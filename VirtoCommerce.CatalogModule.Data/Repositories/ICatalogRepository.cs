@@ -1,16 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using VirtoCommerce.Foundation.Catalogs.Repositories;
-using VirtoCommerce.Foundation.Frameworks;
-using foundation = VirtoCommerce.Foundation.Catalogs.Model;
+using VirtoCommerce.Platform.Core.Common;
+using foundation = VirtoCommerce.CatalogModule.Data.Model;
 using moduleModel = VirtoCommerce.Domain.Catalog.Model;
 
 namespace VirtoCommerce.CatalogModule.Data.Repositories
 {
-	public interface IFoundationCatalogRepository : ICatalogRepository
+	public interface ICatalogRepository : IRepository
 	{
+		IQueryable<foundation.CategoryBase> Categories { get; }
+		IQueryable<foundation.CatalogBase> Catalogs { get; }
+		IQueryable<foundation.Item> Items { get; }
+		IQueryable<foundation.Property> Properties { get; }
+		IQueryable<foundation.PropertySet> PropertySets { get; }
+		IQueryable<foundation.ItemRelation> ItemRelations { get; }
+		IQueryable<foundation.CategoryItemRelation> CategoryItemRelations { get; }
+		IQueryable<foundation.Association> Associations { get; }
+		IQueryable<foundation.SeoUrlKeyword> SeoUrlKeywords { get; }
+
+		foundation.SeoUrlKeyword[] GetAllSeoInformation(string id);
 		foundation.Category[] GetAllCategoryParents(foundation.Category categoryId);
 		foundation.CatalogBase GetCatalogById(string catalogId);
 		foundation.Category GetCategoryById(string categoryId);
