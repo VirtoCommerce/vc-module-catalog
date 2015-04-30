@@ -8,44 +8,25 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
         public override void Up()
         {
             CreateTable(
-                "dbo.CategoryItemRelation",
-                c => new
-                    {
-                        CategoryItemRelationId = c.String(nullable: false, maxLength: 128),
-                        Priority = c.Int(nullable: false),
-                        ItemId = c.String(nullable: false, maxLength: 128),
-                        CategoryId = c.String(nullable: false, maxLength: 128),
-                        CatalogId = c.String(nullable: false, maxLength: 128),
-                        Discriminator = c.String(maxLength: 128),
-                    })
-                .PrimaryKey(t => t.CategoryItemRelationId)
-                .ForeignKey("dbo.CatalogBase", t => t.CatalogId, cascadeDelete: true)
-                .ForeignKey("dbo.Item", t => t.ItemId, cascadeDelete: true)
-                .ForeignKey("dbo.CategoryBase", t => t.CategoryId)
-                .Index(t => t.ItemId)
-                .Index(t => t.CategoryId)
-                .Index(t => t.CatalogId);
-            
-            CreateTable(
                 "dbo.CatalogBase",
                 c => new
                     {
-                        CatalogId = c.String(nullable: false, maxLength: 128),
+                        Id = c.String(nullable: false, maxLength: 128),
                         Name = c.String(nullable: false, maxLength: 128),
                         DefaultLanguage = c.String(nullable: false, maxLength: 64),
                         OwnerId = c.String(maxLength: 128),
                         CreatedDate = c.DateTime(nullable: false),
                         ModifiedDate = c.DateTime(),
-                        CreatedBy = c.String(),
-                        ModifiedBy = c.String(),
+                        CreatedBy = c.String(maxLength: 64),
+                        ModifiedBy = c.String(maxLength: 64),
                     })
-                .PrimaryKey(t => t.CatalogId);
+                .PrimaryKey(t => t.Id);
             
             CreateTable(
                 "dbo.CategoryBase",
                 c => new
                     {
-                        CategoryId = c.String(nullable: false, maxLength: 128),
+                        Id = c.String(nullable: false, maxLength: 128),
                         Code = c.String(nullable: false, maxLength: 64),
                         IsActive = c.Boolean(nullable: false),
                         Priority = c.Int(nullable: false),
@@ -53,31 +34,57 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         ParentCategoryId = c.String(maxLength: 128),
                         CreatedDate = c.DateTime(nullable: false),
                         ModifiedDate = c.DateTime(),
-                        CreatedBy = c.String(),
-                        ModifiedBy = c.String(),
+                        CreatedBy = c.String(maxLength: 64),
+                        ModifiedBy = c.String(maxLength: 64),
                     })
-                .PrimaryKey(t => t.CategoryId)
+                .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.CatalogBase", t => t.CatalogId, cascadeDelete: true)
                 .ForeignKey("dbo.CategoryBase", t => t.ParentCategoryId)
                 .Index(t => t.CatalogId)
                 .Index(t => t.ParentCategoryId);
             
             CreateTable(
+                "dbo.CategoryPropertyValue",
+                c => new
+                    {
+                        Id = c.String(nullable: false, maxLength: 128),
+                        CategoryId = c.String(nullable: false, maxLength: 128),
+                        Alias = c.String(maxLength: 64),
+                        Name = c.String(maxLength: 64),
+                        KeyValue = c.String(maxLength: 128),
+                        ValueType = c.Int(nullable: false),
+                        ShortTextValue = c.String(maxLength: 512),
+                        LongTextValue = c.String(),
+                        DecimalValue = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        IntegerValue = c.Int(nullable: false),
+                        BooleanValue = c.Boolean(nullable: false),
+                        DateTimeValue = c.DateTime(),
+                        Locale = c.String(maxLength: 64),
+                        CreatedDate = c.DateTime(nullable: false),
+                        ModifiedDate = c.DateTime(),
+                        CreatedBy = c.String(maxLength: 64),
+                        ModifiedBy = c.String(maxLength: 64),
+                    })
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.Category", t => t.CategoryId)
+                .Index(t => t.CategoryId);
+            
+            CreateTable(
                 "dbo.PropertySet",
                 c => new
                     {
-                        PropertySetId = c.String(nullable: false, maxLength: 128),
+                        Id = c.String(nullable: false, maxLength: 128),
                         Name = c.String(nullable: false, maxLength: 128),
                         TargetType = c.String(nullable: false, maxLength: 64),
                         CatalogId = c.String(maxLength: 128),
                         CreatedDate = c.DateTime(nullable: false),
                         ModifiedDate = c.DateTime(),
-                        CreatedBy = c.String(),
-                        ModifiedBy = c.String(),
+                        CreatedBy = c.String(maxLength: 64),
+                        ModifiedBy = c.String(maxLength: 64),
                         Catalog_Id = c.String(maxLength: 128),
                         Discriminator = c.String(maxLength: 128),
                     })
-                .PrimaryKey(t => t.PropertySetId)
+                .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.Catalog", t => t.Catalog_Id)
                 .ForeignKey("dbo.Catalog", t => t.CatalogId)
                 .Index(t => t.CatalogId)
@@ -87,12 +94,38 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                 "dbo.CatalogLanguage",
                 c => new
                     {
-                        CatalogLanguageId = c.String(nullable: false, maxLength: 128),
+                        Id = c.String(nullable: false, maxLength: 128),
                         Language = c.String(maxLength: 64),
                         CatalogId = c.String(nullable: false, maxLength: 128),
                         Discriminator = c.String(maxLength: 128),
                     })
-                .PrimaryKey(t => t.CatalogLanguageId)
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.Catalog", t => t.CatalogId)
+                .Index(t => t.CatalogId);
+            
+            CreateTable(
+                "dbo.CatalogPropertyValue",
+                c => new
+                    {
+                        Id = c.String(nullable: false, maxLength: 128),
+                        CatalogId = c.String(nullable: false, maxLength: 128),
+                        Alias = c.String(maxLength: 64),
+                        Name = c.String(maxLength: 64),
+                        KeyValue = c.String(maxLength: 128),
+                        ValueType = c.Int(nullable: false),
+                        ShortTextValue = c.String(maxLength: 512),
+                        LongTextValue = c.String(),
+                        DecimalValue = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        IntegerValue = c.Int(nullable: false),
+                        BooleanValue = c.Boolean(nullable: false),
+                        DateTimeValue = c.DateTime(),
+                        Locale = c.String(maxLength: 64),
+                        CreatedDate = c.DateTime(nullable: false),
+                        ModifiedDate = c.DateTime(),
+                        CreatedBy = c.String(maxLength: 64),
+                        ModifiedBy = c.String(maxLength: 64),
+                    })
+                .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.Catalog", t => t.CatalogId)
                 .Index(t => t.CatalogId);
             
@@ -100,13 +133,13 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                 "dbo.PropertySetProperty",
                 c => new
                     {
-                        PropertySetPropertyId = c.String(nullable: false, maxLength: 128),
+                        Id = c.String(nullable: false, maxLength: 128),
                         Priority = c.Int(nullable: false),
                         PropertyId = c.String(nullable: false, maxLength: 128),
                         PropertySetId = c.String(nullable: false, maxLength: 128),
                         Discriminator = c.String(maxLength: 128),
                     })
-                .PrimaryKey(t => t.PropertySetPropertyId)
+                .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.Property", t => t.PropertyId, cascadeDelete: true)
                 .ForeignKey("dbo.PropertySet", t => t.PropertySetId, cascadeDelete: true)
                 .Index(t => t.PropertyId)
@@ -116,7 +149,7 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                 "dbo.Property",
                 c => new
                     {
-                        PropertyId = c.String(nullable: false, maxLength: 128),
+                        Id = c.String(nullable: false, maxLength: 128),
                         Name = c.String(nullable: false, maxLength: 128),
                         TargetType = c.String(maxLength: 128),
                         IsKey = c.Boolean(nullable: false),
@@ -132,11 +165,11 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         CatalogId = c.String(maxLength: 128),
                         CreatedDate = c.DateTime(nullable: false),
                         ModifiedDate = c.DateTime(),
-                        CreatedBy = c.String(),
-                        ModifiedBy = c.String(),
+                        CreatedBy = c.String(maxLength: 64),
+                        ModifiedBy = c.String(maxLength: 64),
                         Discriminator = c.String(maxLength: 128),
                     })
-                .PrimaryKey(t => t.PropertyId)
+                .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.Catalog", t => t.CatalogId)
                 .ForeignKey("dbo.Property", t => t.ParentPropertyId)
                 .Index(t => t.ParentPropertyId)
@@ -146,26 +179,55 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                 "dbo.PropertyAttribute",
                 c => new
                     {
-                        PropertyAttributeId = c.String(nullable: false, maxLength: 128),
+                        Id = c.String(nullable: false, maxLength: 128),
                         PropertyAttributeName = c.String(nullable: false, maxLength: 128),
                         PropertyAttributeValue = c.String(nullable: false, maxLength: 128),
                         Priority = c.Int(nullable: false),
                         PropertyId = c.String(nullable: false, maxLength: 128),
                         CreatedDate = c.DateTime(nullable: false),
                         ModifiedDate = c.DateTime(),
-                        CreatedBy = c.String(),
-                        ModifiedBy = c.String(),
+                        CreatedBy = c.String(maxLength: 64),
+                        ModifiedBy = c.String(maxLength: 64),
                         Discriminator = c.String(maxLength: 128),
                     })
-                .PrimaryKey(t => t.PropertyAttributeId)
+                .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.Property", t => t.PropertyId, cascadeDelete: true)
                 .Index(t => t.PropertyId);
+            
+            CreateTable(
+                "dbo.PropertyValue",
+                c => new
+                    {
+                        Id = c.String(nullable: false, maxLength: 128),
+                        PropertyId = c.String(nullable: false, maxLength: 128),
+                        ParentPropertyValueId = c.String(maxLength: 128),
+                        Alias = c.String(maxLength: 64),
+                        Name = c.String(maxLength: 64),
+                        KeyValue = c.String(maxLength: 128),
+                        ValueType = c.Int(nullable: false),
+                        ShortTextValue = c.String(maxLength: 512),
+                        LongTextValue = c.String(),
+                        DecimalValue = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        IntegerValue = c.Int(nullable: false),
+                        BooleanValue = c.Boolean(nullable: false),
+                        DateTimeValue = c.DateTime(),
+                        Locale = c.String(maxLength: 64),
+                        CreatedDate = c.DateTime(nullable: false),
+                        ModifiedDate = c.DateTime(),
+                        CreatedBy = c.String(maxLength: 64),
+                        ModifiedBy = c.String(maxLength: 64),
+                    })
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.PropertyValue", t => t.ParentPropertyValueId)
+                .ForeignKey("dbo.Property", t => t.PropertyId, cascadeDelete: true)
+                .Index(t => t.PropertyId)
+                .Index(t => t.ParentPropertyValueId);
             
             CreateTable(
                 "dbo.Item",
                 c => new
                     {
-                        ItemId = c.String(nullable: false, maxLength: 128),
+                        Id = c.String(nullable: false, maxLength: 128),
                         Name = c.String(nullable: false, maxLength: 1024),
                         StartDate = c.DateTime(nullable: false),
                         EndDate = c.DateTime(),
@@ -183,11 +245,11 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         CatalogId = c.String(maxLength: 128),
                         CreatedDate = c.DateTime(nullable: false),
                         ModifiedDate = c.DateTime(),
-                        CreatedBy = c.String(),
-                        ModifiedBy = c.String(),
+                        CreatedBy = c.String(maxLength: 64),
+                        ModifiedBy = c.String(maxLength: 64),
                         Discriminator = c.String(maxLength: 128),
                     })
-                .PrimaryKey(t => t.ItemId)
+                .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.CatalogBase", t => t.CatalogId)
                 .ForeignKey("dbo.PropertySet", t => t.PropertySetId)
                 .Index(t => t.PropertySetId)
@@ -197,18 +259,18 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                 "dbo.AssociationGroup",
                 c => new
                     {
-                        AssociationGroupId = c.String(nullable: false, maxLength: 128),
+                        Id = c.String(nullable: false, maxLength: 128),
                         Name = c.String(nullable: false, maxLength: 128),
                         Description = c.String(maxLength: 512),
                         Priority = c.Int(nullable: false),
                         ItemId = c.String(nullable: false, maxLength: 128),
                         CreatedDate = c.DateTime(nullable: false),
                         ModifiedDate = c.DateTime(),
-                        CreatedBy = c.String(),
-                        ModifiedBy = c.String(),
+                        CreatedBy = c.String(maxLength: 64),
+                        ModifiedBy = c.String(maxLength: 64),
                         Discriminator = c.String(maxLength: 128),
                     })
-                .PrimaryKey(t => t.AssociationGroupId)
+                .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.Item", t => t.ItemId, cascadeDelete: true)
                 .Index(t => t.ItemId);
             
@@ -216,28 +278,47 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                 "dbo.Association",
                 c => new
                     {
-                        AssociationId = c.String(nullable: false, maxLength: 128),
+                        Id = c.String(nullable: false, maxLength: 128),
                         AssociationType = c.String(nullable: false, maxLength: 128),
                         Priority = c.Int(nullable: false),
                         AssociationGroupId = c.String(nullable: false, maxLength: 128),
                         ItemId = c.String(nullable: false, maxLength: 128),
                         CreatedDate = c.DateTime(nullable: false),
                         ModifiedDate = c.DateTime(),
-                        CreatedBy = c.String(),
-                        ModifiedBy = c.String(),
+                        CreatedBy = c.String(maxLength: 64),
+                        ModifiedBy = c.String(maxLength: 64),
                         Discriminator = c.String(maxLength: 128),
                     })
-                .PrimaryKey(t => t.AssociationId)
+                .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.Item", t => t.ItemId)
                 .ForeignKey("dbo.AssociationGroup", t => t.AssociationGroupId, cascadeDelete: true)
                 .Index(t => t.AssociationGroupId)
                 .Index(t => t.ItemId);
             
             CreateTable(
+                "dbo.CategoryItemRelation",
+                c => new
+                    {
+                        Id = c.String(nullable: false, maxLength: 128),
+                        Priority = c.Int(nullable: false),
+                        ItemId = c.String(nullable: false, maxLength: 128),
+                        CategoryId = c.String(nullable: false, maxLength: 128),
+                        CatalogId = c.String(nullable: false, maxLength: 128),
+                        Discriminator = c.String(maxLength: 128),
+                    })
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.CatalogBase", t => t.CatalogId, cascadeDelete: true)
+                .ForeignKey("dbo.CategoryBase", t => t.CategoryId)
+                .ForeignKey("dbo.Item", t => t.ItemId, cascadeDelete: true)
+                .Index(t => t.ItemId)
+                .Index(t => t.CategoryId)
+                .Index(t => t.CatalogId);
+            
+            CreateTable(
                 "dbo.EditorialReview",
                 c => new
                     {
-                        EditorialReviewId = c.String(nullable: false, maxLength: 128),
+                        Id = c.String(nullable: false, maxLength: 128),
                         Priority = c.Int(nullable: false),
                         Source = c.String(maxLength: 128),
                         Content = c.String(),
@@ -247,11 +328,11 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         ItemId = c.String(nullable: false, maxLength: 128),
                         CreatedDate = c.DateTime(nullable: false),
                         ModifiedDate = c.DateTime(),
-                        CreatedBy = c.String(),
-                        ModifiedBy = c.String(),
+                        CreatedBy = c.String(maxLength: 64),
+                        ModifiedBy = c.String(maxLength: 64),
                         Discriminator = c.String(maxLength: 128),
                     })
-                .PrimaryKey(t => t.EditorialReviewId)
+                .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.Item", t => t.ItemId, cascadeDelete: true)
                 .Index(t => t.ItemId);
             
@@ -259,7 +340,7 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                 "dbo.ItemAsset",
                 c => new
                     {
-                        ItemAssetId = c.String(nullable: false, maxLength: 128),
+                        Id = c.String(nullable: false, maxLength: 128),
                         AssetId = c.String(nullable: false, maxLength: 128),
                         AssetType = c.String(nullable: false, maxLength: 64),
                         GroupName = c.String(nullable: false, maxLength: 64),
@@ -267,11 +348,37 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         ItemId = c.String(nullable: false, maxLength: 128),
                         CreatedDate = c.DateTime(nullable: false),
                         ModifiedDate = c.DateTime(),
-                        CreatedBy = c.String(),
-                        ModifiedBy = c.String(),
+                        CreatedBy = c.String(maxLength: 64),
+                        ModifiedBy = c.String(maxLength: 64),
                         Discriminator = c.String(maxLength: 128),
                     })
-                .PrimaryKey(t => t.ItemAssetId)
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.Item", t => t.ItemId, cascadeDelete: true)
+                .Index(t => t.ItemId);
+            
+            CreateTable(
+                "dbo.ItemPropertyValue",
+                c => new
+                    {
+                        Id = c.String(nullable: false, maxLength: 128),
+                        ItemId = c.String(nullable: false, maxLength: 128),
+                        Alias = c.String(maxLength: 64),
+                        Name = c.String(maxLength: 64),
+                        KeyValue = c.String(maxLength: 128),
+                        ValueType = c.Int(nullable: false),
+                        ShortTextValue = c.String(maxLength: 512),
+                        LongTextValue = c.String(),
+                        DecimalValue = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        IntegerValue = c.Int(nullable: false),
+                        BooleanValue = c.Boolean(nullable: false),
+                        DateTimeValue = c.DateTime(),
+                        Locale = c.String(maxLength: 64),
+                        CreatedDate = c.DateTime(nullable: false),
+                        ModifiedDate = c.DateTime(),
+                        CreatedBy = c.String(maxLength: 64),
+                        ModifiedBy = c.String(maxLength: 64),
+                    })
+                .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.Item", t => t.ItemId, cascadeDelete: true)
                 .Index(t => t.ItemId);
             
@@ -279,7 +386,7 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                 "dbo.ItemRelation",
                 c => new
                     {
-                        ItemRelationId = c.String(nullable: false, maxLength: 128),
+                        Id = c.String(nullable: false, maxLength: 128),
                         RelationTypeId = c.String(maxLength: 64),
                         Quantity = c.Decimal(nullable: false, precision: 18, scale: 2),
                         GroupName = c.String(nullable: false, maxLength: 64),
@@ -288,11 +395,11 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         ParentItemId = c.String(nullable: false, maxLength: 128),
                         CreatedDate = c.DateTime(nullable: false),
                         ModifiedDate = c.DateTime(),
-                        CreatedBy = c.String(),
-                        ModifiedBy = c.String(),
+                        CreatedBy = c.String(maxLength: 64),
+                        ModifiedBy = c.String(maxLength: 64),
                         Discriminator = c.String(maxLength: 128),
                     })
-                .PrimaryKey(t => t.ItemRelationId)
+                .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.Item", t => t.ChildItemId)
                 .ForeignKey("dbo.Item", t => t.ParentItemId, cascadeDelete: true)
                 .Index(t => t.ChildItemId)
@@ -302,261 +409,154 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                 "dbo.VirtualCatalog",
                 c => new
                     {
-                        CatalogId = c.String(nullable: false, maxLength: 128),
+                        Id = c.String(nullable: false, maxLength: 128),
                     })
-                .PrimaryKey(t => t.CatalogId)
-                .ForeignKey("dbo.CatalogBase", t => t.CatalogId)
-                .Index(t => t.CatalogId);
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.CatalogBase", t => t.Id)
+                .Index(t => t.Id);
             
             CreateTable(
                 "dbo.Catalog",
                 c => new
                     {
-                        CatalogId = c.String(nullable: false, maxLength: 128),
+                        Id = c.String(nullable: false, maxLength: 128),
                         WeightMeasure = c.Int(nullable: false),
                         PropertySetId = c.String(maxLength: 128),
                     })
-                .PrimaryKey(t => t.CatalogId)
-                .ForeignKey("dbo.CatalogBase", t => t.CatalogId)
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.CatalogBase", t => t.Id)
                 .ForeignKey("dbo.PropertySet", t => t.PropertySetId)
-                .Index(t => t.CatalogId)
+                .Index(t => t.Id)
                 .Index(t => t.PropertySetId);
             
             CreateTable(
                 "dbo.Category",
                 c => new
                     {
-                        CategoryId = c.String(nullable: false, maxLength: 128),
+                        Id = c.String(nullable: false, maxLength: 128),
                         Name = c.String(nullable: false, maxLength: 128),
                         StartDate = c.DateTime(nullable: false),
                         EndDate = c.DateTime(),
                         PropertySetId = c.String(maxLength: 128),
                     })
-                .PrimaryKey(t => t.CategoryId)
-                .ForeignKey("dbo.CategoryBase", t => t.CategoryId)
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.CategoryBase", t => t.Id)
                 .ForeignKey("dbo.PropertySet", t => t.PropertySetId)
-                .Index(t => t.CategoryId)
+                .Index(t => t.Id)
                 .Index(t => t.PropertySetId);
             
             CreateTable(
                 "dbo.LinkedCategory",
                 c => new
                     {
-                        CategoryId = c.String(nullable: false, maxLength: 128),
+                        Id = c.String(nullable: false, maxLength: 128),
                         LinkedCatalogId = c.String(nullable: false, maxLength: 128),
                         LinkedCategoryId = c.String(maxLength: 128),
                     })
-                .PrimaryKey(t => t.CategoryId)
-                .ForeignKey("dbo.CategoryBase", t => t.CategoryId)
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.CategoryBase", t => t.Id)
                 .ForeignKey("dbo.CatalogBase", t => t.LinkedCatalogId, cascadeDelete: true)
                 .ForeignKey("dbo.CategoryBase", t => t.LinkedCategoryId)
-                .Index(t => t.CategoryId)
+                .Index(t => t.Id)
                 .Index(t => t.LinkedCatalogId)
                 .Index(t => t.LinkedCategoryId);
-            
-            CreateTable(
-                "dbo.CatalogPropertyValue",
-                c => new
-                    {
-                        PropertyValueId = c.String(nullable: false, maxLength: 128),
-                        Alias = c.String(maxLength: 64),
-                        Name = c.String(maxLength: 64),
-                        KeyValue = c.String(maxLength: 128),
-                        ValueType = c.Int(nullable: false),
-                        ShortTextValue = c.String(maxLength: 512),
-                        LongTextValue = c.String(),
-                        DecimalValue = c.Decimal(nullable: false, precision: 18, scale: 2),
-                        IntegerValue = c.Int(nullable: false),
-                        BooleanValue = c.Boolean(nullable: false),
-                        DateTimeValue = c.DateTime(),
-                        Locale = c.String(maxLength: 64),
-                        CreatedDate = c.DateTime(nullable: false),
-                        ModifiedDate = c.DateTime(),
-                        CreatedBy = c.String(),
-                        ModifiedBy = c.String(),
-                        CatalogId = c.String(nullable: false, maxLength: 128),
-                    })
-                .PrimaryKey(t => t.PropertyValueId)
-                .ForeignKey("dbo.Catalog", t => t.CatalogId)
-                .Index(t => t.CatalogId);
-            
-            CreateTable(
-                "dbo.CategoryPropertyValue",
-                c => new
-                    {
-                        PropertyValueId = c.String(nullable: false, maxLength: 128),
-                        Alias = c.String(maxLength: 64),
-                        Name = c.String(maxLength: 64),
-                        KeyValue = c.String(maxLength: 128),
-                        ValueType = c.Int(nullable: false),
-                        ShortTextValue = c.String(maxLength: 512),
-                        LongTextValue = c.String(),
-                        DecimalValue = c.Decimal(nullable: false, precision: 18, scale: 2),
-                        IntegerValue = c.Int(nullable: false),
-                        BooleanValue = c.Boolean(nullable: false),
-                        DateTimeValue = c.DateTime(),
-                        Locale = c.String(maxLength: 64),
-                        CreatedDate = c.DateTime(nullable: false),
-                        ModifiedDate = c.DateTime(),
-                        CreatedBy = c.String(),
-                        ModifiedBy = c.String(),
-                        CategoryId = c.String(nullable: false, maxLength: 128),
-                    })
-                .PrimaryKey(t => t.PropertyValueId)
-                .ForeignKey("dbo.Category", t => t.CategoryId)
-                .Index(t => t.CategoryId);
-            
-            CreateTable(
-                "dbo.PropertyValue",
-                c => new
-                    {
-                        PropertyValueId = c.String(nullable: false, maxLength: 128),
-                        Alias = c.String(maxLength: 64),
-                        Name = c.String(maxLength: 64),
-                        KeyValue = c.String(maxLength: 128),
-                        ValueType = c.Int(nullable: false),
-                        ShortTextValue = c.String(maxLength: 512),
-                        LongTextValue = c.String(),
-                        DecimalValue = c.Decimal(nullable: false, precision: 18, scale: 2),
-                        IntegerValue = c.Int(nullable: false),
-                        BooleanValue = c.Boolean(nullable: false),
-                        DateTimeValue = c.DateTime(),
-                        Locale = c.String(maxLength: 64),
-                        CreatedDate = c.DateTime(nullable: false),
-                        ModifiedDate = c.DateTime(),
-                        CreatedBy = c.String(),
-                        ModifiedBy = c.String(),
-                        PropertyId = c.String(nullable: false, maxLength: 128),
-                        ParentPropertyValueId = c.String(maxLength: 128),
-                    })
-                .PrimaryKey(t => t.PropertyValueId)
-                .ForeignKey("dbo.Property", t => t.PropertyId, cascadeDelete: true)
-                .ForeignKey("dbo.PropertyValue", t => t.ParentPropertyValueId)
-                .Index(t => t.PropertyId)
-                .Index(t => t.ParentPropertyValueId);
-            
-            CreateTable(
-                "dbo.ItemPropertyValue",
-                c => new
-                    {
-                        PropertyValueId = c.String(nullable: false, maxLength: 128),
-                        Alias = c.String(maxLength: 64),
-                        Name = c.String(maxLength: 64),
-                        KeyValue = c.String(maxLength: 128),
-                        ValueType = c.Int(nullable: false),
-                        ShortTextValue = c.String(maxLength: 512),
-                        LongTextValue = c.String(),
-                        DecimalValue = c.Decimal(nullable: false, precision: 18, scale: 2),
-                        IntegerValue = c.Int(nullable: false),
-                        BooleanValue = c.Boolean(nullable: false),
-                        DateTimeValue = c.DateTime(),
-                        Locale = c.String(maxLength: 64),
-                        CreatedDate = c.DateTime(nullable: false),
-                        ModifiedDate = c.DateTime(),
-                        CreatedBy = c.String(),
-                        ModifiedBy = c.String(),
-                        ItemId = c.String(nullable: false, maxLength: 128),
-                    })
-                .PrimaryKey(t => t.PropertyValueId)
-                .ForeignKey("dbo.Item", t => t.ItemId, cascadeDelete: true)
-                .Index(t => t.ItemId);
             
         }
         
         public override void Down()
         {
-            DropForeignKey("dbo.ItemPropertyValue", "ItemId", "dbo.Item");
-            DropForeignKey("dbo.PropertyValue", "ParentPropertyValueId", "dbo.PropertyValue");
-            DropForeignKey("dbo.PropertyValue", "PropertyId", "dbo.Property");
-            DropForeignKey("dbo.CategoryPropertyValue", "CategoryId", "dbo.Category");
-            DropForeignKey("dbo.CatalogPropertyValue", "CatalogId", "dbo.Catalog");
             DropForeignKey("dbo.LinkedCategory", "LinkedCategoryId", "dbo.CategoryBase");
             DropForeignKey("dbo.LinkedCategory", "LinkedCatalogId", "dbo.CatalogBase");
-            DropForeignKey("dbo.LinkedCategory", "CategoryId", "dbo.CategoryBase");
+            DropForeignKey("dbo.LinkedCategory", "Id", "dbo.CategoryBase");
             DropForeignKey("dbo.Category", "PropertySetId", "dbo.PropertySet");
-            DropForeignKey("dbo.Category", "CategoryId", "dbo.CategoryBase");
+            DropForeignKey("dbo.Category", "Id", "dbo.CategoryBase");
             DropForeignKey("dbo.Catalog", "PropertySetId", "dbo.PropertySet");
-            DropForeignKey("dbo.Catalog", "CatalogId", "dbo.CatalogBase");
-            DropForeignKey("dbo.VirtualCatalog", "CatalogId", "dbo.CatalogBase");
+            DropForeignKey("dbo.Catalog", "Id", "dbo.CatalogBase");
+            DropForeignKey("dbo.VirtualCatalog", "Id", "dbo.CatalogBase");
             DropForeignKey("dbo.ItemRelation", "ParentItemId", "dbo.Item");
             DropForeignKey("dbo.ItemRelation", "ChildItemId", "dbo.Item");
-            DropForeignKey("dbo.CategoryItemRelation", "CategoryId", "dbo.CategoryBase");
             DropForeignKey("dbo.Item", "PropertySetId", "dbo.PropertySet");
+            DropForeignKey("dbo.ItemPropertyValue", "ItemId", "dbo.Item");
             DropForeignKey("dbo.ItemAsset", "ItemId", "dbo.Item");
             DropForeignKey("dbo.EditorialReview", "ItemId", "dbo.Item");
             DropForeignKey("dbo.CategoryItemRelation", "ItemId", "dbo.Item");
+            DropForeignKey("dbo.CategoryItemRelation", "CategoryId", "dbo.CategoryBase");
+            DropForeignKey("dbo.CategoryItemRelation", "CatalogId", "dbo.CatalogBase");
             DropForeignKey("dbo.Item", "CatalogId", "dbo.CatalogBase");
             DropForeignKey("dbo.AssociationGroup", "ItemId", "dbo.Item");
             DropForeignKey("dbo.Association", "AssociationGroupId", "dbo.AssociationGroup");
             DropForeignKey("dbo.Association", "ItemId", "dbo.Item");
-            DropForeignKey("dbo.CategoryItemRelation", "CatalogId", "dbo.CatalogBase");
             DropForeignKey("dbo.PropertySetProperty", "PropertySetId", "dbo.PropertySet");
             DropForeignKey("dbo.PropertySetProperty", "PropertyId", "dbo.Property");
+            DropForeignKey("dbo.PropertyValue", "PropertyId", "dbo.Property");
+            DropForeignKey("dbo.PropertyValue", "ParentPropertyValueId", "dbo.PropertyValue");
             DropForeignKey("dbo.PropertyAttribute", "PropertyId", "dbo.Property");
             DropForeignKey("dbo.Property", "ParentPropertyId", "dbo.Property");
             DropForeignKey("dbo.Property", "CatalogId", "dbo.Catalog");
             DropForeignKey("dbo.PropertySet", "CatalogId", "dbo.Catalog");
             DropForeignKey("dbo.PropertySet", "Catalog_Id", "dbo.Catalog");
+            DropForeignKey("dbo.CatalogPropertyValue", "CatalogId", "dbo.Catalog");
             DropForeignKey("dbo.CatalogLanguage", "CatalogId", "dbo.Catalog");
+            DropForeignKey("dbo.CategoryPropertyValue", "CategoryId", "dbo.Category");
             DropForeignKey("dbo.CategoryBase", "ParentCategoryId", "dbo.CategoryBase");
             DropForeignKey("dbo.CategoryBase", "CatalogId", "dbo.CatalogBase");
-            DropIndex("dbo.ItemPropertyValue", new[] { "ItemId" });
-            DropIndex("dbo.PropertyValue", new[] { "ParentPropertyValueId" });
-            DropIndex("dbo.PropertyValue", new[] { "PropertyId" });
-            DropIndex("dbo.CategoryPropertyValue", new[] { "CategoryId" });
-            DropIndex("dbo.CatalogPropertyValue", new[] { "CatalogId" });
             DropIndex("dbo.LinkedCategory", new[] { "LinkedCategoryId" });
             DropIndex("dbo.LinkedCategory", new[] { "LinkedCatalogId" });
-            DropIndex("dbo.LinkedCategory", new[] { "CategoryId" });
+            DropIndex("dbo.LinkedCategory", new[] { "Id" });
             DropIndex("dbo.Category", new[] { "PropertySetId" });
-            DropIndex("dbo.Category", new[] { "CategoryId" });
+            DropIndex("dbo.Category", new[] { "Id" });
             DropIndex("dbo.Catalog", new[] { "PropertySetId" });
-            DropIndex("dbo.Catalog", new[] { "CatalogId" });
-            DropIndex("dbo.VirtualCatalog", new[] { "CatalogId" });
+            DropIndex("dbo.Catalog", new[] { "Id" });
+            DropIndex("dbo.VirtualCatalog", new[] { "Id" });
             DropIndex("dbo.ItemRelation", new[] { "ParentItemId" });
             DropIndex("dbo.ItemRelation", new[] { "ChildItemId" });
+            DropIndex("dbo.ItemPropertyValue", new[] { "ItemId" });
             DropIndex("dbo.ItemAsset", new[] { "ItemId" });
             DropIndex("dbo.EditorialReview", new[] { "ItemId" });
+            DropIndex("dbo.CategoryItemRelation", new[] { "CatalogId" });
+            DropIndex("dbo.CategoryItemRelation", new[] { "CategoryId" });
+            DropIndex("dbo.CategoryItemRelation", new[] { "ItemId" });
             DropIndex("dbo.Association", new[] { "ItemId" });
             DropIndex("dbo.Association", new[] { "AssociationGroupId" });
             DropIndex("dbo.AssociationGroup", new[] { "ItemId" });
             DropIndex("dbo.Item", new[] { "CatalogId" });
             DropIndex("dbo.Item", new[] { "PropertySetId" });
+            DropIndex("dbo.PropertyValue", new[] { "ParentPropertyValueId" });
+            DropIndex("dbo.PropertyValue", new[] { "PropertyId" });
             DropIndex("dbo.PropertyAttribute", new[] { "PropertyId" });
             DropIndex("dbo.Property", new[] { "CatalogId" });
             DropIndex("dbo.Property", new[] { "ParentPropertyId" });
             DropIndex("dbo.PropertySetProperty", new[] { "PropertySetId" });
             DropIndex("dbo.PropertySetProperty", new[] { "PropertyId" });
+            DropIndex("dbo.CatalogPropertyValue", new[] { "CatalogId" });
             DropIndex("dbo.CatalogLanguage", new[] { "CatalogId" });
             DropIndex("dbo.PropertySet", new[] { "Catalog_Id" });
             DropIndex("dbo.PropertySet", new[] { "CatalogId" });
+            DropIndex("dbo.CategoryPropertyValue", new[] { "CategoryId" });
             DropIndex("dbo.CategoryBase", new[] { "ParentCategoryId" });
             DropIndex("dbo.CategoryBase", new[] { "CatalogId" });
-            DropIndex("dbo.CategoryItemRelation", new[] { "CatalogId" });
-            DropIndex("dbo.CategoryItemRelation", new[] { "CategoryId" });
-            DropIndex("dbo.CategoryItemRelation", new[] { "ItemId" });
-            DropTable("dbo.ItemPropertyValue");
-            DropTable("dbo.PropertyValue");
-            DropTable("dbo.CategoryPropertyValue");
-            DropTable("dbo.CatalogPropertyValue");
             DropTable("dbo.LinkedCategory");
             DropTable("dbo.Category");
             DropTable("dbo.Catalog");
             DropTable("dbo.VirtualCatalog");
             DropTable("dbo.ItemRelation");
+            DropTable("dbo.ItemPropertyValue");
             DropTable("dbo.ItemAsset");
             DropTable("dbo.EditorialReview");
+            DropTable("dbo.CategoryItemRelation");
             DropTable("dbo.Association");
             DropTable("dbo.AssociationGroup");
             DropTable("dbo.Item");
+            DropTable("dbo.PropertyValue");
             DropTable("dbo.PropertyAttribute");
             DropTable("dbo.Property");
             DropTable("dbo.PropertySetProperty");
+            DropTable("dbo.CatalogPropertyValue");
             DropTable("dbo.CatalogLanguage");
             DropTable("dbo.PropertySet");
+            DropTable("dbo.CategoryPropertyValue");
             DropTable("dbo.CategoryBase");
             DropTable("dbo.CatalogBase");
-            DropTable("dbo.CategoryItemRelation");
         }
     }
 }

@@ -1,7 +1,8 @@
 ﻿using VirtoCommerce.CatalogModule.Data.Repositories;
-namespace VirtoCommerce.CatalogModule.Web.SampleData
+using VirtoCommerce.Platform.Data.Infrastructure;
+namespace VirtoCommerce.CatalogModule.Data.Repositories
 {
-	public class SqlCatalogSampleDatabaseInitializer : SqlCatalogDatabaseInitializer
+	public class SqlCatalogSampleDatabaseInitializer : SetupDatabaseInitializer<CatalogRepositoryImpl, VirtoCommerce.CatalogModule.Data.Migrations.Configuration>
 	{
 		readonly string[] _files =
 		{
@@ -16,14 +17,11 @@ namespace VirtoCommerce.CatalogModule.Web.SampleData
 			"CategoryBase.sql", 
 			"Category.sql",
 			"LinkedCategory.sql",
-			//"TaxCategory.sql",
 			"Item.sql",
 			"ItemPropertyValue.sql",
 			"CategoryItemRelation.sql",
 			"EditorialReview.sql",
 			"ItemAsset.sql",
-			//"PricelistAssignment.sql",
-			//"Price.sql",
 			"AssociationGroup.sql",
 			"Association.sql",
 			"ItemRelation.sql"
@@ -44,7 +42,7 @@ namespace VirtoCommerce.CatalogModule.Web.SampleData
 		{
 			foreach (var file in GetSampleFiles())
 			{
-				ExecuteSqlScriptFile(context, file, "Catalogs");
+				//ExecuteSqlScriptFile(context, file, "Catalogs");
 			}
 		}
 	}
