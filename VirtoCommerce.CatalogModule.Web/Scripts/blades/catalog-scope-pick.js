@@ -24,7 +24,7 @@
     };
 
     $scope.isValid = function () {
-        return _.any(blade.currentEntities, function (x) { return x.$selected; });
+    	return true;
     };
 
     $scope.saveChanges = function () {
