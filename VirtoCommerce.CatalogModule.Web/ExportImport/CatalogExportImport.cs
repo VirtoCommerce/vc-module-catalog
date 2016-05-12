@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using Microsoft.Practices.ObjectBuilder2;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
-using VirtoCommerce.Platform.Core.Asset;
+using VirtoCommerce.Platform.Core.Assets;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.ExportImport;
 using VirtoCommerce.Platform.Data.Common;
@@ -22,12 +20,12 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
             Products = new List<CatalogProduct>();
             Properties = new List<Property>();
         }
+
         public ICollection<Catalog> Catalogs { get; set; }
         public ICollection<Category> Categories { get; set; }
         public ICollection<CatalogProduct> Products { get; set; }
         public ICollection<Property> Properties { get; set; }
     }
-
 
     public sealed class CatalogExportImport
     {
@@ -50,7 +48,6 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
             _propertyService = propertyService;
         }
 
-
         public void DoExport(Stream backupStream, PlatformExportManifest manifest, Action<ExportImportProgressInfo> progressCallback)
         {
             var backupObject = GetBackupObject(progressCallback, manifest.HandleBinaryData);
@@ -63,24 +60,24 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
             var progressInfo = new ExportImportProgressInfo();
 
             var backupObject = backupStream.DeserializeJson<BackupObject>();
-            foreach(var category in backupObject.Categories)
+            foreach (var category in backupObject.Categories)
             {
                 category.Catalog = backupObject.Catalogs.FirstOrDefault(x => x.Id == category.CatalogId);
-                if(category.Parents != null)
+                if (category.Parents != null)
                 {
-                    category.Level = category.Parents.Count();
+                    category.Level = category.Parents.Length;
                 }
             }
             var originalObject = GetBackupObject(progressCallback, false);
 
-            progressInfo.Description = String.Format("{0} catalogs importing...", backupObject.Catalogs.Count());
+            progressInfo.Description = string.Format("{0} catalogs importing...", backupObject.Catalogs.Count);
             progressCallback(progressInfo);
 
             UpdateCatalogs(originalObject.Catalogs, backupObject.Catalogs);
 
-            progressInfo.Description = String.Format("{0} categories importing...", backupObject.Categories.Count());
+            progressInfo.Description = string.Format("{0} categories importing...", backupObject.Categories.Count);
             progressCallback(progressInfo);
-          
+
             backupObject.Products = backupObject.Products.OrderBy(x => x.MainProductId).ToList();
             UpdateCategories(originalObject.Categories, backupObject.Categories);
             UpdateProperties(originalObject.Properties, backupObject.Properties);
@@ -96,12 +93,12 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                 allOrigImages = allOrigImages.Concat(originalObject.Categories.SelectMany(x => x.Images));
                 allOrigImages = allOrigImages.Concat(originalObject.Products.SelectMany(x => x.Variations).SelectMany(x => x.Images));
                 //Import only new images
-                var allNewImages = allBackupImages.Where(x => !allOrigImages.Contains(x));
+                var allNewImages = allBackupImages.Where(x => !allOrigImages.Contains(x)).ToList();
                 var index = 0;
-                var progressTemplate = "{0} of " + allNewImages.Count() + " images uploading";
+                var progressTemplate = "{0} of " + allNewImages.Count + " images uploading";
                 foreach (var image in allNewImages)
                 {
-                    progressInfo.Description = String.Format(progressTemplate, index);
+                    progressInfo.Description = string.Format(progressTemplate, index);
                     progressCallback(progressInfo);
                     try
                     {
@@ -117,7 +114,7 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                     }
                     catch (Exception ex)
                     {
-                        progressInfo.Errors.Add(String.Format("{0}: {1}", "CatalogModule", ex.ExpandExceptionMessage()));
+                        progressInfo.Errors.Add(string.Format("{0}: {1}", "CatalogModule", ex.ExpandExceptionMessage()));
                         progressCallback(progressInfo);
                     }
 
@@ -125,10 +122,11 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                 }
             }
 
-            progressInfo.Description = String.Format("{0} products importing...", backupObject.Products.Count());
+            progressInfo.Description = string.Format("{0} products importing...", backupObject.Products.Count);
             progressCallback(progressInfo);
             UpdateCatalogProducts(originalObject.Products, backupObject.Products);
         }
+
 
         private void UpdateCatalogs(ICollection<Catalog> original, ICollection<Catalog> backup)
         {
@@ -219,39 +217,41 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
 
             var retVal = new BackupObject();
 
-            progressInfo.Description = String.Format("{0} catalogs loading", searchResponse.Catalogs.Count());
+            progressInfo.Description = string.Format("{0} catalogs loading", searchResponse.Catalogs.Count);
             progressCallback(progressInfo);
 
             //Catalogs
             retVal.Catalogs = searchResponse.Catalogs.Select(x => _catalogService.GetById(x.Id)).ToList();
 
-            progressInfo.Description = String.Format("{0} categories loading", searchResponse.Categories.Count());
+            progressInfo.Description = string.Format("{0} categories loading", searchResponse.Categories.Count);
             progressCallback(progressInfo);
-          
+
             //Categories
-            retVal.Categories = _categoryService.GetByIds(searchResponse.Categories.Select(x=>x.Id).ToArray(), CategoryResponseGroup.Full);
-         
+            retVal.Categories = _categoryService.GetByIds(searchResponse.Categories.Select(x => x.Id).ToArray(), CategoryResponseGroup.Full);
+
             //Products
-            for (int i = 0; i < searchResponse.Products.Count(); i += 50)
+            for (int i = 0; i < searchResponse.Products.Count; i += 50)
             {
                 var products = _itemService.GetByIds(searchResponse.Products.Skip(i).Take(50).Select(x => x.Id).ToArray(), ItemResponseGroup.ItemLarge);
                 retVal.Products.AddRange(products);
 
-                progressInfo.Description = String.Format("{0} of {1} products loaded", Math.Min(searchResponse.ProductsTotalCount, i), searchResponse.ProductsTotalCount);
+                progressInfo.Description = string.Format("{0} of {1} products loaded", Math.Min(searchResponse.ProductsTotalCount, i), searchResponse.ProductsTotalCount);
                 progressCallback(progressInfo);
             }
             //Binary data
             if (loadBinaryData)
             {
-                var allImages = retVal.Products.SelectMany(x => x.Images);
-                allImages = allImages.Concat(retVal.Categories.SelectMany(x => x.Images));
-                allImages = allImages.Concat(retVal.Products.SelectMany(x => x.Variations).SelectMany(x => x.Images));
+                var allImages = retVal.Products.SelectMany(x => x.Images)
+                    .Concat(retVal.Categories.SelectMany(x => x.Images))
+                    .Concat(retVal.Products.SelectMany(x => x.Variations)
+                    .SelectMany(x => x.Images))
+                    .ToList();
 
                 var index = 0;
-                var progressTemplate = "{0} of " + allImages.Count() + " images downloading";
+                var progressTemplate = "{0} of " + allImages.Count + " images downloading";
                 foreach (var image in allImages)
                 {
-                    progressInfo.Description = String.Format(progressTemplate, index);
+                    progressInfo.Description = string.Format(progressTemplate, index);
                     progressCallback(progressInfo);
                     try
                     {
@@ -270,7 +270,7 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
             }
 
             //Properties
-            progressInfo.Description = String.Format("Properties loading");
+            progressInfo.Description = "Properties loading";
             progressCallback(progressInfo);
 
             retVal.Properties = _propertyService.GetAllProperties();
@@ -292,7 +292,7 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                     propvalue.Property = null;
                 }
             }
-            foreach (var product in retVal.Products.Concat(retVal.Products.SelectMany(x=>x.Variations)))
+            foreach (var product in retVal.Products.Concat(retVal.Products.SelectMany(x => x.Variations)))
             {
                 product.Catalog = null;
                 product.Category = null;
@@ -303,10 +303,8 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                     propvalue.Property = null;
                 }
             }
+
             return retVal;
-
         }
-
     }
-
 }

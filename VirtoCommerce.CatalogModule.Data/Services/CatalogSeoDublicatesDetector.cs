@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Commerce.Model;
@@ -89,20 +86,20 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             var retVal = new List<ISeoSupport>();
             //Here we try to find between SEO duplicates records for products with directly or indirectly (virtual) related to requested catalog
             foreach (var product in products)
-            {              
-                if (product.CatalogId == catalogId || product.Outlines.SelectMany(x=>x.Items).Any(x=>x.Id == catalogId))
-                {             
-                    foreach(var productSeo in product.SeoInfos)
+            {
+                if (product.CatalogId == catalogId || product.Outlines.SelectMany(x => x.Items).Any(x => x.Id == catalogId))
+                {
+                    foreach (var productSeo in product.SeoInfos)
                     {
                         productSeo.Name = string.Format("{0} ({1})", product.Name, product.Code);
-                    }      
+                    }
                     retVal.Add(product);
                 }
             }
             //Here we try to find between SEO duplicates records for categories with directly or indirectly related to requested catalog
             foreach (var category in categories)
             {
-                if (category.CatalogId == catalogId || category.Outlines.SelectMany(x=>x.Items).Any(x => x.Id == catalogId))
+                if (category.CatalogId == catalogId || category.Outlines.SelectMany(x => x.Items).Any(x => x.Id == catalogId))
                 {
                     foreach (var categorySeo in category.SeoInfos)
                     {

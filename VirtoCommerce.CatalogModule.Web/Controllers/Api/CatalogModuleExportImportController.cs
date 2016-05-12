@@ -11,7 +11,7 @@ using VirtoCommerce.CatalogModule.Web.Model.PushNotifications;
 using VirtoCommerce.CatalogModule.Web.Security;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Commerce.Services;
-using VirtoCommerce.Platform.Core.Asset;
+using VirtoCommerce.Platform.Core.Assets;
 using VirtoCommerce.Platform.Core.ExportImport;
 using VirtoCommerce.Platform.Core.PushNotifications;
 using VirtoCommerce.Platform.Core.Security;
@@ -52,12 +52,12 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// </summary>
         /// <remarks>Data export is an async process. An ExportNotification is returned for progress reporting.</remarks>
         /// <param name="exportInfo">The export configuration.</param>
-        [ResponseType(typeof(ExportNotification))]
         [HttpPost]
         [Route("export")]
+        [ResponseType(typeof(ExportNotification))]
         public IHttpActionResult DoExport(CsvExportInfo exportInfo)
         {
-            base.CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Export, exportInfo);
+            CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Export, exportInfo);
 
             var notification = new ExportNotification(_userNameResolver.GetCurrentUserName())
             {
@@ -72,7 +72,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return Ok(notification);
         }
 
-
         /// <summary>
         /// Gets the CSV mapping configuration.
         /// </summary>
@@ -80,9 +79,9 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <param name="fileUrl">The file URL.</param>
         /// <param name="delimiter">The CSV delimiter.</param>
         /// <returns></returns>
-        [ResponseType(typeof(CsvProductMappingConfiguration))]
         [HttpGet]
         [Route("import/mappingconfiguration")]
+        [ResponseType(typeof(CsvProductMappingConfiguration))]
         public IHttpActionResult GetMappingConfiguration([FromUri]string fileUrl, [FromUri]string delimiter = ";")
         {
             var retVal = CsvProductMappingConfiguration.GetDefaultConfiguration();
@@ -102,19 +101,18 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return Ok(retVal);
         }
 
-
         /// <summary>
         /// Start catalog data import process.
         /// </summary>
         /// <remarks>Data import is an async process. An ImportNotification is returned for progress reporting.</remarks>
         /// <param name="importInfo">The import data configuration.</param>
         /// <returns></returns>
-        [ResponseType(typeof(ImportNotification))]
         [HttpPost]
         [Route("import")]
+        [ResponseType(typeof(ImportNotification))]
         public IHttpActionResult DoImport(CsvImportInfo importInfo)
         {
-            base.CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Import, importInfo);
+            CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Import, importInfo);
 
             var notification = new ImportNotification(_userNameResolver.GetCurrentUserName())
             {
@@ -128,12 +126,11 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return Ok(notification);
         }
 
-
         [ApiExplorerSettings(IgnoreApi = true)]
         // Only public methods can be invoked in the background. (Hangfire)
         public void BackgroundImport(CsvImportInfo importInfo, ImportNotification notifyEvent)
         {
-            Action<ExportImportProgressInfo> progressCallback = (x) =>
+            Action<ExportImportProgressInfo> progressCallback = x =>
             {
                 notifyEvent.InjectFrom(x);
                 _notifier.Upsert(notifyEvent);
@@ -160,7 +157,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             }
         }
 
-
         [ApiExplorerSettings(IgnoreApi = true)]
         // Only public methods can be invoked in the background. (Hangfire)
         public void BackgroundExport(CsvExportInfo exportInfo, ExportNotification notifyEvent)
@@ -174,7 +170,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 throw new NullReferenceException("catalog");
             }
 
-            Action<ExportImportProgressInfo> progressCallback = (x) =>
+            Action<ExportImportProgressInfo> progressCallback = x =>
             {
                 notifyEvent.InjectFrom(x);
                 _notifier.Upsert(notifyEvent);
@@ -209,8 +205,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                     _notifier.Upsert(notifyEvent);
                 }
             }
-
         }
-
     }
 }

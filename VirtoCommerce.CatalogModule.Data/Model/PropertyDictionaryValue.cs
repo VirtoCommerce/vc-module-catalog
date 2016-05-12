@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VirtoCommerce.Domain.Catalog.Model;
+﻿using System.ComponentModel.DataAnnotations;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.Model
@@ -20,15 +14,12 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         [StringLength(512)]
         public string Value { get; set; }
 
-
         [StringLength(64)]
         public string Locale { get; set; }
-
 
         #region Navigation Properties
         public string PropertyId { get; set; }
         public virtual Property Property { get; set; }
         #endregion
-      
     }
 }

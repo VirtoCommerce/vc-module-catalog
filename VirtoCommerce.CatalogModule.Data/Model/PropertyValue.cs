@@ -1,16 +1,11 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Runtime.Serialization;
-using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Data.Infrastructure;
-
 
 namespace VirtoCommerce.CatalogModule.Data.Model
 {
 
-	public class PropertyValue : AuditableEntity
+    public class PropertyValue : AuditableEntity
     {
         [StringLength(64)]
         public string Alias { get; set; }
@@ -40,7 +35,6 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         [StringLength(64)]
         public string Locale { get; set; }
 
-
         #region Navigation Properties
         public string ItemId { get; set; }
         public virtual Item CatalogItem { get; set; }
@@ -51,5 +45,5 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         public string CategoryId { get; set; }
         public virtual Category Category { get; set; }
         #endregion
-	}
+    }
 }

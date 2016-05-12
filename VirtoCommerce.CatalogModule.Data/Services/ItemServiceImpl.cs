@@ -1,17 +1,14 @@
 ﻿using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Data.Converters;
-using dataModel = VirtoCommerce.CatalogModule.Data.Model;
-using coreModel = VirtoCommerce.Domain.Catalog.Model;
-using System.Collections.Generic;
-using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.CatalogModule.Data.Repositories;
-using VirtoCommerce.Platform.Data.Infrastructure;
-using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Commerce.Model;
 using VirtoCommerce.Domain.Commerce.Services;
-using System.Diagnostics;
+using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Data.Infrastructure;
+using coreModel = VirtoCommerce.Domain.Catalog.Model;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {

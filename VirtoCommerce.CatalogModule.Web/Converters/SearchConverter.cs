@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using Omu.ValueInjecter;
-using VirtoCommerce.Platform.Core.Asset;
+using VirtoCommerce.Platform.Core.Assets;
 using coreModel = VirtoCommerce.Domain.Catalog.Model;
 using webModel = VirtoCommerce.CatalogModule.Web.Model;
 

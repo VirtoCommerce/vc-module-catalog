@@ -1,38 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Web.Http;
-using System.Linq;
 using System.Web.Http.Description;
-using VirtoCommerce.CatalogModule.Web.Converters;
-using VirtoCommerce.Domain.Catalog.Services;
-using VirtoCommerce.Platform.Core.Security;
-using webModel = VirtoCommerce.CatalogModule.Web.Model;
-using coreModel = VirtoCommerce.Domain.Catalog.Model;
-using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Domain.Commerce.Model;
-using VirtoCommerce.Platform.Core.Asset;
-using VirtoCommerce.CatalogModule.Web.Security;
 using System.Web.Http.ModelBinding;
 using VirtoCommerce.CatalogModule.Web.Binders;
+using VirtoCommerce.CatalogModule.Web.Converters;
+using VirtoCommerce.CatalogModule.Web.Security;
+using VirtoCommerce.Domain.Catalog.Services;
+using VirtoCommerce.Domain.Commerce.Model;
+using VirtoCommerce.Platform.Core.Assets;
+using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.Security;
+using coreModel = VirtoCommerce.Domain.Catalog.Model;
+using webModel = VirtoCommerce.CatalogModule.Web.Model;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
     [RoutePrefix("api/catalog/categories")]
     public class CatalogModuleCategoriesController : CatalogBaseController
     {
-        private readonly ICatalogSearchService _searchService;
         private readonly ICategoryService _categoryService;
         private readonly ICatalogService _catalogService;
-		private readonly IBlobUrlResolver _blobUrlResolver;
+        private readonly IBlobUrlResolver _blobUrlResolver;
 
-        public CatalogModuleCategoriesController(ICatalogSearchService searchService, ICategoryService categoryService,  ICatalogService catalogService, IBlobUrlResolver blobUrlResolver, ISecurityService securityService, IPermissionScopeService permissionScopeService)
-            :base(securityService, permissionScopeService)
+        public CatalogModuleCategoriesController(ICategoryService categoryService, ICatalogService catalogService, IBlobUrlResolver blobUrlResolver, ISecurityService securityService, IPermissionScopeService permissionScopeService)
+            : base(securityService, permissionScopeService)
         {
-            _searchService = searchService;
             _categoryService = categoryService;
             _catalogService = catalogService;
-			_blobUrlResolver = blobUrlResolver;
+            _blobUrlResolver = blobUrlResolver;
         }
 
 
@@ -41,8 +39,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// </summary>
         /// <param name="id">Category id.</param>
         [HttpGet]
-        [ResponseType(typeof(webModel.Category))]
         [Route("{id}")]
+        [ResponseType(typeof(webModel.Category))]
         public IHttpActionResult Get(string id)
         {
             var category = GetCategoriesByIds(new[] { id }).FirstOrDefault();
@@ -63,19 +61,20 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         //Because Swagger generated API client passed arrays as joined string need parse query string by binder
         [HttpGet]
         [Route("")]
+        [ResponseType(typeof(webModel.Category[]))]
         public webModel.Category[] GetCategoriesByIds([ModelBinder(typeof(IdsStringArrayBinder))] string[] ids, [FromUri] coreModel.CategoryResponseGroup respGroup = coreModel.CategoryResponseGroup.Full)
         {
             var categories = _categoryService.GetByIds(ids, respGroup);
 
-            base.CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Read, categories);
+            CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Read, categories);
 
-            var retVal = categories.Select(x => x.ToWebModel(_blobUrlResolver));
+            var retVal = categories.Select(x => x.ToWebModel(_blobUrlResolver)).ToArray();
             foreach (var category in retVal)
             {
-                category.SecurityScopes = base.GetObjectPermissionScopeStrings(category);
+                category.SecurityScopes = GetObjectPermissionScopeStrings(category);
             }
 
-            return retVal.ToArray();
+            return retVal;
         }
 
         /// <summary>
@@ -95,11 +94,11 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 Catalog = _catalogService.GetById(catalogId).ToWebModel(),
                 Code = Guid.NewGuid().ToString().Substring(0, 5),
                 SeoInfos = new List<SeoInfo>(),
-				IsActive = true
+                IsActive = true
             };
 
-            base.CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Create, retVal.ToModuleModel());
-            retVal.SecurityScopes = base.GetObjectPermissionScopeStrings(retVal.ToModuleModel());
+            CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Create, retVal.ToModuleModel());
+            retVal.SecurityScopes = GetObjectPermissionScopeStrings(retVal.ToModuleModel());
 
             return Ok(retVal);
         }
@@ -111,51 +110,51 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <remarks>If category.id is null, a new category is created. It's updated otherwise</remarks>
         /// <param name="category">The category.</param>
         [HttpPost]
-        [ResponseType(typeof(void))]
         [Route("")]
+        [ResponseType(typeof(void))]
         public IHttpActionResult CreateOrUpdateCategory(webModel.Category category)
         {
             var coreCategory = category.ToModuleModel();
             if (coreCategory.Id == null)
-			{
-				if (coreCategory.SeoInfos == null || !coreCategory.SeoInfos.Any())
-				{
-					var slugUrl = category.Name.GenerateSlug();
-					if (!String.IsNullOrEmpty(slugUrl))
-					{
-						var catalog = _catalogService.GetById(category.CatalogId);
-						var defaultLanguage = catalog.Languages.First(x => x.IsDefault).LanguageCode;
-						coreCategory.SeoInfos = new SeoInfo[] { new SeoInfo { LanguageCode = defaultLanguage, SemanticUrl = slugUrl } };
-					}
-				}
+            {
+                if (coreCategory.SeoInfos == null || !coreCategory.SeoInfos.Any())
+                {
+                    var slugUrl = category.Name.GenerateSlug();
+                    if (!String.IsNullOrEmpty(slugUrl))
+                    {
+                        var catalog = _catalogService.GetById(category.CatalogId);
+                        var defaultLanguage = catalog.Languages.First(x => x.IsDefault).LanguageCode;
+                        coreCategory.SeoInfos = new[] { new SeoInfo { LanguageCode = defaultLanguage, SemanticUrl = slugUrl } };
+                    }
+                }
 
-                base.CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Create, coreCategory);
+                CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Create, coreCategory);
 
                 var retVal = _categoryService.Create(coreCategory).ToWebModel(_blobUrlResolver);
-				retVal.Catalog = null;
-				return Ok(retVal);
-			}
+                retVal.Catalog = null;
+                return Ok(retVal);
+            }
             else
             {
-                base.CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Update, coreCategory);
+                CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Update, coreCategory);
 
                 _categoryService.Update(new[] { coreCategory });
                 return StatusCode(HttpStatusCode.NoContent);
             }
         }
 
-        
+
         /// <summary>
         /// Deletes the specified categories by id.
         /// </summary>
         /// <param name="ids">The categories ids.</param>
         [HttpDelete]
-        [ResponseType(typeof(void))]
         [Route("")]
+        [ResponseType(typeof(void))]
         public IHttpActionResult Delete([FromUri]string[] ids)
         {
             var categories = _categoryService.GetByIds(ids, Domain.Catalog.Model.CategoryResponseGroup.WithParents);
-            base.CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Delete, categories);
+            CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Delete, categories);
 
             _categoryService.Delete(ids);
             return StatusCode(HttpStatusCode.NoContent);

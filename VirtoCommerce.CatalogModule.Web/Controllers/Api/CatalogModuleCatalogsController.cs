@@ -6,7 +6,7 @@ using VirtoCommerce.CatalogModule.Web.Converters;
 using VirtoCommerce.CatalogModule.Web.Security;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Platform.Core.Security;
-using VirtoCommerce.Platform.Core.Settings;
+using VirtoCommerce.Platform.Core.Web.Security;
 using moduleModel = VirtoCommerce.Domain.Catalog.Model;
 using webModel = VirtoCommerce.CatalogModule.Web.Model;
 
@@ -17,15 +17,12 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
     {
         private readonly ICatalogService _catalogService;
         private readonly ICatalogSearchService _searchService;
-        private readonly ISettingsManager _settingManager;
 
-        public CatalogModuleCatalogsController(ICatalogService catalogService, ICatalogSearchService itemSearchService,
-                                  ISettingsManager settingManager, ISecurityService securityService, IPermissionScopeService permissionScopeService)
+        public CatalogModuleCatalogsController(ICatalogService catalogService, ICatalogSearchService itemSearchService, ISecurityService securityService, IPermissionScopeService permissionScopeService)
             : base(securityService, permissionScopeService)
         {
             _catalogService = catalogService;
             _searchService = itemSearchService;
-            _settingManager = settingManager;
         }
 
         /// <summary>
@@ -33,8 +30,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// </summary>
         /// <remarks>Get common and virtual Catalogs list with minimal information included. Returns array of Catalog</remarks>
 		[HttpGet]
-        [ResponseType(typeof(webModel.Catalog[]))]
         [Route("")]
+        [ResponseType(typeof(webModel.Catalog[]))]
         public IHttpActionResult GetCatalogs()
         {
             var criteria = new moduleModel.SearchCriteria
@@ -63,8 +60,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <remarks>Gets Catalog by id with full information loaded</remarks>
         /// <param name="id">The Catalog id.</param>
 		[HttpGet]
-        [ResponseType(typeof(webModel.Catalog))]
         [Route("{id}")]
+        [ResponseType(typeof(webModel.Catalog))]
         public IHttpActionResult Get(string id)
         {
             var catalog = _catalogService.GetById(id);
@@ -86,8 +83,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// </summary>
         /// <remarks>Gets the template for a new common catalog</remarks>
         [HttpGet]
-        [ResponseType(typeof(webModel.Catalog))]
         [Route("getnew")]
+        [ResponseType(typeof(webModel.Catalog))]
         [CheckPermission(Permission = CatalogPredefinedPermissions.Create)]
         public IHttpActionResult GetNewCatalog()
         {
@@ -113,8 +110,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// Gets the template for a new virtual catalog.
         /// </summary>
         [HttpGet]
-        [ResponseType(typeof(webModel.Catalog))]
         [Route("getnewvirtual")]
+        [ResponseType(typeof(webModel.Catalog))]
         [CheckPermission(Permission = CatalogPredefinedPermissions.Create)]
         public IHttpActionResult GetNewVirtualCatalog()
         {
@@ -142,8 +139,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <param name="catalog">The catalog to create</param>
         /// <exception cref="System.UnauthorizedAccessException"></exception>
 		[HttpPost]
-        [ResponseType(typeof(webModel.Catalog))]
         [Route("")]
+        [ResponseType(typeof(webModel.Catalog))]
         [CheckPermission(Permission = CatalogPredefinedPermissions.Create)]
         public IHttpActionResult Create(webModel.Catalog catalog)
         {
@@ -160,14 +157,13 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <remarks>Updates the specified catalog.</remarks>
         /// <param name="catalog">The catalog.</param>
         [HttpPut]
-        [ResponseType(typeof(void))]
         [Route("")]
+        [ResponseType(typeof(void))]
         public IHttpActionResult Update(webModel.Catalog catalog)
         {
             UpdateCatalog(catalog);
             return StatusCode(HttpStatusCode.NoContent);
         }
-
 
         /// <summary>
         /// Deletes catalog by id.
@@ -176,8 +172,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <param name="id">Catalog id.</param>
         /// <returns></returns>
         [HttpDelete]
-        [ResponseType(typeof(void))]
         [Route("{id}")]
+        [ResponseType(typeof(void))]
         public IHttpActionResult Delete(string id)
         {
             var catalog = _catalogService.GetById(id);
@@ -187,6 +183,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return StatusCode(HttpStatusCode.NoContent);
         }
 
+
         private void UpdateCatalog(webModel.Catalog catalog)
         {
             var moduleCatalog = catalog.ToModuleModel();
@@ -195,7 +192,5 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             _catalogService.Update(new[] { moduleCatalog });
         }
-
-
     }
 }

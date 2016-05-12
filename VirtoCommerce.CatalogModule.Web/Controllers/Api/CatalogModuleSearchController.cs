@@ -4,7 +4,7 @@ using VirtoCommerce.CatalogModule.Web.Converters;
 using VirtoCommerce.CatalogModule.Web.Model;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
-using VirtoCommerce.Platform.Core.Asset;
+using VirtoCommerce.Platform.Core.Assets;
 using VirtoCommerce.Platform.Core.Security;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api

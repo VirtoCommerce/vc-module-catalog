@@ -7,7 +7,7 @@ using System.Web.Http.Description;
 using VirtoCommerce.CatalogModule.Web.Converters;
 using VirtoCommerce.CatalogModule.Web.Security;
 using VirtoCommerce.Domain.Catalog.Services;
-using VirtoCommerce.Platform.Core.Asset;
+using VirtoCommerce.Platform.Core.Assets;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Security;
 using coreModel = VirtoCommerce.Domain.Catalog.Model;
@@ -241,7 +241,5 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             _categoryService.Update(changedObjects.OfType<coreModel.Category>().ToArray());
             _itemService.Update(changedObjects.OfType<coreModel.CatalogProduct>().ToArray());
         }
-
-
     }
 }
