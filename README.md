@@ -3,7 +3,7 @@ Represent PIM (products information management) system.
 Key features:
 * categories taxonomy
 * virtual catalogs
-* Properties inheritance
+* properties inheritance
 * product variations 
 * robust content localization
 
