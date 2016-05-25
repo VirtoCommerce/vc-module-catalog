@@ -22,8 +22,7 @@ Install the module.
 * **Catalog.AssociationGroups** - catalog product association groups for making different product relations (Related, Accessories, Cross sails etc)
 
 # Module development
-Add to you VC project module
-https://www.nuget.org/packages/VirtoCommerce.Catalog NuGet package
+Add to you VC project module https://www.nuget.org/packages/VirtoCommerce.Catalog NuGet package
 
 # API client 
 Online API documentation http://demo.virtocommerce.com/admin/docs/ui/index#!/Catalog_module
