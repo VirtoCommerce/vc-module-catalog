@@ -1,5 +1,5 @@
 # VirtoCommerce.Catalog
-Represent PIM (products information management) system.
+VirtoCommerce.Catalog module represents PIM (product information management) system.
 Key features:
 * categories taxonomy
 * virtual catalogs
@@ -10,25 +10,25 @@ Key features:
 ![image](https://cloud.githubusercontent.com/assets/7566324/15540050/edd41b2e-2285-11e6-8962-a173e002ace7.png)
 
 # Documentation
-http://docs.virtocommerce.com/display/vc2userguide/Products+catalog
-http://docs.virtocommerce.com/display/vc2devguide/Creating+catalog+custom+import-export+extensions
+User guide: <a href="http://docs.virtocommerce.com/display/vc2userguide/Products+catalog" target="_blank"> Products catalog</a>
+
+Developer guide: <a href="http://docs.virtocommerce.com/display/vc2devguide/Creating+catalog+custom+import-export+extensions" target="_blank"> Creating catalog custom import-export extensions</a>
 
 # Installation
-Install the module.
-* Automaticaly: go to VC Manager Configuration -> Modules -> Catalog  module -> Install
-* Manualy: download module zip archive from https://github.com/VirtoCommerce/vc-module-catalog/releases  then go to VC Manager Configuration->Modules->Advanced-> upload module archive and install.
+Installing the module:
+* Automatically: in VC Manager go to Configuration -> Modules -> Catalog module -> Install
+* Manually: download module zip package from https://github.com/VirtoCommerce/vc-module-catalog/releases. In VC Manager go to Configuration -> Modules -> Advanced -> upload module package -> Install.
 
 # Settings
-* **Catalog.AssociationGroups** - catalog product association groups for making different product relations (Related, Accessories, Cross sails etc)
+* **Catalog.AssociationGroups** - catalog product association groups for making different product relations (Related, Accessories, Cross sails, etc.);
+* **Catalog.EditorialReviewTypes** - types that item Descriptions can have (QuickReview, FullReview, etc.).
 
-# Module development
-Add to you VC project module https://www.nuget.org/packages/VirtoCommerce.Catalog NuGet package
+# Available resources
+* Module as a <a href="https://www.nuget.org/packages/VirtoCommerce.Catalog" target="_blank">NuGet package</a>
+* API client as a <a href="https://www.nuget.org/packages/VirtoCommerce.Catalog" target="_blank">NuGet package **place url here**</a>
+* API client  documentation http://demo.virtocommerce.com/admin/docs/ui/index#!/Catalog_module
 
-# API client 
-Online API documentation http://demo.virtocommerce.com/admin/docs/ui/index#!/Catalog_module
-NuGet package *place url here*
-
-# Licence
+# License
 Copyright (c) Virtosoftware Ltd.  All rights reserved.
 
 Licensed under the Virto Commerce Open Software License (the "License"); you
