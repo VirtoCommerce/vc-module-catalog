@@ -23,11 +23,12 @@ Install the module.
 
 # Module development
 Add to you VC project module
-<a href="https://www.nuget.org/packages/VirtoCommerce.Catalog" target="_blank">VirtoCommerce.Catalog NuGet package</a>
+https://www.nuget.org/packages/VirtoCommerce.Catalog NuGet package
 
 # API client 
 Online API documentation http://demo.virtocommerce.com/admin/docs/ui/index#!/Catalog_module
 NuGet package *place url here*
+
 # Licence
 Copyright (c) Virtosoftware Ltd.  All rights reserved.
 
