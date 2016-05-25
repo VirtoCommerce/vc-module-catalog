@@ -24,9 +24,9 @@ Installing the module:
 * **Catalog.EditorialReviewTypes** - types that item Descriptions can have (QuickReview, FullReview, etc.).
 
 # Available resources
-* Module as a <a href="https://www.nuget.org/packages/VirtoCommerce.Catalog" target="_blank">NuGet package</a>
-* API client as a <a href="https://www.nuget.org/packages/VirtoCommerce.Catalog" target="_blank">NuGet package **place url here**</a>
-* API client  documentation http://demo.virtocommerce.com/admin/docs/ui/index#!/Catalog_module
+* Module related service implementations as a <a href="https://www.nuget.org/packages/VirtoCommerce.CatalogModule.Data" target="_blank">NuGet package</a>
+* API client as a <a href="" target="_blank">NuGet package **place url here**</a>
+* API client documentation http://demo.virtocommerce.com/admin/docs/ui/index#!/Catalog_module
 
 # License
 Copyright (c) Virtosoftware Ltd.  All rights reserved.
