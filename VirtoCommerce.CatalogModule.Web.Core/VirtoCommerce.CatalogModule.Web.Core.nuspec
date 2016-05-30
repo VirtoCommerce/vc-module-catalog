@@ -10,7 +10,7 @@
         <projectUrl>https://github.com/VirtoCommerce/vc-module-catalog</projectUrl>
         <iconUrl>https://github.com/VirtoCommerce/vc-module-catalog/raw/master/NuGet/icon.png</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>Catalog implementation</description>
+        <description>Catalog web model, converters and security.</description>
         <copyright>Copyright © VirtoCommerce 2011-2016</copyright>
     </metadata>
 </package>

@@ -34,6 +34,8 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\VirtoCommerce.CatalogModule.Web.XML</DocumentationFile>
     <NoWarn>1591</NoWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -44,10 +46,20 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\VirtoCommerce.CatalogModule.Web.XML</DocumentationFile>
     <NoWarn>1591</NoWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CacheManager.Core, Version=0.8.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\CacheManager.Core.0.8.0\lib\net45\CacheManager.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Common.Logging, Version=3.1.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Common.Logging.3.1.0\lib\net40\Common.Logging.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Common.Logging.Core, Version=3.1.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Common.Logging.Core.3.1.0\lib\net40\Common.Logging.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="CsvHelper, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8c4959082be5c823, processorArchitecture=MSIL">
@@ -117,19 +129,19 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="VirtoCommerce.Domain, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VirtoCommerce.Domain.2.10.1\lib\net451\VirtoCommerce.Domain.dll</HintPath>
+      <HintPath>..\packages\VirtoCommerce.Domain.2.10.3\lib\net451\VirtoCommerce.Domain.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="VirtoCommerce.Platform.Core, Version=2.10.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VirtoCommerce.Platform.Core.2.10.1\lib\net451\VirtoCommerce.Platform.Core.dll</HintPath>
+      <HintPath>..\packages\VirtoCommerce.Platform.Core.2.10.2\lib\net451\VirtoCommerce.Platform.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="VirtoCommerce.Platform.Core.Web, Version=2.10.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VirtoCommerce.Platform.Core.Web.2.10.1\lib\net451\VirtoCommerce.Platform.Core.Web.dll</HintPath>
+      <HintPath>..\packages\VirtoCommerce.Platform.Core.Web.2.10.2\lib\net451\VirtoCommerce.Platform.Core.Web.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="VirtoCommerce.Platform.Data, Version=2.10.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VirtoCommerce.Platform.Data.2.10.1\lib\net451\VirtoCommerce.Platform.Data.dll</HintPath>
+      <HintPath>..\packages\VirtoCommerce.Platform.Data.2.10.2\lib\net451\VirtoCommerce.Platform.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
@@ -143,72 +155,26 @@
     <Compile Include="Controllers\Api\CatalogModuleListEntryController.cs" />
     <Compile Include="Controllers\Api\CatalogModuleSearchController.cs" />
     <Compile Include="Controllers\Api\CatalogModulePropertiesController.cs" />
-    <Compile Include="Converters\AggregationConverters.cs" />
-    <Compile Include="Model\Aggregation.cs" />
-    <Compile Include="Model\AggregationItem.cs" />
-    <Compile Include="Model\AggregationLabel.cs" />
-    <Compile Include="Model\CatalogSearchResult.cs" />
-    <Compile Include="Security\CatalogPredefinedPermissions.cs" />
-    <Compile Include="Converters\AssetConverter.cs" />
-    <Compile Include="Converters\AssociationConverter.cs" />
-    <Compile Include="Converters\CatalogConverter.cs" />
-    <Compile Include="Converters\CatalogLanguageConverter.cs" />
-    <Compile Include="Converters\CategoryConverter.cs" />
-    <Compile Include="Converters\EditorialReviewConverter.cs" />
     <Compile Include="Converters\ImportJobConverter.cs" />
     <Compile Include="Converters\ImportMappingItemConverter.cs" />
-    <Compile Include="Converters\LinkConverter.cs" />
-    <Compile Include="Converters\ProductConverter.cs" />
-    <Compile Include="Converters\PropertyAttributeConverter.cs" />
-    <Compile Include="Converters\PropertyConverter.cs" />
-    <Compile Include="Converters\PropertyDictionaryValueConverter.cs" />
-    <Compile Include="Converters\PropertyValueConverter.cs" />
-    <Compile Include="Converters\SearchConverter.cs" />
     <Compile Include="ExportImport\CatalogExportImport.cs" />
     <Compile Include="ExportImport\CsvCatalogExporter.cs" />
     <Compile Include="ExportImport\CsvCatalogImporter.cs" />
-    <Compile Include="ExportImport\CsvImportInfo.cs" />
-    <Compile Include="ExportImport\CsvProduct.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="ExportImport\ExpressionConverter.cs" />
     <Compile Include="ExportImport\CsvProductMap.cs" />
-    <Compile Include="Model\Catalog.cs" />
-    <Compile Include="Model\CategoryLink.cs" />
-    <Compile Include="ExportImport\CsvExportInfo.cs" />
-    <Compile Include="ExportImport\CsvProductMappingConfiguration.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Model\EditorialReview.cs" />
     <Compile Include="Model\PushNotifications\ExportNotification.cs" />
     <Compile Include="Model\PushNotifications\ImportNotification.cs" />
     <Compile Include="Model\PushNotifications\JobNotificationBase.cs" />
-    <Compile Include="Model\ListEntryLink.cs" />
-    <Compile Include="ExportImport\CsvProductPropertyMap.cs" />
     <Compile Include="Model\PasteInfo.cs" />
-    <Compile Include="Model\ProductAssociation.cs" />
-    <Compile Include="Model\PropertyDictionaryValue.cs" />
-    <Compile Include="Model\Language.cs" />
     <Compile Include="Model\ListEntryCategory.cs" />
     <Compile Include="Model\ListEntry.cs" />
-    <Compile Include="Model\Category.cs" />
-    <Compile Include="Model\Product.cs" />
     <Compile Include="Model\ItemsSearchResult.cs" />
     <Compile Include="Model\ListEntrySearchResult.cs" />
     <Compile Include="Model\ListEntryProduct.cs" />
-    <Compile Include="Model\Asset.cs" />
-    <Compile Include="Model\AssetBase.cs" />
-    <Compile Include="Model\Image.cs" />
-    <Compile Include="Model\Property.cs" />
-    <Compile Include="Model\PropertyAttribute.cs" />
-    <Compile Include="Model\PropertyValue.cs" />
     <Compile Include="Model\ResponseGroup.cs" />
     <Compile Include="Model\ListEntrySearchCriteria.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Security\CatalogSelectedScope.cs" />
-    <Compile Include="Security\CatalogSelectedCategoryScope.cs" />
-    <Compile Include="Security\SearchCriteriaExtensions.cs" />
     <Content Include="Content\css\catalog.css" />
     <Content Include="Content\logo.png" />
     <Content Include="Scripts\blades\filter-detail.js" />
@@ -359,6 +325,10 @@
       <Project>{b8c758d7-822f-40d8-b28c-ef21c873af49}</Project>
       <Name>VirtoCommerce.CatalogModule.Data</Name>
     </ProjectReference>
+    <ProjectReference Include="..\VirtoCommerce.CatalogModule.Web.Core\VirtoCommerce.CatalogModule.Web.Core.csproj">
+      <Project>{7b591603-92cc-4a50-ab60-70f6e32ff706}</Project>
+      <Name>VirtoCommerce.CatalogModule.Web.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <PropertyGroup>
@@ -381,12 +351,12 @@
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
-  <Import Project="..\packages\VirtoCommerce.Module.0.2.0\build\VirtoCommerce.Module.targets" Condition="Exists('..\packages\VirtoCommerce.Module.0.2.0\build\VirtoCommerce.Module.targets')" />
+  <Import Project="..\packages\VirtoCommerce.Module.0.5.0\build\VirtoCommerce.Module.targets" Condition="Exists('..\packages\VirtoCommerce.Module.0.5.0\build\VirtoCommerce.Module.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\VirtoCommerce.Module.0.2.0\build\VirtoCommerce.Module.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\VirtoCommerce.Module.0.2.0\build\VirtoCommerce.Module.targets'))" />
+    <Error Condition="!Exists('..\packages\VirtoCommerce.Module.0.5.0\build\VirtoCommerce.Module.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\VirtoCommerce.Module.0.5.0\build\VirtoCommerce.Module.targets'))" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

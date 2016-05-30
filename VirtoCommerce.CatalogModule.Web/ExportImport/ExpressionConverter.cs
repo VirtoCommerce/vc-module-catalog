@@ -23,11 +23,13 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
             return OutExpression != null;
         }
 
+        [CLSCompliant(false)]
         public object ConvertFromString(TypeConverterOptions options, string text)
         {
             return InExpression(text);
         }
 
+        [CLSCompliant(false)]
         public string ConvertToString(TypeConverterOptions options, object value)
         {
             return OutExpression((T)value);
@@ -36,6 +38,7 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
 
     public static class CsvHelperExtensions
     {
+        [CLSCompliant(false)]
         public static CsvPropertyMap UsingExpression<T>(this CsvPropertyMap map, Func<string, T> readExpression,
             Func<T, string> writeExpression)
         {

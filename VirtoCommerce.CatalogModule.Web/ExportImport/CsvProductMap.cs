@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using CsvHelper.Configuration;
@@ -6,6 +7,7 @@ using coreModel = VirtoCommerce.Domain.Catalog.Model;
 
 namespace VirtoCommerce.CatalogModule.Web.ExportImport
 {
+    [CLSCompliant(false)]
     public sealed class CsvProductMap : CsvClassMap<CsvProduct>
     {
         public CsvProductMap(CsvProductMappingConfiguration mappingCfg)
