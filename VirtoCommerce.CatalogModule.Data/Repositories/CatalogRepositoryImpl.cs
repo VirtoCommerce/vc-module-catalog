@@ -470,6 +470,9 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             DELETE AG FROM AssociationGroup AG INNER JOIN Item I ON I.Id = AG.ItemId
             WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
 
+            DELETE A FROM Association A INNER JOIN Item I ON I.Id = A.ItemId
+            WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
+
             DELETE  FROM Item  WHERE ParentId IN ({0})
 
             DELETE  FROM Item  WHERE Id IN ({0})";
