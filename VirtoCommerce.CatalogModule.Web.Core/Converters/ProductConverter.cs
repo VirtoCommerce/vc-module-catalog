@@ -154,7 +154,7 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
                             //Need populate required fields
                             propValue.PropertyName = property.Name;
                             propValue.ValueType = property.ValueType;
-                            retVal.PropertyValues.Add(propValue.ToModuleModel());
+                            retVal.PropertyValues.Add(propValue.ToCoreModel());
                         }
                     }
                 }
@@ -167,17 +167,17 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
 
             if (product.Links != null)
             {
-                retVal.Links = product.Links.Select(x => x.ToModuleModel()).ToList();
+                retVal.Links = product.Links.Select(x => x.ToCoreModel()).ToList();
             }
 
             if (product.Reviews != null)
             {
-                retVal.Reviews = product.Reviews.Select(x => x.ToModuleModel()).ToList();
+                retVal.Reviews = product.Reviews.Select(x => x.ToCoreModel()).ToList();
             }
 
             if (product.Associations != null)
             {
-                retVal.Associations = product.Associations.Select(x => x.ToModuleModel()).ToList();
+                retVal.Associations = product.Associations.Select(x => x.ToCoreModel()).ToList();
             }
             retVal.MainProductId = product.TitularItemId;
 

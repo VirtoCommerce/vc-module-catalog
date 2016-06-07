@@ -13,7 +13,7 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             return retVal;
         }
 
-        public static moduleModel.EditorialReview ToModuleModel(this webModel.EditorialReview review)
+        public static moduleModel.EditorialReview ToCoreModel(this webModel.EditorialReview review)
         {
             var retVal = new moduleModel.EditorialReview();
             retVal.InjectFrom(review);

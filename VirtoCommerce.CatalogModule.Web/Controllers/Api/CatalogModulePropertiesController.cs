@@ -106,7 +106,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 DisplayNames = catalog.Languages.Select(x => new moduleModel.PropertyDisplayName { LanguageCode = x.LanguageCode }).ToList()
             };
 
-            CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Create, retVal.ToModuleModel());
+            CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Create, retVal.ToCoreModel());
 
             return Ok(retVal);
         }
@@ -138,7 +138,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 DisplayNames = category.Catalog.Languages.Select(x => new moduleModel.PropertyDisplayName { LanguageCode = x.LanguageCode }).ToList()
             };
 
-            CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Create, retVal.ToModuleModel());
+            CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Create, retVal.ToCoreModel());
 
             return Ok(retVal);
         }
@@ -154,7 +154,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [ResponseType(typeof(void))]
         public IHttpActionResult CreateOrUpdateProperty(webModel.Property property)
         {
-            var moduleProperty = property.ToModuleModel();
+            var moduleProperty = property.ToCoreModel();
 
             if (property.IsNew)
             {

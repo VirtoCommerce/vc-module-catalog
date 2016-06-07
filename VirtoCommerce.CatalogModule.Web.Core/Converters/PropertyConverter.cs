@@ -34,7 +34,7 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             return retVal;
         }
 
-        public static coreModel.Property ToModuleModel(this webModel.Property property)
+        public static coreModel.Property ToCoreModel(this webModel.Property property)
         {
             var retVal = new coreModel.Property();
 
@@ -44,11 +44,11 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             retVal.DisplayNames = property.DisplayNames;
             if (property.DictionaryValues != null)
             {
-                retVal.DictionaryValues = property.DictionaryValues.Select(x => x.ToModuleModel()).ToList();
+                retVal.DictionaryValues = property.DictionaryValues.Select(x => x.ToCoreModel()).ToList();
             }
             if (property.Attributes != null)
             {
-                retVal.Attributes = property.Attributes.Select(x => x.ToModuleModel()).ToList();
+                retVal.Attributes = property.Attributes.Select(x => x.ToCoreModel()).ToList();
             }
 
             return retVal;

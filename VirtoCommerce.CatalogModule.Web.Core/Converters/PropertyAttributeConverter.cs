@@ -13,7 +13,7 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             return retVal;
         }
 
-        public static moduleModel.PropertyAttribute ToModuleModel(this webModel.PropertyAttribute attribute)
+        public static moduleModel.PropertyAttribute ToCoreModel(this webModel.PropertyAttribute attribute)
         {
             var retVal = new moduleModel.PropertyAttribute();
             retVal.InjectFrom(attribute);

@@ -59,13 +59,13 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             return retVal;
         }
 
-        public static moduleModel.Catalog ToModuleModel(this webModel.Catalog catalog)
+        public static moduleModel.Catalog ToCoreModel(this webModel.Catalog catalog)
         {
             var retVal = new moduleModel.Catalog();
             retVal.InjectFrom(catalog);
             if (catalog.Languages != null)
             {
-                retVal.Languages = catalog.Languages.Select(x => x.ToModuleModel()).ToList();
+                retVal.Languages = catalog.Languages.Select(x => x.ToCoreModel()).ToList();
             }
 
             if (catalog.Properties != null)
@@ -78,7 +78,7 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
                         propValue.ValueType = property.ValueType;
                         //Need populate required fields
                         propValue.PropertyName = property.Name;
-                        retVal.PropertyValues.Add(propValue.ToModuleModel());
+                        retVal.PropertyValues.Add(propValue.ToCoreModel());
                     }
                 }
 

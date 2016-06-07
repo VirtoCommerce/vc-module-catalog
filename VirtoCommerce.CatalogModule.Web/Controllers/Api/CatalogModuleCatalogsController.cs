@@ -144,7 +144,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [CheckPermission(Permission = CatalogPredefinedPermissions.Create)]
         public IHttpActionResult Create(webModel.Catalog catalog)
         {
-            var newCatalog = _catalogService.Create(catalog.ToModuleModel());
+            var newCatalog = _catalogService.Create(catalog.ToCoreModel());
             var retVal = newCatalog.ToWebModel();
             //Need for UI permission checks
             retVal.SecurityScopes = GetObjectPermissionScopeStrings(newCatalog);
@@ -186,7 +186,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
         private void UpdateCatalog(webModel.Catalog catalog)
         {
-            var moduleCatalog = catalog.ToModuleModel();
+            var moduleCatalog = catalog.ToCoreModel();
 
             CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Update, catalog);
 

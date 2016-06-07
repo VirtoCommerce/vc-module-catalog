@@ -89,7 +89,7 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
 
             if (category.Links != null)
             {
-                retVal.Links = category.Links.Select(x => x.ToModuleModel()).ToList();
+                retVal.Links = category.Links.Select(x => x.ToCoreModel()).ToList();
             }
 
             if (category.Properties != null)
@@ -102,7 +102,7 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
                         propValue.ValueType = property.ValueType;
                         //Need populate required fields
                         propValue.PropertyName = property.Name;
-                        retVal.PropertyValues.Add(propValue.ToModuleModel());
+                        retVal.PropertyValues.Add(propValue.ToCoreModel());
                     }
                 }
             }

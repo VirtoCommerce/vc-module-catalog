@@ -13,7 +13,7 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             return retVal;
         }
 
-        public static moduleModel.CategoryLink ToModuleModel(this webModel.CategoryLink link)
+        public static moduleModel.CategoryLink ToCoreModel(this webModel.CategoryLink link)
         {
             var retVal = new moduleModel.CategoryLink();
             retVal.InjectFrom(link);

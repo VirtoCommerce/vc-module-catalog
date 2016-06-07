@@ -38,21 +38,22 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <summary>
         /// Searches for the items by complex criteria.
         /// </summary>
-        /// <param name="searchCriteria">The search criteria.</param>
+        /// <param name="criteria">The search criteria.</param>
         /// <returns></returns>
         [HttpPost]
         [Route("")]
         [ResponseType(typeof(webModel.ListEntrySearchResult))]
-        public IHttpActionResult ListItemsSearch(coreModel.SearchCriteria searchCriteria)
+        public IHttpActionResult ListItemsSearch(webModel.SearchCriteria criteria)
         {
-            ApplyRestrictionsForCurrentUser(searchCriteria);
+            var coreModelCriteria = criteria.ToCoreModel();
+            ApplyRestrictionsForCurrentUser(coreModelCriteria);
 
-            searchCriteria.WithHidden = true;
+            coreModelCriteria.WithHidden = true;
             //Need search in children categories if user specify keyword
-            if (!string.IsNullOrEmpty(searchCriteria.Keyword))
+            if (!string.IsNullOrEmpty(coreModelCriteria.Keyword))
             {
-                searchCriteria.SearchInChildren = true;
-                searchCriteria.SearchInVariations = true;
+                coreModelCriteria.SearchInChildren = true;
+                coreModelCriteria.SearchInVariations = true;
             }
 
             var retVal = new webModel.ListEntrySearchResult();
@@ -62,29 +63,29 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             //Because products and categories represent in search result as two separated collections for handle paging request 
             //we should join two resulting collection artificially
             //search categories
-            if ((searchCriteria.ResponseGroup & coreModel.SearchResponseGroup.WithCategories) == coreModel.SearchResponseGroup.WithCategories)
+            if ((coreModelCriteria.ResponseGroup & coreModel.SearchResponseGroup.WithCategories) == coreModel.SearchResponseGroup.WithCategories)
             {
-                searchCriteria.ResponseGroup = searchCriteria.ResponseGroup & ~coreModel.SearchResponseGroup.WithProducts;
-                var categoriesSearchResult = _searchService.Search(searchCriteria);
+                coreModelCriteria.ResponseGroup = coreModelCriteria.ResponseGroup & ~coreModel.SearchResponseGroup.WithProducts;
+                var categoriesSearchResult = _searchService.Search(coreModelCriteria);
                 var categoriesTotalCount = categoriesSearchResult.Categories.Count();
 
-                categorySkip = Math.Min(categoriesTotalCount, searchCriteria.Skip);
-                categoryTake = Math.Min(searchCriteria.Take, Math.Max(0, categoriesTotalCount - searchCriteria.Skip));
+                categorySkip = Math.Min(categoriesTotalCount, coreModelCriteria.Skip);
+                categoryTake = Math.Min(coreModelCriteria.Take, Math.Max(0, categoriesTotalCount - coreModelCriteria.Skip));
                 var categories = categoriesSearchResult.Categories.Skip(categorySkip).Take(categoryTake).Select(x => new webModel.ListEntryCategory(x.ToWebModel(_blobUrlResolver))).ToList();
 
                 retVal.TotalCount = categoriesTotalCount;
                 retVal.ListEntries.AddRange(categories);
 
-                searchCriteria.ResponseGroup = searchCriteria.ResponseGroup | coreModel.SearchResponseGroup.WithProducts;
+                coreModelCriteria.ResponseGroup = coreModelCriteria.ResponseGroup | coreModel.SearchResponseGroup.WithProducts;
             }
 
             //search products
-            if ((searchCriteria.ResponseGroup & coreModel.SearchResponseGroup.WithProducts) == coreModel.SearchResponseGroup.WithProducts)
+            if ((coreModelCriteria.ResponseGroup & coreModel.SearchResponseGroup.WithProducts) == coreModel.SearchResponseGroup.WithProducts)
             {
-                searchCriteria.ResponseGroup = searchCriteria.ResponseGroup & ~coreModel.SearchResponseGroup.WithCategories;
-                searchCriteria.Skip = searchCriteria.Skip - categorySkip;
-                searchCriteria.Take = searchCriteria.Take - categoryTake;
-                var productsSearchResult = _searchService.Search(searchCriteria);
+                coreModelCriteria.ResponseGroup = coreModelCriteria.ResponseGroup & ~coreModel.SearchResponseGroup.WithCategories;
+                coreModelCriteria.Skip = coreModelCriteria.Skip - categorySkip;
+                coreModelCriteria.Take = coreModelCriteria.Take - categoryTake;
+                var productsSearchResult = _searchService.Search(coreModelCriteria);
 
                 var products = productsSearchResult.Products.Select(x => new webModel.ListEntryProduct(x.ToWebModel(_blobUrlResolver)));
 

@@ -14,7 +14,7 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
         }
 
 
-        public static moduleModel.CatalogLanguage ToModuleModel(this webModel.CatalogLanguage language)
+        public static moduleModel.CatalogLanguage ToCoreModel(this webModel.CatalogLanguage language)
         {
             var result = new moduleModel.CatalogLanguage();
             result.InjectFrom(language);

@@ -22,7 +22,7 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             return retVal;
         }
 
-        public static moduleModel.ProductAssociation ToModuleModel(this webModel.ProductAssociation association)
+        public static moduleModel.ProductAssociation ToCoreModel(this webModel.ProductAssociation association)
         {
             var retVal = new moduleModel.ProductAssociation();
             retVal.InjectFrom(association);
