@@ -78,7 +78,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="VirtoCommerce.Platform.Core, Version=2.10.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VirtoCommerce.Platform.Core.2.10.2\lib\net451\VirtoCommerce.Platform.Core.dll</HintPath>
+      <HintPath>..\packages\VirtoCommerce.Platform.Core.2.10.3\lib\net451\VirtoCommerce.Platform.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="VirtoCommerce.Platform.Data, Version=2.10.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -87,6 +87,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Converters\AssetConverter.cs">
       <SubType>Code</SubType>
     </Compile>
