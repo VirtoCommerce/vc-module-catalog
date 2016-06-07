@@ -22,8 +22,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalog">The catalog to create</param>
-        /// <returns>VirtoCommerceCatalogModuleWebModelCatalog</returns>
-        VirtoCommerceCatalogModuleWebModelCatalog CatalogModuleCatalogsCreate(VirtoCommerceCatalogModuleWebModelCatalog catalog);
+        /// <returns>Catalog</returns>
+        Catalog CatalogModuleCatalogsCreate(Catalog catalog);
 
         /// <summary>
         /// Creates the specified catalog.
@@ -33,8 +33,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalog">The catalog to create</param>
-        /// <returns>ApiResponse of VirtoCommerceCatalogModuleWebModelCatalog</returns>
-        ApiResponse<VirtoCommerceCatalogModuleWebModelCatalog> CatalogModuleCatalogsCreateWithHttpInfo(VirtoCommerceCatalogModuleWebModelCatalog catalog);
+        /// <returns>ApiResponse of Catalog</returns>
+        ApiResponse<Catalog> CatalogModuleCatalogsCreateWithHttpInfo(Catalog catalog);
         /// <summary>
         /// Deletes catalog by id.
         /// </summary>
@@ -64,8 +64,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="id">The Catalog id.</param>
-        /// <returns>VirtoCommerceCatalogModuleWebModelCatalog</returns>
-        VirtoCommerceCatalogModuleWebModelCatalog CatalogModuleCatalogsGet(string id);
+        /// <returns>Catalog</returns>
+        Catalog CatalogModuleCatalogsGet(string id);
 
         /// <summary>
         /// Gets Catalog by id.
@@ -75,8 +75,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="id">The Catalog id.</param>
-        /// <returns>ApiResponse of VirtoCommerceCatalogModuleWebModelCatalog</returns>
-        ApiResponse<VirtoCommerceCatalogModuleWebModelCatalog> CatalogModuleCatalogsGetWithHttpInfo(string id);
+        /// <returns>ApiResponse of Catalog</returns>
+        ApiResponse<Catalog> CatalogModuleCatalogsGetWithHttpInfo(string id);
         /// <summary>
         /// Get Catalogs list
         /// </summary>
@@ -84,8 +84,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// Get common and virtual Catalogs list with minimal information included. Returns array of Catalog
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <returns>List&lt;VirtoCommerceCatalogModuleWebModelCatalog&gt;</returns>
-        List<VirtoCommerceCatalogModuleWebModelCatalog> CatalogModuleCatalogsGetCatalogs();
+        /// <returns>List&lt;Catalog&gt;</returns>
+        List<Catalog> CatalogModuleCatalogsGetCatalogs();
 
         /// <summary>
         /// Get Catalogs list
@@ -94,8 +94,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// Get common and virtual Catalogs list with minimal information included. Returns array of Catalog
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <returns>ApiResponse of List&lt;VirtoCommerceCatalogModuleWebModelCatalog&gt;</returns>
-        ApiResponse<List<VirtoCommerceCatalogModuleWebModelCatalog>> CatalogModuleCatalogsGetCatalogsWithHttpInfo();
+        /// <returns>ApiResponse of List&lt;Catalog&gt;</returns>
+        ApiResponse<List<Catalog>> CatalogModuleCatalogsGetCatalogsWithHttpInfo();
         /// <summary>
         /// Gets the template for a new catalog.
         /// </summary>
@@ -103,8 +103,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// Gets the template for a new common catalog
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <returns>VirtoCommerceCatalogModuleWebModelCatalog</returns>
-        VirtoCommerceCatalogModuleWebModelCatalog CatalogModuleCatalogsGetNewCatalog();
+        /// <returns>Catalog</returns>
+        Catalog CatalogModuleCatalogsGetNewCatalog();
 
         /// <summary>
         /// Gets the template for a new catalog.
@@ -113,8 +113,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// Gets the template for a new common catalog
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <returns>ApiResponse of VirtoCommerceCatalogModuleWebModelCatalog</returns>
-        ApiResponse<VirtoCommerceCatalogModuleWebModelCatalog> CatalogModuleCatalogsGetNewCatalogWithHttpInfo();
+        /// <returns>ApiResponse of Catalog</returns>
+        ApiResponse<Catalog> CatalogModuleCatalogsGetNewCatalogWithHttpInfo();
         /// <summary>
         /// Gets the template for a new virtual catalog.
         /// </summary>
@@ -122,8 +122,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// 
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <returns>VirtoCommerceCatalogModuleWebModelCatalog</returns>
-        VirtoCommerceCatalogModuleWebModelCatalog CatalogModuleCatalogsGetNewVirtualCatalog();
+        /// <returns>Catalog</returns>
+        Catalog CatalogModuleCatalogsGetNewVirtualCatalog();
 
         /// <summary>
         /// Gets the template for a new virtual catalog.
@@ -132,8 +132,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// 
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <returns>ApiResponse of VirtoCommerceCatalogModuleWebModelCatalog</returns>
-        ApiResponse<VirtoCommerceCatalogModuleWebModelCatalog> CatalogModuleCatalogsGetNewVirtualCatalogWithHttpInfo();
+        /// <returns>ApiResponse of Catalog</returns>
+        ApiResponse<Catalog> CatalogModuleCatalogsGetNewVirtualCatalogWithHttpInfo();
         /// <summary>
         /// Updates the specified catalog.
         /// </summary>
@@ -143,7 +143,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalog">The catalog.</param>
         /// <returns></returns>
-        void CatalogModuleCatalogsUpdate(VirtoCommerceCatalogModuleWebModelCatalog catalog);
+        void CatalogModuleCatalogsUpdate(Catalog catalog);
 
         /// <summary>
         /// Updates the specified catalog.
@@ -154,7 +154,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalog">The catalog.</param>
         /// <returns>ApiResponse of Object(void)</returns>
-        ApiResponse<Object> CatalogModuleCatalogsUpdateWithHttpInfo(VirtoCommerceCatalogModuleWebModelCatalog catalog);
+        ApiResponse<Object> CatalogModuleCatalogsUpdateWithHttpInfo(Catalog catalog);
         /// <summary>
         /// Creates or updates the specified category.
         /// </summary>
@@ -164,7 +164,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="category">The category.</param>
         /// <returns></returns>
-        void CatalogModuleCategoriesCreateOrUpdateCategory(VirtoCommerceCatalogModuleWebModelCategory category);
+        void CatalogModuleCategoriesCreateOrUpdateCategory(Category category);
 
         /// <summary>
         /// Creates or updates the specified category.
@@ -175,7 +175,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="category">The category.</param>
         /// <returns>ApiResponse of Object(void)</returns>
-        ApiResponse<Object> CatalogModuleCategoriesCreateOrUpdateCategoryWithHttpInfo(VirtoCommerceCatalogModuleWebModelCategory category);
+        ApiResponse<Object> CatalogModuleCategoriesCreateOrUpdateCategoryWithHttpInfo(Category category);
         /// <summary>
         /// Deletes the specified categories by id.
         /// </summary>
@@ -205,8 +205,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="id">Category id.</param>
-        /// <returns>VirtoCommerceCatalogModuleWebModelCategory</returns>
-        VirtoCommerceCatalogModuleWebModelCategory CatalogModuleCategoriesGet(string id);
+        /// <returns>Category</returns>
+        Category CatalogModuleCategoriesGet(string id);
 
         /// <summary>
         /// Gets category by id.
@@ -216,8 +216,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="id">Category id.</param>
-        /// <returns>ApiResponse of VirtoCommerceCatalogModuleWebModelCategory</returns>
-        ApiResponse<VirtoCommerceCatalogModuleWebModelCategory> CatalogModuleCategoriesGetWithHttpInfo(string id);
+        /// <returns>ApiResponse of Category</returns>
+        ApiResponse<Category> CatalogModuleCategoriesGetWithHttpInfo(string id);
         /// <summary>
         /// Gets categories by ids
         /// </summary>
@@ -227,8 +227,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="ids">Categories ids</param>
         /// <param name="respGroup">Response group. (optional)</param>
-        /// <returns>List&lt;VirtoCommerceCatalogModuleWebModelCategory&gt;</returns>
-        List<VirtoCommerceCatalogModuleWebModelCategory> CatalogModuleCategoriesGetCategoriesByIds(List<string> ids, string respGroup = null);
+        /// <returns>List&lt;Category&gt;</returns>
+        List<Category> CatalogModuleCategoriesGetCategoriesByIds(List<string> ids, string respGroup = null);
 
         /// <summary>
         /// Gets categories by ids
@@ -239,8 +239,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="ids">Categories ids</param>
         /// <param name="respGroup">Response group. (optional)</param>
-        /// <returns>ApiResponse of List&lt;VirtoCommerceCatalogModuleWebModelCategory&gt;</returns>
-        ApiResponse<List<VirtoCommerceCatalogModuleWebModelCategory>> CatalogModuleCategoriesGetCategoriesByIdsWithHttpInfo(List<string> ids, string respGroup = null);
+        /// <returns>ApiResponse of List&lt;Category&gt;</returns>
+        ApiResponse<List<Category>> CatalogModuleCategoriesGetCategoriesByIdsWithHttpInfo(List<string> ids, string respGroup = null);
         /// <summary>
         /// Gets the template for a new category.
         /// </summary>
@@ -250,8 +250,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalogId">The catalog id.</param>
         /// <param name="parentCategoryId">The parent category id. (Optional) (optional)</param>
-        /// <returns>VirtoCommerceCatalogModuleWebModelCategory</returns>
-        VirtoCommerceCatalogModuleWebModelCategory CatalogModuleCategoriesGetNewCategory(string catalogId, string parentCategoryId = null);
+        /// <returns>Category</returns>
+        Category CatalogModuleCategoriesGetNewCategory(string catalogId, string parentCategoryId = null);
 
         /// <summary>
         /// Gets the template for a new category.
@@ -262,8 +262,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalogId">The catalog id.</param>
         /// <param name="parentCategoryId">The parent category id. (Optional) (optional)</param>
-        /// <returns>ApiResponse of VirtoCommerceCatalogModuleWebModelCategory</returns>
-        ApiResponse<VirtoCommerceCatalogModuleWebModelCategory> CatalogModuleCategoriesGetNewCategoryWithHttpInfo(string catalogId, string parentCategoryId = null);
+        /// <returns>ApiResponse of Category</returns>
+        ApiResponse<Category> CatalogModuleCategoriesGetNewCategoryWithHttpInfo(string catalogId, string parentCategoryId = null);
         /// <summary>
         /// Start catalog data export process.
         /// </summary>
@@ -272,8 +272,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="exportInfo">The export configuration.</param>
-        /// <returns>VirtoCommerceCatalogModuleWebModelPushNotificationsExportNotification</returns>
-        VirtoCommerceCatalogModuleWebModelPushNotificationsExportNotification CatalogModuleExportImportDoExport(VirtoCommerceCatalogModuleWebExportImportCsvExportInfo exportInfo);
+        /// <returns>ExportNotification</returns>
+        ExportNotification CatalogModuleExportImportDoExport(CsvExportInfo exportInfo);
 
         /// <summary>
         /// Start catalog data export process.
@@ -283,8 +283,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="exportInfo">The export configuration.</param>
-        /// <returns>ApiResponse of VirtoCommerceCatalogModuleWebModelPushNotificationsExportNotification</returns>
-        ApiResponse<VirtoCommerceCatalogModuleWebModelPushNotificationsExportNotification> CatalogModuleExportImportDoExportWithHttpInfo(VirtoCommerceCatalogModuleWebExportImportCsvExportInfo exportInfo);
+        /// <returns>ApiResponse of ExportNotification</returns>
+        ApiResponse<ExportNotification> CatalogModuleExportImportDoExportWithHttpInfo(CsvExportInfo exportInfo);
         /// <summary>
         /// Start catalog data import process.
         /// </summary>
@@ -293,8 +293,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="importInfo">The import data configuration.</param>
-        /// <returns>VirtoCommerceCatalogModuleWebModelPushNotificationsImportNotification</returns>
-        VirtoCommerceCatalogModuleWebModelPushNotificationsImportNotification CatalogModuleExportImportDoImport(VirtoCommerceCatalogModuleWebExportImportCsvImportInfo importInfo);
+        /// <returns>ImportNotification</returns>
+        ImportNotification CatalogModuleExportImportDoImport(CsvImportInfo importInfo);
 
         /// <summary>
         /// Start catalog data import process.
@@ -304,8 +304,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="importInfo">The import data configuration.</param>
-        /// <returns>ApiResponse of VirtoCommerceCatalogModuleWebModelPushNotificationsImportNotification</returns>
-        ApiResponse<VirtoCommerceCatalogModuleWebModelPushNotificationsImportNotification> CatalogModuleExportImportDoImportWithHttpInfo(VirtoCommerceCatalogModuleWebExportImportCsvImportInfo importInfo);
+        /// <returns>ApiResponse of ImportNotification</returns>
+        ApiResponse<ImportNotification> CatalogModuleExportImportDoImportWithHttpInfo(CsvImportInfo importInfo);
         /// <summary>
         /// Gets the CSV mapping configuration.
         /// </summary>
@@ -315,8 +315,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="fileUrl">The file URL.</param>
         /// <param name="delimiter">The CSV delimiter. (optional)</param>
-        /// <returns>VirtoCommerceCatalogModuleWebExportImportCsvProductMappingConfiguration</returns>
-        VirtoCommerceCatalogModuleWebExportImportCsvProductMappingConfiguration CatalogModuleExportImportGetMappingConfiguration(string fileUrl, string delimiter = null);
+        /// <returns>CsvProductMappingConfiguration</returns>
+        CsvProductMappingConfiguration CatalogModuleExportImportGetMappingConfiguration(string fileUrl, string delimiter = null);
 
         /// <summary>
         /// Gets the CSV mapping configuration.
@@ -327,8 +327,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="fileUrl">The file URL.</param>
         /// <param name="delimiter">The CSV delimiter. (optional)</param>
-        /// <returns>ApiResponse of VirtoCommerceCatalogModuleWebExportImportCsvProductMappingConfiguration</returns>
-        ApiResponse<VirtoCommerceCatalogModuleWebExportImportCsvProductMappingConfiguration> CatalogModuleExportImportGetMappingConfigurationWithHttpInfo(string fileUrl, string delimiter = null);
+        /// <returns>ApiResponse of CsvProductMappingConfiguration</returns>
+        ApiResponse<CsvProductMappingConfiguration> CatalogModuleExportImportGetMappingConfigurationWithHttpInfo(string fileUrl, string delimiter = null);
         /// <summary>
         /// Creates links for categories or items to parent categories and catalogs.
         /// </summary>
@@ -338,7 +338,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="links">The links.</param>
         /// <returns></returns>
-        void CatalogModuleListEntryCreateLinks(List<VirtoCommerceCatalogModuleWebModelListEntryLink> links);
+        void CatalogModuleListEntryCreateLinks(List<ListEntryLink> links);
 
         /// <summary>
         /// Creates links for categories or items to parent categories and catalogs.
@@ -349,7 +349,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="links">The links.</param>
         /// <returns>ApiResponse of Object(void)</returns>
-        ApiResponse<Object> CatalogModuleListEntryCreateLinksWithHttpInfo(List<VirtoCommerceCatalogModuleWebModelListEntryLink> links);
+        ApiResponse<Object> CatalogModuleListEntryCreateLinksWithHttpInfo(List<ListEntryLink> links);
         /// <summary>
         /// Unlinks the linked categories or items from parent categories and catalogs.
         /// </summary>
@@ -359,7 +359,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="links">The links.</param>
         /// <returns></returns>
-        void CatalogModuleListEntryDeleteLinks(List<VirtoCommerceCatalogModuleWebModelListEntryLink> links);
+        void CatalogModuleListEntryDeleteLinks(List<ListEntryLink> links);
 
         /// <summary>
         /// Unlinks the linked categories or items from parent categories and catalogs.
@@ -370,7 +370,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="links">The links.</param>
         /// <returns>ApiResponse of Object(void)</returns>
-        ApiResponse<Object> CatalogModuleListEntryDeleteLinksWithHttpInfo(List<VirtoCommerceCatalogModuleWebModelListEntryLink> links);
+        ApiResponse<Object> CatalogModuleListEntryDeleteLinksWithHttpInfo(List<ListEntryLink> links);
         /// <summary>
         /// Searches for the items by complex criteria.
         /// </summary>
@@ -378,9 +378,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// 
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="searchCriteria">The search criteria.</param>
-        /// <returns>VirtoCommerceCatalogModuleWebModelListEntrySearchResult</returns>
-        VirtoCommerceCatalogModuleWebModelListEntrySearchResult CatalogModuleListEntryListItemsSearch(VirtoCommerceDomainCatalogModelSearchCriteria searchCriteria);
+        /// <param name="criteria">The search criteria.</param>
+        /// <returns>ListEntrySearchResult</returns>
+        ListEntrySearchResult CatalogModuleListEntryListItemsSearch(SearchCriteria criteria);
 
         /// <summary>
         /// Searches for the items by complex criteria.
@@ -389,9 +389,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// 
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="searchCriteria">The search criteria.</param>
-        /// <returns>ApiResponse of VirtoCommerceCatalogModuleWebModelListEntrySearchResult</returns>
-        ApiResponse<VirtoCommerceCatalogModuleWebModelListEntrySearchResult> CatalogModuleListEntryListItemsSearchWithHttpInfo(VirtoCommerceDomainCatalogModelSearchCriteria searchCriteria);
+        /// <param name="criteria">The search criteria.</param>
+        /// <returns>ApiResponse of ListEntrySearchResult</returns>
+        ApiResponse<ListEntrySearchResult> CatalogModuleListEntryListItemsSearchWithHttpInfo(SearchCriteria criteria);
         /// <summary>
         /// Move categories or products to another location.
         /// </summary>
@@ -401,7 +401,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="moveInfo">Move operation details</param>
         /// <returns></returns>
-        void CatalogModuleListEntryMove(VirtoCommerceCatalogModuleWebModelMoveInfo moveInfo);
+        void CatalogModuleListEntryMove(MoveInfo moveInfo);
 
         /// <summary>
         /// Move categories or products to another location.
@@ -412,7 +412,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="moveInfo">Move operation details</param>
         /// <returns>ApiResponse of Object(void)</returns>
-        ApiResponse<Object> CatalogModuleListEntryMoveWithHttpInfo(VirtoCommerceCatalogModuleWebModelMoveInfo moveInfo);
+        ApiResponse<Object> CatalogModuleListEntryMoveWithHttpInfo(MoveInfo moveInfo);
         /// <summary>
         /// 
         /// </summary>
@@ -421,8 +421,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="productId"></param>
-        /// <returns>VirtoCommerceCatalogModuleWebModelProduct</returns>
-        VirtoCommerceCatalogModuleWebModelProduct CatalogModuleProductsCloneProduct(string productId);
+        /// <returns>Product</returns>
+        Product CatalogModuleProductsCloneProduct(string productId);
 
         /// <summary>
         /// 
@@ -432,8 +432,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="productId"></param>
-        /// <returns>ApiResponse of VirtoCommerceCatalogModuleWebModelProduct</returns>
-        ApiResponse<VirtoCommerceCatalogModuleWebModelProduct> CatalogModuleProductsCloneProductWithHttpInfo(string productId);
+        /// <returns>ApiResponse of Product</returns>
+        ApiResponse<Product> CatalogModuleProductsCloneProductWithHttpInfo(string productId);
         /// <summary>
         /// Deletes the specified items by id.
         /// </summary>
@@ -463,8 +463,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalogId">The catalog id.</param>
-        /// <returns>VirtoCommerceCatalogModuleWebModelProduct</returns>
-        VirtoCommerceCatalogModuleWebModelProduct CatalogModuleProductsGetNewProductByCatalog(string catalogId);
+        /// <returns>Product</returns>
+        Product CatalogModuleProductsGetNewProductByCatalog(string catalogId);
 
         /// <summary>
         /// Gets the template for a new product (outside of category).
@@ -474,8 +474,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalogId">The catalog id.</param>
-        /// <returns>ApiResponse of VirtoCommerceCatalogModuleWebModelProduct</returns>
-        ApiResponse<VirtoCommerceCatalogModuleWebModelProduct> CatalogModuleProductsGetNewProductByCatalogWithHttpInfo(string catalogId);
+        /// <returns>ApiResponse of Product</returns>
+        ApiResponse<Product> CatalogModuleProductsGetNewProductByCatalogWithHttpInfo(string catalogId);
         /// <summary>
         /// Gets the template for a new product (inside category).
         /// </summary>
@@ -485,8 +485,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalogId">The catalog id.</param>
         /// <param name="categoryId">The category id.</param>
-        /// <returns>VirtoCommerceCatalogModuleWebModelProduct</returns>
-        VirtoCommerceCatalogModuleWebModelProduct CatalogModuleProductsGetNewProductByCatalogAndCategory(string catalogId, string categoryId);
+        /// <returns>Product</returns>
+        Product CatalogModuleProductsGetNewProductByCatalogAndCategory(string catalogId, string categoryId);
 
         /// <summary>
         /// Gets the template for a new product (inside category).
@@ -497,8 +497,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalogId">The catalog id.</param>
         /// <param name="categoryId">The category id.</param>
-        /// <returns>ApiResponse of VirtoCommerceCatalogModuleWebModelProduct</returns>
-        ApiResponse<VirtoCommerceCatalogModuleWebModelProduct> CatalogModuleProductsGetNewProductByCatalogAndCategoryWithHttpInfo(string catalogId, string categoryId);
+        /// <returns>ApiResponse of Product</returns>
+        ApiResponse<Product> CatalogModuleProductsGetNewProductByCatalogAndCategoryWithHttpInfo(string catalogId, string categoryId);
         /// <summary>
         /// Gets the template for a new variation.
         /// </summary>
@@ -507,8 +507,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="productId">The parent product id.</param>
-        /// <returns>VirtoCommerceCatalogModuleWebModelProduct</returns>
-        VirtoCommerceCatalogModuleWebModelProduct CatalogModuleProductsGetNewVariation(string productId);
+        /// <returns>Product</returns>
+        Product CatalogModuleProductsGetNewVariation(string productId);
 
         /// <summary>
         /// Gets the template for a new variation.
@@ -518,8 +518,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="productId">The parent product id.</param>
-        /// <returns>ApiResponse of VirtoCommerceCatalogModuleWebModelProduct</returns>
-        ApiResponse<VirtoCommerceCatalogModuleWebModelProduct> CatalogModuleProductsGetNewVariationWithHttpInfo(string productId);
+        /// <returns>ApiResponse of Product</returns>
+        ApiResponse<Product> CatalogModuleProductsGetNewVariationWithHttpInfo(string productId);
         /// <summary>
         /// Gets product by id.
         /// </summary>
@@ -529,8 +529,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="id">Item id.</param>
         /// <param name="respGroup">Response group. (optional)</param>
-        /// <returns>VirtoCommerceCatalogModuleWebModelProduct</returns>
-        VirtoCommerceCatalogModuleWebModelProduct CatalogModuleProductsGetProductById(string id, string respGroup = null);
+        /// <returns>Product</returns>
+        Product CatalogModuleProductsGetProductById(string id, string respGroup = null);
 
         /// <summary>
         /// Gets product by id.
@@ -541,8 +541,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="id">Item id.</param>
         /// <param name="respGroup">Response group. (optional)</param>
-        /// <returns>ApiResponse of VirtoCommerceCatalogModuleWebModelProduct</returns>
-        ApiResponse<VirtoCommerceCatalogModuleWebModelProduct> CatalogModuleProductsGetProductByIdWithHttpInfo(string id, string respGroup = null);
+        /// <returns>ApiResponse of Product</returns>
+        ApiResponse<Product> CatalogModuleProductsGetProductByIdWithHttpInfo(string id, string respGroup = null);
         /// <summary>
         /// Gets products by ids
         /// </summary>
@@ -552,8 +552,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="ids">Item ids</param>
         /// <param name="respGroup">Response group. (optional)</param>
-        /// <returns>List&lt;VirtoCommerceCatalogModuleWebModelProduct&gt;</returns>
-        List<VirtoCommerceCatalogModuleWebModelProduct> CatalogModuleProductsGetProductByIds(List<string> ids, string respGroup = null);
+        /// <returns>List&lt;Product&gt;</returns>
+        List<Product> CatalogModuleProductsGetProductByIds(List<string> ids, string respGroup = null);
 
         /// <summary>
         /// Gets products by ids
@@ -564,8 +564,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="ids">Item ids</param>
         /// <param name="respGroup">Response group. (optional)</param>
-        /// <returns>ApiResponse of List&lt;VirtoCommerceCatalogModuleWebModelProduct&gt;</returns>
-        ApiResponse<List<VirtoCommerceCatalogModuleWebModelProduct>> CatalogModuleProductsGetProductByIdsWithHttpInfo(List<string> ids, string respGroup = null);
+        /// <returns>ApiResponse of List&lt;Product&gt;</returns>
+        ApiResponse<List<Product>> CatalogModuleProductsGetProductByIdsWithHttpInfo(List<string> ids, string respGroup = null);
         /// <summary>
         /// Updates the specified product.
         /// </summary>
@@ -575,7 +575,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="product">The product.</param>
         /// <returns></returns>
-        void CatalogModuleProductsUpdate(VirtoCommerceCatalogModuleWebModelProduct product);
+        void CatalogModuleProductsUpdate(Product product);
 
         /// <summary>
         /// Updates the specified product.
@@ -586,7 +586,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="product">The product.</param>
         /// <returns>ApiResponse of Object(void)</returns>
-        ApiResponse<Object> CatalogModuleProductsUpdateWithHttpInfo(VirtoCommerceCatalogModuleWebModelProduct product);
+        ApiResponse<Object> CatalogModuleProductsUpdateWithHttpInfo(Product product);
         /// <summary>
         /// Creates or updates the specified property.
         /// </summary>
@@ -596,7 +596,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="property">The property.</param>
         /// <returns></returns>
-        void CatalogModulePropertiesCreateOrUpdateProperty(VirtoCommerceCatalogModuleWebModelProperty property);
+        void CatalogModulePropertiesCreateOrUpdateProperty(Property property);
 
         /// <summary>
         /// Creates or updates the specified property.
@@ -607,7 +607,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="property">The property.</param>
         /// <returns>ApiResponse of Object(void)</returns>
-        ApiResponse<Object> CatalogModulePropertiesCreateOrUpdatePropertyWithHttpInfo(VirtoCommerceCatalogModuleWebModelProperty property);
+        ApiResponse<Object> CatalogModulePropertiesCreateOrUpdatePropertyWithHttpInfo(Property property);
         /// <summary>
         /// Deletes property by id.
         /// </summary>
@@ -637,8 +637,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="propertyId">The property id.</param>
-        /// <returns>VirtoCommerceCatalogModuleWebModelProperty</returns>
-        VirtoCommerceCatalogModuleWebModelProperty CatalogModulePropertiesGet(string propertyId);
+        /// <returns>Property</returns>
+        Property CatalogModulePropertiesGet(string propertyId);
 
         /// <summary>
         /// Gets property metainformation by id.
@@ -648,8 +648,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="propertyId">The property id.</param>
-        /// <returns>ApiResponse of VirtoCommerceCatalogModuleWebModelProperty</returns>
-        ApiResponse<VirtoCommerceCatalogModuleWebModelProperty> CatalogModulePropertiesGetWithHttpInfo(string propertyId);
+        /// <returns>ApiResponse of Property</returns>
+        ApiResponse<Property> CatalogModulePropertiesGetWithHttpInfo(string propertyId);
         /// <summary>
         /// Gets the template for a new catalog property.
         /// </summary>
@@ -658,8 +658,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalogId">The catalog id.</param>
-        /// <returns>VirtoCommerceCatalogModuleWebModelProperty</returns>
-        VirtoCommerceCatalogModuleWebModelProperty CatalogModulePropertiesGetNewCatalogProperty(string catalogId);
+        /// <returns>Property</returns>
+        Property CatalogModulePropertiesGetNewCatalogProperty(string catalogId);
 
         /// <summary>
         /// Gets the template for a new catalog property.
@@ -669,8 +669,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalogId">The catalog id.</param>
-        /// <returns>ApiResponse of VirtoCommerceCatalogModuleWebModelProperty</returns>
-        ApiResponse<VirtoCommerceCatalogModuleWebModelProperty> CatalogModulePropertiesGetNewCatalogPropertyWithHttpInfo(string catalogId);
+        /// <returns>ApiResponse of Property</returns>
+        ApiResponse<Property> CatalogModulePropertiesGetNewCatalogPropertyWithHttpInfo(string catalogId);
         /// <summary>
         /// Gets the template for a new category property.
         /// </summary>
@@ -679,8 +679,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="categoryId">The category id.</param>
-        /// <returns>VirtoCommerceCatalogModuleWebModelProperty</returns>
-        VirtoCommerceCatalogModuleWebModelProperty CatalogModulePropertiesGetNewCategoryProperty(string categoryId);
+        /// <returns>Property</returns>
+        Property CatalogModulePropertiesGetNewCategoryProperty(string categoryId);
 
         /// <summary>
         /// Gets the template for a new category property.
@@ -690,8 +690,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="categoryId">The category id.</param>
-        /// <returns>ApiResponse of VirtoCommerceCatalogModuleWebModelProperty</returns>
-        ApiResponse<VirtoCommerceCatalogModuleWebModelProperty> CatalogModulePropertiesGetNewCategoryPropertyWithHttpInfo(string categoryId);
+        /// <returns>ApiResponse of Property</returns>
+        ApiResponse<Property> CatalogModulePropertiesGetNewCategoryPropertyWithHttpInfo(string categoryId);
         /// <summary>
         /// Gets all dictionary values that specified property can have.
         /// </summary>
@@ -701,8 +701,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="propertyId">The property id.</param>
         /// <param name="keyword">The keyword. (Optional) (optional)</param>
-        /// <returns>List&lt;VirtoCommerceCatalogModuleWebModelPropertyValue&gt;</returns>
-        List<VirtoCommerceCatalogModuleWebModelPropertyValue> CatalogModulePropertiesGetPropertyValues(string propertyId, string keyword = null);
+        /// <returns>List&lt;PropertyValue&gt;</returns>
+        List<PropertyValue> CatalogModulePropertiesGetPropertyValues(string propertyId, string keyword = null);
 
         /// <summary>
         /// Gets all dictionary values that specified property can have.
@@ -713,8 +713,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="propertyId">The property id.</param>
         /// <param name="keyword">The keyword. (Optional) (optional)</param>
-        /// <returns>ApiResponse of List&lt;VirtoCommerceCatalogModuleWebModelPropertyValue&gt;</returns>
-        ApiResponse<List<VirtoCommerceCatalogModuleWebModelPropertyValue>> CatalogModulePropertiesGetPropertyValuesWithHttpInfo(string propertyId, string keyword = null);
+        /// <returns>ApiResponse of List&lt;PropertyValue&gt;</returns>
+        ApiResponse<List<PropertyValue>> CatalogModulePropertiesGetPropertyValuesWithHttpInfo(string propertyId, string keyword = null);
         /// <summary>
         /// Searches for the items by complex criteria
         /// </summary>
@@ -723,8 +723,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="criteria">The search criteria.</param>
-        /// <returns>VirtoCommerceCatalogModuleWebModelCatalogSearchResult</returns>
-        VirtoCommerceCatalogModuleWebModelCatalogSearchResult CatalogModuleSearchSearch(VirtoCommerceDomainCatalogModelSearchCriteria criteria);
+        /// <returns>CatalogSearchResult</returns>
+        CatalogSearchResult CatalogModuleSearchSearch(SearchCriteria criteria);
 
         /// <summary>
         /// Searches for the items by complex criteria
@@ -734,8 +734,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="criteria">The search criteria.</param>
-        /// <returns>ApiResponse of VirtoCommerceCatalogModuleWebModelCatalogSearchResult</returns>
-        ApiResponse<VirtoCommerceCatalogModuleWebModelCatalogSearchResult> CatalogModuleSearchSearchWithHttpInfo(VirtoCommerceDomainCatalogModelSearchCriteria criteria);
+        /// <returns>ApiResponse of CatalogSearchResult</returns>
+        ApiResponse<CatalogSearchResult> CatalogModuleSearchSearchWithHttpInfo(SearchCriteria criteria);
         #endregion Synchronous Operations
         #region Asynchronous Operations
         /// <summary>
@@ -746,8 +746,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalog">The catalog to create</param>
-        /// <returns>Task of VirtoCommerceCatalogModuleWebModelCatalog</returns>
-        System.Threading.Tasks.Task<VirtoCommerceCatalogModuleWebModelCatalog> CatalogModuleCatalogsCreateAsync(VirtoCommerceCatalogModuleWebModelCatalog catalog);
+        /// <returns>Task of Catalog</returns>
+        System.Threading.Tasks.Task<Catalog> CatalogModuleCatalogsCreateAsync(Catalog catalog);
 
         /// <summary>
         /// Creates the specified catalog.
@@ -757,8 +757,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalog">The catalog to create</param>
-        /// <returns>Task of ApiResponse (VirtoCommerceCatalogModuleWebModelCatalog)</returns>
-        System.Threading.Tasks.Task<ApiResponse<VirtoCommerceCatalogModuleWebModelCatalog>> CatalogModuleCatalogsCreateAsyncWithHttpInfo(VirtoCommerceCatalogModuleWebModelCatalog catalog);
+        /// <returns>Task of ApiResponse (Catalog)</returns>
+        System.Threading.Tasks.Task<ApiResponse<Catalog>> CatalogModuleCatalogsCreateAsyncWithHttpInfo(Catalog catalog);
         /// <summary>
         /// Deletes catalog by id.
         /// </summary>
@@ -788,8 +788,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="id">The Catalog id.</param>
-        /// <returns>Task of VirtoCommerceCatalogModuleWebModelCatalog</returns>
-        System.Threading.Tasks.Task<VirtoCommerceCatalogModuleWebModelCatalog> CatalogModuleCatalogsGetAsync(string id);
+        /// <returns>Task of Catalog</returns>
+        System.Threading.Tasks.Task<Catalog> CatalogModuleCatalogsGetAsync(string id);
 
         /// <summary>
         /// Gets Catalog by id.
@@ -799,8 +799,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="id">The Catalog id.</param>
-        /// <returns>Task of ApiResponse (VirtoCommerceCatalogModuleWebModelCatalog)</returns>
-        System.Threading.Tasks.Task<ApiResponse<VirtoCommerceCatalogModuleWebModelCatalog>> CatalogModuleCatalogsGetAsyncWithHttpInfo(string id);
+        /// <returns>Task of ApiResponse (Catalog)</returns>
+        System.Threading.Tasks.Task<ApiResponse<Catalog>> CatalogModuleCatalogsGetAsyncWithHttpInfo(string id);
         /// <summary>
         /// Get Catalogs list
         /// </summary>
@@ -808,8 +808,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// Get common and virtual Catalogs list with minimal information included. Returns array of Catalog
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <returns>Task of List&lt;VirtoCommerceCatalogModuleWebModelCatalog&gt;</returns>
-        System.Threading.Tasks.Task<List<VirtoCommerceCatalogModuleWebModelCatalog>> CatalogModuleCatalogsGetCatalogsAsync();
+        /// <returns>Task of List&lt;Catalog&gt;</returns>
+        System.Threading.Tasks.Task<List<Catalog>> CatalogModuleCatalogsGetCatalogsAsync();
 
         /// <summary>
         /// Get Catalogs list
@@ -818,8 +818,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// Get common and virtual Catalogs list with minimal information included. Returns array of Catalog
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <returns>Task of ApiResponse (List&lt;VirtoCommerceCatalogModuleWebModelCatalog&gt;)</returns>
-        System.Threading.Tasks.Task<ApiResponse<List<VirtoCommerceCatalogModuleWebModelCatalog>>> CatalogModuleCatalogsGetCatalogsAsyncWithHttpInfo();
+        /// <returns>Task of ApiResponse (List&lt;Catalog&gt;)</returns>
+        System.Threading.Tasks.Task<ApiResponse<List<Catalog>>> CatalogModuleCatalogsGetCatalogsAsyncWithHttpInfo();
         /// <summary>
         /// Gets the template for a new catalog.
         /// </summary>
@@ -827,8 +827,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// Gets the template for a new common catalog
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <returns>Task of VirtoCommerceCatalogModuleWebModelCatalog</returns>
-        System.Threading.Tasks.Task<VirtoCommerceCatalogModuleWebModelCatalog> CatalogModuleCatalogsGetNewCatalogAsync();
+        /// <returns>Task of Catalog</returns>
+        System.Threading.Tasks.Task<Catalog> CatalogModuleCatalogsGetNewCatalogAsync();
 
         /// <summary>
         /// Gets the template for a new catalog.
@@ -837,8 +837,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// Gets the template for a new common catalog
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <returns>Task of ApiResponse (VirtoCommerceCatalogModuleWebModelCatalog)</returns>
-        System.Threading.Tasks.Task<ApiResponse<VirtoCommerceCatalogModuleWebModelCatalog>> CatalogModuleCatalogsGetNewCatalogAsyncWithHttpInfo();
+        /// <returns>Task of ApiResponse (Catalog)</returns>
+        System.Threading.Tasks.Task<ApiResponse<Catalog>> CatalogModuleCatalogsGetNewCatalogAsyncWithHttpInfo();
         /// <summary>
         /// Gets the template for a new virtual catalog.
         /// </summary>
@@ -846,8 +846,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// 
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <returns>Task of VirtoCommerceCatalogModuleWebModelCatalog</returns>
-        System.Threading.Tasks.Task<VirtoCommerceCatalogModuleWebModelCatalog> CatalogModuleCatalogsGetNewVirtualCatalogAsync();
+        /// <returns>Task of Catalog</returns>
+        System.Threading.Tasks.Task<Catalog> CatalogModuleCatalogsGetNewVirtualCatalogAsync();
 
         /// <summary>
         /// Gets the template for a new virtual catalog.
@@ -856,8 +856,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// 
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <returns>Task of ApiResponse (VirtoCommerceCatalogModuleWebModelCatalog)</returns>
-        System.Threading.Tasks.Task<ApiResponse<VirtoCommerceCatalogModuleWebModelCatalog>> CatalogModuleCatalogsGetNewVirtualCatalogAsyncWithHttpInfo();
+        /// <returns>Task of ApiResponse (Catalog)</returns>
+        System.Threading.Tasks.Task<ApiResponse<Catalog>> CatalogModuleCatalogsGetNewVirtualCatalogAsyncWithHttpInfo();
         /// <summary>
         /// Updates the specified catalog.
         /// </summary>
@@ -867,7 +867,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalog">The catalog.</param>
         /// <returns>Task of void</returns>
-        System.Threading.Tasks.Task CatalogModuleCatalogsUpdateAsync(VirtoCommerceCatalogModuleWebModelCatalog catalog);
+        System.Threading.Tasks.Task CatalogModuleCatalogsUpdateAsync(Catalog catalog);
 
         /// <summary>
         /// Updates the specified catalog.
@@ -878,7 +878,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalog">The catalog.</param>
         /// <returns>Task of ApiResponse</returns>
-        System.Threading.Tasks.Task<ApiResponse<object>> CatalogModuleCatalogsUpdateAsyncWithHttpInfo(VirtoCommerceCatalogModuleWebModelCatalog catalog);
+        System.Threading.Tasks.Task<ApiResponse<object>> CatalogModuleCatalogsUpdateAsyncWithHttpInfo(Catalog catalog);
         /// <summary>
         /// Creates or updates the specified category.
         /// </summary>
@@ -888,7 +888,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="category">The category.</param>
         /// <returns>Task of void</returns>
-        System.Threading.Tasks.Task CatalogModuleCategoriesCreateOrUpdateCategoryAsync(VirtoCommerceCatalogModuleWebModelCategory category);
+        System.Threading.Tasks.Task CatalogModuleCategoriesCreateOrUpdateCategoryAsync(Category category);
 
         /// <summary>
         /// Creates or updates the specified category.
@@ -899,7 +899,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="category">The category.</param>
         /// <returns>Task of ApiResponse</returns>
-        System.Threading.Tasks.Task<ApiResponse<object>> CatalogModuleCategoriesCreateOrUpdateCategoryAsyncWithHttpInfo(VirtoCommerceCatalogModuleWebModelCategory category);
+        System.Threading.Tasks.Task<ApiResponse<object>> CatalogModuleCategoriesCreateOrUpdateCategoryAsyncWithHttpInfo(Category category);
         /// <summary>
         /// Deletes the specified categories by id.
         /// </summary>
@@ -929,8 +929,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="id">Category id.</param>
-        /// <returns>Task of VirtoCommerceCatalogModuleWebModelCategory</returns>
-        System.Threading.Tasks.Task<VirtoCommerceCatalogModuleWebModelCategory> CatalogModuleCategoriesGetAsync(string id);
+        /// <returns>Task of Category</returns>
+        System.Threading.Tasks.Task<Category> CatalogModuleCategoriesGetAsync(string id);
 
         /// <summary>
         /// Gets category by id.
@@ -940,8 +940,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="id">Category id.</param>
-        /// <returns>Task of ApiResponse (VirtoCommerceCatalogModuleWebModelCategory)</returns>
-        System.Threading.Tasks.Task<ApiResponse<VirtoCommerceCatalogModuleWebModelCategory>> CatalogModuleCategoriesGetAsyncWithHttpInfo(string id);
+        /// <returns>Task of ApiResponse (Category)</returns>
+        System.Threading.Tasks.Task<ApiResponse<Category>> CatalogModuleCategoriesGetAsyncWithHttpInfo(string id);
         /// <summary>
         /// Gets categories by ids
         /// </summary>
@@ -951,8 +951,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="ids">Categories ids</param>
         /// <param name="respGroup">Response group. (optional)</param>
-        /// <returns>Task of List&lt;VirtoCommerceCatalogModuleWebModelCategory&gt;</returns>
-        System.Threading.Tasks.Task<List<VirtoCommerceCatalogModuleWebModelCategory>> CatalogModuleCategoriesGetCategoriesByIdsAsync(List<string> ids, string respGroup = null);
+        /// <returns>Task of List&lt;Category&gt;</returns>
+        System.Threading.Tasks.Task<List<Category>> CatalogModuleCategoriesGetCategoriesByIdsAsync(List<string> ids, string respGroup = null);
 
         /// <summary>
         /// Gets categories by ids
@@ -963,8 +963,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="ids">Categories ids</param>
         /// <param name="respGroup">Response group. (optional)</param>
-        /// <returns>Task of ApiResponse (List&lt;VirtoCommerceCatalogModuleWebModelCategory&gt;)</returns>
-        System.Threading.Tasks.Task<ApiResponse<List<VirtoCommerceCatalogModuleWebModelCategory>>> CatalogModuleCategoriesGetCategoriesByIdsAsyncWithHttpInfo(List<string> ids, string respGroup = null);
+        /// <returns>Task of ApiResponse (List&lt;Category&gt;)</returns>
+        System.Threading.Tasks.Task<ApiResponse<List<Category>>> CatalogModuleCategoriesGetCategoriesByIdsAsyncWithHttpInfo(List<string> ids, string respGroup = null);
         /// <summary>
         /// Gets the template for a new category.
         /// </summary>
@@ -974,8 +974,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalogId">The catalog id.</param>
         /// <param name="parentCategoryId">The parent category id. (Optional) (optional)</param>
-        /// <returns>Task of VirtoCommerceCatalogModuleWebModelCategory</returns>
-        System.Threading.Tasks.Task<VirtoCommerceCatalogModuleWebModelCategory> CatalogModuleCategoriesGetNewCategoryAsync(string catalogId, string parentCategoryId = null);
+        /// <returns>Task of Category</returns>
+        System.Threading.Tasks.Task<Category> CatalogModuleCategoriesGetNewCategoryAsync(string catalogId, string parentCategoryId = null);
 
         /// <summary>
         /// Gets the template for a new category.
@@ -986,8 +986,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalogId">The catalog id.</param>
         /// <param name="parentCategoryId">The parent category id. (Optional) (optional)</param>
-        /// <returns>Task of ApiResponse (VirtoCommerceCatalogModuleWebModelCategory)</returns>
-        System.Threading.Tasks.Task<ApiResponse<VirtoCommerceCatalogModuleWebModelCategory>> CatalogModuleCategoriesGetNewCategoryAsyncWithHttpInfo(string catalogId, string parentCategoryId = null);
+        /// <returns>Task of ApiResponse (Category)</returns>
+        System.Threading.Tasks.Task<ApiResponse<Category>> CatalogModuleCategoriesGetNewCategoryAsyncWithHttpInfo(string catalogId, string parentCategoryId = null);
         /// <summary>
         /// Start catalog data export process.
         /// </summary>
@@ -996,8 +996,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="exportInfo">The export configuration.</param>
-        /// <returns>Task of VirtoCommerceCatalogModuleWebModelPushNotificationsExportNotification</returns>
-        System.Threading.Tasks.Task<VirtoCommerceCatalogModuleWebModelPushNotificationsExportNotification> CatalogModuleExportImportDoExportAsync(VirtoCommerceCatalogModuleWebExportImportCsvExportInfo exportInfo);
+        /// <returns>Task of ExportNotification</returns>
+        System.Threading.Tasks.Task<ExportNotification> CatalogModuleExportImportDoExportAsync(CsvExportInfo exportInfo);
 
         /// <summary>
         /// Start catalog data export process.
@@ -1007,8 +1007,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="exportInfo">The export configuration.</param>
-        /// <returns>Task of ApiResponse (VirtoCommerceCatalogModuleWebModelPushNotificationsExportNotification)</returns>
-        System.Threading.Tasks.Task<ApiResponse<VirtoCommerceCatalogModuleWebModelPushNotificationsExportNotification>> CatalogModuleExportImportDoExportAsyncWithHttpInfo(VirtoCommerceCatalogModuleWebExportImportCsvExportInfo exportInfo);
+        /// <returns>Task of ApiResponse (ExportNotification)</returns>
+        System.Threading.Tasks.Task<ApiResponse<ExportNotification>> CatalogModuleExportImportDoExportAsyncWithHttpInfo(CsvExportInfo exportInfo);
         /// <summary>
         /// Start catalog data import process.
         /// </summary>
@@ -1017,8 +1017,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="importInfo">The import data configuration.</param>
-        /// <returns>Task of VirtoCommerceCatalogModuleWebModelPushNotificationsImportNotification</returns>
-        System.Threading.Tasks.Task<VirtoCommerceCatalogModuleWebModelPushNotificationsImportNotification> CatalogModuleExportImportDoImportAsync(VirtoCommerceCatalogModuleWebExportImportCsvImportInfo importInfo);
+        /// <returns>Task of ImportNotification</returns>
+        System.Threading.Tasks.Task<ImportNotification> CatalogModuleExportImportDoImportAsync(CsvImportInfo importInfo);
 
         /// <summary>
         /// Start catalog data import process.
@@ -1028,8 +1028,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="importInfo">The import data configuration.</param>
-        /// <returns>Task of ApiResponse (VirtoCommerceCatalogModuleWebModelPushNotificationsImportNotification)</returns>
-        System.Threading.Tasks.Task<ApiResponse<VirtoCommerceCatalogModuleWebModelPushNotificationsImportNotification>> CatalogModuleExportImportDoImportAsyncWithHttpInfo(VirtoCommerceCatalogModuleWebExportImportCsvImportInfo importInfo);
+        /// <returns>Task of ApiResponse (ImportNotification)</returns>
+        System.Threading.Tasks.Task<ApiResponse<ImportNotification>> CatalogModuleExportImportDoImportAsyncWithHttpInfo(CsvImportInfo importInfo);
         /// <summary>
         /// Gets the CSV mapping configuration.
         /// </summary>
@@ -1039,8 +1039,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="fileUrl">The file URL.</param>
         /// <param name="delimiter">The CSV delimiter. (optional)</param>
-        /// <returns>Task of VirtoCommerceCatalogModuleWebExportImportCsvProductMappingConfiguration</returns>
-        System.Threading.Tasks.Task<VirtoCommerceCatalogModuleWebExportImportCsvProductMappingConfiguration> CatalogModuleExportImportGetMappingConfigurationAsync(string fileUrl, string delimiter = null);
+        /// <returns>Task of CsvProductMappingConfiguration</returns>
+        System.Threading.Tasks.Task<CsvProductMappingConfiguration> CatalogModuleExportImportGetMappingConfigurationAsync(string fileUrl, string delimiter = null);
 
         /// <summary>
         /// Gets the CSV mapping configuration.
@@ -1051,8 +1051,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="fileUrl">The file URL.</param>
         /// <param name="delimiter">The CSV delimiter. (optional)</param>
-        /// <returns>Task of ApiResponse (VirtoCommerceCatalogModuleWebExportImportCsvProductMappingConfiguration)</returns>
-        System.Threading.Tasks.Task<ApiResponse<VirtoCommerceCatalogModuleWebExportImportCsvProductMappingConfiguration>> CatalogModuleExportImportGetMappingConfigurationAsyncWithHttpInfo(string fileUrl, string delimiter = null);
+        /// <returns>Task of ApiResponse (CsvProductMappingConfiguration)</returns>
+        System.Threading.Tasks.Task<ApiResponse<CsvProductMappingConfiguration>> CatalogModuleExportImportGetMappingConfigurationAsyncWithHttpInfo(string fileUrl, string delimiter = null);
         /// <summary>
         /// Creates links for categories or items to parent categories and catalogs.
         /// </summary>
@@ -1062,7 +1062,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="links">The links.</param>
         /// <returns>Task of void</returns>
-        System.Threading.Tasks.Task CatalogModuleListEntryCreateLinksAsync(List<VirtoCommerceCatalogModuleWebModelListEntryLink> links);
+        System.Threading.Tasks.Task CatalogModuleListEntryCreateLinksAsync(List<ListEntryLink> links);
 
         /// <summary>
         /// Creates links for categories or items to parent categories and catalogs.
@@ -1073,7 +1073,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="links">The links.</param>
         /// <returns>Task of ApiResponse</returns>
-        System.Threading.Tasks.Task<ApiResponse<object>> CatalogModuleListEntryCreateLinksAsyncWithHttpInfo(List<VirtoCommerceCatalogModuleWebModelListEntryLink> links);
+        System.Threading.Tasks.Task<ApiResponse<object>> CatalogModuleListEntryCreateLinksAsyncWithHttpInfo(List<ListEntryLink> links);
         /// <summary>
         /// Unlinks the linked categories or items from parent categories and catalogs.
         /// </summary>
@@ -1083,7 +1083,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="links">The links.</param>
         /// <returns>Task of void</returns>
-        System.Threading.Tasks.Task CatalogModuleListEntryDeleteLinksAsync(List<VirtoCommerceCatalogModuleWebModelListEntryLink> links);
+        System.Threading.Tasks.Task CatalogModuleListEntryDeleteLinksAsync(List<ListEntryLink> links);
 
         /// <summary>
         /// Unlinks the linked categories or items from parent categories and catalogs.
@@ -1094,7 +1094,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="links">The links.</param>
         /// <returns>Task of ApiResponse</returns>
-        System.Threading.Tasks.Task<ApiResponse<object>> CatalogModuleListEntryDeleteLinksAsyncWithHttpInfo(List<VirtoCommerceCatalogModuleWebModelListEntryLink> links);
+        System.Threading.Tasks.Task<ApiResponse<object>> CatalogModuleListEntryDeleteLinksAsyncWithHttpInfo(List<ListEntryLink> links);
         /// <summary>
         /// Searches for the items by complex criteria.
         /// </summary>
@@ -1102,9 +1102,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// 
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="searchCriteria">The search criteria.</param>
-        /// <returns>Task of VirtoCommerceCatalogModuleWebModelListEntrySearchResult</returns>
-        System.Threading.Tasks.Task<VirtoCommerceCatalogModuleWebModelListEntrySearchResult> CatalogModuleListEntryListItemsSearchAsync(VirtoCommerceDomainCatalogModelSearchCriteria searchCriteria);
+        /// <param name="criteria">The search criteria.</param>
+        /// <returns>Task of ListEntrySearchResult</returns>
+        System.Threading.Tasks.Task<ListEntrySearchResult> CatalogModuleListEntryListItemsSearchAsync(SearchCriteria criteria);
 
         /// <summary>
         /// Searches for the items by complex criteria.
@@ -1113,9 +1113,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// 
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="searchCriteria">The search criteria.</param>
-        /// <returns>Task of ApiResponse (VirtoCommerceCatalogModuleWebModelListEntrySearchResult)</returns>
-        System.Threading.Tasks.Task<ApiResponse<VirtoCommerceCatalogModuleWebModelListEntrySearchResult>> CatalogModuleListEntryListItemsSearchAsyncWithHttpInfo(VirtoCommerceDomainCatalogModelSearchCriteria searchCriteria);
+        /// <param name="criteria">The search criteria.</param>
+        /// <returns>Task of ApiResponse (ListEntrySearchResult)</returns>
+        System.Threading.Tasks.Task<ApiResponse<ListEntrySearchResult>> CatalogModuleListEntryListItemsSearchAsyncWithHttpInfo(SearchCriteria criteria);
         /// <summary>
         /// Move categories or products to another location.
         /// </summary>
@@ -1125,7 +1125,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="moveInfo">Move operation details</param>
         /// <returns>Task of void</returns>
-        System.Threading.Tasks.Task CatalogModuleListEntryMoveAsync(VirtoCommerceCatalogModuleWebModelMoveInfo moveInfo);
+        System.Threading.Tasks.Task CatalogModuleListEntryMoveAsync(MoveInfo moveInfo);
 
         /// <summary>
         /// Move categories or products to another location.
@@ -1136,7 +1136,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="moveInfo">Move operation details</param>
         /// <returns>Task of ApiResponse</returns>
-        System.Threading.Tasks.Task<ApiResponse<object>> CatalogModuleListEntryMoveAsyncWithHttpInfo(VirtoCommerceCatalogModuleWebModelMoveInfo moveInfo);
+        System.Threading.Tasks.Task<ApiResponse<object>> CatalogModuleListEntryMoveAsyncWithHttpInfo(MoveInfo moveInfo);
         /// <summary>
         /// 
         /// </summary>
@@ -1145,8 +1145,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="productId"></param>
-        /// <returns>Task of VirtoCommerceCatalogModuleWebModelProduct</returns>
-        System.Threading.Tasks.Task<VirtoCommerceCatalogModuleWebModelProduct> CatalogModuleProductsCloneProductAsync(string productId);
+        /// <returns>Task of Product</returns>
+        System.Threading.Tasks.Task<Product> CatalogModuleProductsCloneProductAsync(string productId);
 
         /// <summary>
         /// 
@@ -1156,8 +1156,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="productId"></param>
-        /// <returns>Task of ApiResponse (VirtoCommerceCatalogModuleWebModelProduct)</returns>
-        System.Threading.Tasks.Task<ApiResponse<VirtoCommerceCatalogModuleWebModelProduct>> CatalogModuleProductsCloneProductAsyncWithHttpInfo(string productId);
+        /// <returns>Task of ApiResponse (Product)</returns>
+        System.Threading.Tasks.Task<ApiResponse<Product>> CatalogModuleProductsCloneProductAsyncWithHttpInfo(string productId);
         /// <summary>
         /// Deletes the specified items by id.
         /// </summary>
@@ -1187,8 +1187,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalogId">The catalog id.</param>
-        /// <returns>Task of VirtoCommerceCatalogModuleWebModelProduct</returns>
-        System.Threading.Tasks.Task<VirtoCommerceCatalogModuleWebModelProduct> CatalogModuleProductsGetNewProductByCatalogAsync(string catalogId);
+        /// <returns>Task of Product</returns>
+        System.Threading.Tasks.Task<Product> CatalogModuleProductsGetNewProductByCatalogAsync(string catalogId);
 
         /// <summary>
         /// Gets the template for a new product (outside of category).
@@ -1198,8 +1198,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalogId">The catalog id.</param>
-        /// <returns>Task of ApiResponse (VirtoCommerceCatalogModuleWebModelProduct)</returns>
-        System.Threading.Tasks.Task<ApiResponse<VirtoCommerceCatalogModuleWebModelProduct>> CatalogModuleProductsGetNewProductByCatalogAsyncWithHttpInfo(string catalogId);
+        /// <returns>Task of ApiResponse (Product)</returns>
+        System.Threading.Tasks.Task<ApiResponse<Product>> CatalogModuleProductsGetNewProductByCatalogAsyncWithHttpInfo(string catalogId);
         /// <summary>
         /// Gets the template for a new product (inside category).
         /// </summary>
@@ -1209,8 +1209,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalogId">The catalog id.</param>
         /// <param name="categoryId">The category id.</param>
-        /// <returns>Task of VirtoCommerceCatalogModuleWebModelProduct</returns>
-        System.Threading.Tasks.Task<VirtoCommerceCatalogModuleWebModelProduct> CatalogModuleProductsGetNewProductByCatalogAndCategoryAsync(string catalogId, string categoryId);
+        /// <returns>Task of Product</returns>
+        System.Threading.Tasks.Task<Product> CatalogModuleProductsGetNewProductByCatalogAndCategoryAsync(string catalogId, string categoryId);
 
         /// <summary>
         /// Gets the template for a new product (inside category).
@@ -1221,8 +1221,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalogId">The catalog id.</param>
         /// <param name="categoryId">The category id.</param>
-        /// <returns>Task of ApiResponse (VirtoCommerceCatalogModuleWebModelProduct)</returns>
-        System.Threading.Tasks.Task<ApiResponse<VirtoCommerceCatalogModuleWebModelProduct>> CatalogModuleProductsGetNewProductByCatalogAndCategoryAsyncWithHttpInfo(string catalogId, string categoryId);
+        /// <returns>Task of ApiResponse (Product)</returns>
+        System.Threading.Tasks.Task<ApiResponse<Product>> CatalogModuleProductsGetNewProductByCatalogAndCategoryAsyncWithHttpInfo(string catalogId, string categoryId);
         /// <summary>
         /// Gets the template for a new variation.
         /// </summary>
@@ -1231,8 +1231,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="productId">The parent product id.</param>
-        /// <returns>Task of VirtoCommerceCatalogModuleWebModelProduct</returns>
-        System.Threading.Tasks.Task<VirtoCommerceCatalogModuleWebModelProduct> CatalogModuleProductsGetNewVariationAsync(string productId);
+        /// <returns>Task of Product</returns>
+        System.Threading.Tasks.Task<Product> CatalogModuleProductsGetNewVariationAsync(string productId);
 
         /// <summary>
         /// Gets the template for a new variation.
@@ -1242,8 +1242,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="productId">The parent product id.</param>
-        /// <returns>Task of ApiResponse (VirtoCommerceCatalogModuleWebModelProduct)</returns>
-        System.Threading.Tasks.Task<ApiResponse<VirtoCommerceCatalogModuleWebModelProduct>> CatalogModuleProductsGetNewVariationAsyncWithHttpInfo(string productId);
+        /// <returns>Task of ApiResponse (Product)</returns>
+        System.Threading.Tasks.Task<ApiResponse<Product>> CatalogModuleProductsGetNewVariationAsyncWithHttpInfo(string productId);
         /// <summary>
         /// Gets product by id.
         /// </summary>
@@ -1253,8 +1253,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="id">Item id.</param>
         /// <param name="respGroup">Response group. (optional)</param>
-        /// <returns>Task of VirtoCommerceCatalogModuleWebModelProduct</returns>
-        System.Threading.Tasks.Task<VirtoCommerceCatalogModuleWebModelProduct> CatalogModuleProductsGetProductByIdAsync(string id, string respGroup = null);
+        /// <returns>Task of Product</returns>
+        System.Threading.Tasks.Task<Product> CatalogModuleProductsGetProductByIdAsync(string id, string respGroup = null);
 
         /// <summary>
         /// Gets product by id.
@@ -1265,8 +1265,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="id">Item id.</param>
         /// <param name="respGroup">Response group. (optional)</param>
-        /// <returns>Task of ApiResponse (VirtoCommerceCatalogModuleWebModelProduct)</returns>
-        System.Threading.Tasks.Task<ApiResponse<VirtoCommerceCatalogModuleWebModelProduct>> CatalogModuleProductsGetProductByIdAsyncWithHttpInfo(string id, string respGroup = null);
+        /// <returns>Task of ApiResponse (Product)</returns>
+        System.Threading.Tasks.Task<ApiResponse<Product>> CatalogModuleProductsGetProductByIdAsyncWithHttpInfo(string id, string respGroup = null);
         /// <summary>
         /// Gets products by ids
         /// </summary>
@@ -1276,8 +1276,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="ids">Item ids</param>
         /// <param name="respGroup">Response group. (optional)</param>
-        /// <returns>Task of List&lt;VirtoCommerceCatalogModuleWebModelProduct&gt;</returns>
-        System.Threading.Tasks.Task<List<VirtoCommerceCatalogModuleWebModelProduct>> CatalogModuleProductsGetProductByIdsAsync(List<string> ids, string respGroup = null);
+        /// <returns>Task of List&lt;Product&gt;</returns>
+        System.Threading.Tasks.Task<List<Product>> CatalogModuleProductsGetProductByIdsAsync(List<string> ids, string respGroup = null);
 
         /// <summary>
         /// Gets products by ids
@@ -1288,8 +1288,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="ids">Item ids</param>
         /// <param name="respGroup">Response group. (optional)</param>
-        /// <returns>Task of ApiResponse (List&lt;VirtoCommerceCatalogModuleWebModelProduct&gt;)</returns>
-        System.Threading.Tasks.Task<ApiResponse<List<VirtoCommerceCatalogModuleWebModelProduct>>> CatalogModuleProductsGetProductByIdsAsyncWithHttpInfo(List<string> ids, string respGroup = null);
+        /// <returns>Task of ApiResponse (List&lt;Product&gt;)</returns>
+        System.Threading.Tasks.Task<ApiResponse<List<Product>>> CatalogModuleProductsGetProductByIdsAsyncWithHttpInfo(List<string> ids, string respGroup = null);
         /// <summary>
         /// Updates the specified product.
         /// </summary>
@@ -1299,7 +1299,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="product">The product.</param>
         /// <returns>Task of void</returns>
-        System.Threading.Tasks.Task CatalogModuleProductsUpdateAsync(VirtoCommerceCatalogModuleWebModelProduct product);
+        System.Threading.Tasks.Task CatalogModuleProductsUpdateAsync(Product product);
 
         /// <summary>
         /// Updates the specified product.
@@ -1310,7 +1310,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="product">The product.</param>
         /// <returns>Task of ApiResponse</returns>
-        System.Threading.Tasks.Task<ApiResponse<object>> CatalogModuleProductsUpdateAsyncWithHttpInfo(VirtoCommerceCatalogModuleWebModelProduct product);
+        System.Threading.Tasks.Task<ApiResponse<object>> CatalogModuleProductsUpdateAsyncWithHttpInfo(Product product);
         /// <summary>
         /// Creates or updates the specified property.
         /// </summary>
@@ -1320,7 +1320,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="property">The property.</param>
         /// <returns>Task of void</returns>
-        System.Threading.Tasks.Task CatalogModulePropertiesCreateOrUpdatePropertyAsync(VirtoCommerceCatalogModuleWebModelProperty property);
+        System.Threading.Tasks.Task CatalogModulePropertiesCreateOrUpdatePropertyAsync(Property property);
 
         /// <summary>
         /// Creates or updates the specified property.
@@ -1331,7 +1331,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="property">The property.</param>
         /// <returns>Task of ApiResponse</returns>
-        System.Threading.Tasks.Task<ApiResponse<object>> CatalogModulePropertiesCreateOrUpdatePropertyAsyncWithHttpInfo(VirtoCommerceCatalogModuleWebModelProperty property);
+        System.Threading.Tasks.Task<ApiResponse<object>> CatalogModulePropertiesCreateOrUpdatePropertyAsyncWithHttpInfo(Property property);
         /// <summary>
         /// Deletes property by id.
         /// </summary>
@@ -1361,8 +1361,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="propertyId">The property id.</param>
-        /// <returns>Task of VirtoCommerceCatalogModuleWebModelProperty</returns>
-        System.Threading.Tasks.Task<VirtoCommerceCatalogModuleWebModelProperty> CatalogModulePropertiesGetAsync(string propertyId);
+        /// <returns>Task of Property</returns>
+        System.Threading.Tasks.Task<Property> CatalogModulePropertiesGetAsync(string propertyId);
 
         /// <summary>
         /// Gets property metainformation by id.
@@ -1372,8 +1372,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="propertyId">The property id.</param>
-        /// <returns>Task of ApiResponse (VirtoCommerceCatalogModuleWebModelProperty)</returns>
-        System.Threading.Tasks.Task<ApiResponse<VirtoCommerceCatalogModuleWebModelProperty>> CatalogModulePropertiesGetAsyncWithHttpInfo(string propertyId);
+        /// <returns>Task of ApiResponse (Property)</returns>
+        System.Threading.Tasks.Task<ApiResponse<Property>> CatalogModulePropertiesGetAsyncWithHttpInfo(string propertyId);
         /// <summary>
         /// Gets the template for a new catalog property.
         /// </summary>
@@ -1382,8 +1382,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalogId">The catalog id.</param>
-        /// <returns>Task of VirtoCommerceCatalogModuleWebModelProperty</returns>
-        System.Threading.Tasks.Task<VirtoCommerceCatalogModuleWebModelProperty> CatalogModulePropertiesGetNewCatalogPropertyAsync(string catalogId);
+        /// <returns>Task of Property</returns>
+        System.Threading.Tasks.Task<Property> CatalogModulePropertiesGetNewCatalogPropertyAsync(string catalogId);
 
         /// <summary>
         /// Gets the template for a new catalog property.
@@ -1393,8 +1393,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalogId">The catalog id.</param>
-        /// <returns>Task of ApiResponse (VirtoCommerceCatalogModuleWebModelProperty)</returns>
-        System.Threading.Tasks.Task<ApiResponse<VirtoCommerceCatalogModuleWebModelProperty>> CatalogModulePropertiesGetNewCatalogPropertyAsyncWithHttpInfo(string catalogId);
+        /// <returns>Task of ApiResponse (Property)</returns>
+        System.Threading.Tasks.Task<ApiResponse<Property>> CatalogModulePropertiesGetNewCatalogPropertyAsyncWithHttpInfo(string catalogId);
         /// <summary>
         /// Gets the template for a new category property.
         /// </summary>
@@ -1403,8 +1403,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="categoryId">The category id.</param>
-        /// <returns>Task of VirtoCommerceCatalogModuleWebModelProperty</returns>
-        System.Threading.Tasks.Task<VirtoCommerceCatalogModuleWebModelProperty> CatalogModulePropertiesGetNewCategoryPropertyAsync(string categoryId);
+        /// <returns>Task of Property</returns>
+        System.Threading.Tasks.Task<Property> CatalogModulePropertiesGetNewCategoryPropertyAsync(string categoryId);
 
         /// <summary>
         /// Gets the template for a new category property.
@@ -1414,8 +1414,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="categoryId">The category id.</param>
-        /// <returns>Task of ApiResponse (VirtoCommerceCatalogModuleWebModelProperty)</returns>
-        System.Threading.Tasks.Task<ApiResponse<VirtoCommerceCatalogModuleWebModelProperty>> CatalogModulePropertiesGetNewCategoryPropertyAsyncWithHttpInfo(string categoryId);
+        /// <returns>Task of ApiResponse (Property)</returns>
+        System.Threading.Tasks.Task<ApiResponse<Property>> CatalogModulePropertiesGetNewCategoryPropertyAsyncWithHttpInfo(string categoryId);
         /// <summary>
         /// Gets all dictionary values that specified property can have.
         /// </summary>
@@ -1425,8 +1425,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="propertyId">The property id.</param>
         /// <param name="keyword">The keyword. (Optional) (optional)</param>
-        /// <returns>Task of List&lt;VirtoCommerceCatalogModuleWebModelPropertyValue&gt;</returns>
-        System.Threading.Tasks.Task<List<VirtoCommerceCatalogModuleWebModelPropertyValue>> CatalogModulePropertiesGetPropertyValuesAsync(string propertyId, string keyword = null);
+        /// <returns>Task of List&lt;PropertyValue&gt;</returns>
+        System.Threading.Tasks.Task<List<PropertyValue>> CatalogModulePropertiesGetPropertyValuesAsync(string propertyId, string keyword = null);
 
         /// <summary>
         /// Gets all dictionary values that specified property can have.
@@ -1437,8 +1437,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="propertyId">The property id.</param>
         /// <param name="keyword">The keyword. (Optional) (optional)</param>
-        /// <returns>Task of ApiResponse (List&lt;VirtoCommerceCatalogModuleWebModelPropertyValue&gt;)</returns>
-        System.Threading.Tasks.Task<ApiResponse<List<VirtoCommerceCatalogModuleWebModelPropertyValue>>> CatalogModulePropertiesGetPropertyValuesAsyncWithHttpInfo(string propertyId, string keyword = null);
+        /// <returns>Task of ApiResponse (List&lt;PropertyValue&gt;)</returns>
+        System.Threading.Tasks.Task<ApiResponse<List<PropertyValue>>> CatalogModulePropertiesGetPropertyValuesAsyncWithHttpInfo(string propertyId, string keyword = null);
         /// <summary>
         /// Searches for the items by complex criteria
         /// </summary>
@@ -1447,8 +1447,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="criteria">The search criteria.</param>
-        /// <returns>Task of VirtoCommerceCatalogModuleWebModelCatalogSearchResult</returns>
-        System.Threading.Tasks.Task<VirtoCommerceCatalogModuleWebModelCatalogSearchResult> CatalogModuleSearchSearchAsync(VirtoCommerceDomainCatalogModelSearchCriteria criteria);
+        /// <returns>Task of CatalogSearchResult</returns>
+        System.Threading.Tasks.Task<CatalogSearchResult> CatalogModuleSearchSearchAsync(SearchCriteria criteria);
 
         /// <summary>
         /// Searches for the items by complex criteria
@@ -1458,8 +1458,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </remarks>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="criteria">The search criteria.</param>
-        /// <returns>Task of ApiResponse (VirtoCommerceCatalogModuleWebModelCatalogSearchResult)</returns>
-        System.Threading.Tasks.Task<ApiResponse<VirtoCommerceCatalogModuleWebModelCatalogSearchResult>> CatalogModuleSearchSearchAsyncWithHttpInfo(VirtoCommerceDomainCatalogModelSearchCriteria criteria);
+        /// <returns>Task of ApiResponse (CatalogSearchResult)</returns>
+        System.Threading.Tasks.Task<ApiResponse<CatalogSearchResult>> CatalogModuleSearchSearchAsyncWithHttpInfo(SearchCriteria criteria);
         #endregion Asynchronous Operations
     }
 
@@ -1506,10 +1506,10 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalog">The catalog to create</param>
-        /// <returns>VirtoCommerceCatalogModuleWebModelCatalog</returns>
-        public VirtoCommerceCatalogModuleWebModelCatalog CatalogModuleCatalogsCreate(VirtoCommerceCatalogModuleWebModelCatalog catalog)
+        /// <returns>Catalog</returns>
+        public Catalog CatalogModuleCatalogsCreate(Catalog catalog)
         {
-             ApiResponse<VirtoCommerceCatalogModuleWebModelCatalog> localVarResponse = CatalogModuleCatalogsCreateWithHttpInfo(catalog);
+             ApiResponse<Catalog> localVarResponse = CatalogModuleCatalogsCreateWithHttpInfo(catalog);
              return localVarResponse.Data;
         }
 
@@ -1518,8 +1518,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalog">The catalog to create</param>
-        /// <returns>ApiResponse of VirtoCommerceCatalogModuleWebModelCatalog</returns>
-        public ApiResponse<VirtoCommerceCatalogModuleWebModelCatalog> CatalogModuleCatalogsCreateWithHttpInfo(VirtoCommerceCatalogModuleWebModelCatalog catalog)
+        /// <returns>ApiResponse of Catalog</returns>
+        public ApiResponse<Catalog> CatalogModuleCatalogsCreateWithHttpInfo(Catalog catalog)
         {
             // verify the required parameter 'catalog' is set
             if (catalog == null)
@@ -1579,9 +1579,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModuleCatalogsCreate: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<VirtoCommerceCatalogModuleWebModelCatalog>(localVarStatusCode,
+            return new ApiResponse<Catalog>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (VirtoCommerceCatalogModuleWebModelCatalog)ApiClient.Deserialize(localVarResponse, typeof(VirtoCommerceCatalogModuleWebModelCatalog)));
+                (Catalog)ApiClient.Deserialize(localVarResponse, typeof(Catalog)));
             
         }
 
@@ -1590,10 +1590,10 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalog">The catalog to create</param>
-        /// <returns>Task of VirtoCommerceCatalogModuleWebModelCatalog</returns>
-        public async System.Threading.Tasks.Task<VirtoCommerceCatalogModuleWebModelCatalog> CatalogModuleCatalogsCreateAsync(VirtoCommerceCatalogModuleWebModelCatalog catalog)
+        /// <returns>Task of Catalog</returns>
+        public async System.Threading.Tasks.Task<Catalog> CatalogModuleCatalogsCreateAsync(Catalog catalog)
         {
-             ApiResponse<VirtoCommerceCatalogModuleWebModelCatalog> localVarResponse = await CatalogModuleCatalogsCreateAsyncWithHttpInfo(catalog);
+             ApiResponse<Catalog> localVarResponse = await CatalogModuleCatalogsCreateAsyncWithHttpInfo(catalog);
              return localVarResponse.Data;
 
         }
@@ -1603,8 +1603,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalog">The catalog to create</param>
-        /// <returns>Task of ApiResponse (VirtoCommerceCatalogModuleWebModelCatalog)</returns>
-        public async System.Threading.Tasks.Task<ApiResponse<VirtoCommerceCatalogModuleWebModelCatalog>> CatalogModuleCatalogsCreateAsyncWithHttpInfo(VirtoCommerceCatalogModuleWebModelCatalog catalog)
+        /// <returns>Task of ApiResponse (Catalog)</returns>
+        public async System.Threading.Tasks.Task<ApiResponse<Catalog>> CatalogModuleCatalogsCreateAsyncWithHttpInfo(Catalog catalog)
         {
             // verify the required parameter 'catalog' is set
             if (catalog == null)
@@ -1664,9 +1664,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModuleCatalogsCreate: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<VirtoCommerceCatalogModuleWebModelCatalog>(localVarStatusCode,
+            return new ApiResponse<Catalog>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (VirtoCommerceCatalogModuleWebModelCatalog)ApiClient.Deserialize(localVarResponse, typeof(VirtoCommerceCatalogModuleWebModelCatalog)));
+                (Catalog)ApiClient.Deserialize(localVarResponse, typeof(Catalog)));
             
         }
         /// <summary>
@@ -1808,10 +1808,10 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="id">The Catalog id.</param>
-        /// <returns>VirtoCommerceCatalogModuleWebModelCatalog</returns>
-        public VirtoCommerceCatalogModuleWebModelCatalog CatalogModuleCatalogsGet(string id)
+        /// <returns>Catalog</returns>
+        public Catalog CatalogModuleCatalogsGet(string id)
         {
-             ApiResponse<VirtoCommerceCatalogModuleWebModelCatalog> localVarResponse = CatalogModuleCatalogsGetWithHttpInfo(id);
+             ApiResponse<Catalog> localVarResponse = CatalogModuleCatalogsGetWithHttpInfo(id);
              return localVarResponse.Data;
         }
 
@@ -1820,8 +1820,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="id">The Catalog id.</param>
-        /// <returns>ApiResponse of VirtoCommerceCatalogModuleWebModelCatalog</returns>
-        public ApiResponse<VirtoCommerceCatalogModuleWebModelCatalog> CatalogModuleCatalogsGetWithHttpInfo(string id)
+        /// <returns>ApiResponse of Catalog</returns>
+        public ApiResponse<Catalog> CatalogModuleCatalogsGetWithHttpInfo(string id)
         {
             // verify the required parameter 'id' is set
             if (id == null)
@@ -1869,9 +1869,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModuleCatalogsGet: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<VirtoCommerceCatalogModuleWebModelCatalog>(localVarStatusCode,
+            return new ApiResponse<Catalog>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (VirtoCommerceCatalogModuleWebModelCatalog)ApiClient.Deserialize(localVarResponse, typeof(VirtoCommerceCatalogModuleWebModelCatalog)));
+                (Catalog)ApiClient.Deserialize(localVarResponse, typeof(Catalog)));
             
         }
 
@@ -1880,10 +1880,10 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="id">The Catalog id.</param>
-        /// <returns>Task of VirtoCommerceCatalogModuleWebModelCatalog</returns>
-        public async System.Threading.Tasks.Task<VirtoCommerceCatalogModuleWebModelCatalog> CatalogModuleCatalogsGetAsync(string id)
+        /// <returns>Task of Catalog</returns>
+        public async System.Threading.Tasks.Task<Catalog> CatalogModuleCatalogsGetAsync(string id)
         {
-             ApiResponse<VirtoCommerceCatalogModuleWebModelCatalog> localVarResponse = await CatalogModuleCatalogsGetAsyncWithHttpInfo(id);
+             ApiResponse<Catalog> localVarResponse = await CatalogModuleCatalogsGetAsyncWithHttpInfo(id);
              return localVarResponse.Data;
 
         }
@@ -1893,8 +1893,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="id">The Catalog id.</param>
-        /// <returns>Task of ApiResponse (VirtoCommerceCatalogModuleWebModelCatalog)</returns>
-        public async System.Threading.Tasks.Task<ApiResponse<VirtoCommerceCatalogModuleWebModelCatalog>> CatalogModuleCatalogsGetAsyncWithHttpInfo(string id)
+        /// <returns>Task of ApiResponse (Catalog)</returns>
+        public async System.Threading.Tasks.Task<ApiResponse<Catalog>> CatalogModuleCatalogsGetAsyncWithHttpInfo(string id)
         {
             // verify the required parameter 'id' is set
             if (id == null)
@@ -1942,19 +1942,19 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModuleCatalogsGet: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<VirtoCommerceCatalogModuleWebModelCatalog>(localVarStatusCode,
+            return new ApiResponse<Catalog>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (VirtoCommerceCatalogModuleWebModelCatalog)ApiClient.Deserialize(localVarResponse, typeof(VirtoCommerceCatalogModuleWebModelCatalog)));
+                (Catalog)ApiClient.Deserialize(localVarResponse, typeof(Catalog)));
             
         }
         /// <summary>
         /// Get Catalogs list Get common and virtual Catalogs list with minimal information included. Returns array of Catalog
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <returns>List&lt;VirtoCommerceCatalogModuleWebModelCatalog&gt;</returns>
-        public List<VirtoCommerceCatalogModuleWebModelCatalog> CatalogModuleCatalogsGetCatalogs()
+        /// <returns>List&lt;Catalog&gt;</returns>
+        public List<Catalog> CatalogModuleCatalogsGetCatalogs()
         {
-             ApiResponse<List<VirtoCommerceCatalogModuleWebModelCatalog>> localVarResponse = CatalogModuleCatalogsGetCatalogsWithHttpInfo();
+             ApiResponse<List<Catalog>> localVarResponse = CatalogModuleCatalogsGetCatalogsWithHttpInfo();
              return localVarResponse.Data;
         }
 
@@ -1962,8 +1962,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// Get Catalogs list Get common and virtual Catalogs list with minimal information included. Returns array of Catalog
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <returns>ApiResponse of List&lt;VirtoCommerceCatalogModuleWebModelCatalog&gt;</returns>
-        public ApiResponse<List<VirtoCommerceCatalogModuleWebModelCatalog>> CatalogModuleCatalogsGetCatalogsWithHttpInfo()
+        /// <returns>ApiResponse of List&lt;Catalog&gt;</returns>
+        public ApiResponse<List<Catalog>> CatalogModuleCatalogsGetCatalogsWithHttpInfo()
         {
 
             var localVarPath = "/api/catalog/catalogs";
@@ -2007,9 +2007,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModuleCatalogsGetCatalogs: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<List<VirtoCommerceCatalogModuleWebModelCatalog>>(localVarStatusCode,
+            return new ApiResponse<List<Catalog>>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (List<VirtoCommerceCatalogModuleWebModelCatalog>)ApiClient.Deserialize(localVarResponse, typeof(List<VirtoCommerceCatalogModuleWebModelCatalog>)));
+                (List<Catalog>)ApiClient.Deserialize(localVarResponse, typeof(List<Catalog>)));
             
         }
 
@@ -2017,10 +2017,10 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// Get Catalogs list Get common and virtual Catalogs list with minimal information included. Returns array of Catalog
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <returns>Task of List&lt;VirtoCommerceCatalogModuleWebModelCatalog&gt;</returns>
-        public async System.Threading.Tasks.Task<List<VirtoCommerceCatalogModuleWebModelCatalog>> CatalogModuleCatalogsGetCatalogsAsync()
+        /// <returns>Task of List&lt;Catalog&gt;</returns>
+        public async System.Threading.Tasks.Task<List<Catalog>> CatalogModuleCatalogsGetCatalogsAsync()
         {
-             ApiResponse<List<VirtoCommerceCatalogModuleWebModelCatalog>> localVarResponse = await CatalogModuleCatalogsGetCatalogsAsyncWithHttpInfo();
+             ApiResponse<List<Catalog>> localVarResponse = await CatalogModuleCatalogsGetCatalogsAsyncWithHttpInfo();
              return localVarResponse.Data;
 
         }
@@ -2029,8 +2029,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// Get Catalogs list Get common and virtual Catalogs list with minimal information included. Returns array of Catalog
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <returns>Task of ApiResponse (List&lt;VirtoCommerceCatalogModuleWebModelCatalog&gt;)</returns>
-        public async System.Threading.Tasks.Task<ApiResponse<List<VirtoCommerceCatalogModuleWebModelCatalog>>> CatalogModuleCatalogsGetCatalogsAsyncWithHttpInfo()
+        /// <returns>Task of ApiResponse (List&lt;Catalog&gt;)</returns>
+        public async System.Threading.Tasks.Task<ApiResponse<List<Catalog>>> CatalogModuleCatalogsGetCatalogsAsyncWithHttpInfo()
         {
 
             var localVarPath = "/api/catalog/catalogs";
@@ -2074,19 +2074,19 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModuleCatalogsGetCatalogs: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<List<VirtoCommerceCatalogModuleWebModelCatalog>>(localVarStatusCode,
+            return new ApiResponse<List<Catalog>>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (List<VirtoCommerceCatalogModuleWebModelCatalog>)ApiClient.Deserialize(localVarResponse, typeof(List<VirtoCommerceCatalogModuleWebModelCatalog>)));
+                (List<Catalog>)ApiClient.Deserialize(localVarResponse, typeof(List<Catalog>)));
             
         }
         /// <summary>
         /// Gets the template for a new catalog. Gets the template for a new common catalog
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <returns>VirtoCommerceCatalogModuleWebModelCatalog</returns>
-        public VirtoCommerceCatalogModuleWebModelCatalog CatalogModuleCatalogsGetNewCatalog()
+        /// <returns>Catalog</returns>
+        public Catalog CatalogModuleCatalogsGetNewCatalog()
         {
-             ApiResponse<VirtoCommerceCatalogModuleWebModelCatalog> localVarResponse = CatalogModuleCatalogsGetNewCatalogWithHttpInfo();
+             ApiResponse<Catalog> localVarResponse = CatalogModuleCatalogsGetNewCatalogWithHttpInfo();
              return localVarResponse.Data;
         }
 
@@ -2094,8 +2094,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// Gets the template for a new catalog. Gets the template for a new common catalog
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <returns>ApiResponse of VirtoCommerceCatalogModuleWebModelCatalog</returns>
-        public ApiResponse<VirtoCommerceCatalogModuleWebModelCatalog> CatalogModuleCatalogsGetNewCatalogWithHttpInfo()
+        /// <returns>ApiResponse of Catalog</returns>
+        public ApiResponse<Catalog> CatalogModuleCatalogsGetNewCatalogWithHttpInfo()
         {
 
             var localVarPath = "/api/catalog/catalogs/getnew";
@@ -2139,9 +2139,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModuleCatalogsGetNewCatalog: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<VirtoCommerceCatalogModuleWebModelCatalog>(localVarStatusCode,
+            return new ApiResponse<Catalog>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (VirtoCommerceCatalogModuleWebModelCatalog)ApiClient.Deserialize(localVarResponse, typeof(VirtoCommerceCatalogModuleWebModelCatalog)));
+                (Catalog)ApiClient.Deserialize(localVarResponse, typeof(Catalog)));
             
         }
 
@@ -2149,10 +2149,10 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// Gets the template for a new catalog. Gets the template for a new common catalog
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <returns>Task of VirtoCommerceCatalogModuleWebModelCatalog</returns>
-        public async System.Threading.Tasks.Task<VirtoCommerceCatalogModuleWebModelCatalog> CatalogModuleCatalogsGetNewCatalogAsync()
+        /// <returns>Task of Catalog</returns>
+        public async System.Threading.Tasks.Task<Catalog> CatalogModuleCatalogsGetNewCatalogAsync()
         {
-             ApiResponse<VirtoCommerceCatalogModuleWebModelCatalog> localVarResponse = await CatalogModuleCatalogsGetNewCatalogAsyncWithHttpInfo();
+             ApiResponse<Catalog> localVarResponse = await CatalogModuleCatalogsGetNewCatalogAsyncWithHttpInfo();
              return localVarResponse.Data;
 
         }
@@ -2161,8 +2161,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// Gets the template for a new catalog. Gets the template for a new common catalog
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <returns>Task of ApiResponse (VirtoCommerceCatalogModuleWebModelCatalog)</returns>
-        public async System.Threading.Tasks.Task<ApiResponse<VirtoCommerceCatalogModuleWebModelCatalog>> CatalogModuleCatalogsGetNewCatalogAsyncWithHttpInfo()
+        /// <returns>Task of ApiResponse (Catalog)</returns>
+        public async System.Threading.Tasks.Task<ApiResponse<Catalog>> CatalogModuleCatalogsGetNewCatalogAsyncWithHttpInfo()
         {
 
             var localVarPath = "/api/catalog/catalogs/getnew";
@@ -2206,19 +2206,19 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModuleCatalogsGetNewCatalog: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<VirtoCommerceCatalogModuleWebModelCatalog>(localVarStatusCode,
+            return new ApiResponse<Catalog>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (VirtoCommerceCatalogModuleWebModelCatalog)ApiClient.Deserialize(localVarResponse, typeof(VirtoCommerceCatalogModuleWebModelCatalog)));
+                (Catalog)ApiClient.Deserialize(localVarResponse, typeof(Catalog)));
             
         }
         /// <summary>
         /// Gets the template for a new virtual catalog. 
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <returns>VirtoCommerceCatalogModuleWebModelCatalog</returns>
-        public VirtoCommerceCatalogModuleWebModelCatalog CatalogModuleCatalogsGetNewVirtualCatalog()
+        /// <returns>Catalog</returns>
+        public Catalog CatalogModuleCatalogsGetNewVirtualCatalog()
         {
-             ApiResponse<VirtoCommerceCatalogModuleWebModelCatalog> localVarResponse = CatalogModuleCatalogsGetNewVirtualCatalogWithHttpInfo();
+             ApiResponse<Catalog> localVarResponse = CatalogModuleCatalogsGetNewVirtualCatalogWithHttpInfo();
              return localVarResponse.Data;
         }
 
@@ -2226,8 +2226,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// Gets the template for a new virtual catalog. 
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <returns>ApiResponse of VirtoCommerceCatalogModuleWebModelCatalog</returns>
-        public ApiResponse<VirtoCommerceCatalogModuleWebModelCatalog> CatalogModuleCatalogsGetNewVirtualCatalogWithHttpInfo()
+        /// <returns>ApiResponse of Catalog</returns>
+        public ApiResponse<Catalog> CatalogModuleCatalogsGetNewVirtualCatalogWithHttpInfo()
         {
 
             var localVarPath = "/api/catalog/catalogs/getnewvirtual";
@@ -2271,9 +2271,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModuleCatalogsGetNewVirtualCatalog: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<VirtoCommerceCatalogModuleWebModelCatalog>(localVarStatusCode,
+            return new ApiResponse<Catalog>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (VirtoCommerceCatalogModuleWebModelCatalog)ApiClient.Deserialize(localVarResponse, typeof(VirtoCommerceCatalogModuleWebModelCatalog)));
+                (Catalog)ApiClient.Deserialize(localVarResponse, typeof(Catalog)));
             
         }
 
@@ -2281,10 +2281,10 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// Gets the template for a new virtual catalog. 
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <returns>Task of VirtoCommerceCatalogModuleWebModelCatalog</returns>
-        public async System.Threading.Tasks.Task<VirtoCommerceCatalogModuleWebModelCatalog> CatalogModuleCatalogsGetNewVirtualCatalogAsync()
+        /// <returns>Task of Catalog</returns>
+        public async System.Threading.Tasks.Task<Catalog> CatalogModuleCatalogsGetNewVirtualCatalogAsync()
         {
-             ApiResponse<VirtoCommerceCatalogModuleWebModelCatalog> localVarResponse = await CatalogModuleCatalogsGetNewVirtualCatalogAsyncWithHttpInfo();
+             ApiResponse<Catalog> localVarResponse = await CatalogModuleCatalogsGetNewVirtualCatalogAsyncWithHttpInfo();
              return localVarResponse.Data;
 
         }
@@ -2293,8 +2293,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// Gets the template for a new virtual catalog. 
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <returns>Task of ApiResponse (VirtoCommerceCatalogModuleWebModelCatalog)</returns>
-        public async System.Threading.Tasks.Task<ApiResponse<VirtoCommerceCatalogModuleWebModelCatalog>> CatalogModuleCatalogsGetNewVirtualCatalogAsyncWithHttpInfo()
+        /// <returns>Task of ApiResponse (Catalog)</returns>
+        public async System.Threading.Tasks.Task<ApiResponse<Catalog>> CatalogModuleCatalogsGetNewVirtualCatalogAsyncWithHttpInfo()
         {
 
             var localVarPath = "/api/catalog/catalogs/getnewvirtual";
@@ -2338,9 +2338,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModuleCatalogsGetNewVirtualCatalog: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<VirtoCommerceCatalogModuleWebModelCatalog>(localVarStatusCode,
+            return new ApiResponse<Catalog>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (VirtoCommerceCatalogModuleWebModelCatalog)ApiClient.Deserialize(localVarResponse, typeof(VirtoCommerceCatalogModuleWebModelCatalog)));
+                (Catalog)ApiClient.Deserialize(localVarResponse, typeof(Catalog)));
             
         }
         /// <summary>
@@ -2349,7 +2349,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalog">The catalog.</param>
         /// <returns></returns>
-        public void CatalogModuleCatalogsUpdate(VirtoCommerceCatalogModuleWebModelCatalog catalog)
+        public void CatalogModuleCatalogsUpdate(Catalog catalog)
         {
              CatalogModuleCatalogsUpdateWithHttpInfo(catalog);
         }
@@ -2360,7 +2360,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalog">The catalog.</param>
         /// <returns>ApiResponse of Object(void)</returns>
-        public ApiResponse<object> CatalogModuleCatalogsUpdateWithHttpInfo(VirtoCommerceCatalogModuleWebModelCatalog catalog)
+        public ApiResponse<object> CatalogModuleCatalogsUpdateWithHttpInfo(Catalog catalog)
         {
             // verify the required parameter 'catalog' is set
             if (catalog == null)
@@ -2428,7 +2428,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalog">The catalog.</param>
         /// <returns>Task of void</returns>
-        public async System.Threading.Tasks.Task CatalogModuleCatalogsUpdateAsync(VirtoCommerceCatalogModuleWebModelCatalog catalog)
+        public async System.Threading.Tasks.Task CatalogModuleCatalogsUpdateAsync(Catalog catalog)
         {
              await CatalogModuleCatalogsUpdateAsyncWithHttpInfo(catalog);
 
@@ -2440,7 +2440,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalog">The catalog.</param>
         /// <returns>Task of ApiResponse</returns>
-        public async System.Threading.Tasks.Task<ApiResponse<object>> CatalogModuleCatalogsUpdateAsyncWithHttpInfo(VirtoCommerceCatalogModuleWebModelCatalog catalog)
+        public async System.Threading.Tasks.Task<ApiResponse<object>> CatalogModuleCatalogsUpdateAsyncWithHttpInfo(Catalog catalog)
         {
             // verify the required parameter 'catalog' is set
             if (catalog == null)
@@ -2507,7 +2507,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="category">The category.</param>
         /// <returns></returns>
-        public void CatalogModuleCategoriesCreateOrUpdateCategory(VirtoCommerceCatalogModuleWebModelCategory category)
+        public void CatalogModuleCategoriesCreateOrUpdateCategory(Category category)
         {
              CatalogModuleCategoriesCreateOrUpdateCategoryWithHttpInfo(category);
         }
@@ -2518,7 +2518,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="category">The category.</param>
         /// <returns>ApiResponse of Object(void)</returns>
-        public ApiResponse<object> CatalogModuleCategoriesCreateOrUpdateCategoryWithHttpInfo(VirtoCommerceCatalogModuleWebModelCategory category)
+        public ApiResponse<object> CatalogModuleCategoriesCreateOrUpdateCategoryWithHttpInfo(Category category)
         {
             // verify the required parameter 'category' is set
             if (category == null)
@@ -2586,7 +2586,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="category">The category.</param>
         /// <returns>Task of void</returns>
-        public async System.Threading.Tasks.Task CatalogModuleCategoriesCreateOrUpdateCategoryAsync(VirtoCommerceCatalogModuleWebModelCategory category)
+        public async System.Threading.Tasks.Task CatalogModuleCategoriesCreateOrUpdateCategoryAsync(Category category)
         {
              await CatalogModuleCategoriesCreateOrUpdateCategoryAsyncWithHttpInfo(category);
 
@@ -2598,7 +2598,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="category">The category.</param>
         /// <returns>Task of ApiResponse</returns>
-        public async System.Threading.Tasks.Task<ApiResponse<object>> CatalogModuleCategoriesCreateOrUpdateCategoryAsyncWithHttpInfo(VirtoCommerceCatalogModuleWebModelCategory category)
+        public async System.Threading.Tasks.Task<ApiResponse<object>> CatalogModuleCategoriesCreateOrUpdateCategoryAsyncWithHttpInfo(Category category)
         {
             // verify the required parameter 'category' is set
             if (category == null)
@@ -2798,10 +2798,10 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="id">Category id.</param>
-        /// <returns>VirtoCommerceCatalogModuleWebModelCategory</returns>
-        public VirtoCommerceCatalogModuleWebModelCategory CatalogModuleCategoriesGet(string id)
+        /// <returns>Category</returns>
+        public Category CatalogModuleCategoriesGet(string id)
         {
-             ApiResponse<VirtoCommerceCatalogModuleWebModelCategory> localVarResponse = CatalogModuleCategoriesGetWithHttpInfo(id);
+             ApiResponse<Category> localVarResponse = CatalogModuleCategoriesGetWithHttpInfo(id);
              return localVarResponse.Data;
         }
 
@@ -2810,8 +2810,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="id">Category id.</param>
-        /// <returns>ApiResponse of VirtoCommerceCatalogModuleWebModelCategory</returns>
-        public ApiResponse<VirtoCommerceCatalogModuleWebModelCategory> CatalogModuleCategoriesGetWithHttpInfo(string id)
+        /// <returns>ApiResponse of Category</returns>
+        public ApiResponse<Category> CatalogModuleCategoriesGetWithHttpInfo(string id)
         {
             // verify the required parameter 'id' is set
             if (id == null)
@@ -2859,9 +2859,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModuleCategoriesGet: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<VirtoCommerceCatalogModuleWebModelCategory>(localVarStatusCode,
+            return new ApiResponse<Category>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (VirtoCommerceCatalogModuleWebModelCategory)ApiClient.Deserialize(localVarResponse, typeof(VirtoCommerceCatalogModuleWebModelCategory)));
+                (Category)ApiClient.Deserialize(localVarResponse, typeof(Category)));
             
         }
 
@@ -2870,10 +2870,10 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="id">Category id.</param>
-        /// <returns>Task of VirtoCommerceCatalogModuleWebModelCategory</returns>
-        public async System.Threading.Tasks.Task<VirtoCommerceCatalogModuleWebModelCategory> CatalogModuleCategoriesGetAsync(string id)
+        /// <returns>Task of Category</returns>
+        public async System.Threading.Tasks.Task<Category> CatalogModuleCategoriesGetAsync(string id)
         {
-             ApiResponse<VirtoCommerceCatalogModuleWebModelCategory> localVarResponse = await CatalogModuleCategoriesGetAsyncWithHttpInfo(id);
+             ApiResponse<Category> localVarResponse = await CatalogModuleCategoriesGetAsyncWithHttpInfo(id);
              return localVarResponse.Data;
 
         }
@@ -2883,8 +2883,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="id">Category id.</param>
-        /// <returns>Task of ApiResponse (VirtoCommerceCatalogModuleWebModelCategory)</returns>
-        public async System.Threading.Tasks.Task<ApiResponse<VirtoCommerceCatalogModuleWebModelCategory>> CatalogModuleCategoriesGetAsyncWithHttpInfo(string id)
+        /// <returns>Task of ApiResponse (Category)</returns>
+        public async System.Threading.Tasks.Task<ApiResponse<Category>> CatalogModuleCategoriesGetAsyncWithHttpInfo(string id)
         {
             // verify the required parameter 'id' is set
             if (id == null)
@@ -2932,9 +2932,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModuleCategoriesGet: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<VirtoCommerceCatalogModuleWebModelCategory>(localVarStatusCode,
+            return new ApiResponse<Category>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (VirtoCommerceCatalogModuleWebModelCategory)ApiClient.Deserialize(localVarResponse, typeof(VirtoCommerceCatalogModuleWebModelCategory)));
+                (Category)ApiClient.Deserialize(localVarResponse, typeof(Category)));
             
         }
         /// <summary>
@@ -2943,10 +2943,10 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="ids">Categories ids</param>
         /// <param name="respGroup">Response group. (optional)</param>
-        /// <returns>List&lt;VirtoCommerceCatalogModuleWebModelCategory&gt;</returns>
-        public List<VirtoCommerceCatalogModuleWebModelCategory> CatalogModuleCategoriesGetCategoriesByIds(List<string> ids, string respGroup = null)
+        /// <returns>List&lt;Category&gt;</returns>
+        public List<Category> CatalogModuleCategoriesGetCategoriesByIds(List<string> ids, string respGroup = null)
         {
-             ApiResponse<List<VirtoCommerceCatalogModuleWebModelCategory>> localVarResponse = CatalogModuleCategoriesGetCategoriesByIdsWithHttpInfo(ids, respGroup);
+             ApiResponse<List<Category>> localVarResponse = CatalogModuleCategoriesGetCategoriesByIdsWithHttpInfo(ids, respGroup);
              return localVarResponse.Data;
         }
 
@@ -2956,8 +2956,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="ids">Categories ids</param>
         /// <param name="respGroup">Response group. (optional)</param>
-        /// <returns>ApiResponse of List&lt;VirtoCommerceCatalogModuleWebModelCategory&gt;</returns>
-        public ApiResponse<List<VirtoCommerceCatalogModuleWebModelCategory>> CatalogModuleCategoriesGetCategoriesByIdsWithHttpInfo(List<string> ids, string respGroup = null)
+        /// <returns>ApiResponse of List&lt;Category&gt;</returns>
+        public ApiResponse<List<Category>> CatalogModuleCategoriesGetCategoriesByIdsWithHttpInfo(List<string> ids, string respGroup = null)
         {
             // verify the required parameter 'ids' is set
             if (ids == null)
@@ -3006,9 +3006,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModuleCategoriesGetCategoriesByIds: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<List<VirtoCommerceCatalogModuleWebModelCategory>>(localVarStatusCode,
+            return new ApiResponse<List<Category>>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (List<VirtoCommerceCatalogModuleWebModelCategory>)ApiClient.Deserialize(localVarResponse, typeof(List<VirtoCommerceCatalogModuleWebModelCategory>)));
+                (List<Category>)ApiClient.Deserialize(localVarResponse, typeof(List<Category>)));
             
         }
 
@@ -3018,10 +3018,10 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="ids">Categories ids</param>
         /// <param name="respGroup">Response group. (optional)</param>
-        /// <returns>Task of List&lt;VirtoCommerceCatalogModuleWebModelCategory&gt;</returns>
-        public async System.Threading.Tasks.Task<List<VirtoCommerceCatalogModuleWebModelCategory>> CatalogModuleCategoriesGetCategoriesByIdsAsync(List<string> ids, string respGroup = null)
+        /// <returns>Task of List&lt;Category&gt;</returns>
+        public async System.Threading.Tasks.Task<List<Category>> CatalogModuleCategoriesGetCategoriesByIdsAsync(List<string> ids, string respGroup = null)
         {
-             ApiResponse<List<VirtoCommerceCatalogModuleWebModelCategory>> localVarResponse = await CatalogModuleCategoriesGetCategoriesByIdsAsyncWithHttpInfo(ids, respGroup);
+             ApiResponse<List<Category>> localVarResponse = await CatalogModuleCategoriesGetCategoriesByIdsAsyncWithHttpInfo(ids, respGroup);
              return localVarResponse.Data;
 
         }
@@ -3032,8 +3032,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="ids">Categories ids</param>
         /// <param name="respGroup">Response group. (optional)</param>
-        /// <returns>Task of ApiResponse (List&lt;VirtoCommerceCatalogModuleWebModelCategory&gt;)</returns>
-        public async System.Threading.Tasks.Task<ApiResponse<List<VirtoCommerceCatalogModuleWebModelCategory>>> CatalogModuleCategoriesGetCategoriesByIdsAsyncWithHttpInfo(List<string> ids, string respGroup = null)
+        /// <returns>Task of ApiResponse (List&lt;Category&gt;)</returns>
+        public async System.Threading.Tasks.Task<ApiResponse<List<Category>>> CatalogModuleCategoriesGetCategoriesByIdsAsyncWithHttpInfo(List<string> ids, string respGroup = null)
         {
             // verify the required parameter 'ids' is set
             if (ids == null)
@@ -3082,9 +3082,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModuleCategoriesGetCategoriesByIds: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<List<VirtoCommerceCatalogModuleWebModelCategory>>(localVarStatusCode,
+            return new ApiResponse<List<Category>>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (List<VirtoCommerceCatalogModuleWebModelCategory>)ApiClient.Deserialize(localVarResponse, typeof(List<VirtoCommerceCatalogModuleWebModelCategory>)));
+                (List<Category>)ApiClient.Deserialize(localVarResponse, typeof(List<Category>)));
             
         }
         /// <summary>
@@ -3093,10 +3093,10 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalogId">The catalog id.</param>
         /// <param name="parentCategoryId">The parent category id. (Optional) (optional)</param>
-        /// <returns>VirtoCommerceCatalogModuleWebModelCategory</returns>
-        public VirtoCommerceCatalogModuleWebModelCategory CatalogModuleCategoriesGetNewCategory(string catalogId, string parentCategoryId = null)
+        /// <returns>Category</returns>
+        public Category CatalogModuleCategoriesGetNewCategory(string catalogId, string parentCategoryId = null)
         {
-             ApiResponse<VirtoCommerceCatalogModuleWebModelCategory> localVarResponse = CatalogModuleCategoriesGetNewCategoryWithHttpInfo(catalogId, parentCategoryId);
+             ApiResponse<Category> localVarResponse = CatalogModuleCategoriesGetNewCategoryWithHttpInfo(catalogId, parentCategoryId);
              return localVarResponse.Data;
         }
 
@@ -3106,8 +3106,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalogId">The catalog id.</param>
         /// <param name="parentCategoryId">The parent category id. (Optional) (optional)</param>
-        /// <returns>ApiResponse of VirtoCommerceCatalogModuleWebModelCategory</returns>
-        public ApiResponse<VirtoCommerceCatalogModuleWebModelCategory> CatalogModuleCategoriesGetNewCategoryWithHttpInfo(string catalogId, string parentCategoryId = null)
+        /// <returns>ApiResponse of Category</returns>
+        public ApiResponse<Category> CatalogModuleCategoriesGetNewCategoryWithHttpInfo(string catalogId, string parentCategoryId = null)
         {
             // verify the required parameter 'catalogId' is set
             if (catalogId == null)
@@ -3156,9 +3156,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModuleCategoriesGetNewCategory: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<VirtoCommerceCatalogModuleWebModelCategory>(localVarStatusCode,
+            return new ApiResponse<Category>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (VirtoCommerceCatalogModuleWebModelCategory)ApiClient.Deserialize(localVarResponse, typeof(VirtoCommerceCatalogModuleWebModelCategory)));
+                (Category)ApiClient.Deserialize(localVarResponse, typeof(Category)));
             
         }
 
@@ -3168,10 +3168,10 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalogId">The catalog id.</param>
         /// <param name="parentCategoryId">The parent category id. (Optional) (optional)</param>
-        /// <returns>Task of VirtoCommerceCatalogModuleWebModelCategory</returns>
-        public async System.Threading.Tasks.Task<VirtoCommerceCatalogModuleWebModelCategory> CatalogModuleCategoriesGetNewCategoryAsync(string catalogId, string parentCategoryId = null)
+        /// <returns>Task of Category</returns>
+        public async System.Threading.Tasks.Task<Category> CatalogModuleCategoriesGetNewCategoryAsync(string catalogId, string parentCategoryId = null)
         {
-             ApiResponse<VirtoCommerceCatalogModuleWebModelCategory> localVarResponse = await CatalogModuleCategoriesGetNewCategoryAsyncWithHttpInfo(catalogId, parentCategoryId);
+             ApiResponse<Category> localVarResponse = await CatalogModuleCategoriesGetNewCategoryAsyncWithHttpInfo(catalogId, parentCategoryId);
              return localVarResponse.Data;
 
         }
@@ -3182,8 +3182,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalogId">The catalog id.</param>
         /// <param name="parentCategoryId">The parent category id. (Optional) (optional)</param>
-        /// <returns>Task of ApiResponse (VirtoCommerceCatalogModuleWebModelCategory)</returns>
-        public async System.Threading.Tasks.Task<ApiResponse<VirtoCommerceCatalogModuleWebModelCategory>> CatalogModuleCategoriesGetNewCategoryAsyncWithHttpInfo(string catalogId, string parentCategoryId = null)
+        /// <returns>Task of ApiResponse (Category)</returns>
+        public async System.Threading.Tasks.Task<ApiResponse<Category>> CatalogModuleCategoriesGetNewCategoryAsyncWithHttpInfo(string catalogId, string parentCategoryId = null)
         {
             // verify the required parameter 'catalogId' is set
             if (catalogId == null)
@@ -3232,9 +3232,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModuleCategoriesGetNewCategory: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<VirtoCommerceCatalogModuleWebModelCategory>(localVarStatusCode,
+            return new ApiResponse<Category>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (VirtoCommerceCatalogModuleWebModelCategory)ApiClient.Deserialize(localVarResponse, typeof(VirtoCommerceCatalogModuleWebModelCategory)));
+                (Category)ApiClient.Deserialize(localVarResponse, typeof(Category)));
             
         }
         /// <summary>
@@ -3242,10 +3242,10 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="exportInfo">The export configuration.</param>
-        /// <returns>VirtoCommerceCatalogModuleWebModelPushNotificationsExportNotification</returns>
-        public VirtoCommerceCatalogModuleWebModelPushNotificationsExportNotification CatalogModuleExportImportDoExport(VirtoCommerceCatalogModuleWebExportImportCsvExportInfo exportInfo)
+        /// <returns>ExportNotification</returns>
+        public ExportNotification CatalogModuleExportImportDoExport(CsvExportInfo exportInfo)
         {
-             ApiResponse<VirtoCommerceCatalogModuleWebModelPushNotificationsExportNotification> localVarResponse = CatalogModuleExportImportDoExportWithHttpInfo(exportInfo);
+             ApiResponse<ExportNotification> localVarResponse = CatalogModuleExportImportDoExportWithHttpInfo(exportInfo);
              return localVarResponse.Data;
         }
 
@@ -3254,8 +3254,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="exportInfo">The export configuration.</param>
-        /// <returns>ApiResponse of VirtoCommerceCatalogModuleWebModelPushNotificationsExportNotification</returns>
-        public ApiResponse<VirtoCommerceCatalogModuleWebModelPushNotificationsExportNotification> CatalogModuleExportImportDoExportWithHttpInfo(VirtoCommerceCatalogModuleWebExportImportCsvExportInfo exportInfo)
+        /// <returns>ApiResponse of ExportNotification</returns>
+        public ApiResponse<ExportNotification> CatalogModuleExportImportDoExportWithHttpInfo(CsvExportInfo exportInfo)
         {
             // verify the required parameter 'exportInfo' is set
             if (exportInfo == null)
@@ -3313,9 +3313,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModuleExportImportDoExport: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<VirtoCommerceCatalogModuleWebModelPushNotificationsExportNotification>(localVarStatusCode,
+            return new ApiResponse<ExportNotification>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (VirtoCommerceCatalogModuleWebModelPushNotificationsExportNotification)ApiClient.Deserialize(localVarResponse, typeof(VirtoCommerceCatalogModuleWebModelPushNotificationsExportNotification)));
+                (ExportNotification)ApiClient.Deserialize(localVarResponse, typeof(ExportNotification)));
             
         }
 
@@ -3324,10 +3324,10 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="exportInfo">The export configuration.</param>
-        /// <returns>Task of VirtoCommerceCatalogModuleWebModelPushNotificationsExportNotification</returns>
-        public async System.Threading.Tasks.Task<VirtoCommerceCatalogModuleWebModelPushNotificationsExportNotification> CatalogModuleExportImportDoExportAsync(VirtoCommerceCatalogModuleWebExportImportCsvExportInfo exportInfo)
+        /// <returns>Task of ExportNotification</returns>
+        public async System.Threading.Tasks.Task<ExportNotification> CatalogModuleExportImportDoExportAsync(CsvExportInfo exportInfo)
         {
-             ApiResponse<VirtoCommerceCatalogModuleWebModelPushNotificationsExportNotification> localVarResponse = await CatalogModuleExportImportDoExportAsyncWithHttpInfo(exportInfo);
+             ApiResponse<ExportNotification> localVarResponse = await CatalogModuleExportImportDoExportAsyncWithHttpInfo(exportInfo);
              return localVarResponse.Data;
 
         }
@@ -3337,8 +3337,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="exportInfo">The export configuration.</param>
-        /// <returns>Task of ApiResponse (VirtoCommerceCatalogModuleWebModelPushNotificationsExportNotification)</returns>
-        public async System.Threading.Tasks.Task<ApiResponse<VirtoCommerceCatalogModuleWebModelPushNotificationsExportNotification>> CatalogModuleExportImportDoExportAsyncWithHttpInfo(VirtoCommerceCatalogModuleWebExportImportCsvExportInfo exportInfo)
+        /// <returns>Task of ApiResponse (ExportNotification)</returns>
+        public async System.Threading.Tasks.Task<ApiResponse<ExportNotification>> CatalogModuleExportImportDoExportAsyncWithHttpInfo(CsvExportInfo exportInfo)
         {
             // verify the required parameter 'exportInfo' is set
             if (exportInfo == null)
@@ -3396,9 +3396,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModuleExportImportDoExport: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<VirtoCommerceCatalogModuleWebModelPushNotificationsExportNotification>(localVarStatusCode,
+            return new ApiResponse<ExportNotification>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (VirtoCommerceCatalogModuleWebModelPushNotificationsExportNotification)ApiClient.Deserialize(localVarResponse, typeof(VirtoCommerceCatalogModuleWebModelPushNotificationsExportNotification)));
+                (ExportNotification)ApiClient.Deserialize(localVarResponse, typeof(ExportNotification)));
             
         }
         /// <summary>
@@ -3406,10 +3406,10 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="importInfo">The import data configuration.</param>
-        /// <returns>VirtoCommerceCatalogModuleWebModelPushNotificationsImportNotification</returns>
-        public VirtoCommerceCatalogModuleWebModelPushNotificationsImportNotification CatalogModuleExportImportDoImport(VirtoCommerceCatalogModuleWebExportImportCsvImportInfo importInfo)
+        /// <returns>ImportNotification</returns>
+        public ImportNotification CatalogModuleExportImportDoImport(CsvImportInfo importInfo)
         {
-             ApiResponse<VirtoCommerceCatalogModuleWebModelPushNotificationsImportNotification> localVarResponse = CatalogModuleExportImportDoImportWithHttpInfo(importInfo);
+             ApiResponse<ImportNotification> localVarResponse = CatalogModuleExportImportDoImportWithHttpInfo(importInfo);
              return localVarResponse.Data;
         }
 
@@ -3418,8 +3418,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="importInfo">The import data configuration.</param>
-        /// <returns>ApiResponse of VirtoCommerceCatalogModuleWebModelPushNotificationsImportNotification</returns>
-        public ApiResponse<VirtoCommerceCatalogModuleWebModelPushNotificationsImportNotification> CatalogModuleExportImportDoImportWithHttpInfo(VirtoCommerceCatalogModuleWebExportImportCsvImportInfo importInfo)
+        /// <returns>ApiResponse of ImportNotification</returns>
+        public ApiResponse<ImportNotification> CatalogModuleExportImportDoImportWithHttpInfo(CsvImportInfo importInfo)
         {
             // verify the required parameter 'importInfo' is set
             if (importInfo == null)
@@ -3477,9 +3477,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModuleExportImportDoImport: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<VirtoCommerceCatalogModuleWebModelPushNotificationsImportNotification>(localVarStatusCode,
+            return new ApiResponse<ImportNotification>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (VirtoCommerceCatalogModuleWebModelPushNotificationsImportNotification)ApiClient.Deserialize(localVarResponse, typeof(VirtoCommerceCatalogModuleWebModelPushNotificationsImportNotification)));
+                (ImportNotification)ApiClient.Deserialize(localVarResponse, typeof(ImportNotification)));
             
         }
 
@@ -3488,10 +3488,10 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="importInfo">The import data configuration.</param>
-        /// <returns>Task of VirtoCommerceCatalogModuleWebModelPushNotificationsImportNotification</returns>
-        public async System.Threading.Tasks.Task<VirtoCommerceCatalogModuleWebModelPushNotificationsImportNotification> CatalogModuleExportImportDoImportAsync(VirtoCommerceCatalogModuleWebExportImportCsvImportInfo importInfo)
+        /// <returns>Task of ImportNotification</returns>
+        public async System.Threading.Tasks.Task<ImportNotification> CatalogModuleExportImportDoImportAsync(CsvImportInfo importInfo)
         {
-             ApiResponse<VirtoCommerceCatalogModuleWebModelPushNotificationsImportNotification> localVarResponse = await CatalogModuleExportImportDoImportAsyncWithHttpInfo(importInfo);
+             ApiResponse<ImportNotification> localVarResponse = await CatalogModuleExportImportDoImportAsyncWithHttpInfo(importInfo);
              return localVarResponse.Data;
 
         }
@@ -3501,8 +3501,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="importInfo">The import data configuration.</param>
-        /// <returns>Task of ApiResponse (VirtoCommerceCatalogModuleWebModelPushNotificationsImportNotification)</returns>
-        public async System.Threading.Tasks.Task<ApiResponse<VirtoCommerceCatalogModuleWebModelPushNotificationsImportNotification>> CatalogModuleExportImportDoImportAsyncWithHttpInfo(VirtoCommerceCatalogModuleWebExportImportCsvImportInfo importInfo)
+        /// <returns>Task of ApiResponse (ImportNotification)</returns>
+        public async System.Threading.Tasks.Task<ApiResponse<ImportNotification>> CatalogModuleExportImportDoImportAsyncWithHttpInfo(CsvImportInfo importInfo)
         {
             // verify the required parameter 'importInfo' is set
             if (importInfo == null)
@@ -3560,9 +3560,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModuleExportImportDoImport: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<VirtoCommerceCatalogModuleWebModelPushNotificationsImportNotification>(localVarStatusCode,
+            return new ApiResponse<ImportNotification>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (VirtoCommerceCatalogModuleWebModelPushNotificationsImportNotification)ApiClient.Deserialize(localVarResponse, typeof(VirtoCommerceCatalogModuleWebModelPushNotificationsImportNotification)));
+                (ImportNotification)ApiClient.Deserialize(localVarResponse, typeof(ImportNotification)));
             
         }
         /// <summary>
@@ -3571,10 +3571,10 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="fileUrl">The file URL.</param>
         /// <param name="delimiter">The CSV delimiter. (optional)</param>
-        /// <returns>VirtoCommerceCatalogModuleWebExportImportCsvProductMappingConfiguration</returns>
-        public VirtoCommerceCatalogModuleWebExportImportCsvProductMappingConfiguration CatalogModuleExportImportGetMappingConfiguration(string fileUrl, string delimiter = null)
+        /// <returns>CsvProductMappingConfiguration</returns>
+        public CsvProductMappingConfiguration CatalogModuleExportImportGetMappingConfiguration(string fileUrl, string delimiter = null)
         {
-             ApiResponse<VirtoCommerceCatalogModuleWebExportImportCsvProductMappingConfiguration> localVarResponse = CatalogModuleExportImportGetMappingConfigurationWithHttpInfo(fileUrl, delimiter);
+             ApiResponse<CsvProductMappingConfiguration> localVarResponse = CatalogModuleExportImportGetMappingConfigurationWithHttpInfo(fileUrl, delimiter);
              return localVarResponse.Data;
         }
 
@@ -3584,8 +3584,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="fileUrl">The file URL.</param>
         /// <param name="delimiter">The CSV delimiter. (optional)</param>
-        /// <returns>ApiResponse of VirtoCommerceCatalogModuleWebExportImportCsvProductMappingConfiguration</returns>
-        public ApiResponse<VirtoCommerceCatalogModuleWebExportImportCsvProductMappingConfiguration> CatalogModuleExportImportGetMappingConfigurationWithHttpInfo(string fileUrl, string delimiter = null)
+        /// <returns>ApiResponse of CsvProductMappingConfiguration</returns>
+        public ApiResponse<CsvProductMappingConfiguration> CatalogModuleExportImportGetMappingConfigurationWithHttpInfo(string fileUrl, string delimiter = null)
         {
             // verify the required parameter 'fileUrl' is set
             if (fileUrl == null)
@@ -3634,9 +3634,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModuleExportImportGetMappingConfiguration: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<VirtoCommerceCatalogModuleWebExportImportCsvProductMappingConfiguration>(localVarStatusCode,
+            return new ApiResponse<CsvProductMappingConfiguration>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (VirtoCommerceCatalogModuleWebExportImportCsvProductMappingConfiguration)ApiClient.Deserialize(localVarResponse, typeof(VirtoCommerceCatalogModuleWebExportImportCsvProductMappingConfiguration)));
+                (CsvProductMappingConfiguration)ApiClient.Deserialize(localVarResponse, typeof(CsvProductMappingConfiguration)));
             
         }
 
@@ -3646,10 +3646,10 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="fileUrl">The file URL.</param>
         /// <param name="delimiter">The CSV delimiter. (optional)</param>
-        /// <returns>Task of VirtoCommerceCatalogModuleWebExportImportCsvProductMappingConfiguration</returns>
-        public async System.Threading.Tasks.Task<VirtoCommerceCatalogModuleWebExportImportCsvProductMappingConfiguration> CatalogModuleExportImportGetMappingConfigurationAsync(string fileUrl, string delimiter = null)
+        /// <returns>Task of CsvProductMappingConfiguration</returns>
+        public async System.Threading.Tasks.Task<CsvProductMappingConfiguration> CatalogModuleExportImportGetMappingConfigurationAsync(string fileUrl, string delimiter = null)
         {
-             ApiResponse<VirtoCommerceCatalogModuleWebExportImportCsvProductMappingConfiguration> localVarResponse = await CatalogModuleExportImportGetMappingConfigurationAsyncWithHttpInfo(fileUrl, delimiter);
+             ApiResponse<CsvProductMappingConfiguration> localVarResponse = await CatalogModuleExportImportGetMappingConfigurationAsyncWithHttpInfo(fileUrl, delimiter);
              return localVarResponse.Data;
 
         }
@@ -3660,8 +3660,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="fileUrl">The file URL.</param>
         /// <param name="delimiter">The CSV delimiter. (optional)</param>
-        /// <returns>Task of ApiResponse (VirtoCommerceCatalogModuleWebExportImportCsvProductMappingConfiguration)</returns>
-        public async System.Threading.Tasks.Task<ApiResponse<VirtoCommerceCatalogModuleWebExportImportCsvProductMappingConfiguration>> CatalogModuleExportImportGetMappingConfigurationAsyncWithHttpInfo(string fileUrl, string delimiter = null)
+        /// <returns>Task of ApiResponse (CsvProductMappingConfiguration)</returns>
+        public async System.Threading.Tasks.Task<ApiResponse<CsvProductMappingConfiguration>> CatalogModuleExportImportGetMappingConfigurationAsyncWithHttpInfo(string fileUrl, string delimiter = null)
         {
             // verify the required parameter 'fileUrl' is set
             if (fileUrl == null)
@@ -3710,9 +3710,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModuleExportImportGetMappingConfiguration: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<VirtoCommerceCatalogModuleWebExportImportCsvProductMappingConfiguration>(localVarStatusCode,
+            return new ApiResponse<CsvProductMappingConfiguration>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (VirtoCommerceCatalogModuleWebExportImportCsvProductMappingConfiguration)ApiClient.Deserialize(localVarResponse, typeof(VirtoCommerceCatalogModuleWebExportImportCsvProductMappingConfiguration)));
+                (CsvProductMappingConfiguration)ApiClient.Deserialize(localVarResponse, typeof(CsvProductMappingConfiguration)));
             
         }
         /// <summary>
@@ -3721,7 +3721,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="links">The links.</param>
         /// <returns></returns>
-        public void CatalogModuleListEntryCreateLinks(List<VirtoCommerceCatalogModuleWebModelListEntryLink> links)
+        public void CatalogModuleListEntryCreateLinks(List<ListEntryLink> links)
         {
              CatalogModuleListEntryCreateLinksWithHttpInfo(links);
         }
@@ -3732,7 +3732,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="links">The links.</param>
         /// <returns>ApiResponse of Object(void)</returns>
-        public ApiResponse<object> CatalogModuleListEntryCreateLinksWithHttpInfo(List<VirtoCommerceCatalogModuleWebModelListEntryLink> links)
+        public ApiResponse<object> CatalogModuleListEntryCreateLinksWithHttpInfo(List<ListEntryLink> links)
         {
             // verify the required parameter 'links' is set
             if (links == null)
@@ -3800,7 +3800,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="links">The links.</param>
         /// <returns>Task of void</returns>
-        public async System.Threading.Tasks.Task CatalogModuleListEntryCreateLinksAsync(List<VirtoCommerceCatalogModuleWebModelListEntryLink> links)
+        public async System.Threading.Tasks.Task CatalogModuleListEntryCreateLinksAsync(List<ListEntryLink> links)
         {
              await CatalogModuleListEntryCreateLinksAsyncWithHttpInfo(links);
 
@@ -3812,7 +3812,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="links">The links.</param>
         /// <returns>Task of ApiResponse</returns>
-        public async System.Threading.Tasks.Task<ApiResponse<object>> CatalogModuleListEntryCreateLinksAsyncWithHttpInfo(List<VirtoCommerceCatalogModuleWebModelListEntryLink> links)
+        public async System.Threading.Tasks.Task<ApiResponse<object>> CatalogModuleListEntryCreateLinksAsyncWithHttpInfo(List<ListEntryLink> links)
         {
             // verify the required parameter 'links' is set
             if (links == null)
@@ -3879,7 +3879,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="links">The links.</param>
         /// <returns></returns>
-        public void CatalogModuleListEntryDeleteLinks(List<VirtoCommerceCatalogModuleWebModelListEntryLink> links)
+        public void CatalogModuleListEntryDeleteLinks(List<ListEntryLink> links)
         {
              CatalogModuleListEntryDeleteLinksWithHttpInfo(links);
         }
@@ -3890,7 +3890,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="links">The links.</param>
         /// <returns>ApiResponse of Object(void)</returns>
-        public ApiResponse<object> CatalogModuleListEntryDeleteLinksWithHttpInfo(List<VirtoCommerceCatalogModuleWebModelListEntryLink> links)
+        public ApiResponse<object> CatalogModuleListEntryDeleteLinksWithHttpInfo(List<ListEntryLink> links)
         {
             // verify the required parameter 'links' is set
             if (links == null)
@@ -3958,7 +3958,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="links">The links.</param>
         /// <returns>Task of void</returns>
-        public async System.Threading.Tasks.Task CatalogModuleListEntryDeleteLinksAsync(List<VirtoCommerceCatalogModuleWebModelListEntryLink> links)
+        public async System.Threading.Tasks.Task CatalogModuleListEntryDeleteLinksAsync(List<ListEntryLink> links)
         {
              await CatalogModuleListEntryDeleteLinksAsyncWithHttpInfo(links);
 
@@ -3970,7 +3970,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="links">The links.</param>
         /// <returns>Task of ApiResponse</returns>
-        public async System.Threading.Tasks.Task<ApiResponse<object>> CatalogModuleListEntryDeleteLinksAsyncWithHttpInfo(List<VirtoCommerceCatalogModuleWebModelListEntryLink> links)
+        public async System.Threading.Tasks.Task<ApiResponse<object>> CatalogModuleListEntryDeleteLinksAsyncWithHttpInfo(List<ListEntryLink> links)
         {
             // verify the required parameter 'links' is set
             if (links == null)
@@ -4035,11 +4035,11 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// Searches for the items by complex criteria. 
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="searchCriteria">The search criteria.</param>
-        /// <returns>VirtoCommerceCatalogModuleWebModelListEntrySearchResult</returns>
-        public VirtoCommerceCatalogModuleWebModelListEntrySearchResult CatalogModuleListEntryListItemsSearch(VirtoCommerceDomainCatalogModelSearchCriteria searchCriteria)
+        /// <param name="criteria">The search criteria.</param>
+        /// <returns>ListEntrySearchResult</returns>
+        public ListEntrySearchResult CatalogModuleListEntryListItemsSearch(SearchCriteria criteria)
         {
-             ApiResponse<VirtoCommerceCatalogModuleWebModelListEntrySearchResult> localVarResponse = CatalogModuleListEntryListItemsSearchWithHttpInfo(searchCriteria);
+             ApiResponse<ListEntrySearchResult> localVarResponse = CatalogModuleListEntryListItemsSearchWithHttpInfo(criteria);
              return localVarResponse.Data;
         }
 
@@ -4047,13 +4047,13 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// Searches for the items by complex criteria. 
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="searchCriteria">The search criteria.</param>
-        /// <returns>ApiResponse of VirtoCommerceCatalogModuleWebModelListEntrySearchResult</returns>
-        public ApiResponse<VirtoCommerceCatalogModuleWebModelListEntrySearchResult> CatalogModuleListEntryListItemsSearchWithHttpInfo(VirtoCommerceDomainCatalogModelSearchCriteria searchCriteria)
+        /// <param name="criteria">The search criteria.</param>
+        /// <returns>ApiResponse of ListEntrySearchResult</returns>
+        public ApiResponse<ListEntrySearchResult> CatalogModuleListEntryListItemsSearchWithHttpInfo(SearchCriteria criteria)
         {
-            // verify the required parameter 'searchCriteria' is set
-            if (searchCriteria == null)
-                throw new ApiException(400, "Missing required parameter 'searchCriteria' when calling VirtoCommerceCatalogApi->CatalogModuleListEntryListItemsSearch");
+            // verify the required parameter 'criteria' is set
+            if (criteria == null)
+                throw new ApiException(400, "Missing required parameter 'criteria' when calling VirtoCommerceCatalogApi->CatalogModuleListEntryListItemsSearch");
 
             var localVarPath = "/api/catalog/listentries";
             var localVarPathParams = new Dictionary<string, string>();
@@ -4087,13 +4087,13 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             // set "format" to json by default
             // e.g. /pet/{petId}.{format} becomes /pet/{petId}.json
             localVarPathParams.Add("format", "json");
-            if (searchCriteria.GetType() != typeof(byte[]))
+            if (criteria.GetType() != typeof(byte[]))
             {
-                localVarPostBody = ApiClient.Serialize(searchCriteria); // http body (model) parameter
+                localVarPostBody = ApiClient.Serialize(criteria); // http body (model) parameter
             }
             else
             {
-                localVarPostBody = searchCriteria; // byte array
+                localVarPostBody = criteria; // byte array
             }
 
 
@@ -4109,9 +4109,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModuleListEntryListItemsSearch: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<VirtoCommerceCatalogModuleWebModelListEntrySearchResult>(localVarStatusCode,
+            return new ApiResponse<ListEntrySearchResult>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (VirtoCommerceCatalogModuleWebModelListEntrySearchResult)ApiClient.Deserialize(localVarResponse, typeof(VirtoCommerceCatalogModuleWebModelListEntrySearchResult)));
+                (ListEntrySearchResult)ApiClient.Deserialize(localVarResponse, typeof(ListEntrySearchResult)));
             
         }
 
@@ -4119,11 +4119,11 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// Searches for the items by complex criteria. 
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="searchCriteria">The search criteria.</param>
-        /// <returns>Task of VirtoCommerceCatalogModuleWebModelListEntrySearchResult</returns>
-        public async System.Threading.Tasks.Task<VirtoCommerceCatalogModuleWebModelListEntrySearchResult> CatalogModuleListEntryListItemsSearchAsync(VirtoCommerceDomainCatalogModelSearchCriteria searchCriteria)
+        /// <param name="criteria">The search criteria.</param>
+        /// <returns>Task of ListEntrySearchResult</returns>
+        public async System.Threading.Tasks.Task<ListEntrySearchResult> CatalogModuleListEntryListItemsSearchAsync(SearchCriteria criteria)
         {
-             ApiResponse<VirtoCommerceCatalogModuleWebModelListEntrySearchResult> localVarResponse = await CatalogModuleListEntryListItemsSearchAsyncWithHttpInfo(searchCriteria);
+             ApiResponse<ListEntrySearchResult> localVarResponse = await CatalogModuleListEntryListItemsSearchAsyncWithHttpInfo(criteria);
              return localVarResponse.Data;
 
         }
@@ -4132,13 +4132,13 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// Searches for the items by complex criteria. 
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
-        /// <param name="searchCriteria">The search criteria.</param>
-        /// <returns>Task of ApiResponse (VirtoCommerceCatalogModuleWebModelListEntrySearchResult)</returns>
-        public async System.Threading.Tasks.Task<ApiResponse<VirtoCommerceCatalogModuleWebModelListEntrySearchResult>> CatalogModuleListEntryListItemsSearchAsyncWithHttpInfo(VirtoCommerceDomainCatalogModelSearchCriteria searchCriteria)
+        /// <param name="criteria">The search criteria.</param>
+        /// <returns>Task of ApiResponse (ListEntrySearchResult)</returns>
+        public async System.Threading.Tasks.Task<ApiResponse<ListEntrySearchResult>> CatalogModuleListEntryListItemsSearchAsyncWithHttpInfo(SearchCriteria criteria)
         {
-            // verify the required parameter 'searchCriteria' is set
-            if (searchCriteria == null)
-                throw new ApiException(400, "Missing required parameter 'searchCriteria' when calling VirtoCommerceCatalogApi->CatalogModuleListEntryListItemsSearch");
+            // verify the required parameter 'criteria' is set
+            if (criteria == null)
+                throw new ApiException(400, "Missing required parameter 'criteria' when calling VirtoCommerceCatalogApi->CatalogModuleListEntryListItemsSearch");
 
             var localVarPath = "/api/catalog/listentries";
             var localVarPathParams = new Dictionary<string, string>();
@@ -4172,13 +4172,13 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             // set "format" to json by default
             // e.g. /pet/{petId}.{format} becomes /pet/{petId}.json
             localVarPathParams.Add("format", "json");
-            if (searchCriteria.GetType() != typeof(byte[]))
+            if (criteria.GetType() != typeof(byte[]))
             {
-                localVarPostBody = ApiClient.Serialize(searchCriteria); // http body (model) parameter
+                localVarPostBody = ApiClient.Serialize(criteria); // http body (model) parameter
             }
             else
             {
-                localVarPostBody = searchCriteria; // byte array
+                localVarPostBody = criteria; // byte array
             }
 
 
@@ -4194,9 +4194,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModuleListEntryListItemsSearch: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<VirtoCommerceCatalogModuleWebModelListEntrySearchResult>(localVarStatusCode,
+            return new ApiResponse<ListEntrySearchResult>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (VirtoCommerceCatalogModuleWebModelListEntrySearchResult)ApiClient.Deserialize(localVarResponse, typeof(VirtoCommerceCatalogModuleWebModelListEntrySearchResult)));
+                (ListEntrySearchResult)ApiClient.Deserialize(localVarResponse, typeof(ListEntrySearchResult)));
             
         }
         /// <summary>
@@ -4205,7 +4205,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="moveInfo">Move operation details</param>
         /// <returns></returns>
-        public void CatalogModuleListEntryMove(VirtoCommerceCatalogModuleWebModelMoveInfo moveInfo)
+        public void CatalogModuleListEntryMove(MoveInfo moveInfo)
         {
              CatalogModuleListEntryMoveWithHttpInfo(moveInfo);
         }
@@ -4216,7 +4216,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="moveInfo">Move operation details</param>
         /// <returns>ApiResponse of Object(void)</returns>
-        public ApiResponse<object> CatalogModuleListEntryMoveWithHttpInfo(VirtoCommerceCatalogModuleWebModelMoveInfo moveInfo)
+        public ApiResponse<object> CatalogModuleListEntryMoveWithHttpInfo(MoveInfo moveInfo)
         {
             // verify the required parameter 'moveInfo' is set
             if (moveInfo == null)
@@ -4284,7 +4284,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="moveInfo">Move operation details</param>
         /// <returns>Task of void</returns>
-        public async System.Threading.Tasks.Task CatalogModuleListEntryMoveAsync(VirtoCommerceCatalogModuleWebModelMoveInfo moveInfo)
+        public async System.Threading.Tasks.Task CatalogModuleListEntryMoveAsync(MoveInfo moveInfo)
         {
              await CatalogModuleListEntryMoveAsyncWithHttpInfo(moveInfo);
 
@@ -4296,7 +4296,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="moveInfo">Move operation details</param>
         /// <returns>Task of ApiResponse</returns>
-        public async System.Threading.Tasks.Task<ApiResponse<object>> CatalogModuleListEntryMoveAsyncWithHttpInfo(VirtoCommerceCatalogModuleWebModelMoveInfo moveInfo)
+        public async System.Threading.Tasks.Task<ApiResponse<object>> CatalogModuleListEntryMoveAsyncWithHttpInfo(MoveInfo moveInfo)
         {
             // verify the required parameter 'moveInfo' is set
             if (moveInfo == null)
@@ -4362,10 +4362,10 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="productId"></param>
-        /// <returns>VirtoCommerceCatalogModuleWebModelProduct</returns>
-        public VirtoCommerceCatalogModuleWebModelProduct CatalogModuleProductsCloneProduct(string productId)
+        /// <returns>Product</returns>
+        public Product CatalogModuleProductsCloneProduct(string productId)
         {
-             ApiResponse<VirtoCommerceCatalogModuleWebModelProduct> localVarResponse = CatalogModuleProductsCloneProductWithHttpInfo(productId);
+             ApiResponse<Product> localVarResponse = CatalogModuleProductsCloneProductWithHttpInfo(productId);
              return localVarResponse.Data;
         }
 
@@ -4374,8 +4374,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="productId"></param>
-        /// <returns>ApiResponse of VirtoCommerceCatalogModuleWebModelProduct</returns>
-        public ApiResponse<VirtoCommerceCatalogModuleWebModelProduct> CatalogModuleProductsCloneProductWithHttpInfo(string productId)
+        /// <returns>ApiResponse of Product</returns>
+        public ApiResponse<Product> CatalogModuleProductsCloneProductWithHttpInfo(string productId)
         {
             // verify the required parameter 'productId' is set
             if (productId == null)
@@ -4423,9 +4423,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModuleProductsCloneProduct: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<VirtoCommerceCatalogModuleWebModelProduct>(localVarStatusCode,
+            return new ApiResponse<Product>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (VirtoCommerceCatalogModuleWebModelProduct)ApiClient.Deserialize(localVarResponse, typeof(VirtoCommerceCatalogModuleWebModelProduct)));
+                (Product)ApiClient.Deserialize(localVarResponse, typeof(Product)));
             
         }
 
@@ -4434,10 +4434,10 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="productId"></param>
-        /// <returns>Task of VirtoCommerceCatalogModuleWebModelProduct</returns>
-        public async System.Threading.Tasks.Task<VirtoCommerceCatalogModuleWebModelProduct> CatalogModuleProductsCloneProductAsync(string productId)
+        /// <returns>Task of Product</returns>
+        public async System.Threading.Tasks.Task<Product> CatalogModuleProductsCloneProductAsync(string productId)
         {
-             ApiResponse<VirtoCommerceCatalogModuleWebModelProduct> localVarResponse = await CatalogModuleProductsCloneProductAsyncWithHttpInfo(productId);
+             ApiResponse<Product> localVarResponse = await CatalogModuleProductsCloneProductAsyncWithHttpInfo(productId);
              return localVarResponse.Data;
 
         }
@@ -4447,8 +4447,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="productId"></param>
-        /// <returns>Task of ApiResponse (VirtoCommerceCatalogModuleWebModelProduct)</returns>
-        public async System.Threading.Tasks.Task<ApiResponse<VirtoCommerceCatalogModuleWebModelProduct>> CatalogModuleProductsCloneProductAsyncWithHttpInfo(string productId)
+        /// <returns>Task of ApiResponse (Product)</returns>
+        public async System.Threading.Tasks.Task<ApiResponse<Product>> CatalogModuleProductsCloneProductAsyncWithHttpInfo(string productId)
         {
             // verify the required parameter 'productId' is set
             if (productId == null)
@@ -4496,9 +4496,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModuleProductsCloneProduct: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<VirtoCommerceCatalogModuleWebModelProduct>(localVarStatusCode,
+            return new ApiResponse<Product>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (VirtoCommerceCatalogModuleWebModelProduct)ApiClient.Deserialize(localVarResponse, typeof(VirtoCommerceCatalogModuleWebModelProduct)));
+                (Product)ApiClient.Deserialize(localVarResponse, typeof(Product)));
             
         }
         /// <summary>
@@ -4640,10 +4640,10 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalogId">The catalog id.</param>
-        /// <returns>VirtoCommerceCatalogModuleWebModelProduct</returns>
-        public VirtoCommerceCatalogModuleWebModelProduct CatalogModuleProductsGetNewProductByCatalog(string catalogId)
+        /// <returns>Product</returns>
+        public Product CatalogModuleProductsGetNewProductByCatalog(string catalogId)
         {
-             ApiResponse<VirtoCommerceCatalogModuleWebModelProduct> localVarResponse = CatalogModuleProductsGetNewProductByCatalogWithHttpInfo(catalogId);
+             ApiResponse<Product> localVarResponse = CatalogModuleProductsGetNewProductByCatalogWithHttpInfo(catalogId);
              return localVarResponse.Data;
         }
 
@@ -4652,8 +4652,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalogId">The catalog id.</param>
-        /// <returns>ApiResponse of VirtoCommerceCatalogModuleWebModelProduct</returns>
-        public ApiResponse<VirtoCommerceCatalogModuleWebModelProduct> CatalogModuleProductsGetNewProductByCatalogWithHttpInfo(string catalogId)
+        /// <returns>ApiResponse of Product</returns>
+        public ApiResponse<Product> CatalogModuleProductsGetNewProductByCatalogWithHttpInfo(string catalogId)
         {
             // verify the required parameter 'catalogId' is set
             if (catalogId == null)
@@ -4701,9 +4701,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModuleProductsGetNewProductByCatalog: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<VirtoCommerceCatalogModuleWebModelProduct>(localVarStatusCode,
+            return new ApiResponse<Product>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (VirtoCommerceCatalogModuleWebModelProduct)ApiClient.Deserialize(localVarResponse, typeof(VirtoCommerceCatalogModuleWebModelProduct)));
+                (Product)ApiClient.Deserialize(localVarResponse, typeof(Product)));
             
         }
 
@@ -4712,10 +4712,10 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalogId">The catalog id.</param>
-        /// <returns>Task of VirtoCommerceCatalogModuleWebModelProduct</returns>
-        public async System.Threading.Tasks.Task<VirtoCommerceCatalogModuleWebModelProduct> CatalogModuleProductsGetNewProductByCatalogAsync(string catalogId)
+        /// <returns>Task of Product</returns>
+        public async System.Threading.Tasks.Task<Product> CatalogModuleProductsGetNewProductByCatalogAsync(string catalogId)
         {
-             ApiResponse<VirtoCommerceCatalogModuleWebModelProduct> localVarResponse = await CatalogModuleProductsGetNewProductByCatalogAsyncWithHttpInfo(catalogId);
+             ApiResponse<Product> localVarResponse = await CatalogModuleProductsGetNewProductByCatalogAsyncWithHttpInfo(catalogId);
              return localVarResponse.Data;
 
         }
@@ -4725,8 +4725,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalogId">The catalog id.</param>
-        /// <returns>Task of ApiResponse (VirtoCommerceCatalogModuleWebModelProduct)</returns>
-        public async System.Threading.Tasks.Task<ApiResponse<VirtoCommerceCatalogModuleWebModelProduct>> CatalogModuleProductsGetNewProductByCatalogAsyncWithHttpInfo(string catalogId)
+        /// <returns>Task of ApiResponse (Product)</returns>
+        public async System.Threading.Tasks.Task<ApiResponse<Product>> CatalogModuleProductsGetNewProductByCatalogAsyncWithHttpInfo(string catalogId)
         {
             // verify the required parameter 'catalogId' is set
             if (catalogId == null)
@@ -4774,9 +4774,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModuleProductsGetNewProductByCatalog: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<VirtoCommerceCatalogModuleWebModelProduct>(localVarStatusCode,
+            return new ApiResponse<Product>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (VirtoCommerceCatalogModuleWebModelProduct)ApiClient.Deserialize(localVarResponse, typeof(VirtoCommerceCatalogModuleWebModelProduct)));
+                (Product)ApiClient.Deserialize(localVarResponse, typeof(Product)));
             
         }
         /// <summary>
@@ -4785,10 +4785,10 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalogId">The catalog id.</param>
         /// <param name="categoryId">The category id.</param>
-        /// <returns>VirtoCommerceCatalogModuleWebModelProduct</returns>
-        public VirtoCommerceCatalogModuleWebModelProduct CatalogModuleProductsGetNewProductByCatalogAndCategory(string catalogId, string categoryId)
+        /// <returns>Product</returns>
+        public Product CatalogModuleProductsGetNewProductByCatalogAndCategory(string catalogId, string categoryId)
         {
-             ApiResponse<VirtoCommerceCatalogModuleWebModelProduct> localVarResponse = CatalogModuleProductsGetNewProductByCatalogAndCategoryWithHttpInfo(catalogId, categoryId);
+             ApiResponse<Product> localVarResponse = CatalogModuleProductsGetNewProductByCatalogAndCategoryWithHttpInfo(catalogId, categoryId);
              return localVarResponse.Data;
         }
 
@@ -4798,8 +4798,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalogId">The catalog id.</param>
         /// <param name="categoryId">The category id.</param>
-        /// <returns>ApiResponse of VirtoCommerceCatalogModuleWebModelProduct</returns>
-        public ApiResponse<VirtoCommerceCatalogModuleWebModelProduct> CatalogModuleProductsGetNewProductByCatalogAndCategoryWithHttpInfo(string catalogId, string categoryId)
+        /// <returns>ApiResponse of Product</returns>
+        public ApiResponse<Product> CatalogModuleProductsGetNewProductByCatalogAndCategoryWithHttpInfo(string catalogId, string categoryId)
         {
             // verify the required parameter 'catalogId' is set
             if (catalogId == null)
@@ -4851,9 +4851,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModuleProductsGetNewProductByCatalogAndCategory: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<VirtoCommerceCatalogModuleWebModelProduct>(localVarStatusCode,
+            return new ApiResponse<Product>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (VirtoCommerceCatalogModuleWebModelProduct)ApiClient.Deserialize(localVarResponse, typeof(VirtoCommerceCatalogModuleWebModelProduct)));
+                (Product)ApiClient.Deserialize(localVarResponse, typeof(Product)));
             
         }
 
@@ -4863,10 +4863,10 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalogId">The catalog id.</param>
         /// <param name="categoryId">The category id.</param>
-        /// <returns>Task of VirtoCommerceCatalogModuleWebModelProduct</returns>
-        public async System.Threading.Tasks.Task<VirtoCommerceCatalogModuleWebModelProduct> CatalogModuleProductsGetNewProductByCatalogAndCategoryAsync(string catalogId, string categoryId)
+        /// <returns>Task of Product</returns>
+        public async System.Threading.Tasks.Task<Product> CatalogModuleProductsGetNewProductByCatalogAndCategoryAsync(string catalogId, string categoryId)
         {
-             ApiResponse<VirtoCommerceCatalogModuleWebModelProduct> localVarResponse = await CatalogModuleProductsGetNewProductByCatalogAndCategoryAsyncWithHttpInfo(catalogId, categoryId);
+             ApiResponse<Product> localVarResponse = await CatalogModuleProductsGetNewProductByCatalogAndCategoryAsyncWithHttpInfo(catalogId, categoryId);
              return localVarResponse.Data;
 
         }
@@ -4877,8 +4877,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalogId">The catalog id.</param>
         /// <param name="categoryId">The category id.</param>
-        /// <returns>Task of ApiResponse (VirtoCommerceCatalogModuleWebModelProduct)</returns>
-        public async System.Threading.Tasks.Task<ApiResponse<VirtoCommerceCatalogModuleWebModelProduct>> CatalogModuleProductsGetNewProductByCatalogAndCategoryAsyncWithHttpInfo(string catalogId, string categoryId)
+        /// <returns>Task of ApiResponse (Product)</returns>
+        public async System.Threading.Tasks.Task<ApiResponse<Product>> CatalogModuleProductsGetNewProductByCatalogAndCategoryAsyncWithHttpInfo(string catalogId, string categoryId)
         {
             // verify the required parameter 'catalogId' is set
             if (catalogId == null)
@@ -4930,9 +4930,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModuleProductsGetNewProductByCatalogAndCategory: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<VirtoCommerceCatalogModuleWebModelProduct>(localVarStatusCode,
+            return new ApiResponse<Product>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (VirtoCommerceCatalogModuleWebModelProduct)ApiClient.Deserialize(localVarResponse, typeof(VirtoCommerceCatalogModuleWebModelProduct)));
+                (Product)ApiClient.Deserialize(localVarResponse, typeof(Product)));
             
         }
         /// <summary>
@@ -4940,10 +4940,10 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="productId">The parent product id.</param>
-        /// <returns>VirtoCommerceCatalogModuleWebModelProduct</returns>
-        public VirtoCommerceCatalogModuleWebModelProduct CatalogModuleProductsGetNewVariation(string productId)
+        /// <returns>Product</returns>
+        public Product CatalogModuleProductsGetNewVariation(string productId)
         {
-             ApiResponse<VirtoCommerceCatalogModuleWebModelProduct> localVarResponse = CatalogModuleProductsGetNewVariationWithHttpInfo(productId);
+             ApiResponse<Product> localVarResponse = CatalogModuleProductsGetNewVariationWithHttpInfo(productId);
              return localVarResponse.Data;
         }
 
@@ -4952,8 +4952,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="productId">The parent product id.</param>
-        /// <returns>ApiResponse of VirtoCommerceCatalogModuleWebModelProduct</returns>
-        public ApiResponse<VirtoCommerceCatalogModuleWebModelProduct> CatalogModuleProductsGetNewVariationWithHttpInfo(string productId)
+        /// <returns>ApiResponse of Product</returns>
+        public ApiResponse<Product> CatalogModuleProductsGetNewVariationWithHttpInfo(string productId)
         {
             // verify the required parameter 'productId' is set
             if (productId == null)
@@ -5001,9 +5001,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModuleProductsGetNewVariation: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<VirtoCommerceCatalogModuleWebModelProduct>(localVarStatusCode,
+            return new ApiResponse<Product>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (VirtoCommerceCatalogModuleWebModelProduct)ApiClient.Deserialize(localVarResponse, typeof(VirtoCommerceCatalogModuleWebModelProduct)));
+                (Product)ApiClient.Deserialize(localVarResponse, typeof(Product)));
             
         }
 
@@ -5012,10 +5012,10 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="productId">The parent product id.</param>
-        /// <returns>Task of VirtoCommerceCatalogModuleWebModelProduct</returns>
-        public async System.Threading.Tasks.Task<VirtoCommerceCatalogModuleWebModelProduct> CatalogModuleProductsGetNewVariationAsync(string productId)
+        /// <returns>Task of Product</returns>
+        public async System.Threading.Tasks.Task<Product> CatalogModuleProductsGetNewVariationAsync(string productId)
         {
-             ApiResponse<VirtoCommerceCatalogModuleWebModelProduct> localVarResponse = await CatalogModuleProductsGetNewVariationAsyncWithHttpInfo(productId);
+             ApiResponse<Product> localVarResponse = await CatalogModuleProductsGetNewVariationAsyncWithHttpInfo(productId);
              return localVarResponse.Data;
 
         }
@@ -5025,8 +5025,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="productId">The parent product id.</param>
-        /// <returns>Task of ApiResponse (VirtoCommerceCatalogModuleWebModelProduct)</returns>
-        public async System.Threading.Tasks.Task<ApiResponse<VirtoCommerceCatalogModuleWebModelProduct>> CatalogModuleProductsGetNewVariationAsyncWithHttpInfo(string productId)
+        /// <returns>Task of ApiResponse (Product)</returns>
+        public async System.Threading.Tasks.Task<ApiResponse<Product>> CatalogModuleProductsGetNewVariationAsyncWithHttpInfo(string productId)
         {
             // verify the required parameter 'productId' is set
             if (productId == null)
@@ -5074,9 +5074,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModuleProductsGetNewVariation: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<VirtoCommerceCatalogModuleWebModelProduct>(localVarStatusCode,
+            return new ApiResponse<Product>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (VirtoCommerceCatalogModuleWebModelProduct)ApiClient.Deserialize(localVarResponse, typeof(VirtoCommerceCatalogModuleWebModelProduct)));
+                (Product)ApiClient.Deserialize(localVarResponse, typeof(Product)));
             
         }
         /// <summary>
@@ -5085,10 +5085,10 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="id">Item id.</param>
         /// <param name="respGroup">Response group. (optional)</param>
-        /// <returns>VirtoCommerceCatalogModuleWebModelProduct</returns>
-        public VirtoCommerceCatalogModuleWebModelProduct CatalogModuleProductsGetProductById(string id, string respGroup = null)
+        /// <returns>Product</returns>
+        public Product CatalogModuleProductsGetProductById(string id, string respGroup = null)
         {
-             ApiResponse<VirtoCommerceCatalogModuleWebModelProduct> localVarResponse = CatalogModuleProductsGetProductByIdWithHttpInfo(id, respGroup);
+             ApiResponse<Product> localVarResponse = CatalogModuleProductsGetProductByIdWithHttpInfo(id, respGroup);
              return localVarResponse.Data;
         }
 
@@ -5098,8 +5098,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="id">Item id.</param>
         /// <param name="respGroup">Response group. (optional)</param>
-        /// <returns>ApiResponse of VirtoCommerceCatalogModuleWebModelProduct</returns>
-        public ApiResponse<VirtoCommerceCatalogModuleWebModelProduct> CatalogModuleProductsGetProductByIdWithHttpInfo(string id, string respGroup = null)
+        /// <returns>ApiResponse of Product</returns>
+        public ApiResponse<Product> CatalogModuleProductsGetProductByIdWithHttpInfo(string id, string respGroup = null)
         {
             // verify the required parameter 'id' is set
             if (id == null)
@@ -5148,9 +5148,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModuleProductsGetProductById: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<VirtoCommerceCatalogModuleWebModelProduct>(localVarStatusCode,
+            return new ApiResponse<Product>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (VirtoCommerceCatalogModuleWebModelProduct)ApiClient.Deserialize(localVarResponse, typeof(VirtoCommerceCatalogModuleWebModelProduct)));
+                (Product)ApiClient.Deserialize(localVarResponse, typeof(Product)));
             
         }
 
@@ -5160,10 +5160,10 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="id">Item id.</param>
         /// <param name="respGroup">Response group. (optional)</param>
-        /// <returns>Task of VirtoCommerceCatalogModuleWebModelProduct</returns>
-        public async System.Threading.Tasks.Task<VirtoCommerceCatalogModuleWebModelProduct> CatalogModuleProductsGetProductByIdAsync(string id, string respGroup = null)
+        /// <returns>Task of Product</returns>
+        public async System.Threading.Tasks.Task<Product> CatalogModuleProductsGetProductByIdAsync(string id, string respGroup = null)
         {
-             ApiResponse<VirtoCommerceCatalogModuleWebModelProduct> localVarResponse = await CatalogModuleProductsGetProductByIdAsyncWithHttpInfo(id, respGroup);
+             ApiResponse<Product> localVarResponse = await CatalogModuleProductsGetProductByIdAsyncWithHttpInfo(id, respGroup);
              return localVarResponse.Data;
 
         }
@@ -5174,8 +5174,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="id">Item id.</param>
         /// <param name="respGroup">Response group. (optional)</param>
-        /// <returns>Task of ApiResponse (VirtoCommerceCatalogModuleWebModelProduct)</returns>
-        public async System.Threading.Tasks.Task<ApiResponse<VirtoCommerceCatalogModuleWebModelProduct>> CatalogModuleProductsGetProductByIdAsyncWithHttpInfo(string id, string respGroup = null)
+        /// <returns>Task of ApiResponse (Product)</returns>
+        public async System.Threading.Tasks.Task<ApiResponse<Product>> CatalogModuleProductsGetProductByIdAsyncWithHttpInfo(string id, string respGroup = null)
         {
             // verify the required parameter 'id' is set
             if (id == null)
@@ -5224,9 +5224,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModuleProductsGetProductById: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<VirtoCommerceCatalogModuleWebModelProduct>(localVarStatusCode,
+            return new ApiResponse<Product>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (VirtoCommerceCatalogModuleWebModelProduct)ApiClient.Deserialize(localVarResponse, typeof(VirtoCommerceCatalogModuleWebModelProduct)));
+                (Product)ApiClient.Deserialize(localVarResponse, typeof(Product)));
             
         }
         /// <summary>
@@ -5235,10 +5235,10 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="ids">Item ids</param>
         /// <param name="respGroup">Response group. (optional)</param>
-        /// <returns>List&lt;VirtoCommerceCatalogModuleWebModelProduct&gt;</returns>
-        public List<VirtoCommerceCatalogModuleWebModelProduct> CatalogModuleProductsGetProductByIds(List<string> ids, string respGroup = null)
+        /// <returns>List&lt;Product&gt;</returns>
+        public List<Product> CatalogModuleProductsGetProductByIds(List<string> ids, string respGroup = null)
         {
-             ApiResponse<List<VirtoCommerceCatalogModuleWebModelProduct>> localVarResponse = CatalogModuleProductsGetProductByIdsWithHttpInfo(ids, respGroup);
+             ApiResponse<List<Product>> localVarResponse = CatalogModuleProductsGetProductByIdsWithHttpInfo(ids, respGroup);
              return localVarResponse.Data;
         }
 
@@ -5248,8 +5248,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="ids">Item ids</param>
         /// <param name="respGroup">Response group. (optional)</param>
-        /// <returns>ApiResponse of List&lt;VirtoCommerceCatalogModuleWebModelProduct&gt;</returns>
-        public ApiResponse<List<VirtoCommerceCatalogModuleWebModelProduct>> CatalogModuleProductsGetProductByIdsWithHttpInfo(List<string> ids, string respGroup = null)
+        /// <returns>ApiResponse of List&lt;Product&gt;</returns>
+        public ApiResponse<List<Product>> CatalogModuleProductsGetProductByIdsWithHttpInfo(List<string> ids, string respGroup = null)
         {
             // verify the required parameter 'ids' is set
             if (ids == null)
@@ -5298,9 +5298,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModuleProductsGetProductByIds: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<List<VirtoCommerceCatalogModuleWebModelProduct>>(localVarStatusCode,
+            return new ApiResponse<List<Product>>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (List<VirtoCommerceCatalogModuleWebModelProduct>)ApiClient.Deserialize(localVarResponse, typeof(List<VirtoCommerceCatalogModuleWebModelProduct>)));
+                (List<Product>)ApiClient.Deserialize(localVarResponse, typeof(List<Product>)));
             
         }
 
@@ -5310,10 +5310,10 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="ids">Item ids</param>
         /// <param name="respGroup">Response group. (optional)</param>
-        /// <returns>Task of List&lt;VirtoCommerceCatalogModuleWebModelProduct&gt;</returns>
-        public async System.Threading.Tasks.Task<List<VirtoCommerceCatalogModuleWebModelProduct>> CatalogModuleProductsGetProductByIdsAsync(List<string> ids, string respGroup = null)
+        /// <returns>Task of List&lt;Product&gt;</returns>
+        public async System.Threading.Tasks.Task<List<Product>> CatalogModuleProductsGetProductByIdsAsync(List<string> ids, string respGroup = null)
         {
-             ApiResponse<List<VirtoCommerceCatalogModuleWebModelProduct>> localVarResponse = await CatalogModuleProductsGetProductByIdsAsyncWithHttpInfo(ids, respGroup);
+             ApiResponse<List<Product>> localVarResponse = await CatalogModuleProductsGetProductByIdsAsyncWithHttpInfo(ids, respGroup);
              return localVarResponse.Data;
 
         }
@@ -5324,8 +5324,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="ids">Item ids</param>
         /// <param name="respGroup">Response group. (optional)</param>
-        /// <returns>Task of ApiResponse (List&lt;VirtoCommerceCatalogModuleWebModelProduct&gt;)</returns>
-        public async System.Threading.Tasks.Task<ApiResponse<List<VirtoCommerceCatalogModuleWebModelProduct>>> CatalogModuleProductsGetProductByIdsAsyncWithHttpInfo(List<string> ids, string respGroup = null)
+        /// <returns>Task of ApiResponse (List&lt;Product&gt;)</returns>
+        public async System.Threading.Tasks.Task<ApiResponse<List<Product>>> CatalogModuleProductsGetProductByIdsAsyncWithHttpInfo(List<string> ids, string respGroup = null)
         {
             // verify the required parameter 'ids' is set
             if (ids == null)
@@ -5374,9 +5374,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModuleProductsGetProductByIds: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<List<VirtoCommerceCatalogModuleWebModelProduct>>(localVarStatusCode,
+            return new ApiResponse<List<Product>>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (List<VirtoCommerceCatalogModuleWebModelProduct>)ApiClient.Deserialize(localVarResponse, typeof(List<VirtoCommerceCatalogModuleWebModelProduct>)));
+                (List<Product>)ApiClient.Deserialize(localVarResponse, typeof(List<Product>)));
             
         }
         /// <summary>
@@ -5385,7 +5385,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="product">The product.</param>
         /// <returns></returns>
-        public void CatalogModuleProductsUpdate(VirtoCommerceCatalogModuleWebModelProduct product)
+        public void CatalogModuleProductsUpdate(Product product)
         {
              CatalogModuleProductsUpdateWithHttpInfo(product);
         }
@@ -5396,7 +5396,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="product">The product.</param>
         /// <returns>ApiResponse of Object(void)</returns>
-        public ApiResponse<object> CatalogModuleProductsUpdateWithHttpInfo(VirtoCommerceCatalogModuleWebModelProduct product)
+        public ApiResponse<object> CatalogModuleProductsUpdateWithHttpInfo(Product product)
         {
             // verify the required parameter 'product' is set
             if (product == null)
@@ -5464,7 +5464,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="product">The product.</param>
         /// <returns>Task of void</returns>
-        public async System.Threading.Tasks.Task CatalogModuleProductsUpdateAsync(VirtoCommerceCatalogModuleWebModelProduct product)
+        public async System.Threading.Tasks.Task CatalogModuleProductsUpdateAsync(Product product)
         {
              await CatalogModuleProductsUpdateAsyncWithHttpInfo(product);
 
@@ -5476,7 +5476,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="product">The product.</param>
         /// <returns>Task of ApiResponse</returns>
-        public async System.Threading.Tasks.Task<ApiResponse<object>> CatalogModuleProductsUpdateAsyncWithHttpInfo(VirtoCommerceCatalogModuleWebModelProduct product)
+        public async System.Threading.Tasks.Task<ApiResponse<object>> CatalogModuleProductsUpdateAsyncWithHttpInfo(Product product)
         {
             // verify the required parameter 'product' is set
             if (product == null)
@@ -5543,7 +5543,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="property">The property.</param>
         /// <returns></returns>
-        public void CatalogModulePropertiesCreateOrUpdateProperty(VirtoCommerceCatalogModuleWebModelProperty property)
+        public void CatalogModulePropertiesCreateOrUpdateProperty(Property property)
         {
              CatalogModulePropertiesCreateOrUpdatePropertyWithHttpInfo(property);
         }
@@ -5554,7 +5554,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="property">The property.</param>
         /// <returns>ApiResponse of Object(void)</returns>
-        public ApiResponse<object> CatalogModulePropertiesCreateOrUpdatePropertyWithHttpInfo(VirtoCommerceCatalogModuleWebModelProperty property)
+        public ApiResponse<object> CatalogModulePropertiesCreateOrUpdatePropertyWithHttpInfo(Property property)
         {
             // verify the required parameter 'property' is set
             if (property == null)
@@ -5622,7 +5622,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="property">The property.</param>
         /// <returns>Task of void</returns>
-        public async System.Threading.Tasks.Task CatalogModulePropertiesCreateOrUpdatePropertyAsync(VirtoCommerceCatalogModuleWebModelProperty property)
+        public async System.Threading.Tasks.Task CatalogModulePropertiesCreateOrUpdatePropertyAsync(Property property)
         {
              await CatalogModulePropertiesCreateOrUpdatePropertyAsyncWithHttpInfo(property);
 
@@ -5634,7 +5634,7 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="property">The property.</param>
         /// <returns>Task of ApiResponse</returns>
-        public async System.Threading.Tasks.Task<ApiResponse<object>> CatalogModulePropertiesCreateOrUpdatePropertyAsyncWithHttpInfo(VirtoCommerceCatalogModuleWebModelProperty property)
+        public async System.Threading.Tasks.Task<ApiResponse<object>> CatalogModulePropertiesCreateOrUpdatePropertyAsyncWithHttpInfo(Property property)
         {
             // verify the required parameter 'property' is set
             if (property == null)
@@ -5834,10 +5834,10 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="propertyId">The property id.</param>
-        /// <returns>VirtoCommerceCatalogModuleWebModelProperty</returns>
-        public VirtoCommerceCatalogModuleWebModelProperty CatalogModulePropertiesGet(string propertyId)
+        /// <returns>Property</returns>
+        public Property CatalogModulePropertiesGet(string propertyId)
         {
-             ApiResponse<VirtoCommerceCatalogModuleWebModelProperty> localVarResponse = CatalogModulePropertiesGetWithHttpInfo(propertyId);
+             ApiResponse<Property> localVarResponse = CatalogModulePropertiesGetWithHttpInfo(propertyId);
              return localVarResponse.Data;
         }
 
@@ -5846,8 +5846,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="propertyId">The property id.</param>
-        /// <returns>ApiResponse of VirtoCommerceCatalogModuleWebModelProperty</returns>
-        public ApiResponse<VirtoCommerceCatalogModuleWebModelProperty> CatalogModulePropertiesGetWithHttpInfo(string propertyId)
+        /// <returns>ApiResponse of Property</returns>
+        public ApiResponse<Property> CatalogModulePropertiesGetWithHttpInfo(string propertyId)
         {
             // verify the required parameter 'propertyId' is set
             if (propertyId == null)
@@ -5895,9 +5895,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModulePropertiesGet: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<VirtoCommerceCatalogModuleWebModelProperty>(localVarStatusCode,
+            return new ApiResponse<Property>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (VirtoCommerceCatalogModuleWebModelProperty)ApiClient.Deserialize(localVarResponse, typeof(VirtoCommerceCatalogModuleWebModelProperty)));
+                (Property)ApiClient.Deserialize(localVarResponse, typeof(Property)));
             
         }
 
@@ -5906,10 +5906,10 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="propertyId">The property id.</param>
-        /// <returns>Task of VirtoCommerceCatalogModuleWebModelProperty</returns>
-        public async System.Threading.Tasks.Task<VirtoCommerceCatalogModuleWebModelProperty> CatalogModulePropertiesGetAsync(string propertyId)
+        /// <returns>Task of Property</returns>
+        public async System.Threading.Tasks.Task<Property> CatalogModulePropertiesGetAsync(string propertyId)
         {
-             ApiResponse<VirtoCommerceCatalogModuleWebModelProperty> localVarResponse = await CatalogModulePropertiesGetAsyncWithHttpInfo(propertyId);
+             ApiResponse<Property> localVarResponse = await CatalogModulePropertiesGetAsyncWithHttpInfo(propertyId);
              return localVarResponse.Data;
 
         }
@@ -5919,8 +5919,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="propertyId">The property id.</param>
-        /// <returns>Task of ApiResponse (VirtoCommerceCatalogModuleWebModelProperty)</returns>
-        public async System.Threading.Tasks.Task<ApiResponse<VirtoCommerceCatalogModuleWebModelProperty>> CatalogModulePropertiesGetAsyncWithHttpInfo(string propertyId)
+        /// <returns>Task of ApiResponse (Property)</returns>
+        public async System.Threading.Tasks.Task<ApiResponse<Property>> CatalogModulePropertiesGetAsyncWithHttpInfo(string propertyId)
         {
             // verify the required parameter 'propertyId' is set
             if (propertyId == null)
@@ -5968,9 +5968,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModulePropertiesGet: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<VirtoCommerceCatalogModuleWebModelProperty>(localVarStatusCode,
+            return new ApiResponse<Property>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (VirtoCommerceCatalogModuleWebModelProperty)ApiClient.Deserialize(localVarResponse, typeof(VirtoCommerceCatalogModuleWebModelProperty)));
+                (Property)ApiClient.Deserialize(localVarResponse, typeof(Property)));
             
         }
         /// <summary>
@@ -5978,10 +5978,10 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalogId">The catalog id.</param>
-        /// <returns>VirtoCommerceCatalogModuleWebModelProperty</returns>
-        public VirtoCommerceCatalogModuleWebModelProperty CatalogModulePropertiesGetNewCatalogProperty(string catalogId)
+        /// <returns>Property</returns>
+        public Property CatalogModulePropertiesGetNewCatalogProperty(string catalogId)
         {
-             ApiResponse<VirtoCommerceCatalogModuleWebModelProperty> localVarResponse = CatalogModulePropertiesGetNewCatalogPropertyWithHttpInfo(catalogId);
+             ApiResponse<Property> localVarResponse = CatalogModulePropertiesGetNewCatalogPropertyWithHttpInfo(catalogId);
              return localVarResponse.Data;
         }
 
@@ -5990,8 +5990,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalogId">The catalog id.</param>
-        /// <returns>ApiResponse of VirtoCommerceCatalogModuleWebModelProperty</returns>
-        public ApiResponse<VirtoCommerceCatalogModuleWebModelProperty> CatalogModulePropertiesGetNewCatalogPropertyWithHttpInfo(string catalogId)
+        /// <returns>ApiResponse of Property</returns>
+        public ApiResponse<Property> CatalogModulePropertiesGetNewCatalogPropertyWithHttpInfo(string catalogId)
         {
             // verify the required parameter 'catalogId' is set
             if (catalogId == null)
@@ -6039,9 +6039,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModulePropertiesGetNewCatalogProperty: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<VirtoCommerceCatalogModuleWebModelProperty>(localVarStatusCode,
+            return new ApiResponse<Property>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (VirtoCommerceCatalogModuleWebModelProperty)ApiClient.Deserialize(localVarResponse, typeof(VirtoCommerceCatalogModuleWebModelProperty)));
+                (Property)ApiClient.Deserialize(localVarResponse, typeof(Property)));
             
         }
 
@@ -6050,10 +6050,10 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalogId">The catalog id.</param>
-        /// <returns>Task of VirtoCommerceCatalogModuleWebModelProperty</returns>
-        public async System.Threading.Tasks.Task<VirtoCommerceCatalogModuleWebModelProperty> CatalogModulePropertiesGetNewCatalogPropertyAsync(string catalogId)
+        /// <returns>Task of Property</returns>
+        public async System.Threading.Tasks.Task<Property> CatalogModulePropertiesGetNewCatalogPropertyAsync(string catalogId)
         {
-             ApiResponse<VirtoCommerceCatalogModuleWebModelProperty> localVarResponse = await CatalogModulePropertiesGetNewCatalogPropertyAsyncWithHttpInfo(catalogId);
+             ApiResponse<Property> localVarResponse = await CatalogModulePropertiesGetNewCatalogPropertyAsyncWithHttpInfo(catalogId);
              return localVarResponse.Data;
 
         }
@@ -6063,8 +6063,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="catalogId">The catalog id.</param>
-        /// <returns>Task of ApiResponse (VirtoCommerceCatalogModuleWebModelProperty)</returns>
-        public async System.Threading.Tasks.Task<ApiResponse<VirtoCommerceCatalogModuleWebModelProperty>> CatalogModulePropertiesGetNewCatalogPropertyAsyncWithHttpInfo(string catalogId)
+        /// <returns>Task of ApiResponse (Property)</returns>
+        public async System.Threading.Tasks.Task<ApiResponse<Property>> CatalogModulePropertiesGetNewCatalogPropertyAsyncWithHttpInfo(string catalogId)
         {
             // verify the required parameter 'catalogId' is set
             if (catalogId == null)
@@ -6112,9 +6112,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModulePropertiesGetNewCatalogProperty: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<VirtoCommerceCatalogModuleWebModelProperty>(localVarStatusCode,
+            return new ApiResponse<Property>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (VirtoCommerceCatalogModuleWebModelProperty)ApiClient.Deserialize(localVarResponse, typeof(VirtoCommerceCatalogModuleWebModelProperty)));
+                (Property)ApiClient.Deserialize(localVarResponse, typeof(Property)));
             
         }
         /// <summary>
@@ -6122,10 +6122,10 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="categoryId">The category id.</param>
-        /// <returns>VirtoCommerceCatalogModuleWebModelProperty</returns>
-        public VirtoCommerceCatalogModuleWebModelProperty CatalogModulePropertiesGetNewCategoryProperty(string categoryId)
+        /// <returns>Property</returns>
+        public Property CatalogModulePropertiesGetNewCategoryProperty(string categoryId)
         {
-             ApiResponse<VirtoCommerceCatalogModuleWebModelProperty> localVarResponse = CatalogModulePropertiesGetNewCategoryPropertyWithHttpInfo(categoryId);
+             ApiResponse<Property> localVarResponse = CatalogModulePropertiesGetNewCategoryPropertyWithHttpInfo(categoryId);
              return localVarResponse.Data;
         }
 
@@ -6134,8 +6134,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="categoryId">The category id.</param>
-        /// <returns>ApiResponse of VirtoCommerceCatalogModuleWebModelProperty</returns>
-        public ApiResponse<VirtoCommerceCatalogModuleWebModelProperty> CatalogModulePropertiesGetNewCategoryPropertyWithHttpInfo(string categoryId)
+        /// <returns>ApiResponse of Property</returns>
+        public ApiResponse<Property> CatalogModulePropertiesGetNewCategoryPropertyWithHttpInfo(string categoryId)
         {
             // verify the required parameter 'categoryId' is set
             if (categoryId == null)
@@ -6183,9 +6183,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModulePropertiesGetNewCategoryProperty: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<VirtoCommerceCatalogModuleWebModelProperty>(localVarStatusCode,
+            return new ApiResponse<Property>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (VirtoCommerceCatalogModuleWebModelProperty)ApiClient.Deserialize(localVarResponse, typeof(VirtoCommerceCatalogModuleWebModelProperty)));
+                (Property)ApiClient.Deserialize(localVarResponse, typeof(Property)));
             
         }
 
@@ -6194,10 +6194,10 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="categoryId">The category id.</param>
-        /// <returns>Task of VirtoCommerceCatalogModuleWebModelProperty</returns>
-        public async System.Threading.Tasks.Task<VirtoCommerceCatalogModuleWebModelProperty> CatalogModulePropertiesGetNewCategoryPropertyAsync(string categoryId)
+        /// <returns>Task of Property</returns>
+        public async System.Threading.Tasks.Task<Property> CatalogModulePropertiesGetNewCategoryPropertyAsync(string categoryId)
         {
-             ApiResponse<VirtoCommerceCatalogModuleWebModelProperty> localVarResponse = await CatalogModulePropertiesGetNewCategoryPropertyAsyncWithHttpInfo(categoryId);
+             ApiResponse<Property> localVarResponse = await CatalogModulePropertiesGetNewCategoryPropertyAsyncWithHttpInfo(categoryId);
              return localVarResponse.Data;
 
         }
@@ -6207,8 +6207,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="categoryId">The category id.</param>
-        /// <returns>Task of ApiResponse (VirtoCommerceCatalogModuleWebModelProperty)</returns>
-        public async System.Threading.Tasks.Task<ApiResponse<VirtoCommerceCatalogModuleWebModelProperty>> CatalogModulePropertiesGetNewCategoryPropertyAsyncWithHttpInfo(string categoryId)
+        /// <returns>Task of ApiResponse (Property)</returns>
+        public async System.Threading.Tasks.Task<ApiResponse<Property>> CatalogModulePropertiesGetNewCategoryPropertyAsyncWithHttpInfo(string categoryId)
         {
             // verify the required parameter 'categoryId' is set
             if (categoryId == null)
@@ -6256,9 +6256,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModulePropertiesGetNewCategoryProperty: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<VirtoCommerceCatalogModuleWebModelProperty>(localVarStatusCode,
+            return new ApiResponse<Property>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (VirtoCommerceCatalogModuleWebModelProperty)ApiClient.Deserialize(localVarResponse, typeof(VirtoCommerceCatalogModuleWebModelProperty)));
+                (Property)ApiClient.Deserialize(localVarResponse, typeof(Property)));
             
         }
         /// <summary>
@@ -6267,10 +6267,10 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="propertyId">The property id.</param>
         /// <param name="keyword">The keyword. (Optional) (optional)</param>
-        /// <returns>List&lt;VirtoCommerceCatalogModuleWebModelPropertyValue&gt;</returns>
-        public List<VirtoCommerceCatalogModuleWebModelPropertyValue> CatalogModulePropertiesGetPropertyValues(string propertyId, string keyword = null)
+        /// <returns>List&lt;PropertyValue&gt;</returns>
+        public List<PropertyValue> CatalogModulePropertiesGetPropertyValues(string propertyId, string keyword = null)
         {
-             ApiResponse<List<VirtoCommerceCatalogModuleWebModelPropertyValue>> localVarResponse = CatalogModulePropertiesGetPropertyValuesWithHttpInfo(propertyId, keyword);
+             ApiResponse<List<PropertyValue>> localVarResponse = CatalogModulePropertiesGetPropertyValuesWithHttpInfo(propertyId, keyword);
              return localVarResponse.Data;
         }
 
@@ -6280,8 +6280,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="propertyId">The property id.</param>
         /// <param name="keyword">The keyword. (Optional) (optional)</param>
-        /// <returns>ApiResponse of List&lt;VirtoCommerceCatalogModuleWebModelPropertyValue&gt;</returns>
-        public ApiResponse<List<VirtoCommerceCatalogModuleWebModelPropertyValue>> CatalogModulePropertiesGetPropertyValuesWithHttpInfo(string propertyId, string keyword = null)
+        /// <returns>ApiResponse of List&lt;PropertyValue&gt;</returns>
+        public ApiResponse<List<PropertyValue>> CatalogModulePropertiesGetPropertyValuesWithHttpInfo(string propertyId, string keyword = null)
         {
             // verify the required parameter 'propertyId' is set
             if (propertyId == null)
@@ -6330,9 +6330,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModulePropertiesGetPropertyValues: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<List<VirtoCommerceCatalogModuleWebModelPropertyValue>>(localVarStatusCode,
+            return new ApiResponse<List<PropertyValue>>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (List<VirtoCommerceCatalogModuleWebModelPropertyValue>)ApiClient.Deserialize(localVarResponse, typeof(List<VirtoCommerceCatalogModuleWebModelPropertyValue>)));
+                (List<PropertyValue>)ApiClient.Deserialize(localVarResponse, typeof(List<PropertyValue>)));
             
         }
 
@@ -6342,10 +6342,10 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="propertyId">The property id.</param>
         /// <param name="keyword">The keyword. (Optional) (optional)</param>
-        /// <returns>Task of List&lt;VirtoCommerceCatalogModuleWebModelPropertyValue&gt;</returns>
-        public async System.Threading.Tasks.Task<List<VirtoCommerceCatalogModuleWebModelPropertyValue>> CatalogModulePropertiesGetPropertyValuesAsync(string propertyId, string keyword = null)
+        /// <returns>Task of List&lt;PropertyValue&gt;</returns>
+        public async System.Threading.Tasks.Task<List<PropertyValue>> CatalogModulePropertiesGetPropertyValuesAsync(string propertyId, string keyword = null)
         {
-             ApiResponse<List<VirtoCommerceCatalogModuleWebModelPropertyValue>> localVarResponse = await CatalogModulePropertiesGetPropertyValuesAsyncWithHttpInfo(propertyId, keyword);
+             ApiResponse<List<PropertyValue>> localVarResponse = await CatalogModulePropertiesGetPropertyValuesAsyncWithHttpInfo(propertyId, keyword);
              return localVarResponse.Data;
 
         }
@@ -6356,8 +6356,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="propertyId">The property id.</param>
         /// <param name="keyword">The keyword. (Optional) (optional)</param>
-        /// <returns>Task of ApiResponse (List&lt;VirtoCommerceCatalogModuleWebModelPropertyValue&gt;)</returns>
-        public async System.Threading.Tasks.Task<ApiResponse<List<VirtoCommerceCatalogModuleWebModelPropertyValue>>> CatalogModulePropertiesGetPropertyValuesAsyncWithHttpInfo(string propertyId, string keyword = null)
+        /// <returns>Task of ApiResponse (List&lt;PropertyValue&gt;)</returns>
+        public async System.Threading.Tasks.Task<ApiResponse<List<PropertyValue>>> CatalogModulePropertiesGetPropertyValuesAsyncWithHttpInfo(string propertyId, string keyword = null)
         {
             // verify the required parameter 'propertyId' is set
             if (propertyId == null)
@@ -6406,9 +6406,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModulePropertiesGetPropertyValues: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<List<VirtoCommerceCatalogModuleWebModelPropertyValue>>(localVarStatusCode,
+            return new ApiResponse<List<PropertyValue>>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (List<VirtoCommerceCatalogModuleWebModelPropertyValue>)ApiClient.Deserialize(localVarResponse, typeof(List<VirtoCommerceCatalogModuleWebModelPropertyValue>)));
+                (List<PropertyValue>)ApiClient.Deserialize(localVarResponse, typeof(List<PropertyValue>)));
             
         }
         /// <summary>
@@ -6416,10 +6416,10 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="criteria">The search criteria.</param>
-        /// <returns>VirtoCommerceCatalogModuleWebModelCatalogSearchResult</returns>
-        public VirtoCommerceCatalogModuleWebModelCatalogSearchResult CatalogModuleSearchSearch(VirtoCommerceDomainCatalogModelSearchCriteria criteria)
+        /// <returns>CatalogSearchResult</returns>
+        public CatalogSearchResult CatalogModuleSearchSearch(SearchCriteria criteria)
         {
-             ApiResponse<VirtoCommerceCatalogModuleWebModelCatalogSearchResult> localVarResponse = CatalogModuleSearchSearchWithHttpInfo(criteria);
+             ApiResponse<CatalogSearchResult> localVarResponse = CatalogModuleSearchSearchWithHttpInfo(criteria);
              return localVarResponse.Data;
         }
 
@@ -6428,8 +6428,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="criteria">The search criteria.</param>
-        /// <returns>ApiResponse of VirtoCommerceCatalogModuleWebModelCatalogSearchResult</returns>
-        public ApiResponse<VirtoCommerceCatalogModuleWebModelCatalogSearchResult> CatalogModuleSearchSearchWithHttpInfo(VirtoCommerceDomainCatalogModelSearchCriteria criteria)
+        /// <returns>ApiResponse of CatalogSearchResult</returns>
+        public ApiResponse<CatalogSearchResult> CatalogModuleSearchSearchWithHttpInfo(SearchCriteria criteria)
         {
             // verify the required parameter 'criteria' is set
             if (criteria == null)
@@ -6489,9 +6489,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModuleSearchSearch: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<VirtoCommerceCatalogModuleWebModelCatalogSearchResult>(localVarStatusCode,
+            return new ApiResponse<CatalogSearchResult>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (VirtoCommerceCatalogModuleWebModelCatalogSearchResult)ApiClient.Deserialize(localVarResponse, typeof(VirtoCommerceCatalogModuleWebModelCatalogSearchResult)));
+                (CatalogSearchResult)ApiClient.Deserialize(localVarResponse, typeof(CatalogSearchResult)));
             
         }
 
@@ -6500,10 +6500,10 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="criteria">The search criteria.</param>
-        /// <returns>Task of VirtoCommerceCatalogModuleWebModelCatalogSearchResult</returns>
-        public async System.Threading.Tasks.Task<VirtoCommerceCatalogModuleWebModelCatalogSearchResult> CatalogModuleSearchSearchAsync(VirtoCommerceDomainCatalogModelSearchCriteria criteria)
+        /// <returns>Task of CatalogSearchResult</returns>
+        public async System.Threading.Tasks.Task<CatalogSearchResult> CatalogModuleSearchSearchAsync(SearchCriteria criteria)
         {
-             ApiResponse<VirtoCommerceCatalogModuleWebModelCatalogSearchResult> localVarResponse = await CatalogModuleSearchSearchAsyncWithHttpInfo(criteria);
+             ApiResponse<CatalogSearchResult> localVarResponse = await CatalogModuleSearchSearchAsyncWithHttpInfo(criteria);
              return localVarResponse.Data;
 
         }
@@ -6513,8 +6513,8 @@ namespace VirtoCommerce.CatalogModule.Client.Api
         /// </summary>
         /// <exception cref="VirtoCommerce.CatalogModule.Client.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="criteria">The search criteria.</param>
-        /// <returns>Task of ApiResponse (VirtoCommerceCatalogModuleWebModelCatalogSearchResult)</returns>
-        public async System.Threading.Tasks.Task<ApiResponse<VirtoCommerceCatalogModuleWebModelCatalogSearchResult>> CatalogModuleSearchSearchAsyncWithHttpInfo(VirtoCommerceDomainCatalogModelSearchCriteria criteria)
+        /// <returns>Task of ApiResponse (CatalogSearchResult)</returns>
+        public async System.Threading.Tasks.Task<ApiResponse<CatalogSearchResult>> CatalogModuleSearchSearchAsyncWithHttpInfo(SearchCriteria criteria)
         {
             // verify the required parameter 'criteria' is set
             if (criteria == null)
@@ -6574,9 +6574,9 @@ namespace VirtoCommerce.CatalogModule.Client.Api
             else if (localVarStatusCode == 0)
                 throw new ApiException(localVarStatusCode, "Error calling CatalogModuleSearchSearch: " + localVarResponse.ErrorMessage, localVarResponse.ErrorMessage);
 
-            return new ApiResponse<VirtoCommerceCatalogModuleWebModelCatalogSearchResult>(localVarStatusCode,
+            return new ApiResponse<CatalogSearchResult>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (VirtoCommerceCatalogModuleWebModelCatalogSearchResult)ApiClient.Deserialize(localVarResponse, typeof(VirtoCommerceCatalogModuleWebModelCatalogSearchResult)));
+                (CatalogSearchResult)ApiClient.Deserialize(localVarResponse, typeof(CatalogSearchResult)));
             
         }
     }
