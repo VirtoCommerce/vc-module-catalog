@@ -18,7 +18,7 @@
     <projectUrl>http://virtocommerce.com/</projectUrl>
     <iconUrl>Modules/$(VirtoCommerce.Catalog)/Content/logo.png</iconUrl>
     <releaseNotes>First version.</releaseNotes>
-    <copyright>Copyright © 2011-2015 Virto Commerce. All rights reserved</copyright>
+    <copyright>Copyright © 2011-2016 Virto Commerce. All rights reserved</copyright>
     <tags>catalog</tags>
 
     <assemblyFile>VirtoCommerce.CatalogModule.Web.dll</assemblyFile>
