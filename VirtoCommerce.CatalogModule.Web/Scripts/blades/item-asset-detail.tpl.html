@@ -16,7 +16,7 @@
                         <input type="file" multiple uploader="uploader" nv-file-select tabindex="-1">
                         <input type="text" readonly="">
                         <button class="btn __file" type="button" onclick="$('input[type=file]').trigger('click')">
-                            <i class="btn-ico fa fa-image"></i>
+                            <i class="btn-ico fa fa-file"></i>
                         </button>
                     </div>
                 </form>
@@ -25,7 +25,7 @@
                     <div class="sub-t">{{ 'catalog.blades.item-asset-detail.labels.progress' | translate }}</div>
                     <div class="progress-bar __aqua" ng-style="{'width': uploader.progress + '%'}"></div>
                 </div>
-                
+
                 <!-- <div class="tile-group triple __images-list" ui-sortable="sortableOptions" ng-model="item.assets">
                     <div class="tile" ng-class="{'__selected': data.selected}" ng-repeat="data in item.assets" ng-include="'assetTemplate.html'" ng-click="toggleAssetSelect($event, data)" context-menu="toggleAssetSelect($event, data)" data-target="itemAssetMenu{{$index}}"></div>
                 </div> -->
