@@ -74,8 +74,8 @@
                 angular.forEach(images, function (image) {
                     //ADD uploaded image
                     blade.currentEntity.images.push(image);
-                    var request = { imageUrl: image.url, thumbnailsParameters: thumbnailsParameters, isRegenerateAll: true };
-
+                    var request = { imageUrl: image.url, isRegenerateAll: true };
+                    
                     imageTools.generateThumbnails(request, function (response) {
                         if (!response || response.error) {
                             bladeNavigationService.setError(response.error, blade);
@@ -199,10 +199,9 @@
     };
 
 
-    initialize();
     $scope.imageTypes = settings.getValues({ id: 'Catalog.ImageCategories' });
-    var thumbnailsParameters = settings.getValues({ id: 'ImageTools.Thumbnails.Parameters' });
 
+    initialize();
     blade.refresh();
 
 }]);
