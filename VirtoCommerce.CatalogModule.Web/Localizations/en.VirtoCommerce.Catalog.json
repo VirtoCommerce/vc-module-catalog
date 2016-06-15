@@ -325,12 +325,15 @@
           "no-images": "No images",
           "copy-url-prompt": "Copy to clipboard: Ctrl+C, Enter",
           "select-images": "Select images",
+          "select-image-category": "Select image category",
+          "image-category": "Image category",
           "drag-drop-comment": "Drag and drop images here",
           "progress": "Progress",
           "make-default-image": "Drag and drop an image to top left corner of images area to make it the default image."
         },
         "placeholders": {
-          "image-url": "Paste image URL here"
+          "image-url": "Paste image URL here",
+          "image-category": "Select..."
         }
       },
       "item-asset-detail": {

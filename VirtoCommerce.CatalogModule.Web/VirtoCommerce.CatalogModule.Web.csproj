@@ -197,6 +197,7 @@
     <Content Include="Scripts\blades\item-property-detail.js" />
     <Content Include="Scripts\dialogs\deleteCategoryItem-dialog.tpl.html" />
     <Content Include="Scripts\dialogs\deleteCatalog-dialog.tpl.html" />
+    <Content Include="Scripts\resources\imageTools.js" />
     <Content Include="Scripts\resources\export.js" />
   </ItemGroup>
   <ItemGroup>

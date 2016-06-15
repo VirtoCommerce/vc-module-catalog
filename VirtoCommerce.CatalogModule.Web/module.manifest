@@ -65,6 +65,17 @@
                 </arrayValues>
             </setting>
         </group>
+        <group name="Catalog|Images">
+            <setting>
+                <name>Catalog.ImageCategories</name>
+                <valueType>string</valueType>
+                <title>Image categories</title>
+                <description>Dictionary of possible categories that item's Images can have</description>
+                <isArray>true</isArray>
+                <arrayValues>
+                </arrayValues>
+            </setting>
+        </group>
     </settings>
 
     <permissions>
@@ -76,6 +87,7 @@
             <permission id="catalog:delete" name="Delete catalog related data" description=""/>
             <permission id="catalog:export" name="Export catalog data" description=""/>
             <permission id="catalog:import" name="Import catalog data" description=""/>
+            <permission id="catalog:imagetypes" name="Manage image types" description=""/>
         </group>
     </permissions>
 </module>

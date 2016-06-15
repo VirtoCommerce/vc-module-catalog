@@ -5,8 +5,24 @@
 <div class="blade-content">
     <div class="blade-inner">
         <div class="inner-block">
-            <div class="sub-t" va-permission="{{blade.updatePermission}}">{{ 'catalog.blades.images.labels.select-images' | translate }}</div>
             <form class="form" ng-if="blade.hasAssetCreatePermission">
+                <div class="sub-t">{{ 'catalog.blades.images.labels.select-image-category' | translate }}</div>
+                <div class="column">
+                    <div class="form-group">
+                        <label class="form-label">{{ 'catalog.blades.images.labels.image-category' | translate }} <a href="" ng-click="openDictionarySettingManagement()" class="form-edit" va-permission="catalog:imagetypes"><i class="form-ico fa fa-pencil"></i></a></label>
+                        <div class="form-input">
+                            <ui-select ng-model="blade.imageType" on-select="changeImageCategory($item, $model)">
+                                <ui-select-match allow-clear="true" placeholder="{{ 'catalog.blades.images.placeholders.image-category' | translate }}">{{$select.selected}}</ui-select-match>
+                                <ui-select-choices repeat="x in imageTypes | filter: $select.search">
+                                    <span ng-bind-html="x | highlight: $select.search"></span>
+                                </ui-select-choices>
+                            </ui-select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sub-t" va-permission="{{blade.updatePermission}}">{{ 'catalog.blades.images.labels.select-images' | translate }}</div>
+
                 <div ng-show="uploader.isHTML5">
                     <!-- 3. ng-file-over | ng-file-over="className" -->
                     <div over-class="bd-blue" nv-file-over nv-file-drop uploader="uploader" class="drag-area">

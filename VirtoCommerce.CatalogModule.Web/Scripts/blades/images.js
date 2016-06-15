@@ -1,13 +1,17 @@
 ﻿angular.module('virtoCommerce.catalogModule')
-.controller('virtoCommerce.catalogModule.imagesController', ['$scope', '$filter', '$translate', 'FileUploader', 'platformWebApp.dialogService', 'platformWebApp.bladeNavigationService', 'platformWebApp.authService', 'platformWebApp.assets.api', function ($scope, $filter, $translate, FileUploader, dialogService, bladeNavigationService, authService, assets) {
+.controller('virtoCommerce.catalogModule.imagesController',
+    ['$scope', '$filter', '$translate', 'FileUploader', 'platformWebApp.dialogService',
+        'platformWebApp.bladeNavigationService', 'platformWebApp.authService',
+        'platformWebApp.assets.api', 'virtoCommerce.catalogModule.imageTools', 'platformWebApp.settings',
+        function ($scope, $filter, $translate, FileUploader, dialogService, bladeNavigationService, authService, assets, imageTools, settings) {
     var blade = $scope.blade;
     blade.hasAssetCreatePermission = bladeNavigationService.checkPermission('platform:asset:create');
 
     blade.refresh = function (parentRefresh) {
         blade.currentResource.get({ id: blade.currentEntityId }, function (data) {
-            if ($scope.uploader)
-                $scope.uploader.url = 'api/platform/assets?folderUrl=catalog/' + data.code;
             $scope.origItem = data;
+            if ($scope.uploader)
+                $scope.uploader.url = getImageUrl().relative;
             blade.currentEntity = angular.copy(data);
             blade.isLoading = false;
             if (parentRefresh) {
@@ -27,7 +31,7 @@
 
     $scope.addImageFromUrl = function () {
         if (blade.newExternalImageUrl) {
-            assets.uploadFromUrl({ folderUrl: 'catalog/' + $scope.origItem.code, url: blade.newExternalImageUrl }, function (data) {
+            assets.uploadFromUrl({ folderUrl: getImageUrl().folderUrl, url: blade.newExternalImageUrl }, function (data) {
                 blade.currentEntity.images.push(data);
                 blade.newExternalImageUrl = undefined;
             });
@@ -70,6 +74,14 @@
                 angular.forEach(images, function (image) {
                     //ADD uploaded image
                     blade.currentEntity.images.push(image);
+                    var request = { imageUrl: image.url, thumbnailsParameters: thumbnailsParameters, isRegenerateAll: true };
+
+                    imageTools.generateThumbnails(request, function (response) {
+                        if (!response || response.error) {
+                            bladeNavigationService.setError(response.error, blade);
+                        }
+                    },
+                    function (error) { bladeNavigationService.setError('Thumbnails creation error ' + error.status, $scope.blade); });
                 });
             };
 
@@ -165,7 +177,32 @@
         }
     };
 
+    $scope.openDictionarySettingManagement = function () {
+        var newBlade = {
+            id: 'settingDetailChild',
+            isApiSave: true,
+            currentEntityId: 'Catalog.ImageCategories',
+            parentRefresh: function (data) { $scope.languages = data; },
+            controller: 'platformWebApp.settingDictionaryController',
+            template: '$(Platform)/Scripts/app/settings/blades/setting-dictionary.tpl.html'
+        };
+        bladeNavigationService.showBlade(newBlade, blade);
+    };
+
+    $scope.changeImageCategory = function ($item, $model) {
+        $scope.uploader.url = getImageUrl().relative;
+    };
+
+    function getImageUrl() {
+        var folderUrl = 'catalog/'+ $scope.origItem.code + (blade.imageType ? '/' + blade.imageType : '') ;
+        return { folderUrl: '/' + folderUrl, relative: 'api/platform/assets?folderUrl=' + folderUrl };
+    };
+
+
     initialize();
+    $scope.imageTypes = settings.getValues({ id: 'Catalog.ImageCategories' });
+    var thumbnailsParameters = settings.getValues({ id: 'ImageTools.Thumbnails.Parameters' });
+
     blade.refresh();
 
 }]);
