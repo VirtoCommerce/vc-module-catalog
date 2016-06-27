@@ -63,7 +63,7 @@
                     <value>QuickReview</value>
                     <value>FullReview</value>
                 </arrayValues>
-            </setting>
+            </setting>			
         </group>
         <group name="Catalog|Images">
             <setting>

@@ -137,6 +137,10 @@ namespace VirtoCommerce.CatalogModule.Web.Model
 		public decimal? Weight { get; set; }
 
         /// <summary>
+        /// Predefined length dimension package type
+        /// </summary>
+        public string PackageType { get; set; }
+        /// <summary>
         /// Gets or sets the dimensions measure unit. (for physical product only)
         /// </summary>
         /// <value>
