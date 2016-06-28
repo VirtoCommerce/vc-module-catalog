@@ -1,5 +1,5 @@
 ﻿angular.module('virtoCommerce.catalogModule')
-.controller('virtoCommerce.catalogModule.newProductWizardImagesController', ['$scope', '$filter', 'platformWebApp.bladeNavigationService', 'FileUploader', 'platformWebApp.assets.api', 'platformWebApp.settings', function ($scope, $filter, bladeNavigationService, FileUploader, assets, settings) {
+.controller('virtoCommerce.catalogModule.newProductWizardImagesController', ['$scope', '$filter', 'platformWebApp.bladeNavigationService', 'FileUploader', 'platformWebApp.assets.api', 'virtoCommerce.catalogModule.imageTools', 'platformWebApp.settings', function ($scope, $filter, bladeNavigationService, FileUploader, assets, imageTools, settings) {
     var blade = $scope.blade;
     blade.hasAssetCreatePermission = bladeNavigationService.checkPermission('platform:asset:create');
 
