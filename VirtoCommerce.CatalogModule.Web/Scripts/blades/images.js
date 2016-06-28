@@ -74,14 +74,13 @@
                 angular.forEach(images, function (image) {
                     //ADD uploaded image
                     blade.currentEntity.images.push(image);
-                    var request = { imageUrl: image.url, thumbnailsParameters: thumbnailsParameters, isRegenerateAll: true };
-
+                    var request = { imageUrl: image.url, isRegenerateAll: true };
+                    
                     imageTools.generateThumbnails(request, function (response) {
                         if (!response || response.error) {
                             bladeNavigationService.setError(response.error, blade);
                         }
-                    },
-                    function (error) { bladeNavigationService.setError('Thumbnails creation error ' + error.status, $scope.blade); });
+                    });
                 });
             };
 
@@ -182,7 +181,7 @@
             id: 'settingDetailChild',
             isApiSave: true,
             currentEntityId: 'Catalog.ImageCategories',
-            parentRefresh: function (data) { $scope.languages = data; },
+            parentRefresh: function (data) { $scope.imageTypes = data; },
             controller: 'platformWebApp.settingDictionaryController',
             template: '$(Platform)/Scripts/app/settings/blades/setting-dictionary.tpl.html'
         };
@@ -199,10 +198,9 @@
     };
 
 
-    initialize();
     $scope.imageTypes = settings.getValues({ id: 'Catalog.ImageCategories' });
-    var thumbnailsParameters = settings.getValues({ id: 'ImageTools.Thumbnails.Parameters' });
 
+    initialize();
     blade.refresh();
 
 }]);

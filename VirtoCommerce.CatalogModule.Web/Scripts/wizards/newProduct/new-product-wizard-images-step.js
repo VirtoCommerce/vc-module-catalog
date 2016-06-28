@@ -1,5 +1,5 @@
 ﻿angular.module('virtoCommerce.catalogModule')
-.controller('virtoCommerce.catalogModule.newProductWizardImagesController', ['$scope', '$filter', 'platformWebApp.bladeNavigationService', 'FileUploader', 'platformWebApp.assets.api', function ($scope, $filter, bladeNavigationService, FileUploader, assets) {
+.controller('virtoCommerce.catalogModule.newProductWizardImagesController', ['$scope', '$filter', 'platformWebApp.bladeNavigationService', 'FileUploader', 'platformWebApp.assets.api', 'platformWebApp.settings', function ($scope, $filter, bladeNavigationService, FileUploader, assets, settings) {
     var blade = $scope.blade;
     blade.hasAssetCreatePermission = bladeNavigationService.checkPermission('platform:asset:create');
 
@@ -48,6 +48,13 @@
                 angular.forEach(images, function (image) {
                     //ADD uploaded image to the item
                     blade.currentEntity.images.push(image);
+                    var request = { imageUrl: image.url, isRegenerateAll: true };
+                    
+                    imageTools.generateThumbnails(request, function (response) {
+                        if (!response || response.error) {
+                            bladeNavigationService.setError(response.error, blade);
+                        }
+                    });
                 });
             };
 
@@ -101,6 +108,8 @@
         stop: function (e, ui) {
         }
     };
+
+    $scope.imageTypes = settings.getValues({ id: 'Catalog.ImageCategories' });
 
     initialize();
 }]);
