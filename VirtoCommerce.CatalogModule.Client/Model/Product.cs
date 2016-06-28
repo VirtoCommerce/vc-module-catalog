@@ -138,6 +138,12 @@ namespace VirtoCommerce.CatalogModule.Client.Model
         public double? Weight { get; set; }
 
         /// <summary>
+        /// Gets or Sets PackageType
+        /// </summary>
+        [DataMember(Name="packageType", EmitDefaultValue=false)]
+        public string PackageType { get; set; }
+
+        /// <summary>
         /// Gets or Sets MeasureUnit
         /// </summary>
         [DataMember(Name="measureUnit", EmitDefaultValue=false)]
@@ -339,6 +345,7 @@ namespace VirtoCommerce.CatalogModule.Client.Model
             sb.Append("  ProductType: ").Append(ProductType).Append("\n");
             sb.Append("  WeightUnit: ").Append(WeightUnit).Append("\n");
             sb.Append("  Weight: ").Append(Weight).Append("\n");
+            sb.Append("  PackageType: ").Append(PackageType).Append("\n");
             sb.Append("  MeasureUnit: ").Append(MeasureUnit).Append("\n");
             sb.Append("  Height: ").Append(Height).Append("\n");
             sb.Append("  Length: ").Append(Length).Append("\n");
@@ -503,6 +510,11 @@ namespace VirtoCommerce.CatalogModule.Client.Model
                     this.Weight == other.Weight ||
                     this.Weight != null &&
                     this.Weight.Equals(other.Weight)
+                ) && 
+                (
+                    this.PackageType == other.PackageType ||
+                    this.PackageType != null &&
+                    this.PackageType.Equals(other.PackageType)
                 ) && 
                 (
                     this.MeasureUnit == other.MeasureUnit ||
@@ -722,6 +734,9 @@ namespace VirtoCommerce.CatalogModule.Client.Model
 
                 if (this.Weight != null)
                     hash = hash * 59 + this.Weight.GetHashCode();
+
+                if (this.PackageType != null)
+                    hash = hash * 59 + this.PackageType.GetHashCode();
 
                 if (this.MeasureUnit != null)
                     hash = hash * 59 + this.MeasureUnit.GetHashCode();
