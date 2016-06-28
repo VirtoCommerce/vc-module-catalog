@@ -182,7 +182,7 @@
             id: 'settingDetailChild',
             isApiSave: true,
             currentEntityId: 'Catalog.ImageCategories',
-            parentRefresh: function (data) { $scope.languages = data; },
+            parentRefresh: function (data) { $scope.imageTypes = data; },
             controller: 'platformWebApp.settingDictionaryController',
             template: '$(Platform)/Scripts/app/settings/blades/setting-dictionary.tpl.html'
         };

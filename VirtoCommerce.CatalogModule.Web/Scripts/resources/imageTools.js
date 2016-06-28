@@ -1,9 +1,9 @@
 ﻿angular.module('virtoCommerce.catalogModule')
 .factory('virtoCommerce.catalogModule.imageTools', ['$resource', function ($resource) {
 
-    return $resource('/api/image', {},
+    return $resource('api/image', {},
     {
-        generateThumbnails: { method: 'POST', url: '/api/image/thumbnails' }
+        generateThumbnails: { method: 'POST', url: 'api/image/thumbnails' }
     });
 }]);
 
