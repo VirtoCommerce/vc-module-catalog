@@ -148,13 +148,7 @@
                     currentEntityId: 'VirtoCommerce.Core.General.TaxTypes',
                     parentRefresh: function (data) { $scope.taxTypes = data; }
                 });
-                break;
-            case 'WeightUnits':
-                _.extend(newBlade, {
-                    currentEntityId: 'VirtoCommerce.Core.General.WeightUnits',
-                    parentRefresh: function (data) { $scope.weightUnits = data; }
-                });
-                break;
+                break;       
         }
 
         bladeNavigationService.showBlade(newBlade, blade);
@@ -167,7 +161,6 @@
     });
 
     initVendors();
-    $scope.taxTypes = settings.getValues({ id: 'VirtoCommerce.Core.General.TaxTypes' });
-    $scope.weightUnits = settings.getValues({ id: 'VirtoCommerce.Core.General.WeightUnits' });
+    $scope.taxTypes = settings.getValues({ id: 'VirtoCommerce.Core.General.TaxTypes' });  
     blade.refresh(false);
 }]);

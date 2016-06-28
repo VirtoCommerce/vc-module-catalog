@@ -291,10 +291,22 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
                 target.CatalogId = null;
             if (source.CategoryId == String.Empty)
                 target.CategoryId = null;
+            if (source.EnableReview != null)
+                target.EnableReview = source.EnableReview.Value;
+
+            target.Vendor = source.Vendor;
+            target.TaxType = source.TaxType;
+            target.WeightUnit = source.WeightUnit;
+            target.Weight = source.Weight;
+            target.MeasureUnit = source.MeasureUnit;
+            target.PackageType = source.PackageType;
+            target.Height = source.Height;
+            target.Length = source.Length;
+            target.Width = source.Width;
+            target.ShippingType = source.ShippingType;
 
             var patchInjectionPolicy = new PatchInjection<dataModel.Item>(x => x.Name, x => x.Code, x => x.ManufacturerPartNumber, x => x.Gtin, x => x.ProductType,
-                                                                          x => x.WeightUnit, x => x.Weight, x => x.MeasureUnit, x => x.Height, x => x.Length, x => x.Width, x => x.EnableReview, x => x.MaxNumberOfDownload,
-                                                                          x => x.DownloadExpiration, x => x.DownloadType, x => x.HasUserAgreement, x => x.ShippingType, x => x.TaxType, x => x.Vendor, x => x.CatalogId, x => x.CategoryId);
+                                                                          x => x.MaxNumberOfDownload,  x => x.DownloadExpiration, x => x.DownloadType, x => x.HasUserAgreement);
 
             var dbSource = source.ToDataModel(pkMap);
             target.InjectFrom(patchInjectionPolicy, dbSource);
