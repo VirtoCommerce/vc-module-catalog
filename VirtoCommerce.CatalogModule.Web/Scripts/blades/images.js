@@ -80,8 +80,7 @@
                         if (!response || response.error) {
                             bladeNavigationService.setError(response.error, blade);
                         }
-                    },
-                    function (error) { bladeNavigationService.setError('Thumbnails creation error ' + error.status, $scope.blade); });
+                    });
                 });
             };
 

@@ -48,6 +48,13 @@
                 angular.forEach(images, function (image) {
                     //ADD uploaded image to the item
                     blade.currentEntity.images.push(image);
+                    var request = { imageUrl: image.url, isRegenerateAll: true };
+                    
+                    imageTools.generateThumbnails(request, function (response) {
+                        if (!response || response.error) {
+                            bladeNavigationService.setError(response.error, blade);
+                        }
+                    });
                 });
             };
 
