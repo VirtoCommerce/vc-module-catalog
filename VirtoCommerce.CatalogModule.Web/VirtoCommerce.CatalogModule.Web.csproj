@@ -178,9 +178,6 @@
     <Compile Include="Model\ListEntrySearchCriteria.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Content Include="Scripts\blades\package-type-detail.js" />
-    <Content Include="Scripts\blades\package-type-detail.tpl.html" />
-    <Content Include="Scripts\blades\package-type-list.tpl.html" />
     <Content Include="Content\css\catalog.css" />
     <Content Include="Content\logo.png" />
     <Content Include="Scripts\blades\filter-detail.js" />
@@ -202,7 +199,6 @@
     <Content Include="Scripts\blades\item-property-detail.js" />
     <Content Include="Scripts\dialogs\deleteCategoryItem-dialog.tpl.html" />
     <Content Include="Scripts\dialogs\deleteCatalog-dialog.tpl.html" />
-    <Content Include="Scripts\blades\package-type-list.js" />
     <Content Include="Scripts\resources\imageTools.js" />
     <Content Include="Scripts\resources\export.js" />
   </ItemGroup>
