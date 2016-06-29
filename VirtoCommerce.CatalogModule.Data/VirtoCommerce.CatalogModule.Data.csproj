@@ -73,16 +73,16 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="VirtoCommerce.Domain, Version=2.12.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VirtoCommerce.Domain.2.12.0\lib\net451\VirtoCommerce.Domain.dll</HintPath>
+    <Reference Include="VirtoCommerce.Domain, Version=2.14.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VirtoCommerce.Domain.2.14.0\lib\net451\VirtoCommerce.Domain.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="VirtoCommerce.Platform.Core, Version=2.11.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VirtoCommerce.Platform.Core.2.11.1\lib\net451\VirtoCommerce.Platform.Core.dll</HintPath>
+    <Reference Include="VirtoCommerce.Platform.Core, Version=2.11.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VirtoCommerce.Platform.Core.2.11.2\lib\net451\VirtoCommerce.Platform.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="VirtoCommerce.Platform.Data, Version=2.11.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VirtoCommerce.Platform.Data.2.11.1\lib\net451\VirtoCommerce.Platform.Data.dll</HintPath>
+    <Reference Include="VirtoCommerce.Platform.Data, Version=2.11.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VirtoCommerce.Platform.Data.2.11.2\lib\net451\VirtoCommerce.Platform.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
@@ -172,10 +172,13 @@
     <Compile Include="Migrations\201602010841250_NewCatalogIdAndParentIdIndex.Designer.cs">
       <DependentUpon>201602010841250_NewCatalogIdAndParentIdIndex.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201606290918048_NewAssociations.cs" />
+    <Compile Include="Migrations\201606290918048_NewAssociations.Designer.cs">
+      <DependentUpon>201606290918048_NewAssociations.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Model\Asset.cs" />
     <Compile Include="Model\Association.cs" />
-    <Compile Include="Model\AssociationGroup.cs" />
     <Compile Include="Model\Catalog.cs" />
     <Compile Include="Model\CatalogLanguage.cs" />
     <Compile Include="Model\Category.cs" />
@@ -184,7 +187,6 @@
     <Compile Include="Model\EditorialReview.cs" />
     <Compile Include="Model\Image.cs" />
     <Compile Include="Model\Item.cs" />
-    <Compile Include="Model\ItemRelation.cs" />
     <Compile Include="Model\Property.cs" />
     <Compile Include="Model\PropertyAttribute.cs" />
     <Compile Include="Model\PropertyDictionaryValue.cs" />
@@ -257,6 +259,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201602010841250_NewCatalogIdAndParentIdIndex.resx">
       <DependentUpon>201602010841250_NewCatalogIdAndParentIdIndex.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606290918048_NewAssociations.resx">
+      <DependentUpon>201606290918048_NewAssociations.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

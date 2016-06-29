@@ -11,14 +11,24 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
         {
             var retVal = new webModel.ProductAssociation();
             retVal.InjectFrom(association);
-            if (association.AssociatedProduct != null)
+            if (association.AssociatedObject != null)
             {
-                var associatedProduct = association.AssociatedProduct.ToWebModel(blobUrlResolver);
-                retVal.ProductId = associatedProduct.Id;
-                retVal.ProductCode = associatedProduct.Code;
-                retVal.ProductImg = associatedProduct.ImgSrc;
-                retVal.ProductName = associatedProduct.Name;
+                var product = association.AssociatedObject as moduleModel.CatalogProduct;
+                var category = association.AssociatedObject as moduleModel.Category;
+                if(product != null)
+                {
+                    var associatedProduct = product.ToWebModel(blobUrlResolver);
+                    retVal.AssociatedObjectImg = associatedProduct.ImgSrc;
+                    retVal.AssociatedObjectName = associatedProduct.Name;
+                }
+                if(category != null)
+                {
+                    var associatedCategory = category.ToWebModel(blobUrlResolver);
+                    retVal.AssociatedObjectImg = associatedCategory.ImgSrc;
+                    retVal.AssociatedObjectName = associatedCategory.Name;
+                }          
             }
+         
             return retVal;
         }
 
@@ -26,7 +36,6 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
         {
             var retVal = new moduleModel.ProductAssociation();
             retVal.InjectFrom(association);
-            retVal.AssociatedProductId = association.ProductId;
             return retVal;
         }
     }

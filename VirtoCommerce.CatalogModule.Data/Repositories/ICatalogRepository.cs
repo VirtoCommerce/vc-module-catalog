@@ -15,11 +15,9 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         IQueryable<dataModel.Asset> Assets { get; }
         IQueryable<dataModel.EditorialReview> EditorialReviews { get; }
         IQueryable<dataModel.PropertyValue> PropertyValues { get; }
-        IQueryable<dataModel.PropertyDictionaryValue> PropertyDictionaryValues { get; }
-        IQueryable<dataModel.ItemRelation> ItemRelations { get; }
+        IQueryable<dataModel.PropertyDictionaryValue> PropertyDictionaryValues { get; }      
         IQueryable<dataModel.CategoryItemRelation> CategoryItemRelations { get; }
         IQueryable<dataModel.Association> Associations { get; }
-        IQueryable<dataModel.AssociationGroup> AssociationGroups { get; }
         IQueryable<dataModel.CategoryRelation> CategoryLinks { get; }
 
 

@@ -21,8 +21,9 @@
                 <ul class="list __items">
                     <li class="list-item" ng-click="openBlade()">
                         <i class="list-ico fa fa-cubes"></i>
-                        <span class="list-t">{{ 'catalog.wizards.association.labels.products' | translate }}</span>
-                        <span class="list-descr">{{blade.selection.length}} {{ 'catalog.wizards.association.labels.products-selected' | translate }}</span>
+                        <span class="list-t">{{ 'catalog.wizards.association.labels.items' | translate }}</span>
+                        <span class="list-descr">{{selectedCount('product')}} {{ 'catalog.wizards.association.labels.products-selected' | translate }}</span>
+                        <span class="list-descr">{{selectedCount('category')}} {{ 'catalog.wizards.association.labels.categories-selected' | translate }}</span>
                     </li>
                 </ul>
             </div>            

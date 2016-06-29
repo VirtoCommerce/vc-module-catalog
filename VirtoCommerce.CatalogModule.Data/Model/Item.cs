@@ -13,11 +13,10 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             CategoryLinks = new NullCollection<CategoryItemRelation>();
             Images = new NullCollection<Image>();
             Assets = new NullCollection<Asset>();
-            AssociationGroups = new NullCollection<AssociationGroup>();
             EditorialReviews = new NullCollection<EditorialReview>();
             ItemPropertyValues = new NullCollection<PropertyValue>();
             Childrens = new NullCollection<Item>();
-            Assosiations = new NullCollection<Association>();
+            Associations = new NullCollection<Association>();
         }
 
         [StringLength(1024)]
@@ -89,8 +88,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
         public virtual ObservableCollection<Image> Images { get; set; }
 
-        public virtual ObservableCollection<Association> Assosiations { get; set; }
-        public virtual ObservableCollection<AssociationGroup> AssociationGroups { get; set; }
+        public virtual ObservableCollection<Association> Associations { get; set; }
 
         public virtual ObservableCollection<EditorialReview> EditorialReviews { get; set; }
 

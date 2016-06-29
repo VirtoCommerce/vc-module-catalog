@@ -6,15 +6,12 @@
     public class ProductAssociation
     {
         /// <summary>
-        /// Gets or sets the ProductAssociation name.
+        /// Gets or sets the ProductAssociation type.
         /// </summary>
         /// <value>
-        /// The name.
+        /// Accessories, Up-Sales, Cross-Sales, Related etc
         /// </value>
-        public string Name { get; set; }
-
-        public string Description { get; set; }
-
+        public string Type { get; set; }
         /// <summary>
         /// Gets or sets the order in which the associated product is displayed.
         /// </summary>
@@ -22,37 +19,24 @@
         /// The priority.
         /// </value>
         public int Priority { get; set; }
-
         /// <summary>
-        /// Gets or sets the identifier of the associated product.
+        /// Each link element can have an associated object like Product, Category, etc.
+        /// Is a primary key of associated object
         /// </summary>
-        /// <value>
-        /// The product identifier.
-        /// </value>
-        public string ProductId { get; set; }
-
+        public string AssociatedObjectId { get; set; }
         /// <summary>
-        /// Gets or sets the name of the associated product.
+        /// Display name for associated object
         /// </summary>
-        /// <value>
-        /// The name of the product.
-        /// </value>
-        public string ProductName { get; set; }
-
+        public string AssociatedObjectName { get; set; }
         /// <summary>
-        /// Gets or sets the associated product code.
+        /// Associated object type
         /// </summary>
-        /// <value>
-        /// The product code.
-        /// </value>
-        public string ProductCode { get; set; }
-
+        public string AssociatedObjectType { get; set; }
         /// <summary>
-        /// Gets or sets the associated product image.
+        /// Associated object image URL
         /// </summary>
-        /// <value>
-        /// The product img.
-        /// </value>
-        public string ProductImg { get; set; }
+        public string AssociatedObjectImg  { get; set; }
+
+
     }
 }
