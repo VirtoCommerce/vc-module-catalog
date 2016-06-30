@@ -18,16 +18,10 @@ namespace VirtoCommerce.CatalogModule.Client.Model
     public partial class ProductAssociation :  IEquatable<ProductAssociation>
     {
         /// <summary>
-        /// Gets or Sets Name
+        /// Gets or Sets Type
         /// </summary>
-        [DataMember(Name="name", EmitDefaultValue=false)]
-        public string Name { get; set; }
-
-        /// <summary>
-        /// Gets or Sets Description
-        /// </summary>
-        [DataMember(Name="description", EmitDefaultValue=false)]
-        public string Description { get; set; }
+        [DataMember(Name="type", EmitDefaultValue=false)]
+        public string Type { get; set; }
 
         /// <summary>
         /// Gets or Sets Priority
@@ -36,28 +30,28 @@ namespace VirtoCommerce.CatalogModule.Client.Model
         public int? Priority { get; set; }
 
         /// <summary>
-        /// Gets or Sets ProductId
+        /// Gets or Sets AssociatedObjectId
         /// </summary>
-        [DataMember(Name="productId", EmitDefaultValue=false)]
-        public string ProductId { get; set; }
+        [DataMember(Name="associatedObjectId", EmitDefaultValue=false)]
+        public string AssociatedObjectId { get; set; }
 
         /// <summary>
-        /// Gets or Sets ProductName
+        /// Gets or Sets AssociatedObjectName
         /// </summary>
-        [DataMember(Name="productName", EmitDefaultValue=false)]
-        public string ProductName { get; set; }
+        [DataMember(Name="associatedObjectName", EmitDefaultValue=false)]
+        public string AssociatedObjectName { get; set; }
 
         /// <summary>
-        /// Gets or Sets ProductCode
+        /// Gets or Sets AssociatedObjectType
         /// </summary>
-        [DataMember(Name="productCode", EmitDefaultValue=false)]
-        public string ProductCode { get; set; }
+        [DataMember(Name="associatedObjectType", EmitDefaultValue=false)]
+        public string AssociatedObjectType { get; set; }
 
         /// <summary>
-        /// Gets or Sets ProductImg
+        /// Gets or Sets AssociatedObjectImg
         /// </summary>
-        [DataMember(Name="productImg", EmitDefaultValue=false)]
-        public string ProductImg { get; set; }
+        [DataMember(Name="associatedObjectImg", EmitDefaultValue=false)]
+        public string AssociatedObjectImg { get; set; }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -67,13 +61,12 @@ namespace VirtoCommerce.CatalogModule.Client.Model
         {
             var sb = new StringBuilder();
             sb.Append("class ProductAssociation {\n");
-            sb.Append("  Name: ").Append(Name).Append("\n");
-            sb.Append("  Description: ").Append(Description).Append("\n");
+            sb.Append("  Type: ").Append(Type).Append("\n");
             sb.Append("  Priority: ").Append(Priority).Append("\n");
-            sb.Append("  ProductId: ").Append(ProductId).Append("\n");
-            sb.Append("  ProductName: ").Append(ProductName).Append("\n");
-            sb.Append("  ProductCode: ").Append(ProductCode).Append("\n");
-            sb.Append("  ProductImg: ").Append(ProductImg).Append("\n");
+            sb.Append("  AssociatedObjectId: ").Append(AssociatedObjectId).Append("\n");
+            sb.Append("  AssociatedObjectName: ").Append(AssociatedObjectName).Append("\n");
+            sb.Append("  AssociatedObjectType: ").Append(AssociatedObjectType).Append("\n");
+            sb.Append("  AssociatedObjectImg: ").Append(AssociatedObjectImg).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -111,14 +104,9 @@ namespace VirtoCommerce.CatalogModule.Client.Model
 
             return 
                 (
-                    this.Name == other.Name ||
-                    this.Name != null &&
-                    this.Name.Equals(other.Name)
-                ) && 
-                (
-                    this.Description == other.Description ||
-                    this.Description != null &&
-                    this.Description.Equals(other.Description)
+                    this.Type == other.Type ||
+                    this.Type != null &&
+                    this.Type.Equals(other.Type)
                 ) && 
                 (
                     this.Priority == other.Priority ||
@@ -126,24 +114,24 @@ namespace VirtoCommerce.CatalogModule.Client.Model
                     this.Priority.Equals(other.Priority)
                 ) && 
                 (
-                    this.ProductId == other.ProductId ||
-                    this.ProductId != null &&
-                    this.ProductId.Equals(other.ProductId)
+                    this.AssociatedObjectId == other.AssociatedObjectId ||
+                    this.AssociatedObjectId != null &&
+                    this.AssociatedObjectId.Equals(other.AssociatedObjectId)
                 ) && 
                 (
-                    this.ProductName == other.ProductName ||
-                    this.ProductName != null &&
-                    this.ProductName.Equals(other.ProductName)
+                    this.AssociatedObjectName == other.AssociatedObjectName ||
+                    this.AssociatedObjectName != null &&
+                    this.AssociatedObjectName.Equals(other.AssociatedObjectName)
                 ) && 
                 (
-                    this.ProductCode == other.ProductCode ||
-                    this.ProductCode != null &&
-                    this.ProductCode.Equals(other.ProductCode)
+                    this.AssociatedObjectType == other.AssociatedObjectType ||
+                    this.AssociatedObjectType != null &&
+                    this.AssociatedObjectType.Equals(other.AssociatedObjectType)
                 ) && 
                 (
-                    this.ProductImg == other.ProductImg ||
-                    this.ProductImg != null &&
-                    this.ProductImg.Equals(other.ProductImg)
+                    this.AssociatedObjectImg == other.AssociatedObjectImg ||
+                    this.AssociatedObjectImg != null &&
+                    this.AssociatedObjectImg.Equals(other.AssociatedObjectImg)
                 );
         }
 
@@ -159,26 +147,23 @@ namespace VirtoCommerce.CatalogModule.Client.Model
                 int hash = 41;
                 // Suitable nullity checks etc, of course :)
 
-                if (this.Name != null)
-                    hash = hash * 59 + this.Name.GetHashCode();
-
-                if (this.Description != null)
-                    hash = hash * 59 + this.Description.GetHashCode();
+                if (this.Type != null)
+                    hash = hash * 59 + this.Type.GetHashCode();
 
                 if (this.Priority != null)
                     hash = hash * 59 + this.Priority.GetHashCode();
 
-                if (this.ProductId != null)
-                    hash = hash * 59 + this.ProductId.GetHashCode();
+                if (this.AssociatedObjectId != null)
+                    hash = hash * 59 + this.AssociatedObjectId.GetHashCode();
 
-                if (this.ProductName != null)
-                    hash = hash * 59 + this.ProductName.GetHashCode();
+                if (this.AssociatedObjectName != null)
+                    hash = hash * 59 + this.AssociatedObjectName.GetHashCode();
 
-                if (this.ProductCode != null)
-                    hash = hash * 59 + this.ProductCode.GetHashCode();
+                if (this.AssociatedObjectType != null)
+                    hash = hash * 59 + this.AssociatedObjectType.GetHashCode();
 
-                if (this.ProductImg != null)
-                    hash = hash * 59 + this.ProductImg.GetHashCode();
+                if (this.AssociatedObjectImg != null)
+                    hash = hash * 59 + this.AssociatedObjectImg.GetHashCode();
 
                 return hash;
             }
