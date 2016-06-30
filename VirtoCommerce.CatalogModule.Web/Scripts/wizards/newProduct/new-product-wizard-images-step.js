@@ -11,7 +11,7 @@
 
     $scope.addImageFromUrl = function () {
         if (blade.newExternalImageUrl) {
-            assets.uploadFromUrl({ folderUrl: 'catalog/' + blade.currentEntity.code, url: blade.newExternalImageUrl }, function (data) {
+            assets.uploadFromUrl({ folderUrl: getImageUrl().folderUrl, url: blade.newExternalImageUrl }, function (data) {
                 blade.currentEntity.images.push(data);
                 blade.newExternalImageUrl = undefined;
             });
@@ -29,7 +29,7 @@
             var uploader = $scope.uploader = new FileUploader({
                 scope: $scope,
                 headers: { Accept: 'application/json' },
-                url: 'api/platform/assets?folderUrl=catalog/' + blade.currentEntity.code,
+                url: getImageUrl().relative,
                 autoUpload: true,
                 removeAfterUpload: true
             });
@@ -107,6 +107,15 @@
         },
         stop: function (e, ui) {
         }
+    };
+
+    $scope.changeImageCategory = function ($item, $model) {
+        $scope.uploader.url = getImageUrl().relative;
+    };
+
+    function getImageUrl() {
+        var folderUrl = 'catalog/' + blade.item.code + (blade.imageType ? '/' + blade.imageType : '');
+        return { folderUrl: '/' + folderUrl, relative: 'api/platform/assets?folderUrl=' + folderUrl };
     };
 
     $scope.imageTypes = settings.getValues({ id: 'Catalog.ImageCategories' });
