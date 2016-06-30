@@ -355,7 +355,7 @@
                 "labels": {
                     "sorting-prompt": "Set the order how associated items appear sorted in web store. Drag and drop the products to change the order.",
                     "picture": "Img",
-                    "product": "Product",
+                    "name": "Name",
                     "priority": "Priority",
                     "group": "Group"
                 }
@@ -596,8 +596,9 @@
                 "title": "New Association",
                 "labels": {
                     "group-name": "Group name",
-                    "products": "Products",
-                    "products-selected": "product(s) selected"
+                    "items": "Items",
+                    "products-selected": "products selected",
+                    "categories-selected": "categories selected"
                 },
                 "placeholders": {
                     "group-name": "Select..."

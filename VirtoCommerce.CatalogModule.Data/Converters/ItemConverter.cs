@@ -87,7 +87,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
             }
 
             // Associations
-            retVal.Associations = dbItem.AssociationGroups.SelectMany(x => x.Associations).Select(x => x.ToCoreModel()).ToList();
+            retVal.Associations = dbItem.Associations.Select(x => x.ToCoreModel()).ToList();
 
             //TaxType category inheritance
             if (retVal.TaxType == null && retVal.Category != null)
@@ -239,27 +239,8 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 			#region Associations
 			if (product.Associations != null)
 			{
-				retVal.AssociationGroups = new ObservableCollection<dataModel.AssociationGroup>();
-				var associations = product.Associations.ToArray();
-				for (int order = 0; order < associations.Count(); order++)
-				{
-					var association = associations[order];
-					var associationGroup = retVal.AssociationGroups.FirstOrDefault(x => x.Name == association.Name);
-					if (associationGroup == null)
-					{
-						associationGroup = new dataModel.AssociationGroup
-						{
-							Name = association.Name,
-							Description = association.Description,
-							Priority = 1,
-						};
-						retVal.AssociationGroups.Add(associationGroup);
-					}
-					var foundationAssociation = association.ToDataModel();
-					foundationAssociation.Priority = order;
-					associationGroup.Associations.Add(foundationAssociation);
-				}
-			}
+                retVal.Associations = new ObservableCollection<dataModel.Association>(product.Associations.Select(x => x.ToDataModel()));
+            }
 			#endregion
 
 			return retVal;
@@ -348,11 +329,11 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
             #endregion
 
             #region Association
-            if (!dbSource.AssociationGroups.IsNullCollection())
+            if (!dbSource.Associations.IsNullCollection())
             {
-                var associationComparer = AnonymousComparer.Create((dataModel.AssociationGroup x) => x.Name);
-                dbSource.AssociationGroups.Patch(target.AssociationGroups, associationComparer,
-                                         (sourceGroup, targetGroup) => sourceGroup.Patch(targetGroup));
+                var associationComparer = AnonymousComparer.Create((dataModel.Association x) =>  x.AssociatedItemId + ":" + x.AssociatedCategoryId);
+                dbSource.Associations.Patch(target.Associations, associationComparer,
+                                             (sourceAssociation, targetAssociation) => sourceAssociation.Patch(targetAssociation));
             }
             #endregion
         }

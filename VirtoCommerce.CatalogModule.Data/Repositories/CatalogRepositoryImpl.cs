@@ -70,13 +70,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             modelBuilder.Entity<dataModel.PropertyValue>().HasOptional(m => m.Catalog).WithMany(x => x.CatalogPropertyValues).HasForeignKey(x => x.CatalogId).WillCascadeOnDelete(false);
             #endregion
 
-            #region ItemRelation
-            modelBuilder.Entity<dataModel.ItemRelation>().ToTable("ItemRelation").HasKey(x => x.Id).Property(x => x.Id);
-            modelBuilder.Entity<dataModel.ItemRelation>().HasRequired(m => m.ChildItem).WithMany().HasForeignKey(x => x.ChildItemId).WillCascadeOnDelete(false);
-            modelBuilder.Entity<dataModel.ItemRelation>().HasOptional(m => m.ParentItem).WithMany().HasForeignKey(x => x.ParentItemId).WillCascadeOnDelete(false);
-
-            #endregion
-
+       
             #region CatalogImage
             modelBuilder.Entity<dataModel.Image>().ToTable("CatalogImage").HasKey(x => x.Id).Property(x => x.Id);
             modelBuilder.Entity<dataModel.Image>().HasOptional(m => m.Category).WithMany(x => x.Images).HasForeignKey(x => x.CategoryId).WillCascadeOnDelete(false);
@@ -86,17 +80,13 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             #region EditorialReview
             modelBuilder.Entity<dataModel.EditorialReview>().ToTable("EditorialReview").HasKey(x => x.Id).Property(x => x.Id);
             modelBuilder.Entity<dataModel.EditorialReview>().HasRequired(x => x.CatalogItem).WithMany(x => x.EditorialReviews).HasForeignKey(x => x.ItemId).WillCascadeOnDelete(true);
-            #endregion
-
-            #region AssociationGroup
-            modelBuilder.Entity<dataModel.AssociationGroup>().ToTable("AssociationGroup").HasKey(x => x.Id).Property(x => x.Id);
-            modelBuilder.Entity<dataModel.AssociationGroup>().HasRequired(x => x.CatalogItem).WithMany(x => x.AssociationGroups).HasForeignKey(x => x.ItemId).WillCascadeOnDelete(true);
-            #endregion
+            #endregion         
 
             #region Association
             modelBuilder.Entity<dataModel.Association>().ToTable("Association").HasKey(x => x.Id).Property(x => x.Id);
-            modelBuilder.Entity<dataModel.Association>().HasRequired(m => m.CatalogItem).WithMany(x => x.Assosiations).HasForeignKey(x => x.ItemId).WillCascadeOnDelete(false);
-            modelBuilder.Entity<dataModel.Association>().HasRequired(m => m.AssociationGroup).WithMany(x => x.Associations).HasForeignKey(x => x.AssociationGroupId).WillCascadeOnDelete(true);
+            modelBuilder.Entity<dataModel.Association>().HasRequired(m => m.Item).WithMany(x => x.Associations).HasForeignKey(x => x.ItemId).WillCascadeOnDelete(false);
+            modelBuilder.Entity<dataModel.Association>().HasOptional(m => m.AssociatedItem).WithMany().HasForeignKey(x => x.AssociatedItemId).WillCascadeOnDelete(false);
+            modelBuilder.Entity<dataModel.Association>().HasOptional(m => m.AssociatedCategory).WithMany().HasForeignKey(x => x.AssociatedCategoryId).WillCascadeOnDelete(false);
             #endregion
 
             #region Asset
@@ -176,12 +166,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         public IQueryable<dataModel.Property> Properties
         {
             get { return GetAsQueryable<dataModel.Property>(); }
-        }
-
-        public IQueryable<dataModel.ItemRelation> ItemRelations
-        {
-            get { return GetAsQueryable<dataModel.ItemRelation>(); }
-        }
+        }   
 
         public IQueryable<dataModel.PropertyDictionaryValue> PropertyDictionaryValues
         {
@@ -190,12 +175,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         public IQueryable<dataModel.CategoryItemRelation> CategoryItemRelations
         {
             get { return GetAsQueryable<dataModel.CategoryItemRelation>(); }
-        }
-
-        public IQueryable<dataModel.AssociationGroup> AssociationGroups
-        {
-            get { return GetAsQueryable<dataModel.AssociationGroup>(); }
-        }
+        }     
 
         public IQueryable<dataModel.Association> Associations
         {
@@ -374,9 +354,12 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
             if (respGroup.HasFlag(coreModel.ItemResponseGroup.ItemAssociations))
             {
-                var assosiationGroups = AssociationGroups.Include(x => x.Associations).ToArray();
-                var assosiatedItemIds = assosiationGroups.SelectMany(x => x.Associations).Select(x => x.ItemId).Distinct().ToArray();
-                var assosiationItems = GetItemByIds(assosiatedItemIds, coreModel.ItemResponseGroup.ItemInfo);
+                var assosiations = Associations.Where(x => itemIds.Contains(x.ItemId)).ToArray();
+                var assosiatedCategoriesIds = assosiations.Where(x => x.AssociatedCategoryId != null).Select(x => x.AssociatedCategoryId).Distinct().ToArray();
+                var assosiatedProductIds = assosiations.Where(x => x.AssociatedItemId != null).Select(x => x.AssociatedItemId).Distinct().ToArray();
+
+                var assosiatedCategories = GetCategoriesByIds(assosiatedCategoriesIds, coreModel.CategoryResponseGroup.Info | coreModel.CategoryResponseGroup.WithImages);
+                var assosiatedItems = GetItemByIds(assosiatedProductIds, coreModel.ItemResponseGroup.ItemInfo | coreModel.ItemResponseGroup.ItemAssets);
             }
 
             // Load parents
@@ -451,10 +434,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             const string queryPattern =
             @"DELETE CR FROM CategoryItemRelation  CR INNER JOIN Item I ON I.Id = CR.ItemId
             WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
-
-            DELETE IR FROM ItemRelation  IR INNER JOIN Item I ON I.Id = IR.ChildItemId  OR I.Id = IR.ParentItemId
-            WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
-
+        
             DELETE CI FROM CatalogImage CI INNER JOIN Item I ON I.Id = CI.ItemId
             WHERE I.Id IN ({0})  OR I.ParentId IN ({0})
 
@@ -467,10 +447,10 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             DELETE ER FROM EditorialReview ER INNER JOIN Item I ON I.Id = ER.ItemId
             WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
 
-            DELETE AG FROM AssociationGroup AG INNER JOIN Item I ON I.Id = AG.ItemId
+            DELETE A FROM Association A INNER JOIN Item I ON I.Id = A.ItemId
             WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
 
-            DELETE A FROM Association A INNER JOIN Item I ON I.Id = A.ItemId
+            DELETE A FROM Association A INNER JOIN Item I ON I.Id = A.AssociatedItemId
             WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
 
             DELETE  FROM Item  WHERE ParentId IN ({0})
@@ -493,7 +473,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             DELETE PV FROM PropertyValue PV INNER JOIN Category C ON C.Id = PV.CategoryId WHERE C.Id IN ({0}) 
             DELETE CR FROM CategoryRelation CR INNER JOIN Category C ON C.Id = CR.SourceCategoryId OR C.Id = CR.TargetCategoryId  WHERE C.Id IN ({0}) 
             DELETE CIR FROM CategoryItemRelation CIR INNER JOIN Category C ON C.Id = CIR.CategoryId WHERE C.Id IN ({0}) 
-
+            DELETE A FROM Association A INNER JOIN Category C ON C.Id = A.AssociatedCategoryId WHERE C.Id IN ({0})
             DELETE P FROM Property P INNER JOIN Category C ON C.Id = P.CategoryId  WHERE C.Id IN ({0})";
 
             var itemsIds = Items.Where(x => allCategoriesIds.Contains(x.CategoryId)).Select(x => x.Id).ToArray();

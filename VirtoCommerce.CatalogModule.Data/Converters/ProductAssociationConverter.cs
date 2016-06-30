@@ -26,14 +26,23 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 
             var retVal = new coreModel.ProductAssociation
             {
-                Name = dbAssociation.AssociationGroup.Name,
-                Description = dbAssociation.AssociationGroup.Description,
-                Priority = dbAssociation.Priority,
-                AssociatedProductId = dbAssociation.CatalogItem.Id,
                 Type = dbAssociation.AssociationType,
-                AssociatedProduct = dbAssociation.CatalogItem.ToCoreModel()
+                Priority = dbAssociation.Priority,
+                AssociatedObjectId = dbAssociation.AssociatedItemId ?? dbAssociation.AssociatedCategoryId,
             };
-			return retVal;
+            if(dbAssociation.AssociatedCategory != null)
+            {
+                retVal.AssociatedObject = dbAssociation.AssociatedCategory.ToCoreModel();
+                retVal.AssociatedObjectType = "category";
+            }
+            if (dbAssociation.AssociatedItem != null)
+            {
+                //Need to remove associations in associated product to prevent StackOverflow in converter
+                dbAssociation.AssociatedItem.Associations = new NullCollection<dataModel.Association>();
+                retVal.AssociatedObject = dbAssociation.AssociatedItem.ToCoreModel();
+                retVal.AssociatedObjectType = "product";
+            }
+            return retVal;
 		}
 
 		
@@ -49,32 +58,24 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 				throw new ArgumentNullException("association");
 
 			var retVal = new dataModel.Association
-			{
-				ItemId = association.AssociatedProductId,
-				Priority = association.Priority,
-				AssociationType = association.Type ?? "optional"
+			{   
+                Priority = association.Priority,
+				AssociationType = association.Type
 			};
+
+            if(association.AssociatedObjectType.EqualsInvariant("product"))
+            {
+                retVal.AssociatedItemId = association.AssociatedObjectId;
+            }
+            else if(association.AssociatedObjectType.EqualsInvariant("category"))
+            {
+                retVal.AssociatedCategoryId = association.AssociatedObjectId;
+            }
 			return retVal;
 		}
 
 	
-		/// <summary>
-		/// Patch AssociationGroup type
-		/// </summary>
-		/// <param name="source"></param>
-		/// <param name="target"></param>
-		public static void Patch(this dataModel.AssociationGroup source, dataModel.AssociationGroup target)
-		{
-			var patchInjectionPolicy = new PatchInjection<dataModel.AssociationGroup>(x => x.Name, x => x.Description);
-			target.InjectFrom(patchInjectionPolicy, source);
-
-			if (!source.Associations.IsNullCollection())
-			{
-				var associationComparer = AnonymousComparer.Create((dataModel.Association x) => x.ItemId);
-				source.Associations.Patch(target.Associations, associationComparer,
-										 (sourceAssociation, targetAssociation) => sourceAssociation.Patch(targetAssociation));
-			}
-		}
+		
 		/// <summary>
 		/// Patch Association type
 		/// </summary>
@@ -82,8 +83,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 		/// <param name="target"></param>
 		public static void Patch(this dataModel.Association source, dataModel.Association target)
 		{
-			var patchInjectionPolicy = new PatchInjection<dataModel.Association>(x => x.Priority);
-			target.InjectFrom(patchInjectionPolicy, source);
+            target.Priority = source.Priority;		
 		}
 	}
 

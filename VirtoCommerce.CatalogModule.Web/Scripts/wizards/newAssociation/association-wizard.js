@@ -3,21 +3,23 @@
     var blade = $scope.blade;
     blade.title = "catalog.wizards.association.title";
 
+    $scope.selectedCount = function (type) {
+    	return _.where(blade.selection, { type: type }).length;
+    };
+   
     $scope.create = function () {
         blade.isLoading = true;
-        var entriesCopy = blade.associations.slice();
-
-        _.each(blade.selection, function (id) {
-            if (_.every(entriesCopy, function (x) { return x.productId != id; })) {
-                var newEntry = {
-                    name: blade.groupName,
-                    productId: id
-                };
-                entriesCopy.push(newEntry);
-            }
+        var associations = _.map(blade.selection, function (x) {
+        	var association =  {
+        		type: blade.groupName,
+        		associatedObjectType: x.type,
+				associatedObjectId: x.id
+        	};
+        
+        	return association;
         });
 
-        items.update({ id: blade.parentBlade.currentEntityId, associations: entriesCopy }, function () {
+        items.update({ id: blade.parentBlade.currentEntityId, associations: associations }, function () {
             $scope.bladeClose();
             blade.parentBlade.refresh();
         },
@@ -27,7 +29,8 @@
     $scope.openBlade = function () {
         var selection = [];
         var options = {
-            selectedItemIds: _.union(blade.selection, _.pluck(blade.associations, 'productId')),
+        	allowCheckingCategory : true,
+        	selectedItemIds: _.pluck(blade.selection, 'id'),
             checkItemFn: function (listItem, isSelected) {
                 if (isSelected) {
                     if (_.all(selection, function (x) { return x.id != listItem.id; })) {
@@ -51,7 +54,7 @@
               {
                   name: "platform.commands.confirm", icon: 'fa fa-check',
                   executeMethod: function (pickingBlade) {
-                      blade.selection = _.union(blade.selection, _.pluck(selection, 'id'));
+                      blade.selection = _.union(blade.selection, selection);
                       bladeNavigationService.closeBlade(pickingBlade);
                   },
                   canExecuteMethod: function () {
@@ -77,6 +80,6 @@
 
     $scope.associationGroups = settings.getValues({ id: 'Catalog.AssociationGroups' });
 
-    blade.selection = [];
+    blade.selection = _.map(blade.associations, function (x) { return { id: x.associatedObjectId, type: x.associatedObjectType } });
     blade.isLoading = false;
 }]);

@@ -178,6 +178,11 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             if (product.Associations != null)
             {
                 retVal.Associations = product.Associations.Select(x => x.ToCoreModel()).ToList();
+                var index = 0;
+                foreach (var association in retVal.Associations)
+                {
+                    association.Priority = index++;
+                }               
             }
             retVal.MainProductId = product.TitularItemId;
 
