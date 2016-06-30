@@ -96,6 +96,12 @@ namespace VirtoCommerce.CatalogModule.Client.Model
         public List<CategoryLink> Links { get; set; }
 
         /// <summary>
+        /// Gets or Sets ImgSrc
+        /// </summary>
+        [DataMember(Name="imgSrc", EmitDefaultValue=false)]
+        public string ImgSrc { get; private set; }
+
+        /// <summary>
         /// Gets or Sets Images
         /// </summary>
         [DataMember(Name="images", EmitDefaultValue=false)]
@@ -176,6 +182,7 @@ namespace VirtoCommerce.CatalogModule.Client.Model
             sb.Append("  Children: ").Append(Children).Append("\n");
             sb.Append("  Properties: ").Append(Properties).Append("\n");
             sb.Append("  Links: ").Append(Links).Append("\n");
+            sb.Append("  ImgSrc: ").Append(ImgSrc).Append("\n");
             sb.Append("  Images: ").Append(Images).Append("\n");
             sb.Append("  SecurityScopes: ").Append(SecurityScopes).Append("\n");
             sb.Append("  SeoObjectType: ").Append(SeoObjectType).Append("\n");
@@ -288,6 +295,11 @@ namespace VirtoCommerce.CatalogModule.Client.Model
                     this.Links.SequenceEqual(other.Links)
                 ) && 
                 (
+                    this.ImgSrc == other.ImgSrc ||
+                    this.ImgSrc != null &&
+                    this.ImgSrc.Equals(other.ImgSrc)
+                ) && 
+                (
                     this.Images == other.Images ||
                     this.Images != null &&
                     this.Images.SequenceEqual(other.Images)
@@ -389,6 +401,9 @@ namespace VirtoCommerce.CatalogModule.Client.Model
 
                 if (this.Links != null)
                     hash = hash * 59 + this.Links.GetHashCode();
+
+                if (this.ImgSrc != null)
+                    hash = hash * 59 + this.ImgSrc.GetHashCode();
 
                 if (this.Images != null)
                     hash = hash * 59 + this.Images.GetHashCode();

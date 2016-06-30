@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Commerce.Model;
 using VirtoCommerce.Platform.Core.Common;
@@ -93,6 +94,28 @@ namespace VirtoCommerce.CatalogModule.Web.Model
         /// The links.
         /// </value>
 		public ICollection<CategoryLink> Links { get; set; }
+
+        private string _imgSrc;
+        /// <summary>
+        /// Gets the default image for the category.
+        /// </summary>
+        /// <value>
+        /// The image source URL.
+        /// </value>
+        public string ImgSrc
+        {
+            get
+            {
+                if (_imgSrc == null)
+                {
+                    if (Images != null && Images.Any())
+                    {
+                        _imgSrc = Images.First().Url;
+                    }
+                }
+                return _imgSrc;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the images.

@@ -87,7 +87,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
             }
 
             // Associations
-            retVal.Associations = dbItem.AssociationGroups.SelectMany(x => x.Associations).Select(x => x.ToCoreModel()).ToList();
+            retVal.Associations = dbItem.Associations.Select(x => x.ToCoreModel()).ToList();
 
             //TaxType category inheritance
             if (retVal.TaxType == null && retVal.Category != null)
@@ -239,27 +239,8 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 			#region Associations
 			if (product.Associations != null)
 			{
-				retVal.AssociationGroups = new ObservableCollection<dataModel.AssociationGroup>();
-				var associations = product.Associations.ToArray();
-				for (int order = 0; order < associations.Count(); order++)
-				{
-					var association = associations[order];
-					var associationGroup = retVal.AssociationGroups.FirstOrDefault(x => x.Name == association.Name);
-					if (associationGroup == null)
-					{
-						associationGroup = new dataModel.AssociationGroup
-						{
-							Name = association.Name,
-							Description = association.Description,
-							Priority = 1,
-						};
-						retVal.AssociationGroups.Add(associationGroup);
-					}
-					var foundationAssociation = association.ToDataModel();
-					foundationAssociation.Priority = order;
-					associationGroup.Associations.Add(foundationAssociation);
-				}
-			}
+                retVal.Associations = new ObservableCollection<dataModel.Association>(product.Associations.Select(x => x.ToDataModel()));
+            }
 			#endregion
 
 			return retVal;
@@ -291,10 +272,22 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
                 target.CatalogId = null;
             if (source.CategoryId == String.Empty)
                 target.CategoryId = null;
+            if (source.EnableReview != null)
+                target.EnableReview = source.EnableReview.Value;
+
+            target.Vendor = source.Vendor;
+            target.TaxType = source.TaxType;
+            target.WeightUnit = source.WeightUnit;
+            target.Weight = source.Weight;
+            target.MeasureUnit = source.MeasureUnit;
+            target.PackageType = source.PackageType;
+            target.Height = source.Height;
+            target.Length = source.Length;
+            target.Width = source.Width;
+            target.ShippingType = source.ShippingType;
 
             var patchInjectionPolicy = new PatchInjection<dataModel.Item>(x => x.Name, x => x.Code, x => x.ManufacturerPartNumber, x => x.Gtin, x => x.ProductType,
-                                                                          x => x.WeightUnit, x => x.Weight, x => x.MeasureUnit, x => x.Height, x => x.Length, x => x.Width, x => x.EnableReview, x => x.MaxNumberOfDownload,
-                                                                          x => x.DownloadExpiration, x => x.DownloadType, x => x.HasUserAgreement, x => x.ShippingType, x => x.TaxType, x => x.Vendor, x => x.CatalogId, x => x.CategoryId);
+                                                                          x => x.MaxNumberOfDownload,  x => x.DownloadExpiration, x => x.DownloadType, x => x.HasUserAgreement);
 
             var dbSource = source.ToDataModel(pkMap);
             target.InjectFrom(patchInjectionPolicy, dbSource);
@@ -336,11 +329,11 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
             #endregion
 
             #region Association
-            if (!dbSource.AssociationGroups.IsNullCollection())
+            if (!dbSource.Associations.IsNullCollection())
             {
-                var associationComparer = AnonymousComparer.Create((dataModel.AssociationGroup x) => x.Name);
-                dbSource.AssociationGroups.Patch(target.AssociationGroups, associationComparer,
-                                         (sourceGroup, targetGroup) => sourceGroup.Patch(targetGroup));
+                var associationComparer = AnonymousComparer.Create((dataModel.Association x) =>  x.AssociatedItemId + ":" + x.AssociatedCategoryId);
+                dbSource.Associations.Patch(target.Associations, associationComparer,
+                                             (sourceAssociation, targetAssociation) => sourceAssociation.Patch(targetAssociation));
             }
             #endregion
         }

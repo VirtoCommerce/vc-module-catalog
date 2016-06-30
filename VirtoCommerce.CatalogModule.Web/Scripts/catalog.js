@@ -166,6 +166,14 @@ angular.module(catalogsModuleName, [
 	    //	};
 	    //});
 
+		//Register dimensions widget
+	    var dimensionsWidget = {
+	    	controller: 'virtoCommerce.catalogModule.itemDimensionWidgetController',
+	    	isVisible: function (blade) { return blade.productType == 'Physical'; },
+	    	size: [2, 1],
+	    	template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/itemDimensionWidget.tpl.html'
+	    };
+	    widgetService.registerWidget(dimensionsWidget, 'itemDetail');
 	    //Register item editorialReview widget
 	    var editorialReviewWidget = {
 	        controller: 'virtoCommerce.catalogModule.editorialReviewWidgetController',
