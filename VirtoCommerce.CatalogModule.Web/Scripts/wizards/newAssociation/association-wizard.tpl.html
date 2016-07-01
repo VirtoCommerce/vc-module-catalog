@@ -18,6 +18,14 @@
                 </div>
             </div>
             <div class="form-group">
+                <label class="form-label">{{ 'catalog.wizards.association.labels.tags' | translate }}</label>
+                <tags-input ng-model="blade.tags"
+                            add-on-blur="false"
+                            display-property="value"
+                            placeholder="{{ 'catalog.wizards.association.labels.tags-placeholder' | translate }}">
+                </tags-input>
+            </div>
+            <div class="form-group">
                 <ul class="list __items">
                     <li class="list-item" ng-click="openBlade()">
                         <i class="list-ico fa fa-cubes"></i>
@@ -26,7 +34,7 @@
                         <span class="list-descr">{{selectedCount('category')}} {{ 'catalog.wizards.association.labels.categories-selected' | translate }}</span>
                     </li>
                 </ul>
-            </div>            
+            </div>
         </div>
     </div>
 </div>

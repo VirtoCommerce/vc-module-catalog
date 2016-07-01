@@ -42,6 +42,10 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
                 retVal.AssociatedObject = dbAssociation.AssociatedItem.ToCoreModel();
                 retVal.AssociatedObjectType = "product";
             }
+            if(!dbAssociation.Tags.IsNullOrEmpty())
+            {
+                retVal.Tags = dbAssociation.Tags.Split(';');
+            }
             return retVal;
 		}
 
@@ -71,7 +75,12 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
             {
                 retVal.AssociatedCategoryId = association.AssociatedObjectId;
             }
-			return retVal;
+
+            if(!association.Tags.IsNullOrEmpty())
+            {
+                retVal.Tags = string.Join(";", association.Tags);
+            }
+            return retVal;
 		}
 
 	
@@ -83,7 +92,9 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 		/// <param name="target"></param>
 		public static void Patch(this dataModel.Association source, dataModel.Association target)
 		{
-            target.Priority = source.Priority;		
+            target.Priority = source.Priority;
+            target.Tags = source.Tags;
+            target.AssociationType = source.AssociationType;
 		}
 	}
 

@@ -10,13 +10,20 @@
     $scope.create = function () {
         blade.isLoading = true;
         var associations = _.map(blade.selection, function (x) {
-        	var association =  {
-        		type: blade.groupName,
-        		associatedObjectType: x.type,
-				associatedObjectId: x.id
-        	};
-        
-        	return association;
+        	var retVal = x.association;
+        	if (!retVal)
+        	{
+        		retVal = {
+        			type: blade.groupName,
+        			associatedObjectType: x.type,
+        			associatedObjectId: x.id
+        		};
+        		if(blade.tags)
+        		{
+        			retVal.tags = _.map(blade.tags, function (x) { return x.value; });
+        		}
+        	}
+        	return retVal;        	
         });
 
         items.update({ id: blade.parentBlade.currentEntityId, associations: associations }, function () {
@@ -80,6 +87,6 @@
 
     $scope.associationGroups = settings.getValues({ id: 'Catalog.AssociationGroups' });
 
-    blade.selection = _.map(blade.associations, function (x) { return { id: x.associatedObjectId, type: x.associatedObjectType } });
+    blade.selection = _.map(blade.associations, function (x) { return { id: x.associatedObjectId, type: x.associatedObjectType, association : x } });
     blade.isLoading = false;
 }]);
