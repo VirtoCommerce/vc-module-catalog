@@ -36,7 +36,10 @@
         /// Associated object image URL
         /// </summary>
         public string AssociatedObjectImg  { get; set; }
-
+        /// <summary>
+        /// Association tags
+        /// </summary>
+        public string[] Tags { get; set; }
 
     }
 }

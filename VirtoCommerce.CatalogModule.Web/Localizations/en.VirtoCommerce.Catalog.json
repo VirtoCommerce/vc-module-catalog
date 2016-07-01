@@ -596,6 +596,8 @@
                 "title": "New Association",
                 "labels": {
                     "group-name": "Group name",
+                    "tags": "Tags",
+                    "tags-placeholder": "Enter tags...",
                     "items": "Items",
                     "products-selected": "products selected",
                     "categories-selected": "categories selected"

@@ -176,6 +176,10 @@
     <Compile Include="Migrations\201606290918048_NewAssociations.Designer.cs">
       <DependentUpon>201606290918048_NewAssociations.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201607010942332_AssociationTags.cs" />
+    <Compile Include="Migrations\201607010942332_AssociationTags.Designer.cs">
+      <DependentUpon>201607010942332_AssociationTags.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Model\Asset.cs" />
     <Compile Include="Model\Association.cs" />
@@ -262,6 +266,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201606290918048_NewAssociations.resx">
       <DependentUpon>201606290918048_NewAssociations.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607010942332_AssociationTags.resx">
+      <DependentUpon>201607010942332_AssociationTags.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

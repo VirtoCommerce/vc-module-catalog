@@ -11,6 +11,7 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
         {
             var retVal = new webModel.ProductAssociation();
             retVal.InjectFrom(association);
+            retVal.Tags = association.Tags;
             if (association.AssociatedObject != null)
             {
                 var product = association.AssociatedObject as moduleModel.CatalogProduct;
@@ -36,6 +37,7 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
         {
             var retVal = new moduleModel.ProductAssociation();
             retVal.InjectFrom(association);
+            retVal.Tags = association.Tags;
             return retVal;
         }
     }

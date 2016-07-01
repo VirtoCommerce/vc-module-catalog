@@ -17,6 +17,9 @@ namespace VirtoCommerce.CatalogModule.Data.Model
  
         public int Priority { get; set; }
 
+        [StringLength(1024)]
+        public string Tags { get; set; }
+
         #region Navigation Properties
 
         public string ItemId { get; set; }
