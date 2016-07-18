@@ -127,6 +127,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                         changeTracker.Attach(dbItem);
 
                         item.Patch(dbItem, pkMap);
+                        //Force set ModifiedDate property to mark a product changed. Special for  partial update cases when product table not have changes
+                        dbItem.ModifiedDate = DateTime.UtcNow;
                     }
                 }
                 CommitChanges(repository);

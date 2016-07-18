@@ -112,6 +112,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     changeTracker.Attach(dbCategory);
 
                     category.Patch(dbCategory, pkMap);
+                    //Force set ModifiedDate property to mark a category changed. Special for  partial update cases when category table not have changes
+                    dbCategory.ModifiedDate = DateTime.UtcNow;
                 }
                 CommitChanges(repository);
                 pkMap.ResolvePrimaryKeys();
