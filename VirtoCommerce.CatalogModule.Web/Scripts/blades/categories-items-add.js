@@ -36,24 +36,30 @@
     };
 
     $scope.addProduct = function (productType) {
-        if (!angular.isDefined(pb.categoryId)) {
-            items.newItemInCatalog({ catalogId: pb.catalogId }, function (data) {
-                data.productType = productType;
-                $scope.bladeClose(function () {
-                    showNewItemWizard(data);
-                });
-            },
-            function (error) { bladeNavigationService.setError('Error ' +error.status, $scope.blade); });
-        }
-        else {
-            items.newItemInCategory({ catalogId: pb.catalogId, categoryId: pb.categoryId }, function (data) {
-                        data.productType = productType;
-                        $scope.bladeClose(function () {
-                            showNewItemWizard(data);
-                        });
-                    },
-                    function (error) { bladeNavigationService.setError('Error ' +error.status, $scope.blade); });
-        }
+    	if (!angular.isDefined(pb.categoryId)) {
+    		items.newItemInCatalog({ catalogId: pb.catalogId }, function (data) {
+    			data.productType = productType;
+    			if (productType == 'Digital') {
+    				data.trackInventory = false;
+    			}
+    			$scope.bladeClose(function () {
+    				showNewItemWizard(data);
+    			});
+    		},
+            function (error) { bladeNavigationService.setError('Error ' + error.status, $scope.blade); });
+    	}
+    	else {
+    		items.newItemInCategory({ catalogId: pb.catalogId, categoryId: pb.categoryId }, function (data) {
+    			data.productType = productType;
+    			if (productType == 'Digital') {
+    				data.trackInventory = false;
+    			}
+    			$scope.bladeClose(function () {
+    				showNewItemWizard(data);
+    			});
+    		},
+                    function (error) { bladeNavigationService.setError('Error ' + error.status, $scope.blade); });
+    	}
     };
 
     function showNewItemWizard(data) {
