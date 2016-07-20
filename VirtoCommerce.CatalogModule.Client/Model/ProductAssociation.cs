@@ -54,6 +54,12 @@ namespace VirtoCommerce.CatalogModule.Client.Model
         public string AssociatedObjectImg { get; set; }
 
         /// <summary>
+        /// Gets or Sets Tags
+        /// </summary>
+        [DataMember(Name="tags", EmitDefaultValue=false)]
+        public List<string> Tags { get; set; }
+
+        /// <summary>
         /// Returns the string presentation of the object
         /// </summary>
         /// <returns>String presentation of the object</returns>
@@ -67,6 +73,7 @@ namespace VirtoCommerce.CatalogModule.Client.Model
             sb.Append("  AssociatedObjectName: ").Append(AssociatedObjectName).Append("\n");
             sb.Append("  AssociatedObjectType: ").Append(AssociatedObjectType).Append("\n");
             sb.Append("  AssociatedObjectImg: ").Append(AssociatedObjectImg).Append("\n");
+            sb.Append("  Tags: ").Append(Tags).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -132,6 +139,11 @@ namespace VirtoCommerce.CatalogModule.Client.Model
                     this.AssociatedObjectImg == other.AssociatedObjectImg ||
                     this.AssociatedObjectImg != null &&
                     this.AssociatedObjectImg.Equals(other.AssociatedObjectImg)
+                ) && 
+                (
+                    this.Tags == other.Tags ||
+                    this.Tags != null &&
+                    this.Tags.SequenceEqual(other.Tags)
                 );
         }
 
@@ -164,6 +176,9 @@ namespace VirtoCommerce.CatalogModule.Client.Model
 
                 if (this.AssociatedObjectImg != null)
                     hash = hash * 59 + this.AssociatedObjectImg.GetHashCode();
+
+                if (this.Tags != null)
+                    hash = hash * 59 + this.Tags.GetHashCode();
 
                 return hash;
             }
