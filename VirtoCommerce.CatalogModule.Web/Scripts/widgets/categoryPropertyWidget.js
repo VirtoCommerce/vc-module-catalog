@@ -1,23 +1,19 @@
 ﻿angular.module('virtoCommerce.catalogModule')
-.controller('virtoCommerce.catalogModule.categoryPropertyWidgetController', ['$scope', 'platformWebApp.bladeNavigationService', function ($scope, bladeNavigationService)
-{
-    $scope.currentBlade = $scope.widget.blade;
+.controller('virtoCommerce.catalogModule.categoryPropertyWidgetController', ['$scope', 'platformWebApp.bladeNavigationService', function ($scope, bladeNavigationService) {
+	var blade = $scope.blade;
 
-    $scope.openCategoryPropertyBlade = function ()
-    {
+	$scope.openCategoryPropertyBlade = function () {
+		var newBlade = {
+			id: "categoryPropertyDetail",
+			categoryId: blade.currentEntity.id,
+			entityType: "category",
+			propGroups: [{ title: 'catalog.properties.category', type: 'Category' }, { title: 'catalog.properties.product', type: 'Product' }, { title: 'catalog.properties.variation', type: 'Variation' }],
+			currentEntity: blade.currentEntity,
+			controller: 'virtoCommerce.catalogModule.propertyListController',
+			template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-list.tpl.html'
+		};
 
-        var blade = {
-            id: "categoryPropertyDetail",
-            currentEntityId: $scope.currentBlade.currentEntityId,
-            currentEntity: $scope.currentBlade.currentEntity,
-            title: $scope.currentBlade.title,
-            subtitle: 'catalog.widgets.categoryProperty.blade-subtitle',
-            controller: 'virtoCommerce.catalogModule.categoryPropertyListController',
-            template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/category-property-list.tpl.html'
-        };
-
-
-        bladeNavigationService.showBlade(blade, $scope.currentBlade);
-    };
+		bladeNavigationService.showBlade(newBlade, blade);
+	};
 
 }]);

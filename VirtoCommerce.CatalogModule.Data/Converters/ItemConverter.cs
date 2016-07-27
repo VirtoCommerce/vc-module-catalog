@@ -87,7 +87,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
             }
 
             // Associations
-            retVal.Associations = dbItem.Associations.Select(x => x.ToCoreModel()).ToList();
+            retVal.Associations = dbItem.Associations.Select(x => x.ToCoreModel()).OrderBy(x => x.Priority).ToList();
 
             //TaxType category inheritance
             if (retVal.TaxType == null && retVal.Category != null)
@@ -275,6 +275,15 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
             if (source.EnableReview != null)
                 target.EnableReview = source.EnableReview.Value;
 
+            target.Name = source.Name;
+            target.Code = source.Code;
+            target.ManufacturerPartNumber = source.ManufacturerPartNumber;
+            target.Gtin = source.Gtin;
+            target.ProductType = source.ProductType;
+            target.MaxNumberOfDownload = source.MaxNumberOfDownload;
+            target.DownloadType = source.DownloadType;
+            target.HasUserAgreement = source.HasUserAgreement;
+            target.DownloadExpiration = source.DownloadExpiration;
             target.Vendor = source.Vendor;
             target.TaxType = source.TaxType;
             target.WeightUnit = source.WeightUnit;
@@ -286,12 +295,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
             target.Width = source.Width;
             target.ShippingType = source.ShippingType;
 
-            var patchInjectionPolicy = new PatchInjection<dataModel.Item>(x => x.Name, x => x.Code, x => x.ManufacturerPartNumber, x => x.Gtin, x => x.ProductType,
-                                                                          x => x.MaxNumberOfDownload,  x => x.DownloadExpiration, x => x.DownloadType, x => x.HasUserAgreement);
-
             var dbSource = source.ToDataModel(pkMap);
-            target.InjectFrom(patchInjectionPolicy, dbSource);
-
             #region Assets
             if (!dbSource.Assets.IsNullCollection())
             {
@@ -331,7 +335,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
             #region Association
             if (!dbSource.Associations.IsNullCollection())
             {
-                var associationComparer = AnonymousComparer.Create((dataModel.Association x) =>  x.AssociatedItemId + ":" + x.AssociatedCategoryId);
+                var associationComparer = AnonymousComparer.Create((dataModel.Association x) => x.AssociationType + ":" + x.AssociatedItemId + ":" + x.AssociatedCategoryId);
                 dbSource.Associations.Patch(target.Associations, associationComparer,
                                              (sourceAssociation, targetAssociation) => sourceAssociation.Patch(targetAssociation));
             }

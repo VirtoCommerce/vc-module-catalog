@@ -23,13 +23,11 @@
                 case 'properties':
                     newBlade = {
                         id: "categoryPropertyDetail",
-                        currentEntityId: blade.currentEntityId,
+                        entityType: "product",
                         currentEntity: blade.currentEntity,
-                        title: blade.title,
-                        subtitle: 'catalog.blades.category-property-detail.title',
-                        controller: 'virtoCommerce.catalogModule.categoryPropertyListController',
-                        //isNew: true,
-                        template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/category-property-list.tpl.html'
+                        propGroups: [{ title: 'catalog.properties.category', type: 'Category' }, { title: 'catalog.properties.product', type: 'Product' }, { title: 'catalog.properties.variation', type: 'Variation' }],
+                        controller: 'virtoCommerce.catalogModule.propertyListController',
+                        template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-list.tpl.html'
                     };
                     break;
                 case 'seo':

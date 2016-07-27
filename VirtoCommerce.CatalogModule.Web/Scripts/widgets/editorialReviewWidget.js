@@ -5,10 +5,7 @@
     $scope.openBlade = function () {
         var blade = {
             id: "editorialReviewsList",
-            currentEntityId: $scope.currentBlade.currentEntityId,
-            currentEntities: $scope.currentBlade.item.reviews,
-            title: $scope.currentBlade.title,
-            subtitle: 'catalog.widgets.editorialReview.blade-subtitle',
+            item: $scope.currentBlade.item,
             controller: 'virtoCommerce.catalogModule.editorialReviewsListController',
             template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/editorialReviews-list.tpl.html'
         };

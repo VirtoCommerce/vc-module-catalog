@@ -10,22 +10,24 @@
     $scope.pageSettings.numPages = 5;
     $scope.pageSettings.itemsPerPageCount = 20;
 
-    blade.refresh = function (parentRefresh) {
-        blade.isLoading = true;
-        items.get({ id: blade.itemId }, function (data) {
-            blade.item = data;
-            $scope.pageSettings.totalItems = blade.item.variations.length;
-            blade.isLoading = false;
-        },
-        function (error) { bladeNavigationService.setError('Error ' + error.status, blade); });
+    blade.isLoading = false;
 
-        if (angular.isUndefined(parentRefresh)) {
-            parentRefresh = true;
-        }
-        if (parentRefresh) {
-            blade.parentBlade.refresh();
-        }
+    blade.refresh = function (item) {
+    	if (item) {
+    		initialize(item);
+    	}
+    	else {
+    		blade.parentBlade.refresh();
+    	}
+
     };
+
+    function initialize(item) {
+    	blade.title = item.name;
+    	blade.subtitle = 'catalog.widgets.itemVariation.blade-subtitle';
+    	blade.item = item;
+    	$scope.pageSettings.totalItems = blade.item.variations.length;
+    }
 
     blade.setSelectedItem = function (listItem) {
         $scope.selectedNodeId = listItem.id;
@@ -33,7 +35,6 @@
 
     $scope.selectVariation = function (listItem) {
         blade.setSelectedItem(listItem);
-
         var newBlade = {
             id: 'variationDetail',
             itemId: listItem.id,
@@ -55,11 +56,10 @@
                 callback: function (remove) {
                     if (remove) {
                         var ids = _.pluck(list, 'id');
-                        items.remove({ ids: ids }, blade.refresh, function (error) { bladeNavigationService.setError('Error ' + error.status, blade); });
+                        items.remove({ ids: ids }, blade.parentBlade.refresh, function (error) { bladeNavigationService.setError('Error ' + error.status, blade); });
                     }
                 }
             }
-
             dialogService.showConfirmationDialog(dialog);
         });
     };
@@ -74,14 +74,14 @@
             {
                 name: "platform.commands.refresh", icon: 'fa fa-refresh',
                 executeMethod: function () {
-                    blade.refresh(false);
+                	blade.parentBlade.refresh()
                 },
                 canExecuteMethod: function () { return true; }
             },
             {
                 name: "platform.commands.add", icon: 'fa fa-plus',
                 executeMethod: function () {
-                    items.newVariation({ itemId: blade.itemId }, function (data) {
+                    items.newVariation({ itemId: blade.item.id }, function (data) {
                         // take variation properties only
                         data.properties = _.where(data.properties, { type: 'Variation' });
                         data.productType = blade.item.productType;
@@ -140,5 +140,5 @@
     //// actions on load
     //$scope.$watch('blade.parentBlade.item.variations', initializeBlade);
 
-    blade.refresh(false);
+    initialize(blade.item);
 }]);

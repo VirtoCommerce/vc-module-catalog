@@ -1,7 +1,4 @@
-﻿<div class="blade-static __bottom" ng-if="blade.bottomTemplate">
-    <ng-include src='blade.bottomTemplate'> </ng-include>
-</div>
-
+﻿<div class="blade-static __bottom" ng-include="'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/common/templates/ok-cancel.tpl.html'"></div>
 <div class="blade-content">
     <div class="blade-inner">
         <div class="inner-block">
@@ -21,7 +18,7 @@
                     </div>
                 </div>
 
-                <div class="sub-t" va-permission="{{blade.updatePermission}}">{{ 'catalog.blades.images.labels.select-images' | translate }}</div>
+                <div class="sub-t">{{ 'catalog.blades.images.labels.select-images' | translate }}</div>
 
                 <div ng-show="uploader.isHTML5">
                     <!-- 3. ng-file-over | ng-file-over="className" -->
@@ -52,9 +49,9 @@
                 <div class="progress-bar __aqua" ng-style="{'width': uploader.progress + '%'}"></div>
             </div>
 
-            <p class="note" va-permission="{{blade.updatePermission}}">{{ 'catalog.blades.images.labels.make-default-image' | translate }}</p>
-            <div class="tile-group triple __images-list" ui-sortable="sortableOptions" ng-model="blade.currentEntity.images">
-                <div class="tile" ng-click="toggleImageSelect($event, image)" ng-class="{'double': $first, '__selected': image.$selected}" ng-repeat="image in blade.currentEntity.images" ng-include="'imageTemplate.html'"></div>
+            <p class="note">{{ 'catalog.blades.images.labels.make-default-image' | translate }}</p>
+            <div class="tile-group triple __images-list" ui-sortable="sortableOptions" ng-model="blade.currentEntities">
+                <div class="tile" ng-click="toggleImageSelect($event, image)" ng-class="{'double': $first, '__selected': image.$selected}" ng-repeat="image in blade.currentEntities" ng-include="'imageTemplate.html'"></div>
             </div>
         </div>
 

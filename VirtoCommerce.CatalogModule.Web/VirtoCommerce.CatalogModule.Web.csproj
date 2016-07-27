@@ -180,6 +180,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="Content\css\catalog.css" />
     <Content Include="Content\logo.png" />
+    <Content Include="Scripts\blades\common\templates\ok-cancel.tpl.html" />
     <Content Include="Scripts\blades\filter-detail.js" />
     <Content Include="Scripts\blades\filter-detail.tpl.html" />
     <Content Include="Scripts\blades\import\catalog-CSV-import.js" />
@@ -197,6 +198,8 @@
     <Content Include="Scripts\blades\item-dimensions.tpl.html" />
     <Content Include="Scripts\blades\item-property-detail.tpl.html" />
     <Content Include="Scripts\blades\item-property-detail.js" />
+    <Content Include="Scripts\blades\property-list.js" />
+    <Content Include="Scripts\blades\property-list.tpl.html" />
     <Content Include="Scripts\dialogs\deleteCategoryItem-dialog.tpl.html" />
     <Content Include="Scripts\dialogs\deleteCatalog-dialog.tpl.html" />
     <Content Include="Scripts\resources\imageTools.js" />
@@ -207,8 +210,6 @@
     <Content Include="Scripts\blades\advanced-search-results.js" />
     <Content Include="Scripts\blades\advanced-search.js" />
     <Content Include="Scripts\blades\advanced-search.tpl.html" />
-    <Content Include="Scripts\blades\catalog-property-list.js" />
-    <Content Include="Scripts\blades\catalog-property-list.tpl.html" />
     <Content Include="Scripts\blades\common\catalog-items-select.js" />
     <Content Include="Scripts\blades\common\catalog-items-select.tpl.html" />
     <Content Include="Scripts\blades\export\catalog-export.js" />
@@ -247,16 +248,12 @@
     <Content Include="Scripts\blades\catalogs-list.js" />
     <Content Include="Scripts\blades\categories-items-list.js" />
     <Content Include="Scripts\blades\categories-items-list.tpl.html" />
-    <Content Include="Scripts\blades\category-property-list.js" />
-    <Content Include="Scripts\blades\category-property-list.tpl.html" />
     <Content Include="Scripts\blades\item-detail.js" />
     <Content Include="Scripts\blades\item-detail.tpl.html" />
     <Content Include="Scripts\blades\item-asset-detail.js" />
     <Content Include="Scripts\blades\images.js" />
     <Content Include="Scripts\blades\item-asset-detail.tpl.html" />
     <Content Include="Scripts\blades\images.tpl.html" />
-    <Content Include="Scripts\blades\item-property-list.js" />
-    <Content Include="Scripts\blades\item-property-list.tpl.html" />
     <Content Include="Scripts\blades\item-variation-list.js" />
     <Content Include="Scripts\blades\item-variation-list.tpl.html" />
     <Content Include="Scripts\blades\catalogs-list.tpl.html" />
@@ -297,10 +294,6 @@
     <Content Include="Scripts\wizards\newCategory\category-wizard-actions.tpl.html" />
     <Content Include="Scripts\wizards\newCategory\category-wizard.js" />
     <Content Include="Scripts\wizards\newCategory\category-wizard.tpl.html" />
-    <Content Include="Scripts\wizards\newProduct\new-product-wizard-editorial-review-detail-step.js" />
-    <Content Include="Scripts\wizards\newProduct\new-product-wizard-editorial-reviews.js" />
-    <Content Include="Scripts\wizards\newProduct\new-product-wizard-property-list-step.js" />
-    <Content Include="Scripts\wizards\newProduct\new-product-wizard-images-step.js" />
     <Content Include="Scripts\wizards\newProduct\new-product-wizard-actions.tpl.html" />
     <Content Include="Scripts\wizards\newProduct\new-product-wizard.js" />
     <Content Include="Scripts\wizards\newProduct\new-product-wizard.tpl.html" />

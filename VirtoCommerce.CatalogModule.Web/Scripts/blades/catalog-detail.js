@@ -8,7 +8,16 @@
             initializeBlade(blade.currentEntity);
         } else {
             catalogs.get({ id: blade.currentEntityId }, function (data) {
-                initializeBlade(data);
+            	initializeBlade(data);
+
+            	if (blade.childrenBlades) {
+            		_.each(blade.childrenBlades, function (x) {
+            			if (x.refresh) {
+            				x.refresh(blade.currentEntity);
+            			}
+            		});
+            	}
+
                 if (parentRefresh) {
                     blade.parentBlade.refresh();
                 }

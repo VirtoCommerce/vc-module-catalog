@@ -1,98 +1,52 @@
 ﻿angular.module('virtoCommerce.catalogModule')
-.controller('virtoCommerce.catalogModule.editorialReviewDetailController', ['$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'virtoCommerce.catalogModule.items', 'platformWebApp.settings', function ($scope, bladeNavigationService, dialogService, items, settings) {
-    var blade = $scope.blade;
-    blade.updatePermission = 'catalog:update';
-    var promise = settings.getValues({ id: 'Catalog.EditorialReviewTypes' }).$promise;
+.controller('virtoCommerce.catalogModule.editorialReviewDetailController', ['$scope', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.items', 'platformWebApp.settings', function ($scope, bladeNavigationService, items, settings) {
+	var blade = $scope.blade;
+	blade.isLoading = false;
 
-    function initializeBlade(data) {
-        promise.then(function (promiseData) {
-            $scope.types = promiseData;
+	blade.refresh = function (item) {
+		initilize(item);
+	};
 
-            if (data.isNew) {
-                data.reviewType = $scope.types[0];
-            }
+	function initilize(item) {
+		blade.title = 'catalog.blades.editorialReview-detail.title';
+		blade.subtitle = 'catalog.blades.editorialReview-detail.subtitle';
 
-            $scope.currentEntity = angular.copy(data);
-            blade.origEntity = data;
-            blade.isLoading = false;
-        });
-    };
+		if (!blade.item.reviews) {
+			blade.item.reviews = [];
+		};
+		if (!blade.currentEntity) {
+			blade.currentEntity = {};
+		};		
 
-    function isDirty() {
-        return !angular.equals($scope.currentEntity, blade.origEntity) && blade.hasUpdatePermission();
-    }
+		blade.origEntity = blade.currentEntity;
+		blade.currentEntity = angular.copy(blade.currentEntity);
+		if(!blade.currentEntity.languageCode)
+		{
+			blade.currentEntity.languageCode = blade.item.catalog.defaultLanguage.languageCode;
+		}
+	};
 
-    function canSave() {
-        return isDirty() && $scope.currentEntity.content;
-    }
+    settings.getValues({ id: 'Catalog.EditorialReviewTypes' }, function (data) {
+    	$scope.types = data;
+    	if (!blade.currentEntity.reviewType) {
+    		blade.currentEntity.reviewType = $scope.types[0];
+    	}
+    });
+  
+    $scope.isValid = true;
 
-    function saveChanges() {
-        blade.isLoading = true;
-        var entriesCopy = _.filter(blade.parentBlade.currentEntities, function (ent) { return !angular.equals(ent, blade.origEntity); });
-        entriesCopy.push($scope.currentEntity);
-
-        items.update({ id: blade.parentBlade.currentEntityId, reviews: entriesCopy }, function () {
-            angular.copy($scope.currentEntity, blade.origEntity);
-            blade.parentBlade.refresh(true);
-        },
-        function (error) { bladeNavigationService.setError('Error ' + error.status, blade); });
-    };
-
-    blade.onClose = function (closeCallback) {
-        bladeNavigationService.showConfirmationIfNeeded(isDirty(), canSave(), blade, saveChanges, closeCallback, "catalog.dialogs.review-save.title", "catalog.dialogs.review-save.message");
-    };
-
-    function deleteEntry() {
-        var dialog = {
-            id: "confirmDelete",
-            title: "catalog.dialogs.review-delete.title",
-            message: "catalog.dialogs.review-delete.message",
-            callback: function (remove) {
-                if (remove) {
-                    blade.isLoading = true;
-
-                    var idx = blade.parentBlade.currentEntities.indexOf(blade.origEntity);
-                    if (idx >= 0) {
-                        var entriesCopy = blade.parentBlade.currentEntities.slice();
-                        entriesCopy.splice(idx, 1);
-                        items.update({ id: blade.parentBlade.currentEntityId, reviews: entriesCopy }, function () {
-                            $scope.bladeClose();
-                            blade.parentBlade.refresh(true);
-                        },
-                        function (error) { bladeNavigationService.setError('Error ' + error.status, blade); });
-                    }
-                }
-            }
-        }
-        dialogService.showConfirmationDialog(dialog);
-    }
+    $scope.saveChanges = function () {
+    	var existReview = _.find(blade.item.reviews, function (x) { return x == blade.origEntity; });
+    	if (!existReview) {
+    		blade.item.reviews.push(blade.origEntity);
+    	};
+    	angular.copy(blade.currentEntity, blade.origEntity);		
+    	$scope.bladeClose();
+    };   
 
     blade.headIcon = 'fa-comments';
 
-    blade.toolbarCommands = [
-        {
-            name: "platform.commands.save", icon: 'fa fa-save',
-            executeMethod: saveChanges,
-            canExecuteMethod: canSave,
-            permission: blade.updatePermission
-        },
-        {
-            name: "platform.commands.reset", icon: 'fa fa-undo',
-            executeMethod: function () {
-                angular.copy(blade.origEntity, $scope.currentEntity);
-            },
-            canExecuteMethod: isDirty,
-            permission: blade.updatePermission
-        },
-        {
-            name: "platform.commands.delete", icon: 'fa fa-trash-o',
-            executeMethod: deleteEntry,
-            canExecuteMethod: function () {
-                return blade.parentBlade.currentEntities.indexOf(blade.origEntity) >= 0 && !isDirty();
-            },
-            permission: blade.updatePermission
-        }
-    ];
+    blade.toolbarCommands = [];
 
     $scope.openDictionarySettingManagement = function () {
         var newBlade = {
@@ -106,15 +60,6 @@
         bladeNavigationService.showBlade(newBlade, blade);
     };
 
-    // on load
-    initializeBlade(blade.currentEntity);
-    $scope.$watch('blade.parentBlade.currentEntities', function (newEntities, oldEntities) {
-        if (!angular.equals(newEntities, oldEntities)) {
-            var currentChild = angular.isDefined($scope.currentEntity.id)
-                ? _.find(newEntities, function (ent) { return ent.id === $scope.currentEntity.id; })
-                : _.find(newEntities, function (ent) { return ent.content === $scope.currentEntity.content; });
+    initilize(blade.currentEntity);
 
-            initializeBlade(currentChild);
-        }
-    }, true);
 }]);

@@ -6,9 +6,7 @@
     $scope.openBlade = function () {
         var newBlade = {
             id: "itemAsset",
-            itemId: blade.item.id,
-            title: blade.origItem.name,
-            subtitle: 'catalog.widgets.itemAsset.blade-subtitle',
+            item: blade.currentEntity,
             controller: 'virtoCommerce.catalogModule.itemAssetController',
             template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/item-asset-detail.tpl.html'
         };
