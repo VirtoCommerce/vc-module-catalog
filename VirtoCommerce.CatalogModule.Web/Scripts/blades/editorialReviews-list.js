@@ -1,65 +1,88 @@
 ﻿angular.module('virtoCommerce.catalogModule')
-.controller('virtoCommerce.catalogModule.editorialReviewsListController', ['$timeout', '$scope', 'platformWebApp.bladeNavigationService', function ($timeout, $scope, bladeNavigationService) {
+.controller('virtoCommerce.catalogModule.editorialReviewsListController', ['$timeout', '$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.uiGridHelper', 'platformWebApp.dialogService', function ($timeout, $scope, bladeNavigationService, uiGridHelper, dialogService) {
     var blade = $scope.blade;
-    blade.updatePermission = 'catalog:update';
 
-    blade.refresh = function (parentRefresh) {
-        if (parentRefresh) {
-            blade.isLoading = true;
-            blade.parentBlade.refresh().$promise.then(function (data) {
-                initializeBlade(data.reviews);
-            });
-        } else {
-            initializeBlade(blade.currentEntities);
-        }
-    }
-
-    function initializeBlade(data) {
-        blade.currentEntities = angular.copy(data);
-        blade.origItem = data;
-        blade.isLoading = false;
+    $scope.selectedNodeId = null; // need to initialize to null
+    blade.isLoading = false;
+    blade.refresh = function (item) {
+    	initialize(item);    	
     };
 
-    $scope.openBlade = function (data) {
+    function initialize(item) {
+    	blade.headIcon = 'fa-comments';
+    	blade.item = item;
+    	blade.title = blade.item.name;
+    	blade.subtitle = 'catalog.blades.editorialReviews-list.subtitle';
+    	blade.selectNode = $scope.openBlade;
+    };
+
+    $scope.openBlade = function (node) {
+    	if (node) {
+    		$scope.selectedNodeId = node.id;
+    	}
         var newBlade = {
             id: 'editorialReview',
-            currentEntity: data,
-            languages: blade.parentBlade.item.catalog.languages,
-            title: 'catalog.blades.editorialReview-detail.title',
-            subtitle: 'catalog.blades.editorialReview-detail.subtitle',
+            currentEntity: node,
+			item : blade.item,
+            languages: blade.item.catalog.languages,
             controller: 'virtoCommerce.catalogModule.editorialReviewDetailController',
             template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/editorialReview-detail.tpl.html'
         };
         bladeNavigationService.showBlade(newBlade, $scope.blade);
-    }
-        
-    function openAddEntityBlade() {
-        var data = {
-            isNew: true,
-            languageCode: blade.parentBlade.item.catalog.defaultLanguage.languageCode
-        };
-        $scope.openBlade(data);
-    }
+    }        
+   
 
-    blade.headIcon = 'fa-comments';
+    $scope.delete = function (data) {
+    	deleteList([data]);
+    };
+
+    function deleteList(selection) {
+    	var dialog = {
+    		id: "confirmDelete",
+    		title: "catalog.dialogs.review-delete.title",
+    		message: "catalog.dialogs.review-delete.message",
+    		callback: function (remove) {
+    			if (remove) {
+    				bladeNavigationService.closeChildrenBlades(blade, function () {
+    					_.each(selection, function (x) {
+    						blade.item.reviews.splice(blade.item.reviews.indexOf(x), 1);
+    					});
+    				});
+    			}
+    		}
+    	};
+    	dialogService.showConfirmationDialog(dialog);
+    }
 
     blade.toolbarCommands = [
         {
-            name: "platform.commands.add", icon: 'fa fa-plus',
-            executeMethod: function () {
-                openAddEntityBlade();
-            },
-            canExecuteMethod: function () {
-                return true;
-            },
-            permission: blade.updatePermission
-        }
+        	name: "platform.commands.add", icon: 'fa fa-plus',
+        	executeMethod: function () {
+        		$scope.openBlade({});
+        	},
+        	canExecuteMethod: function () {
+        		return true;
+        	}
+        },
+		{
+			name: "platform.commands.delete", icon: 'fa fa-trash-o',
+			executeMethod: function () { deleteList($scope.gridApi.selection.getSelectedRows()); },
+			canExecuteMethod: function () {
+				return $scope.gridApi && _.any($scope.gridApi.selection.getSelectedRows());
+			}
+		}
+
     ];
 
-    blade.refresh(false);
+	// ui-grid
+    $scope.setGridOptions = function (gridOptions) {
+    	uiGridHelper.initialize($scope, gridOptions);
+    };
 
     // open blade for new review 
-    if (!_.some(blade.currentEntities)) {
-        $timeout(openAddEntityBlade, 60, false);
+    if (!_.some(blade.item.reviews)) {
+    	$timeout($scope.openBlade, 60, false);
     }
+
+    initialize(blade.item);
 }]);

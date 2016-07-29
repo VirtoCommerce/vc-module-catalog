@@ -181,8 +181,6 @@
             scope.datepickers = {
                 DateTime: false
             }
-            scope.today = new Date();
-
             scope.open = function ($event, which) {
                 $event.preventDefault();
                 $event.stopPropagation();
@@ -191,11 +189,8 @@
             };
 
             scope.dateOptions = {
-                formatYear: 'yyyy',
+            	datepickerMode: 'day'
             };
-
-            scope.formats = ['shortDate', 'dd-MMMM-yyyy', 'yyyy/MM/dd'];
-            scope.format = scope.formats[0];
 
             linker(function (clone) {
                 element.append(clone);

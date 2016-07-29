@@ -1,23 +1,23 @@
 ﻿angular.module('virtoCommerce.catalogModule')
-.controller('virtoCommerce.catalogModule.categoryPropertyWidgetController', ['$scope', 'platformWebApp.bladeNavigationService', function ($scope, bladeNavigationService)
-{
-    $scope.currentBlade = $scope.widget.blade;
+.controller('virtoCommerce.catalogModule.categoryPropertyWidgetController', ['$scope', 'platformWebApp.bladeNavigationService', function ($scope, bladeNavigationService) {
+    var blade = $scope.blade;
+    $scope.propertiesCount = '...';
 
-    $scope.openCategoryPropertyBlade = function ()
-    {
+    $scope.$watch('blade.currentEntity', function (product) {
+        if (product)
+            $scope.propertiesCount = _.filter(product.properties, function (x) { return x.type == 'Category' || x.type == 'Product' || x.type == 'Variation'; }).length;
+    });
 
-        var blade = {
+    $scope.openPropertiesBlade = function () {
+        var newBlade = {
             id: "categoryPropertyDetail",
-            currentEntityId: $scope.currentBlade.currentEntityId,
-            currentEntity: $scope.currentBlade.currentEntity,
-            title: $scope.currentBlade.title,
-            subtitle: 'catalog.widgets.categoryProperty.blade-subtitle',
-            controller: 'virtoCommerce.catalogModule.categoryPropertyListController',
-            template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/category-property-list.tpl.html'
+            categoryId: blade.currentEntity.id,
+            entityType: "category",
+            currentEntity: blade.currentEntity,
+            propGroups: [{ title: 'catalog.properties.category', type: 'Category' }, { title: 'catalog.properties.product', type: 'Product' }, { title: 'catalog.properties.variation', type: 'Variation' }],
+            controller: 'virtoCommerce.catalogModule.propertyListController',
+            template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-list.tpl.html'
         };
-
-
-        bladeNavigationService.showBlade(blade, $scope.currentBlade);
+        bladeNavigationService.showBlade(newBlade, blade);
     };
-
 }]);

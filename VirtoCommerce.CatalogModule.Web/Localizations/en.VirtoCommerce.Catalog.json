@@ -138,16 +138,8 @@
                 }
             },
             "property-detail": {
-                "title-catalog": "Edit catalog property",
-                "subtitle-catalog": "Enter property information",
-                "title-catalog-new": "New catalog property",
-                "subtitle-catalog-new": "Enter property information",
-                "title-category": "Edit category property",
-                "subtitle-category": "Enter property information",
-                "title-category-new": "New category property",
-                "subtitle-category-new": "Enter property information",
-                "title-item": "Edit item property",
-                "subtitle-item": "Enter property information",
+                "title": "Manage property",
+                "subtitle": "Edit property information",
                 "labels": {
                     "property-name": "Property name",
                     "display-name": "Display name",
@@ -164,15 +156,9 @@
                 "placeholders": {
                     "display-name": "Enter display name..."
                 }
-            },
-            "category-property-detail": {
-                "subtitle": "Category properties",
-                "labels": {
-                    "empty-list": "None"
-                }
-            },
-            "item-property-list": {
-                "subtitle": "item properties",
+            },                      
+            "property-list": {
+                "subtitle": "Properties list",
                 "labels": {
                     "empty-list": "None"
                 }

@@ -38,16 +38,15 @@
 
     <script type="text/ng-template" id="DateTime.html">
         <div class="form-input __calendar">
-            <input type="text"
-                   close-text="Close"
-                   datepicker-options="dateOptions"
-                   min-date="today"
+            <input close-text="Close"
                    is-open="datepickers.DateTime"
-                   datepicker-popup="shortDate"
+                   datepicker-popup
+                   ng-required="currentEntity.required && !currentEntity.isReadOnly"
+                   placeholder="{{ 'platform.genericValueInput.placeholders.date-time' | translate}}"
                    ng-model="context.currentPropValues[0].value">
             <button ng-click="open($event, 'DateTime')" type="button" class="btn">
                 <i class="btn-ico fa fa-calendar"></i>
-            </button>
+            </button>          
         </div>
     </script>
 

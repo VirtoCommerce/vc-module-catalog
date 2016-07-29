@@ -1,45 +1,26 @@
 ﻿angular.module('virtoCommerce.catalogModule')
-.controller('virtoCommerce.catalogModule.itemAssetController', ['$scope', '$translate', 'virtoCommerce.catalogModule.items', 'platformWebApp.bladeNavigationService', '$filter', 'FileUploader', function ($scope, $translate, items, bladeNavigationService, $filter, FileUploader) {
+.controller('virtoCommerce.catalogModule.itemAssetController', ['$scope', '$translate', 'platformWebApp.bladeNavigationService', '$filter', 'FileUploader', function ($scope, $translate, bladeNavigationService, $filter, FileUploader) {
     var blade = $scope.blade;
-    blade.updatePermission = 'catalog:update';
-    $scope.item = {};
-    $scope.origItem = {};
 
-    blade.refresh = function (parentRefresh) {
-        items.get({ id: blade.itemId }, function (data) {
-            if ($scope.uploader)
-                $scope.uploader.url = 'api/platform/assets?folderUrl=catalog/' + data.code;
-            $scope.origItem = data;
-            $scope.item = angular.copy(data);
-            blade.isLoading = false;
-            if (parentRefresh) {
-                blade.parentBlade.refresh();
-            }
-        },
-        function (error) { bladeNavigationService.setError('Error ' + error.status, $scope.blade); });
+    blade.isLoading = false;  
+
+    blade.refresh = function (item) {
+    	initialize(item);
     }
 
-    $scope.isDirty = function () {
-        return !angular.equals($scope.item, $scope.origItem) && blade.hasUpdatePermission();
-    };
-
-    $scope.reset = function () {
-        angular.copy($scope.origItem, $scope.item);
-    };
-
-    blade.onClose = function (closeCallback) {
-        bladeNavigationService.showConfirmationIfNeeded($scope.isDirty(), true, blade, $scope.saveChanges, closeCallback, "catalog.dialogs.asset-save.title", "catalog.dialogs.asset-save.message");
-    };
+    $scope.isValid = true;
 
     $scope.saveChanges = function () {
-        blade.isLoading = true;
-        items.update({}, { id: blade.itemId, assets: $scope.item.assets }, function (data) {
-            blade.refresh(true);
-        },
-        function (error) { bladeNavigationService.setError('Error ' + error.status, $scope.blade); });
+    	blade.item.assets = blade.currentEntities;
+    	$scope.bladeClose();
     };
 
-    function initialize() {
+    function initialize(item) {
+    	blade.item = item;
+
+    	blade.title = item.name;
+    	blade.subtitle = 'catalog.widgets.itemAsset.blade-subtitle';
+
         if (!$scope.uploader && blade.hasUpdatePermission()) {
             // create the uploader
             var uploader = $scope.uploader = new FileUploader({
@@ -50,11 +31,13 @@
                 removeAfterUpload: true
             });
 
+           	uploader.url = 'api/platform/assets?folderUrl=catalog/' + item.code;
+
             uploader.onSuccessItem = function (fileItem, assets, status, headers) {
                 angular.forEach(assets, function (asset) {
-                    asset.itemId = $scope.item.id;
+                    asset.itemId = blade.item.id;
                     //ADD uploaded asset to the item
-                    $scope.item.assets.push(asset);
+                    blade.currentEntities.push(asset);
                 });
             };
 
@@ -66,6 +49,7 @@
                 bladeNavigationService.setError(item._file.name + ' failed: ' + (response.message ? response.message : status), blade);
             };
         }
+        blade.currentEntities = item.assets ? angular.copy(item.assets) : [];
     };
 
     $scope.toggleAssetSelect = function (e, asset) {
@@ -81,9 +65,9 @@
     }
 
     $scope.removeAction = function (asset) {
-        var idx = $scope.item.assets.indexOf(asset);
+    	var idx = blade.currentEntities.indexOf(asset);
         if (idx >= 0) {
-            $scope.item.assets.splice(idx, 1);
+        	blade.currentEntities.splice(idx, 1);
         }
     };
 
@@ -93,22 +77,9 @@
         });
     }
 
-    $scope.blade.headIcon = 'fa-chain';
+    blade.headIcon = 'fa-chain';
+    blade.toolbarCommands = [];
 
-    $scope.blade.toolbarCommands = [
-        {
-            name: "platform.commands.save", icon: 'fa fa-save',
-            executeMethod: function () {
-                $scope.saveChanges();
-            },
-            canExecuteMethod: function () {
-                return $scope.isDirty();
-            },
-            permission: blade.updatePermission
-        }
-    ];
-
-    initialize();
-    blade.refresh();
+    initialize(blade.item);
 
 }]);

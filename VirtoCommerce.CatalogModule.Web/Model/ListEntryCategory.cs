@@ -13,7 +13,7 @@ namespace VirtoCommerce.CatalogModule.Web.Model
             : base(TypeName)
         {
             Id = category.Id;
-            ImageUrl = "";
+            ImageUrl = category.ImgSrc;
             Code = category.Code;
             Name = category.Name;
             IsActive = category.IsActive;

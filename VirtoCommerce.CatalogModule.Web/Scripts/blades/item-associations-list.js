@@ -1,25 +1,19 @@
 ﻿angular.module('virtoCommerce.catalogModule')
-.controller('virtoCommerce.catalogModule.itemAssociationsListController', ['$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'virtoCommerce.catalogModule.items', 'filterFilter', 'uiGridConstants', 'platformWebApp.uiGridHelper', function ($scope, bladeNavigationService, dialogService, items, filterFilter, uiGridConstants, uiGridHelper) {
+.controller('virtoCommerce.catalogModule.itemAssociationsListController', ['$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService',  'filterFilter', 'uiGridConstants', 'platformWebApp.uiGridHelper', function ($scope, bladeNavigationService, dialogService, filterFilter, uiGridConstants, uiGridHelper) {
     $scope.uiGridConstants = uiGridConstants;
     var blade = $scope.blade;
-    blade.updatePermission = 'catalog:update';
 
-    blade.refresh = function () {
-        blade.isLoading = true;
-        blade.parentBlade.refresh().$promise.then(function (data) {
-            initializeBlade(data.associations);
-        });
+    blade.isLoading = false;
+    blade.refresh = function (item) {
+    	initialize(item);
     };
 
-    function initializeBlade(data) {
-        blade.currentEntities = angular.copy(data);
-        blade.isLoading = false;
-
-        blade.currentEntities.sort(function (a, b) {
-            return a.priority - b.priority;
-        });
+    function initialize(item) {
+    	blade.title = item.name;
+    	blade.subtitle = 'catalog.widgets.itemAssociations.blade-subtitle';
+    	blade.item = item;
     };
-
+   
     $scope.selectNode = function (listItem) {
     	$scope.selectedNodeId = listItem.associatedObjectId;
     	var newBlade = {
@@ -38,32 +32,16 @@
     };
 
     $scope.deleteList = function (list) {
-        bladeNavigationService.closeChildrenBlades(blade, function () {
-            var dialog = {
-                id: "confirmDeleteItem",
-                title: "catalog.dialogs.association-delete.title",
-                message: "catalog.dialogs.association-delete.message",
-                callback: function (remove) {
-                    if (remove) {
-                        blade.isLoading = true;
-
-                        var undeletedEntries = _.difference(blade.currentEntities, list);
-                        items.update({ id: blade.currentEntityId, associations: undeletedEntries }, function () {
-                            blade.refresh();
-                        },
-                        function (error) { bladeNavigationService.setError('Error ' + error.status, blade); });
-                    }
-                }
-            }
-
-            dialogService.showConfirmationDialog(dialog);
-        });
+    	bladeNavigationService.closeChildrenBlades(blade, function () {
+    		var undeletedEntries = _.difference(blade.item.associations, list);
+    		blade.item.associations = undeletedEntries;
+    	});
     }
 
     function openAddEntityWizard() {
         var newBlade = {
             id: "associationWizard",
-            associations: blade.currentEntities,
+            item : blade.item,
             controller: 'virtoCommerce.catalogModule.associationWizardController',
             template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/wizards/newAssociation/association-wizard.tpl.html'
         };
@@ -78,8 +56,7 @@
             },
             canExecuteMethod: function () {
                 return true;
-            },
-            permission: blade.updatePermission
+            }
         },
         {
             name: "platform.commands.delete", icon: 'fa fa-trash-o',
@@ -88,8 +65,7 @@
             },
             canExecuteMethod: function () {
                 return $scope.gridApi && _.any($scope.gridApi.selection.getSelectedRows());
-            },
-            permission: blade.updatePermission
+            }
         }
     ];
 
@@ -99,28 +75,12 @@
         function (gridApi) {
             // gridApi.grid.registerRowsProcessor($scope.singleFilter, 90);
             gridApi.draggableRows.on.rowFinishDrag($scope, function () {
-                for (var i = 0; i < blade.currentEntities.length; i++) {
-                    blade.currentEntities[i].priority = i + 1;
-                }
-
-                items.update({ id: blade.currentEntityId, associations: blade.currentEntities },
-                    blade.refresh,
-                    function (error) { bladeNavigationService.setError('Error ' + error.status, blade); });
+                for (var i = 0; i < blade.item.associations.length; i++) {
+                	blade.item.associations[i].priority = i + 1;
+                }               
             });
         });
     };
 
-    //$scope.singleFilter = function (renderableRows) {
-    //    var visibleCount = 0;
-    //    renderableRows.forEach(function (row) {
-    //        row.visible = _.any(filterFilter([row.entity], blade.searchText));
-    //        if (row.visible) visibleCount++;
-    //    });
-
-    //    $scope.filteredEntitiesCount = visibleCount;
-    //    return renderableRows;
-    //};
-
-
-    initializeBlade(blade.currentEntities);
+    initialize(blade.item);
 }]);

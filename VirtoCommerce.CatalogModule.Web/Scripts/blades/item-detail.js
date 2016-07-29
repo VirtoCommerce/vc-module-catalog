@@ -8,7 +8,7 @@
         blade.isLoading = true;
 
         return items.get({ id: blade.itemId }, function (data) {
-            blade.itemId = data.id;
+        	blade.itemId = data.id;
             blade.title = data.code;
             blade.securityScopes = data.securityScopes;
             if (!data.productType) {
@@ -19,23 +19,25 @@
             $scope.isTitularConfirmed = $scope.isTitular;
 
             blade.item = angular.copy(data);
+            blade.currentEntity = blade.item;
             blade.origItem = data;
             blade.isLoading = false;
             if (parentRefresh && blade.parentBlade.refresh) {
                 blade.parentBlade.refresh();
             }
+            if(blade.childrenBlades)
+            {
+            	_.each(blade.childrenBlades, function (x) {
+            		if(x.refresh)
+            		{
+            			x.refresh(blade.item);
+            		}
+            	});
+            }
         },
         function (error) { bladeNavigationService.setError('Error ' + error.status, blade); });
     }
 
-    //$scope.onTitularChange = function () {
-    //    $scope.isTitular = !$scope.isTitular;
-    //    if ($scope.isTitular) {
-    //        blade.item.titularItemId = null;
-    //    } else {
-    //        blade.item.titularItemId = blade.origItem.titularItemId;
-    //    }
-    //};
 
     $scope.codeValidator = function (value) {
         var pattern = /[$+;=%{}[\]|\\\/@ ~!^*&()?:'<>,]/;
@@ -53,7 +55,8 @@
     function saveChanges() {
         blade.isLoading = true;
         items.update({}, blade.item, function () {
-            blade.refresh(true);
+        	blade.refresh(true);
+
         },
         function (error) { bladeNavigationService.setError('Error ' + error.status, blade); });
     };

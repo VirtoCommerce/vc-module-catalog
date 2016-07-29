@@ -13,7 +13,7 @@
         blade.item.$update(null,
             function (dbItem) {
                 blade.parentBlade.setSelectedItem(dbItem)
-                blade.parentBlade.refresh(true);
+                blade.parentBlade.refresh();
 
                 var newBlade = {
                     id: blade.id,
@@ -32,24 +32,21 @@
         var newBlade = null;
         switch (type) {
             case 'properties':
-                newBlade = {
-                    id: "newProductProperties",
-                    item: blade.item,
-                    title: blade.item.name,
-                    subtitle: 'catalog.blades.item-property-list.subtitle',
-                    bottomTemplate: '$(Platform)/Scripts/common/templates/ok.tpl.html',
-                    controller: 'virtoCommerce.catalogModule.newProductWizardPropertiesController',
-                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/item-property-list.tpl.html'
-                };
+            	newBlade = {
+            		id: "newProductProperties",
+            		entityType: "product",
+            		item: blade.item,
+            		currentEntity: blade.item,
+            		propGroups: [{ title: 'catalog.properties.product', type: 'Product' }, { title: 'catalog.properties.variation', type: 'Variation' }],
+            		controller: 'virtoCommerce.catalogModule.propertyListController',
+            		template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-list.tpl.html'
+            	};
                 break;
             case 'images':
                 newBlade = {
                     id: "newProductImages",
                     item: blade.item,
-                    title: blade.item.name,
-                    subtitle: 'catalog.wizards.item-images.subtitle',
-                    bottomTemplate: '$(Platform)/Scripts/common/templates/ok.tpl.html',
-                    controller: 'virtoCommerce.catalogModule.newProductWizardImagesController',
+                    controller: 'virtoCommerce.catalogModule.imagesController',
                     template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/images.tpl.html'
                 };
                 break;
@@ -71,28 +68,13 @@
                     });
                 });
                 break;
-            case 'review':
-                if (blade.item.reviews != undefined && blade.item.reviews.length > 0) {
+        	case 'review':               
                     newBlade = {
                         id: "newProductEditorialReviewsList",
-                        currentEntities: blade.item.reviews,
-                        title: blade.item.name,
-                        subtitle: 'catalog.blades.editorialReviews-list.subtitle',
-                        controller: 'virtoCommerce.catalogModule.newProductWizardReviewsController',
+                        item: blade.item,                    
+                        controller: 'virtoCommerce.catalogModule.editorialReviewsListController',
                         template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/editorialReviews-list.tpl.html'
                     };
-                } else {
-                    newBlade = {
-                        id: 'editorialReviewWizard',
-                        currentEntity: { languageCode: getCatalog().defaultLanguage.languageCode },
-                        languages: getCatalog().languages,
-                        title: 'catalog.blades.editorialReview-detail.title',
-                        subtitle: 'catalog.blades.editorialReview-detail.subtitle',
-                        bottomTemplate: '$(Platform)/Scripts/common/templates/ok.tpl.html',
-                        controller: 'virtoCommerce.catalogModule.editorialReviewDetailWizardStepController',
-                        template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/editorialReview-detail.tpl.html'
-                    };
-                }
                 break;
         }
 

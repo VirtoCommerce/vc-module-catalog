@@ -1,9 +1,10 @@
-﻿<div class="blade-content">
+﻿<div class="blade-static __bottom" ng-include="'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/common/templates/ok-cancel.tpl.html'"></div>
+<div class="blade-content">
     <div class="blade-inner">
         <div class="inner-block">
             <div class="inner">
-                <div class="sub-t" va-permission="{{blade.updatePermission}}">{{ 'catalog.blades.item-asset-detail.labels.select-files' | translate }}</div>
-                <form class="form" ng-if="blade.hasUpdatePermission()">
+                <div class="sub-t">{{ 'catalog.blades.item-asset-detail.labels.select-files' | translate }}</div>
+                <form class="form">
                     <div ng-show="uploader.isHTML5">
                         <!-- 3. ng-file-over | ng-file-over="className" -->
                         <div class="well my-drop-zone panel drag-area" uploader="uploader" nv-file-drop nv-file-over>
@@ -24,20 +25,16 @@
                 <div ng-show="uploader.isUploading">
                     <div class="sub-t">{{ 'catalog.blades.item-asset-detail.labels.progress' | translate }}</div>
                     <div class="progress-bar __aqua" ng-style="{'width': uploader.progress + '%'}"></div>
-                </div>
+                </div>            
 
-                <!-- <div class="tile-group triple __images-list" ui-sortable="sortableOptions" ng-model="item.assets">
-                    <div class="tile" ng-class="{'__selected': data.selected}" ng-repeat="data in item.assets" ng-include="'assetTemplate.html'" ng-click="toggleAssetSelect($event, data)" context-menu="toggleAssetSelect($event, data)" data-target="itemAssetMenu{{$index}}"></div>
-                </div> -->
-
-                <div class="table-wrapper" ng-if="item.assets.length > 0">
+                <div class="table-wrapper" ng-if="blade.currentEntities.length > 0">
                     <table class="table">
                         <tr>
                             <th class="table-col">{{ 'catalog.blades.item-asset-detail.labels.type' | translate }}</th>
                             <th class="table-col">{{ 'catalog.blades.item-asset-detail.labels.name' | translate }}</th>
                             <th class="table-col">{{ 'catalog.blades.item-asset-detail.labels.actions' | translate }}</th>
                         </tr>
-                        <tr class="table-item" ng-repeat="data in item.assets">
+                        <tr class="table-item" ng-repeat="data in blade.currentEntities">
                             <td class="table-col __product-img">
                                 <div class="product-img">
                                     <i class="table-ico fa {{data.mimeType == 'image/png' || data.mimeType == 'image/jpeg' ? 'fa-image' : 'fa-file-text'}}"></i>
@@ -46,7 +43,7 @@
                             <td class="table-col __product-name"> <a ng-href="{{data.url}}" target="_blank">{{data.name}}</a></td>
                             <td class="table-col __center">
                                 <ul class="menu __actions">
-                                    <li class="menu-item" ng-click="removeAction(data)" va-permission="{{blade.updatePermission}}">
+                                    <li class="menu-item" ng-click="removeAction(data)">
                                         <a class="menu-link" title="Remove">
                                             <i class="menu-ico fa fa-trash-o"></i>
                                         </a>

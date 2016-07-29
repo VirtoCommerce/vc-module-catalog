@@ -10,12 +10,13 @@
 
     $scope.openItemPropertyBlade = function () {
         var newBlade = {
-            id: "itemProperty",
-            itemId: blade.item.id,
-            title: blade.origItem.name,
-            subtitle: 'catalog.widgets.itemProperty.blade-subtitle',
-            controller: 'virtoCommerce.catalogModule.itemPropertyListController',
-            template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/item-property-list.tpl.html'
+        	id: "itemProperty",
+        	productId: blade.currentEntity.id,
+        	entityType: "product",
+            currentEntity: blade.currentEntity,
+            propGroups: [ {title:'catalog.properties.product', type:'Product'}, {title:'catalog.properties.variation', type:'Variation'} ],
+            controller: 'virtoCommerce.catalogModule.propertyListController',
+            template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-list.tpl.html'
         };
         bladeNavigationService.showBlade(newBlade, blade);
     };

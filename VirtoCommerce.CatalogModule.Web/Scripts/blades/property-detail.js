@@ -5,13 +5,14 @@
     blade.origEntity = {};
 
     $scope.currentChild = undefined;
-
+    blade.title = "catalog.blades.property-detail.title";
+    blade.subtitle = "catalog.blades.property-detail.subtitle";
     blade.refresh = function (parentRefresh) {
         if (blade.currentEntityId) {
             properties.get({ propertyId: blade.currentEntityId }, function (data) {
                 initializeBlade(data);
                 if (parentRefresh) {
-                    blade.parentBlade.refresh(data);
+                    blade.parentBlade.refresh();
                 }
             },
             function (error) { bladeNavigationService.setError('Error ' + error.status, blade); });
