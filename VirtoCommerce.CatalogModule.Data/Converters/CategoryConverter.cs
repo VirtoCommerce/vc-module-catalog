@@ -140,23 +140,17 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 
             //TODO: temporary solution because partial update replaced not nullable properties in db entity
             if (source.IsActive != null)
-                target.IsActive = source.IsActive.Value;
-            //Handle three valuable states (null, empty and have value states) for case when need reset catalog or category
-            if (source.CatalogId == String.Empty)
-                target.CatalogId = null;
-            if (source.ParentId == String.Empty)
-                target.ParentCategoryId = null;
-
-
+                target.IsActive = source.IsActive.Value;          
+      
             var dbSource = source.ToDataModel(pkMap) as dataModel.Category;
             var dbTarget = target as dataModel.Category;
-
             if (dbSource != null && dbTarget != null)
             {
+                dbTarget.CatalogId = string.IsNullOrEmpty(dbSource.CatalogId) ? null : dbSource.CatalogId;
+                dbTarget.ParentCategoryId = string.IsNullOrEmpty(dbSource.ParentCategoryId) ? null : dbSource.ParentCategoryId;
+                dbTarget.Code = dbSource.Code;
+                dbTarget.Name = dbSource.Name;
                 dbTarget.TaxType = dbSource.TaxType;
-
-                var patchInjectionPolicy = new PatchInjection<dataModel.Category>(x => x.Code, x => x.Name, x => x.CatalogId, x => x.ParentCategoryId);
-                dbTarget.InjectFrom(patchInjectionPolicy, dbSource);
 
                 if (!dbSource.CategoryPropertyValues.IsNullCollection())
                 {
