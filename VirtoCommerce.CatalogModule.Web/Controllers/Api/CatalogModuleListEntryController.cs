@@ -20,18 +20,20 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
     {
         private readonly ICatalogSearchService _searchService;
         private readonly ICategoryService _categoryService;
+        private readonly ICatalogService _catalogService;
         private readonly IItemService _itemService;
         private readonly IBlobUrlResolver _blobUrlResolver;
 
         public CatalogModuleListEntryController(ICatalogSearchService searchService,
                                    ICategoryService categoryService,
-                                   IItemService itemService, IBlobUrlResolver blobUrlResolver, ISecurityService securityService, IPermissionScopeService permissionScopeService)
+                                   IItemService itemService, IBlobUrlResolver blobUrlResolver, ISecurityService securityService, IPermissionScopeService permissionScopeService, ICatalogService catalogService)
             : base(securityService, permissionScopeService)
         {
             _searchService = searchService;
             _categoryService = categoryService;
             _itemService = itemService;
             _blobUrlResolver = blobUrlResolver;
+            _catalogService = catalogService;
         }
 
 
@@ -156,6 +158,11 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         public IHttpActionResult Move(webModel.MoveInfo moveInfo)
         {
             var categories = new List<coreModel.Category>();
+            var dstCatalog = _catalogService.GetById(moveInfo.Catalog);
+            if(dstCatalog.IsVirtual)
+            {
+                throw new InvalidOperationException("Unable to move in virtual catalog");
+            }
 
             //Move  categories
             foreach (var listEntryCategory in moveInfo.ListEntries.Where(x => String.Equals(x.Type, webModel.ListEntryCategory.TypeName, StringComparison.InvariantCultureIgnoreCase)))
