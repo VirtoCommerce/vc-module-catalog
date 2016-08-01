@@ -267,14 +267,12 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
                 target.MinQuantity = source.MinQuantity.Value;
             if (source.MaxQuantity != null)
                 target.MaxQuantity = source.MaxQuantity.Value;
-            //Handle three valuable states (null, empty and have value states) for case when need reset catalog or category
-            if (source.CatalogId == String.Empty)
-                target.CatalogId = null;
-            if (source.CategoryId == String.Empty)
-                target.CategoryId = null;
+        
             if (source.EnableReview != null)
                 target.EnableReview = source.EnableReview.Value;
 
+            target.CatalogId = string.IsNullOrEmpty(source.CatalogId) ? null : source.CatalogId;
+            target.CategoryId = string.IsNullOrEmpty(source.CategoryId) ? null : source.CategoryId;
             target.Name = source.Name;
             target.Code = source.Code;
             target.ManufacturerPartNumber = source.ManufacturerPartNumber;

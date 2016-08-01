@@ -1,7 +1,7 @@
 ﻿angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.categoriesItemsListController', [
-        '$sessionStorage', '$localStorage', '$timeout', '$scope', 'virtoCommerce.catalogModule.categories', 'virtoCommerce.catalogModule.items', 'virtoCommerce.catalogModule.listEntries', 'platformWebApp.bladeUtils', 'platformWebApp.dialogService', 'platformWebApp.authService', 'platformWebApp.uiGridHelper',
-        function ($sessionStorage, $localStorage, $timeout, $scope, categories, items, listEntries, bladeUtils, dialogService, authService, uiGridHelper) {
+        '$sessionStorage', '$localStorage', '$timeout', '$scope', 'virtoCommerce.catalogModule.categories', 'virtoCommerce.catalogModule.items', 'virtoCommerce.catalogModule.listEntries', 'platformWebApp.bladeUtils', 'platformWebApp.dialogService', 'platformWebApp.authService', 'platformWebApp.uiGridHelper', 'virtoCommerce.catalogModule.catalogs',
+        function ($sessionStorage, $localStorage, $timeout, $scope, categories, items, listEntries, bladeUtils, dialogService, authService, uiGridHelper, catalogs) {
             $scope.uiGridConstants = uiGridHelper.uiGridConstants;
 
             var blade = $scope.blade;
@@ -21,6 +21,10 @@
                 if (filter.current) {
                     angular.extend(searchCriteria, filter.current);
                 }
+
+                catalogs.get({ id: blade.catalogId }, function (data) {
+                	blade.catalog = data;
+                });
 
                 listEntries.listitemssearch(
                     searchCriteria,
@@ -392,7 +396,7 @@
                          });
                      },
                      canExecuteMethod: function () {
-                         return $sessionStorage.catalogClipboardContent;
+                     	return $sessionStorage.catalogClipboardContent && blade.catalog && !blade.catalog.isVirtual;
                      },
                      permission: 'catalog:create'
                  }
