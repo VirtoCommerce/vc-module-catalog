@@ -117,23 +117,21 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
             if (target == null)
                 throw new ArgumentNullException("target");
 
-            var patchInjectionPolicy = new PatchInjection<dataModel.Catalog>(x => x.Name, x => x.DefaultLanguage);
-            target.InjectFrom(patchInjectionPolicy, source);
+            target.Name = source.Name;
+            target.DefaultLanguage = source.DefaultLanguage;
 
             //Languages patch
-            var sourceCatalog = source as dataModel.Catalog;
-            var targetCatalog = target as dataModel.Catalog;
-            if (sourceCatalog != null && targetCatalog != null && !sourceCatalog.CatalogLanguages.IsNullCollection())
+            if (!source.CatalogLanguages.IsNullCollection())
             {
                 var languageComparer = AnonymousComparer.Create((dataModel.CatalogLanguage x) => x.Language);
-                sourceCatalog.CatalogLanguages.Patch(targetCatalog.CatalogLanguages, languageComparer,
+                source.CatalogLanguages.Patch(target.CatalogLanguages, languageComparer,
                                                      (sourceLang, targetlang) => sourceLang.Patch(targetlang));
             }
 
             //Property values
-            if (sourceCatalog != null && !sourceCatalog.CatalogPropertyValues.IsNullCollection())
+            if (!source.CatalogPropertyValues.IsNullCollection())
             {
-                sourceCatalog.CatalogPropertyValues.Patch(targetCatalog.CatalogPropertyValues, (sourcePropValue, targetPropValue) => sourcePropValue.Patch(targetPropValue));
+                source.CatalogPropertyValues.Patch(target.CatalogPropertyValues, (sourcePropValue, targetPropValue) => sourcePropValue.Patch(targetPropValue));
             }
 
 

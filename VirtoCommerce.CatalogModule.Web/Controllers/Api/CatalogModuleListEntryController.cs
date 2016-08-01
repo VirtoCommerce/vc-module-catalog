@@ -170,11 +170,11 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 var category = _categoryService.GetById(listEntryCategory.Id, coreModel.CategoryResponseGroup.Info);
                 if (category.CatalogId != moveInfo.Catalog)
                 {
-                    category.CatalogId = moveInfo.Catalog ?? String.Empty;
+                    category.CatalogId = moveInfo.Catalog;
                 }
                 if (category.ParentId != moveInfo.Category)
                 {
-                    category.ParentId = moveInfo.Category ?? String.Empty;
+                    category.ParentId = moveInfo.Category;
                 }
                 categories.Add(category);
             }
@@ -186,21 +186,21 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 var product = _itemService.GetById(listEntryProduct.Id, Domain.Catalog.Model.ItemResponseGroup.ItemLarge);
                 if (product.CatalogId != moveInfo.Catalog)
                 {
-                    product.CatalogId = moveInfo.Catalog ?? String.Empty;
+                    product.CatalogId = moveInfo.Catalog;
                     product.CategoryId = null;
                     foreach (var variation in product.Variations)
                     {
-                        variation.CatalogId = moveInfo.Catalog ?? String.Empty;
+                        variation.CatalogId = moveInfo.Catalog;
                         variation.CategoryId = null;
                     }
 
                 }
                 if (product.CategoryId != moveInfo.Category)
                 {
-                    product.CategoryId = moveInfo.Category ?? String.Empty;
+                    product.CategoryId = moveInfo.Category;
                     foreach (var variation in product.Variations)
                     {
-                        variation.CategoryId = moveInfo.Category ?? String.Empty;
+                        variation.CategoryId = moveInfo.Category;
                     }
                 }
                 products.Add(product);
