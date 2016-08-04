@@ -117,6 +117,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 		{
             int hash = 17;
             hash = hash * 23 + obj.CatalogId.GetHashCode();
+            hash = hash * 23 + obj.Priority.GetHashCode();
             if (obj.CategoryId != null)
             {
                 hash = hash * 23 + obj.CategoryId.GetHashCode();

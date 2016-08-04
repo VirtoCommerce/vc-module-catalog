@@ -223,6 +223,11 @@ namespace VirtoCommerce.CatalogModule.Web.Model
         /// </value>
 		public string Vendor { get; set; }
 
+        /// <summary>
+        /// Product order position physical catalog
+        /// </summary>
+        public int Priority { get; set; }
+
         private string _imgSrc;
         /// <summary>
         /// Gets the default image for the product.
