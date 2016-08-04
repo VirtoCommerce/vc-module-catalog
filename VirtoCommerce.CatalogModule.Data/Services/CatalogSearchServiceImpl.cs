@@ -176,6 +176,15 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         private void SearchItems(SearchCriteria criteria, SearchResult result)
         {
+            var sortInfos = criteria.SortInfos;
+            if (sortInfos.IsNullOrEmpty())
+            {
+                sortInfos = new[] { new SortInfo { SortColumn = "Priority", SortDirection = SortDirection.Descending } };
+            }
+            //Try to replace sorting columns names
+            TryTransformSortingInfoColumnNames(_productSortingAliases, sortInfos);
+
+
             using (var repository = _catalogRepositoryFactory())
             {
                 //list of search categories
@@ -246,16 +255,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     query = query.Where(x => x.TrackInventory == criteria.OnlyWithTrackingInventory);
                 }
 
-                result.ProductsTotalCount = query.Count();
-
-                var sortInfos = criteria.SortInfos;
-                if (sortInfos.IsNullOrEmpty())
-                {
-                    sortInfos = new[] { new SortInfo { SortColumn = "Name" } };
-                }
-                //Try to replace sorting columns names
-                TryTransformSortingInfoColumnNames(_productSortingAliases, sortInfos);
-
+                result.ProductsTotalCount = query.Count();              
+             
                 query = query.OrderBySortInfos(sortInfos);
 
                 var itemIds = query.Skip(criteria.Skip)
