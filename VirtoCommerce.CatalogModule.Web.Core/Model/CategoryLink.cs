@@ -7,6 +7,10 @@ namespace VirtoCommerce.CatalogModule.Web.Model
     public class CategoryLink
     {
         /// <summary>
+        /// Product order position in virtual catalog
+        /// </summary>
+        public int Priority { get; set; }
+        /// <summary>
         /// Gets or sets the source item id.
         /// </summary>
         /// <value>
