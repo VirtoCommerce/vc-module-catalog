@@ -227,6 +227,7 @@
                 "subtitle-variation": "Variation details",
                 "labels": {
                     "sku": "SKU",
+                    "priority": "Priority",
                     "name": "Name",
                     "can-be-purchased": "Can be purchased",
                     "store-visible": "Store visible",
@@ -246,7 +247,8 @@
                     "sku": "SKU can't contain $+;=%{}[]|\/@ ~!^*&()?:'<>, characters"
                 },
                 "placeholders": {
-                    "sku": "Enter item sku",
+                    "sku": "Enter item SKU",
+                    "priority": "Enter number",
                     "name": "Enter item name",
                     "vendor": "Select...",
                     "tax-type": "Select...",
@@ -551,7 +553,7 @@
                 },
                 "placeholders": {
                     "name": "Enter item name",
-                    "sku": "Enter item sku"
+                    "sku": "Enter item SKU"
                 }
             },
             "new-variation": {
@@ -572,7 +574,7 @@
                 },
                 "placeholders": {
                     "name": "Enter item name",
-                    "sku": "Enter item sku"
+                    "sku": "Enter item SKU"
                 }
             },
             "item-images": {
