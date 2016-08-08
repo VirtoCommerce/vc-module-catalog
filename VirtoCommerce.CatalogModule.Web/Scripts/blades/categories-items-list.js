@@ -438,7 +438,7 @@
                     }
                     blade.toolbarCommands.splice(1, 5, mapCommand);
                 }
-            } else if (authService.checkPermission('catalog:create')) {
+            } else if (!blade.isBrowsingLinkedCategory && authService.checkPermission('catalog:create')) {
                 blade.toolbarCommands.splice(1, 0, {
                     name: "platform.commands.add",
                     icon: 'fa fa-plus',
