@@ -118,7 +118,9 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
                     retVal.DateTimeValue = DateTime.Parse(value);
                     break;
                 case coreModel.PropertyValueType.Boolean:
-                    retVal.BooleanValue = Boolean.Parse(value);
+                    bool boolValue = false;
+                    Boolean.TryParse(value, out boolValue);
+                    retVal.BooleanValue = boolValue;
                     break;
             }
         }
