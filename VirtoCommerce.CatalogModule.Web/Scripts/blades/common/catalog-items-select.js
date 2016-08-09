@@ -145,8 +145,10 @@ function ($scope, catalogs, listEntries, bladeUtils, uiGridConstants, uiGridHelp
                 template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/item-detail.tpl.html'
             };
             bladeNavigationService.showBlade(newBlade, blade);
-        }
 
+            // setting current categoryId to be globally available
+            bladeNavigationService.catalogsSelectedCategoryId = blade.categoryId;
+        }
     };
 
     var filter = $scope.filter = {};

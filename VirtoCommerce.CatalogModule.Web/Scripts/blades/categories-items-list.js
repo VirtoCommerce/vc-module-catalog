@@ -6,6 +6,8 @@
 
             var blade = $scope.blade;
             var bladeNavigationService = bladeUtils.bladeNavigationService;
+            // blade.catalog = bladeNavigationService.catalogsSelectedCatalog;
+            blade.catalog = catalogs.get({ id: blade.catalogId });
 
             blade.refresh = function () {
                 blade.isLoading = true;
@@ -21,10 +23,6 @@
                 if (filter.current) {
                     angular.extend(searchCriteria, filter.current);
                 }
-
-                catalogs.get({ id: blade.catalogId }, function (data) {
-                	blade.catalog = data;
-                });
 
                 listEntries.listitemssearch(
                     searchCriteria,
@@ -222,7 +220,6 @@
                         subtitle: 'catalog.blades.categories-items-list.subtitle',
                         subtitleValues: listItem.name != null ? { name: listItem.name } : '',
                         catalogId: blade.catalogId,
-                        catalog: blade.catalog,
                         categoryId: listItem.id,
                         category: listItem,
                         disableOpenAnimation: true,
@@ -247,6 +244,9 @@
                         template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/item-detail.tpl.html'
                     };
                     bladeNavigationService.showBlade(newBlade, blade);
+
+                    // setting current categoryId to be globally available
+                    bladeNavigationService.catalogsSelectedCategoryId = blade.categoryId;
                 }
             };
 
@@ -266,7 +266,6 @@
                     // subtitle: 'catalog.blades.categories-items-list.subtitle',
                     // subtitleValues: listItem.name ? { name: listItem.name } : '',
                     catalogId: blade.catalogId,
-                    catalog: blade.catalog,
                     categoryId: listItem.id,
                     category: listItem,
                     controller: 'virtoCommerce.catalogModule.categoriesItemsListController',
@@ -315,7 +314,10 @@
             }
 
             $scope.hasLinks = function (listEntry) {
-                return blade.catalog.isVirtual && listEntry.links && (listEntry.type === 'category' ? listEntry.links.length > 0 : listEntry.links.length > 1);
+                return blade.catalog.isVirtual &&
+                            _.any(listEntry.links, function (l) {
+                                return l.catalogId === blade.catalogId && (!blade.categoryId || l.categoryId === blade.categoryId);
+                            });
             }
 
             blade.toolbarCommands = [
@@ -396,7 +398,7 @@
                          });
                      },
                      canExecuteMethod: function () {
-                     	return $sessionStorage.catalogClipboardContent && blade.catalog && !blade.catalog.isVirtual;
+                         return $sessionStorage.catalogClipboardContent && !blade.catalog.isVirtual;
                      },
                      permission: 'catalog:create'
                  }
@@ -436,7 +438,7 @@
                     }
                     blade.toolbarCommands.splice(1, 5, mapCommand);
                 }
-            } else if (authService.checkPermission('catalog:create')) {
+            } else if (!blade.isBrowsingLinkedCategory && authService.checkPermission('catalog:create')) {
                 blade.toolbarCommands.splice(1, 0, {
                     name: "platform.commands.add",
                     icon: 'fa fa-plus',

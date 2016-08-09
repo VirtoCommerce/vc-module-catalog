@@ -32,15 +32,15 @@
         var newBlade = null;
         switch (type) {
             case 'properties':
-            	newBlade = {
-            		id: "newProductProperties",
-            		entityType: "product",
-            		item: blade.item,
-            		currentEntity: blade.item,
-            		propGroups: [{ title: 'catalog.properties.product', type: 'Product' }, { title: 'catalog.properties.variation', type: 'Variation' }],
-            		controller: 'virtoCommerce.catalogModule.propertyListController',
-            		template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-list.tpl.html'
-            	};
+                newBlade = {
+                    id: "newProductProperties",
+                    entityType: "product",
+                    item: blade.item,
+                    currentEntity: blade.item,
+                    propGroups: [{ title: 'catalog.properties.product', type: 'Product' }, { title: 'catalog.properties.variation', type: 'Variation' }],
+                    controller: 'virtoCommerce.catalogModule.propertyListController',
+                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-list.tpl.html'
+                };
                 break;
             case 'images':
                 newBlade = {
@@ -59,7 +59,7 @@
                             isNew: !_.any(blade.item.seoInfos),
                             seoContainerObject: blade.item,
                             stores: promiseData,
-                            languages: _.pluck(getCatalog().languages, 'languageCode'),
+                            languages: _.pluck(bladeNavigationService.catalogsSelectedCatalog.languages, 'languageCode'),
                             updatePermission: 'catalog:create',
                             controller: 'virtoCommerce.coreModule.seo.seoDetailController',
                             template: 'Modules/$(VirtoCommerce.Core)/Scripts/SEO/blades/seo-detail.tpl.html'
@@ -68,13 +68,13 @@
                     });
                 });
                 break;
-        	case 'review':               
-                    newBlade = {
-                        id: "newProductEditorialReviewsList",
-                        item: blade.item,                    
-                        controller: 'virtoCommerce.catalogModule.editorialReviewsListController',
-                        template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/editorialReviews-list.tpl.html'
-                    };
+            case 'review':
+                newBlade = {
+                    id: "newProductEditorialReviewsList",
+                    item: blade.item,
+                    controller: 'virtoCommerce.catalogModule.editorialReviewsListController',
+                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/editorialReviews-list.tpl.html'
+                };
                 break;
         }
 
@@ -96,14 +96,6 @@
         return _.filter(blade.item.properties, function (p) {
             return p && _.any(p.values) && p.values[0].value;
         });
-    }
-
-    function getCatalog() {
-        var parentBlade = blade.parentBlade;
-        while (!parentBlade.catalog) {
-            parentBlade = parentBlade.parentBlade;
-        }
-        return parentBlade.catalog;
     }
 
     function initializeSEO(item, callback) {

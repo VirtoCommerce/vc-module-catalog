@@ -85,7 +85,7 @@
 <script type="text/ng-template" id="item-list-name.cell.html">
     <div class="ui-grid-cell-contents">
         <div class="inner-contents">
-            <i class="table-ico fa fa-link" ng-if="grid.appScope.hasLinks(row.entity)" title="This category is linked"></i>
+            <i class="table-ico fa fa-link" ng-if="grid.appScope.hasLinks(row.entity)" title="It's mapped to this virtual location"></i>
             <div class="table-t">{{COL_FIELD}}</div>
             <span class="table-status" ng-if="row.entity.type==='category' && !row.entity.isActive">Inactive</span>
             <div class="table-descr" ng-if="row.entity.productType">{{row.entity.productType}}</div>
