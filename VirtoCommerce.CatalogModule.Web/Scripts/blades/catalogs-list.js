@@ -4,7 +4,6 @@ function ($scope, catalogs, bladeNavigationService, dialogService, authService, 
     $scope.uiGridConstants = uiGridHelper.uiGridConstants;
     var blade = $scope.blade;
     var selectedNode = null;
-    var preventCategoryListingOnce;
 
     blade.refresh = function () {
         blade.isLoading = true;
@@ -18,38 +17,37 @@ function ($scope, catalogs, bladeNavigationService, dialogService, authService, 
             //filter the catalogs in which we not have access
             blade.currentEntities = results;
 
-            if (selectedNode != null) {
+            if (selectedNode) {
                 //select the node in the new list
-                angular.forEach(results, function (node) {
-                    if (selectedNode.id === node.id) {
-                        selectedNode = node;
-                    }
-                });
+                selectedNode = _.findWhere(results, { id: selectedNode.id });
             }
         },
         function (error) { bladeNavigationService.setError('Error ' + error.status, $scope.blade); });
     };
 
-    $scope.refreshItems = function () {
-        if (preventCategoryListingOnce) {
-            preventCategoryListingOnce = undefined;
-        } else {
-            var newBlade = {
-                id: 'itemsList1',
-                level: 1,
-                breadcrumbs: blade.breadcrumbs,
-                title: 'catalog.blades.categories-items-list.title',
-                subtitle: 'catalog.blades.categories-items-list.subtitle',
-                subtitleValues: selectedNode != null ? { name: selectedNode.name } : '',
-                catalogId: (selectedNode != null) ? selectedNode.id : null,
-                catalog: selectedNode,
-                controller: 'virtoCommerce.catalogModule.categoriesItemsListController',
-                template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/categories-items-list.tpl.html',
-                securityScopes: selectedNode.securityScopes
-            };
+    $scope.selectNode = function (node) {
+        selectedNode = node;
+        $scope.selectedNodeId = selectedNode.id;
 
-            bladeNavigationService.showBlade(newBlade, blade);
-        }
+        var newBlade = {
+            id: 'itemsList1',
+            level: 1,
+            breadcrumbs: blade.breadcrumbs,
+            title: 'catalog.blades.categories-items-list.title',
+            subtitle: 'catalog.blades.categories-items-list.subtitle',
+            subtitleValues: { name: selectedNode.name },
+            catalogId: selectedNode.id,
+            catalog: selectedNode,
+            controller: 'virtoCommerce.catalogModule.categoriesItemsListController',
+            template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/categories-items-list.tpl.html',
+            securityScopes: selectedNode.securityScopes
+        };
+
+        bladeNavigationService.showBlade(newBlade, blade);
+
+        // setting current catalog to be globally available 
+        bladeNavigationService.catalogsSelectedCatalog = selectedNode;
+        bladeNavigationService.catalogsSelectedCategoryId = undefined;
     };
 
     $scope.editCatalog = function (catalog) {
@@ -59,7 +57,6 @@ function ($scope, catalogs, bladeNavigationService, dialogService, authService, 
         else {
             showCatalogBlade(catalog.id, null, catalog.name);
         }
-        preventCategoryListingOnce = true;
     };
 
     $scope.deleteCatalog = function (node) {
@@ -81,8 +78,6 @@ function ($scope, catalogs, bladeNavigationService, dialogService, authService, 
             }
         };
         dialogService.showDialog(dialog, 'Modules/$(VirtoCommerce.Catalog)/Scripts/dialogs/deleteCatalog-dialog.tpl.html', 'platformWebApp.confirmDialogController');
-
-        preventCategoryListingOnce = true;
     };
 
     function showCatalogBlade(id, data, title) {
@@ -112,14 +107,6 @@ function ($scope, catalogs, bladeNavigationService, dialogService, authService, 
 
         bladeNavigationService.showBlade(newBlade, blade);
     }
-
-    $scope.selectNode = function (node) {
-        selectedNode = node;
-        $scope.selectedNodeId = selectedNode.id;
-
-        $scope.refreshItems();
-    };
-
 
     blade.toolbarCommands = [
         {

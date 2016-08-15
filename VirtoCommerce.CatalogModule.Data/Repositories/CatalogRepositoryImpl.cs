@@ -477,8 +477,18 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             DELETE P FROM Property P INNER JOIN Category C ON C.Id = P.CategoryId  WHERE C.Id IN ({0})";
 
             var itemsIds = Items.Where(x => allCategoriesIds.Contains(x.CategoryId)).Select(x => x.Id).ToArray();
-
-            RemoveItems(itemsIds);
+            int skip = 0;
+            var take = 500;
+            do
+            {
+                var itemIdsPart = itemsIds.Skip(skip).Take(take).ToArray();
+                if (!itemIdsPart.IsNullOrEmpty())
+                {
+                    RemoveItems(itemIdsPart);
+                }
+                skip += take;
+            } while (skip <= itemsIds.Count());
+      
 
             var query = string.Format(queryPattern, string.Join(", ", allCategoriesIds.Select(x => string.Format("'{0}'", x))));
             var queryBuilder = new StringBuilder(query);

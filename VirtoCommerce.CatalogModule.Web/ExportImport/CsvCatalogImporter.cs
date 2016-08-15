@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CsvHelper;
+using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Commerce.Model;
@@ -27,12 +28,13 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
         private readonly ICommerceService _commerceService;
         private readonly IPropertyService _propertyService;
         private readonly ICatalogSearchService _searchService;
+        private readonly Func<ICatalogRepository> _catalogRepositoryFactory;
         private readonly object _lockObject = new object();
 
         public CsvCatalogImporter(ICatalogService catalogService, ICategoryService categoryService, IItemService productService,
                                   ISkuGenerator skuGenerator,
                                   IPricingService pricingService, IInventoryService inventoryService, ICommerceService commerceService,
-                                  IPropertyService propertyService, ICatalogSearchService searchService)
+                                  IPropertyService propertyService, ICatalogSearchService searchService, Func<ICatalogRepository> catalogRepositoryFactory)
         {
             _catalogService = catalogService;
             _categoryService = categoryService;
@@ -43,6 +45,7 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
             _commerceService = commerceService;
             _propertyService = propertyService;
             _searchService = searchService;
+            _catalogRepositoryFactory = catalogRepositoryFactory;
         }
 
         public void DoImport(Stream inputStream, CsvImportInfo importInfo, Action<ExportImportProgressInfo> progressCallback)
@@ -130,110 +133,57 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
 
         private void SaveProducts(Catalog catalog, List<CsvProduct> csvProducts, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback)
         {
-            var counter = 0;
-            var notifyProductSizeLimit = 10;
+            progressInfo.ProcessedCount = 0;
             progressInfo.TotalCount = csvProducts.Count;
 
             var defaultFulfilmentCenter = _commerceService.GetAllFulfillmentCenters().FirstOrDefault();
-            var options = new ParallelOptions
-            {
-                MaxDegreeOfParallelism = 10
-            };
-
             DetectParents(csvProducts);
 
-            //First need create main products, second will be created variations
-            foreach (var group in new[] { csvProducts.Where(x => x.MainProduct == null), csvProducts.Where(x => x.MainProduct != null) })
+            //Detect already exist product by Code
+            using (var repository = _catalogRepositoryFactory())
             {
-                Parallel.ForEach(group, options, csvProduct =>
+                var codes = csvProducts.Where(x => x.IsTransient()).Select(x => x.Code).Where(x => x != null).Distinct().ToArray();
+                var existProducts = repository.Items.Where(x => x.CatalogId == catalog.Id && codes.Contains(x.Code)).Select(x => new { Id = x.Id, Code = x.Code }).ToArray();
+                foreach (var existProduct in existProducts)
                 {
-                    try
+                    var product = csvProducts.FirstOrDefault(x => x.Code == existProduct.Code);
+                    if (product != null)
                     {
-                        SaveProduct(catalog, defaultFulfilmentCenter, csvProduct);
+                        product.Id = product.Id;
                     }
-                    catch (Exception ex)
-                    {
-                        lock (_lockObject)
-                        {
-                            progressInfo.Errors.Add(ex.ToString());
-                            progressCallback(progressInfo);
-                        }
-                    }
-                    finally
-                    {
-                        lock (_lockObject)
-                        {
-                            //Raise notification each notifyProductSizeLimit category
-                            counter++;
-                            progressInfo.ProcessedCount = counter;
-                            progressInfo.Description = string.Format("Creating products: {0} of {1} created", progressInfo.ProcessedCount, progressInfo.TotalCount);
-                            if (counter % notifyProductSizeLimit == 0 || counter == progressInfo.TotalCount)
-                            {
-                                progressCallback(progressInfo);
-                            }
-                        }
-                    }
-                });
+                }
             }
-        }
 
-        private void DetectParents(List<CsvProduct> csvProducts)
-        {
+            var categoriesIds = csvProducts.Where(x => x.CategoryId != null).Select(x => x.CategoryId).Distinct().ToArray();
+            var categpories = _categoryService.GetByIds(categoriesIds, CategoryResponseGroup.WithProperties);
+
+            var defaultLanguge = catalog.DefaultLanguage != null ? catalog.DefaultLanguage.LanguageCode : "EN-US";
             foreach (var csvProduct in csvProducts)
             {
-                //Try to set parent relations
-                //By id or code reference
-                var parentProduct = csvProducts.FirstOrDefault(x => csvProduct.MainProductId != null && (x.Id == csvProduct.MainProductId || x.Code == csvProduct.MainProductId));
-                csvProduct.MainProduct = parentProduct;
-                csvProduct.MainProductId = parentProduct != null ? parentProduct.Id : null;
-            }
-        }
-
-        private void SaveProduct(Catalog catalog, FulfillmentCenter defaultFulfillmentCenter, CsvProduct csvProduct)
-        {
-            var defaultLanguge = catalog.DefaultLanguage != null ? catalog.DefaultLanguage.LanguageCode : "EN-US";
-
-            CatalogProduct alreadyExistProduct = null;
-            //For new product try to find them by code
-            if (csvProduct.IsTransient() && !string.IsNullOrEmpty(csvProduct.Code))
-            {
-                var criteria = new SearchCriteria
+                csvProduct.CatalogId = catalog.Id;
+                if (string.IsNullOrEmpty(csvProduct.Code))
                 {
-                    CatalogId = catalog.Id,
-                    CategoryId = csvProduct.CategoryId,
-                    Code = csvProduct.Code,
-                    ResponseGroup = SearchResponseGroup.WithProducts | SearchResponseGroup.WithVariations
-                };
-                var result = _searchService.Search(criteria);
-                alreadyExistProduct = result.Products.FirstOrDefault();
-                csvProduct.Id = alreadyExistProduct != null ? alreadyExistProduct.Id : csvProduct.Id;
-            }
-            else if (!csvProduct.IsTransient())
-            {
-                //If id specified need check that product really exist 
-                alreadyExistProduct = _productService.GetById(csvProduct.Id, ItemResponseGroup.ItemInfo);
-            }
-            var isNewProduct = alreadyExistProduct == null;
+                    csvProduct.Code = _skuGenerator.GenerateSku(csvProduct);
+                }
+                //Set a parent relations
+                if (csvProduct.MainProductId == null && csvProduct.MainProduct != null)
+                {
+                    csvProduct.MainProductId = csvProduct.MainProduct.Id;
+                }
+                csvProduct.EditorialReview.LanguageCode = defaultLanguge;
+                csvProduct.SeoInfo.LanguageCode = defaultLanguge;
+                csvProduct.SeoInfo.SemanticUrl = string.IsNullOrEmpty(csvProduct.SeoInfo.SemanticUrl) ? csvProduct.Code : csvProduct.SeoInfo.SemanticUrl;
 
-            csvProduct.CatalogId = catalog.Id;
+                var properties = catalog.Properties;
+                if (csvProduct.CategoryId != null)
+                {
+                    var category = categpories.FirstOrDefault(x => x.Id == csvProduct.CategoryId);
+                    if (category != null)
+                    {
+                        properties = category.Properties;
+                    }
+                }
 
-            if (string.IsNullOrEmpty(csvProduct.Code))
-            {
-                csvProduct.Code = _skuGenerator.GenerateSku(csvProduct);
-            }
-            //Set a parent relations
-            if (csvProduct.MainProductId == null && csvProduct.MainProduct != null)
-            {
-                csvProduct.MainProductId = csvProduct.MainProduct.Id;
-            }
-            csvProduct.EditorialReview.LanguageCode = defaultLanguge;
-            csvProduct.SeoInfo.LanguageCode = defaultLanguge;
-            csvProduct.SeoInfo.SemanticUrl = string.IsNullOrEmpty(csvProduct.SeoInfo.SemanticUrl) ? csvProduct.Code : csvProduct.SeoInfo.SemanticUrl;
-
-            var properties = !string.IsNullOrEmpty(csvProduct.CategoryId) ? _categoryService.GetById(csvProduct.CategoryId, CategoryResponseGroup.WithProperties).Properties : _catalogService.GetById(csvProduct.CatalogId).Properties;
-
-            if (csvProduct.PropertyValues != null)
-            {
                 //Try to fill properties meta information for values
                 foreach (var propertyValue in csvProduct.PropertyValues)
                 {
@@ -253,37 +203,88 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                     }
                 }
             }
-
-            if (!isNewProduct)
+            var options = new ParallelOptions
             {
-                _productService.Update(new CatalogProduct[] { csvProduct });
-            }
-            else
+                MaxDegreeOfParallelism = 10
+            };
+
+            foreach (var group in new[] { csvProducts.Where(x => x.MainProduct == null), csvProducts.Where(x => x.MainProduct != null) })
             {
-                var newProduct = _productService.Create(csvProduct);
-                csvProduct.Id = newProduct.Id;
-            }
+                var partSize = 100;
+                var partsCount = Math.Max(1, group.Count() / partSize);
+                var parts = group.Select((x, i) => new { Index = i, Value = x })
+                                              .GroupBy(x => x.Index % partsCount)
+                                              .Select(x => x.Select(v => v.Value));
 
-            //Create price in default price list
-
-            if (csvProduct.Price.EffectiveValue > 0)
-            {
-                csvProduct.Price.ProductId = csvProduct.Id;
-
-                if (csvProduct.Price.IsTransient() || _pricingService.GetPriceById(csvProduct.Price.Id) == null)
+                Parallel.ForEach(parts, options, products =>
                 {
-                    _pricingService.CreatePrice(csvProduct.Price);
-                }
-                else
-                {
-                    _pricingService.UpdatePrices(new[] { csvProduct.Price });
-                }
-            }
+                    try
+                    {
+                        //Save main products first and then variations
+                        var toUpdateProducts = products.Where(x => !x.IsTransient());
+                        //Need to additional  check that  product with id exist  
+                        using (var repository = _catalogRepositoryFactory())
+                        {
+                            var updateProductIds = toUpdateProducts.Select(x => x.Id).ToArray();
+                            var existProductIds = repository.Items.Where(x => updateProductIds.Contains(x.Id)).Select(x => x.Id).ToArray();
+                            toUpdateProducts = toUpdateProducts.Where(x => existProductIds.Contains(x.Id)).ToList();
+                        }
+                        var toCreateProducts = products.Except(toUpdateProducts);
+                        if (!toCreateProducts.IsNullOrEmpty())
+                        {
+                            _productService.Create(toCreateProducts.ToArray());
+                        }
+                        if (!toUpdateProducts.IsNullOrEmpty())
+                        {
+                            _productService.Update(toUpdateProducts.ToArray());
+                        }
 
-            //Create inventory
-            csvProduct.Inventory.ProductId = csvProduct.Id;
-            csvProduct.Inventory.FulfillmentCenterId = csvProduct.Inventory.FulfillmentCenterId ?? defaultFulfillmentCenter.Id;
-            _inventoryService.UpsertInventory(csvProduct.Inventory);
+                        //Set productId for dependent objects
+                        foreach (var product in products)
+                        {
+                            product.Inventory.ProductId = product.Id;
+                            product.Inventory.FulfillmentCenterId = product.Inventory.FulfillmentCenterId ?? defaultFulfilmentCenter.Id;
+                            product.Price.ProductId = product.Id;
+                        }
+
+                        var prices = products.Where(x => x.Price != null && x.Price.EffectiveValue > 0).Select(x => x.Price).ToArray();
+                        _pricingService.SavePrices(prices);
+
+                        var inventories = products.Where(x => x.Inventory != null).Select(x => x.Inventory).ToArray();
+                        _inventoryService.UpsertInventories(inventories);
+                    }
+                    catch (Exception ex)
+                    {
+                        lock (_lockObject)
+                        {
+                            progressInfo.Errors.Add(ex.ToString());
+                            progressCallback(progressInfo);
+                        }
+                    }
+                    finally
+                    {
+                        lock (_lockObject)
+                        {
+                            //Raise notification
+                            progressInfo.ProcessedCount += products.Count();
+                            progressInfo.Description = string.Format("Saving products: {0} of {1} created", progressInfo.ProcessedCount, progressInfo.TotalCount);
+                            progressCallback(progressInfo);
+                        }
+                    }
+                });
+            }
+        }
+
+        private void DetectParents(List<CsvProduct> csvProducts)
+        {
+            foreach (var csvProduct in csvProducts)
+            {
+                //Try to set parent relations
+                //By id or code reference
+                var parentProduct = csvProducts.FirstOrDefault(x => csvProduct.MainProductId != null && (x.Id == csvProduct.MainProductId || x.Code == csvProduct.MainProductId));
+                csvProduct.MainProduct = parentProduct;
+                csvProduct.MainProductId = parentProduct != null ? parentProduct.Id : null;
+            }
         }
     }
 }

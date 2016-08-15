@@ -292,6 +292,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
             target.Length = source.Length;
             target.Width = source.Width;
             target.ShippingType = source.ShippingType;
+            target.Priority = source.Priority;
 
             var dbSource = source.ToDataModel(pkMap);
             #region Assets

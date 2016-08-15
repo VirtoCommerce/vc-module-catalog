@@ -18,6 +18,12 @@ namespace VirtoCommerce.CatalogModule.Client.Model
     public partial class CategoryLink :  IEquatable<CategoryLink>
     {
         /// <summary>
+        /// Gets or Sets Priority
+        /// </summary>
+        [DataMember(Name="priority", EmitDefaultValue=false)]
+        public int? Priority { get; set; }
+
+        /// <summary>
         /// Gets or Sets SourceItemId
         /// </summary>
         [DataMember(Name="sourceItemId", EmitDefaultValue=false)]
@@ -49,6 +55,7 @@ namespace VirtoCommerce.CatalogModule.Client.Model
         {
             var sb = new StringBuilder();
             sb.Append("class CategoryLink {\n");
+            sb.Append("  Priority: ").Append(Priority).Append("\n");
             sb.Append("  SourceItemId: ").Append(SourceItemId).Append("\n");
             sb.Append("  SourceCategoryId: ").Append(SourceCategoryId).Append("\n");
             sb.Append("  CatalogId: ").Append(CatalogId).Append("\n");
@@ -90,6 +97,11 @@ namespace VirtoCommerce.CatalogModule.Client.Model
 
             return 
                 (
+                    this.Priority == other.Priority ||
+                    this.Priority != null &&
+                    this.Priority.Equals(other.Priority)
+                ) && 
+                (
                     this.SourceItemId == other.SourceItemId ||
                     this.SourceItemId != null &&
                     this.SourceItemId.Equals(other.SourceItemId)
@@ -122,6 +134,9 @@ namespace VirtoCommerce.CatalogModule.Client.Model
             {
                 int hash = 41;
                 // Suitable nullity checks etc, of course :)
+
+                if (this.Priority != null)
+                    hash = hash * 59 + this.Priority.GetHashCode();
 
                 if (this.SourceItemId != null)
                     hash = hash * 59 + this.SourceItemId.GetHashCode();

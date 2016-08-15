@@ -80,6 +80,8 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         [StringLength(128)]
         public string Vendor { get; set; }
 
+        public int Priority { get; set; }
+
         #region Navigation Properties
 
         public virtual ObservableCollection<CategoryItemRelation> CategoryLinks { get; set; }

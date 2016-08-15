@@ -125,6 +125,10 @@ function ($scope, catalogs, listEntries, bladeUtils, uiGridConstants, uiGridHelp
             bladeNavigationService.closeBlade(blade, function () {
                 bladeNavigationService.showBlade(newBlade, blade.parentBlade);
             });
+
+            // setting current catalog to be globally available 
+            bladeNavigationService.catalogsSelectedCatalog = listItem;
+            bladeNavigationService.catalogsSelectedCategoryId = undefined;
         }
         else if (listItem.type === 'category') {
             newBlade.categoryId = listItem.id;
@@ -145,8 +149,10 @@ function ($scope, catalogs, listEntries, bladeUtils, uiGridConstants, uiGridHelp
                 template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/item-detail.tpl.html'
             };
             bladeNavigationService.showBlade(newBlade, blade);
-        }
 
+            // setting current categoryId to be globally available
+            bladeNavigationService.catalogsSelectedCategoryId = blade.categoryId;
+        }
     };
 
     var filter = $scope.filter = {};

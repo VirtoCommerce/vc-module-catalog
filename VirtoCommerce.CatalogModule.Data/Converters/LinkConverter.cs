@@ -24,7 +24,9 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 			var retVal = new coreModel.CategoryLink
 			{
 				 CategoryId = categoryItemRelation.CategoryId,
-				 CatalogId = categoryItemRelation.CatalogId
+				 CatalogId = categoryItemRelation.CatalogId,
+                 Priority = categoryItemRelation.Priority
+                 
 			};
 			return retVal;
 		}
@@ -59,8 +61,8 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 				 CategoryId = categoryLink.CategoryId,
 				 ItemId = product.Id,
 				 CatalogId = categoryLink.CatalogId,
-				 Priority = 100
-			};
+				 Priority = categoryLink.Priority
+            };
 			return retVal;
 		}
 
@@ -108,24 +110,19 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 
 		public bool Equals(dataModel.CategoryItemRelation x, dataModel.CategoryItemRelation y)
 		{
-			var retVal = x.CatalogId == y.CatalogId;
-			
-			if (retVal && x.CategoryId != null)
-			{
-				retVal = x.CategoryId == y.CategoryId;
-			}
-
-			return retVal;
+            return GetHashCode(x) == GetHashCode(y);
 		}
 
 		public int GetHashCode(dataModel.CategoryItemRelation obj)
 		{
-			var retVal = obj.CatalogId.GetHashCode();
-			if (obj.CategoryId != null)
-			{
-				retVal = obj.CategoryId.GetHashCode();
-			}
-			return retVal;
+            int hash = 17;
+            hash = hash * 23 + obj.CatalogId.GetHashCode();
+            hash = hash * 23 + obj.Priority.GetHashCode();
+            if (obj.CategoryId != null)
+            {
+                hash = hash * 23 + obj.CategoryId.GetHashCode();
+            }
+            return hash;
 		}
 
 		#endregion
@@ -137,27 +134,22 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 
 		public bool Equals(dataModel.CategoryRelation x, dataModel.CategoryRelation y)
 		{
-			var retVal = x.TargetCatalogId == y.TargetCatalogId;
-			if(retVal && x.TargetCategoryId != null)
-			{
-				retVal = x.TargetCategoryId == y.TargetCategoryId;
-			}
-
-			return retVal;
-		}
+            return GetHashCode(x) == GetHashCode(y);
+        }
 
 		public int GetHashCode(dataModel.CategoryRelation obj)
 		{
-			var retVal = obj.SourceCategoryId.GetHashCode();
-			if(obj.TargetCategoryId != null)
-			{
-				retVal = obj.TargetCategoryId.GetHashCode();
-			}
-			else if (obj.TargetCatalogId != null)
-			{
-				retVal = obj.TargetCatalogId.GetHashCode();
-			}
-			return retVal;
+            var hash = 17;
+            hash = hash * 23 + obj.SourceCategoryId.GetHashCode();
+            if (obj.TargetCategoryId != null)
+            {
+                hash = hash * 23 + obj.TargetCategoryId.GetHashCode();
+            }
+            else if (obj.TargetCatalogId != null)
+            {
+                hash = hash * 23 + obj.TargetCatalogId.GetHashCode();
+            }
+            return hash;     
 		}
 
 		#endregion

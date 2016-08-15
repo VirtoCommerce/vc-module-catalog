@@ -8,15 +8,16 @@
         blade.isLoading = true;
 
         return items.get({ id: blade.itemId }, function (data) {
-        	blade.itemId = data.id;
+            blade.itemId = data.id;
             blade.title = data.code;
             blade.securityScopes = data.securityScopes;
             if (!data.productType) {
                 data.productType = 'Physical';
             }
             blade.subtitle = data.productType + ' item details';
-            $scope.isTitular = data.titularItemId == null;
-            $scope.isTitularConfirmed = $scope.isTitular;
+
+            var linkWithPriority = getLinkWithPriority(data);
+            data._priority = (linkWithPriority ? linkWithPriority.priority : data.priority) || 0;
 
             blade.item = angular.copy(data);
             blade.currentEntity = blade.item;
@@ -25,14 +26,12 @@
             if (parentRefresh && blade.parentBlade.refresh) {
                 blade.parentBlade.refresh();
             }
-            if(blade.childrenBlades)
-            {
-            	_.each(blade.childrenBlades, function (x) {
-            		if(x.refresh)
-            		{
-            			x.refresh(blade.item);
-            		}
-            	});
+            if (blade.childrenBlades) {
+                _.each(blade.childrenBlades, function (x) {
+                    if (x.refresh) {
+                        x.refresh(blade.item);
+                    }
+                });
             }
         },
         function (error) { bladeNavigationService.setError('Error ' + error.status, blade); });
@@ -54,16 +53,33 @@
 
     function saveChanges() {
         blade.isLoading = true;
-        items.update({}, blade.item, function () {
-        	blade.refresh(true);
 
-        },
-        function (error) { bladeNavigationService.setError('Error ' + error.status, blade); });
+        var linkWithPriority = getLinkWithPriority(blade.item);
+        if (linkWithPriority) {
+            linkWithPriority.priority = blade.item._priority;
+        } else {
+            blade.item.priority = blade.item._priority;
+        }
+
+        items.update({}, blade.item, function () {
+            blade.refresh(true);
+        }, function (error) { bladeNavigationService.setError('Error ' + error.status, blade); });
     };
 
     blade.onClose = function (closeCallback) {
         bladeNavigationService.showConfirmationIfNeeded(isDirty(), canSave(), blade, saveChanges, closeCallback, "catalog.dialogs.item-save.title", "catalog.dialogs.item-save.message");
     };
+
+    function getLinkWithPriority(data) {
+        var retVal;
+        if (bladeNavigationService.catalogsSelectedCatalog.isVirtual) {
+            retVal = _.find(data.links, function(l) {
+                return l.catalogId == bladeNavigationService.catalogsSelectedCatalog.id &&
+                        (!bladeNavigationService.catalogsSelectedCategoryId || l.categoryId === bladeNavigationService.catalogsSelectedCategoryId);
+            });
+        }
+        return retVal;
+    }
 
     var formScope;
     $scope.setForm = function (form) { formScope = form; }
@@ -81,7 +97,6 @@
             name: "platform.commands.reset", icon: 'fa fa-undo',
             executeMethod: function () {
                 angular.copy(blade.origItem, blade.item);
-                $scope.isTitular = blade.item.titularItemId == null;
             },
             canExecuteMethod: isDirty,
             permission: blade.updatePermission
@@ -151,7 +166,7 @@
                     currentEntityId: 'VirtoCommerce.Core.General.TaxTypes',
                     parentRefresh: function (data) { $scope.taxTypes = data; }
                 });
-                break;       
+                break;
         }
 
         bladeNavigationService.showBlade(newBlade, blade);
@@ -164,6 +179,6 @@
     });
 
     initVendors();
-    $scope.taxTypes = settings.getValues({ id: 'VirtoCommerce.Core.General.TaxTypes' });  
+    $scope.taxTypes = settings.getValues({ id: 'VirtoCommerce.Core.General.TaxTypes' });
     blade.refresh(false);
 }]);
