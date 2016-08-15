@@ -216,6 +216,12 @@ namespace VirtoCommerce.CatalogModule.Client.Model
         public string Vendor { get; set; }
 
         /// <summary>
+        /// Gets or Sets Priority
+        /// </summary>
+        [DataMember(Name="priority", EmitDefaultValue=false)]
+        public int? Priority { get; set; }
+
+        /// <summary>
         /// Gets or Sets ImgSrc
         /// </summary>
         [DataMember(Name="imgSrc", EmitDefaultValue=false)]
@@ -358,6 +364,7 @@ namespace VirtoCommerce.CatalogModule.Client.Model
             sb.Append("  ShippingType: ").Append(ShippingType).Append("\n");
             sb.Append("  TaxType: ").Append(TaxType).Append("\n");
             sb.Append("  Vendor: ").Append(Vendor).Append("\n");
+            sb.Append("  Priority: ").Append(Priority).Append("\n");
             sb.Append("  ImgSrc: ").Append(ImgSrc).Append("\n");
             sb.Append("  Properties: ").Append(Properties).Append("\n");
             sb.Append("  Images: ").Append(Images).Append("\n");
@@ -577,6 +584,11 @@ namespace VirtoCommerce.CatalogModule.Client.Model
                     this.Vendor.Equals(other.Vendor)
                 ) && 
                 (
+                    this.Priority == other.Priority ||
+                    this.Priority != null &&
+                    this.Priority.Equals(other.Priority)
+                ) && 
+                (
                     this.ImgSrc == other.ImgSrc ||
                     this.ImgSrc != null &&
                     this.ImgSrc.Equals(other.ImgSrc)
@@ -773,6 +785,9 @@ namespace VirtoCommerce.CatalogModule.Client.Model
 
                 if (this.Vendor != null)
                     hash = hash * 59 + this.Vendor.GetHashCode();
+
+                if (this.Priority != null)
+                    hash = hash * 59 + this.Priority.GetHashCode();
 
                 if (this.ImgSrc != null)
                     hash = hash * 59 + this.ImgSrc.GetHashCode();
