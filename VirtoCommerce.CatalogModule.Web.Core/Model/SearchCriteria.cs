@@ -107,6 +107,11 @@ namespace VirtoCommerce.CatalogModule.Web.Model
         /// Search product with specified types
         /// </summary>
         public string[] ProductTypes { get; set; }
+
+        //Search by product vendor
+        public string VendorId { get; set; }
+        public string[] VendorIds { get; set; }
+
         public DateTime? StartDateFrom { get; set; }
       
     }

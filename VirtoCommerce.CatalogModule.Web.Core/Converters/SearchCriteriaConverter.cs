@@ -23,6 +23,7 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             retVal.Terms = criteria.Terms;
             retVal.Facets = criteria.Facets;
             retVal.ProductTypes = criteria.ProductTypes;
+            retVal.VendorIds = criteria.VendorIds;
 
             if(!criteria.PropertyValues.IsNullOrEmpty())
             {

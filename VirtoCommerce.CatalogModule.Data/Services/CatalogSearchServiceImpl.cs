@@ -232,6 +232,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     query = query.Where(x => x.Name.Contains(criteria.Keyword) || x.Code.Contains(criteria.Keyword) || x.ItemPropertyValues.Any(y => y.ShortTextValue == criteria.Keyword));
                 }
 
+                if (!criteria.VendorIds.IsNullOrEmpty())
+                {
+                    query = query.Where(x => criteria.VendorIds.Contains(x.Vendor));
+                }
 
                 //Filter by property dictionary values
                 if (!criteria.PropertyValues.IsNullOrEmpty())
