@@ -198,6 +198,18 @@ namespace VirtoCommerce.CatalogModule.Client.Model
         public List<string> ProductTypes { get; set; }
 
         /// <summary>
+        /// Gets or Sets VendorId
+        /// </summary>
+        [DataMember(Name="vendorId", EmitDefaultValue=false)]
+        public string VendorId { get; set; }
+
+        /// <summary>
+        /// Gets or Sets VendorIds
+        /// </summary>
+        [DataMember(Name="vendorIds", EmitDefaultValue=false)]
+        public List<string> VendorIds { get; set; }
+
+        /// <summary>
         /// Gets or Sets StartDateFrom
         /// </summary>
         [DataMember(Name="startDateFrom", EmitDefaultValue=false)]
@@ -241,6 +253,8 @@ namespace VirtoCommerce.CatalogModule.Client.Model
             sb.Append("  OnlyWithTrackingInventory: ").Append(OnlyWithTrackingInventory).Append("\n");
             sb.Append("  ProductType: ").Append(ProductType).Append("\n");
             sb.Append("  ProductTypes: ").Append(ProductTypes).Append("\n");
+            sb.Append("  VendorId: ").Append(VendorId).Append("\n");
+            sb.Append("  VendorIds: ").Append(VendorIds).Append("\n");
             sb.Append("  StartDateFrom: ").Append(StartDateFrom).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
@@ -429,6 +443,16 @@ namespace VirtoCommerce.CatalogModule.Client.Model
                     this.ProductTypes.SequenceEqual(other.ProductTypes)
                 ) && 
                 (
+                    this.VendorId == other.VendorId ||
+                    this.VendorId != null &&
+                    this.VendorId.Equals(other.VendorId)
+                ) && 
+                (
+                    this.VendorIds == other.VendorIds ||
+                    this.VendorIds != null &&
+                    this.VendorIds.SequenceEqual(other.VendorIds)
+                ) && 
+                (
                     this.StartDateFrom == other.StartDateFrom ||
                     this.StartDateFrom != null &&
                     this.StartDateFrom.Equals(other.StartDateFrom)
@@ -536,6 +560,12 @@ namespace VirtoCommerce.CatalogModule.Client.Model
 
                 if (this.ProductTypes != null)
                     hash = hash * 59 + this.ProductTypes.GetHashCode();
+
+                if (this.VendorId != null)
+                    hash = hash * 59 + this.VendorId.GetHashCode();
+
+                if (this.VendorIds != null)
+                    hash = hash * 59 + this.VendorIds.GetHashCode();
 
                 if (this.StartDateFrom != null)
                     hash = hash * 59 + this.StartDateFrom.GetHashCode();
