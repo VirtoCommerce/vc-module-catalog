@@ -158,6 +158,7 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
             var categpories = _categoryService.GetByIds(categoriesIds, CategoryResponseGroup.WithProperties);
 
             var defaultLanguge = catalog.DefaultLanguage != null ? catalog.DefaultLanguage.LanguageCode : "EN-US";
+            var changedProperties = new List<Property>();
             foreach (var csvProduct in csvProducts)
             {
                 csvProduct.CatalogId = catalog.Id;
@@ -195,14 +196,32 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                             propertyValue.ValueType = property.ValueType;
                             if (property.Dictionary)
                             {
-                                property = _propertyService.GetById(property.Id);
                                 var dicValue = property.DictionaryValues.FirstOrDefault(x => Equals(x.Value, propertyValue.Value));
-                                propertyValue.ValueId = dicValue != null ? dicValue.Id : null;
+                                if (dicValue == null)
+                                {
+                                    dicValue = new PropertyDictionaryValue
+                                    {
+                                        Alias = propertyValue.Value.ToString(),
+                                        Value = propertyValue.Value.ToString(),
+                                        Id = Guid.NewGuid().ToString()
+                                    };
+                                    property.DictionaryValues.Add(dicValue);
+                                    if(!changedProperties.Contains(property))
+                                    {
+                                        changedProperties.Add(property);
+                                    }
+                                }
+                                propertyValue.ValueId = dicValue.Id;
                             }
                         }
                     }
-                }
+                }             
             }
+
+            progressInfo.Description = string.Format("Saving property dictionary values...");
+            progressCallback(progressInfo);
+            _propertyService.Update(changedProperties.ToArray());
+
             var options = new ParallelOptions
             {
                 MaxDegreeOfParallelism = 10
@@ -210,7 +229,7 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
 
             foreach (var group in new[] { csvProducts.Where(x => x.MainProduct == null), csvProducts.Where(x => x.MainProduct != null) })
             {
-                var partSize = 100;
+                var partSize = 25;
                 var partsCount = Math.Max(1, group.Count() / partSize);
                 var parts = group.Select((x, i) => new { Index = i, Value = x })
                                               .GroupBy(x => x.Index % partsCount)
@@ -247,11 +266,13 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                             product.Price.ProductId = product.Id;
                         }
 
+                        var inventories = products.Where(x => x.Inventory != null).Select(x => x.Inventory).ToArray();
+                        _inventoryService.UpsertInventories(inventories);
+
                         var prices = products.Where(x => x.Price != null && x.Price.EffectiveValue > 0).Select(x => x.Price).ToArray();
                         _pricingService.SavePrices(prices);
 
-                        var inventories = products.Where(x => x.Inventory != null).Select(x => x.Inventory).ToArray();
-                        _inventoryService.UpsertInventories(inventories);
+                      
                     }
                     catch (Exception ex)
                     {

@@ -432,7 +432,11 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 return;
 
             const string queryPattern =
-            @"DELETE CR FROM CategoryItemRelation  CR INNER JOIN Item I ON I.Id = CR.ItemId
+            @"
+            DELETE SEO FROM SeoUrlKeyword SEO INNER JOIN Item I ON I.Id = SEO.ObjectId AND SEO.ObjectType = 'CatalogProduct'
+            WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
+
+            DELETE CR FROM CategoryItemRelation  CR INNER JOIN Item I ON I.Id = CR.ItemId
             WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
         
             DELETE CI FROM CatalogImage CI INNER JOIN Item I ON I.Id = CI.ItemId
@@ -469,12 +473,14 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
             var allCategoriesIds = GetAllChildrenCategoriesIds(ids).Concat(ids);
             const string queryPattern =
-            @"DELETE CI FROM CatalogImage CI INNER JOIN Category C ON C.Id = CI.CategoryId WHERE C.Id IN ({0}) 
+            @"DELETE FROM SeoUrlKeyword WHERE ObjectType = 'Category' AND ObjectId IN ({0})
+            DELETE CI FROM CatalogImage CI INNER JOIN Category C ON C.Id = CI.CategoryId WHERE C.Id IN ({0}) 
             DELETE PV FROM PropertyValue PV INNER JOIN Category C ON C.Id = PV.CategoryId WHERE C.Id IN ({0}) 
             DELETE CR FROM CategoryRelation CR INNER JOIN Category C ON C.Id = CR.SourceCategoryId OR C.Id = CR.TargetCategoryId  WHERE C.Id IN ({0}) 
             DELETE CIR FROM CategoryItemRelation CIR INNER JOIN Category C ON C.Id = CIR.CategoryId WHERE C.Id IN ({0}) 
             DELETE A FROM Association A INNER JOIN Category C ON C.Id = A.AssociatedCategoryId WHERE C.Id IN ({0})
             DELETE P FROM Property P INNER JOIN Category C ON C.Id = P.CategoryId  WHERE C.Id IN ({0})";
+
 
             var itemsIds = Items.Where(x => allCategoriesIds.Contains(x.CategoryId)).Select(x => x.Id).ToArray();
             int skip = 0;

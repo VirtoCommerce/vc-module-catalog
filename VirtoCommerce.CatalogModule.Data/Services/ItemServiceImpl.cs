@@ -147,12 +147,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             {
                 repository.RemoveItems(itemIds);
                 CommitChanges(repository);
-            }
-            var expandedItemsWithVariations = items.Concat(items.SelectMany(x => x.Variations));
-            foreach (var item in expandedItemsWithVariations)
-            {
-                _commerceService.DeleteSeoForObject(item);
-            }
+            }      
         }
         #endregion
     }
