@@ -72,7 +72,7 @@
 
     function getLinkWithPriority(data) {
         var retVal;
-        if (bladeNavigationService.catalogsSelectedCatalog.isVirtual) {
+        if (bladeNavigationService.catalogsSelectedCatalog && bladeNavigationService.catalogsSelectedCatalog.isVirtual) {
             retVal = _.find(data.links, function(l) {
                 return l.catalogId == bladeNavigationService.catalogsSelectedCatalog.id &&
                         (!bladeNavigationService.catalogsSelectedCategoryId || l.categoryId === bladeNavigationService.catalogsSelectedCategoryId);

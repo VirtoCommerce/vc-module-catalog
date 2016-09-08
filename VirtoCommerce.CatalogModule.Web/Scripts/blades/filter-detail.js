@@ -1,6 +1,6 @@
 ﻿angular.module('virtoCommerce.catalogModule')
-.controller('virtoCommerce.catalogModule.filterDetailController', ['$scope', '$localStorage', 'platformWebApp.dialogService', 'platformWebApp.bladeNavigationService',
-    function ($scope, $localStorage, dialogService, bladeNavigationService) {
+.controller('virtoCommerce.catalogModule.filterDetailController', ['$scope', '$localStorage', '$translate',
+    function ($scope, $localStorage, $translate) {
         var blade = $scope.blade;
 
         $scope.trueFalse = [
@@ -14,21 +14,20 @@
         ];
 
         $scope.saveChanges = function () {
+            angular.copy(blade.currentEntity, blade.origEntity);
             if (blade.isNew) {
-                $localStorage.catalogSearchFilters.push(blade.currentEntity);
-                $localStorage.catalogSearchFilterId = blade.currentEntity.id;
-                blade.parentBlade.filter.current = blade.currentEntity;
+                $localStorage.catalogSearchFilters.push(blade.origEntity);
+                $localStorage.catalogSearchFilterId = blade.origEntity.id;
+                blade.parentBlade.filter.current = blade.origEntity;
                 blade.isNew = false;
-            } else {
-                angular.copy(blade.currentEntity, blade.origEntity);
             }
+
+            initializeBlade(blade.origEntity);
             blade.parentBlade.filter.criteriaChanged();
             // $scope.bladeClose();
         };
 
         function initializeBlade(data) {
-            if (blade.isNew) data = { id: new Date().getTime(), name: 'Unnamed filter' };
-
             blade.currentEntity = angular.copy(data);
             blade.origEntity = data;
             blade.isLoading = false;
@@ -69,30 +68,25 @@
                     name: "platform.commands.delete", icon: 'fa fa-trash-o',
                     executeMethod: deleteEntry,
                     canExecuteMethod: function () {
-                        return true;
+                        return !blade.isNew;
                     }
                 }];
 
 
         function deleteEntry() {
-            //var dialog = {
-            //    id: "confirmDelete",
-            //    title: "-delete.title",
-            //message: "-delete.message",
-            //callback: function (remove) {
-            //    if (remove) {
-            //        blade.isLoading = true;
             blade.parentBlade.filter.current = null;
             $localStorage.catalogSearchFilters.splice($localStorage.catalogSearchFilters.indexOf(blade.origEntity), 1);
             delete $localStorage.catalogSearchFilterId;
             blade.parentBlade.refresh();
             $scope.bladeClose();
-            //        }
-            //    }
-            //}
-            //dialogService.showConfirmationDialog(dialog);
         }
 
         // actions on load        
-        initializeBlade(blade.data);
+        if (blade.isNew) {
+            $translate('catalog.blades.categories-items-list.labels.unnamed-filter').then(function (result) {
+                initializeBlade({ id: new Date().getTime(), name: result });
+            });
+        } else {
+            initializeBlade(blade.data);
+        }
     }]);
