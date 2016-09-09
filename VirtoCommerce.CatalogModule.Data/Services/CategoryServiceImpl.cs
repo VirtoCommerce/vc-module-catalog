@@ -129,11 +129,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             {
                 repository.RemoveCategories(categoryIds);
                 CommitChanges(repository);
-            }
-            foreach (var category in categories)
-            {
-                _commerceService.DeleteSeoForObject(category);
-            }
+            }       
         }
 
         #endregion
