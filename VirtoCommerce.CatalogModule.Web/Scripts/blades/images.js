@@ -32,17 +32,7 @@
     		});
 
     		uploader.url = getImageUrl(item.code, blade.imageType).relative;
-
-    		// ADDING FILTERS
-    		// Images only
-    		uploader.filters.push({
-    			name: 'imageFilter',
-    			fn: function (i /*{File|FileLikeObject}*/, options) {
-    				var type = '|' + i.type.slice(i.type.lastIndexOf('/') + 1) + '|';
-    				return '|jpg|png|jpeg|bmp|gif|'.indexOf(type) !== -1;
-    			}
-    		});
-
+            
     		uploader.onSuccessItem = function (fileItem, images, status, headers) {
     			angular.forEach(images, function (image) {
     				//ADD uploaded image                

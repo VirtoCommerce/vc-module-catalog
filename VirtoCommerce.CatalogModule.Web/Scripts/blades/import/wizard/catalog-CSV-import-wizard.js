@@ -25,8 +25,7 @@
             removeAfterUpload: true
         });
 
-        // ADDING FILTERS
-        // Images only
+        // ADDING FILTERS: csv only
         uploader.filters.push({
             name: 'csvFilter',
             fn: function (i /*{File|FileLikeObject}*/, options) {
