@@ -5,7 +5,7 @@
     blade.pricelistId = undefined;
     blade.isLoading = false;
     blade.title = 'catalog.blades.catalog-CSV-export.title';
-    blade.titleValues = {name: blade.catalog ? blade.catalog.name : ''};
+    blade.titleValues = { name: blade.catalog ? blade.catalog.name : '' };
 
     $scope.$on("new-notification-event", function (event, notification) {
         if (blade.notification && notification.id == blade.notification.id) {
@@ -34,7 +34,9 @@
     },
     function (error) { bladeNavigationService.setError('Error ' + error.status, $scope.blade); });
 
-    $scope.pricelists = pricelists.query();
+    pricelists.search({ take: 1000 }, function (result) {
+        $scope.pricelists = result.pricelists;
+    });
 
     $scope.blade.headIcon = 'fa-file-archive-o';
 }]);
