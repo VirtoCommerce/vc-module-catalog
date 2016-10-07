@@ -1,25 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using VirtoCommerce.CatalogModule.Data.Converters;
+using System.Text;
+using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
+using VirtoCommerce.Domain.Commerce.Model;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
-    public class OutlineService : IOutlineService
+    public sealed class OutlineService : IOutlineService
     {
-        private readonly Func<ICatalogRepository> _catalogRepositoryFactory;
-
-        public OutlineService(Func<ICatalogRepository> catalogRepositoryFactory)
-        {
-            _catalogRepositoryFactory = catalogRepositoryFactory;
-        }
-
-        #region IOutlineService Members
-
         /// <summary>
         /// Constructs single physical and/or multiple virtual outlines for given objects.
         /// Outline is the path from the catalog to one of the child objects (product or category):
@@ -31,181 +24,196 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
             foreach (var obj in objects)
             {
-                var item = ConvertToGenericItem(obj);
-
-                obj.Outlines = new List<Outline>();
-                AddOutlines(item, catalogId, obj.Outlines);
-            }
-        }
-
-        #endregion
-
-        private void AddOutlines(GenericItem item, string allowedCatalogId, ICollection<Outline> outlines)
-        {
-            // Add physical outline
-            if (IsAllowedCatalog(item.CatalogId, allowedCatalogId))
-            {
-                var outline = CreateOutline(item.CatalogId);
-                outline.Items.AddRange(item.Parents.Select(ConvertToOutlineItem));
-                outline.Items.Add(ConvertToOutlineItem(item));
-                outlines.Add(outline);
-            }
-
-            // Add virtual outlines for parent links
-            var lastItem = ConvertToOutlineItem(item);
-            var parents = new List<OutlineItem>();
-
-            foreach (var parent in item.Parents.Reverse())
-            {
-                parents = parents.Select(Clone).ToList();
-                parents.Insert(0, ConvertToOutlineItem(parent, true));
-                AddOutlinesForLinks(parent.Links, parents, lastItem, allowedCatalogId, outlines);
-            }
-
-            // Add virtual outlines for item links
-            lastItem = ConvertToOutlineItem(item, true);
-            AddOutlinesForLinks(item.Links, null, lastItem, allowedCatalogId, outlines);
-        }
-
-        private void AddOutlinesForLinks(IEnumerable<CategoryLink> links, List<OutlineItem> parents, OutlineItem lastItem, string allowedCatalogId, ICollection<Outline> outlines)
-        {
-            foreach (var link in links)
-            {
-                if (IsAllowedCatalog(link.CatalogId, allowedCatalogId))
+                var relationshipsTree = GetRelationshipsTree(obj);
+                if (relationshipsTree != null)
                 {
-                    var outline = CreateOutline(link.CatalogId);
-
-                    if (link.CategoryId != null)
+                    obj.Outlines = new List<Outline>();
+                    foreach (var flatBranch in relationshipsTree.GetFlatBranches())
                     {
-                        var category = GetCategoryItem(link.CategoryId, true);
-                        outline.Items.AddRange(category.Parents.Select(ConvertToOutlineItem));
-                        outline.Items.Add(ConvertToOutlineItem(category));
+                        var outlineItems = new List<OutlineItem>();
+                        Entity parentEntity = null;
+                        foreach (var entity in flatBranch)
+                        {
+                            var outlineItem = Entity2Outline(entity);
+                            outlineItem.HasVirtualParent = !IsVirtualEntity(entity) && IsVirtualEntity(parentEntity);
+                            outlineItems.Add(outlineItem);
+                            parentEntity = entity;
+                        }
+                        //filter branches with passed catalog
+                        if (string.IsNullOrEmpty(catalogId) || outlineItems.Any(x => x.Id.EqualsInvariant(catalogId) && x.SeoObjectType.EqualsInvariant("catalog")))
+                        {
+                            var outline = new Outline();
+                            outline.Items = outlineItems.ToList();
+                            obj.Outlines.Add(outline);
+                        }
                     }
-
-                    if (parents != null)
-                    {
-                        outline.Items.AddRange(parents);
-                    }
-
-                    outline.Items.Add(lastItem);
-                    outlines.Add(outline);
                 }
             }
         }
 
-        private static bool IsAllowedCatalog(string actualCatalogId, string allowedCatalogId)
+        private GenericTreeNode<Entity> GetRelationshipsTree(IHasOutlines obj)
         {
-            return allowedCatalogId == null || string.Equals(allowedCatalogId, actualCatalogId, StringComparison.OrdinalIgnoreCase);
-        }
-
-        private static Outline CreateOutline(string catalogId)
-        {
-            return new Outline
-            {
-                Items = new List<OutlineItem>
-                {
-                    new OutlineItem { Id = catalogId, SeoObjectType = "Catalog" }
-                }
-            };
-        }
-
-        private static OutlineItem Clone(OutlineItem item)
-        {
-            return item == null ? null : new OutlineItem
-            {
-                Id = item.Id,
-                SeoObjectType = item.SeoObjectType,
-            };
-        }
-
-        private static OutlineItem ConvertToOutlineItem(GenericItem item)
-        {
-            return ConvertToOutlineItem(item, false);
-        }
-
-        private static OutlineItem ConvertToOutlineItem(GenericItem item, bool hasVirtualParent)
-        {
-            return new OutlineItem
-            {
-                Id = item.Id,
-                SeoObjectType = item.SeoObjectType,
-                HasVirtualParent = hasVirtualParent,
-            };
-        }
-
-        private GenericItem ConvertToGenericItem(IHasOutlines obj, bool convertParents = true)
-        {
-            GenericItem result = null;
-
-            var category = obj as Category;
-            if (category != null)
-            {
-                result = GetCategoryItem(category.Id, convertParents);
-            }
-
             var product = obj as CatalogProduct;
+            var category = obj as Category;
+            GenericTreeNode<Entity> retVal = null;
             if (product != null)
             {
-                result = new GenericItem
-                {
-                    Id = product.Id,
-                    SeoObjectType = product.SeoObjectType,
-                    CatalogId = product.CatalogId,
-                    Parents = new List<GenericItem>(),
-                    Links = new List<CategoryLink>(product.Links),
-                };
+                retVal = GetRelationshipsTree(product);
+            }
+            if (category != null)
+            {
+                retVal = GetRelationshipsTree(category);
+            }
+            return retVal;
+        }
 
-                if (product.CategoryId != null)
+        private GenericTreeNode<Entity> GetRelationshipsTree(CatalogProduct product)
+        {
+            var retVal = new GenericTreeNode<Entity>(product);
+            if (product.Category != null)
+            {
+                retVal.AddChild(GetRelationshipsTree(product.Category));
+            }
+            else
+            {
+                retVal.AddChild(new GenericTreeNode<Entity>(product.Catalog));
+            }
+
+            if (!product.Links.IsNullOrEmpty())
+            {
+                foreach (var link in product.Links)
                 {
-                    var productCategory = GetCategoryItem(product.CategoryId, convertParents);
-                    result.Parents.AddRange(productCategory.Parents);
-                    result.Parents.Add(productCategory);
+                    if (link.Category != null)
+                    {
+                        retVal.AddChild(GetRelationshipsTree(link.Category));
+                    }
+                    else
+                    {
+                        retVal.AddChild(new GenericTreeNode<Entity>(link.Catalog));
+                    }
                 }
             }
-
-            return result;
+            return retVal;
         }
 
-        private GenericItem GetCategoryItem(string categoryId, bool convertParents)
+        private GenericTreeNode<Entity> GetRelationshipsTree(Category category)
         {
-            var category = GetCategory(categoryId);
-
-            var result = new GenericItem
+            var retVal = new GenericTreeNode<Entity>(category);
+            if (!category.Parents.IsNullOrEmpty())
             {
-                Id = category.Id,
-                SeoObjectType = category.SeoObjectType,
-                CatalogId = category.CatalogId,
-                Links = category.Links,
+                var parentNode = GetRelationshipsTree(category.Parents.Reverse().First());
+                retVal.AddChild(parentNode);
+            }
+            else
+            {
+                retVal.AddChild(new GenericTreeNode<Entity>(category.Catalog));
+            }
+            if (!category.Links.IsNullOrEmpty())
+            {
+                foreach (var link in category.Links)
+                {
+                    var node = new GenericTreeNode<Entity>(link.Catalog);
+                    if (link.Category != null)
+                    {
+                        node = GetRelationshipsTree(link.Category);
+                    }
+                    retVal.AddChild(node);
+                }
+            }
+            return retVal;
+        }
+
+        private bool IsVirtualEntity(Entity obj)
+        {
+            var retVal = false;
+            var catalog = obj as Catalog;
+            var category = obj as Category;
+            if (catalog != null)
+            {
+                retVal = catalog.IsVirtual;
+            }
+            if (category != null)
+            {
+                retVal = category.IsVirtual;
+            }
+            return retVal;
+        }
+
+        private OutlineItem Entity2Outline(Entity entity)
+        {
+            var seoSupport = entity as ISeoSupport;
+            var retVal = new OutlineItem
+            {
+                Id = entity.Id,
+                SeoObjectType = seoSupport != null ? seoSupport.SeoObjectType : "Catalog"
             };
-
-            if (convertParents)
-            {
-                result.Parents = category.Parents
-                    .Select(c => ConvertToGenericItem(c, false))
-                    .ToList();
-            }
-
-            return result;
-        }
-
-        private Category GetCategory(string categoryId)
-        {
-            using (var repository = _catalogRepositoryFactory())
-            {
-                var result = repository.GetCategoriesByIds(new[] { categoryId }, CategoryResponseGroup.WithParents | CategoryResponseGroup.WithLinks)
-                    .Select(c => c.ToCoreModel())
-                    .FirstOrDefault();
-                return result;
-            }
-        }
-
-        private class GenericItem
-        {
-            public string Id { get; set; }
-            public string SeoObjectType { get; set; }
-            public string CatalogId { get; set; }
-            public ICollection<GenericItem> Parents { get; set; }
-            public ICollection<CategoryLink> Links { get; set; }
+            return retVal;
         }
     }
+
+
+    internal class GenericTreeNode<T>
+    {
+        private ICollection<GenericTreeNode<T>> _children;
+
+        public GenericTreeNode(T value)
+        {
+            Value = value;
+            _children = new List<GenericTreeNode<T>>();
+        }
+
+        public T Value { get; private set; }
+
+        public GenericTreeNode<T> Parent { get; set; }
+
+        public IEnumerable<GenericTreeNode<T>> Children
+        {
+            get
+            {
+                return _children;
+            }
+        }
+
+        public GenericTreeNode<T> AddChild(GenericTreeNode<T> node)
+        {
+            _children.Add(node);
+            node.Parent = this;
+
+            return node;
+        }
+
+        public override string ToString()
+        {
+            var retVal = new List<string>();
+            foreach (var branch in GetFlatBranches())
+            {
+                retVal.Add(string.Join("/", branch));
+            }
+            return string.Join(" | ", retVal);
+        }
+
+        public IEnumerable<IEnumerable<T>> GetFlatBranches()
+        {
+            var retVal = new List<List<T>>();
+            if (!_children.IsNullOrEmpty())
+            {
+                foreach (var children in _children)
+                {
+                    var childrenFlatBranches = children.GetFlatBranches();
+                    foreach (var childrenFlatBranch in childrenFlatBranches)
+                    {
+                        var flatBranch = new List<T>();
+                        flatBranch.AddRange(childrenFlatBranch.Concat(new[] { Value }));
+                        retVal.Add(flatBranch);
+                    }
+                }
+            }
+            else
+            {
+                retVal.Add(new List<T>(new[] { Value }));
+            }
+            return retVal;
+        }
+    }
+
 }

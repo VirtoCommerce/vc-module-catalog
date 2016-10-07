@@ -231,6 +231,11 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 return new dataModel.Category[] { };
             }
 
+            if (respGroup.HasFlag(coreModel.CategoryResponseGroup.WithOutlines))
+            {
+                respGroup |= coreModel.CategoryResponseGroup.WithLinks | coreModel.CategoryResponseGroup.WithParents;
+            }
+
             var result = Categories.Include(x => x.Catalog.CatalogLanguages)
                                    .Where(x => categoriesIds.Contains(x.Id)).ToArray();
 
@@ -238,6 +243,18 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             {
                 var incommingLinks = CategoryLinks.Where(x => categoriesIds.Contains(x.TargetCategoryId)).ToArray();
                 var outgoingLinks = CategoryLinks.Where(x => categoriesIds.Contains(x.SourceCategoryId)).ToArray();
+                var foreignCatalogsIds = outgoingLinks.Where(x => x.TargetCategoryId == null && x.TargetCatalogId != null)
+                                                      .Select(x => x.TargetCatalogId).Distinct().ToArray();
+                var foreginCategoriesIds = outgoingLinks.Where(x => x.TargetCategoryId != null)
+                                                        .Select(x => x.TargetCategoryId).Distinct();
+                if (!foreginCategoriesIds.IsNullOrEmpty())
+                {
+                    var linkedCategories = GetCategoriesByIds(foreginCategoriesIds.ToArray(), coreModel.CategoryResponseGroup.WithLinks | coreModel.CategoryResponseGroup.WithParents);
+                }
+                if (!foreignCatalogsIds.IsNullOrEmpty())
+                {
+                    var linkedCatalogs = Catalogs.Include(x => x.CatalogLanguages).Where(x => foreignCatalogsIds.Contains(x.Id)).ToArray();
+                }
             }
 
             if (respGroup.HasFlag(coreModel.CategoryResponseGroup.WithImages))
@@ -247,13 +264,17 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
             if (respGroup.HasFlag(coreModel.CategoryResponseGroup.WithParents) || respGroup.HasFlag(coreModel.CategoryResponseGroup.WithProperties))
             {
-                var parentsMap = GetAllCategoriesParents(categoriesIds);
+                var parentsMap = GetAllCategoriesParents(categoriesIds, coreModel.CategoryResponseGroup.WithLinks);
                 foreach (var categoryId in categoriesIds)
                 {
                     var category = result.FirstOrDefault(x => x.Id == categoryId);
                     if (category != null)
                     {
                         category.AllParents = parentsMap[categoryId];
+                        foreach(var parent in category.AllParents)
+                        {
+                            parent.AllParents = category.AllParents.TakeWhile(x => x != parent).ToArray();
+                        }
                     }
                 }
             }
@@ -307,7 +328,8 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
             if (respGroup.HasFlag(coreModel.ItemResponseGroup.Outlines))
             {
-                categoriesReponseGroup |= coreModel.CategoryResponseGroup.WithLinks;
+                categoriesReponseGroup |= coreModel.CategoryResponseGroup.WithLinks | coreModel.CategoryResponseGroup.WithParents;
+                respGroup |= coreModel.ItemResponseGroup.Links;
             }
 
             if (respGroup.HasFlag(coreModel.ItemResponseGroup.ItemProperties))
@@ -318,9 +340,21 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
             var categories = GetCategoriesByIds(categoryIds, categoriesReponseGroup);
 
-            if (respGroup.HasFlag(coreModel.ItemResponseGroup.Links) || respGroup.HasFlag(coreModel.ItemResponseGroup.Outlines))
+            if (respGroup.HasFlag(coreModel.ItemResponseGroup.Links))
             {
                 var relations = CategoryItemRelations.Where(x => itemIds.Contains(x.ItemId)).ToArray();
+                var allForeignCatalogsIds = relations.Where(x => x.CategoryId == null && x.CatalogId != null)
+                                                     .Select(x => x.CatalogId).Distinct().ToArray();
+                var allForeginCategoriesIds = relations.Where(x => x.CategoryId != null)
+                                                       .Select(x => x.CategoryId).Distinct().ToArray();
+                if (!allForeginCategoriesIds.IsNullOrEmpty())
+                {
+                    var linkedCategories = GetCategoriesByIds(allForeginCategoriesIds.ToArray(), coreModel.CategoryResponseGroup.WithLinks | coreModel.CategoryResponseGroup.WithParents);
+                }
+                if (!allForeignCatalogsIds.IsNullOrEmpty())
+                {
+                    var linkedCatalogs = Catalogs.Include(x => x.CatalogLanguages).Where(x => allForeignCatalogsIds.Contains(x.Id)).ToArray();
+                }            
             }
 
             // Load all properties meta information and data for inheritance from parent categories and catalog
@@ -355,8 +389,10 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             if (respGroup.HasFlag(coreModel.ItemResponseGroup.ItemAssociations))
             {
                 var assosiations = Associations.Where(x => itemIds.Contains(x.ItemId)).ToArray();
-                var assosiatedCategoriesIds = assosiations.Where(x => x.AssociatedCategoryId != null).Select(x => x.AssociatedCategoryId).Distinct().ToArray();
-                var assosiatedProductIds = assosiations.Where(x => x.AssociatedItemId != null).Select(x => x.AssociatedItemId).Distinct().ToArray();
+                var assosiatedCategoriesIds = assosiations.Where(x => x.AssociatedCategoryId != null)
+                                                          .Select(x => x.AssociatedCategoryId).Distinct().ToArray();
+                var assosiatedProductIds = assosiations.Where(x => x.AssociatedItemId != null)
+                                                       .Select(x => x.AssociatedItemId).Distinct().ToArray();
 
                 var assosiatedCategories = GetCategoriesByIds(assosiatedCategoriesIds, coreModel.CategoryResponseGroup.Info | coreModel.CategoryResponseGroup.WithImages);
                 var assosiatedItems = GetItemByIds(assosiatedProductIds, coreModel.ItemResponseGroup.ItemInfo | coreModel.ItemResponseGroup.ItemAssets);
@@ -527,7 +563,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         #endregion
 
 
-        private IDictionary<string, dataModel.Category[]> GetAllCategoriesParents(string[] categoryIds)
+        private IDictionary<string, dataModel.Category[]> GetAllCategoriesParents(string[] categoryIds, coreModel.CategoryResponseGroup respGroup)
         {
             const string queryPattern =
                  @"WITH items AS ( SELECT Id, Name,  0 AS Level, CAST(Id AS VARCHAR(255)) AS Path
@@ -542,7 +578,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
             var outlines = ObjectContext.ExecuteStoreQuery<CategoryOutline>(query).ToArray();
             var parentCategoriesIds = outlines.SelectMany(x => x.Path.Split('|')).Distinct().ToArray();
-            var allParentCategories = GetCategoriesByIds(parentCategoriesIds, coreModel.CategoryResponseGroup.Info);
+            var allParentCategories = GetCategoriesByIds(parentCategoriesIds, respGroup);
 
             var retVal = new Dictionary<string, dataModel.Category[]>();
             foreach (var categoryId in categoryIds)

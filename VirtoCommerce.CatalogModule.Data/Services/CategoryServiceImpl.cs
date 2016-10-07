@@ -29,7 +29,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         public coreModel.Category[] GetByIds(string[] categoryIds, coreModel.CategoryResponseGroup responseGroup, string catalogId = null)
         {
             coreModel.Category[] result;
-
+        
             using (var repository = _catalogRepositoryFactory())
             {
                 result = repository.GetCategoriesByIds(categoryIds, responseGroup)

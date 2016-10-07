@@ -25,10 +25,17 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 			{
 				 CategoryId = categoryItemRelation.CategoryId,
 				 CatalogId = categoryItemRelation.CatalogId,
-                 Priority = categoryItemRelation.Priority
-                 
+                 Priority = categoryItemRelation.Priority                 
 			};
-			return retVal;
+            if(categoryItemRelation.Category != null)
+            {
+                retVal.Category = categoryItemRelation.Category.ToCoreModel(false);
+            }
+            if (categoryItemRelation.Catalog != null)
+            {
+                retVal.Catalog = categoryItemRelation.Catalog.ToCoreModel(false);
+            }
+            return retVal;
 		}
 
 		/// <summary>
@@ -45,8 +52,15 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 		
 			retVal.CategoryId = linkedCategory.TargetCategoryId;
 			retVal.CatalogId = linkedCategory.TargetCatalogId;
-		
-			return retVal;
+            if (linkedCategory.TargetCategory != null)
+            {
+                retVal.Category = linkedCategory.TargetCategory.ToCoreModel(false);
+            }
+            if (linkedCategory.TargetCatalog != null)
+            {
+                retVal.Catalog = linkedCategory.TargetCatalog.ToCoreModel(false);
+            }
+            return retVal;
 		}
 
 		/// <summary>

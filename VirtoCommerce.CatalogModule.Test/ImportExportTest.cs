@@ -90,7 +90,7 @@ namespace VirtoCommerce.CatalogModule.Test
 
         private static IOutlineService GetOutlineService()
         {
-            return new OutlineService(GetCatalogRepository);
+            return new OutlineService();
         }
 
         private static ICategoryService GetCategoryService()

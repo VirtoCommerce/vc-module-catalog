@@ -35,11 +35,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public coreModel.CatalogProduct[] GetByIds(string[] itemIds, coreModel.ItemResponseGroup respGroup, string catalogId = null)
         {
-            if (respGroup.HasFlag(coreModel.ItemResponseGroup.Outlines))
-            {
-                respGroup |= coreModel.ItemResponseGroup.Links;
-            }
-
+           
             coreModel.CatalogProduct[] result;
 
             using (var repository = _catalogRepositoryFactory())

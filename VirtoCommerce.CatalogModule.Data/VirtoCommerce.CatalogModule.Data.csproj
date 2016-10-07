@@ -184,6 +184,10 @@
     <Compile Include="Migrations\201608041156545_ItemPriority.Designer.cs">
       <DependentUpon>201608041156545_ItemPriority.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201609291416421_Indexes.cs" />
+    <Compile Include="Migrations\201609291416421_Indexes.Designer.cs">
+      <DependentUpon>201609291416421_Indexes.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Model\Asset.cs" />
     <Compile Include="Model\Association.cs" />
@@ -276,6 +280,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201608041156545_ItemPriority.resx">
       <DependentUpon>201608041156545_ItemPriority.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201609291416421_Indexes.resx">
+      <DependentUpon>201609291416421_Indexes.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
