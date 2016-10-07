@@ -11,6 +11,7 @@ using Xunit;
 
 namespace VirtoCommerce.CatalogModule.Test
 {
+    [Trait("Category", "CI")]
     public class OutlineTests
     {
         [Fact]
