@@ -1,5 +1,5 @@
 ﻿<div class="blade-static __bottom"  ng-include="'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/common/templates/ok-cancel.tpl.html'"></div>
-<div class="blade-content">
+<div class="blade-content __xxlarge-wide">
     <div class="blade-inner">
         <div class="inner-block">
             <form class="form">
@@ -27,7 +27,8 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">{{ 'catalog.blades.editorialReview-detail.labels.content' | translate }}</label>
-                    <div class="editable" text-angular ng-model="blade.currentEntity.content" ta-default-wrap="x"></div>
+                    <input id="fileUploader" type="file" multiple style="display: none;" uploader="fileUploader" nv-file-select />
+                    <textarea vc-uk-htmleditor ng-model="blade.currentEntity.content" file-uploader="fileUploader"></textarea>
                 </div>
             </form>
         </div>
