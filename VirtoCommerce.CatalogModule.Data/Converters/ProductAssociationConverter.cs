@@ -14,12 +14,12 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 {
 	public static class ProductAssociationConverter
 	{
-		/// <summary>
-		/// Converting to model type
-		/// </summary>
-		/// <param name="catalogBase"></param>
-		/// <returns></returns>
-		public static coreModel.ProductAssociation ToCoreModel(this dataModel.Association dbAssociation)
+        /// <summary>
+        /// Converting to model type
+        /// </summary>
+        /// <param name="dbAssociation"></param>
+        /// <returns></returns>
+        public static coreModel.ProductAssociation ToCoreModel(this dataModel.Association dbAssociation)
 		{
 			if (dbAssociation == null)
 				throw new ArgumentNullException("dbAssociation");
@@ -29,6 +29,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
                 Type = dbAssociation.AssociationType,
                 Priority = dbAssociation.Priority,
                 AssociatedObjectId = dbAssociation.AssociatedItemId ?? dbAssociation.AssociatedCategoryId,
+                Quantity = dbAssociation.Quantity
             };
             if(dbAssociation.AssociatedCategory != null)
             {
@@ -49,14 +50,14 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
             return retVal;
 		}
 
-		
 
-		/// <summary>
-		/// Converting to foundation type
-		/// </summary>
-		/// <param name="catalog"></param>
-		/// <returns></returns>
-		public static dataModel.Association ToDataModel(this coreModel.ProductAssociation association)
+
+        /// <summary>
+        /// Converting to foundation type
+        /// </summary>
+        /// <param name="association"></param>
+        /// <returns></returns>
+        public static dataModel.Association ToDataModel(this coreModel.ProductAssociation association)
 		{
 			if (association == null)
 				throw new ArgumentNullException("association");
@@ -64,7 +65,8 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 			var retVal = new dataModel.Association
 			{   
                 Priority = association.Priority,
-				AssociationType = association.Type
+				AssociationType = association.Type,
+                Quantity = association.Quantity
 			};
 
             if(association.AssociatedObjectType.EqualsInvariant("product"))
@@ -95,6 +97,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
             target.Priority = source.Priority;
             target.Tags = source.Tags;
             target.AssociationType = source.AssociationType;
+		    target.Quantity = source.Quantity;
 		}
 	}
 
