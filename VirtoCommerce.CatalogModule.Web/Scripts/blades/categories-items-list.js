@@ -20,9 +20,6 @@
                     skip: ($scope.pageSettings.currentPage - 1) * $scope.pageSettings.itemsPerPageCount,
                     take: $scope.pageSettings.itemsPerPageCount
                 };
-                if (filter.current) {
-                    angular.extend(searchCriteria, filter.current);
-                }
 
                 listEntries.listitemssearch(
                     searchCriteria,
@@ -209,7 +206,7 @@
                 blade.setSelectedItem(listItem);
                 var newBlade;
                 if (listItem.type === 'category') {
-                    var openNewBlade = e.ctrlKey || filter.keyword || filter.current;
+                    var openNewBlade = e.ctrlKey || filter.keyword;
                     newBlade = {
                         id: 'itemsList' + (blade.level + (openNewBlade ? 1 : 0)),
                         level: blade.level + (openNewBlade ? 1 : 0),
@@ -477,7 +474,6 @@
 
 
             // simple and advanced filtering
-            //var groupingColumn;
             var filter = blade.filter = $scope.filter = {};
             $scope.$localStorage = $localStorage;
             if (!$localStorage.catalogSearchFilters) {
@@ -487,13 +483,15 @@
                 filter.current = _.findWhere($localStorage.catalogSearchFilters, { id: $localStorage.catalogSearchFilterId });
             }
 
-            filter.change = function () {
+            filter.change = function (isDetailBladeOpen) {
                 $localStorage.catalogSearchFilterId = filter.current ? filter.current.id : null;
                 if (filter.current && !filter.current.id) {
                     filter.current = null;
                     showFilterDetailBlade({ isNew: true });
                 } else {
-                    bladeNavigationService.closeBlade({ id: 'filterDetail' });
+                    if (!isDetailBladeOpen)
+                        bladeNavigationService.closeBlade({ id: 'filterDetail' });
+                    filter.keyword = filter.current ? filter.current.keyword : '';
                     filter.criteriaChanged();
                 }
             };
@@ -529,15 +527,13 @@
                     });
 
                     if ($scope.gridApi) {
-                        if (filter.keyword || filter.current) {
-                            //groupingColumn.visible = true;
+                        if (filter.keyword) {
                             if (!_.any($scope.gridApi.grouping.getGrouping().grouping)) {
                                 $scope.gridApi.grouping.groupColumn('$path');
                             }
 
                             $timeout($scope.gridApi.treeBase.expandAllRows);
                         } else {
-                            //groupingColumn.visible = false;
                             $scope.gridApi.grouping.clearGrouping();
                         }
                     }
@@ -549,9 +545,7 @@
             // ui-grid
             $scope.setGridOptions = function (gridOptions) {
                 uiGridHelper.initialize($scope, gridOptions, function (gridApi) {
-                    //groupingColumn = _.findWhere($scope.gridOptions.columnDefs, { name: '$path' });
-
-                    if (filter.keyword || filter.current) {
+                    if (filter.keyword) {
                         $timeout(function () {
                             gridApi.grouping.groupColumn('$path');
                             $timeout(gridApi.treeBase.expandAllRows);
