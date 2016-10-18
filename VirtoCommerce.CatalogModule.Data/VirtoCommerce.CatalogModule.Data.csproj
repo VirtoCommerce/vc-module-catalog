@@ -188,6 +188,10 @@
     <Compile Include="Migrations\201609291416421_Indexes.Designer.cs">
       <DependentUpon>201609291416421_Indexes.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201610181353548_AssociationQuantity.cs" />
+    <Compile Include="Migrations\201610181353548_AssociationQuantity.Designer.cs">
+      <DependentUpon>201610181353548_AssociationQuantity.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Model\Asset.cs" />
     <Compile Include="Model\Association.cs" />
@@ -283,6 +287,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201609291416421_Indexes.resx">
       <DependentUpon>201609291416421_Indexes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201610181353548_AssociationQuantity.resx">
+      <DependentUpon>201610181353548_AssociationQuantity.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

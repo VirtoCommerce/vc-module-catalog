@@ -586,6 +586,7 @@
                     "group-name": "Group name",
                     "tags": "Tags",
                     "tags-placeholder": "Enter tags...",
+                    "quantity": "Quantity",
                     "items": "Items",
                     "products-selected": "products selected",
                     "categories-selected": "categories selected"
