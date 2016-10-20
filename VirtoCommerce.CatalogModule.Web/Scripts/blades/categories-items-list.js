@@ -481,6 +481,7 @@
             }
             if ($localStorage.catalogSearchFilterId) {
                 filter.current = _.findWhere($localStorage.catalogSearchFilters, { id: $localStorage.catalogSearchFilterId });
+                filter.keyword = filter.current ? filter.current.keyword : '';
             }
 
             filter.change = function (isDetailBladeOpen) {
