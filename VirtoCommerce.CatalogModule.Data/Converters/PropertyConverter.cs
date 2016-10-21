@@ -19,7 +19,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 		/// </summary>
 		/// <param name="catalogBase"></param>
 		/// <returns></returns>
-		public static coreModel.Property ToCoreModel(this dataModel.Property dbProperty)
+		public static coreModel.Property ToCoreModel(this dataModel.Property dbProperty, dataModel.Catalog[] allCatalogs, dataModel.Category[] allCategories)
 		{
 			if (dbProperty == null)
 				throw new ArgumentNullException("dbProperty");
@@ -31,10 +31,14 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 			retVal.Multilanguage = dbProperty.IsLocaleDependant;
 			retVal.Dictionary = dbProperty.IsEnum;
 			retVal.ValueType = (coreModel.PropertyValueType)dbProperty.PropertyValueType;
-			retVal.Catalog = dbProperty.Catalog.ToCoreModel(convertProps: false);
-			retVal.Category = dbProperty.Category != null ? dbProperty.Category.ToCoreModel(convertProps: false) : null;
+            retVal.Catalog = allCatalogs.First(x => x.Id == dbProperty.CatalogId).ToCoreModel(convertProps: false);
+            if (dbProperty.CategoryId != null)
+            {
+                retVal.Category = allCategories.First(x => x.Id == dbProperty.CategoryId)
+                                               .ToCoreModel(allCatalogs, allCategories, convertProps: false);
+            }
 
-			coreModel.PropertyType propertyType;
+            coreModel.PropertyType propertyType;
 			if (!string.IsNullOrEmpty(dbProperty.TargetType) && Enum.TryParse(dbProperty.TargetType, out propertyType))
 			{
 				retVal.Type = propertyType;

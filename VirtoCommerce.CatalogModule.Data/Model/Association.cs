@@ -17,6 +17,8 @@ namespace VirtoCommerce.CatalogModule.Data.Model
  
         public int Priority { get; set; }
 
+        public int? Quantity { get; set; }
+
         [StringLength(1024)]
         public string Tags { get; set; }
 

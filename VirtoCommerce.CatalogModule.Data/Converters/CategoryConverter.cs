@@ -22,24 +22,21 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
         /// <param name="properties">The properties.</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentNullException">catalog</exception>
-        public static coreModel.Category ToCoreModel(this dataModel.Category dbCategory, bool convertProps = true)
+        public static coreModel.Category ToCoreModel(this dataModel.Category dbCategory, dataModel.Catalog[] allCatalogs, dataModel.Category[] allCategories, bool convertProps = true)
         {
             var retVal = new coreModel.Category();
             retVal.InjectFrom(dbCategory);
             retVal.CatalogId = dbCategory.CatalogId;
-            retVal.Catalog = dbCategory.Catalog.ToCoreModel();
+            retVal.Catalog = allCatalogs.First(x => x.Id == dbCategory.CatalogId).ToCoreModel();
             retVal.ParentId = dbCategory.ParentCategoryId;
             retVal.IsActive = dbCategory.IsActive;
 
-            retVal.IsVirtual = dbCategory.Catalog.Virtual;
-            retVal.Links = dbCategory.OutgoingLinks.Select(x => x.ToCoreModel(retVal)).ToList();
+            retVal.IsVirtual = retVal.Catalog.IsVirtual;
+            retVal.Links = dbCategory.OutgoingLinks.Select(x => x.ToCoreModel(allCatalogs, allCategories)).ToList();      
+            //Getting all Parents from cached categories      
+            retVal.Parents = allCategories.First(x=>x.Id == dbCategory.Id).AllParents.Select(x => x.ToCoreModel(allCatalogs, allCategories)).ToArray();
+            retVal.Level = retVal.Parents.Count();
 
-
-            if (dbCategory.AllParents != null)
-            {
-                retVal.Parents = dbCategory.AllParents.Select(x => x.ToCoreModel()).ToArray();
-                retVal.Level = retVal.Parents.Count();
-            }
 
             //Try to inherit taxType from parent category
             if (retVal.TaxType == null && retVal.Parents != null)
@@ -65,7 +62,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
                     properties.AddRange(retVal.Parents.SelectMany(x => x.Properties));
                 }
                 //Self properties
-                properties.AddRange(dbCategory.Properties.Select(x => x.ToCoreModel()));
+                properties.AddRange(dbCategory.Properties.Select(x => x.ToCoreModel(allCatalogs, allCategories)));
 
                 //property override - need leave only property has a min distance to target category 
                 //Algorithm based on index property in resulting list (property with min index will more closed to category)

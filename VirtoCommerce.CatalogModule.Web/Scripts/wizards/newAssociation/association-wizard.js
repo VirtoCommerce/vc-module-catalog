@@ -33,7 +33,8 @@
     				associatedObjectType: x.type,
     				associatedObjectId: x.id,
     				associatedObjectName: x.name,
-    				associatedObjectImg: x.imageUrl
+    				associatedObjectImg: x.imageUrl,
+    				quantity: blade.quantity
     			};
     			if (blade.tags) {
     				retVal.tags = _.map(blade.tags, function (x) {

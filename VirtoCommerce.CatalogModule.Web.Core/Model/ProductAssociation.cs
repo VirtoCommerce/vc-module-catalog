@@ -20,6 +20,10 @@
         /// </value>
         public int Priority { get; set; }
         /// <summary>
+        /// Gets or sets the quantity for associated object
+        /// </summary>
+        public int? Quantity { get; set; }
+        /// <summary>
         /// Each link element can have an associated object like Product, Category, etc.
         /// Is a primary key of associated object
         /// </summary>

@@ -18,21 +18,22 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 		/// Converting to model type
 		/// </summary>
 		/// <returns></returns>
-		public static coreModel.CatalogProduct ToCoreModel(this dataModel.Item dbItem, bool convertChildrens = true)
+		public static coreModel.CatalogProduct ToCoreModel(this dataModel.Item dbItem, dataModel.Catalog[] allCatalogs, dataModel.Category[] allCategories, bool convertChildrens = true)
 		{
 			var retVal = new coreModel.CatalogProduct();
 			retVal.InjectFrom(dbItem);
-			retVal.Catalog = dbItem.Catalog.ToCoreModel();
+            retVal.Catalog = allCatalogs.First(x => x.Id == dbItem.CatalogId).ToCoreModel();
 
-			if (dbItem.Category != null)
+            if (dbItem.CategoryId != null)
 			{
-                retVal.Category = dbItem.Category.ToCoreModel();
-			}
+                retVal.Category = allCategories.First(x => x.Id == dbItem.CategoryId)
+                                               .ToCoreModel(allCatalogs, allCategories);
+            }
 
 			retVal.MainProductId = dbItem.ParentId;
             if(dbItem.Parent != null)
             {
-                retVal.MainProduct = dbItem.Parent.ToCoreModel(convertChildrens: false);
+                retVal.MainProduct = dbItem.Parent.ToCoreModel(allCatalogs, allCategories, convertChildrens: false);
             }
   
 			retVal.IsActive = dbItem.IsActive;
@@ -44,7 +45,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 
 
 			//Links
-			retVal.Links = dbItem.CategoryLinks.Select(x => x.ToCoreModel()).ToList();
+			retVal.Links = dbItem.CategoryLinks.Select(x => x.ToCoreModel(allCatalogs, allCategories)).ToList();
 
             //Images
             retVal.Images = dbItem.Images.OrderBy(x => x.SortOrder).Select(x => x.ToCoreModel()).ToList();
@@ -87,7 +88,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
             }
 
             // Associations
-            retVal.Associations = dbItem.Associations.Select(x => x.ToCoreModel()).OrderBy(x => x.Priority).ToList();
+            retVal.Associations = dbItem.Associations.Select(x => x.ToCoreModel(allCatalogs, allCategories)).OrderBy(x => x.Priority).ToList();
 
             //TaxType category inheritance
             if (retVal.TaxType == null && retVal.Category != null)
@@ -156,7 +157,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
                 retVal.Variations = new List<coreModel.CatalogProduct>();
                 foreach (var variation in dbItem.Childrens)
                 {
-                    var productVariation = variation.ToCoreModel(convertChildrens: false);
+                    var productVariation = variation.ToCoreModel(allCatalogs, allCategories, convertChildrens: false);
                     productVariation.MainProduct = retVal;
                     productVariation.MainProductId = retVal.Id;
 

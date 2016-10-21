@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -38,7 +39,18 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         public string TaxType { get; set; }
 
         [NotMapped]
-        public Category[] AllParents { get; set; }
+        public Category[] AllParents
+        {
+            get
+            {
+                var retVal = new Category[] { };
+                if(ParentCategory != null)
+                {
+                    retVal = ParentCategory.AllParents.Concat(new[] { ParentCategory }).ToArray();
+                }
+                return retVal;
+            }
+        }
 
         #region Navigation Properties
         [StringLength(128)]

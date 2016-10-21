@@ -1,49 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CacheManager.Core;
 using VirtoCommerce.CatalogModule.Data.Converters;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Commerce.Model;
 using VirtoCommerce.Domain.Commerce.Services;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Data.Infrastructure;
 using coreModel = VirtoCommerce.Domain.Catalog.Model;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
-    public class CategoryServiceImpl : ServiceBase, ICategoryService
+    public class CategoryServiceImpl : CatalogServiceBase, ICategoryService
     {
-        private readonly Func<ICatalogRepository> _catalogRepositoryFactory;
         private readonly ICommerceService _commerceService;
         private readonly IOutlineService _outlineService;
-
-        public CategoryServiceImpl(Func<ICatalogRepository> catalogRepositoryFactory, ICommerceService commerceService, IOutlineService outlineService)
+        public CategoryServiceImpl(Func<ICatalogRepository> catalogRepositoryFactory, ICommerceService commerceService, IOutlineService outlineService, ICacheManager<object> cacheManager)
+            :base(catalogRepositoryFactory, cacheManager)
         {
-            _catalogRepositoryFactory = catalogRepositoryFactory;
             _commerceService = commerceService;
             _outlineService = outlineService;
         }
 
         #region ICategoryService Members
-        public coreModel.Category[] GetByIds(string[] categoryIds, coreModel.CategoryResponseGroup responseGroup, string catalogId = null)
+        public virtual coreModel.Category[] GetByIds(string[] categoryIds, coreModel.CategoryResponseGroup responseGroup, string catalogId = null)
         {
             coreModel.Category[] result;
-        
-            using (var repository = _catalogRepositoryFactory())
+          
+            using (var repository = base.CatalogRepositoryFactory())
             {
                 result = repository.GetCategoriesByIds(categoryIds, responseGroup)
-                    .Select(c => c.ToCoreModel())
+                    .Select(c => c.ToCoreModel(base.AllCachedCatalogs, base.AllCachedCategories))
                     .ToArray();
             }
-
+                      
             // Fill outlines for products
             if (responseGroup.HasFlag(coreModel.CategoryResponseGroup.WithOutlines))
             {
                 _outlineService.FillOutlinesForObjects(result, catalogId);
             }
-
-            // Fill SEO info
+        
             if ((responseGroup & coreModel.CategoryResponseGroup.WithSeo) == coreModel.CategoryResponseGroup.WithSeo)
             {
                 var objectsWithSeo = new List<ISeoSupport>(result);
@@ -56,15 +53,27 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 _commerceService.LoadSeoForObjects(objectsWithSeo.ToArray());
             }
 
+            //Cleanup result model considered requested response group
+            foreach(var category in result)
+            {
+                if (!responseGroup.HasFlag(coreModel.CategoryResponseGroup.WithParents))
+                {
+                    category.Parents = null;
+                }
+                if (!responseGroup.HasFlag(coreModel.CategoryResponseGroup.WithProperties))
+                {
+                    category.Properties = null;
+                }            
+            }           
             return result;
         }
 
-        public coreModel.Category GetById(string categoryId, coreModel.CategoryResponseGroup responseGroup, string catalogId = null)
+        public virtual coreModel.Category GetById(string categoryId, coreModel.CategoryResponseGroup responseGroup, string catalogId = null)
         {
             return GetByIds(new[] { categoryId }, responseGroup, catalogId).FirstOrDefault();
         }
 
-        public void Create(coreModel.Category[] categories)
+        public virtual void Create(coreModel.Category[] categories)
         {
             if (categories == null)
                 throw new ArgumentNullException("categories");
@@ -72,7 +81,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             var pkMap = new PrimaryKeyResolvingMap();
             var dbCategories = categories.Select(x => x.ToDataModel(pkMap));
 
-            using (var repository = _catalogRepositoryFactory())
+            using (var repository = base.CatalogRepositoryFactory())
             {
                 foreach (var dbCategory in dbCategories)
                 {
@@ -86,7 +95,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         }
 
 
-        public coreModel.Category Create(coreModel.Category category)
+        public virtual coreModel.Category Create(coreModel.Category category)
         {
             if (category == null)
                 throw new ArgumentNullException("category");
@@ -95,10 +104,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return GetById(category.Id, Domain.Catalog.Model.CategoryResponseGroup.Info);
         }
 
-        public void Update(coreModel.Category[] categories)
+        public virtual void Update(coreModel.Category[] categories)
         {
             var pkMap = new PrimaryKeyResolvingMap();
-            using (var repository = _catalogRepositoryFactory())
+            using (var repository = base.CatalogRepositoryFactory())
             using (var changeTracker = base.GetChangeTracker(repository))
             {
                 foreach (var category in categories)
@@ -122,10 +131,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _commerceService.UpsertSeoForObjects(categories);
         }
 
-        public void Delete(string[] categoryIds)
+        public virtual void Delete(string[] categoryIds)
         {
             var categories = GetByIds(categoryIds, coreModel.CategoryResponseGroup.WithSeo);
-            using (var repository = _catalogRepositoryFactory())
+            using (var repository = base.CatalogRepositoryFactory())
             {
                 repository.RemoveCategories(categoryIds);
                 CommitChanges(repository);

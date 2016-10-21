@@ -28,6 +28,10 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
                     //Reset some props to decrease size of resulting json
                     parent.Catalog = null;
                     parent.Properties = null;
+                    parent.Parents = null;
+                    parent.Links = null;
+                    parent.Images = null;
+                    parent.SeoInfos = null;
                     retVal.Parents.Add(parent);
                 }
             }
@@ -41,15 +45,18 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             retVal.Properties = new List<webModel.Property>();
             if (convertProps)
             {
-                foreach (var property in category.Properties)
+                if (!category.Properties.IsNullOrEmpty())
                 {
-                    var webModelProperty = property.ToWebModel();
-                    //Reset dict values to decrease response size
-                    webModelProperty.DictionaryValues = null;
-                    webModelProperty.Values = new List<webModel.PropertyValue>();
-                    webModelProperty.IsManageable = true;
-                    webModelProperty.IsReadOnly = property.Type != moduleModel.PropertyType.Category;
-                    retVal.Properties.Add(webModelProperty);
+                    foreach (var property in category.Properties)
+                    {
+                        var webModelProperty = property.ToWebModel();
+                        //Reset dict values to decrease response size
+                        webModelProperty.DictionaryValues = null;
+                        webModelProperty.Values = new List<webModel.PropertyValue>();
+                        webModelProperty.IsManageable = true;
+                        webModelProperty.IsReadOnly = property.Type != moduleModel.PropertyType.Category;
+                        retVal.Properties.Add(webModelProperty);
+                    }
                 }
 
                 //Populate property values

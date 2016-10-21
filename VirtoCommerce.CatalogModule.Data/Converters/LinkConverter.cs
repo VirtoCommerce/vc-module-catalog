@@ -16,7 +16,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 		/// </summary>
 		/// <param name="catalogBase"></param>
 		/// <returns></returns>
-		public static coreModel.CategoryLink ToCoreModel(this dataModel.CategoryItemRelation categoryItemRelation)
+		public static coreModel.CategoryLink ToCoreModel(this dataModel.CategoryItemRelation categoryItemRelation, dataModel.Catalog[] allCatalogs, dataModel.Category[] allCategories)
 		{
 			if (categoryItemRelation == null)
 				throw new ArgumentNullException("categoryItemRelation");
@@ -27,14 +27,13 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 				 CatalogId = categoryItemRelation.CatalogId,
                  Priority = categoryItemRelation.Priority                 
 			};
-            if(categoryItemRelation.Category != null)
+            retVal.Catalog = allCatalogs.First(x => x.Id == categoryItemRelation.CatalogId).ToCoreModel(false);
+            if (categoryItemRelation.CategoryId != null)
             {
-                retVal.Category = categoryItemRelation.Category.ToCoreModel(false);
+                retVal.Category = allCategories.First(x => x.Id == categoryItemRelation.CategoryId)
+                                               .ToCoreModel(allCatalogs, allCategories, convertProps: false);
             }
-            if (categoryItemRelation.Catalog != null)
-            {
-                retVal.Catalog = categoryItemRelation.Catalog.ToCoreModel(false);
-            }
+          
             return retVal;
 		}
 
@@ -43,7 +42,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 		/// </summary>
 		/// <param name="catalog"></param>
 		/// <returns></returns>
-		public static coreModel.CategoryLink ToCoreModel(this dataModel.CategoryRelation linkedCategory, coreModel.Category category)
+		public static coreModel.CategoryLink ToCoreModel(this dataModel.CategoryRelation linkedCategory, dataModel.Catalog[] allCatalogs, dataModel.Category[] allCategories)
 		{
 			if (linkedCategory == null)
 				throw new ArgumentNullException("linkedCategory");
@@ -52,13 +51,11 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 		
 			retVal.CategoryId = linkedCategory.TargetCategoryId;
 			retVal.CatalogId = linkedCategory.TargetCatalogId;
-            if (linkedCategory.TargetCategory != null)
+            retVal.Catalog = allCatalogs.First(x => x.Id == linkedCategory.TargetCatalogId).ToCoreModel(false);
+            if (linkedCategory.TargetCategoryId != null)
             {
-                retVal.Category = linkedCategory.TargetCategory.ToCoreModel(false);
-            }
-            if (linkedCategory.TargetCatalog != null)
-            {
-                retVal.Catalog = linkedCategory.TargetCatalog.ToCoreModel(false);
+                retVal.Category = allCategories.First(x => x.Id == linkedCategory.TargetCategoryId)
+                                               .ToCoreModel(allCatalogs, allCategories, convertProps: false);
             }
             return retVal;
 		}
