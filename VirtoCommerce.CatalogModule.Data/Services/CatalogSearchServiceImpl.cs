@@ -131,12 +131,12 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 var categoryIds = query.Select(x => x.Id).ToArray();
                 var categoryResponseGroup = CategoryResponseGroup.Info | CategoryResponseGroup.WithImages | CategoryResponseGroup.WithSeo | CategoryResponseGroup.WithLinks | CategoryResponseGroup.WithParents;
 
-                if ((criteria.ResponseGroup & SearchResponseGroup.WithProperties) == SearchResponseGroup.WithProperties)
+                if (criteria.ResponseGroup.HasFlag(SearchResponseGroup.WithProperties))
                 {
                     categoryResponseGroup |= CategoryResponseGroup.WithProperties;
                 }
 
-                if ((criteria.ResponseGroup & SearchResponseGroup.WithOutlines) == SearchResponseGroup.WithOutlines)
+                if (criteria.ResponseGroup.HasFlag(SearchResponseGroup.WithOutlines))
                 {
                     categoryResponseGroup |= CategoryResponseGroup.WithOutlines;
                 }
@@ -270,17 +270,17 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
                 var productResponseGroup = ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemAssets | ItemResponseGroup.Links | ItemResponseGroup.Seo;
 
-                if ((criteria.ResponseGroup & SearchResponseGroup.WithProperties) == SearchResponseGroup.WithProperties)
+                if (criteria.ResponseGroup.HasFlag(SearchResponseGroup.WithProperties))
                 {
                     productResponseGroup |= ItemResponseGroup.ItemProperties;
                 }
 
-                if ((criteria.ResponseGroup & SearchResponseGroup.WithVariations) == SearchResponseGroup.WithVariations)
+                if (criteria.ResponseGroup.HasFlag(SearchResponseGroup.WithVariations))
                 {
                     productResponseGroup |= ItemResponseGroup.Variations;
                 }
 
-                if ((criteria.ResponseGroup & SearchResponseGroup.WithOutlines) == SearchResponseGroup.WithOutlines)
+                if (criteria.ResponseGroup.HasFlag(SearchResponseGroup.WithOutlines))
                 {
                     productResponseGroup |= ItemResponseGroup.Outlines;
                 }

@@ -1,26 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CacheManager.Core;
 using VirtoCommerce.CatalogModule.Data.Converters;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Commerce.Model;
 using VirtoCommerce.Domain.Commerce.Services;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Data.Common;
 using VirtoCommerce.Platform.Data.Infrastructure;
 using coreModel = VirtoCommerce.Domain.Catalog.Model;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
-    public class ItemServiceImpl : ServiceBase, IItemService
+    public class ItemServiceImpl : CatalogServiceBase, IItemService
     {
-        private readonly Func<ICatalogRepository> _catalogRepositoryFactory;
         private readonly ICommerceService _commerceService;
         private readonly IOutlineService _outlineService;
 
-        public ItemServiceImpl(Func<ICatalogRepository> catalogRepositoryFactory, ICommerceService commerceService, IOutlineService outlineService)
+        public ItemServiceImpl(Func<ICatalogRepository> catalogRepositoryFactory, ICommerceService commerceService, IOutlineService outlineService, ICacheManager<object> cacheManager)
+            : base(catalogRepositoryFactory, cacheManager)
         {
-            _catalogRepositoryFactory = catalogRepositoryFactory;
             _commerceService = commerceService;
             _outlineService = outlineService;
         }
@@ -34,17 +35,15 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         }
 
         public coreModel.CatalogProduct[] GetByIds(string[] itemIds, coreModel.ItemResponseGroup respGroup, string catalogId = null)
-        {
-           
-            coreModel.CatalogProduct[] result;
+        {           
+            coreModel.CatalogProduct[] result;        
 
-            using (var repository = _catalogRepositoryFactory())
+            using (var repository = base.CatalogRepositoryFactory())
             {
                 result = repository.GetItemByIds(itemIds, respGroup)
-                    .Select(x => x.ToCoreModel())
+                    .Select(x => x.ToCoreModel(base.AllCachedCatalogs, base.AllCachedCategories))
                     .ToArray();
             }
-
             // Fill outlines for products
             if (respGroup.HasFlag(coreModel.ItemResponseGroup.Outlines))
             {
@@ -67,13 +66,22 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 _commerceService.LoadSeoForObjects(objectsWithSeo.ToArray());
             }
 
+            //Cleanup result model considered requested response group
+            foreach (var product in result)
+            {
+                if (!respGroup.HasFlag(coreModel.ItemResponseGroup.ItemProperties))
+                {
+                    product.Properties = null;
+                }             
+            }
+
             return result;
         }
 
         public void Create(coreModel.CatalogProduct[] items)
         {
             var pkMap = new PrimaryKeyResolvingMap();
-            using (var repository = _catalogRepositoryFactory())
+            using (var repository = base.CatalogRepositoryFactory())
             {
                 foreach (var item in items)
                 {
@@ -111,7 +119,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
             var pkMap = new PrimaryKeyResolvingMap();
             var now = DateTime.UtcNow;
-            using (var repository = _catalogRepositoryFactory())
+            using (var repository = base.CatalogRepositoryFactory())
             using (var changeTracker = base.GetChangeTracker(repository))
             {
                 var dbItems = repository.GetItemByIds(items.Select(x => x.Id).ToArray(), coreModel.ItemResponseGroup.ItemLarge);
@@ -139,7 +147,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         public void Delete(string[] itemIds)
         {
             var items = GetByIds(itemIds, coreModel.ItemResponseGroup.Seo | coreModel.ItemResponseGroup.Variations);
-            using (var repository = _catalogRepositoryFactory())
+            using (var repository = base.CatalogRepositoryFactory())
             {
                 repository.RemoveItems(itemIds);
                 CommitChanges(repository);

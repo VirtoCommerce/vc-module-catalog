@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using CacheManager.Core;
 using VirtoCommerce.CatalogModule.Data.Converters;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Domain.Catalog.Services;
@@ -8,12 +9,11 @@ using coreModel = VirtoCommerce.Domain.Catalog.Model;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
-    public class PropertyServiceImpl : ServiceBase, IPropertyService
+    public class PropertyServiceImpl : CatalogServiceBase, IPropertyService
     {
-        private readonly Func<ICatalogRepository> _catalogRepositoryFactory;
-        public PropertyServiceImpl(Func<ICatalogRepository> catalogRepositoryFactory)
+        public PropertyServiceImpl(Func<ICatalogRepository> catalogRepositoryFactory, ICacheManager<object> cacheManager)
+            : base(catalogRepositoryFactory, cacheManager)
         {
-            _catalogRepositoryFactory = catalogRepositoryFactory;
         }
 
         #region IPropertyService Members
@@ -25,20 +25,20 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public coreModel.Property[] GetByIds(string[] propertyIds)
         {
-            using (var repository = _catalogRepositoryFactory())
+            using (var repository = base.CatalogRepositoryFactory())
             {
                 var dbProperties = repository.GetPropertiesByIds(propertyIds);
-                var result = dbProperties.Select(dbProperty => dbProperty.ToCoreModel()).ToArray();
+                var result = dbProperties.Select(dbProperty => dbProperty.ToCoreModel(base.AllCachedCatalogs, base.AllCachedCategories)).ToArray();
                 return result;
             }
         }
 
         public coreModel.Property[] GetAllCatalogProperties(string catalogId)
         {
-            using (var repository = _catalogRepositoryFactory())
+            using (var repository = base.CatalogRepositoryFactory())
             {
                 var dbProperties = repository.GetAllCatalogProperties(catalogId);
-                var result = dbProperties.Select(dbProperty => dbProperty.ToCoreModel()).ToArray();
+                var result = dbProperties.Select(dbProperty => dbProperty.ToCoreModel(base.AllCachedCatalogs, base.AllCachedCategories)).ToArray();
                 return result;
             }
         }
@@ -46,7 +46,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public coreModel.Property[] GetAllProperties()
         {
-            using (var repository = _catalogRepositoryFactory())
+            using (var repository = base.CatalogRepositoryFactory())
             {
                 return GetByIds(repository.Properties.Select(x => x.Id).ToArray());
             }
@@ -61,7 +61,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
 
             var dbProperty = property.ToDataModel();
-            using (var repository = _catalogRepositoryFactory())
+            using (var repository = base.CatalogRepositoryFactory())
             {
                 if (property.CategoryId != null)
                 {
@@ -74,7 +74,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 }
                 else
                 {
-                    var dbCatalog = repository.GetCatalogById(property.CatalogId);
+                    var dbCatalog = repository.GetCatalogsByIds(new[] { property.CatalogId }).FirstOrDefault();
                     if (dbCatalog == null)
                     {
                         throw new NullReferenceException("dbCatalog");
@@ -90,7 +90,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public void Update(coreModel.Property[] properties)
         {
-            using (var repository = _catalogRepositoryFactory())
+            using (var repository = base.CatalogRepositoryFactory())
             using (var changeTracker = GetChangeTracker(repository))
             {
                 var dbProperties = repository.GetPropertiesByIds(properties.Select(x => x.Id).ToArray());
@@ -113,7 +113,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public void Delete(string[] propertyIds)
         {
-            using (var repository = _catalogRepositoryFactory())
+            using (var repository = base.CatalogRepositoryFactory())
             {
                 var dbProperties = repository.GetPropertiesByIds(propertyIds);
 
@@ -128,7 +128,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public coreModel.PropertyDictionaryValue[] SearchDictionaryValues(string propertyId, string keyword)
         {
-            using (var repository = _catalogRepositoryFactory())
+            using (var repository = base.CatalogRepositoryFactory())
             {
                 var query = repository.PropertyDictionaryValues.Where(x => x.PropertyId == propertyId);
                 if (!String.IsNullOrEmpty(keyword))

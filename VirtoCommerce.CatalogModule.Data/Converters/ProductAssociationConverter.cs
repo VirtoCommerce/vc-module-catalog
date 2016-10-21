@@ -19,7 +19,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
         /// </summary>
         /// <param name="dbAssociation"></param>
         /// <returns></returns>
-        public static coreModel.ProductAssociation ToCoreModel(this dataModel.Association dbAssociation)
+        public static coreModel.ProductAssociation ToCoreModel(this dataModel.Association dbAssociation, dataModel.Catalog[] allCatalogs, dataModel.Category[] allCategories)
 		{
 			if (dbAssociation == null)
 				throw new ArgumentNullException("dbAssociation");
@@ -31,16 +31,17 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
                 AssociatedObjectId = dbAssociation.AssociatedItemId ?? dbAssociation.AssociatedCategoryId,
                 Quantity = dbAssociation.Quantity
             };
-            if(dbAssociation.AssociatedCategory != null)
+
+            if(dbAssociation.AssociatedCategoryId != null)
             {
-                retVal.AssociatedObject = dbAssociation.AssociatedCategory.ToCoreModel();
+                retVal.AssociatedObject = allCategories.First(x => x.Id == dbAssociation.AssociatedCategoryId).ToCoreModel(allCatalogs, allCategories);
                 retVal.AssociatedObjectType = "category";
             }
             if (dbAssociation.AssociatedItem != null)
             {
                 //Need to remove associations in associated product to prevent StackOverflow in converter
                 dbAssociation.AssociatedItem.Associations = new NullCollection<dataModel.Association>();
-                retVal.AssociatedObject = dbAssociation.AssociatedItem.ToCoreModel();
+                retVal.AssociatedObject = dbAssociation.AssociatedItem.ToCoreModel(allCatalogs, allCategories);
                 retVal.AssociatedObjectType = "product";
             }
             if(!dbAssociation.Tags.IsNullOrEmpty())

@@ -20,9 +20,8 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         IQueryable<dataModel.Association> Associations { get; }
         IQueryable<dataModel.CategoryRelation> CategoryLinks { get; }
 
-
         string[] GetAllChildrenCategoriesIds(string[] categoryIds);
-        dataModel.Catalog GetCatalogById(string catalogId);
+        dataModel.Catalog[] GetCatalogsByIds(string[] catalogIds);
         dataModel.Category[] GetCategoriesByIds(string[] categoryIds, moduleModel.CategoryResponseGroup respGroup);
         dataModel.Item[] GetItemByIds(string[] itemIds, moduleModel.ItemResponseGroup respGroup);
         dataModel.Property[] GetAllCatalogProperties(string catalogId);

@@ -143,7 +143,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             //Scope bound security check
             CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Delete, links);
 
-            InnerUpdateLinks(links, (x, y) => x.Links.Remove(y));
+            InnerUpdateLinks(links, (x, y) => x.Links = x.Links.Where(l => string.Join(":", l.CatalogId, l.CategoryId) != string.Join(":", y.CatalogId, y.CategoryId)).ToList());
             return StatusCode(HttpStatusCode.NoContent);
         }
 

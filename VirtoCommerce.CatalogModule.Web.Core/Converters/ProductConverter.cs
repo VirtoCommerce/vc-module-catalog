@@ -31,6 +31,10 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
                 //Reset  category catalog, properties  for response size economy
                 retVal.Category.Catalog = null;
                 retVal.Category.Properties = null;
+                retVal.Category.Parents = null;
+                retVal.Category.Links = null;
+                retVal.Category.Images = null;
+                retVal.Category.SeoInfos = null;
             }
 
             if (product.Images != null)
