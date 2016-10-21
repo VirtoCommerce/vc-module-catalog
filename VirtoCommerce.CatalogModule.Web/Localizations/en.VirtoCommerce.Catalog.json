@@ -345,7 +345,8 @@
                     "picture": "Img",
                     "name": "Name",
                     "priority": "Priority",
-                    "group": "Group"
+                    "group": "Group",
+                    "quantity": "Quantity"
                 }
             },
             "advanced-search-results": {
@@ -592,7 +593,8 @@
                     "categories-selected": "categories selected"
                 },
                 "placeholders": {
-                    "group-name": "Select..."
+                    "group-name": "Select...",
+                    "quantity": "Enter quantity..." 
                 }
             },
             "catalog-CSV-import": {
