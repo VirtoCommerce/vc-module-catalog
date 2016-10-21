@@ -6,7 +6,7 @@
         $scope.saveChanges = function () {
             angular.copy(blade.currentEntity, blade.origEntity);
             if (blade.isNew) {
-                $localStorage.catalogSearchFilters.push(blade.origEntity);
+                $localStorage.catalogSearchFilters2.push(blade.origEntity);
                 $localStorage.catalogSearchFilterId = blade.origEntity.id;
                 blade.parentBlade.filter.current = blade.origEntity;
                 blade.isNew = false;
@@ -62,7 +62,7 @@
 
         function deleteEntry() {
             blade.parentBlade.filter.current = null;
-            $localStorage.catalogSearchFilters.splice($localStorage.catalogSearchFilters.indexOf(blade.origEntity), 1);
+            $localStorage.catalogSearchFilters2.splice($localStorage.catalogSearchFilters2.indexOf(blade.origEntity), 1);
             delete $localStorage.catalogSearchFilterId;
             blade.parentBlade.filter.change();
         }

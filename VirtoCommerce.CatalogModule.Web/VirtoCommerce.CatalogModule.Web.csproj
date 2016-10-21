@@ -202,6 +202,8 @@
     <Content Include="Scripts\blades\property-list.tpl.html" />
     <Content Include="Scripts\dialogs\deleteCategoryItem-dialog.tpl.html" />
     <Content Include="Scripts\dialogs\deleteCatalog-dialog.tpl.html" />
+    <Content Include="Scripts\directives\itemSearch.js" />
+    <Content Include="Scripts\directives\itemSearch.tpl.html" />
     <Content Include="Scripts\resources\imageTools.js" />
     <Content Include="Scripts\resources\export.js" />
   </ItemGroup>

@@ -14,17 +14,21 @@
                         <input ng-model="blade.currentEntity.keyword" required placeholder="{{ 'catalog.blades.filter-detail.placeholders.criteria' | translate }}" />
                     </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">
-                        When searching, you can construct queries that match specific numbers and words.
-                        #Query for values greater than another value:
-                        cats stars:">10"
-                        cats created:>=2012-04-30
-                        cats created:"2012-04-30 .. 2012-07-04"
-                    </label>
-                </div>
-
             </form>
+
+            <div class="form-group">Quick search reference</div>
+            <div class="form-group">
+                <ul>
+                    <li>Search in any field with wildcard (*)</li>
+                    <div class="note">Pa*</div>
+                    <li>Search in specified field with wildcard (*)</li>
+                    <div class="note">name: 3 P*</div>
+                    <li>Wildcard searches can be run on individual terms, using ? to replace a single character, and * to replace zero or more characters</li>
+                    <div class="note">Da?? Red*</div>
+                </ul>
+            </div>
+
+            <a ng-href="https://virtocommerce.com/" target="_blank">Query string syntax reference</a>
         </div>
     </div>
 </div>
