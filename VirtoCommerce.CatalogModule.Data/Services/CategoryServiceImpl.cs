@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using CacheManager.Core;
 using VirtoCommerce.CatalogModule.Data.Converters;
 using VirtoCommerce.CatalogModule.Data.Repositories;
@@ -26,15 +28,19 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         #region ICategoryService Members
         public virtual coreModel.Category[] GetByIds(string[] categoryIds, coreModel.CategoryResponseGroup responseGroup, string catalogId = null)
         {
-            coreModel.Category[] result;
-          
+            var result = new ConcurrentBag<coreModel.Category>();
+            Model.Category[] dataCategories;
             using (var repository = base.CatalogRepositoryFactory())
             {
-                result = repository.GetCategoriesByIds(categoryIds, responseGroup)
-                    .Select(c => c.ToCoreModel(base.AllCachedCatalogs, base.AllCachedCategories))
-                    .ToArray();
+                dataCategories = repository.GetCategoriesByIds(categoryIds, responseGroup);              
             }
-                      
+            //Parallel conversation for better performance
+             Parallel.ForEach(dataCategories, (x) =>
+            {
+                result.Add(x.ToCoreModel(base.AllCachedCatalogs, base.AllCachedCategories));
+            });
+
+
             // Fill outlines for products
             if (responseGroup.HasFlag(coreModel.CategoryResponseGroup.WithOutlines))
             {
@@ -65,7 +71,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     category.Properties = null;
                 }            
             }           
-            return result;
+            return result.ToArray();
         }
 
         public virtual coreModel.Category GetById(string categoryId, coreModel.CategoryResponseGroup responseGroup, string catalogId = null)

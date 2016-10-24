@@ -9,7 +9,11 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
         public static webModel.CategoryLink ToWebModel(this moduleModel.CategoryLink link)
         {
             var retVal = new webModel.CategoryLink();
-            retVal.InjectFrom(link);
+
+            retVal.CatalogId = link.CatalogId;
+            retVal.CategoryId = link.CategoryId;
+            retVal.Priority = link.Priority;
+           
             return retVal;
         }
 

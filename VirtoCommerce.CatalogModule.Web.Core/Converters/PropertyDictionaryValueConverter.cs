@@ -9,7 +9,11 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
         public static webModel.PropertyDictionaryValue ToWebModel(this moduleModel.PropertyDictionaryValue propDictValue)
         {
             var retVal = new webModel.PropertyDictionaryValue();
-            retVal.InjectFrom(propDictValue);
+            retVal.Id = propDictValue.Id;
+            retVal.PropertyId = propDictValue.PropertyId;
+            retVal.Value = propDictValue.Value;
+            retVal.LanguageCode = propDictValue.LanguageCode;
+            retVal.Alias = propDictValue.Alias;           
 
             return retVal;
         }

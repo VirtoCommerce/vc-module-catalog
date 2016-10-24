@@ -9,7 +9,11 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
         public static webModel.PropertyAttribute ToWebModel(this moduleModel.PropertyAttribute attribute)
         {
             var retVal = new webModel.PropertyAttribute();
-            retVal.InjectFrom(attribute);
+            retVal.Id = attribute.Id;
+            retVal.Name = attribute.Name;
+            retVal.Value = attribute.Value;
+           
+
             return retVal;
         }
 
