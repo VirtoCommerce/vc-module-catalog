@@ -9,7 +9,14 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
         public static webModel.EditorialReview ToWebModel(this moduleModel.EditorialReview review)
         {
             var retVal = new webModel.EditorialReview();
-            retVal.InjectFrom(review);
+
+            retVal.Content = review.Content;
+            retVal.Id = review.Id;
+            retVal.IsInherited = review.IsInherited;
+            retVal.LanguageCode = review.LanguageCode;
+            retVal.ReviewType = review.ReviewType;
+            
+            
             return retVal;
         }
 
