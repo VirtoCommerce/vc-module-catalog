@@ -18,11 +18,12 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
         public static coreModel.PropertyDictionaryValue ToCoreModel(this dataModel.PropertyDictionaryValue dbPropDictValue)
         {
  			var retVal = new coreModel.PropertyDictionaryValue();
-			retVal.InjectFrom(dbPropDictValue);
-
+            retVal.Alias = dbPropDictValue.Alias;
+            retVal.Id = dbPropDictValue.Id;
+            retVal.PropertyId = dbPropDictValue.PropertyId;
 			retVal.LanguageCode = dbPropDictValue.Locale;
 			retVal.Value = dbPropDictValue.Value;
-		          
+            		          
             return retVal;
         }
 

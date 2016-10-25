@@ -27,7 +27,14 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
                 throw new ArgumentNullException("dbPropValue");
 
             var retVal = new coreModel.PropertyValue();
-            retVal.InjectFrom(dbPropValue);
+
+            retVal.Alias = dbPropValue.Alias;
+            retVal.CreatedBy = dbPropValue.CreatedBy;
+            retVal.CreatedDate = dbPropValue.CreatedDate;
+            retVal.Id = dbPropValue.Id;
+            retVal.ModifiedBy = dbPropValue.ModifiedBy;
+            retVal.ModifiedDate = dbPropValue.ModifiedDate;
+            
             retVal.LanguageCode = dbPropValue.Locale;
             retVal.PropertyName = dbPropValue.Name;
             retVal.Value = GetPropertyValue(dbPropValue);

@@ -13,7 +13,9 @@
         	id: "itemProperty",
         	productId: blade.currentEntity.id,
         	entityType: "product",
-            currentEntity: blade.currentEntity,
+        	currentEntity: blade.currentEntity,
+        	languages: _.pluck(blade.currentEntity.catalog.languages, 'languageCode'),
+        	defaultLanguage: blade.currentEntity.catalog.defaultLanguage.languageCode,
             propGroups: [ {title:'catalog.properties.product', type:'Product'}, {title:'catalog.properties.variation', type:'Variation'} ],
             controller: 'virtoCommerce.catalogModule.propertyListController',
             template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-list.tpl.html'

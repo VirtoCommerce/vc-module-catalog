@@ -222,10 +222,10 @@
     <script type="text/ng-template" id="ShortText-dictionary-multilang.html">
         <div class="form-group">
             <div class="form-input __langs" data-role="input-control">
-                <span class="flag flag-{{currentEntity.catalog.defaultLanguage.languageCode.substr(3).toLowerCase()}}"></span>
-                <ui-select ng-model="context.langValuesMap[currentEntity.catalog.defaultLanguage.languageCode].currentPropValues[0]" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
+                <span class="flag flag-{{defaultLanguage.substr(3).toLowerCase()}}"></span>
+                <ui-select ng-model="context.langValuesMap[defaultLanguage].currentPropValues[0]" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
                     <ui-select-match placeholder="Select value">{{$select.selected.value}}</ui-select-match>
-                    <ui-select-choices repeat="propValue in context.langValuesMap[currentEntity.catalog.defaultLanguage.languageCode].allValues | filter: {value: $select.search}">
+                    <ui-select-choices repeat="propValue in context.langValuesMap[defaultLanguage].allValues | filter: {value: $select.search}">
                         <span ng-bind-html="propValue.value | highlight: $select.search"></span>
                     </ui-select-choices>
                 </ui-select>
@@ -254,10 +254,10 @@
     <script type="text/ng-template" id="ShortText-dictionary-multivalue-multilang.html">
         <div class="form-group">
             <div class="form-input __langs" data-role="input-control">
-                <span class="flag flag-{{currentEntity.catalog.defaultLanguage.languageCode.substr(3).toLowerCase()}}"></span>
-                <ui-select multiple ng-model="context.langValuesMap[currentEntity.catalog.defaultLanguage.languageCode].currentPropValues" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
+                <span class="flag flag-{{defaultLanguage.substr(3).toLowerCase()}}"></span>
+                <ui-select multiple ng-model="context.langValuesMap[defaultLanguage].currentPropValues" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
                     <ui-select-match placeholder="Select value">{{$item.value}}</ui-select-match>
-                    <ui-select-choices repeat="propValue in context.langValuesMap[currentEntity.catalog.defaultLanguage.languageCode].allValues | filter: {value: $select.search}">
+                    <ui-select-choices repeat="propValue in context.langValuesMap[defaultLanguage].allValues | filter: {value: $select.search}">
                         <span ng-bind-html="propValue.value | highlight: $select.search"></span>
                     </ui-select-choices>
                 </ui-select>

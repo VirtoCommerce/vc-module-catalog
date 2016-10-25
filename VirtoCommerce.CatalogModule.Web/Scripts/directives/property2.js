@@ -7,7 +7,11 @@
         replace: true,
         transclude: true,
         templateUrl: 'Modules/$(VirtoCommerce.Catalog)/Scripts/directives/property2.tpl.html',
-        scope: { getPropValues: "&" },
+        scope: {
+            languages: "=",
+            defaultLanguage: "=",
+            getPropValues: "&"
+        },
         link: function (scope, element, attr, ngModelController, linker) {
 
             scope.currentEntity = ngModelController.$modelValue;
@@ -16,7 +20,6 @@
             scope.context.currentPropValues = [];
             scope.context.allDictionaryValues = [];
             scope.context.langValuesMap = {};
-
 
             scope.$watch('context.langValuesMap', function (newValue, oldValue) {
                 if (newValue != oldValue) {
@@ -35,7 +38,7 @@
                 if (isValuesDifferent(newValues, scope.currentEntity.values)) {                    
                     if (scope.currentEntity.dictionary && scope.currentEntity.multilanguage) {
                         if (scope.currentEntity.multivalue) {
-                            var realAliases = _.pluck(_.where(newValues, { languageCode: scope.currentEntity.catalog.defaultLanguage.languageCode }), 'alias');
+                            var realAliases = _.pluck(_.where(newValues, { languageCode: scope.defaultLanguage }), 'alias');
                             scope.currentEntity.values = _.filter(scope.context.allDictionaryValues, function (x) {
                                 return _.contains(realAliases, x.alias);
                             });
@@ -89,29 +92,29 @@
             function initLanguagesValuesMap() {
                 if (scope.currentEntity.multilanguage) {
                     //Group values by language 
-                    angular.forEach(scope.currentEntity.catalog.languages, function (language) {
+                    angular.forEach(scope.languages, function (language) {
                         //Currently select values
-                        var currentPropValues = _.where(scope.context.currentPropValues, { languageCode: language.languageCode });
+                        var currentPropValues = _.where(scope.context.currentPropValues, { languageCode: language });
                         // provide default value if value wasn't found in specified language.
                         if (!_.any(currentPropValues) && _.any(scope.context.currentPropValues)) {
                             currentPropValues = angular.copy(_.filter(scope.context.currentPropValues, function (x) { return !x.languageCode }));
                             _.each(currentPropValues, function (x) {
                                 x.id = null;
-                                x.languageCode = language.languageCode;
+                                x.languageCode = language;
                             });
                         }
                         //need add empty value for single  value type
                         if (needAddEmptyValue(scope.currentEntity, currentPropValues)) {
-                            currentPropValues.push({ value: null, languageCode: language.languageCode });
+                            currentPropValues.push({ value: null, languageCode: language });
                         }
                         //All possible dict values
-                        var allValues = _.where(scope.context.allDictionaryValues, { languageCode: language.languageCode });
+                        var allValues = _.where(scope.context.allDictionaryValues, { languageCode: language });
 
                         var langValuesGroup = {
                             allValues: allValues,
                             currentPropValues: currentPropValues
                         };
-                        scope.context.langValuesMap[language.languageCode] = langValuesGroup;
+                        scope.context.langValuesMap[language] = langValuesGroup;
                     });
                 }
             };

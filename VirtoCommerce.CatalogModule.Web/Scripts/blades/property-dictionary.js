@@ -116,11 +116,11 @@
     function resetNewValue(locale) {
         if (pb.currentEntity.multilanguage) {
             // generate input fields for ALL languages
-            var defaultLanguageCode = pb.currentEntity.catalog.defaultLanguage.languageCode;
+            var defaultLanguageCode = pb.defaultLanguage;
             var values = [{ languageCode: defaultLanguageCode }];
-            _.each(pb.currentEntity.catalog.languages, function (lang) {
-                if (lang.languageCode !== defaultLanguageCode) {
-                    values.push({ languageCode: lang.languageCode });
+            _.each(pb.languages, function (lang) {
+                if (lang !== defaultLanguageCode) {
+                    values.push({ languageCode: lang });
                 }
             });
 
@@ -178,7 +178,7 @@
             return { alias: key, values: values };
         });
 
-        resetNewValue(pb.currentEntity.catalog.defaultLanguage.languageCode);
+        resetNewValue(pb.defaultLanguage);
     }
 
     $scope.$watch('blade.parentBlade.currentEntity.dictionaryValues', initializeDictionaryValues);

@@ -25,7 +25,15 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 				throw new ArgumentNullException("dbProperty");
 
 			var retVal = new coreModel.Property();
-			retVal.InjectFrom(dbProperty);
+            retVal.CatalogId = dbProperty.CatalogId;
+            retVal.CategoryId = dbProperty.CategoryId;
+            retVal.CreatedBy = dbProperty.CreatedBy;
+            retVal.CreatedDate = dbProperty.CreatedDate;
+            retVal.Id = dbProperty.Id;
+            retVal.ModifiedBy = dbProperty.ModifiedBy;
+            retVal.ModifiedDate = dbProperty.ModifiedDate;
+            retVal.Name = dbProperty.Name;
+ 
 			retVal.Required = dbProperty.IsRequired;
 			retVal.Multivalue = dbProperty.IsMultiValue;
 			retVal.Multilanguage = dbProperty.IsLocaleDependant;
