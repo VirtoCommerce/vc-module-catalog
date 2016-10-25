@@ -6,7 +6,7 @@
         $scope.saveChanges = function () {
             angular.copy(blade.currentEntity, blade.origEntity);
             if (blade.isNew) {
-                $localStorage.catalogSearchFilters2.push(blade.origEntity);
+                $localStorage.catalogSearchFilters2.splice(0, 0, blade.origEntity);
                 $localStorage.catalogSearchFilterId = blade.origEntity.id;
                 blade.parentBlade.filter.current = blade.origEntity;
                 blade.isNew = false;

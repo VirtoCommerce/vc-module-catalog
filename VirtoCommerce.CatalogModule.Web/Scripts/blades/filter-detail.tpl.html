@@ -16,18 +16,24 @@
                 </div>
             </form>
 
-            <div class="form-group">Quick search reference</div>
+            <div class="sub-t">Quick search reference</div>            
             <div class="form-group">
+                Field names
                 <ul>
-                    <li>Search in any field with wildcard (*)</li>
-                    <div class="note">Pa*</div>
-                    <li>Search in specified field with wildcard (*)</li>
-                    <div class="note">name: 3 P*</div>
-                    <li>Wildcard searches can be run on individual terms, using ? to replace a single character, and * to replace zero or more characters</li>
+                    <li>where the status field contains "active":</li>
+                    <div class="note">status:active</div>
+                    <li>where the price has no value (or is missing):</li>
+                    <div class="note">_missing_:price\*</div>
+                    <li>where the price has any non-null value:</li>
+                    <div class="note">_exists_:price\*</div>
+                </ul>
+                Wildcards
+                <ul>
+                    <li>use ? to replace a single character, and * to replace zero or more characters:</li>
                     <div class="note">Da?? Red*</div>
                 </ul>
             </div>
-
+            <div class="error">Note: this syntax is valid for Elasticsearch engine only.</div>
             <a ng-href="https://virtocommerce.com/" target="_blank">Query string syntax reference</a>
         </div>
     </div>
