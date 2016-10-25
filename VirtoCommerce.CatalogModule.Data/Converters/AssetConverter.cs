@@ -25,8 +25,18 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 				throw new ArgumentNullException("dbImage");
 
 			var retVal = new coreModel.Image();
+            //Do not use omu.ValueInjector for performance purposes
+            retVal.CreatedBy = dbImage.CreatedBy;
+            retVal.CreatedDate = dbImage.CreatedDate;
+            retVal.Id = dbImage.Id;
+            retVal.Group = dbImage.Group;
+            retVal.LanguageCode = dbImage.LanguageCode;
+            retVal.ModifiedBy = dbImage.ModifiedBy;
+            retVal.ModifiedDate = dbImage.ModifiedDate;
+            retVal.Name = dbImage.Name;
+            retVal.SortOrder = dbImage.SortOrder;
+            retVal.Url = dbImage.Url;
 
-			retVal.InjectFrom(dbImage);
 			return retVal;
 
 		}

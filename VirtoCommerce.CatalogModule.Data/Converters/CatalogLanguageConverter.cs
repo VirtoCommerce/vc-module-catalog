@@ -21,8 +21,8 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 		public static coreModel.CatalogLanguage ToCoreModel(this dataModel.CatalogLanguage dbLanguage, coreModel.Catalog catalog)
 		{
 			var retVal = new coreModel.CatalogLanguage();
-			retVal.InjectFrom(dbLanguage);
-
+            retVal.Id = dbLanguage.Id;
+            
 			retVal.CatalogId = catalog.Id;
 			retVal.LanguageCode = dbLanguage.Language;
 

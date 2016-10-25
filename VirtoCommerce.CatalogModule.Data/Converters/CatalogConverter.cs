@@ -27,7 +27,8 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
                 throw new ArgumentNullException("catalog");
 
             var retVal = new coreModel.Catalog();
-            retVal.InjectFrom(dbCatalog);
+            retVal.Id = dbCatalog.Id;
+            retVal.Name = dbCatalog.Name;           
             retVal.IsVirtual = dbCatalog.Virtual;
             retVal.Languages = new List<coreModel.CatalogLanguage>();
 

@@ -24,7 +24,7 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             retVal.Multilanguage = property.Multilanguage;
             retVal.IsInherited = property.IsInherited;           
 
-            retVal.Catalog = property.Catalog.ToWebModel(convertProps: false);
+            //retVal.Catalog = property.Catalog.ToWebModel(convertProps: false);
             if (property.Category != null)
             {
                 retVal.Category = property.Category.ToWebModel(convertProps: false);

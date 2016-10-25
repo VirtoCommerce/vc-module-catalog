@@ -50,6 +50,13 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             if (product.Variations != null)
             {
                 retVal.Variations = product.Variations.Select(x => x.ToWebModel(blobUrlResolver)).ToList();
+                foreach(var variation in retVal.Variations)
+                {
+                    //Reset  variations  for response size economy
+                    variation.Catalog = null;
+                    variation.Parents = null;
+                    variation.Category = null;
+                }
             }
 
             if (product.Links != null)
