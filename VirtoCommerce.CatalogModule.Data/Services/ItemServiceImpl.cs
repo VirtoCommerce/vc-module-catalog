@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using CacheManager.Core;
 using VirtoCommerce.CatalogModule.Data.Converters;
 using VirtoCommerce.CatalogModule.Data.Repositories;
@@ -10,6 +8,8 @@ using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Commerce.Model;
 using VirtoCommerce.Domain.Commerce.Services;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Data.Common;
+using VirtoCommerce.Platform.Data.Infrastructure;
 using coreModel = VirtoCommerce.Domain.Catalog.Model;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
@@ -36,19 +36,14 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public coreModel.CatalogProduct[] GetByIds(string[] itemIds, coreModel.ItemResponseGroup respGroup, string catalogId = null)
         {
-            var result = new ConcurrentBag<coreModel.CatalogProduct>();
-            Model.Item[] dataItems;
+            coreModel.CatalogProduct[] result;
+
             using (var repository = base.CatalogRepositoryFactory())
             {
-                dataItems = repository.GetItemByIds(itemIds, respGroup);
+                result = repository.GetItemByIds(itemIds, respGroup)
+                    .Select(x => x.ToCoreModel(base.AllCachedCatalogs, base.AllCachedCategories))
+                    .ToArray();
             }
-            //Parallel conversation for better performance
-            Parallel.ForEach(dataItems, (x) =>
-            {
-                result.Add(x.ToCoreModel(base.AllCachedCatalogs, base.AllCachedCategories));
-            });
-
-
             // Fill outlines for products
             if (respGroup.HasFlag(coreModel.ItemResponseGroup.Outlines))
             {
@@ -77,10 +72,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 if (!respGroup.HasFlag(coreModel.ItemResponseGroup.ItemProperties))
                 {
                     product.Properties = null;
-                }             
+                }
             }
 
-            return result.ToArray();
+            return result;
         }
 
         public void Create(coreModel.CatalogProduct[] items)
@@ -156,7 +151,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             {
                 repository.RemoveItems(itemIds);
                 CommitChanges(repository);
-            }      
+            }
         }
         #endregion
     }
