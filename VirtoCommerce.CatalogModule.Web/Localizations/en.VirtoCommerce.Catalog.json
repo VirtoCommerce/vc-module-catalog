@@ -63,7 +63,7 @@
                 "subtitle-mapping": "Creating a Link inside virtual catalog",
                 "labels": {
                     "filter-priceless": "Without price",
-                    "filter-withPrice": "With price",
+                    "filter-withPrice": "Has price defined",
                     "filter-priceRange": "Price between",
                     "filter-lowStock": "Low on stock",
                     "filter-notActive": "Not active",

@@ -38,10 +38,11 @@
                 }
             };
 
-            filter.edit = function () {
-                if (filter.current) {
-                    showFilterDetailBlade({ data: filter.current });
-                }
+            filter.edit = function ($event, entry) {
+                $event.preventDefault();
+                $event.stopPropagation();
+                filter.current = entry;
+                showFilterDetailBlade({ data: entry });
             };
 
             function showFilterDetailBlade(bladeData) {
