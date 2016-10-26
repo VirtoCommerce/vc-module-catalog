@@ -20,12 +20,20 @@
             <div class="form-group">
                 Field names
                 <ul>
-                    <li>where the status field contains "active":</li>
-                    <div class="note">status:active</div>
+                    <li>find all notebooks with the "apple" brand:</li>
+                    <div class="note">ipod brand:apple</div>
                     <li>where the price has no value (or is missing):</li>
-                    <div class="note">_missing_:price\*</div>
+                    <div class="note">is:unpriced</div>
                     <li>where the price has any non-null value:</li>
-                    <div class="note">_exists_:price\*</div>
+                    <div class="note">is:priced</div>
+                    <li>where the price is in USD and between values:</li>
+                    <div class="note">price_usd:[100 TO 200]</div>                    
+                    <li>where the price is in any currency and between values:</li>
+                    <div class="note">price:[100 TO 200]</div>
+                    <li>all active "sony" products:</li>
+                    <div class="note">sony is:visible</div>
+                    <li>all hidden products:</li>
+                    <div class="note">is:hidden</div>
                 </ul>
                 Wildcards
                 <ul>
@@ -33,7 +41,6 @@
                     <div class="note">Da?? Red*</div>
                 </ul>
             </div>
-            <div class="error">Note: this syntax is valid for Elasticsearch engine only.</div>
             <a ng-href="https://virtocommerce.com/" target="_blank">Query string syntax reference</a>
         </div>
     </div>

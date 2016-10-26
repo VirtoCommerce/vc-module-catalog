@@ -13,10 +13,10 @@
             if (!$localStorage.catalogSearchFilters2) {
                 // todo: add predefined filters
                 $localStorage.catalogSearchFilters2 = [
-                    { keyword: '_missing_:price\*', id: '1', name: 'catalog.blades.categories-items-list.labels.filter-priceless' },
-                    { keyword: '_exists_:price\*', id: '2', name: 'catalog.blades.categories-items-list.labels.filter-withPrice' },
-                    { keyword: 'price_usd\*:[100 TO 200]', id: '3', name: 'catalog.blades.categories-items-list.labels.filter-priceRange' },
-                    { keyword: '__hidden:true', id: '4', name: 'catalog.blades.categories-items-list.labels.filter-notActive' },
+                    { keyword: 'is:unpriced', id: '1', name: 'catalog.blades.categories-items-list.labels.filter-priceless' },
+                    { keyword: 'is:priced', id: '2', name: 'catalog.blades.categories-items-list.labels.filter-withPrice' },
+                    { keyword: 'price_usd:[100 TO 200]', id: '3', name: 'catalog.blades.categories-items-list.labels.filter-priceRange' },
+                    { keyword: 'is:hidden', id: '4', name: 'catalog.blades.categories-items-list.labels.filter-notActive' },
                     { name: 'catalog.blades.categories-items-list.labels.filter-new' }
                 ];
             }
