@@ -12,8 +12,14 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
         public static webModel.Image ToWebModel(this coreModel.Image image, IBlobUrlResolver blobUrlResolver)
         {
             var retVal = new webModel.Image();
+            //Do not use omu.InjectFrom for performance reasons 
+            retVal.Group = image.Group;
+            retVal.Id = image.Id;
+            retVal.LanguageCode = image.LanguageCode;
+            retVal.Name = image.Name;
+            retVal.IsInherited = image.IsInherited;         
 
-            retVal.InjectFrom(image);
+           
             if (blobUrlResolver != null)
             {
                 retVal.Url = blobUrlResolver.GetAbsoluteUrl(image.Url);

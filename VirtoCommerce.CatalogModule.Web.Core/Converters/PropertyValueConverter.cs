@@ -10,7 +10,14 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
         public static webModel.PropertyValue ToWebModel(this moduleModel.PropertyValue propValue)
         {
             var retVal = new webModel.PropertyValue();
-            retVal.InjectFrom(propValue);
+
+            retVal.Id = propValue.Id;
+            retVal.LanguageCode = propValue.LanguageCode;
+            retVal.PropertyId = propValue.PropertyId;
+            retVal.PropertyName = propValue.PropertyName;
+            retVal.ValueId = propValue.ValueId;
+            retVal.ValueType = propValue.ValueType;
+
             if (propValue.Property != null)
             {
                 retVal.PropertyId = propValue.Property.Id;
@@ -23,7 +30,6 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             {
                 retVal.Value = (propValue.Value ?? string.Empty).ToString();
             }           
-            retVal.ValueType = propValue.ValueType;
 
             return retVal;
         }

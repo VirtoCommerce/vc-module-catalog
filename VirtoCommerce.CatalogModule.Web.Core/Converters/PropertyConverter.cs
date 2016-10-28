@@ -11,8 +11,20 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
         {
             var retVal = new webModel.Property();
 
-            retVal.InjectFrom(property);
-            retVal.Catalog = property.Catalog.ToWebModel(convertProps: false);
+            retVal.Id = property.Id;
+            retVal.Name = property.Name;
+            retVal.Required = property.Required;
+            retVal.Type = property.Type;
+            retVal.Multivalue = property.Multivalue;
+            retVal.CatalogId = property.CatalogId;
+            retVal.CategoryId = property.CategoryId;
+            retVal.Dictionary = property.Dictionary;
+            retVal.ValueType = property.ValueType;
+            retVal.Type = property.Type;
+            retVal.Multilanguage = property.Multilanguage;
+            retVal.IsInherited = property.IsInherited;           
+
+            //retVal.Catalog = property.Catalog.ToWebModel(convertProps: false);
             if (property.Category != null)
             {
                 retVal.Category = property.Category.ToWebModel(convertProps: false);

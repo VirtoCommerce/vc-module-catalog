@@ -22,8 +22,13 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 				throw new ArgumentNullException("dbReview");
 
 			var retVal = new coreModel.EditorialReview();
-			retVal.InjectFrom(dbReview);
-			retVal.LanguageCode = dbReview.Locale;
+            retVal.Content = dbReview.Content;
+            retVal.CreatedBy = dbReview.CreatedBy;
+            retVal.CreatedDate = dbReview.CreatedDate;
+            retVal.Id = dbReview.Id;
+            retVal.ModifiedBy = dbReview.ModifiedBy;
+            retVal.ModifiedDate = dbReview.ModifiedDate;
+            retVal.LanguageCode = dbReview.Locale;
 			retVal.ReviewType = dbReview.Source;
 			return retVal;
 

@@ -17,7 +17,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private readonly ICommerceService _commerceService;
         private readonly IOutlineService _outlineService;
         public CategoryServiceImpl(Func<ICatalogRepository> catalogRepositoryFactory, ICommerceService commerceService, IOutlineService outlineService, ICacheManager<object> cacheManager)
-            :base(catalogRepositoryFactory, cacheManager)
+            : base(catalogRepositoryFactory, cacheManager)
         {
             _commerceService = commerceService;
             _outlineService = outlineService;
@@ -27,20 +27,20 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         public virtual coreModel.Category[] GetByIds(string[] categoryIds, coreModel.CategoryResponseGroup responseGroup, string catalogId = null)
         {
             coreModel.Category[] result;
-          
+
             using (var repository = base.CatalogRepositoryFactory())
             {
                 result = repository.GetCategoriesByIds(categoryIds, responseGroup)
                     .Select(c => c.ToCoreModel(base.AllCachedCatalogs, base.AllCachedCategories))
                     .ToArray();
             }
-                      
+
             // Fill outlines for products
             if (responseGroup.HasFlag(coreModel.CategoryResponseGroup.WithOutlines))
             {
                 _outlineService.FillOutlinesForObjects(result, catalogId);
             }
-        
+
             if ((responseGroup & coreModel.CategoryResponseGroup.WithSeo) == coreModel.CategoryResponseGroup.WithSeo)
             {
                 var objectsWithSeo = new List<ISeoSupport>(result);
@@ -54,7 +54,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
 
             //Cleanup result model considered requested response group
-            foreach(var category in result)
+            foreach (var category in result)
             {
                 if (!responseGroup.HasFlag(coreModel.CategoryResponseGroup.WithParents))
                 {
@@ -63,8 +63,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 if (!responseGroup.HasFlag(coreModel.CategoryResponseGroup.WithProperties))
                 {
                     category.Properties = null;
-                }            
-            }           
+                }
+            }
             return result;
         }
 
@@ -91,7 +91,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 pkMap.ResolvePrimaryKeys();
             }
             //Need add seo separately
-            _commerceService.UpsertSeoForObjects(categories);         
+            _commerceService.UpsertSeoForObjects(categories);
         }
 
 
@@ -138,7 +138,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             {
                 repository.RemoveCategories(categoryIds);
                 CommitChanges(repository);
-            }       
+            }
         }
 
         #endregion

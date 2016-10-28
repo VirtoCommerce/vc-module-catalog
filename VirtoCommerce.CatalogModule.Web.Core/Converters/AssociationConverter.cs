@@ -10,8 +10,16 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
         public static webModel.ProductAssociation ToWebModel(this moduleModel.ProductAssociation association, IBlobUrlResolver blobUrlResolver)
         {
             var retVal = new webModel.ProductAssociation();
-            retVal.InjectFrom(association);
+            //Do not use omu.InjectFrom for performance reasons 
+
+            retVal.AssociatedObjectId = association.AssociatedObjectId;
+            retVal.AssociatedObjectType = association.AssociatedObjectType;
+            retVal.Quantity = association.Quantity;
             retVal.Tags = association.Tags;
+            retVal.Type = association.Type;
+            retVal.Priority = association.Priority;           
+            retVal.Tags = association.Tags;
+
             if (association.AssociatedObject != null)
             {
                 var product = association.AssociatedObject as moduleModel.CatalogProduct;

@@ -35,8 +35,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         }
 
         public coreModel.CatalogProduct[] GetByIds(string[] itemIds, coreModel.ItemResponseGroup respGroup, string catalogId = null)
-        {           
-            coreModel.CatalogProduct[] result;        
+        {
+            coreModel.CatalogProduct[] result;
 
             using (var repository = base.CatalogRepositoryFactory())
             {
@@ -72,7 +72,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 if (!respGroup.HasFlag(coreModel.ItemResponseGroup.ItemProperties))
                 {
                     product.Properties = null;
-                }             
+                }
             }
 
             return result;
@@ -151,7 +151,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             {
                 repository.RemoveItems(itemIds);
                 CommitChanges(repository);
-            }      
+            }
         }
         #endregion
     }

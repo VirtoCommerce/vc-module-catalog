@@ -13,7 +13,21 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
         public static webModel.Category ToWebModel(this moduleModel.Category category, IBlobUrlResolver blobUrlResolver = null, bool convertProps = true)
         {
             var retVal = new webModel.Category();
-            retVal.InjectFrom(category);
+            //Do not use omu.InjectFrom for performance reasons 
+            retVal.Id = category.Id;
+            retVal.IsActive = category.IsActive;
+            retVal.IsVirtual = category.IsVirtual;
+            retVal.Name = category.Name;
+            retVal.ParentId = category.ParentId;
+            retVal.Path = category.Path;
+            retVal.TaxType = category.TaxType;
+            retVal.CatalogId = category.CatalogId;
+            retVal.Code = category.Code;
+            retVal.CreatedBy = category.CreatedBy;
+            retVal.CreatedDate = category.CreatedDate;
+            retVal.ModifiedBy = category.ModifiedBy;
+            retVal.ModifiedDate = category.ModifiedDate;
+           
             retVal.Catalog = category.Catalog.ToWebModel();
             //Reset properties for size economy
             retVal.Catalog.Properties = null;

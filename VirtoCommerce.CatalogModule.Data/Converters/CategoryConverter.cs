@@ -25,7 +25,17 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
         public static coreModel.Category ToCoreModel(this dataModel.Category dbCategory, dataModel.Catalog[] allCatalogs, dataModel.Category[] allCategories, bool convertProps = true)
         {
             var retVal = new coreModel.Category();
-            retVal.InjectFrom(dbCategory);
+            //Do not use omu.ValueInjector for performance purposes
+            retVal.Code = dbCategory.Code;
+            retVal.CreatedBy = dbCategory.CreatedBy;
+            retVal.CreatedDate = dbCategory.CreatedDate;
+            retVal.Id = dbCategory.Id;
+            retVal.ModifiedBy = dbCategory.ModifiedBy;
+            retVal.ModifiedDate = dbCategory.ModifiedDate;
+            retVal.Name = dbCategory.Name;
+            retVal.Priority = dbCategory.Priority;
+            retVal.TaxType = dbCategory.TaxType;
+            
             retVal.CatalogId = dbCategory.CatalogId;
             retVal.Catalog = allCatalogs.First(x => x.Id == dbCategory.CatalogId).ToCoreModel();
             retVal.ParentId = dbCategory.ParentCategoryId;

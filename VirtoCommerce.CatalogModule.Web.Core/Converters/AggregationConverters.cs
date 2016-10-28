@@ -10,7 +10,8 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
         public static webModel.Aggregation ToWebModel(this coreModel.Aggregation aggregation)
         {
             var result = new webModel.Aggregation();
-            result.InjectFrom(aggregation);
+            result.AggregationType = aggregation.AggregationType;
+            result.Field = aggregation.Field;          
 
             if (aggregation.Items != null)
             {
@@ -28,7 +29,9 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
         public static webModel.AggregationItem ToWebModel(this coreModel.AggregationItem item)
         {
             var result = new webModel.AggregationItem();
-            result.InjectFrom(item);
+            result.Count = item.Count;
+            result.IsApplied = item.IsApplied;
+            result.Value = item.Value;
 
             if (item.Labels != null)
             {

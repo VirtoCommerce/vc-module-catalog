@@ -9,7 +9,11 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
         public static webModel.CatalogLanguage ToWebModel(this moduleModel.CatalogLanguage language)
         {
             var result = new webModel.CatalogLanguage();
-            result.InjectFrom(language);
+            //Do not use omu.InjectFrom for performance reasons 
+            result.CatalogId = language.CatalogId;
+            result.LanguageCode = language.LanguageCode;
+            result.IsDefault = language.IsDefault;
+            
             return result;
         }
 

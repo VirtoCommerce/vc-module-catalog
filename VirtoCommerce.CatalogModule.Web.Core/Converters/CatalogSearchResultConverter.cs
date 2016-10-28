@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System.Collections.Concurrent;
+using System.Linq;
+using System.Threading.Tasks;
 using Omu.ValueInjecter;
 using VirtoCommerce.Platform.Core.Assets;
 using coreModel = VirtoCommerce.Domain.Catalog.Model;
@@ -11,16 +13,29 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
         public static webModel.CatalogSearchResult ToWebModel(this coreModel.SearchResult result, IBlobUrlResolver blobUrlResolver)
         {
             var retVal = new webModel.CatalogSearchResult();
-            retVal.InjectFrom(result);
+            retVal.ProductsTotalCount = result.ProductsTotalCount;
 
             if (result.Products != null)
             {
-                retVal.Products = result.Products.Select(x => x.ToWebModel(blobUrlResolver)).ToArray();
+                //Parallel conversation for better performance
+                var preservedOrder = result.Products.Select(x => x.Id).ToList();
+                var productDtos = new ConcurrentBag<CatalogModule.Web.Model.Product>();
+                Parallel.ForEach(result.Products, (x) =>
+                {
+                    productDtos.Add(x.ToWebModel(blobUrlResolver));
+                });
+                retVal.Products = productDtos.OrderBy(i => preservedOrder.IndexOf(i.Id)).ToArray();
             }
 
             if (result.Categories != null)
             {
-                retVal.Categories = result.Categories.Select(x => x.ToWebModel(blobUrlResolver)).ToArray();
+                var preservedOrder = result.Categories.Select(x => x.Id).ToList();
+                var categoryDtos = new ConcurrentBag<CatalogModule.Web.Model.Category>();
+                Parallel.ForEach(result.Categories, (x) =>
+                {
+                    categoryDtos.Add(x.ToWebModel(blobUrlResolver));
+                });
+                retVal.Categories = categoryDtos.OrderBy(i => preservedOrder.IndexOf(i.Id)).ToArray();
             }
 
             if (result.Aggregations != null)

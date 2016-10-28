@@ -12,8 +12,12 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
         public static webModel.Catalog ToWebModel(this moduleModel.Catalog catalog, bool convertProps = true)
         {
             var retVal = new webModel.Catalog();
-            retVal.InjectFrom(catalog);
+            //Do not use omu.InjectFrom for performance reasons 
+            retVal.Id = catalog.Id;
+            retVal.Name = catalog.Name;
+            retVal.IsVirtual = catalog.IsVirtual;
             retVal.Properties = new List<webModel.Property>();
+            
             if (catalog.Languages != null)
             {
                 retVal.Languages = catalog.Languages.Select(x => x.ToWebModel()).ToList();

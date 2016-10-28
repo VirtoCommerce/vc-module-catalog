@@ -48,7 +48,9 @@
 				id: 'editCategoryProperty',
 				currentEntityId: prop ? prop.id : undefined,
 				categoryId: blade.categoryId,
-				catalogId : blade.catalogId,			
+				catalogId: blade.catalogId,
+				defaultLanguage: blade.defaultLanguage,
+                languages: blade.languages,
 				controller: 'virtoCommerce.catalogModule.propertyDetailController',
 				template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-detail.tpl.html'
 			};
