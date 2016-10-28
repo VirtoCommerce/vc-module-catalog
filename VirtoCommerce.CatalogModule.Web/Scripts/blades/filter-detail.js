@@ -3,28 +3,17 @@
     function ($scope, $localStorage, $translate) {
         var blade = $scope.blade;
 
-        $scope.trueFalse = [
-            { name: 'True', value: true },
-            { name: 'False', value: false }
-        ];
-
-        $scope.itemTypes = [
-            { name: 'Physical', value: 'Physical' },
-            { name: 'Digital', value: 'Digital' }
-        ];
-
         $scope.saveChanges = function () {
             angular.copy(blade.currentEntity, blade.origEntity);
             if (blade.isNew) {
-                $localStorage.catalogSearchFilters.push(blade.origEntity);
+                $localStorage.catalogSearchFilters2.splice(0, 0, blade.origEntity);
                 $localStorage.catalogSearchFilterId = blade.origEntity.id;
                 blade.parentBlade.filter.current = blade.origEntity;
                 blade.isNew = false;
             }
 
             initializeBlade(blade.origEntity);
-            blade.parentBlade.filter.criteriaChanged();
-            // $scope.bladeClose();
+            blade.parentBlade.filter.change(true);
         };
 
         function initializeBlade(data) {
@@ -34,16 +23,14 @@
 
             blade.title = blade.isNew ? 'catalog.blades.filter-detail.new-title' : data.name;
             blade.subtitle = blade.isNew ? 'catalog.blades.filter-detail.new-subtitle' : 'catalog.blades.filter-detail.subtitle';
-        };
+        }
 
         var formScope;
-        $scope.setForm = function (form) {
-            formScope = form;
-        }
+        $scope.setForm = function (form) { formScope = form; };
 
         function isDirty() {
             return !angular.equals(blade.currentEntity, blade.origEntity);
-        };
+        }
 
         blade.headIcon = 'fa-filter';
 
@@ -75,10 +62,9 @@
 
         function deleteEntry() {
             blade.parentBlade.filter.current = null;
-            $localStorage.catalogSearchFilters.splice($localStorage.catalogSearchFilters.indexOf(blade.origEntity), 1);
+            $localStorage.catalogSearchFilters2.splice($localStorage.catalogSearchFilters2.indexOf(blade.origEntity), 1);
             delete $localStorage.catalogSearchFilterId;
-            blade.parentBlade.refresh();
-            $scope.bladeClose();
+            blade.parentBlade.filter.change();
         }
 
         // actions on load        

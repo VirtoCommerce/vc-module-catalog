@@ -7,7 +7,8 @@
             var blade = $scope.blade;
             var bladeNavigationService = bladeUtils.bladeNavigationService;
             // blade.catalog = bladeNavigationService.catalogsSelectedCatalog;
-            blade.catalog = catalogs.get({ id: blade.catalogId });
+            if (blade.catalogId)
+                blade.catalog = catalogs.get({ id: blade.catalogId });
 
             blade.refresh = function () {
                 blade.isLoading = true;
@@ -20,9 +21,6 @@
                     skip: ($scope.pageSettings.currentPage - 1) * $scope.pageSettings.itemsPerPageCount,
                     take: $scope.pageSettings.itemsPerPageCount
                 };
-                if (filter.current) {
-                    angular.extend(searchCriteria, filter.current);
-                }
 
                 listEntries.listitemssearch(
                     searchCriteria,
@@ -35,8 +33,6 @@
 
                         //Set navigation breadcrumbs
                         setBreadcrumbs();
-                    }, function (error) {
-                        bladeNavigationService.setError('Error ' + error.status, blade);
                     });
             }
 
@@ -44,6 +40,8 @@
             function setBreadcrumbs() {
                 //Clone array (angular.copy leave a same reference)
                 blade.breadcrumbs = blade.breadcrumbs.slice(0);
+
+                if (!blade.catalogId) return;
 
                 //catalog breadcrumb by default
                 var breadCrumb = {
@@ -118,13 +116,14 @@
                     var deletingLink = false;
 
                     if (listItem.type === 'category') {
-                        if (blade.catalog.isVirtual && _.some(listItem.links, function (x) { return x.categoryId === blade.categoryId; })) {
+                        if (blade.catalog && blade.catalog.isVirtual
+                            && _.some(listItem.links, function (x) { return x.categoryId === blade.categoryId; })) {
                             deletingLink = true;
                         } else {
                             categoryIds.push(listItem.id);
                         }
                     } else {
-                        if (blade.catalog.isVirtual) {
+                        if (blade.catalog && blade.catalog.isVirtual) {
                             deletingLink = true;
                         } else {
                             itemIds.push(listItem.id);
@@ -209,7 +208,7 @@
                 blade.setSelectedItem(listItem);
                 var newBlade;
                 if (listItem.type === 'category') {
-                    var openNewBlade = e.ctrlKey || filter.keyword || filter.current;
+                    var openNewBlade = e.ctrlKey || filter.keyword;
                     newBlade = {
                         id: 'itemsList' + (blade.level + (openNewBlade ? 1 : 0)),
                         level: blade.level + (openNewBlade ? 1 : 0),
@@ -277,21 +276,23 @@
             };
 
             function generateBreadcrumbs(newBlade, listEntry, count) {
-                var newBreadcrumbs = [{
-                    id: blade.catalogId,
-                    name: blade.catalog.name,
-                    navigate: function (breadcrumb) {
-                        bladeNavigationService.closeBlade(newBlade,
-                            function () {
-                                newBlade.disableOpenAnimation = true;
-                                newBlade.categoryId = undefined;
-                                newBlade.category = undefined;
-                                newBlade.breadcrumbs = [];
-                                bladeNavigationService.showBlade(newBlade, blade);
-                                newBlade.refresh();
-                            });
-                    }
-                }];
+                var newBreadcrumbs = [];
+                if (blade.catalog)
+                    newBreadcrumbs.push({
+                        id: blade.catalogId,
+                        name: blade.catalog.name,
+                        navigate: function (breadcrumb) {
+                            bladeNavigationService.closeBlade(newBlade,
+                                function () {
+                                    newBlade.disableOpenAnimation = true;
+                                    newBlade.categoryId = undefined;
+                                    newBlade.category = undefined;
+                                    newBlade.breadcrumbs = [];
+                                    bladeNavigationService.showBlade(newBlade, blade);
+                                    newBlade.refresh();
+                                });
+                        }
+                    });
 
                 for (var i = 0; i < count; i++) {
                     newBreadcrumbs.push({
@@ -314,7 +315,7 @@
             }
 
             $scope.hasLinks = function (listEntry) {
-                return blade.catalog.isVirtual &&
+                return blade.catalog && blade.catalog.isVirtual &&
                             _.any(listEntry.links, function (l) {
                                 return l.catalogId === blade.catalogId && (!blade.categoryId || l.categoryId === blade.categoryId);
                             });
@@ -336,72 +337,72 @@
                     canExecuteMethod: isItemsChecked,
                     permission: 'catalog:delete'
                 },
-    			{
-    			    name: "platform.commands.import",
-    			    icon: 'fa fa-download',
-    			    executeMethod: function () {
-    			        var newBlade = {
-    			            id: 'catalogImport',
-    			            title: 'catalog.blades.importers-list.title',
-    			            subtitle: 'catalog.blades.importers-list.subtitle',
-    			            catalog: blade.catalog,
-    			            controller: 'virtoCommerce.catalogModule.importerListController',
-    			            template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/import/importers-list.tpl.html'
-    			        };
-    			        bladeNavigationService.showBlade(newBlade, blade);
-    			    },
-    			    canExecuteMethod: function () { return true; },
-    			    permission: 'catalog:import'
-    			},
-				{
-				    name: "platform.commands.export",
-				    icon: 'fa fa-upload',
-				    executeMethod: function () {
-				        var newBlade = {
-				            id: 'catalogExport',
-				            title: 'catalog.blades.exporter-list.title',
-				            subtitle: 'catalog.blades.exporter-list.subtitle',
-				            catalog: blade.catalog,
-				            controller: 'virtoCommerce.catalogModule.exporterListController',
-				            template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/export/exporter-list.tpl.html',
-				            selectedProducts: _.filter($scope.gridApi.selection.getSelectedRows(), function (x) { return x.type == 'product' }),
-				            selectedCategories: _.filter($scope.gridApi.selection.getSelectedRows(), function (x) { return x.type == 'category' })
-				        };
-				        bladeNavigationService.showBlade(newBlade, blade);
-				    },
-				    canExecuteMethod: function () { return true; },
-				    permission: 'catalog:export'
-				},
-                 {
-                     name: "platform.commands.cut",
-                     icon: 'fa fa-cut',
-                     executeMethod: function () {
-                         cutList($scope.gridApi.selection.getSelectedRows());
-                     },
-                     canExecuteMethod: isItemsChecked,
-                     permission: 'catalog:create'
-                 },
-                 {
-                     name: "platform.commands.paste",
-                     icon: 'fa fa-clipboard',
-                     executeMethod: function () {
-                         blade.isLoading = true;
-                         listEntries.move({
-                             catalog: blade.catalogId,
-                             category: blade.categoryId,
-                             listEntries: $sessionStorage.catalogClipboardContent
-                         }, function () {
-                             delete $sessionStorage.catalogClipboardContent;
-                             blade.refresh();
-                         }, function (error) {
-                             bladeNavigationService.setError('Error ' + error.status, blade);
-                         });
-                     },
-                     canExecuteMethod: function () {
-                         return $sessionStorage.catalogClipboardContent && !blade.catalog.isVirtual;
-                     },
-                     permission: 'catalog:create'
-                 }
+                {
+                    name: "platform.commands.import",
+                    icon: 'fa fa-download',
+                    executeMethod: function () {
+                        var newBlade = {
+                            id: 'catalogImport',
+                            title: 'catalog.blades.importers-list.title',
+                            subtitle: 'catalog.blades.importers-list.subtitle',
+                            catalog: blade.catalog,
+                            controller: 'virtoCommerce.catalogModule.importerListController',
+                            template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/import/importers-list.tpl.html'
+                        };
+                        bladeNavigationService.showBlade(newBlade, blade);
+                    },
+                    canExecuteMethod: function () { return blade.catalogId; },
+                    permission: 'catalog:import'
+                },
+                {
+                    name: "platform.commands.export",
+                    icon: 'fa fa-upload',
+                    executeMethod: function () {
+                        var newBlade = {
+                            id: 'catalogExport',
+                            title: 'catalog.blades.exporter-list.title',
+                            subtitle: 'catalog.blades.exporter-list.subtitle',
+                            catalog: blade.catalog,
+                            controller: 'virtoCommerce.catalogModule.exporterListController',
+                            template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/export/exporter-list.tpl.html',
+                            selectedProducts: _.filter($scope.gridApi.selection.getSelectedRows(), function (x) { return x.type == 'product' }),
+                            selectedCategories: _.filter($scope.gridApi.selection.getSelectedRows(), function (x) { return x.type == 'category' })
+                        };
+                        bladeNavigationService.showBlade(newBlade, blade);
+                    },
+                    canExecuteMethod: function () { return blade.catalogId; },
+                    permission: 'catalog:export'
+                },
+            {
+                name: "platform.commands.cut",
+                icon: 'fa fa-cut',
+                executeMethod: function () {
+                    cutList($scope.gridApi.selection.getSelectedRows());
+                },
+                canExecuteMethod: isItemsChecked,
+                permission: 'catalog:create'
+            },
+            {
+                name: "platform.commands.paste",
+                icon: 'fa fa-clipboard',
+                executeMethod: function () {
+                    blade.isLoading = true;
+                    listEntries.move({
+                        catalog: blade.catalogId,
+                        category: blade.categoryId,
+                        listEntries: $sessionStorage.catalogClipboardContent
+                    }, function () {
+                        delete $sessionStorage.catalogClipboardContent;
+                        blade.refresh();
+                    }, function (error) {
+                        bladeNavigationService.setError('Error ' + error.status, blade);
+                    });
+                },
+                canExecuteMethod: function () {
+                    return $sessionStorage.catalogClipboardContent && blade.catalog && !blade.catalog.isVirtual;
+                },
+                permission: 'catalog:create'
+            }
 
                 //{
                 //    name: "Advanced search", icon: 'fa fa-search',
@@ -452,9 +453,7 @@
                         };
                         bladeNavigationService.showBlade(newBlade, blade);
                     },
-                    canExecuteMethod: function () {
-                        return true;
-                    }
+                    canExecuteMethod: function () { return blade.catalogId; }
                 });
             }
 
@@ -477,26 +476,7 @@
 
 
             // simple and advanced filtering
-            //var groupingColumn;
-            var filter = blade.filter = $scope.filter = {};
-            $scope.$localStorage = $localStorage;
-            if (!$localStorage.catalogSearchFilters) {
-                $localStorage.catalogSearchFilters = [{ name: 'catalog.blades.categories-items-list.labels.new-filter' }]
-            }
-            if ($localStorage.catalogSearchFilterId) {
-                filter.current = _.findWhere($localStorage.catalogSearchFilters, { id: $localStorage.catalogSearchFilterId });
-            }
-
-            filter.change = function () {
-                $localStorage.catalogSearchFilterId = filter.current ? filter.current.id : null;
-                if (filter.current && !filter.current.id) {
-                    filter.current = null;
-                    showFilterDetailBlade({ isNew: true });
-                } else {
-                    bladeNavigationService.closeBlade({ id: 'filterDetail' });
-                    filter.criteriaChanged();
-                }
-            };
+            var filter = blade.filter = $scope.filter = { keyword: blade.filterKeyword };
 
             filter.criteriaChanged = function () {
                 if ($scope.pageSettings.currentPage > 1) {
@@ -506,22 +486,6 @@
                 }
             };
 
-            filter.edit = function () {
-                if (filter.current) {
-                    showFilterDetailBlade({ data: filter.current });
-                }
-            };
-
-            function showFilterDetailBlade(bladeData) {
-                var newBlade = {
-                    id: 'filterDetail',
-                    controller: 'virtoCommerce.catalogModule.filterDetailController',
-                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/filter-detail.tpl.html',
-                };
-                angular.extend(newBlade, bladeData);
-                bladeNavigationService.showBlade(newBlade, blade);
-            };
-
             function transformByFilters(data) {
                 if (_.any(data)) {
                     _.each(data, function (x) {
@@ -529,15 +493,13 @@
                     });
 
                     if ($scope.gridApi) {
-                        if (filter.keyword || filter.current) {
-                            //groupingColumn.visible = true;
+                        if (filter.keyword) {
                             if (!_.any($scope.gridApi.grouping.getGrouping().grouping)) {
                                 $scope.gridApi.grouping.groupColumn('$path');
                             }
 
                             $timeout($scope.gridApi.treeBase.expandAllRows);
                         } else {
-                            //groupingColumn.visible = false;
                             $scope.gridApi.grouping.clearGrouping();
                         }
                     }
@@ -549,9 +511,7 @@
             // ui-grid
             $scope.setGridOptions = function (gridOptions) {
                 uiGridHelper.initialize($scope, gridOptions, function (gridApi) {
-                    //groupingColumn = _.findWhere($scope.gridOptions.columnDefs, { name: '$path' });
-
-                    if (filter.keyword || filter.current) {
+                    if (filter.keyword) {
                         $timeout(function () {
                             gridApi.grouping.groupColumn('$path');
                             $timeout(gridApi.treeBase.expandAllRows);

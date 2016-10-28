@@ -1,6 +1,6 @@
 ﻿angular.module('virtoCommerce.catalogModule')
-.controller('virtoCommerce.catalogModule.catalogsListController', ['$scope', 'virtoCommerce.catalogModule.catalogs', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'platformWebApp.authService', 'platformWebApp.uiGridHelper', 'filterFilter', 'platformWebApp.bladeUtils',
-function ($scope, catalogs, bladeNavigationService, dialogService, authService, uiGridHelper, filterFilter, bladeUtils) {
+.controller('virtoCommerce.catalogModule.catalogsListController', ['$scope', 'virtoCommerce.catalogModule.catalogs', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'platformWebApp.authService', 'platformWebApp.uiGridHelper', 'platformWebApp.bladeUtils',
+function ($scope, catalogs, bladeNavigationService, dialogService, authService, uiGridHelper, bladeUtils) {
     $scope.uiGridConstants = uiGridHelper.uiGridConstants;
     var blade = $scope.blade;
     var selectedNode = null;
@@ -14,6 +14,7 @@ function ($scope, catalogs, bladeNavigationService, dialogService, authService, 
             count: $scope.pageSettings.itemsPerPageCount
         }, function (results) {
             blade.isLoading = false;
+            $scope.pageSettings.totalItems = results.length;
             //filter the catalogs in which we not have access
             blade.currentEntities = results;
 
@@ -21,34 +22,47 @@ function ($scope, catalogs, bladeNavigationService, dialogService, authService, 
                 //select the node in the new list
                 selectedNode = _.findWhere(results, { id: selectedNode.id });
             }
-        },
-        function (error) { bladeNavigationService.setError('Error ' + error.status, $scope.blade); });
+        });
     };
 
     $scope.selectNode = function (node) {
         selectedNode = node;
         $scope.selectedNodeId = selectedNode.id;
 
-        var newBlade = {
-            id: 'itemsList1',
-            level: 1,
-            breadcrumbs: blade.breadcrumbs,
-            title: 'catalog.blades.categories-items-list.title',
-            subtitle: 'catalog.blades.categories-items-list.subtitle',
-            subtitleValues: { name: selectedNode.name },
-            catalogId: selectedNode.id,
-            catalog: selectedNode,
-            controller: 'virtoCommerce.catalogModule.categoriesItemsListController',
-            template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/categories-items-list.tpl.html',
-            securityScopes: selectedNode.securityScopes
-        };
-
-        bladeNavigationService.showBlade(newBlade, blade);
+        openItemsBlade(node);
 
         // setting current catalog to be globally available 
         bladeNavigationService.catalogsSelectedCatalog = selectedNode;
         bladeNavigationService.catalogsSelectedCategoryId = undefined;
     };
+
+    function openItemsBlade(node) {
+        var newBlade = {
+            id: 'itemsList1',
+            level: 1,
+            breadcrumbs: blade.breadcrumbs,
+            title: 'catalog.blades.categories-items-list.title',
+            controller: 'virtoCommerce.catalogModule.categoriesItemsListController',
+            template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/categories-items-list.tpl.html'
+        };
+
+        if (node.id)
+            angular.extend(newBlade, {
+                subtitle: 'catalog.blades.categories-items-list.subtitle',
+                subtitleValues: { name: node.name },
+                catalogId: node.id,
+                catalog: node,
+                securityScopes: node.securityScopes
+            });
+        else
+            angular.extend(newBlade, {
+                filterKeyword: filter.keyword,
+                subtitle: 'catalog.blades.categories-items-list.subtitle-search',
+                subtitleValues: { keyword: filter.keyword }
+            });
+
+        bladeNavigationService.showBlade(newBlade, blade);
+    }
 
     $scope.editCatalog = function (catalog) {
         if (catalog.isVirtual) {
@@ -109,13 +123,13 @@ function ($scope, catalogs, bladeNavigationService, dialogService, authService, 
     }
 
     blade.toolbarCommands = [
-        {
-            name: "platform.commands.refresh", icon: 'fa fa-refresh',
-            executeMethod: blade.refresh,
-            canExecuteMethod: function () {
-                return true;
-            }
+    {
+        name: "platform.commands.refresh", icon: 'fa fa-refresh',
+        executeMethod: blade.refresh,
+        canExecuteMethod: function () {
+            return true;
         }
+    }
     ];
 
     if (authService.checkPermission('catalog:create')) {
@@ -142,25 +156,27 @@ function ($scope, catalogs, bladeNavigationService, dialogService, authService, 
         });
     }
 
+    // simple and advanced filtering
+    var filter = blade.filter = {};
+
+    filter.criteriaChanged = function () {
+        if (filter.keyword) {
+            openItemsBlade({});
+        } else
+            bladeNavigationService.closeChildrenBlades(blade);
+
+        selectedNode = null;
+        $scope.selectedNodeId = null;
+        bladeNavigationService.catalogsSelectedCatalog = undefined;
+        bladeNavigationService.catalogsSelectedCategoryId = undefined;
+    };
+
     // ui-grid
     $scope.setGridOptions = function (gridOptions) {
         uiGridHelper.initialize($scope, gridOptions, function (gridApi) {
-            gridApi.grid.registerRowsProcessor($scope.singleFilter, 90);
             uiGridHelper.bindRefreshOnSortChanged($scope);
         });
-
         bladeUtils.initializePagination($scope);
-    };
-
-    $scope.singleFilter = function (renderableRows) {
-        var visibleCount = 0;
-        renderableRows.forEach(function (row) {
-            row.visible = _.any(filterFilter([row.entity], blade.searchText));
-            if (row.visible) visibleCount++;
-        });
-
-        $scope.filteredEntitiesCount = visibleCount;
-        return renderableRows;
     };
 
     // actions on load

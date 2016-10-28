@@ -58,10 +58,16 @@
             "categories-items-list": {
                 "title": "Categories & Items",
                 "subtitle": "Browsing {{name}}",
+                "subtitle-search": "Search results for \"{{keyword}}\"",
                 "title-mapping": "Choose Categories & Items for mapping",
                 "subtitle-mapping": "Creating a Link inside virtual catalog",
                 "labels": {
-                    "new-filter": "Add new filter",
+                    "filter-priceless": "Without price",
+                    "filter-withPrice": "With price",
+                    "filter-priceRange": "Price between",
+                    "filter-lowStock": "Low on stock",
+                    "filter-notActive": "Not active",
+                    "filter-new": "<strong>Add new filter</strong>",
                     "unnamed-filter": "Unnamed filter",
                     "inactive": "Inactive",
                     "picture": "Pic",
@@ -127,14 +133,12 @@
                 "new-title": "New filter",
                 "new-subtitle": "Create new filter",
                 "labels": {
-                    "criteria": "Filter criteria",
-                    "productType": "Product type",
-                    "onlyBuyable": "Only buyable",
-                    "onlyWithTrackingInventory": "Only with tracking inventory",
+                    "criteria": "Search criteria",
                     "name": "Filter name"
                 },
                 "placeholders": {
-                    "all": "Not specified"
+                    "criteria": "Enter search criteria",
+                    "name": "How will you call this filter?"
                 }
             },
             "property-detail": {
@@ -156,7 +160,7 @@
                 "placeholders": {
                     "display-name": "Enter display name..."
                 }
-            },                      
+            },
             "property-list": {
                 "subtitle": "Properties list",
                 "labels": {
