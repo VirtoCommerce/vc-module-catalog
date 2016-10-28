@@ -1,5 +1,5 @@
 ﻿angular.module('virtoCommerce.catalogModule')
-.directive('vcItemSearch', ['$localStorage', 'platformWebApp.bladeNavigationService', function ($localStorage, bladeNavigationService) {
+.directive('vcItemSearch', ['$localStorage', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.predefinedSearchFilters', function ($localStorage, bladeNavigationService, predefinedSearchFilters) {
     return {
         restrict: 'E',
         templateUrl: 'Modules/$(VirtoCommerce.Catalog)/Scripts/directives/itemSearch.tpl.html',
@@ -10,18 +10,9 @@
             var blade = $scope.blade;
             $scope.$localStorage = $localStorage;
             var filter = $scope.filter = blade.filter;
-            if (!$localStorage.catalogSearchFilters2) {
-                // todo: add predefined filters
-                $localStorage.catalogSearchFilters2 = [
-                    { keyword: 'is:unpriced', id: '1', name: 'catalog.blades.categories-items-list.labels.filter-priceless' },
-                    { keyword: 'is:priced', id: '2', name: 'catalog.blades.categories-items-list.labels.filter-withPrice' },
-                    { keyword: 'price_usd:[100 TO 200]', id: '3', name: 'catalog.blades.categories-items-list.labels.filter-priceRange' },
-                    { keyword: 'is:hidden', id: '4', name: 'catalog.blades.categories-items-list.labels.filter-notActive' },
-                    { name: 'catalog.blades.categories-items-list.labels.filter-new' }
-                ];
-            }
+            
             if ($localStorage.catalogSearchFilterId && !filter.keyword) {
-                filter.current = _.findWhere($localStorage.catalogSearchFilters2, { id: $localStorage.catalogSearchFilterId });
+                filter.current = _.findWhere($localStorage.catalogSearchFilters, { id: $localStorage.catalogSearchFilterId });
                 filter.keyword = filter.current ? filter.current.keyword : '';
             }
 
@@ -39,8 +30,6 @@
             };
 
             filter.edit = function ($event, entry) {
-                $event.preventDefault();
-                $event.stopPropagation();
                 filter.current = entry;
                 showFilterDetailBlade({ data: entry });
             };

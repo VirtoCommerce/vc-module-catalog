@@ -1,8 +1,8 @@
 ﻿<div>
-    <a class="add" left-click-menu data-target="filterSearch" style="position: absolute; top: 24px;">{{'catalog.blades.categories-items-list.placeholders.select-filter' | translate}} <i class="form-ico fa fa-caret-down"></i></a>
-    <ul class="menu __context" role="menu" id="filterSearch">
-        <li class="menu-item" ng-click='filter.current = x;filter.change();' ng-repeat="x in $localStorage.catalogSearchFilters2">
-            <i class="menu-ico fa fa-plus" ng-if="!x.id"></i> <span ng-bind-html="x.name | translate"></span> <i class="fa fa-pencil" ng-click='filter.edit($event, x)' ng-if="x.id"></i>
+    <a class="add" left-click-menu data-target="filterSearch{{blade.id}}" style="position: absolute; top: 24px;">{{'catalog.blades.categories-items-list.placeholders.select-filter' | translate}} <i class="form-ico fa fa-caret-down"></i></a>
+    <ul class="menu __context" role="menu" id="filterSearch{{blade.id}}">
+        <li class="menu-item" ng-repeat="x in $localStorage.catalogSearchFilters">
+            <i class="menu-ico fa fa-plus" ng-if="!x.id"></i> <span ng-click='filter.current=x;filter.change();' ng-bind-html="x.name | translate"></span> <i class="fa fa-pencil" ng-click='filter.edit($event, x)' ng-if="x.id"></i>
         </li>
     </ul>
 

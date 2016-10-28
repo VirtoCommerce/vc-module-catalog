@@ -479,7 +479,9 @@
             var filter = blade.filter = $scope.filter = { keyword: blade.filterKeyword };
 
             filter.criteriaChanged = function () {
-                if ($scope.pageSettings.currentPage > 1) {
+                if (!blade.catalogId && !filter.keyword) {
+                    $scope.bladeClose();
+                } else if ($scope.pageSettings.currentPage > 1) {
                     $scope.pageSettings.currentPage = 1;
                 } else {
                     blade.refresh();

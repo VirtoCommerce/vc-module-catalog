@@ -33,9 +33,32 @@ angular.module(catalogsModuleName, [
   }
   ]
 )
+// define search filters to be accessible platform-wide
+.factory('virtoCommerce.catalogModule.predefinedSearchFilters', ['$localStorage', function ($localStorage) {
+    $localStorage.catalogSearchFilters = $localStorage.catalogSearchFilters || [];
+
+    return {
+        register: function (currentFiltersUpdateTime, currentFiltersStorageKey, newFilters) {
+            _.each(newFilters, function (newFilter) {
+                var found = _.find($localStorage.catalogSearchFilters, function (x) {
+                    return x.id == newFilter.id;
+                });
+                if (found) {
+                    if (found && (!found.lastUpdateTime || found.lastUpdateTime < currentFiltersUpdateTime)) {
+                        angular.copy(newFilter, found);
+                    }
+                } else if (!$localStorage[currentFiltersStorageKey] || $localStorage[currentFiltersStorageKey] < currentFiltersUpdateTime) {
+                    $localStorage.catalogSearchFilters.splice(0, 0, newFilter);
+                }
+            });
+
+            $localStorage[currentFiltersStorageKey] = currentFiltersUpdateTime;
+        }
+    };
+}])
 .run(
-  ['platformWebApp.authService', 'platformWebApp.mainMenuService', 'platformWebApp.widgetService', '$state', 'platformWebApp.pushNotificationTemplateResolver', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.catalogImportService', 'virtoCommerce.catalogModule.catalogExportService', 'platformWebApp.permissionScopeResolver', 'virtoCommerce.catalogModule.catalogs',
-	function (authService, mainMenuService, widgetService, $state, pushNotificationTemplateResolver, bladeNavigationService, catalogImportService, catalogExportService, scopeResolver, catalogs) {
+  ['platformWebApp.authService', 'platformWebApp.mainMenuService', 'platformWebApp.widgetService', '$state', 'platformWebApp.pushNotificationTemplateResolver', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.catalogImportService', 'virtoCommerce.catalogModule.catalogExportService', 'platformWebApp.permissionScopeResolver', 'virtoCommerce.catalogModule.catalogs', 'virtoCommerce.catalogModule.predefinedSearchFilters',
+	function (authService, mainMenuService, widgetService, $state, pushNotificationTemplateResolver, bladeNavigationService, catalogImportService, catalogExportService, scopeResolver, catalogs, predefinedSearchFilters) {
 
 	    //Register module in main menu
 	    var menuItem = {
@@ -166,12 +189,12 @@ angular.module(catalogsModuleName, [
 	    //	};
 	    //});
 
-		//Register dimensions widget
+	    //Register dimensions widget
 	    var dimensionsWidget = {
-	    	controller: 'virtoCommerce.catalogModule.itemDimensionWidgetController',
-	    	isVisible: function (blade) { return blade.productType == 'Physical'; },
-	    	size: [2, 1],
-	    	template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/itemDimensionWidget.tpl.html'
+	        controller: 'virtoCommerce.catalogModule.itemDimensionWidgetController',
+	        isVisible: function (blade) { return blade.productType == 'Physical'; },
+	        size: [2, 1],
+	        template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/itemDimensionWidget.tpl.html'
 	    };
 	    widgetService.registerWidget(dimensionsWidget, 'itemDetail');
 	    //Register item editorialReview widget
@@ -223,7 +246,7 @@ angular.module(catalogsModuleName, [
 	    widgetService.registerWidget(catalogLanguagesWidget, 'catalogDetail');
 
 	    var catalogPropertyWidget = {
-	    	isVisible: function (blade) { return !blade.isNew; },
+	        isVisible: function (blade) { return !blade.isNew; },
 	        controller: 'virtoCommerce.catalogModule.catalogPropertyWidgetController',
 	        template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/catalogPropertyWidget.tpl.html'
 	    };
@@ -318,4 +341,7 @@ angular.module(catalogsModuleName, [
 	        }
 	    };
 	    scopeResolver.register(categorySelectScope);
+
+	    // predefine search filters for catalog search
+	    predefinedSearchFilters.register(1477584000000, 'catalogSearchFiltersDate', [{ name: 'catalog.blades.categories-items-list.labels.filter-new' }]);
 	}]);
