@@ -10,8 +10,8 @@
             var blade = $scope.blade;
             $scope.$localStorage = $localStorage;
             var filter = $scope.filter = blade.filter;
-            
-            if ($localStorage.catalogSearchFilterId && !filter.keyword) {
+
+            if ($localStorage.catalogSearchFilterId && !filter.keyword && filter.keyword !== null) {
                 filter.current = _.findWhere($localStorage.catalogSearchFilters, { id: $localStorage.catalogSearchFilterId });
                 filter.keyword = filter.current ? filter.current.keyword : '';
             }

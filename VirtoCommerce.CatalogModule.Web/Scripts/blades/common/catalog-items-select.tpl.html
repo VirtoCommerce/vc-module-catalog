@@ -1,18 +1,13 @@
-﻿<div class="blade-static __expanded" ng-if="!isCatalogSelectMode()">
-    <va-breadcrumb ng-model="blade.breadcrumbs" blade-id="blade.id"></va-breadcrumb>
+﻿<div class="blade-static" ng-class="{'__expanded': !isCatalogSelectMode()}">
+    <va-breadcrumb ng-model="blade.breadcrumbs" blade-id="blade.id" ng-if="!isCatalogSelectMode()"></va-breadcrumb>
     <div class="form-group">
-        <div class="form-input __search">
-            <input placeholder="{{'platform.placeholders.search-keyword' | translate}}" ng-model="filter.keyword" ng-keyup="$event.which === 13 && filter.criteriaChanged()">
-            <button class="btn __other" style="position: relative;right: 45px;">
-                <i class="btn-ico fa fa-remove" title="Clear" ng-click="filter.keyword=null;filter.criteriaChanged()"></i>
-            </button>
-        </div>
-        <p class="form-count">{{ 'platform.list.count' | translate }}: <span class="count">{{pageSettings.totalItems}}</span></p>
+        <vc-item-search blade="blade"></vc-item-search>
+        <p class="form-count">{{'platform.list.count' | translate}}: <span class="count">{{pageSettings.totalItems}}</span></p>
     </div>
 </div>
 <div class="blade-content __medium-wide" ng-if="!isCatalogSelectMode()">
     <div class="blade-inner">
-        <div class="inner-block" ng-if="blade.catalogId" ng-init="setGridOptions({
+        <div class="inner-block" ng-init="setGridOptions({
                 data: 'items',
                 rowTemplate: 'item-list.row.html',
                 rowHeight: 61,

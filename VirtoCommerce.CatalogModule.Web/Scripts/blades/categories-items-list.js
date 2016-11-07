@@ -481,7 +481,7 @@
 
 
             // simple and advanced filtering
-            var filter = blade.filter = $scope.filter = { keyword: blade.filterKeyword };
+            var filter = blade.filter = { keyword: blade.filterKeyword };
 
             filter.criteriaChanged = function () {
                 if (!blade.catalogId && !filter.keyword) {

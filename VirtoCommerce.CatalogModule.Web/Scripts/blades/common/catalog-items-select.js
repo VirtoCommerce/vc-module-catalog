@@ -17,6 +17,7 @@ function ($scope, catalogs, listEntries, bladeUtils, uiGridConstants, uiGridHelp
 
     blade.refresh = function () {
         blade.isLoading = true;
+        filter.searchedKeyword = filter.keyword;
 
         if (!$scope.isCatalogSelectMode()) {
             listEntries.listitemssearch(
@@ -37,8 +38,6 @@ function ($scope, catalogs, listEntries, bladeUtils, uiGridConstants, uiGridHelp
                 //Set navigation breadcrumbs
                 setBreadcrumbs();
 
-            }, function (error) {
-                bladeNavigationService.setError('Error ' + error.status, blade);
             });
         }
         else {
@@ -49,8 +48,6 @@ function ($scope, catalogs, listEntries, bladeUtils, uiGridConstants, uiGridHelp
                 //Set navigation breadcrumbs
                 setBreadcrumbs();
 
-            }, function (error) {
-                bladeNavigationService.setError('Error ' + error.status, blade);
             });
         }
     }
@@ -92,11 +89,9 @@ function ($scope, catalogs, listEntries, bladeUtils, uiGridConstants, uiGridHelp
     }
 
     $scope.isCatalogSelectMode = function () {
-        return !blade.catalogId;
+        return !blade.catalogId && !filter.searchedKeyword;
     };
-
-    $scope.$watch('pageSettings.currentPage', blade.refresh);
-
+    
     $scope.selectItem = function (e, listItem) {
         if ($scope.selectedNodeId == listItem.id)
             return;
@@ -156,7 +151,9 @@ function ($scope, catalogs, listEntries, bladeUtils, uiGridConstants, uiGridHelp
         }
     };
 
-    var filter = $scope.filter = {};
+    // simple and advanced filtering
+    var filter = blade.filter = { keyword: null };
+
     filter.criteriaChanged = function () {
         if ($scope.pageSettings.currentPage > 1) {
             $scope.pageSettings.currentPage = 1;

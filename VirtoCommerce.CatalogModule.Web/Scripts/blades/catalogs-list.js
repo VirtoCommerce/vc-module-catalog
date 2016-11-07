@@ -157,7 +157,7 @@ function ($scope, catalogs, bladeNavigationService, dialogService, authService, 
     }
 
     // simple and advanced filtering
-    var filter = blade.filter = {};
+    var filter = blade.filter = { keyword: null };
 
     filter.criteriaChanged = function () {
         if (filter.keyword) {
