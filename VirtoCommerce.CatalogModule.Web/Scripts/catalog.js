@@ -168,7 +168,7 @@ angular.module(catalogsModuleName, [
 	        template: 'Modules/$(VirtoCommerce.Core)/Scripts/SEO/widgets/seoWidget.tpl.html',
 	        objectType: 'CatalogProduct',
 	        getDefaultContainerId: function (blade) { return undefined; },
-	        getLanguages: function (blade) { return _.pluck(blade.item.catalog.languages, 'languageCode'); }
+	        getLanguages: function (blade) { return _.pluck(blade.catalog.languages, 'languageCode'); }
 	    };
 	    widgetService.registerWidget(itemSeoWidget, 'itemDetail');
 
@@ -234,7 +234,7 @@ angular.module(catalogsModuleName, [
 	        template: 'Modules/$(VirtoCommerce.Core)/Scripts/SEO/widgets/seoWidget.tpl.html',
 	        objectType: 'Category',
 	        getDefaultContainerId: function (blade) { return undefined; },
-	        getLanguages: function (blade) { return _.pluck(blade.currentEntity.catalog.languages, 'languageCode'); }
+	        getLanguages: function (blade) { return _.pluck(blade.catalog.languages, 'languageCode'); }
 	    };
 	    widgetService.registerWidget(categorySeoWidget, 'categoryDetail');
 

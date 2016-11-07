@@ -84,6 +84,7 @@
                 var newBlade = {
                     id: "listCategoryDetail",
                     currentEntityId: listItem.id,
+                    catalog: blade.catalog,
                     title: listItem.name,
                     subtitle: 'catalog.blades.category-detail.subtitle',
                     controller: 'virtoCommerce.catalogModule.categoryDetailController',
@@ -221,6 +222,7 @@
                         catalogId: blade.catalogId,
                         categoryId: listItem.id,
                         category: listItem,
+                        catalog: blade.catalog,
                         disableOpenAnimation: true,
                         controller: 'virtoCommerce.catalogModule.categoriesItemsListController',
                         template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/categories-items-list.tpl.html'
@@ -239,6 +241,7 @@
                         itemId: listItem.id,
                         productType: listItem.productType,
                         title: listItem.name,
+                        catalog: blade.catalog,
                         controller: 'virtoCommerce.catalogModule.itemDetailController',
                         template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/item-detail.tpl.html'
                     };
@@ -265,6 +268,7 @@
                     // subtitle: 'catalog.blades.categories-items-list.subtitle',
                     // subtitleValues: listItem.name ? { name: listItem.name } : '',
                     catalogId: blade.catalogId,
+                    catalog: blade.catalog,
                     categoryId: listItem.id,
                     category: listItem,
                     controller: 'virtoCommerce.catalogModule.categoriesItemsListController',
@@ -446,6 +450,7 @@
                     executeMethod: function () {
                         var newBlade = {
                             id: 'listItemChild',
+                            catalog: blade.catalog,
                             title: 'catalog.blades.categories-items-add.title',
                             subtitle: 'catalog.blades.categories-items-add.subtitle',
                             controller: 'virtoCommerce.catalogModule.categoriesItemsAddController',

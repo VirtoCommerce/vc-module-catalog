@@ -13,7 +13,7 @@
         blade.origEntity = blade.currentEntity;
         blade.currentEntity = angular.copy(blade.currentEntity);
         if (!blade.currentEntity.languageCode) {
-            blade.currentEntity.languageCode = blade.item.catalog.defaultLanguage.languageCode;
+            blade.currentEntity.languageCode = blade.catalog.defaultLanguage.languageCode;
         }
 
         $timeout(function () {

@@ -109,6 +109,7 @@
                     var newBlade = {
                         id: blade.id,
                         item: data,
+                        catalog: blade.catalog,
                         title: "catalog.wizards.new-product.title",
                         subtitle: 'catalog.wizards.new-product.subtitle',
                         controller: 'virtoCommerce.catalogModule.newProductWizardController',

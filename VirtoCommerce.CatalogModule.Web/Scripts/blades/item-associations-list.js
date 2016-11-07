@@ -19,6 +19,7 @@
     	var newBlade = {
     		id: 'associationDetail',
     		itemId: listItem.associatedObjectId,
+            catalog: blade.catalog,
     		controller: 'virtoCommerce.catalogModule.itemDetailController',
     		template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/item-detail.tpl.html'
     	};
@@ -41,6 +42,7 @@
     function openAddEntityWizard() {
         var newBlade = {
             id: "associationWizard",
+            catalog: blade.catalog,
             item : blade.item,
             controller: 'virtoCommerce.catalogModule.associationWizardController',
             template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/wizards/newAssociation/association-wizard.tpl.html'

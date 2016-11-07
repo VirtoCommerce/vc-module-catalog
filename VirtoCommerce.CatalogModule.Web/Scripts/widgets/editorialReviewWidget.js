@@ -6,6 +6,7 @@
         var blade = {
             id: "editorialReviewsList",
             item: $scope.currentBlade.item,
+            catalog: $scope.currentBlade.catalog,
             controller: 'virtoCommerce.catalogModule.editorialReviewsListController',
             template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/editorialReviews-list.tpl.html'
         };

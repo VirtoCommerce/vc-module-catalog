@@ -23,8 +23,9 @@
         var newBlade = {
             id: 'editorialReview',
             currentEntity: node,
-			item : blade.item,
-            languages: blade.item.catalog.languages,
+            item: blade.item,
+            catalog: blade.catalog,
+            languages: blade.catalog.languages,
             controller: 'virtoCommerce.catalogModule.editorialReviewDetailController',
             template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/editorialReview-detail.tpl.html'
         };

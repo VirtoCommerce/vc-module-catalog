@@ -40,6 +40,7 @@
             itemId: listItem.id,
             productType: listItem.productType,
             title: listItem.code,
+            catalog: blade.catalog,
             subtitle: 'catalog.blades.item-detail.subtitle-variation',
             controller: 'virtoCommerce.catalogModule.itemDetailController',
             template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/item-detail.tpl.html'
@@ -89,6 +90,7 @@
                         var newBlade = {
                             id: 'variationDetail',
                             item: data,
+                            catalog: blade.catalog,
                             title: "catalog.wizards.new-variation.title",
                             subtitle: 'catalog.wizards.new-variation.subtitle',
                             controller: 'virtoCommerce.catalogModule.newProductWizardController',

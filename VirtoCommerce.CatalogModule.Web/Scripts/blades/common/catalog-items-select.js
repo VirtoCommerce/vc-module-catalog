@@ -144,6 +144,7 @@ function ($scope, catalogs, listEntries, bladeUtils, uiGridConstants, uiGridHelp
                 itemId: listItem.id,
                 productType: listItem.productType,
                 title: listItem.name,
+                catalog: blade.catalog,
                 variationsToolbarCommandsAndEvents: { toolbarCommands: blade.toolbarCommands, externalRegisterApiCallback: externalRegisterApiCallback },
                 controller: 'virtoCommerce.catalogModule.itemDetailController',
                 template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/item-detail.tpl.html'

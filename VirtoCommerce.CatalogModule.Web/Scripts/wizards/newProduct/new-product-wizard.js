@@ -18,6 +18,7 @@
                 var newBlade = {
                     id: blade.id,
                     itemId: dbItem.id,
+                    catalog: blade.catalog,
                     productType: dbItem.productType,
                     title: dbItem.name,
                     controller: 'virtoCommerce.catalogModule.itemDetailController',
@@ -36,9 +37,10 @@
                     id: "newProductProperties",
                     entityType: "product",
                     item: blade.item,
+                    catalog: blade.catalog,
                     currentEntity: blade.item,
-                    languages: _.pluck(blade.item.catalog.languages, 'languageCode'),
-                    defaultLanguage: blade.item.catalog.defaultLanguage.languageCode,
+                    languages: _.pluck(blade.catalog.languages, 'languageCode'),
+                    defaultLanguage: blade.catalog.defaultLanguage.languageCode,
                     propGroups: [{ title: 'catalog.properties.product', type: 'Product' }, { title: 'catalog.properties.variation', type: 'Variation' }],
                     controller: 'virtoCommerce.catalogModule.propertyListController',
                     template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-list.tpl.html'
@@ -48,6 +50,7 @@
                 newBlade = {
                     id: "newProductImages",
                     item: blade.item,
+                    catalog: blade.catalog,
                     controller: 'virtoCommerce.catalogModule.imagesController',
                     template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/images.tpl.html'
                 };
@@ -61,7 +64,8 @@
                             isNew: !_.any(blade.item.seoInfos),
                             seoContainerObject: blade.item,
                             stores: promiseData,
-                            languages: _.pluck(bladeNavigationService.catalogsSelectedCatalog.languages, 'languageCode'),
+                            catalog: blade.catalog,
+                            languages: _.pluck(blade.catalog.languages, 'languageCode'),
                             updatePermission: 'catalog:create',
                             controller: 'virtoCommerce.coreModule.seo.seoDetailController',
                             template: 'Modules/$(VirtoCommerce.Core)/Scripts/SEO/blades/seo-detail.tpl.html'
@@ -74,6 +78,7 @@
                 newBlade = {
                     id: "newProductEditorialReviewsList",
                     item: blade.item,
+                    catalog: blade.catalog,
                     controller: 'virtoCommerce.catalogModule.editorialReviewsListController',
                     template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/editorialReviews-list.tpl.html'
                 };

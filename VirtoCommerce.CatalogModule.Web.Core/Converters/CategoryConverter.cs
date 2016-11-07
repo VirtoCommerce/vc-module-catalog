@@ -28,27 +28,32 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             retVal.ModifiedBy = category.ModifiedBy;
             retVal.ModifiedDate = category.ModifiedDate;
            
-            retVal.Catalog = category.Catalog.ToWebModel();
-            //Reset properties for size economy
-            retVal.Catalog.Properties = null;
-            retVal.SeoInfos = category.SeoInfos;
-            retVal.Outlines = category.Outlines;
+            //retVal.Catalog = category.Catalog.ToWebModel();
+            ////Reset properties for size economy
+            //retVal.Catalog.Properties = null;
 
-            if (category.Parents != null)
+            retVal.SeoInfos = category.SeoInfos;
+            if (!category.Outlines.IsNullOrEmpty())
             {
-                retVal.Parents = new List<webModel.Category>();
-                foreach (var parent in category.Parents.Select(x => x.ToWebModel()))
-                {
-                    //Reset some props to decrease size of resulting json
-                    parent.Catalog = null;
-                    parent.Properties = null;
-                    parent.Parents = null;
-                    parent.Links = null;
-                    parent.Images = null;
-                    parent.SeoInfos = null;
-                    retVal.Parents.Add(parent);
-                }
+                //Minimize outline size
+                retVal.Outlines = category.Outlines.Select(x => x.ToWebModel()).ToList();
             }
+
+            //if (category.Parents != null)
+            //{
+            //    retVal.Parents = new List<webModel.Category>();
+            //    foreach (var parent in category.Parents.Select(x => x.ToWebModel()))
+            //    {
+            //        //Reset some props to decrease size of resulting json
+            //        parent.Catalog = null;
+            //        parent.Properties = null;
+            //        parent.Parents = null;
+            //        parent.Links = null;
+            //        parent.Images = null;
+            //        parent.SeoInfos = null;
+            //        retVal.Parents.Add(parent);
+            //    }
+            //}
             //For virtual category links not needed
             if (!category.IsVirtual && category.Links != null)
             {

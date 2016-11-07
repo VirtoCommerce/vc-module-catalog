@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Omu.ValueInjecter;
+using VirtoCommerce.Domain.Commerce.Model;
 using VirtoCommerce.Platform.Core.Assets;
 using VirtoCommerce.Platform.Core.Common;
 using moduleModel = VirtoCommerce.Domain.Catalog.Model;
@@ -16,25 +17,28 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             retVal.InjectFrom(product);
 
             retVal.SeoInfos = product.SeoInfos;
-            retVal.Outlines = product.Outlines;
 
-            if (product.Catalog != null)
+            if (!product.Outlines.IsNullOrEmpty())
             {
-                retVal.Catalog = product.Catalog.ToWebModel();
-                //Reset catalog properties and languages for response size economy
-                retVal.Catalog.Properties = null;
+                //Minimize outline size
+                retVal.Outlines = product.Outlines.Select(x => x.ToWebModel()).ToList();
             }
+            
+
+            //if (product.Catalog != null)
+            //{
+            //    retVal.Catalog = product.Catalog.ToWebModel();
+            //    //Reset catalog properties and languages for response size economy
+            //    retVal.Catalog.Properties = null;
+            //}
 
             if (product.Category != null)
             {
-                retVal.Category = product.Category.ToWebModel(blobUrlResolver);
-                //Reset  category catalog, properties  for response size economy
-                retVal.Category.Catalog = null;
-                retVal.Category.Properties = null;
-                retVal.Category.Parents = null;
-                retVal.Category.Links = null;
-                retVal.Category.Images = null;
-                retVal.Category.SeoInfos = null;
+                retVal.Category = new Model.Category
+                {
+                     Id = product.CategoryId,
+                     Name = product.Category.Name
+                };        
             }
 
             if (product.Images != null)
@@ -73,22 +77,22 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             {
                 retVal.Associations = product.Associations.Select(x => x.ToWebModel(blobUrlResolver)).ToList();
             }
-            //Init parents
-            if (product.Category != null)
-            {
-                retVal.Parents = new List<webModel.Category>();
-                if (product.Category.Parents != null)
-                {
-                    retVal.Parents.AddRange(product.Category.Parents.Select(x => x.ToWebModel()));
-                }
-                retVal.Parents.Add(product.Category.ToWebModel());
-                foreach (var parent in retVal.Parents)
-                {
-                    //Reset some props to decrease size of resulting json
-                    parent.Catalog = null;
-                    parent.Properties = null;
-                }
-            }
+            ////Init parents
+            //if (product.Category != null)
+            //{
+            //    retVal.Parents = new List<webModel.Category>();
+            //    if (product.Category.Parents != null)
+            //    {
+            //        retVal.Parents.AddRange(product.Category.Parents.Select(x => x.ToWebModel()));
+            //    }
+            //    retVal.Parents.Add(product.Category.ToWebModel());
+            //    foreach (var parent in retVal.Parents)
+            //    {
+            //        //Reset some props to decrease size of resulting json
+            //        parent.Catalog = null;
+            //        parent.Properties = null;
+            //    }
+            //}
 
             retVal.TitularItemId = product.MainProductId;
 

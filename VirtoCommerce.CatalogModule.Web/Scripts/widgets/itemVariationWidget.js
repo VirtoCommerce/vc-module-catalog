@@ -6,6 +6,7 @@
         var newBlade = {
             id: "itemVariationList",
             item: blade.item,
+            catalog: blade.catalog,
             toolbarCommandsAndEvents: blade.variationsToolbarCommandsAndEvents,
             controller: 'virtoCommerce.catalogModule.itemVariationListController',
             template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/item-variation-list.tpl.html',
