@@ -41,13 +41,7 @@ namespace VirtoCommerce.CatalogModule.Web.Model
         /// The type of the tax.
         /// </value>
 		public string TaxType { get; set; }
-        /// <summary>
-        /// Gets or sets the catalog that this category belongs to.
-        /// </summary>
-        /// <value>
-        /// The catalog.
-        /// </value>
-		public Catalog Catalog { get; set; }
+
         /// <summary>
         /// Gets or sets the catalog id that this category belongs to.
         /// </summary>
@@ -62,24 +56,21 @@ namespace VirtoCommerce.CatalogModule.Web.Model
         /// The name.
         /// </value>
         public string Name { get; set; }
+
+        /// <summary>
+        /// Category outline in physical catalog (all parent categories ids concatenated. E.g. (1/21/344))
+        /// </summary>
+        public string Outline { get; set; }
+        /// <summary>
+        /// Category path in physical catalog (all parent categories names concatenated. E.g. (parent1/parent2))
+        /// </summary>
         public string Path { get; set; }
+
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="Category"/> is active.
         /// </summary>
         public bool? IsActive { get; set; }
 
-        /// <summary>
-        /// All parents categories
-        /// </summary>
-        public ICollection<Category> Parents { get; set; }
-
-        /// <summary>
-        /// Gets or sets the children categories.
-        /// </summary>
-        /// <value>
-        /// The children.
-        /// </value>
-        public ICollection<Category> Children { get; set; }
         /// <summary>
         /// Gets or sets the properties.
         /// </summary>

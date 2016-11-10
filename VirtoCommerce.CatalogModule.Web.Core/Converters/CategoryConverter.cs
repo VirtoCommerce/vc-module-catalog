@@ -27,11 +27,7 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             retVal.CreatedDate = category.CreatedDate;
             retVal.ModifiedBy = category.ModifiedBy;
             retVal.ModifiedDate = category.ModifiedDate;
-           
-            //retVal.Catalog = category.Catalog.ToWebModel();
-            ////Reset properties for size economy
-            //retVal.Catalog.Properties = null;
-
+      
             retVal.SeoInfos = category.SeoInfos;
             if (!category.Outlines.IsNullOrEmpty())
             {
@@ -39,21 +35,14 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
                 retVal.Outlines = category.Outlines.Select(x => x.ToWebModel()).ToList();
             }
 
-            //if (category.Parents != null)
-            //{
-            //    retVal.Parents = new List<webModel.Category>();
-            //    foreach (var parent in category.Parents.Select(x => x.ToWebModel()))
-            //    {
-            //        //Reset some props to decrease size of resulting json
-            //        parent.Catalog = null;
-            //        parent.Properties = null;
-            //        parent.Parents = null;
-            //        parent.Links = null;
-            //        parent.Images = null;
-            //        parent.SeoInfos = null;
-            //        retVal.Parents.Add(parent);
-            //    }
-            //}
+            //Init outline and path
+            var parents = new List<moduleModel.Category>();
+            if (category.Parents != null)
+            {
+                retVal.Outline = string.Join("/", category.Parents.Select(x => x.Id));
+                retVal.Path = string.Join("/", category.Parents.Select(x => x.Name));
+            }
+
             //For virtual category links not needed
             if (!category.IsVirtual && category.Links != null)
             {

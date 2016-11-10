@@ -130,14 +130,12 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             if (catalogId != null)
             {
                 var catalog = _catalogService.GetById(catalogId);
-                retVal.Catalog = catalog.ToWebModel();
                 retVal.Properties = catalog.Properties.Select(x => x.ToWebModel()).ToList();
             }
 
             if (categoryId != null)
             {
                 var category = _categoryService.GetById(categoryId, coreModel.CategoryResponseGroup.WithProperties);
-                retVal.Category = category.ToWebModel();
                 retVal.Properties = category.Properties.Select(x => x.ToWebModel()).ToList();
             }
 
@@ -179,8 +177,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             {
                 Name = product.Name,
                 CategoryId = product.CategoryId,
-                Category = mainWebProduct.Category,
-                Catalog = mainWebProduct.Catalog,
                 CatalogId = product.CatalogId,
                 TitularItemId = product.MainProductId ?? productId,
                 Properties = mainWebProduct.Properties.Where(x => x.Type == coreModel.PropertyType.Variation).ToList(),

@@ -14,7 +14,39 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
         public static webModel.Product ToWebModel(this moduleModel.CatalogProduct product, IBlobUrlResolver blobUrlResolver)
         {
             var retVal = new webModel.Product();
-            retVal.InjectFrom(product);
+            retVal.Id = product.Id;
+            retVal.CatalogId = product.CatalogId;
+            retVal.CategoryId = product.CategoryId;
+            retVal.Code = product.Code;
+            retVal.CreatedBy = product.CreatedBy;
+            retVal.CreatedDate = product.CreatedDate;
+            retVal.DownloadExpiration = product.DownloadExpiration;
+            retVal.DownloadType = product.DownloadType;
+            retVal.EnableReview = product.EnableReview;
+            retVal.Gtin = product.Gtin;
+            retVal.HasUserAgreement = product.HasUserAgreement;
+            retVal.Height = product.Height;
+            retVal.IndexingDate = product.IndexingDate;
+            retVal.IsActive = product.IsActive;
+            retVal.IsBuyable = product.IsBuyable;
+            retVal.Length = product.Length;
+            retVal.ManufacturerPartNumber = product.ManufacturerPartNumber;
+            retVal.MaxNumberOfDownload = product.MaxNumberOfDownload;
+            retVal.MaxQuantity = product.MaxQuantity;
+            retVal.MeasureUnit = product.MeasureUnit;
+            retVal.MinQuantity = product.MinQuantity;
+            retVal.ModifiedBy = product.ModifiedBy;
+            retVal.ModifiedDate = product.ModifiedDate;
+            retVal.Name = product.Name;
+            retVal.PackageType = product.PackageType;
+            retVal.Priority = product.Priority;
+            retVal.ProductType = product.ProductType;
+            retVal.TaxType = product.TaxType;
+            retVal.TrackInventory = product.TrackInventory;
+            retVal.Vendor = product.Vendor;
+            retVal.Weight = product.Weight;
+            retVal.WeightUnit = product.WeightUnit;
+            retVal.Width = product.Width;            
 
             retVal.SeoInfos = product.SeoInfos;
 
@@ -24,23 +56,6 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
                 retVal.Outlines = product.Outlines.Select(x => x.ToWebModel()).ToList();
             }
             
-
-            //if (product.Catalog != null)
-            //{
-            //    retVal.Catalog = product.Catalog.ToWebModel();
-            //    //Reset catalog properties and languages for response size economy
-            //    retVal.Catalog.Properties = null;
-            //}
-
-            if (product.Category != null)
-            {
-                retVal.Category = new Model.Category
-                {
-                     Id = product.CategoryId,
-                     Name = product.Category.Name
-                };        
-            }
-
             if (product.Images != null)
             {
                 retVal.Images = product.Images.Select(x => x.ToWebModel(blobUrlResolver)).ToList();
@@ -54,13 +69,6 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             if (product.Variations != null)
             {
                 retVal.Variations = product.Variations.Select(x => x.ToWebModel(blobUrlResolver)).ToList();
-                foreach(var variation in retVal.Variations)
-                {
-                    //Reset  variations  for response size economy
-                    variation.Catalog = null;
-                    variation.Parents = null;
-                    variation.Category = null;
-                }
             }
 
             if (product.Links != null)
@@ -77,22 +85,19 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             {
                 retVal.Associations = product.Associations.Select(x => x.ToWebModel(blobUrlResolver)).ToList();
             }
-            ////Init parents
-            //if (product.Category != null)
-            //{
-            //    retVal.Parents = new List<webModel.Category>();
-            //    if (product.Category.Parents != null)
-            //    {
-            //        retVal.Parents.AddRange(product.Category.Parents.Select(x => x.ToWebModel()));
-            //    }
-            //    retVal.Parents.Add(product.Category.ToWebModel());
-            //    foreach (var parent in retVal.Parents)
-            //    {
-            //        //Reset some props to decrease size of resulting json
-            //        parent.Catalog = null;
-            //        parent.Properties = null;
-            //    }
-            //}
+            //Init outline and path
+            if (product.Category != null)
+            {
+                 var parents = new List<moduleModel.Category>();
+                if (product.Category.Parents != null)
+                {
+                    parents.AddRange(product.Category.Parents);
+                }
+                parents.Add(product.Category);
+
+                retVal.Outline = string.Join("/", parents.Select(x => x.Id));
+                retVal.Path = string.Join("/", parents.Select(x => x.Name));
+            }
 
             retVal.TitularItemId = product.MainProductId;
 
@@ -105,7 +110,6 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
                     var webModelProperty = property.ToWebModel();
                     //Reset dict values to decrease response size
                     webModelProperty.DictionaryValues = null;
-                    webModelProperty.Category = null;
                     webModelProperty.Values = new List<webModel.PropertyValue>();
                     webModelProperty.IsManageable = true;
                     webModelProperty.IsReadOnly = property.Type != moduleModel.PropertyType.Product && property.Type != moduleModel.PropertyType.Variation;

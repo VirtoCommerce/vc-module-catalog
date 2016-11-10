@@ -39,13 +39,6 @@ namespace VirtoCommerce.CatalogModule.Web.Model
         /// The catalog identifier.
         /// </value>
 		public string CatalogId { get; set; }
-        /// <summary>
-        /// Gets or sets the catalog that this product belongs to.
-        /// </summary>
-        /// <value>
-        /// The catalog.
-        /// </value>
-		public Catalog Catalog { get; set; }
 
         /// <summary>
         /// Gets or sets the category id that this product belongs to.
@@ -54,24 +47,15 @@ namespace VirtoCommerce.CatalogModule.Web.Model
         /// The category identifier.
         /// </value>
         public string CategoryId { get; set; }
+
         /// <summary>
-        /// Gets or sets the category that this product belongs to.
+        /// Product outline in physical catalog (all parent categories ids concatenated. E.g. (1/21/344))
         /// </summary>
-        /// <value>
-        /// The category.
-        /// </value>
-        public Category Category { get; set; }
+        public string Outline { get; set; }
         /// <summary>
-        /// Gets or sets the all parent categories ids concatenated. E.g. (1;21;344)
+        /// Product path in physical catalog (all parent categories names concatenated. E.g. (parent1/parent2))
         /// </summary>
-        /// <value>
-        /// The outline.
-        /// </value>
-		public string Outline { get; set; }
-        /// <summary>
-        /// All parents categories
-        /// </summary>
-        public ICollection<Category> Parents { get; set; }
+        public string Path { get; set; }
 
         /// <summary>
         /// Gets or sets the date and time that this product was last indexed at.

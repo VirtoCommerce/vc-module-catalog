@@ -20,12 +20,15 @@ namespace VirtoCommerce.CatalogModule.Web.Model
 			ProductType = product.ProductType;
 			IsActive = product.IsActive ?? true;
             
-            if(product.Parents != null)
-            {
-                Path = product.Parents.Select(x => x.Name).ToArray();
-                Outline = product.Parents.Select(x => x.Id).ToArray();
+            if(!string.IsNullOrEmpty(product.Outline))
+            {              
+                Outline = product.Outline.Split('/').Select(x => x).ToArray();
             }
-			if (product.Links != null)
+            if (!string.IsNullOrEmpty(product.Path))
+            {
+                Path = product.Path.Split('/').Select(x => x).ToArray();
+            }
+            if (product.Links != null)
 			{
 				Links = product.Links.Select(x => new ListEntryLink(x) ).ToArray();
 			}

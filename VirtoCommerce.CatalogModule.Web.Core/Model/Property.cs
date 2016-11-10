@@ -68,28 +68,12 @@ namespace VirtoCommerce.CatalogModule.Web.Model
         public string CatalogId { get; set; }
 
         /// <summary>
-        /// Gets or sets the catalog that this product belongs to.
-        /// </summary>
-        /// <value>
-        /// The catalog.
-        /// </value>
-        public Catalog Catalog { get; set; }
-
-        /// <summary>
         /// Gets or sets the category id that this product belongs to.
         /// </summary>
         /// <value>
         /// The category identifier.
         /// </value>
-        public string CategoryId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the category that this product belongs to.
-        /// </summary>
-        /// <value>
-        /// The category.
-        /// </value>
-        public Category Category { get; set; }
+        public string CategoryId { get; set; }       
 
         /// <summary>
         /// Gets or sets the name.

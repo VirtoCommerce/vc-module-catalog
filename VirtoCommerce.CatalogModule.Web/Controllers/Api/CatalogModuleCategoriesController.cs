@@ -91,7 +91,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             {
                 ParentId = parentCategoryId,
                 CatalogId = catalogId,
-                Catalog = _catalogService.GetById(catalogId).ToWebModel(),
                 Code = Guid.NewGuid().ToString().Substring(0, 5),
                 SeoInfos = new List<SeoInfo>(),
                 IsActive = true
@@ -131,7 +130,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Create, coreCategory);
 
                 var retVal = _categoryService.Create(coreCategory).ToWebModel(_blobUrlResolver);
-                retVal.Catalog = null;
                 return Ok(retVal);
             }
             else
