@@ -10,9 +10,9 @@ Key features:
 ![image](https://cloud.githubusercontent.com/assets/7566324/15540050/edd41b2e-2285-11e6-8962-a173e002ace7.png)
 
 # Documentation
-User guide: <a href="http://docs.virtocommerce.com/display/vc2userguide/Products+catalog" target="_blank"> Products catalog</a>
+User guide: <a href="https://virtocommerce.com/docs/vc2userguide/merchandise-management" target="_blank"> Products catalog</a>
 
-Developer guide: <a href="http://docs.virtocommerce.com/display/vc2devguide/Creating+catalog+custom+import-export+extensions" target="_blank"> Creating catalog custom import-export extensions</a>
+Developer guide: <a href="https://virtocommerce.com/docs/vc2devguide/extending-commerce/creating-catalog-custom-import-export-extensions" target="_blank"> Creating catalog custom import-export extensions</a>
 
 # Installation
 Installing the module:
