@@ -39,10 +39,17 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
             }
             if (dbAssociation.AssociatedItem != null)
             {
-                //Need to remove associations in associated product to prevent StackOverflow in converter
-                dbAssociation.AssociatedItem.Associations = new NullCollection<dataModel.Association>();
-                retVal.AssociatedObject = dbAssociation.AssociatedItem.ToCoreModel(allCatalogs, allCategories);
+                retVal.AssociatedObject = new coreModel.CatalogProduct
+                {
+                    Id = dbAssociation.AssociatedItem.Id,
+                    CategoryId = dbAssociation.AssociatedItem.CategoryId,
+                    CatalogId = dbAssociation.AssociatedItem.CatalogId,
+                    Code = dbAssociation.AssociatedItem.Code,
+                    Name = dbAssociation.AssociatedItem.Name,
+                    Images = dbAssociation.AssociatedItem.Images != null ? dbAssociation.AssociatedItem.Images.Select(x=>x.ToCoreModel()).ToList() : null                                   
+                };         
                 retVal.AssociatedObjectType = "product";
+                
             }
             if(!dbAssociation.Tags.IsNullOrEmpty())
             {

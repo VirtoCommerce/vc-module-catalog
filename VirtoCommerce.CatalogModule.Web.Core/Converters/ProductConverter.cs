@@ -69,6 +69,14 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             if (product.Variations != null)
             {
                 retVal.Variations = product.Variations.Select(x => x.ToWebModel(blobUrlResolver)).ToList();
+                //For nested variations leave only variation properties to decrease resulting JSON
+                foreach(var variation in retVal.Variations)
+                {
+                    if (variation.Properties != null)
+                    {
+                        variation.Properties = variation.Properties.Where(x => x.Type == moduleModel.PropertyType.Variation).ToList();
+                    }
+                }
             }
 
             if (product.Links != null)
