@@ -2,7 +2,7 @@
 <module>
     <id>VirtoCommerce.Catalog</id>
     <version>2.15.11</version>
-    <platformVersion>2.12.0</platformVersion>
+    <platformVersion>2.12.4</platformVersion>
     <dependencies>
         <dependency id="VirtoCommerce.Core" version="2.17.2" />
         <dependency id="VirtoCommerce.ImageTools" version="1.0.0" />
