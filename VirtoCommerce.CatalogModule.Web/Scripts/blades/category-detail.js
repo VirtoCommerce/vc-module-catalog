@@ -1,10 +1,14 @@
 ﻿angular.module('virtoCommerce.catalogModule')
-.controller('virtoCommerce.catalogModule.categoryDetailController', ['$rootScope', '$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.settings', 'virtoCommerce.catalogModule.categories', function ($rootScope, $scope, bladeNavigationService, settings, categories) {
+.controller('virtoCommerce.catalogModule.categoryDetailController', ['$rootScope', '$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.settings', 'virtoCommerce.catalogModule.categories', 'virtoCommerce.catalogModule.catalogs', function ($rootScope, $scope, bladeNavigationService, settings, categories, catalogs) {
     var blade = $scope.blade;
     blade.updatePermission = 'catalog:update';
 
     blade.refresh = function (parentRefresh) {
         return categories.get({ id: blade.currentEntityId }, function (data) {
+
+            if (!blade.catalog) {
+                blade.catalog = catalogs.get({ id: data.catalogId });
+            }
         	initializeBlade(data);
 
         	if (blade.childrenBlades) {

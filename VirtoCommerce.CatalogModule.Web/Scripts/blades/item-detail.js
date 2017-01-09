@@ -1,5 +1,5 @@
 ﻿angular.module('virtoCommerce.catalogModule')
-.controller('virtoCommerce.catalogModule.itemDetailController', ['$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.settings', 'virtoCommerce.catalogModule.items', 'virtoCommerce.customerModule.members', function ($scope, bladeNavigationService, settings, items, members) {
+.controller('virtoCommerce.catalogModule.itemDetailController', ['$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.settings', 'virtoCommerce.catalogModule.items', 'virtoCommerce.customerModule.members', 'virtoCommerce.catalogModule.catalogs', function ($scope, bladeNavigationService, settings, items, members, catalogs) {
     var blade = $scope.blade;
     blade.updatePermission = 'catalog:update';
     blade.currentEntityId = blade.itemId;
@@ -8,6 +8,11 @@
         blade.isLoading = true;
 
         return items.get({ id: blade.itemId }, function (data) {
+
+            if (!blade.catalog) {
+                blade.catalog = catalogs.get({ id: data.catalogId });
+            }
+
             blade.itemId = data.id;
             blade.title = data.code;
             blade.securityScopes = data.securityScopes;
@@ -50,7 +55,7 @@
     function canSave() {
         return isDirty() && formScope && formScope.$valid;
     }
-
+    
     function saveChanges() {
         blade.isLoading = true;
 
@@ -181,5 +186,6 @@
 
     initVendors();
     $scope.taxTypes = settings.getValues({ id: 'VirtoCommerce.Core.General.TaxTypes' });
+   
     blade.refresh(false);
 }]);
