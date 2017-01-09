@@ -25,8 +25,8 @@ function ($scope, catalogs, listEntries, bladeUtils, uiGridConstants, uiGridHelp
                     catalogId: blade.catalogId,
                     categoryId: blade.categoryId,
                     keyword: filter.keyword,
-                    // propertyValues: ,
                     responseGroup: 'withCategories, withProducts',
+                    sort: uiGridHelper.getSortExpression($scope),
                     skip: ($scope.pageSettings.currentPage - 1) * $scope.pageSettings.itemsPerPageCount,
                     take: $scope.pageSettings.itemsPerPageCount
                 },
@@ -91,7 +91,7 @@ function ($scope, catalogs, listEntries, bladeUtils, uiGridConstants, uiGridHelp
     $scope.isCatalogSelectMode = function () {
         return !blade.catalogId && !filter.searchedKeyword;
     };
-    
+
     $scope.selectItem = function (e, listItem) {
         if ($scope.selectedNodeId == listItem.id)
             return;
@@ -162,46 +162,48 @@ function ($scope, catalogs, listEntries, bladeUtils, uiGridConstants, uiGridHelp
         }
     };
 
-    // ui-grid
-    $scope.setGridOptions = function (gridOptions) {
-        gridOptions.isRowSelectable = function (row) {
-            return ($scope.options.allowCheckingItem && row.entity.type !== 'category') || ($scope.options.allowCheckingCategory && row.entity.type === 'category');
+    if ($scope.isCatalogSelectMode()) {
+        blade.refresh();
+    } else {
+        // ui-grid
+        $scope.setGridOptions = function (gridOptions) {
+            gridOptions.isRowSelectable = function (row) {
+                return ($scope.options.allowCheckingItem && row.entity.type !== 'category') || ($scope.options.allowCheckingCategory && row.entity.type === 'category');
+            };
+
+            uiGridHelper.initialize($scope, gridOptions, externalRegisterApiCallback);
+
+            bladeUtils.initializePagination($scope);
         };
 
-        uiGridHelper.initialize($scope, gridOptions, externalRegisterApiCallback);
-    };
-
-    bladeUtils.initializePagination($scope);
-
-    function externalRegisterApiCallback(gridApi) {
-        gridApi.grid.registerDataChangeCallback(function (grid) {
-            //check already selected rows
-            $timeout(function () {
-                _.each($scope.items, function (x) {
-                    if (_.some($scope.options.selectedItemIds, function (y) { return y == x.id; })) {
-                        gridApi.selection.selectRow(x);
-                    }
+        function externalRegisterApiCallback(gridApi) {
+            gridApi.grid.registerDataChangeCallback(function (grid) {
+                //check already selected rows
+                $timeout(function () {
+                    _.each($scope.items, function (x) {
+                        if (_.some($scope.options.selectedItemIds, function (y) { return y == x.id; })) {
+                            gridApi.selection.selectRow(x);
+                        }
+                    });
                 });
-            });
-        }, [uiGridConstants.dataChange.ROW]);
+            }, [uiGridConstants.dataChange.ROW]);
 
-        gridApi.selection.on.rowSelectionChanged($scope, function (row) {
-            if ($scope.options.checkItemFn) {
-                $scope.options.checkItemFn(row.entity, row.isSelected);
-            };
-            if (row.isSelected) {
-                if (!_.contains($scope.options.selectedItemIds, row.entity.id)) {
-                    $scope.options.selectedItemIds.push(row.entity.id);
+            gridApi.selection.on.rowSelectionChanged($scope, function (row) {
+                if ($scope.options.checkItemFn) {
+                    $scope.options.checkItemFn(row.entity, row.isSelected);
+                };
+                if (row.isSelected) {
+                    if (!_.contains($scope.options.selectedItemIds, row.entity.id)) {
+                        $scope.options.selectedItemIds.push(row.entity.id);
+                    }
                 }
-            }
-            else {
-                $scope.options.selectedItemIds = _.without($scope.options.selectedItemIds, row.entity.id);
-            }
-        });
+                else {
+                    $scope.options.selectedItemIds = _.without($scope.options.selectedItemIds, row.entity.id);
+                }
+            });
 
-        uiGridHelper.bindRefreshOnSortChanged($scope);
+            uiGridHelper.bindRefreshOnSortChanged($scope);
+        }
     }
 
-    //No need to call this because page 'pageSettings.currentPage' is watched!!! It would trigger subsequent duplicated req...
-    //blade.refresh();
 }]);
