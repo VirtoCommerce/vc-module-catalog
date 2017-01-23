@@ -23,7 +23,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         {
             Database.SetInitializer<CatalogRepositoryImpl>(null);
         }
-       
+
         protected override void OnModelCreating(System.Data.Entity.DbModelBuilder modelBuilder)
         {
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
@@ -70,7 +70,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             modelBuilder.Entity<dataModel.PropertyValue>().HasOptional(m => m.Catalog).WithMany(x => x.CatalogPropertyValues).HasForeignKey(x => x.CatalogId).WillCascadeOnDelete(false);
             #endregion
 
-       
+
             #region CatalogImage
             modelBuilder.Entity<dataModel.Image>().ToTable("CatalogImage").HasKey(x => x.Id).Property(x => x.Id);
             modelBuilder.Entity<dataModel.Image>().HasOptional(m => m.Category).WithMany(x => x.Images).HasForeignKey(x => x.CategoryId).WillCascadeOnDelete(false);
@@ -166,7 +166,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         public IQueryable<dataModel.Property> Properties
         {
             get { return GetAsQueryable<dataModel.Property>(); }
-        }   
+        }
 
         public IQueryable<dataModel.PropertyDictionaryValue> PropertyDictionaryValues
         {
@@ -175,7 +175,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         public IQueryable<dataModel.CategoryItemRelation> CategoryItemRelations
         {
             get { return GetAsQueryable<dataModel.CategoryItemRelation>(); }
-        }     
+        }
 
         public IQueryable<dataModel.Association> Associations
         {
@@ -237,7 +237,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 respGroup |= coreModel.CategoryResponseGroup.WithLinks | coreModel.CategoryResponseGroup.WithParents;
             }
 
-            var result = Categories.Where(x => categoriesIds.Contains(x.Id)).ToArray();          
+            var result = Categories.Where(x => categoriesIds.Contains(x.Id)).ToArray();
 
             if (respGroup.HasFlag(coreModel.CategoryResponseGroup.WithLinks))
             {
@@ -248,7 +248,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             if (respGroup.HasFlag(coreModel.CategoryResponseGroup.WithImages))
             {
                 var images = Images.Where(x => categoriesIds.Contains(x.CategoryId)).ToArray();
-            }           
+            }
 
             //Load category property values by separate query
             var propertyValues = PropertyValues.Where(x => categoriesIds.Contains(x.CategoryId)).ToArray();
@@ -278,18 +278,18 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
             // Use breaking query EF performance concept https://msdn.microsoft.com/en-us/data/hh949853.aspx#8
             var retVal = Items.Include(x => x.Images).Where(x => itemIds.Contains(x.Id)).ToArray();
-            var propertyValues = PropertyValues.Where(x => itemIds.Contains(x.ItemId)).ToArray();          
+            var propertyValues = PropertyValues.Where(x => itemIds.Contains(x.ItemId)).ToArray();
 
             if (respGroup.HasFlag(coreModel.ItemResponseGroup.Outlines))
-            {            
+            {
                 respGroup |= coreModel.ItemResponseGroup.Links;
-            }                      
-   
+            }
+
             if (respGroup.HasFlag(coreModel.ItemResponseGroup.Links))
             {
-                var relations = CategoryItemRelations.Where(x => itemIds.Contains(x.ItemId)).ToArray();          
-            
-            }        
+                var relations = CategoryItemRelations.Where(x => itemIds.Contains(x.ItemId)).ToArray();
+
+            }
 
             if (respGroup.HasFlag(coreModel.ItemResponseGroup.ItemAssets))
             {
@@ -303,11 +303,23 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
             if (respGroup.HasFlag(coreModel.ItemResponseGroup.Variations))
             {
+                // TODO: Call GetItemByIds for variations recursively (need to measure performance and data amount first)
+
                 var variationIds = Items.Where(x => itemIds.Contains(x.ParentId)).Select(x => x.Id).ToArray();
-                // For variations load only info and images
-                var variations = Items.Include(x => x.Images).Include(x => x.Assets).Where(x => variationIds.Contains(x.Id)).ToArray();              
-                // Load variations property values separately
+
+                // Always load info, images and property values for variations
+                var variations = Items.Include(x => x.Images).Where(x => variationIds.Contains(x.Id)).ToArray();
                 var variationPropertyValues = PropertyValues.Where(x => variationIds.Contains(x.ItemId)).ToArray();
+
+                if (respGroup.HasFlag(coreModel.ItemResponseGroup.ItemAssets))
+                {
+                    var variationAssets = Assets.Where(x => variationIds.Contains(x.ItemId)).ToArray();
+                }
+
+                if (respGroup.HasFlag(coreModel.ItemResponseGroup.ItemEditorialReviews))
+                {
+                    var variationEditorialReviews = EditorialReviews.Where(x => variationIds.Contains(x.ItemId)).ToArray();
+                }
             }
 
             if (respGroup.HasFlag(coreModel.ItemResponseGroup.ItemAssociations))
@@ -451,7 +463,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 }
                 skip += take;
             } while (skip <= itemsIds.Count());
-      
+
 
             var query = string.Format(queryPattern, string.Join(", ", allCategoriesIds.Select(x => string.Format("'{0}'", x))));
             var queryBuilder = new StringBuilder(query);
@@ -482,6 +494,6 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             ObjectContext.ExecuteStoreCommand(query);
         }
         #endregion
-     
+
     }
 }
