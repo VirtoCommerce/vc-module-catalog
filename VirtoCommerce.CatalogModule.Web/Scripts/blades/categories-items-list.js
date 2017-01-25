@@ -182,7 +182,7 @@
 
             function mapChecked() {
                 bladeNavigationService.closeChildrenBlades(blade);
-
+                
                 var selection = $scope.gridApi.selection.getSelectedRows();
                 var listEntryLinks = [];
                 angular.forEach(selection, function (listItem) {
@@ -194,6 +194,7 @@
                     });
                 });
 
+                blade.isLoading = true;
                 listEntries.createlinks(listEntryLinks, function () {
                     blade.refresh();
                     blade.parentBlade.refresh();
