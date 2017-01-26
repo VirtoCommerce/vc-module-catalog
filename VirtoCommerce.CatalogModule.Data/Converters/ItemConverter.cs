@@ -290,6 +290,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
             target.Width = source.Width;
             target.ShippingType = source.ShippingType;
             target.Priority = source.Priority;
+            target.ParentId = source.MainProductId;
 
             var dbSource = source.ToDataModel(pkMap);
 
