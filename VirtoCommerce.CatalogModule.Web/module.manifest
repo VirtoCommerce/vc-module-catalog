@@ -1,7 +1,7 @@
-﻿<?xml version="1.0" encoding="utf-8" ?> 
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <module>
     <id>VirtoCommerce.Catalog</id>
-    <version>2.16.1</version>
+    <version>2.16.2</version>
     <platformVersion>2.12.4</platformVersion>
     <dependencies>
         <dependency id="VirtoCommerce.Core" version="2.17.2" />
@@ -64,7 +64,7 @@
                     <value>QuickReview</value>
                     <value>FullReview</value>
                 </arrayValues>
-            </setting>			
+            </setting>
         </group>
         <group name="Catalog|Images">
             <setting>
