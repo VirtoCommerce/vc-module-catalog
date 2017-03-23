@@ -78,7 +78,7 @@ angular.module(catalogsModuleName, [
                 priority: 900,
                 satisfy: function (notify, place) { return place == 'menu' && notify.notifyType == 'CatalogCsvExport'; },
                 template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/export/notifications/menuExport.tpl.html',
-                action: function (notify) { $state.go('pushNotificationsHistory', notify) }
+                action: function (notify) { $state.go('workspace.pushNotificationsHistory', notify) }
             };
 	    pushNotificationTemplateResolver.register(menuExportTemplate);
 
@@ -106,7 +106,7 @@ angular.module(catalogsModuleName, [
               priority: 900,
               satisfy: function (notify, place) { return place == 'menu' && notify.notifyType == 'CatalogCsvImport'; },
               template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/import/notifications/menuImport.tpl.html',
-              action: function (notify) { $state.go('pushNotificationsHistory', notify) }
+              action: function (notify) { $state.go('workspace.pushNotificationsHistory', notify) }
           };
 	    pushNotificationTemplateResolver.register(menuImportTemplate);
 
