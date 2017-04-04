@@ -70,7 +70,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [HttpGet]
         [Route("")]
         [ResponseType(typeof(webModel.Product[]))]
-        public IHttpActionResult GetProductByIds(string[] ids, coreModel.ItemResponseGroup respGroup = coreModel.ItemResponseGroup.ItemLarge)
+        public IHttpActionResult GetProductByIds([FromUri] string[] ids, [FromUri] coreModel.ItemResponseGroup respGroup = coreModel.ItemResponseGroup.ItemLarge)
         {
             var items = _itemsService.GetByIds(ids, respGroup);
             if (items == null)
@@ -88,6 +88,12 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return Ok(retVal);
         }
 
+        /// <summary>
+        /// Gets products by plenty ids 
+        /// </summary>
+        /// <param name="ids">Item ids</param>
+        /// <param name="respGroup">Response group.</param>
+        /// <returns></returns>
         [HttpPost]
         [Route("plenty")]
         [ResponseType(typeof(webModel.Product[]))]

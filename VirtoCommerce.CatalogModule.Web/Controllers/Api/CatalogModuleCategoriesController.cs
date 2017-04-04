@@ -61,7 +61,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [HttpGet]
         [Route("")]
         [ResponseType(typeof(webModel.Category[]))]
-        public IHttpActionResult GetCategoriesByIds(string[] ids, coreModel.CategoryResponseGroup respGroup = coreModel.CategoryResponseGroup.Full)
+        public IHttpActionResult GetCategoriesByIds([FromUri] string[] ids, [FromUri] coreModel.CategoryResponseGroup respGroup = coreModel.CategoryResponseGroup.Full)
         {
             var categories = _categoryService.GetByIds(ids, respGroup);
 
@@ -76,6 +76,12 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return Ok(retVal);
         }
 
+        /// <summary>
+        /// Get categories by plenty ids
+        /// </summary>
+        /// <param name="ids">Categories ids</param>
+        /// <param name="respGroup">Response group</param>
+        /// <returns></returns>
         [HttpPost]
         [Route("plenty")]
         [ResponseType(typeof(webModel.Category[]))]
