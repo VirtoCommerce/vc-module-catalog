@@ -167,10 +167,13 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 Parallel.ForEach(catalogIds, parallelOptions, catalogId =>
                 {
                     var catalog = _catalogService.GetById(catalogId);
-                    catalogs.Add(catalog);
+                    if (catalog != null)
+                    {
+                        catalogs.Add(catalog);
+                    }
                 });
 
-                result.Catalogs = catalogs.OrderByDescending(x => x.Name).ToList();
+                result.Catalogs = catalogs.OrderBy(x => x.Name).ToList();
             }
         }
 
@@ -259,8 +262,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     query = query.Where(x => x.TrackInventory == criteria.OnlyWithTrackingInventory);
                 }
 
-                result.ProductsTotalCount = query.Count();              
-             
+                result.ProductsTotalCount = query.Count();
+
                 query = query.OrderBySortInfos(sortInfos);
 
                 var itemIds = query.Skip(criteria.Skip)
