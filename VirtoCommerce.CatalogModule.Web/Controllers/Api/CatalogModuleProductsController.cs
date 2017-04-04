@@ -5,7 +5,6 @@ using System.Net;
 using System.Web.Http;
 using System.Web.Http.Description;
 using System.Web.Http.ModelBinding;
-using VirtoCommerce.CatalogModule.Web.Binders;
 using VirtoCommerce.CatalogModule.Web.Converters;
 using VirtoCommerce.CatalogModule.Web.Security;
 using VirtoCommerce.Domain.Catalog.Services;
@@ -68,11 +67,10 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// </summary>
         /// <param name="ids">Item ids</param>
         ///<param name="respGroup">Response group.</param>
-        //Because Swagger generated API client passed arrays as joined string need parse query string by binder
         [HttpGet]
         [Route("")]
         [ResponseType(typeof(webModel.Product[]))]
-        public IHttpActionResult GetProductByIds([ModelBinder(typeof(IdsStringArrayBinder))] string[] ids, [FromUri] coreModel.ItemResponseGroup respGroup = coreModel.ItemResponseGroup.ItemLarge)
+        public IHttpActionResult GetProductByIds(string[] ids, coreModel.ItemResponseGroup respGroup = coreModel.ItemResponseGroup.ItemLarge)
         {
             var items = _itemsService.GetByIds(ids, respGroup);
             if (items == null)
@@ -89,6 +87,15 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             }
             return Ok(retVal);
         }
+
+        [HttpPost]
+        [Route("plenty")]
+        [ResponseType(typeof(webModel.Product[]))]
+        public IHttpActionResult GetProductByPlentyIds([FromBody] string[] ids, [FromUri] coreModel.ItemResponseGroup respGroup = coreModel.ItemResponseGroup.ItemLarge)
+        {
+            return GetProductByIds(ids, respGroup);
+        }
+
 
         /// <summary>
         /// Gets the template for a new product (outside of category).

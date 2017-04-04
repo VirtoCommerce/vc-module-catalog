@@ -5,7 +5,7 @@ using System.Net;
 using System.Web.Http;
 using System.Web.Http.Description;
 using System.Web.Http.ModelBinding;
-using VirtoCommerce.CatalogModule.Web.Binders;
+using System.Web.Http.Results;
 using VirtoCommerce.CatalogModule.Web.Converters;
 using VirtoCommerce.CatalogModule.Web.Security;
 using VirtoCommerce.Domain.Catalog.Services;
@@ -43,7 +43,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [ResponseType(typeof(webModel.Category))]
         public IHttpActionResult Get(string id)
         {
-            var category = GetCategoriesByIds(new[] { id }).FirstOrDefault();
+            var category = ((OkNegotiatedContentResult<webModel.Category[]>)GetCategoriesByIds(new[] { id })).Content.FirstOrDefault();
 
             if (category == null)
             {
@@ -58,11 +58,10 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// </summary>
         /// <param name="ids">Categories ids</param>
         ///<param name="respGroup">Response group.</param>
-        //Because Swagger generated API client passed arrays as joined string need parse query string by binder
         [HttpGet]
         [Route("")]
         [ResponseType(typeof(webModel.Category[]))]
-        public webModel.Category[] GetCategoriesByIds([ModelBinder(typeof(IdsStringArrayBinder))] string[] ids, [FromUri] coreModel.CategoryResponseGroup respGroup = coreModel.CategoryResponseGroup.Full)
+        public IHttpActionResult GetCategoriesByIds(string[] ids, coreModel.CategoryResponseGroup respGroup = coreModel.CategoryResponseGroup.Full)
         {
             var categories = _categoryService.GetByIds(ids, respGroup);
 
@@ -74,7 +73,15 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 category.SecurityScopes = GetObjectPermissionScopeStrings(category);
             }
 
-            return retVal;
+            return Ok(retVal);
+        }
+
+        [HttpPost]
+        [Route("plenty")]
+        [ResponseType(typeof(webModel.Category[]))]
+        public IHttpActionResult GetCategoriesByPlentyIds([FromBody] string[] ids, [FromUri] coreModel.CategoryResponseGroup respGroup = coreModel.CategoryResponseGroup.Full)
+        {
+            return GetCategoriesByIds(ids, respGroup);
         }
 
         /// <summary>
