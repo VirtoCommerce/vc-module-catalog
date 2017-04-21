@@ -1,6 +1,6 @@
 ﻿angular.module('virtoCommerce.catalogModule')
-.controller('virtoCommerce.catalogModule.catalogItemSelectController', ['$scope', 'virtoCommerce.catalogModule.catalogs', 'virtoCommerce.catalogModule.listEntries', 'platformWebApp.bladeUtils', 'uiGridConstants', 'platformWebApp.uiGridHelper', '$timeout',
-function ($scope, catalogs, listEntries, bladeUtils, uiGridConstants, uiGridHelper, $timeout) {
+    .controller('virtoCommerce.catalogModule.catalogItemSelectController', ['$scope', 'virtoCommerce.catalogModule.catalogs', 'virtoCommerce.catalogModule.listEntries', 'platformWebApp.bladeUtils', 'uiGridConstants', 'platformWebApp.uiGridHelper', 'platformWebApp.ui-grid.extension', '$timeout',
+    function ($scope, catalogs, listEntries, bladeUtils, uiGridConstants, uiGridHelper, gridOptionExtension, $timeout) {
     var blade = $scope.blade;
     var bladeNavigationService = bladeUtils.bladeNavigationService;
 
@@ -152,7 +152,8 @@ function ($scope, catalogs, listEntries, bladeUtils, uiGridConstants, uiGridHelp
     };
 
     // simple and advanced filtering
-    var filter = blade.filter = { keyword: null };
+
+    var filter = blade.filter = blade.filter || { keyword: null };
 
     filter.criteriaChanged = function () {
         if ($scope.pageSettings.currentPage > 1) {
@@ -166,13 +167,13 @@ function ($scope, catalogs, listEntries, bladeUtils, uiGridConstants, uiGridHelp
         blade.refresh();
     } else {
         // ui-grid
-        $scope.setGridOptions = function (gridOptions) {
+        $scope.setGridOptions = function (gridId, gridOptions) {
             gridOptions.isRowSelectable = function (row) {
                 return ($scope.options.allowCheckingItem && row.entity.type !== 'category') || ($scope.options.allowCheckingCategory && row.entity.type === 'category');
             };
 
+            gridOptionExtension.tryExtendGridOptions(gridId, gridOptions);
             uiGridHelper.initialize($scope, gridOptions, externalRegisterApiCallback);
-
             bladeUtils.initializePagination($scope);
         };
 
