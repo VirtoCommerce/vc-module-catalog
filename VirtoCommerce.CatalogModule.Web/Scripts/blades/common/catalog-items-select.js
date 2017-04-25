@@ -25,7 +25,7 @@ function ($scope, catalogs, listEntries, bladeUtils, uiGridConstants, uiGridHelp
                     catalogId: blade.catalogId,
                     categoryId: blade.categoryId,
                     keyword: filter.keyword,
-                    responseGroup: 'withCategories, withProducts',
+                    responseGroup: blade.responseGroup || 'withCategories, withProducts',
                     sort: uiGridHelper.getSortExpression($scope),
                     skip: ($scope.pageSettings.currentPage - 1) * $scope.pageSettings.itemsPerPageCount,
                     take: $scope.pageSettings.itemsPerPageCount
@@ -34,6 +34,9 @@ function ($scope, catalogs, listEntries, bladeUtils, uiGridConstants, uiGridHelp
                 blade.isLoading = false;
                 $scope.pageSettings.totalItems = data.totalCount;
                 $scope.items = data.listEntries;
+                if (blade.onItemsLoaded) {
+                    blade.onItemsLoaded(data.listEntries);
+                }
 
                 //Set navigation breadcrumbs
                 setBreadcrumbs();
