@@ -40,8 +40,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
             using (var repository = base.CatalogRepositoryFactory())
             {
+                var allCachedCatalogs = base.AllCachedCatalogs;
+                var allCachedCategories = base.AllCachedCategories;
                 result = repository.GetItemByIds(itemIds, respGroup)
-                    .Select(x => x.ToCoreModel(base.AllCachedCatalogs, base.AllCachedCategories))
+                    .Select(x => x.ToCoreModel(allCachedCatalogs, allCachedCategories))
                     .ToArray();
             }
             // Fill outlines for products

@@ -37,8 +37,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
             using (var repository = base.CatalogRepositoryFactory())
             {
+                var allCachedCatalogs = base.AllCachedCatalogs;
+                var allCachedCategories = base.AllCachedCategories;
                 var dbProperties = repository.GetAllCatalogProperties(catalogId);
-                var result = dbProperties.Select(dbProperty => dbProperty.ToCoreModel(base.AllCachedCatalogs, base.AllCachedCategories)).ToArray();
+                var result = dbProperties.Select(dbProperty => dbProperty.ToCoreModel(allCachedCatalogs, allCachedCategories)).ToArray();
                 return result;
             }
         }
