@@ -128,15 +128,13 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public coreModel.PropertyDictionaryValue[] SearchDictionaryValues(string propertyId, string keyword)
         {
-            using (var repository = base.CatalogRepositoryFactory())
+            var property = GetById(propertyId);
+            var result = property.DictionaryValues.ToArray();
+            if (!String.IsNullOrEmpty(keyword))
             {
-                var query = repository.PropertyDictionaryValues.Where(x => x.PropertyId == propertyId);
-                if (!String.IsNullOrEmpty(keyword))
-                {
-                    query = query.Where(x => x.Value.Contains(keyword));
-                }
-                return query.ToArray().Select(x => x.ToCoreModel()).ToArray();
+                result = result.Where(x => x.Value.Contains(keyword)).ToArray();
             }
+            return result;         
         }
         #endregion
     }
