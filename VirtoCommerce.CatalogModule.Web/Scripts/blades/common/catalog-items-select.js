@@ -34,8 +34,8 @@
                 blade.isLoading = false;
                 $scope.pageSettings.totalItems = data.totalCount;
                 $scope.items = data.listEntries;
-                if (blade.onItemsLoaded) {
-                    blade.onItemsLoaded(data.listEntries);
+                if ($scope.options.onItemsLoaded) {
+                    $scope.options.onItemsLoaded(data.listEntries);
                 }
 
                 //Set navigation breadcrumbs
