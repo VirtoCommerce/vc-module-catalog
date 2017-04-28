@@ -96,8 +96,8 @@
     };
 
     $scope.selectItem = function (e, listItem) {
-        if ($scope.selectedNodeId == listItem.id)
-            return;
+        //if ($scope.selectedNodeId == listItem.id)
+        //    return;
 
         $scope.selectedNodeId = listItem.id;
         //call callback function
