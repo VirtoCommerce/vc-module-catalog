@@ -1,5 +1,5 @@
 ﻿angular.module('virtoCommerce.catalogModule')
-.controller('virtoCommerce.catalogModule.itemDetailController', ['$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.settings', 'virtoCommerce.catalogModule.items', 'virtoCommerce.customerModule.members', 'virtoCommerce.catalogModule.catalogs', function ($scope, bladeNavigationService, settings, items, members, catalogs) {
+.controller('virtoCommerce.catalogModule.itemDetailController', ['$rootScope', '$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.settings', 'virtoCommerce.catalogModule.items', 'virtoCommerce.customerModule.members', 'virtoCommerce.catalogModule.catalogs', function ($rootScope, $scope, bladeNavigationService, settings, items, members, catalogs) {
     var blade = $scope.blade;
     blade.updatePermission = 'catalog:update';
     blade.currentEntityId = blade.itemId;
@@ -68,6 +68,7 @@
 
         items.update({}, blade.item, function () {
             blade.refresh(true);
+            $rootScope.$broadcast('product-saved', blade.currentEntity);
         }, function (error) { bladeNavigationService.setError('Error ' + error.status, blade); });
     };
 
