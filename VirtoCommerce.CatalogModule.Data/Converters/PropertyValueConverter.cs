@@ -100,6 +100,8 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
                     return propertyValue.DecimalValue;
                 case (int)coreModel.PropertyValueType.LongText:
                     return propertyValue.LongTextValue;
+                case (int)coreModel.PropertyValueType.Integer:
+                    return propertyValue.IntegerValue;
                 default:
                     return propertyValue.ShortTextValue;
             }
@@ -128,6 +130,9 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
                     bool boolValue = false;
                     Boolean.TryParse(value, out boolValue);
                     retVal.BooleanValue = boolValue;
+                    break;
+                case coreModel.PropertyValueType.Integer:
+                    retVal.IntegerValue = int.Parse(value);
                     break;
             }
         }
