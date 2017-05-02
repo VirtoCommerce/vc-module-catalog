@@ -38,6 +38,7 @@
                     }
                 });
             }
+            $rootScope.$broadcast('product-loaded', data);
         },
         function (error) { bladeNavigationService.setError('Error ' + error.status, blade); });
     }
