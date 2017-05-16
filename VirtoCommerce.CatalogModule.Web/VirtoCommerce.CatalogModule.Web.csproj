@@ -308,6 +308,7 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Localizations\en.VirtoCommerce.Catalog.json" />
+    <Content Include="Localizations\de.VirtoCommerce.Catalog.json" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
