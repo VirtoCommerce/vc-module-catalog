@@ -128,11 +128,11 @@
                 "new-title": "New filter",
                 "new-subtitle": "Create new filter",
                 "labels": {
-                    "criteria": "Search criteria",
+                    "criteria": "Search phrase",
                     "name": "Filter name"
                 },
                 "placeholders": {
-                    "criteria": "Enter search criteria",
+                    "criteria": "Enter search phrase",
                     "name": "How will you call this filter?"
                 }
             },
