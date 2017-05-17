@@ -57,6 +57,15 @@
         </label>
     </script>
 
+    <script type="text/ng-template" id="Integer.html">
+        <div class="form-input __number">
+            <input smart-float num-type="integer"
+                   ng-required="currentEntity.isRequired"
+                   ng-model="context.currentPropValues[0].value"
+                   placeholder="{{ 'platform.genericValueInput.placeholders.integer' | translate}}" />
+        </div>
+    </script>
+
     <script type="text/ng-template" id="ShortText-multivalue.html">
         <tags-input ng-model="context.currentPropValues"
                     ng-disabled="currentEntity.isReadOnly"
