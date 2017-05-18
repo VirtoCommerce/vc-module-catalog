@@ -32,6 +32,12 @@
                     <span class="list-t">{{ 'platform.properties.boolean.title' | translate }}</span>
                     <span class="list-descr">{{ 'platform.properties.boolean.description' | translate }}</span>
                 </label>
+                <label class="list-item" ng-mouseup="selectOption('Integer')">
+                    <input type="checkbox" ng-checked="'Integer' ===  blade.property.valueType">
+                    <span class="switch"></span>
+                    <span class="list-t">{{ 'platform.properties.integer.title' | translate }}</span>
+                    <span class="list-descr">{{ 'platform.properties.integer.description' | translate }}</span>
+                </label>
             </ul>
         </div>
     </div>
