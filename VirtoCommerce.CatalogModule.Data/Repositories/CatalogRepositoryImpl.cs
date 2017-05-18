@@ -352,7 +352,12 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             {
                 var categories = Categories.Where(x => categoryIds.Contains(x.Id)).ToArray();
             }
-            var dictValues = PropertyDictionaryValues.Where(x => propIds.Contains(x.PropertyId)).ToArray();
+            //Do not load dictionary values for not enum properties
+            var dictPropertiesIds = retVal.Where(x => x.IsEnum).Select(x => x.Id).ToArray();
+            if (!dictPropertiesIds.IsNullOrEmpty())
+            {
+                var dictValues = PropertyDictionaryValues.Where(x => dictPropertiesIds.Contains(x.PropertyId)).ToArray();
+            }
             return retVal;
         }
 
