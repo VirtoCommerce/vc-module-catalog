@@ -246,20 +246,33 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         }
 
         /// <summary>
-        /// Updates the specified product.
+        /// Create/Update the specified product.
         /// </summary>
         /// <param name="product">The product.</param>
         [HttpPost]
         [Route("")]
-        [ResponseType(typeof(void))]
-        public IHttpActionResult Update(webModel.Product product)
+        [ResponseType(typeof(webModel.Product))]
+        public IHttpActionResult SaveProduct(webModel.Product product)
         {
-            var updatedProduct = UpdateProduct(product);
-            if (updatedProduct != null)
+            var result = InnerSaveProducts(new[] { product }).FirstOrDefault();
+            if(result != null)
             {
-                return Ok(updatedProduct);
+                return Ok(result.ToWebModel(_blobUrlResolver));
             }
             return StatusCode(HttpStatusCode.NoContent);
+        }
+
+        /// <summary>
+        /// Create/Update the specified products.
+        /// </summary>
+        /// <param name="products">The products.</param>
+        [HttpPost]
+        [Route("batch")]
+        [ResponseType(typeof(void))]
+        public IHttpActionResult SaveProducts(webModel.Product[] products)
+        {
+            InnerSaveProducts(products);          
+            return Ok();
         }
 
 
@@ -280,37 +293,51 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         }
 
 
-        private coreModel.CatalogProduct UpdateProduct(webModel.Product product)
+        private coreModel.CatalogProduct[] InnerSaveProducts(webModel.Product[] products)
         {
-            var moduleProduct = product.ToModuleModel(_blobUrlResolver);
-            if (moduleProduct.Id == null)
+            var toUpdateList = new List<coreModel.CatalogProduct>();
+            var toCreateList = new List<coreModel.CatalogProduct>();
+            foreach (var product in products)
             {
-                if (moduleProduct.SeoInfos == null || !moduleProduct.SeoInfos.Any())
+                var moduleProduct = product.ToModuleModel(_blobUrlResolver);
+                if (moduleProduct.IsTransient())
                 {
-                    var slugUrl = GenerateProductDefaultSlugUrl(product);
-                    if (!string.IsNullOrEmpty(slugUrl))
+                    if (moduleProduct.SeoInfos == null || !moduleProduct.SeoInfos.Any())
                     {
-                        var catalog = _catalogService.GetById(product.CatalogId);
-                        var defaultLanguageCode = catalog.Languages.First(x => x.IsDefault).LanguageCode;
-                        var seoInfo = new SeoInfo
+                        var slugUrl = GenerateProductDefaultSlugUrl(product);
+                        if (!string.IsNullOrEmpty(slugUrl))
                         {
-                            LanguageCode = defaultLanguageCode,
-                            SemanticUrl = slugUrl
-                        };
-                        moduleProduct.SeoInfos = new[] { seoInfo };
+                            var catalog = _catalogService.GetById(product.CatalogId);
+                            var defaultLanguageCode = catalog.Languages.First(x => x.IsDefault).LanguageCode;
+                            var seoInfo = new SeoInfo
+                            {
+                                LanguageCode = defaultLanguageCode,
+                                SemanticUrl = slugUrl
+                            };
+                            moduleProduct.SeoInfos = new[] { seoInfo };
+                        }
                     }
+
+                    CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Create, moduleProduct);
+                    toCreateList.Add(moduleProduct);
                 }
-
-                CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Create, moduleProduct);
-                return _itemsService.Create(moduleProduct);
+                else
+                {
+                    CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Update, moduleProduct);
+                    toUpdateList.Add(moduleProduct);                  
+                }
             }
-            else
+
+            if(!toCreateList.IsNullOrEmpty())
             {
-                CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Update, moduleProduct);
-                _itemsService.Update(new[] { moduleProduct });
+                _itemsService.Create(toCreateList.ToArray());
+            }
+            if (!toUpdateList.IsNullOrEmpty())
+            {
+                _itemsService.Update(toUpdateList.ToArray());
             }
 
-            return null;
+            return toCreateList.Concat(toUpdateList).ToArray();
         }
 
         private string GenerateProductDefaultSlugUrl(webModel.Product product)
