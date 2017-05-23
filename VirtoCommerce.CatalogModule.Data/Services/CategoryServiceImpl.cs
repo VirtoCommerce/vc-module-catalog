@@ -80,20 +80,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             if (categories == null)
                 throw new ArgumentNullException("categories");
 
-            var pkMap = new PrimaryKeyResolvingMap();
-            var dbCategories = categories.Select(x => x.ToDataModel(pkMap));
-
-            using (var repository = base.CatalogRepositoryFactory())
-            {
-                foreach (var dbCategory in dbCategories)
-                {
-                    repository.Add(dbCategory);
-                }
-                CommitChanges(repository);
-                pkMap.ResolvePrimaryKeys();
-            }
-            //Need add seo separately
-            _commerceService.UpsertSeoForObjects(categories);
+            SaveChanges(categories);
         }
 
 
@@ -108,29 +95,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public virtual void Update(coreModel.Category[] categories)
         {
-            var pkMap = new PrimaryKeyResolvingMap();
-            using (var repository = base.CatalogRepositoryFactory())
-            using (var changeTracker = base.GetChangeTracker(repository))
-            {
-                foreach (var category in categories)
-                {
-                    var dbCategory = repository.GetCategoriesByIds(new[] { category.Id }, Domain.Catalog.Model.CategoryResponseGroup.Full).FirstOrDefault();
-
-                    if (dbCategory == null)
-                    {
-                        throw new NullReferenceException("dbCategory");
-                    }
-                    changeTracker.Attach(dbCategory);
-
-                    category.Patch(dbCategory, pkMap);
-                    //Force set ModifiedDate property to mark a category changed. Special for  partial update cases when category table not have changes
-                    dbCategory.ModifiedDate = DateTime.UtcNow;
-                }
-                CommitChanges(repository);
-                pkMap.ResolvePrimaryKeys();
-            }
-            //Update seo
-            _commerceService.UpsertSeoForObjects(categories);
+            SaveChanges(categories);
         }
 
         public virtual void Delete(string[] categoryIds)
@@ -140,9 +105,44 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             {
                 repository.RemoveCategories(categoryIds);
                 CommitChanges(repository);
+                //Reset cached categories and catalogs
+                base.InvalidateCache();
             }
         }
 
         #endregion
+
+        protected virtual void SaveChanges(coreModel.Category[] categories)
+        {
+            var pkMap = new PrimaryKeyResolvingMap();
+
+            using (var repository = base.CatalogRepositoryFactory())
+            using (var changeTracker = GetChangeTracker(repository))
+            {
+                var dbExistCategories = repository.GetCategoriesByIds(categories.Where(x => !x.IsTransient()).Select(x => x.Id).ToArray(), Domain.Catalog.Model.CategoryResponseGroup.Full);
+                foreach (var category in categories)
+                {
+                    var originalEntity = dbExistCategories.FirstOrDefault(x => x.Id == category.Id);
+                    if (originalEntity != null)
+                    {
+                        changeTracker.Attach(originalEntity);
+                        category.Patch(originalEntity, pkMap);
+                        //Force set ModifiedDate property to mark a product changed. Special for  partial update cases when product table not have changes
+                        originalEntity.ModifiedDate = DateTime.UtcNow;
+                    }
+                    else
+                    {
+                        var modifiedEntity = category.ToDataModel(pkMap);                       
+                        repository.Add(modifiedEntity);
+                    }
+                }
+                CommitChanges(repository);
+                pkMap.ResolvePrimaryKeys();
+                //Reset cached categories and catalogs
+                base.InvalidateCache();
+            }
+            //Need add seo separately
+            _commerceService.UpsertSeoForObjects(categories);
+        }
     }
 }

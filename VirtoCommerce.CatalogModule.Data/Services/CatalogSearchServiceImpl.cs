@@ -128,7 +128,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
                 query = query.OrderBySortInfos(sortInfos);
 
-                var categoryIds = query.Select(x => x.Id).ToArray();
+                var categoryIds = query.Select(x => x.Id).ToList();
                 var categoryResponseGroup = CategoryResponseGroup.Info | CategoryResponseGroup.WithImages | CategoryResponseGroup.WithSeo | CategoryResponseGroup.WithLinks | CategoryResponseGroup.WithParents;
 
                 if (criteria.ResponseGroup.HasFlag(SearchResponseGroup.WithProperties))
@@ -141,10 +141,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     categoryResponseGroup |= CategoryResponseGroup.WithOutlines;
                 }
 
-                result.Categories = _categoryService.GetByIds(categoryIds, categoryResponseGroup, criteria.CatalogId)
-                                                    .AsQueryable()
-                                                    .OrderBySortInfos(sortInfos)
-                                                    .ToList();
+                result.Categories = _categoryService.GetByIds(categoryIds.ToArray(), categoryResponseGroup, criteria.CatalogId)
+                                                    .OrderBy(x => categoryIds.IndexOf(x.Id)).ToList();
             }
         }
 
@@ -269,7 +267,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 var itemIds = query.Skip(criteria.Skip)
                                    .Take(criteria.Take)
                                    .Select(x => x.Id)
-                                   .ToArray();
+                                   .ToList();
 
                 var productResponseGroup = ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemAssets | ItemResponseGroup.Links | ItemResponseGroup.Seo;
 
@@ -288,8 +286,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     productResponseGroup |= ItemResponseGroup.Outlines;
                 }
 
-                var products = _itemService.GetByIds(itemIds, productResponseGroup, criteria.CatalogId);
-                result.Products = products.AsQueryable().OrderBySortInfos(sortInfos).ToList();
+                result.Products = _itemService.GetByIds(itemIds.ToArray(), productResponseGroup, criteria.CatalogId)
+                                          .OrderBy(x => itemIds.IndexOf(x.Id)).ToList();
             }
 
         }

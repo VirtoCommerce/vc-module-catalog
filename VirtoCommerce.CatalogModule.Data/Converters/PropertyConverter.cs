@@ -86,14 +86,15 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 		/// </summary>
 		/// <param name="catalog"></param>
 		/// <returns></returns>
-		public static dataModel.Property ToDataModel(this coreModel.Property property)
+		public static dataModel.Property ToDataModel(this coreModel.Property property, PrimaryKeyResolvingMap pkMap)
 		{
 			if (property == null)
 				throw new ArgumentNullException("property");
 
 			var retVal = new dataModel.Property();
-		
-			retVal.InjectFrom(property);
+            pkMap.AddPair(property, retVal);
+
+            retVal.InjectFrom(property);
 
             retVal.PropertyValueType = (int)property.ValueType;
 			retVal.IsMultiValue = property.Multivalue;
@@ -108,7 +109,9 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 				foreach (var attribute in property.Attributes)
 				{
 					var dbAttribute = attribute.ToDataModel();
-					retVal.PropertyAttributes.Add(dbAttribute);
+                    pkMap.AddPair(attribute, dbAttribute);
+
+                    retVal.PropertyAttributes.Add(dbAttribute);
 				}
 			}
 
@@ -118,7 +121,9 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 				foreach (var dictValue in property.DictionaryValues)
 				{
 					var dbDictValue = dictValue.ToDataModel();
-					retVal.DictionaryValues.Add(dbDictValue);
+                    pkMap.AddPair(dictValue, dbDictValue);
+
+                    retVal.DictionaryValues.Add(dbDictValue);
 				}
 			}
 
