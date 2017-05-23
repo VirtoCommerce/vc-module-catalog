@@ -180,7 +180,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             var sortInfos = criteria.SortInfos;
             if (sortInfos.IsNullOrEmpty())
             {
-                sortInfos = new[] { new SortInfo { SortColumn = "Priority", SortDirection = SortDirection.Descending } };
+                sortInfos = new[] { new SortInfo { SortColumn = "Priority", SortDirection = SortDirection.Descending }, new SortInfo { SortColumn = "Name", SortDirection = SortDirection.Ascending } };
             }
             //Try to replace sorting columns names
             TryTransformSortingInfoColumnNames(_productSortingAliases, sortInfos);
