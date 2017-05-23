@@ -375,14 +375,12 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
         {
             var allImages = haveImagesObjects.SelectMany(x => x.GetFlatObjectsListWithInterface<IHasImages>())
                                              .SelectMany(x => x.Images).ToArray();
-            var index = 0;
             foreach (var image in allImages)
             {
                 using (var stream = _blobStorageProvider.OpenRead(image.Url))
                 {
                     image.BinaryData = stream.ReadFully();
                 }
-                index++;
             }
         }
 
@@ -391,22 +389,17 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
 
             var allImages = haveImagesObjects.SelectMany(x => x.GetFlatObjectsListWithInterface<IHasImages>())
                                        .SelectMany(x => x.Images).ToArray();
-            var index = 0;
             foreach (var image in allImages)
             {
                 //do not save images with external url
                 if (image.Url != null && !image.Url.IsAbsoluteUrl())
                 {
-                    if (_blobStorageProvider.GetBlobInfo(image.Url) != null)
+                    using (var sourceStream = new MemoryStream(image.BinaryData))
+                    using (var targetStream = _blobStorageProvider.OpenWrite(image.Url))
                     {
-                        using (var sourceStream = new MemoryStream(image.BinaryData))
-                        using (var targetStream = _blobStorageProvider.OpenWrite(image.Url))
-                        {
-                            sourceStream.CopyTo(targetStream);
-                        }
+                        sourceStream.CopyTo(targetStream);
                     }
                 }
-                index++;
             }
         }
 
