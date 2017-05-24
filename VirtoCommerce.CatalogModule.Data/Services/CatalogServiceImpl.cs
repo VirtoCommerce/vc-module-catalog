@@ -35,42 +35,14 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public coreModel.Catalog Create(coreModel.Catalog catalog)
         {
-            var pkMap = new PrimaryKeyResolvingMap();
-            var dbCatalog = catalog.ToDataModel(pkMap);
-            coreModel.Catalog retVal = null;
-            using (var repository = base.CatalogRepositoryFactory())
-            {
-                repository.Add(dbCatalog);
-                CommitChanges(repository);
-                pkMap.ResolvePrimaryKeys();
-            }
-            retVal = GetById(dbCatalog.Id);
-            return retVal;
+            SaveChanges(new[] { catalog });
+            var result = GetById(catalog.Id);
+            return result;
         }
 
         public void Update(coreModel.Catalog[] catalogs)
         {
-            var pkMap = new PrimaryKeyResolvingMap();
-            using (var repository = base.CatalogRepositoryFactory())
-            using (var changeTracker = base.GetChangeTracker(repository))
-            {
-                foreach (var catalog in catalogs)
-                {
-                    var dbCatalog = repository.GetCatalogsByIds(new[] { catalog.Id }).FirstOrDefault();
-                    if (dbCatalog == null)
-                    {
-                        throw new NullReferenceException("dbCatalog");
-                    }
-                    var dbCatalogChanged = catalog.ToDataModel(pkMap);
-
-                    changeTracker.Attach(dbCatalog);
-                    dbCatalogChanged.Patch(dbCatalog);
-
-                }
-
-                CommitChanges(repository);
-                pkMap.ResolvePrimaryKeys();
-            }
+            SaveChanges(catalogs);
         }
 
         public void Delete(string[] catalogIds)
@@ -79,6 +51,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             {
                 repository.RemoveCatalogs(catalogIds);
                 CommitChanges(repository);
+                //Reset cached categories and catalogs
+                base.InvalidateCache();
             }
         }
 
@@ -89,5 +63,34 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         }
 
         #endregion
+
+        protected virtual void SaveChanges(coreModel.Catalog[] catalogs)
+        {
+            var pkMap = new PrimaryKeyResolvingMap();
+
+            using (var repository = base.CatalogRepositoryFactory())
+            using (var changeTracker = GetChangeTracker(repository))
+            {
+                var dbExistEntities = repository.GetCatalogsByIds(catalogs.Where(x => !x.IsTransient()).Select(x => x.Id).ToArray());
+                foreach (var catalog in catalogs)
+                {
+                    var originalEntity = dbExistEntities.FirstOrDefault(x => x.Id == catalog.Id);
+                    var modifiedEntity = catalog.ToDataModel(pkMap);
+                    if (originalEntity != null)
+                    {
+                        changeTracker.Attach(originalEntity);
+                        modifiedEntity.Patch(originalEntity);                     
+                    }
+                    else
+                    {
+                        repository.Add(modifiedEntity);
+                    }
+                }
+                CommitChanges(repository);
+                pkMap.ResolvePrimaryKeys();
+                //Reset cached categories and catalogs
+                base.InvalidateCache();
+            }          
+        }
     }
 }

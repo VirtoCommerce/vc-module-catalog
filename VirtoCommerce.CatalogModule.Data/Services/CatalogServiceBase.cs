@@ -23,13 +23,11 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _cacheManager = cacheManager;
 
         }
-
-        protected override void CommitChanges(IRepository repository)
+        protected void InvalidateCache()
         {
             _cacheManager.ClearRegion("CatalogModuleRegion");
-            base.CommitChanges(repository);
         }
-
+  
         protected virtual Catalog[] AllCachedCatalogs
         {
             get

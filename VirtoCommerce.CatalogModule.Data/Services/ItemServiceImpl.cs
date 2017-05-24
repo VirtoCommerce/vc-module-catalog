@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using CacheManager.Core;
 using VirtoCommerce.CatalogModule.Data.Converters;
@@ -82,68 +83,19 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public void Create(coreModel.CatalogProduct[] items)
         {
-            var pkMap = new PrimaryKeyResolvingMap();
-            using (var repository = base.CatalogRepositoryFactory())
-            {
-                foreach (var item in items)
-                {
-                    var dbItem = item.ToDataModel(pkMap);
-                    if (item.Variations != null)
-                    {
-                        foreach (var variation in item.Variations)
-                        {
-                            variation.MainProductId = dbItem.Id;
-                            variation.CatalogId = dbItem.CatalogId;
-                            var dbVariation = variation.ToDataModel(pkMap);
-                            dbItem.Childrens.Add(dbVariation);
-                        }
-                    }
-                    repository.Add(dbItem);
-                }
-                CommitChanges(repository);
-                pkMap.ResolvePrimaryKeys();
-            }
-
-            //Update SEO 
-            var itemsWithVariations = items.Concat(items.Where(x => x.Variations != null).SelectMany(x => x.Variations)).ToArray();
-            _commerceService.UpsertSeoForObjects(itemsWithVariations);
+            SaveChanges(items);
         }
 
         public coreModel.CatalogProduct Create(coreModel.CatalogProduct item)
         {
             Create(new[] { item });
-
             var retVal = GetById(item.Id, coreModel.ItemResponseGroup.ItemLarge);
             return retVal;
         }
 
         public void Update(coreModel.CatalogProduct[] items)
         {
-            var pkMap = new PrimaryKeyResolvingMap();
-            var now = DateTime.UtcNow;
-            using (var repository = base.CatalogRepositoryFactory())
-            using (var changeTracker = base.GetChangeTracker(repository))
-            {
-                var dbItems = repository.GetItemByIds(items.Select(x => x.Id).ToArray(), coreModel.ItemResponseGroup.ItemLarge);
-                foreach (var dbItem in dbItems)
-                {
-                    var item = items.FirstOrDefault(x => x.Id == dbItem.Id);
-                    if (item != null)
-                    {
-                        changeTracker.Attach(dbItem);
-
-                        item.Patch(dbItem, pkMap);
-                        //Force set ModifiedDate property to mark a product changed. Special for  partial update cases when product table not have changes
-                        dbItem.ModifiedDate = DateTime.UtcNow;
-                    }
-                }
-                CommitChanges(repository);
-                pkMap.ResolvePrimaryKeys();
-            }
-
-            //Update seo for products
-            _commerceService.UpsertSeoForObjects(items);
-
+            SaveChanges(items);
         }
 
         public void Delete(string[] itemIds)
@@ -156,5 +108,47 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
         }
         #endregion
+
+        protected virtual void SaveChanges(coreModel.CatalogProduct[] products, bool disableValidation = false)
+        {
+            var pkMap = new PrimaryKeyResolvingMap();
+
+            using (var repository = base.CatalogRepositoryFactory())
+            using (var changeTracker = GetChangeTracker(repository))
+            {
+                var dbExistProducts = repository.GetItemByIds(products.Where(x => !x.IsTransient()).Select(x => x.Id).ToArray(), Domain.Catalog.Model.ItemResponseGroup.ItemLarge);
+                foreach (var product in products)
+                {
+                    var originalEntity = dbExistProducts.FirstOrDefault(x => x.Id == product.Id);           
+                    if (originalEntity != null)
+                    {
+                        changeTracker.Attach(originalEntity);
+                        product.Patch(originalEntity, pkMap);
+                        //Force set ModifiedDate property to mark a product changed. Special for  partial update cases when product table not have changes
+                        originalEntity.ModifiedDate = DateTime.UtcNow;
+                    }
+                    else
+                    {
+                        var modifiedEntity = product.ToDataModel(pkMap);
+                        if (product.Variations != null)
+                        {
+                            foreach (var variation in product.Variations)
+                            {
+                                variation.MainProductId = modifiedEntity.Id;
+                                variation.CatalogId = modifiedEntity.CatalogId;
+                                modifiedEntity.Childrens.Add(variation.ToDataModel(pkMap));
+                            }
+                        }
+                        repository.Add(modifiedEntity);
+                    }
+                }
+                CommitChanges(repository);
+                pkMap.ResolvePrimaryKeys();
+            }
+
+            //Update SEO 
+            var productsWithVariations = products.Concat(products.Where(x => x.Variations != null).SelectMany(x => x.Variations)).ToArray();
+            _commerceService.UpsertSeoForObjects(productsWithVariations);
+        }
     }
 }

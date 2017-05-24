@@ -4,6 +4,7 @@ using CacheManager.Core;
 using VirtoCommerce.CatalogModule.Data.Converters;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Domain.Catalog.Services;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Data.Infrastructure;
 using coreModel = VirtoCommerce.Domain.Catalog.Model;
 
@@ -62,54 +63,15 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 throw new NullReferenceException("property.CatalogId");
             }
 
-            var dbProperty = property.ToDataModel();
-            using (var repository = base.CatalogRepositoryFactory())
-            {
-                if (property.CategoryId != null)
-                {
-                    var dbCategory = repository.GetCategoriesByIds(new[] { property.CategoryId }, coreModel.CategoryResponseGroup.Info).FirstOrDefault();
-                    if (dbCategory == null)
-                    {
-                        throw new NullReferenceException("dbCategory");
-                    }
-                    dbCategory.Properties.Add(dbProperty);
-                }
-                else
-                {
-                    var dbCatalog = repository.GetCatalogsByIds(new[] { property.CatalogId }).FirstOrDefault();
-                    if (dbCatalog == null)
-                    {
-                        throw new NullReferenceException("dbCatalog");
-                    }
-                    dbCatalog.Properties.Add(dbProperty);
-                }
-                repository.Add(dbProperty);
-                CommitChanges(repository);
-            }
-            var retVal = GetById(dbProperty.Id);
-            return retVal;
+            SaveChanges(new[] { property });
+
+            var result = GetById(property.Id);
+            return result;
         }
 
         public void Update(coreModel.Property[] properties)
         {
-            using (var repository = base.CatalogRepositoryFactory())
-            using (var changeTracker = GetChangeTracker(repository))
-            {
-                var dbProperties = repository.GetPropertiesByIds(properties.Select(x => x.Id).ToArray());
-
-                foreach (var dbProperty in dbProperties)
-                {
-                    var property = properties.FirstOrDefault(x => x.Id == dbProperty.Id);
-                    if (property != null)
-                    {
-                        changeTracker.Attach(dbProperty);
-
-                        var dbPropertyChanged = property.ToDataModel();
-                        dbPropertyChanged.Patch(dbProperty);
-                    }
-                }
-                CommitChanges(repository);
-            }
+            SaveChanges(properties);
         }
 
 
@@ -125,6 +87,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 }
 
                 CommitChanges(repository);
+                //Reset cached categories and catalogs
+                base.InvalidateCache();
             }
         }
 
@@ -139,5 +103,34 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return result;         
         }
         #endregion
+
+        protected virtual void SaveChanges(coreModel.Property[] properties)
+        {
+            var pkMap = new PrimaryKeyResolvingMap();
+
+            using (var repository = base.CatalogRepositoryFactory())
+            using (var changeTracker = GetChangeTracker(repository))
+            {
+                var dbExistEntities = repository.GetPropertiesByIds(properties.Where(x => !x.IsTransient()).Select(x => x.Id).ToArray());
+                foreach (var property in properties)
+                {
+                    var originalEntity = dbExistEntities.FirstOrDefault(x => x.Id == property.Id);
+                    var modifiedEntity = property.ToDataModel(pkMap);
+                    if (originalEntity != null)
+                    {
+                        changeTracker.Attach(originalEntity);
+                        modifiedEntity.Patch(originalEntity);
+                    }
+                    else
+                    {
+                        repository.Add(modifiedEntity);
+                    }
+                }
+                CommitChanges(repository);
+                pkMap.ResolvePrimaryKeys();
+                //Reset cached categories and catalogs
+                base.InvalidateCache();
+            }
+        }
     }
 }

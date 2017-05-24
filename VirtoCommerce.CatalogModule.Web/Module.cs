@@ -62,6 +62,7 @@ namespace VirtoCommerce.CatalogModule.Web
             _container.RegisterType<ISkuGenerator, DefaultSkuGenerator>();
             _container.RegisterType<ISeoDuplicatesDetector, CatalogSeoDublicatesDetector>(new ContainerControlledLifetimeManager());
             _container.RegisterType<IOutlineService, OutlineService>();
+            _container.RegisterType<IAssociationService, AssociationServiceImpl>();
 
             #endregion
         }
