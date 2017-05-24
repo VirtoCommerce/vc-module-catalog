@@ -38,7 +38,6 @@
                     }
                 });
             }
-            $rootScope.$broadcast('product-loaded', data);
         },
         function (error) { bladeNavigationService.setError('Error ' + error.status, blade); });
     }
@@ -69,7 +68,6 @@
 
         items.update({}, blade.item, function () {
             blade.refresh(true);
-            $rootScope.$broadcast('product-saved', blade.currentEntity);
         }, function (error) { bladeNavigationService.setError('Error ' + error.status, blade); });
     };
 
