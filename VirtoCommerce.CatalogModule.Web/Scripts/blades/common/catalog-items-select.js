@@ -12,7 +12,8 @@
         showCheckingMultiple: true,
         allowCheckingItem: true,
         allowCheckingCategory: false,
-        selectedItemIds: []
+        selectedItemIds: [],
+        gridColumns: []
     }, blade.options);
 
     blade.refresh = function () {
@@ -175,6 +176,7 @@
                 return ($scope.options.allowCheckingItem && row.entity.type !== 'category') || ($scope.options.allowCheckingCategory && row.entity.type === 'category');
             };
 
+            gridOptions.columnDefs = gridOptions.columnDefs.concat($scope.options.gridColumns);
             gridOptionExtension.tryExtendGridOptions(gridId, gridOptions);
             uiGridHelper.initialize($scope, gridOptions, externalRegisterApiCallback);
             bladeUtils.initializePagination($scope);
