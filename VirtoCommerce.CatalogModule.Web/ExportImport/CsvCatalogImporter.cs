@@ -118,7 +118,12 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
 
                     if (category == null)
                     {
-                        category = _categoryService.Create(new Category() { Name = categoryName, Code = categoryName.GenerateSlug(), CatalogId = catalog.Id, ParentId = parentCategoryId });
+                        var code = categoryName.GenerateSlug();
+                        if(string.IsNullOrEmpty(code))
+                        {
+                            code = Guid.NewGuid().ToString("N");
+                        }
+                        category = _categoryService.Create(new Category() { Name = categoryName, Code = code, CatalogId = catalog.Id, ParentId = parentCategoryId });
                         //Raise notification each notifyCategorySizeLimit category
                         progressInfo.Description = string.Format("Creating categories: {0} created", ++progressInfo.ProcessedCount);
                         progressCallback(progressInfo);
