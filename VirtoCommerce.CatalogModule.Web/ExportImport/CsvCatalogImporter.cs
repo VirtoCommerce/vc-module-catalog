@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CsvHelper;
+using Omu.ValueInjecter;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
@@ -24,6 +25,7 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
         private readonly IItemService _productService;
         private readonly ISkuGenerator _skuGenerator;
         private readonly IPricingService _pricingService;
+        private readonly IPricingSearchService _pricingSearchService;
         private readonly IInventoryService _inventoryService;
         private readonly ICommerceService _commerceService;
         private readonly IPropertyService _propertyService;
@@ -34,7 +36,7 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
         public CsvCatalogImporter(ICatalogService catalogService, ICategoryService categoryService, IItemService productService,
                                   ISkuGenerator skuGenerator,
                                   IPricingService pricingService, IInventoryService inventoryService, ICommerceService commerceService,
-                                  IPropertyService propertyService, ICatalogSearchService searchService, Func<ICatalogRepository> catalogRepositoryFactory)
+                                  IPropertyService propertyService, ICatalogSearchService searchService, Func<ICatalogRepository> catalogRepositoryFactory, IPricingSearchService pricingSearchService)
         {
             _catalogService = catalogService;
             _categoryService = categoryService;
@@ -46,6 +48,7 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
             _propertyService = propertyService;
             _searchService = searchService;
             _catalogRepositoryFactory = catalogRepositoryFactory;
+            _pricingSearchService = pricingSearchService;
         }
 
         public void DoImport(Stream inputStream, CsvImportInfo importInfo, Action<ExportImportProgressInfo> progressCallback)
@@ -227,77 +230,75 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
             progressCallback(progressInfo);
             _propertyService.Update(changedProperties.ToArray());
 
-            var options = new ParallelOptions
+            var totalProductsCount = csvProducts.Count();
+            //Order to save main products first then variations
+            csvProducts = csvProducts.OrderBy(x => x.MainProductId != null).ToList();
+            for (int i = 0; i< totalProductsCount; i += 50)
             {
-                MaxDegreeOfParallelism = 10
-            };
-
-            foreach (var group in new[] { csvProducts.Where(x => x.MainProduct == null), csvProducts.Where(x => x.MainProduct != null) })
-            {
-                var partSize = 25;
-                var partsCount = Math.Max(1, group.Count() / partSize);
-                var parts = group.Select((x, i) => new { Index = i, Value = x })
-                                              .GroupBy(x => x.Index % partsCount)
-                                              .Select(x => x.Select(v => v.Value));
-
-                Parallel.ForEach(parts, options, products =>
+                var products = csvProducts.Skip(i).Take(50);
+                try
                 {
-                    try
-                    {
-                        //Save main products first and then variations
-                        var toUpdateProducts = products.Where(x => !x.IsTransient());
-                        //Need to additional  check that  product with id exist  
-                        using (var repository = _catalogRepositoryFactory())
-                        {
-                            var updateProductIds = toUpdateProducts.Select(x => x.Id).ToArray();
-                            var existProductIds = repository.Items.Where(x => updateProductIds.Contains(x.Id)).Select(x => x.Id).ToArray();
-                            toUpdateProducts = toUpdateProducts.Where(x => existProductIds.Contains(x.Id)).ToList();
-                        }
-                        var toCreateProducts = products.Except(toUpdateProducts);
-                        if (!toCreateProducts.IsNullOrEmpty())
-                        {
-                            _productService.Create(toCreateProducts.ToArray());
-                        }
-                        if (!toUpdateProducts.IsNullOrEmpty())
-                        {
-                            _productService.Update(toUpdateProducts.ToArray());
-                        }
+                    //Save main products first and then variations
+                    _productService.Update(products.ToArray());
 
-                        //Set productId for dependent objects
-                        foreach (var product in products)
+                    //Set productId for dependent objects
+                    foreach (var product in products)
+                    {
+                        if (defaultFulfilmentCenter != null || product.Inventory.FulfillmentCenterId != null)
                         {
                             product.Inventory.ProductId = product.Id;
                             product.Inventory.FulfillmentCenterId = product.Inventory.FulfillmentCenterId ?? defaultFulfilmentCenter.Id;
                             product.Price.ProductId = product.Id;
                         }
-
-                        var inventories = products.Where(x => x.Inventory != null).Select(x => x.Inventory).ToArray();
-                        _inventoryService.UpsertInventories(inventories);
-
-                        var prices = products.Where(x => x.Price != null && x.Price.EffectiveValue > 0).Select(x => x.Price).ToArray();
-                        _pricingService.SavePrices(prices);
-
-                      
-                    }
-                    catch (Exception ex)
-                    {
-                        lock (_lockObject)
+                        else
                         {
-                            progressInfo.Errors.Add(ex.ToString());
-                            progressCallback(progressInfo);
+                            product.Inventory = null;
                         }
                     }
-                    finally
+                    var productIds = products.Select(x => x.Id).ToArray();
+                    var existInventories = _inventoryService.GetProductsInventoryInfos(productIds);
+                    var inventories = products.Where(x => x.Inventory != null).Select(x => x.Inventory).ToArray();
+                    foreach (var inventory in inventories)
                     {
-                        lock (_lockObject)
+                        var exitsInventory = existInventories.FirstOrDefault(x => x.ProductId == inventory.ProductId && x.FulfillmentCenterId == inventory.FulfillmentCenterId);
+                        if (exitsInventory != null)
                         {
-                            //Raise notification
-                            progressInfo.ProcessedCount += products.Count();
-                            progressInfo.Description = string.Format("Saving products: {0} of {1} created", progressInfo.ProcessedCount, progressInfo.TotalCount);
-                            progressCallback(progressInfo);
+                            inventory.InjectFrom(exitsInventory);
                         }
                     }
-                });
+                    _inventoryService.UpsertInventories(inventories);
+
+                    //We do not have information about concrete price list id and therefore select first product price then
+                    var existPrices = _pricingSearchService.SearchPrices(new Domain.Pricing.Model.Search.PricesSearchCriteria { ProductIds = productIds }).Results;
+                    var prices = products.Where(x => x.Price != null && x.Price.EffectiveValue > 0).Select(x => x.Price).ToArray();
+                    foreach(var price in prices)
+                    {
+                        var existPrice = existPrices.FirstOrDefault(x => x.Currency.EqualsInvariant(price.Currency) && x.ProductId.EqualsInvariant(price.ProductId));
+                        if(existPrice != null)
+                        {
+                            price.InjectFrom(existPrice);
+                        }
+                    }
+                    _pricingService.SavePrices(prices);
+                }
+                catch (Exception ex)
+                {
+                    lock (_lockObject)
+                    {
+                        progressInfo.Errors.Add(ex.ToString());
+                        progressCallback(progressInfo);
+                    }
+                }
+                finally
+                {
+                    lock (_lockObject)
+                    {
+                        //Raise notification
+                        progressInfo.ProcessedCount += products.Count();
+                        progressInfo.Description = string.Format("Saving products: {0} of {1} created", progressInfo.ProcessedCount, progressInfo.TotalCount);
+                        progressCallback(progressInfo);
+                    }
+                }
             }
         }
 
