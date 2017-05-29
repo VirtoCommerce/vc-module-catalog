@@ -5,7 +5,7 @@
             <form name="propertiesForm" class="form">
                 <fieldset ng-repeat="propGroup in blade.propGroups" ng-init="setForm(propertiesForm)">
                     <legend>
-                        {{ propGroup.title | translate }}: <span class="count">{{properties.length}}</span>
+                        {{ propGroup.title | translate }}: <span class="count">{{properties.length | number:0}}</span>
                     </legend>
                     <div class="form-group" ng-repeat="prop in properties = (blade.currentEntities | filter: {type:propGroup.type})">
                         <label class="form-label">

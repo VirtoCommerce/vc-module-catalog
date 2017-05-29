@@ -16,15 +16,15 @@
                     <ul class="list __info">
                         <li class="list-item">
                             <div class="list-t">{{ 'catalog.blades.catalog-CSV-import.labels.total' | translate }}</div>
-                            <div class="list-descr">{{blade.notification.totalCount}}</div>
+                            <div class="list-descr">{{blade.notification.totalCount | number:0}}</div>
                         </li>
                         <li class="list-item">
                             <div class="list-t">{{ 'catalog.blades.catalog-CSV-import.labels.processed' | translate }}</div>
-                            <div class="list-descr">{{blade.notification.processedCount}}</div>
+                            <div class="list-descr">{{blade.notification.processedCount | number:0}}</div>
                         </li>
                         <li class="list-item">
                             <div class="list-t">{{ 'catalog.blades.catalog-CSV-import.labels.errors-count' | translate }}</div>
-                            <div class="list-descr">{{blade.notification.errorCount}}</div>
+                            <div class="list-descr">{{blade.notification.errorCount | number:0}}</div>
                         </li>
                     </ul>
                 </div>
