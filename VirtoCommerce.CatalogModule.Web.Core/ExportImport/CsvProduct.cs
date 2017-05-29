@@ -193,8 +193,14 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
         }
         public string Sku
         {
-            get { return Code; }
-            set { Code = value; }
+            get
+            {
+                return Code;
+            }
+            set
+            {
+                Code = value != null ? value.Trim() : value;
+            }
         }
 
         public string ParentSku { get; set; }

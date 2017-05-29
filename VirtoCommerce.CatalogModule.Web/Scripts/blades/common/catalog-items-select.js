@@ -12,7 +12,8 @@
         showCheckingMultiple: true,
         allowCheckingItem: true,
         allowCheckingCategory: false,
-        selectedItemIds: []
+        selectedItemIds: [],
+        gridColumns: []
     }, blade.options);
 
     blade.refresh = function () {
@@ -25,7 +26,7 @@
                     catalogId: blade.catalogId,
                     categoryId: blade.categoryId,
                     keyword: filter.keyword,
-                    responseGroup: 'withCategories, withProducts',
+                    responseGroup: blade.responseGroup || 'withCategories, withProducts',
                     sort: uiGridHelper.getSortExpression($scope),
                     skip: ($scope.pageSettings.currentPage - 1) * $scope.pageSettings.itemsPerPageCount,
                     take: $scope.pageSettings.itemsPerPageCount
@@ -34,6 +35,9 @@
                 blade.isLoading = false;
                 $scope.pageSettings.totalItems = data.totalCount;
                 $scope.items = data.listEntries;
+                if ($scope.options.onItemsLoaded) {
+                    $scope.options.onItemsLoaded(data.listEntries);
+                }
 
                 //Set navigation breadcrumbs
                 setBreadcrumbs();
@@ -93,8 +97,8 @@
     };
 
     $scope.selectItem = function (e, listItem) {
-        if ($scope.selectedNodeId == listItem.id)
-            return;
+        //if ($scope.selectedNodeId == listItem.id)
+        //    return;
 
         $scope.selectedNodeId = listItem.id;
         //call callback function
@@ -172,6 +176,7 @@
                 return ($scope.options.allowCheckingItem && row.entity.type !== 'category') || ($scope.options.allowCheckingCategory && row.entity.type === 'category');
             };
 
+            gridOptions.columnDefs = gridOptions.columnDefs.concat($scope.options.gridColumns);
             gridOptionExtension.tryExtendGridOptions(gridId, gridOptions);
             uiGridHelper.initialize($scope, gridOptions, externalRegisterApiCallback);
             bladeUtils.initializePagination($scope);
