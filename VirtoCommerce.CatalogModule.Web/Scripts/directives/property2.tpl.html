@@ -38,8 +38,7 @@
 
     <script type="text/ng-template" id="DateTime.html">
         <div class="form-input __calendar">
-            <input close-text="Close"
-                   is-open="datepickers.DateTime"
+            <input is-open="datepickers.DateTime"
                    datepicker-popup
                    ng-required="currentEntity.required && !currentEntity.isReadOnly"
                    placeholder="{{ 'platform.genericValueInput.placeholders.date-time' | translate}}"
