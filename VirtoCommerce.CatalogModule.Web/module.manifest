@@ -16,7 +16,7 @@
     <owners>
         <owner>Virto Commerce</owner>
     </owners>
-    <projectUrl>https://virtocommerce.com/virto-catalog-module</projectUrl>
+    <projectUrl>https://virtocommerce.com/apps/extensions/virto-catalog-module</projectUrl>
     <iconUrl>https://github.com/VirtoCommerce/vc-module-catalog/raw/master/VirtoCommerce.CatalogModule.Web/Content/logo.png</iconUrl>
     <releaseNotes>First version.</releaseNotes>
     <copyright>Copyright © 2011-2017 Virto Commerce. All rights reserved</copyright>
