@@ -27,26 +27,26 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
             _cacheManager.ClearRegion("CatalogModuleRegion");
         }
-  
+
         protected virtual Catalog[] AllCachedCatalogs
         {
             get
             {
                 return _cacheManager.Get("AllCatalogs", "CatalogModuleRegion", () =>
                 {
-                    lock (_lock)
+                    using (var repository = CatalogRepositoryFactory())
                     {
-                        using (var repository = CatalogRepositoryFactory())
+                        //EF multi-thread issue for cached entities
+                        //http://stackoverflow.com/questions/29106477/nullreferenceexception-in-entity-framework-from-trygetcachedrelatedend
+                        if (repository is System.Data.Entity.DbContext)
                         {
-                            //EF multi-thread issue for cached entities
-                            //http://stackoverflow.com/questions/29106477/nullreferenceexception-in-entity-framework-from-trygetcachedrelatedend
                             var dbConfiguration = ((System.Data.Entity.DbContext)repository).Configuration;
                             dbConfiguration.ProxyCreationEnabled = false;
                             dbConfiguration.AutoDetectChangesEnabled = false;
-                            return repository.GetCatalogsByIds(repository.Catalogs.Select(x => x.Id).ToArray());
                         }
+                        return repository.GetCatalogsByIds(repository.Catalogs.Select(x => x.Id).ToArray());
                     }
-                });            
+                });
 
             }
         }
@@ -57,17 +57,17 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             {
                 return _cacheManager.Get("AllCategories", "CatalogModuleRegion", () =>
                 {
-                    lock (_lock)
+                    using (var repository = CatalogRepositoryFactory())
                     {
-                        using (var repository = CatalogRepositoryFactory())
+                        //EF multi-thread issue for cached entities
+                        //http://stackoverflow.com/questions/29106477/nullreferenceexception-in-entity-framework-from-trygetcachedrelatedend
+                        if (repository is System.Data.Entity.DbContext)
                         {
-                            //EF multi-thread issue for cached entities
-                            //http://stackoverflow.com/questions/29106477/nullreferenceexception-in-entity-framework-from-trygetcachedrelatedend
                             var dbConfiguration = ((System.Data.Entity.DbContext)repository).Configuration;
                             dbConfiguration.ProxyCreationEnabled = false;
                             dbConfiguration.AutoDetectChangesEnabled = false;
-                            return repository.GetCategoriesByIds(repository.Categories.Select(x => x.Id).ToArray(), Domain.Catalog.Model.CategoryResponseGroup.Full);
                         }
+                        return repository.GetCategoriesByIds(repository.Categories.Select(x => x.Id).ToArray(), Domain.Catalog.Model.CategoryResponseGroup.Full);
                     }
                 });
 
