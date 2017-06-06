@@ -89,7 +89,7 @@
             <a ng-if="!currentEntity.isReadOnly" ng-click="context.currentPropValues.push({value:''})" style="cursor:pointer;">add value</a>
         </div>
     </script>
-    <script type="text/ng-template" id="dInteger-multivalue.html">
+    <script type="text/ng-template" id="Integer-multivalue.html">
         <tags-input ng-model="context.currentPropValues"
                     ng-disabled="currentEntity.isReadOnly"
                     min-tags="{{(currentEntity.required && !currentEntity.isReadOnly) ? 1 : undefined}}"
