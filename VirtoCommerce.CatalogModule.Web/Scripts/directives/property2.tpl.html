@@ -26,12 +26,23 @@
     <script type="text/ng-template" id="Number.html">
         <!--<a href="#" editable-number="val.value">{{val.value || "N/A" }}</a>-->
         <div class="form-input">
-            <input ng-disabled="currentEntity.isReadOnly"
+            <input smart-float num-type="float"
+                   ng-disabled="currentEntity.isReadOnly"
                    ng-required="currentEntity.required && !currentEntity.isReadOnly"
                    ng-model="context.currentPropValues[0].value"
-                   money
                    ng-class="{'error': context.currentEntity.valueType.$error.pattern}"
-                   placeholder="Please enter number"
+                   placeholder="Please enter number">
+        </div>
+    </script>
+
+    <script type="text/ng-template" id="Integer.html">
+        <div class="form-input __number">
+            <input smart-float num-type="integer"
+                   ng-disabled="currentEntity.isReadOnly"
+                   ng-required="currentEntity.required && !currentEntity.isReadOnly"
+                   ng-model="context.currentPropValues[0].value"
+                   ng-class="{'error': context.currentEntity.valueType.$error.pattern}"
+                   placeholder="Please enter integer"
                    type="text">
         </div>
     </script>
@@ -57,14 +68,7 @@
         </label>
     </script>
 
-    <script type="text/ng-template" id="Integer.html">
-        <div class="form-input __number">
-            <input smart-float num-type="integer"
-                   ng-required="currentEntity.isRequired"
-                   ng-model="context.currentPropValues[0].value"
-                   placeholder="{{ 'platform.genericValueInput.placeholders.integer' | translate}}" />
-        </div>
-    </script>
+  
 
     <script type="text/ng-template" id="ShortText-multivalue.html">
         <tags-input ng-model="context.currentPropValues"

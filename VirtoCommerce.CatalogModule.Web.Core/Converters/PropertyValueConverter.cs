@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using Omu.ValueInjecter;
 using moduleModel = VirtoCommerce.Domain.Catalog.Model;
 using webModel = VirtoCommerce.CatalogModule.Web.Model;
@@ -22,15 +23,8 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             {
                 retVal.PropertyId = propValue.Property.Id;
             }
-            if(propValue.ValueType == Domain.Catalog.Model.PropertyValueType.DateTime && propValue.Value != null)
-            {
-                retVal.Value = DateTime.SpecifyKind(((DateTime)propValue.Value), DateTimeKind.Utc).ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
-            }
-            else
-            {
-                retVal.Value = (propValue.Value ?? string.Empty).ToString();
-            }           
-
+            retVal.Value = propValue.Value;
+      
             return retVal;
         }
 

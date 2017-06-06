@@ -63,7 +63,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
             retVal.KeyValue = propValue.ValueId;
             retVal.Locale = propValue.LanguageCode;
             retVal.ValueType = (int)propValue.ValueType;
-            SetPropertyValue(retVal, propValue.ValueType, propValue.Value.ToString());
+            SetPropertyValue(retVal, propValue.ValueType, propValue.Value != null ? propValue.Value.ToString() : null);
 
             return retVal;
         }

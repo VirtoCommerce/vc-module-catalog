@@ -66,7 +66,7 @@ namespace VirtoCommerce.CatalogModule.Web.Model
         /// <value>
         /// The value.
         /// </value>
-        public string Value { get; set; }
+        public object Value { get; set; }
 
         /// <summary>
         /// System flag used to mark that object was inherited from other

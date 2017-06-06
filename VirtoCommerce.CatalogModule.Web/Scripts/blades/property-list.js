@@ -17,22 +17,7 @@
 		blade.currentEntity = entity;
 
 		blade.currentEntities = angular.copy(entity.properties);
-
-		if (blade.currentEntities) {
-			var selection = _.where(blade.currentEntities, { valueType: 'Number', multivalue: false, dictionary: false });
-			_.forEach(selection, function (prop) {
-				_.forEach(prop.values, function (value) {
-					value.value = parseFloat(value.value);
-				});
-			});
-
-			selection = _.where(blade.currentEntities, { valueType: 'Boolean' });
-			_.forEach(selection, function (prop) {
-				_.forEach(prop.values, function (value) {
-					value.value = Boolean(value.value) ? value.value.toLowerCase() == 'true' : false;
-				});
-			});
-		}
+	
 	};
 
 

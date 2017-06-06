@@ -194,7 +194,14 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
             if (product.PropertyValues != null)
             {
                 retVal.ItemPropertyValues = new ObservableCollection<dataModel.PropertyValue>();
-                retVal.ItemPropertyValues.AddRange(product.PropertyValues.Where(x => !x.IsInherited).Select(x => x.ToDataModel(pkMap)));
+                foreach(var propertyValue in product.PropertyValues)
+                {
+                    if(!propertyValue.IsInherited && propertyValue.Value != null && !string.IsNullOrEmpty(propertyValue.Value.ToString()))
+                    {
+                        var dbPropertyValue = propertyValue.ToDataModel(pkMap);
+                        retVal.ItemPropertyValues.Add(dbPropertyValue);
+                    }
+                }              
             }
             #endregion
 

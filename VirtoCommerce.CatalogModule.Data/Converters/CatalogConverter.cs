@@ -90,8 +90,15 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
             if (catalog.PropertyValues != null)
             {
                 retVal.CatalogPropertyValues = new ObservableCollection<dataModel.PropertyValue>();
-                retVal.CatalogPropertyValues.AddRange(catalog.PropertyValues.Select(x => x.ToDataModel(pkMap)));
-            }
+                foreach (var propertyValue in catalog.PropertyValues)
+                {
+                    if (!propertyValue.IsInherited && propertyValue.Value != null && !string.IsNullOrEmpty(propertyValue.Value.ToString()))
+                    {
+                        var dbPropertyValue = propertyValue.ToDataModel(pkMap);
+                        retVal.CatalogPropertyValues.Add(dbPropertyValue);
+                    }
+                }
+            }         
 
             retVal.InjectFrom(catalog);
             retVal.Virtual = catalog.IsVirtual;

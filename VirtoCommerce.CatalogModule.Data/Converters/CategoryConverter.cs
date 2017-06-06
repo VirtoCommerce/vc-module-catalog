@@ -113,12 +113,20 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
             retVal.StartDate = DateTime.UtcNow;
             retVal.IsActive = category.IsActive ?? true;
 
+
             if (category.PropertyValues != null)
             {
                 retVal.CategoryPropertyValues = new ObservableCollection<dataModel.PropertyValue>();
-                retVal.CategoryPropertyValues.AddRange(category.PropertyValues.Select(x => x.ToDataModel(pkMap)));
+                foreach (var propertyValue in category.PropertyValues)
+                {
+                    if (!propertyValue.IsInherited && propertyValue.Value != null && !string.IsNullOrEmpty(propertyValue.Value.ToString()))
+                    {
+                        var dbPropertyValue = propertyValue.ToDataModel(pkMap);
+                        retVal.CategoryPropertyValues.Add(dbPropertyValue);
+                    }
+                }
             }
-
+                     
             if (category.Links != null)
             {
                 retVal.OutgoingLinks = new ObservableCollection<dataModel.CategoryRelation>();
