@@ -18,7 +18,7 @@
     </ul>-->
 <div class="gridster-cnt" ng-click="openBlade()" ng-if="!blade.currentEntity.isVirtual">
     <div class="cnt-inner">
-        <div class="list-count">{{blade.currentEntity.languages.length}}</div>
+        <div class="list-count">{{blade.currentEntity.languages.length | number:0}}</div>
         <div class="list-t">{{ 'catalog.widgets.catalogLanguages.title' | translate }}</div>
     </div>
 </div>

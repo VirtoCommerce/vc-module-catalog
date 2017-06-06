@@ -28,17 +28,17 @@
                 <li class="list-item" ng-click="openBlade('properties')" ng-if="blade.item.properties.length > 0">
                     <i class="list-ico fa fa-cogs"></i>
                     <span class="list-t">{{ 'catalog.wizards.new-product.labels.fill-properties' | translate }}</span>
-                    <span class="list-descr">{{ 'catalog.wizards.new-product.labels.fill-properties-summary' | translate: {count: getUnfilledProperties().length, total: blade.item.properties.length} }} </span>
+                    <span class="list-descr">{{ 'catalog.wizards.new-product.labels.fill-properties-summary' | translate: {count: (getUnfilledProperties().length  | number:0), total: (blade.item.properties.length | number:0)} }} </span>
                 </li>
                 <li class="list-item" ng-click="openBlade('images')">
                     <i class="list-ico fa fa-image"></i>
                     <span class="list-t">{{ 'catalog.wizards.new-product.labels.upload-images' | translate }}</span>
-                    <span class="list-descr">{{ 'catalog.wizards.new-product.labels.upload-images-summary' | translate: {count: blade.item.images.length >= 0 ? blade.item.images.length : 0} }}</span>
+                    <span class="list-descr">{{ 'catalog.wizards.new-product.labels.upload-images-summary' | translate: {count: (blade.item.images.length >= 0 ? blade.item.images.length : 0 | number:0)} }}</span>
                 </li>
                 <li class="list-item" ng-click="openBlade('review')">
                     <i class="list-ico fa fa-file-text"></i>
                     <span class="list-t">{{'catalog.wizards.new-product.labels.add-review' | translate}}</span>
-                    <span class="list-descr">{{ 'catalog.wizards.new-product.labels.add-review-summary' | translate: {count: blade.item.reviews.length >= 0 ? blade.item.reviews.length : 0} }}</span>
+                    <span class="list-descr">{{ 'catalog.wizards.new-product.labels.add-review-summary' | translate: {count: (blade.item.reviews.length >= 0 ? blade.item.reviews.length : 0 | number:0)} }}</span>
                 </li>
                 <li class="list-item" ng-click="openBlade('seo')">
                     <i class="list-ico fa fa-bar-chart-o"></i>

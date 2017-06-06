@@ -39,22 +39,22 @@
 
 						</div>
 						<div class="block" ng-if="blade.notification.created || blade.notification.finished">
-							<p ng-if="blade.notification.created" ng-class="{'no-data': blade.notification.created}" class="text">{{ 'catalog.blades.catalog-CSV-export.labels.start' | translate }} — <i class="fa fa-clock-o"></i> {{blade.notification.created | date : 'mediumTime'}}</p>
-							<p ng-if="blade.notification.finished" ng-class="{'no-data': blade.notification.finished}" class="text">{{ 'catalog.blades.catalog-CSV-export.labels.end' | translate }} — <i class="fa fa-clock-o"></i> {{blade.notification.finished | date : 'mediumTime'}}</p>
+							<p ng-if="blade.notification.created" ng-class="{'no-data': blade.notification.created}" class="text">{{ 'catalog.blades.catalog-CSV-export.labels.start' | translate }} — <i class="fa fa-clock-o"></i>&nbsp;{{ blade.notification.created | amParse | date:'mediumTime' }}</p>
+							<p ng-if="blade.notification.finished" ng-class="{'no-data': blade.notification.finished}" class="text">{{ 'catalog.blades.catalog-CSV-export.labels.end' | translate }} — <i class="fa fa-clock-o"></i>&nbsp;{{ blade.notification.finished | amParse | date:'mediumTime' }}</p>
 						</div>
 						<div class="block" ng-if="blade.notification.totalCount || blade.notification.processedCount || blade.notification.errorCount">
 							<ul class="list __info">
 								<li class="list-item">
 									<div class="list-t">{{ 'catalog.blades.catalog-CSV-export.labels.total' | translate }}</div>
-									<div class="list-descr">{{blade.notification.totalCount}}</div>
+									<div class="list-descr">{{blade.notification.totalCount | number:0}}</div>
 								</li>
 								<li class="list-item">
 									<div class="list-t">{{ 'catalog.blades.catalog-CSV-export.labels.processed' | translate }}</div>
-									<div class="list-descr">{{blade.notification.processedCount}}</div>
+									<div class="list-descr">{{blade.notification.processedCount | number:0}}</div>
 								</li>
 								<li class="list-item">
 									<div class="list-t">{{ 'catalog.blades.catalog-CSV-export.labels.errors-count' | translate }}</div>
-									<div class="list-descr">{{blade.notification.errorCount}}</div>
+									<div class="list-descr">{{blade.notification.errorCount | number:0}}</div>
 								</li>
 							</ul>
 						</div>
