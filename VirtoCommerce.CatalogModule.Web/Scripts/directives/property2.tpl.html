@@ -49,8 +49,7 @@
 
     <script type="text/ng-template" id="DateTime.html">
         <div class="form-input __calendar">
-            <input close-text="Close"
-                   is-open="datepickers.DateTime"
+            <input is-open="datepickers.DateTime"
                    datepicker-popup
                    ng-required="currentEntity.required && !currentEntity.isReadOnly"
                    placeholder="{{ 'platform.genericValueInput.placeholders.date-time' | translate}}"
@@ -67,9 +66,7 @@
             <span class="switch"></span>
         </label>
     </script>
-
-  
-
+      
     <script type="text/ng-template" id="ShortText-multivalue.html">
         <tags-input ng-model="context.currentPropValues"
                     ng-disabled="currentEntity.isReadOnly"
@@ -92,12 +89,22 @@
             <a ng-if="!currentEntity.isReadOnly" ng-click="context.currentPropValues.push({value:''})" style="cursor:pointer;">add value</a>
         </div>
     </script>
+    <script type="text/ng-template" id="dInteger-multivalue.html">
+        <tags-input ng-model="context.currentPropValues"
+                    ng-disabled="currentEntity.isReadOnly"
+                    min-tags="{{(currentEntity.required && !currentEntity.isReadOnly) ? 1 : undefined}}"
+                    tags-number num-type="integer"
+                    min-length="1"
+                    name="{{currentEntity.valueType}}"
+                    display-property="value"
+                    placeholder="Add number">
+        </tags-input>
+    </script>
     <script type="text/ng-template" id="Number-multivalue.html">
         <tags-input ng-model="context.currentPropValues"
                     ng-disabled="currentEntity.isReadOnly"
                     min-tags="{{(currentEntity.required && !currentEntity.isReadOnly) ? 1 : undefined}}"
-                    add-on-blur="false"
-                    allowed-tags-pattern="^[-]?[0-9]+[\.]?[0-9]*$"
+                    tags-number num-type="float"
                     min-length="1"
                     name="{{currentEntity.valueType}}"
                     display-property="value"

@@ -137,7 +137,6 @@
         $event.stopPropagation();
         $scope.datepickers[which] = true;
     };
-    // $scope.dateOptions = { 'year-format': "'yyyy'" };
 
     function initVendors() {
         $scope.vendors = members.search({
