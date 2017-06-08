@@ -3,11 +3,13 @@ using System.IO;
 using Microsoft.Practices.Unity;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
+using VirtoCommerce.CatalogModule.Data.Search;
 using VirtoCommerce.CatalogModule.Data.Services;
 using VirtoCommerce.CatalogModule.Web.ExportImport;
 using VirtoCommerce.CatalogModule.Web.Security;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Commerce.Services;
+using VirtoCommerce.Domain.Search;
 using VirtoCommerce.Platform.Core.ExportImport;
 using VirtoCommerce.Platform.Core.Modularity;
 using VirtoCommerce.Platform.Core.Security;
@@ -65,13 +67,29 @@ namespace VirtoCommerce.CatalogModule.Web
             _container.RegisterType<IAssociationService, AssociationServiceImpl>();
 
             #endregion
+
+            #region Search
+
+            var productIndexingConfiguration = new IndexDocumentConfiguration
+            {
+                DocumentType = "Product", // TODO: Use VirtoCommerce.Domain.Search.Constants.ProductDocumentType
+                DocumentSource = new IndexDocumentSource
+                {
+                    ChangesProvider = _container.Resolve<ProductDocumentChangesProvider>(),
+                    DocumentBuilder = _container.Resolve<ProductDocumentBuilder>(),
+                },
+            };
+
+            _container.RegisterInstance(productIndexingConfiguration.DocumentType, productIndexingConfiguration);
+
+            #endregion
         }
 
         public override void PostInitialize()
         {
             var securityScopeService = _container.Resolve<IPermissionScopeService>();
             securityScopeService.RegisterSope(() => new CatalogSelectedScope());
-            securityScopeService.RegisterSope(() => new CatalogSelectedCategoryScope(_container.Resolve<ICategoryService>()));         
+            securityScopeService.RegisterSope(() => new CatalogSelectedCategoryScope(_container.Resolve<ICategoryService>()));
         }
 
         #endregion
