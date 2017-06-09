@@ -8,7 +8,7 @@ using VirtoCommerce.Domain.Store.Model;
 using VirtoCommerce.Domain.Store.Services;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Settings;
-using Aggregation = VirtoCommerce.Domain.Catalog.Model.Aggregation;
+using Aggregation = VirtoCommerce.CatalogModule.Web.Model.Aggregation;
 
 namespace VirtoCommerce.CatalogModule.Data.Search
 {

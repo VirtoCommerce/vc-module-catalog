@@ -8,6 +8,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
         public Product[] Products { get; set; }
 
-        public Domain.Catalog.Model.Aggregation[] Aggregations { get; set; }
+        public Aggregation[] Aggregations { get; set; }
     }
 }
