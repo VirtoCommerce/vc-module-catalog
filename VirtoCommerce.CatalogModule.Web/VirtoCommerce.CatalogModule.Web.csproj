@@ -127,7 +127,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="VirtoCommerce.Domain, Version=2.23.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VirtoCommerce.Domain.2.23.0-rc1\lib\net461\VirtoCommerce.Domain.dll</HintPath>
+      <HintPath>..\packages\VirtoCommerce.Domain.2.23.0-rc2\lib\net461\VirtoCommerce.Domain.dll</HintPath>
     </Reference>
     <Reference Include="VirtoCommerce.Platform.Core, Version=2.13.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\VirtoCommerce.Platform.Core.2.13.0\lib\net461\VirtoCommerce.Platform.Core.dll</HintPath>
@@ -158,6 +158,8 @@
     <Compile Include="ExportImport\CsvCatalogImporter.cs" />
     <Compile Include="ExportImport\ExpressionConverter.cs" />
     <Compile Include="ExportImport\CsvProductMap.cs" />
+    <Compile Include="JsonConverters\CategorySearchJsonConverter.cs" />
+    <Compile Include="JsonConverters\ProductSearchJsonConverter.cs" />
     <Compile Include="Model\PushNotifications\ExportNotification.cs" />
     <Compile Include="Model\PushNotifications\ImportNotification.cs" />
     <Compile Include="Model\PushNotifications\JobNotificationBase.cs" />

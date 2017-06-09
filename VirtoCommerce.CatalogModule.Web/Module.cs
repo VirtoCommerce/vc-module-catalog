@@ -1,11 +1,14 @@
 ﻿using System;
 using System.IO;
+using System.Web.Http;
 using Microsoft.Practices.Unity;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Data.Search;
+using VirtoCommerce.CatalogModule.Data.Search.Indexing;
 using VirtoCommerce.CatalogModule.Data.Services;
 using VirtoCommerce.CatalogModule.Web.ExportImport;
+using VirtoCommerce.CatalogModule.Web.JsonConverters;
 using VirtoCommerce.CatalogModule.Web.Security;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Commerce.Services;
@@ -70,9 +73,17 @@ namespace VirtoCommerce.CatalogModule.Web
 
             #region Search
 
+            _container.RegisterType<IBrowseFilterService, BrowseFilterService>();
+
+            _container.RegisterType<IProductSearchService, ProductSearchService>();
+            _container.RegisterType<ICategorySearchService, CategorySearchService>();
+
+            _container.RegisterType<ISearchRequestBuilder, ProductSearchRequestBuilder>(nameof(ProductSearchRequestBuilder));
+            _container.RegisterType<ISearchRequestBuilder, CategorySearchRequestBuilder>(nameof(CategorySearchRequestBuilder));
+
             var productIndexingConfiguration = new IndexDocumentConfiguration
             {
-                DocumentType = "Product", // TODO: Use VirtoCommerce.Domain.Search.Constants.ProductDocumentType
+                DocumentType = Constants.ProductDocumentType,
                 DocumentSource = new IndexDocumentSource
                 {
                     ChangesProvider = _container.Resolve<ProductDocumentChangesProvider>(),
@@ -87,9 +98,15 @@ namespace VirtoCommerce.CatalogModule.Web
 
         public override void PostInitialize()
         {
+            base.PostInitialize();
+
             var securityScopeService = _container.Resolve<IPermissionScopeService>();
             securityScopeService.RegisterSope(() => new CatalogSelectedScope());
             securityScopeService.RegisterSope(() => new CatalogSelectedCategoryScope(_container.Resolve<ICategoryService>()));
+
+            var httpConfiguration = _container.Resolve<HttpConfiguration>();
+            httpConfiguration.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new ProductSearchJsonConverter());
+            httpConfiguration.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new CategorySearchJsonConverter());
         }
 
         #endregion
@@ -108,15 +125,15 @@ namespace VirtoCommerce.CatalogModule.Web
             exportJob.DoImport(inputStream, manifest, progressCallback);
         }
 
-
         public string ExportDescription
         {
             get
             {
                 var settingManager = _container.Resolve<ISettingsManager>();
-                return settingManager.GetValue("Catalog.ExportImport.Description", String.Empty);
+                return settingManager.GetValue("Catalog.ExportImport.Description", string.Empty);
             }
         }
+
         #endregion
     }
 }

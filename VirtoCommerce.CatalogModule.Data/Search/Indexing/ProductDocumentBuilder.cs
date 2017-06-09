@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using VirtoCommerce.CatalogModule.Data.Helpers;
 using VirtoCommerce.CatalogModule.Web.Converters;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
@@ -11,7 +10,7 @@ using VirtoCommerce.Domain.Search;
 using VirtoCommerce.Platform.Core.Assets;
 using VirtoCommerce.Platform.Core.Settings;
 
-namespace VirtoCommerce.CatalogModule.Data.Search
+namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 {
     public class ProductDocumentBuilder : IIndexDocumentBuilder
     {

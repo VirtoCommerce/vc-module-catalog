@@ -1,0 +1,9 @@
+﻿using System.Threading.Tasks;
+
+namespace VirtoCommerce.CatalogModule.Data.Search
+{
+    public interface IProductSearchService
+    {
+        Task<ProductSearchResult> SearchProductsAsync(string storeId, ProductSearch productSearch);
+    }
+}

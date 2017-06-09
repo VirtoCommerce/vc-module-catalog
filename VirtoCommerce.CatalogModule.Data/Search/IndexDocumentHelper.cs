@@ -4,9 +4,9 @@ using Newtonsoft.Json.Linq;
 using VirtoCommerce.Domain.Search;
 using VirtoCommerce.Platform.Core.Common;
 
-namespace VirtoCommerce.CatalogModule.Data.Helpers
+namespace VirtoCommerce.CatalogModule.Data.Search
 {
-    public static class IndexHelper
+    public static class IndexDocumentHelper
     {
         public const string ObjectFieldName = "__object";
 

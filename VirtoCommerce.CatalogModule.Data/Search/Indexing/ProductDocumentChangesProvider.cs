@@ -7,7 +7,7 @@ using VirtoCommerce.Domain.Search;
 using VirtoCommerce.Platform.Core.ChangeLog;
 using VirtoCommerce.Platform.Core.Common;
 
-namespace VirtoCommerce.CatalogModule.Data.Search
+namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 {
     public class ProductDocumentChangesProvider : IIndexDocumentChangesProvider
     {
