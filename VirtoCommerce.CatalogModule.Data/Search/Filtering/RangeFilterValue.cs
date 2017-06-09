@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Xml.Serialization;
+﻿using System.Xml.Serialization;
 
 namespace VirtoCommerce.CatalogModule.Data.Search.Filtering
 {
@@ -21,6 +20,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Filtering
         public bool IncludeUpper { get; set; }
 
         [XmlElement("display")]
-        public IList<FilterValueDisplay> Displays { get; set; }
+        public FilterValueDisplay[] Displays { get; set; }
     }
 }

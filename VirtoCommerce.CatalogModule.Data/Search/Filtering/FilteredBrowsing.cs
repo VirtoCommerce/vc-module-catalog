@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Xml.Serialization;
+﻿using System.Xml.Serialization;
 
 namespace VirtoCommerce.CatalogModule.Data.Search.Filtering
 {
@@ -7,12 +6,12 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Filtering
     public class FilteredBrowsing
     {
         [XmlElement("attribute")]
-        public IList<AttributeFilter> Attributes { get; set; }
+        public AttributeFilter[] Attributes { get; set; }
 
         [XmlElement("attributeRange")]
-        public IList<RangeFilter> AttributeRanges { get; set; }
+        public RangeFilter[] AttributeRanges { get; set; }
 
         [XmlElement("price")]
-        public IList<PriceRangeFilter> Prices { get; set; }
+        public PriceRangeFilter[] Prices { get; set; }
     }
 }
