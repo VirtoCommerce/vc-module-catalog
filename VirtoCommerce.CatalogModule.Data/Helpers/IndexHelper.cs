@@ -49,7 +49,7 @@ namespace VirtoCommerce.CatalogModule.Data.Helpers
 
         public static JsonSerializer ObjectSerializer { get; } = new JsonSerializer
         {
-            DefaultValueHandling = DefaultValueHandling.Ignore,
+            DefaultValueHandling = DefaultValueHandling.Include,
             NullValueHandling = NullValueHandling.Ignore,
             Formatting = Formatting.None,
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
