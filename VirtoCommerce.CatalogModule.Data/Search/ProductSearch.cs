@@ -9,11 +9,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 {
     public class ProductSearch
     {
-        public ProductSearch()
-        {
-            Take = 20;
-        }
-
         public IList<string> ProductIds { get; set; }
 
         /// <summary>
@@ -39,9 +34,10 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
         public int Skip { get; set; }
 
-        public int Take { get; set; }
+        public int Take { get; set; } = 20;
 
-        public virtual T AsCriteria<T>(string storeId, string catalog, IList<ISearchFilter> filters)
+
+        public virtual T AsCriteria<T>(string catalog, IList<ISearchFilter> filters)
             where T : ProductSearchCriteria, new()
         {
             var criteria = AbstractTypeFactory<T>.TryCreateInstance();
@@ -54,47 +50,48 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             criteria.Skip = Skip;
             criteria.Take = Take;
 
-            // add outline
-            if (!string.IsNullOrEmpty(Outline))
+            var outline = string.Join("/", catalog, Outline).TrimEnd('/', '*').ToLowerInvariant();
+            if (!string.IsNullOrEmpty(outline))
             {
-                criteria.Outlines.Add(string.Join("/", catalog, Outline));
-            }
-            else
-            {
-                criteria.Outlines.Add(catalog ?? string.Empty);
+                criteria.Outlines.Add(outline);
             }
 
-            // Add facets
-            if (filters != null)
-            {
-                foreach (var filter in filters)
-                {
-                    criteria.Add(filter);
-                }
-            }
-
-            ApplyFilters(criteria, filters);
-
-            criteria.Sorting = GetSorting(catalog, criteria);
+            criteria.CurrentFilters = GetFilters(filters, Terms, Currency);
+            criteria.Filters = GetFacets(filters);
+            criteria.Sorting = GetSorting(criteria, catalog);
 
             return criteria;
         }
 
-        protected virtual void ApplyFilters<T>(T criteria, IList<ISearchFilter> filters)
-            where T : ProductSearchCriteria, new()
+
+        private static IList<ISearchFilter> GetFacets(IList<ISearchFilter> filters)
         {
-            var terms = Terms.AsKeyValues();
+            var result = new List<ISearchFilter>();
+
+            if (filters != null)
+            {
+                result.AddRange(filters);
+            }
+
+            return result;
+        }
+
+        private static IList<ISearchFilter> GetFilters(IList<ISearchFilter> filters, IEnumerable<string> termStrings, string currency)
+        {
+            var result = new List<ISearchFilter>();
+
+            var terms = termStrings.AsKeyValues();
             if (terms.Any())
             {
                 var filtersWithValues = filters?
-                    .Where(x => !(x is PriceRangeFilter) || ((PriceRangeFilter)x).Currency.EqualsInvariant(Currency))
+                    .Where(x => !(x is PriceRangeFilter) || ((PriceRangeFilter)x).Currency.EqualsInvariant(currency))
                     .Select(x => new { Filter = x, Values = x.GetValues() })
                     .ToList();
 
                 foreach (var term in terms)
                 {
                     var filter = filters?.SingleOrDefault(x => x.Key.EqualsInvariant(term.Key)
-                        && (!(x is PriceRangeFilter) || ((PriceRangeFilter)x).Currency.EqualsInvariant(criteria.Currency)));
+                        && (!(x is PriceRangeFilter) || ((PriceRangeFilter)x).Currency.EqualsInvariant(currency)));
 
                     // handle special filter term with a key = "tags", it contains just values and we need to determine which filter to use
                     if (filter == null && term.Key == "tags")
@@ -109,7 +106,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                                 filter = foundFilter.Filter;
 
                                 var appliedFilter = filter.Convert(term.Values);
-                                criteria.Apply(appliedFilter);
+                                result.Add(appliedFilter);
                             }
                         }
                     }
@@ -128,25 +125,27 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                         }
 
                         var appliedFilter = filter.Convert(term.Values);
-                        criteria.Apply(appliedFilter);
+                        result.Add(appliedFilter);
                     }
                     else // custom term
                     {
                         if (!term.Key.StartsWith("_")) // ignore system terms, we can't filter by them
                         {
-                            var attr = new AttributeFilter { Key = term.Key, Values = term.Values.CreateAttributeFilterValues() };
-                            criteria.Apply(attr);
+                            result.Add(CreateAttributeFilter(term.Key, term.Values));
                         }
                     }
                 }
             }
+
+            return result;
         }
 
-        protected virtual List<SortingField> GetSorting<T>(string catalog, T criteria) where T : ProductSearchCriteria, new()
+        protected virtual IList<SortingField> GetSorting<T>(T criteria, string catalog) where T : ProductSearchCriteria, new()
         {
+            var result = new List<SortingField>();
+
             var categoryId = Outline.AsCategoryId();
             var sorts = Sort.AsSortInfoes();
-            var sortFields = new List<SortingField>();
             var priorityFieldName = string.Format(CultureInfo.InvariantCulture, "priority_{0}_{1}", catalog, categoryId).ToLower();
 
             if (!sorts.IsNullOrEmpty())
@@ -161,32 +160,42 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                         case "price":
                             if (criteria.Pricelists != null)
                             {
-                                sortFields.AddRange(
+                                result.AddRange(
                                     criteria.Pricelists.Select(priceList => new SortingField($"price_{criteria.Currency}_{priceList}".ToLower(), isDescending)));
                             }
                             break;
                         case "priority":
-                            sortFields.Add(new SortingField(priorityFieldName, isDescending));
-                            sortFields.Add(new SortingField("priority", isDescending));
+                            result.Add(new SortingField(priorityFieldName, isDescending));
+                            result.Add(new SortingField("priority", isDescending));
                             break;
                         case "name":
                         case "title":
-                            sortFields.Add(new SortingField("name", isDescending));
+                            result.Add(new SortingField("name", isDescending));
                             break;
                         default:
-                            sortFields.Add(new SortingField(fieldName, isDescending));
+                            result.Add(new SortingField(fieldName, isDescending));
                             break;
                     }
                 }
             }
 
-            if (!sortFields.Any())
+            if (!result.Any())
             {
-                sortFields.Add(new SortingField(priorityFieldName, true));
-                sortFields.Add(new SortingField("priority", true));
-                sortFields.Add(ProductSearchCriteria.DefaultSortOrder);
+                result.Add(new SortingField(priorityFieldName, true));
+                result.Add(new SortingField("priority", true));
+                result.Add(ProductSearchCriteria.DefaultSortOrder);
             }
-            return sortFields;
+
+            return result;
+        }
+
+        private static ISearchFilter CreateAttributeFilter(string key, IEnumerable<string> values)
+        {
+            return new AttributeFilter
+            {
+                Key = key,
+                Values = values.Select(v => new AttributeFilterValue { Value = v }).ToArray(),
+            };
         }
     }
 }

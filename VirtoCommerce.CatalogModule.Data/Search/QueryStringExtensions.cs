@@ -7,7 +7,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 {
     public static class QueryStringExtensions
     {
-        public static List<StringKeyValues> AsKeyValues(this string[] query)
+        public static IList<StringKeyValues> AsKeyValues(this IEnumerable<string> query)
         {
             var result = new List<StringKeyValues>();
 

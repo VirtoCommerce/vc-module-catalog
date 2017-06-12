@@ -4,6 +4,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 {
     public interface ICategorySearchService
     {
-        Task<CategorySearchResult> SearchCategoriesAsync(string storeId, CategorySearch categorySearch);
+        Task<CategorySearchResult> SearchAsync(string storeId, CategorySearch categorySearch);
     }
 }

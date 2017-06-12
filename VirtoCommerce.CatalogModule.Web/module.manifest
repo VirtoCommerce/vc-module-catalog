@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <module>
     <id>VirtoCommerce.Catalog</id>
-    <version>2.16.7</version>
-    <platformVersion>2.12.4</platformVersion>
+    <version>2.17.0</version>
+    <platformVersion>2.13.0</platformVersion>
     <dependencies>
-        <dependency id="VirtoCommerce.Core" version="2.22.2" />
+        <dependency id="VirtoCommerce.Core" version="2.23.0" />
         <dependency id="VirtoCommerce.ImageTools" version="1.0.0" />
     </dependencies>
 
@@ -75,6 +75,22 @@
                 <isArray>true</isArray>
                 <arrayValues>
                 </arrayValues>
+            </setting>
+        </group>
+        <group name="Search|General">
+            <setting>
+                <name>VirtoCommerce.SearchApi.UseCatalogIndexedSearchInManager</name>
+                <valueType>boolean</valueType>
+                <defaultValue>true</defaultValue>
+                <title>Use indexed search for catalog</title>
+                <description>Enable or disable indexed search for catalog module with advanced syntax</description>
+            </setting>
+            <setting>
+                <name>VirtoCommerce.SearchApi.UseFullObjectIndexStoring</name>
+                <valueType>boolean</valueType>
+                <defaultValue>true</defaultValue>
+                <title>Store serialized catalog objects in the index</title>
+                <description>Store serialized catalog objects in the index and return them in search results</description>
             </setting>
         </group>
     </settings>

@@ -51,7 +51,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [ResponseType(typeof(ProductSearchResult))]
         public async Task<IHttpActionResult> SearchProducts(string storeId, ProductSearch criteria)
         {
-            var result = await _productSearchService.SearchProductsAsync(storeId, criteria);
+            var result = await _productSearchService.SearchAsync(storeId, criteria);
             return Ok(result);
         }
 
@@ -60,7 +60,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [ResponseType(typeof(CategorySearchResult))]
         public async Task<IHttpActionResult> SearchCategories(string storeId, CategorySearch criteria)
         {
-            var result = await _categorySearchService.SearchCategoriesAsync(storeId, criteria);
+            var result = await _categorySearchService.SearchAsync(storeId, criteria);
             return Ok(result);
         }
     }

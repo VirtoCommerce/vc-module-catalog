@@ -207,6 +207,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\CatalogRepositoryImpl.cs" />
     <Compile Include="Repositories\ICatalogRepository.cs" />
+    <Compile Include="Search\BaseSearchRequestBuilder.cs" />
+    <Compile Include="Search\BaseSearchResult.cs" />
+    <Compile Include="Search\BaseSearchService.cs" />
     <Compile Include="Search\BrowseFilterService.cs" />
     <Compile Include="Search\CategorySearch.cs" />
     <Compile Include="Search\CategorySearchCriteria.cs" />

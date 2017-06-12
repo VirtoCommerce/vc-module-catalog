@@ -1,62 +1,53 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Linq;
+using VirtoCommerce.CatalogModule.Web.Converters;
 using VirtoCommerce.Domain.Catalog.Model;
+using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Search;
+using VirtoCommerce.Domain.Store.Model;
 using VirtoCommerce.Domain.Store.Services;
+using VirtoCommerce.Platform.Core.Assets;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Settings;
 using Category = VirtoCommerce.CatalogModule.Web.Model.Category;
+using SearchCriteria = VirtoCommerce.Domain.Search.SearchCriteria;
 
 namespace VirtoCommerce.CatalogModule.Data.Search
 {
-    public class CategorySearchService : ICategorySearchService
+    public class CategorySearchService : BaseSearchService<CategorySearch, Category, CategorySearchResult>, ICategorySearchService
     {
-        private readonly IStoreService _storeService;
-        private readonly ISearchProvider _searchProvider;
-        private readonly ISearchRequestBuilder[] _searchRequestBuilders;
-        private readonly ISettingsManager _settingsManager;
+        private readonly ICategoryService _categoryService;
+        private readonly IBlobUrlResolver _blobUrlResolver;
 
-        public CategorySearchService(IStoreService storeService, ISearchProvider searchProvider, ISearchRequestBuilder[] searchRequestBuilders, ISettingsManager settingsManager)
+        public CategorySearchService(ISearchProvider searchProvider, ISearchRequestBuilder[] searchRequestBuilders, IStoreService storeService, ISettingsManager settingsManager, ICategoryService categoryService, IBlobUrlResolver blobUrlResolver)
+            : base(searchProvider, searchRequestBuilders, storeService, settingsManager)
         {
-            _storeService = storeService;
-            _searchProvider = searchProvider;
-            _searchRequestBuilders = searchRequestBuilders;
-            _settingsManager = settingsManager;
+            _categoryService = categoryService;
+            _blobUrlResolver = blobUrlResolver;
         }
 
-        public async Task<CategorySearchResult> SearchCategoriesAsync(string storeId, CategorySearch categorySearch)
+        protected override SearchCriteria GetSearchCriteria(CategorySearch search, Store store)
         {
-            var result = new CategorySearchResult();
-
-            var store = _storeService.GetById(storeId);
-            if (store != null)
-            {
-                var responseGroup = EnumUtility.SafeParse(categorySearch.ResponseGroup, CategoryResponseGroup.Full & ~CategoryResponseGroup.WithProperties);
-                var searchCriteria = categorySearch.AsCriteria<CategorySearchCriteria>(store.Catalog);
-
-                var searchRequest = ConvertSearchCriteriaToSearchRequest(searchCriteria);
-                var searchResponse = await _searchProvider.SearchAsync(searchCriteria.DocumentType, searchRequest);
-
-                if (searchResponse != null)
-                {
-                    var returnProductsFromIndex = _settingsManager.GetValue("VirtoCommerce.SearchApi.UseFullObjectIndexStoring", true);
-
-                    result.TotalCount = searchResponse.TotalCount;
-                    result.Categories = ConvertDocumentsToCategories(searchResponse.Documents, returnProductsFromIndex, searchCriteria, responseGroup);
-                }
-            }
-
+            var result = search.AsCriteria<CategorySearchCriteria>(store.Catalog);
             return result;
         }
 
-        private static SearchRequest ConvertSearchCriteriaToSearchRequest(CategorySearchCriteria searchCriteria)
+        protected override IList<Category> LoadMissingItems(string[] missingItemIds, SearchCriteria searchCriteria, CategorySearch search)
         {
-            return null;
+            var catalog = (searchCriteria as CategorySearchCriteria)?.Catalog;
+            var categories = _categoryService.GetByIds(missingItemIds, GetResponseGroup(search), catalog);
+            var result = categories.Select(p => p.ToWebModel(_blobUrlResolver)).ToArray();
+            return result;
         }
 
-        private static Category[] ConvertDocumentsToCategories(IList<SearchDocument> documents, bool returnProductsFromIndex, CategorySearchCriteria searchCriteria, CategoryResponseGroup responseGroup)
+        protected virtual CategoryResponseGroup GetResponseGroup(CategorySearch search)
         {
-            return null;
+            var result = EnumUtility.SafeParse(search.ResponseGroup, CategoryResponseGroup.Full & ~CategoryResponseGroup.WithProperties);
+            return result;
+        }
+
+        protected override void ReduceSearchResults(IEnumerable<Category> items, CategorySearch search)
+        {
         }
     }
 }

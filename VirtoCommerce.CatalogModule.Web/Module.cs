@@ -83,7 +83,7 @@ namespace VirtoCommerce.CatalogModule.Web
 
             var productIndexingConfiguration = new IndexDocumentConfiguration
             {
-                DocumentType = Constants.ProductDocumentType,
+                DocumentType = KnownDocumentTypes.Product,
                 DocumentSource = new IndexDocumentSource
                 {
                     ChangesProvider = _container.Resolve<ProductDocumentChangesProvider>(),
