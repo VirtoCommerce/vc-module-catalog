@@ -232,6 +232,9 @@
     <Compile Include="Search\IBrowseFilterService.cs" />
     <Compile Include="Search\ICategorySearchService.cs" />
     <Compile Include="Search\IndexDocumentHelper.cs" />
+    <Compile Include="Search\Indexing\CatalogDocumentBuilder.cs" />
+    <Compile Include="Search\Indexing\CategoryDocumentBuilder.cs" />
+    <Compile Include="Search\Indexing\CategoryDocumentChangesProvider.cs" />
     <Compile Include="Search\Indexing\ProductDocumentBuilder.cs" />
     <Compile Include="Search\Indexing\ProductDocumentChangesProvider.cs" />
     <Compile Include="Search\IProductSearchService.cs" />

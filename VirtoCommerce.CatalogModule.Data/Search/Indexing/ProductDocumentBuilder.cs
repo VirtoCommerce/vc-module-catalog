@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Web.Converters;
@@ -12,17 +11,16 @@ using VirtoCommerce.Platform.Core.Settings;
 
 namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 {
-    public class ProductDocumentBuilder : IIndexDocumentBuilder
+    public class ProductDocumentBuilder : CatalogDocumentBuilder, IIndexDocumentBuilder
     {
         private readonly IItemService _itemService;
         private readonly IBlobUrlResolver _blobUrlResolver;
-        private readonly ISettingsManager _settingsManager;
 
-        public ProductDocumentBuilder(IItemService itemService, IBlobUrlResolver blobUrlResolver, ISettingsManager settingsManager)
+        public ProductDocumentBuilder(ISettingsManager settingsManager, IItemService itemService, IBlobUrlResolver blobUrlResolver)
+            : base(settingsManager)
         {
             _itemService = itemService;
             _blobUrlResolver = blobUrlResolver;
-            _settingsManager = settingsManager;
         }
 
         public Task<IList<IndexDocument>> GetDocumentsAsync(IList<string> documentIds)
@@ -64,7 +62,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             // Add priority in virtual categories to search index
             foreach (var link in product.Links)
             {
-                document.Add(new IndexDocumentField(string.Format(CultureInfo.InvariantCulture, "priority_{0}_{1}", link.CatalogId, link.CategoryId), link.Priority) { IsRetrievable = true, IsFilterable = true });
+                document.Add(new IndexDocumentField($"priority_{link.CatalogId}_{link.CategoryId}", link.Priority) { IsRetrievable = true, IsFilterable = true });
             }
 
             // Add catalogs to search index
@@ -86,7 +84,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             }
 
             // Index custom properties
-            IndexItemCustomProperties(document, product);
+            IndexCustomProperties(document, product.Properties, product.PropertyValues);
 
             if (product.Variations != null)
             {
@@ -104,7 +102,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
                 foreach (var variation in product.Variations)
                 {
-                    IndexItemCustomProperties(document, variation);
+                    IndexCustomProperties(document, variation.Properties, variation.PropertyValues);
                 }
             }
 
@@ -112,7 +110,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             document.Add(new IndexDocumentField("__content", product.Name) { IsRetrievable = true, IsSearchable = true, IsCollection = true });
             document.Add(new IndexDocumentField("__content", product.Code) { IsRetrievable = true, IsSearchable = true, IsCollection = true });
 
-            if (_settingsManager.GetValue("VirtoCommerce.SearchApi.UseFullObjectIndexStoring", true))
+            if (StoreObjectsInIndex)
             {
                 // Index serialized product
                 var itemDto = product.ToWebModel(_blobUrlResolver);
@@ -121,97 +119,10 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
             return document;
         }
+
         protected virtual void IndexIsProperty(IndexDocument document, string value)
         {
             document.Add(new IndexDocumentField("is", value) { IsRetrievable = true, IsFilterable = true, IsCollection = true });
-        }
-
-        protected virtual void IndexItemCustomProperties(IndexDocument document, CatalogProduct item)
-        {
-            var properties = item.Properties;
-
-            foreach (var propValue in item.PropertyValues.Where(x => x.Value != null))
-            {
-                var propertyName = (propValue.PropertyName ?? "").ToLowerInvariant();
-                var property = properties.FirstOrDefault(x => string.Equals(x.Name, propValue.PropertyName, StringComparison.InvariantCultureIgnoreCase) && x.ValueType == propValue.ValueType);
-                var isCollection = property?.Multivalue == true;
-
-                switch (propValue.ValueType)
-                {
-                    case PropertyValueType.Boolean:
-                    case PropertyValueType.DateTime:
-                    case PropertyValueType.Number:
-                        document.Add(new IndexDocumentField(propertyName, propValue.Value) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection });
-                        break;
-                    case PropertyValueType.LongText:
-                        document.Add(new IndexDocumentField(propertyName, propValue.Value.ToString().ToLowerInvariant()) { IsRetrievable = true, IsSearchable = true, IsCollection = isCollection });
-                        break;
-                    case PropertyValueType.ShortText: // do not tokenize small values as they will be used for lookups and filters
-                        document.Add(new IndexDocumentField(propertyName, propValue.Value.ToString()) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection });
-                        break;
-                }
-
-                // Add value to the searchable content field
-                var contentField = string.Concat("__content", property != null && property.Multilanguage && !string.IsNullOrWhiteSpace(propValue.LanguageCode) ? "_" + propValue.LanguageCode.ToLowerInvariant() : string.Empty);
-
-                switch (propValue.ValueType)
-                {
-                    case PropertyValueType.LongText:
-                    case PropertyValueType.ShortText:
-                        var stringValue = propValue.Value.ToString();
-
-                        if (!string.IsNullOrWhiteSpace(stringValue)) // don't index empty values
-                        {
-                            document.Add(new IndexDocumentField(contentField, stringValue.ToLower()) { IsRetrievable = true, IsSearchable = true, IsCollection = true });
-                        }
-
-                        break;
-                }
-            }
-        }
-
-        protected virtual string[] GetOutlineStrings(IEnumerable<Outline> outlines)
-        {
-            return outlines
-                .SelectMany(ExpandOutline)
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .ToArray();
-        }
-
-        protected virtual IEnumerable<string> ExpandOutline(Outline outline)
-        {
-            // Outline structure: catalog/category1/.../categoryN/product
-
-            var items = outline.Items
-                .Take(outline.Items.Count - 1) // Exclude last item, which is product ID
-                .Select(i => i.Id)
-                .ToList();
-
-            var result = new List<string>();
-
-            // Add partial outline for each parent:
-            // catalog/category1/category2
-            // catalog/category1
-            // catalog
-            if (items.Count > 0)
-            {
-                for (var i = items.Count; i > 0; i--)
-                {
-                    result.Add(string.Join("/", items.Take(i)));
-                }
-            }
-
-            // For each parent category create a separate outline: catalog/parent_category
-            if (items.Count > 2)
-            {
-                var catalogId = items.First();
-
-                result.AddRange(
-                    items.Skip(1)
-                        .Select(i => string.Join("/", catalogId, i)));
-            }
-
-            return result;
         }
     }
 }

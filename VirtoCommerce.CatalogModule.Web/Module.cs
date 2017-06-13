@@ -81,6 +81,7 @@ namespace VirtoCommerce.CatalogModule.Web
             _container.RegisterType<ISearchRequestBuilder, ProductSearchRequestBuilder>(nameof(ProductSearchRequestBuilder));
             _container.RegisterType<ISearchRequestBuilder, CategorySearchRequestBuilder>(nameof(CategorySearchRequestBuilder));
 
+            // Product indexing configuration
             var productIndexingConfiguration = new IndexDocumentConfiguration
             {
                 DocumentType = KnownDocumentTypes.Product,
@@ -92,6 +93,19 @@ namespace VirtoCommerce.CatalogModule.Web
             };
 
             _container.RegisterInstance(productIndexingConfiguration.DocumentType, productIndexingConfiguration);
+
+            // Category indexing configuration
+            var categoryIndexingConfiguration = new IndexDocumentConfiguration
+            {
+                DocumentType = KnownDocumentTypes.Category,
+                DocumentSource = new IndexDocumentSource
+                {
+                    ChangesProvider = _container.Resolve<CategoryDocumentChangesProvider>(),
+                    DocumentBuilder = _container.Resolve<CategoryDocumentBuilder>(),
+                },
+            };
+
+            _container.RegisterInstance(categoryIndexingConfiguration.DocumentType, categoryIndexingConfiguration);
 
             #endregion
         }
