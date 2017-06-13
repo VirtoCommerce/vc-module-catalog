@@ -16,7 +16,7 @@ using SearchCriteria = VirtoCommerce.Domain.Search.SearchCriteria;
 
 namespace VirtoCommerce.CatalogModule.Data.Search
 {
-    public class ProductSearchService : BaseSearchService<ProductSearch, Product, ProductSearchResult>, IProductSearchService
+    public class ProductSearchService : CatalogSearchService<ProductSearch, Product, ProductSearchResult>, IProductSearchService
     {
         private readonly IItemService _itemService;
         private readonly IBlobUrlResolver _blobUrlResolver;

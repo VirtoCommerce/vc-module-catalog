@@ -5,7 +5,7 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.Search
 {
-    public abstract class BaseSearchRequestBuilder : ISearchRequestBuilder
+    public abstract class CatalogSearchRequestBuilder : ISearchRequestBuilder
     {
         public abstract string DocumentType { get; }
 

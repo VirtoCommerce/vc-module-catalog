@@ -2,7 +2,7 @@
 
 namespace VirtoCommerce.CatalogModule.Data.Search
 {
-    public class ProductSearchResult : BaseSearchResult<Product>
+    public class ProductSearchResult : CatalogSearchResult<Product>
     {
     }
 }

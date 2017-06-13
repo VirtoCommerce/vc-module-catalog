@@ -5,7 +5,7 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.Search
 {
-    public class CategorySearchRequestBuilder : BaseSearchRequestBuilder
+    public class CategorySearchRequestBuilder : CatalogSearchRequestBuilder
     {
         public override string DocumentType { get; } = KnownDocumentTypes.Category;
 

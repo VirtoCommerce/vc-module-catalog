@@ -2,7 +2,7 @@
 
 namespace VirtoCommerce.CatalogModule.Data.Search
 {
-    public class BaseSearchResult<TItem>
+    public class CatalogSearchResult<TItem>
     {
         public long TotalCount { get; set; }
 

@@ -9,7 +9,7 @@ using RangeFilterValue = VirtoCommerce.Domain.Search.RangeFilterValue;
 
 namespace VirtoCommerce.CatalogModule.Data.Search
 {
-    public class ProductSearchRequestBuilder : BaseSearchRequestBuilder
+    public class ProductSearchRequestBuilder : CatalogSearchRequestBuilder
     {
         public override string DocumentType { get; } = KnownDocumentTypes.Product;
 

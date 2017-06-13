@@ -11,16 +11,16 @@ using SearchCriteria = VirtoCommerce.Domain.Search.SearchCriteria;
 
 namespace VirtoCommerce.CatalogModule.Data.Search
 {
-    public abstract class BaseSearchService<TSearch, TItem, TResult>
+    public abstract class CatalogSearchService<TSearch, TItem, TResult>
         where TItem : Entity
-        where TResult : BaseSearchResult<TItem>
+        where TResult : CatalogSearchResult<TItem>
     {
         private readonly ISearchProvider _searchProvider;
         private readonly ISearchRequestBuilder[] _searchRequestBuilders;
         private readonly IStoreService _storeService;
         private readonly ISettingsManager _settingsManager;
 
-        protected BaseSearchService(ISearchProvider searchProvider, ISearchRequestBuilder[] searchRequestBuilders, IStoreService storeService, ISettingsManager settingsManager)
+        protected CatalogSearchService(ISearchProvider searchProvider, ISearchRequestBuilder[] searchRequestBuilders, IStoreService storeService, ISettingsManager settingsManager)
         {
             _searchProvider = searchProvider;
             _searchRequestBuilders = searchRequestBuilders;
