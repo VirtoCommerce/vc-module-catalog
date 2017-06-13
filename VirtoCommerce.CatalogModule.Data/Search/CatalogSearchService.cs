@@ -111,7 +111,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return result;
         }
 
-        protected virtual Aggregation[] ConvertAggregations(IList<AggregationResponse> aggregations, SearchCriteria searchCriteria)
+        protected virtual Aggregation[] ConvertAggregations(IList<AggregationResponse> aggregationResponses, SearchCriteria searchCriteria)
         {
             return null;
         }

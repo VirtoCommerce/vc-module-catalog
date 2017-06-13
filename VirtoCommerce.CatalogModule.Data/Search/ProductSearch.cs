@@ -37,7 +37,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
         public int Take { get; set; } = 20;
 
 
-        public virtual T AsCriteria<T>(string catalog, IList<ISearchFilter> filters)
+        public virtual T AsCriteria<T>(string catalog, IList<ISearchFilter> allFilters)
             where T : ProductSearchCriteria, new()
         {
             var criteria = AbstractTypeFactory<T>.TryCreateInstance();
@@ -56,8 +56,12 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 criteria.Outlines.Add(outline);
             }
 
-            criteria.CurrentFilters = GetFilters(filters, Terms, Currency);
+            var filters = allFilters
+                .Where(f => !(f is PriceRangeFilter) || ((PriceRangeFilter)f).Currency.EqualsInvariant(Currency))
+                .ToList();
+
             criteria.Filters = GetFacets(filters);
+            criteria.CurrentFilters = GetFilters(filters, Terms);
             criteria.Sorting = GetSorting(criteria, catalog);
 
             return criteria;
@@ -76,22 +80,20 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return result;
         }
 
-        private static IList<ISearchFilter> GetFilters(IList<ISearchFilter> filters, IEnumerable<string> termStrings, string currency)
+        private static IList<ISearchFilter> GetFilters(IList<ISearchFilter> filters, IEnumerable<string> termStrings)
         {
             var result = new List<ISearchFilter>();
 
             var terms = termStrings.AsKeyValues();
             if (terms.Any())
             {
-                var filtersWithValues = filters?
-                    .Where(x => !(x is PriceRangeFilter) || ((PriceRangeFilter)x).Currency.EqualsInvariant(currency))
-                    .Select(x => new { Filter = x, Values = x.GetValues() })
+                var filtersWithValues = filters
+                    ?.Select(x => new { Filter = x, Values = x.GetValues() })
                     .ToList();
 
                 foreach (var term in terms)
                 {
-                    var filter = filters?.SingleOrDefault(x => x.Key.EqualsInvariant(term.Key)
-                        && (!(x is PriceRangeFilter) || ((PriceRangeFilter)x).Currency.EqualsInvariant(currency)));
+                    var filter = filters?.SingleOrDefault(x => x.Key.EqualsInvariant(term.Key));
 
                     // handle special filter term with a key = "tags", it contains just values and we need to determine which filter to use
                     if (filter == null && term.Key == "tags")

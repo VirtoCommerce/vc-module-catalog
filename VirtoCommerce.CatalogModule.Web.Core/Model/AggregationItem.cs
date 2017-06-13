@@ -1,4 +1,6 @@
-﻿namespace VirtoCommerce.CatalogModule.Web.Model
+﻿using System.Collections.Generic;
+
+namespace VirtoCommerce.CatalogModule.Web.Model
 {
     public class AggregationItem
     {
@@ -20,6 +22,6 @@
         /// <summary>
         /// Gets or sets the collection of aggregation item labels
         /// </summary>
-        public AggregationLabel[] Labels { get; set; }
+        public IList<AggregationLabel> Labels { get; set; }
     }
 }
