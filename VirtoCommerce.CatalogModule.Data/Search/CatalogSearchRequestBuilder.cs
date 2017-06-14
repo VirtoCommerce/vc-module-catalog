@@ -17,6 +17,13 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 request.Sorting = GetSorting(criteria);
                 request.Skip = criteria.Skip;
                 request.Take = criteria.Take;
+
+                var catalogSearchCriteria = criteria as CatalogSearchCriteria;
+                if (catalogSearchCriteria != null)
+                {
+                    request.SearchKeywords = catalogSearchCriteria.SearchPhrase;
+                    request.SearchFields = new[] { "__content" };
+                }
             }
         }
 

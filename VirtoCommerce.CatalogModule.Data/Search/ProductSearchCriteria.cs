@@ -5,12 +5,10 @@ using VirtoCommerce.Domain.Search;
 
 namespace VirtoCommerce.CatalogModule.Data.Search
 {
-    public class ProductSearchCriteria : SearchCriteria
+    public class ProductSearchCriteria : CatalogSearchCriteria
     {
         public override string DocumentType { get; } = KnownDocumentTypes.Product;
 
-        public virtual string SearchPhrase { get; set; }
-        public virtual string Locale { get; set; }
         public virtual string Currency { get; set; }
         public virtual IList<string> Pricelists { get; set; }
         public NumericRange PriceRange { get; set; }
@@ -20,31 +18,10 @@ namespace VirtoCommerce.CatalogModule.Data.Search
         public virtual IList<ISearchFilter> Filters { get; set; }
 
         /// <summary>
-        /// Gets the default sort order.
-        /// </summary>
-        /// <value>The default sort order.</value>
-        public static SortingField DefaultSortOrder => new SortingField { FieldName = "__sort" };
-
-        /// <summary>
         /// Gets or sets the class types.
         /// </summary>
         /// <value>The class types.</value>
         public virtual IList<string> ClassTypes { get; set; } = new List<string>();
-
-        /// <summary>
-        /// Gets or sets the catalog.
-        /// </summary>
-        /// <value>
-        /// The catalog.
-        /// </value>
-        public virtual string Catalog { get; set; }
-
-        /// <summary>
-        /// Gets or sets the outlines. Outline consists of "Category1/Category2".
-        /// </summary>
-        /// <example>Everything/digital-cameras</example>
-        /// <value>The outlines.</value>
-        public virtual IList<string> Outlines { get; set; } = new List<string>();
 
         /// <summary>
         /// Specifies if we search for hidden products.

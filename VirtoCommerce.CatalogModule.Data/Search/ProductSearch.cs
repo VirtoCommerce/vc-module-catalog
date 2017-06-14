@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Data.Search.Filtering;
 using VirtoCommerce.Domain.Search;
@@ -7,10 +6,8 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.Search
 {
-    public class ProductSearch
+    public class ProductSearch : CatalogSearch
     {
-        public IList<string> ProductIds { get; set; }
-
         /// <summary>
         /// ItemResponseGroup
         /// </summary>
@@ -20,43 +17,19 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
         public string[] Terms { get; set; }
 
-        public string SearchPhrase { get; set; }
-        public string Locale { get; set; }
+        public string[] Pricelists { get; set; }
 
-        /// <summary>
-        /// CategoryId1/CategoryId2, no catalog should be included in the outline
-        /// </summary>
-        public string Outline { get; set; }
-
-        public string[] PriceLists { get; set; }
         public NumericRange PriceRange { get; set; }
-
-        public string[] Sort { get; set; }
-
-        public int Skip { get; set; }
-
-        public int Take { get; set; } = 20;
 
 
         public virtual T AsCriteria<T>(string catalog, IList<ISearchFilter> allFilters)
             where T : ProductSearchCriteria, new()
         {
-            var criteria = AbstractTypeFactory<T>.TryCreateInstance();
+            var criteria = base.AsCriteria<T>(catalog);
 
-            criteria.Ids = ProductIds;
             criteria.Currency = Currency;
-            criteria.Pricelists = PriceLists;
+            criteria.Pricelists = Pricelists;
             criteria.PriceRange = PriceRange;
-            criteria.SearchPhrase = SearchPhrase;
-            criteria.Locale = Locale;
-            criteria.Skip = Skip;
-            criteria.Take = Take;
-
-            var outline = string.Join("/", catalog, Outline).TrimEnd('/', '*').ToLowerInvariant();
-            if (!string.IsNullOrEmpty(outline))
-            {
-                criteria.Outlines.Add(outline);
-            }
 
             var filters = allFilters
                 .Where(f => !(f is PriceRangeFilter) || ((PriceRangeFilter)f).Currency.EqualsInvariant(Currency))
@@ -64,7 +37,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
             criteria.Filters = GetFacets(filters);
             criteria.CurrentFilters = GetFilters(filters, Terms);
-            criteria.Sorting = GetSorting(criteria, catalog);
+            criteria.Sorting = GetSorting(catalog);
 
             return criteria;
         }
@@ -133,7 +106,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                     }
                     else // custom term
                     {
-                        if (!term.Key.StartsWith("_")) // ignore system terms, we can't filter by them
+                        if (!term.Key.StartsWith("_")) // ignore system terms, we can't filter by them // AD: Why???
                         {
                             result.Add(CreateAttributeFilter(term.Key, term.Values));
                         }
@@ -144,13 +117,13 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return result;
         }
 
-        protected virtual IList<SortingField> GetSorting<T>(T criteria, string catalog) where T : ProductSearchCriteria, new()
+        protected virtual IList<SortingField> GetSorting(string catalog)
         {
             var result = new List<SortingField>();
 
             var categoryId = Outline.AsCategoryId();
             var sorts = Sort.AsSortInfoes();
-            var priorityFieldName = string.Format(CultureInfo.InvariantCulture, "priority_{0}_{1}", catalog, categoryId).ToLower();
+            var priorityFieldName = $"priority_{catalog}_{categoryId}".ToLowerInvariant();
 
             if (!sorts.IsNullOrEmpty())
             {
@@ -162,10 +135,10 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                     switch (fieldName)
                     {
                         case "price":
-                            if (criteria.Pricelists != null)
+                            if (Pricelists != null)
                             {
                                 result.AddRange(
-                                    criteria.Pricelists.Select(priceList => new SortingField($"price_{criteria.Currency}_{priceList}".ToLower(), isDescending)));
+                                    Pricelists.Select(priceList => new SortingField($"price_{Currency}_{priceList}".ToLowerInvariant(), isDescending)));
                             }
                             break;
                         case "priority":
@@ -187,7 +160,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             {
                 result.Add(new SortingField(priorityFieldName, true));
                 result.Add(new SortingField("priority", true));
-                result.Add(ProductSearchCriteria.DefaultSortOrder);
+                result.Add(CatalogSearchCriteria.DefaultSortOrder);
             }
 
             return result;

@@ -208,6 +208,8 @@
     <Compile Include="Repositories\CatalogRepositoryImpl.cs" />
     <Compile Include="Repositories\ICatalogRepository.cs" />
     <Compile Include="Search\BrowseFilterService.cs" />
+    <Compile Include="Search\CatalogSearch.cs" />
+    <Compile Include="Search\CatalogSearchCriteria.cs" />
     <Compile Include="Search\CatalogSearchRequestBuilder.cs" />
     <Compile Include="Search\CatalogSearchResult.cs" />
     <Compile Include="Search\CatalogSearchService.cs" />

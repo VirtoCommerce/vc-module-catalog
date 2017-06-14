@@ -1,46 +1,33 @@
 ﻿using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using VirtoCommerce.Domain.Search;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.Search
 {
-    public class CategorySearch
+    public class CategorySearch : CatalogSearch
     {
         /// <summary>
         /// CategoryResponseGroup
         /// </summary>
         public string ResponseGroup { get; set; }
-        /// <summary>
-        /// CategoryId/CategoryId
-        /// </summary>
-        public string Outline { get; set; }
 
-        public string[] Sort { get; set; }
-
-        public int Skip { get; set; }
-
-        public int Take { get; set; }
-
-        public virtual T AsCriteria<T>(string catalog)
-            where T : CategorySearchCriteria, new()
+        public override T AsCriteria<T>(string catalog)
         {
-            var criteria = AbstractTypeFactory<T>.TryCreateInstance();
+            var criteria = base.AsCriteria<T>(catalog);
 
-            criteria.Skip = Skip;
-            criteria.Take = Take;
+            criteria.Sorting = GetSorting(catalog);
 
-            // Add outline
-            var outline = string.IsNullOrEmpty(Outline) ? $"{catalog}" : $"{catalog}{Outline}";
-            criteria.Outlines.Add(outline);
+            return criteria;
+        }
 
-            #region Sorting
+        protected virtual IList<SortingField> GetSorting(string catalog)
+        {
+            var result = new List<SortingField>();
 
             var categoryId = Outline.AsCategoryId();
             var sorts = Sort.AsSortInfoes();
-            var sortFields = new List<SortingField>();
-            var priorityFieldName = string.Format(CultureInfo.InvariantCulture, "priority_{0}_{1}", catalog, categoryId).ToLower();
+            var priorityFieldName = $"priority_{catalog}_{categoryId}".ToLowerInvariant();
 
             if (!sorts.IsNullOrEmpty())
             {
@@ -52,32 +39,28 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                     switch (fieldName)
                     {
                         case "priority":
-                            sortFields.Add(new SortingField(priorityFieldName, isDescending));
-                            sortFields.Add(new SortingField("priority", isDescending));
+                            result.Add(new SortingField(priorityFieldName, isDescending));
+                            result.Add(new SortingField("priority", isDescending));
                             break;
                         case "name":
                         case "title":
-                            sortFields.Add(new SortingField("name", isDescending));
+                            result.Add(new SortingField("name", isDescending));
                             break;
                         default:
-                            sortFields.Add(new SortingField(fieldName, isDescending));
+                            result.Add(new SortingField(fieldName, isDescending));
                             break;
                     }
                 }
             }
 
-            if (!sortFields.Any())
+            if (!result.Any())
             {
-                sortFields.Add(new SortingField(priorityFieldName, true));
-                sortFields.Add(new SortingField("priority", true));
-                sortFields.Add(CategorySearchCriteria.DefaultSortOrder);
+                result.Add(new SortingField(priorityFieldName, true));
+                result.Add(new SortingField("priority", true));
+                result.Add(CatalogSearchCriteria.DefaultSortOrder);
             }
 
-            criteria.Sorting = sortFields;
-
-            #endregion
-
-            return criteria;
+            return result;
         }
     }
 }
