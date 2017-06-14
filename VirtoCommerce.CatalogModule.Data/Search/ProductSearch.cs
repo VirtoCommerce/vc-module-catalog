@@ -29,6 +29,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
         public string Outline { get; set; }
 
         public string[] PriceLists { get; set; }
+        public NumericRange PriceRange { get; set; }
 
         public string[] Sort { get; set; }
 
@@ -45,6 +46,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             criteria.Ids = ProductIds;
             criteria.Currency = Currency;
             criteria.Pricelists = PriceLists;
+            criteria.PriceRange = PriceRange;
             criteria.SearchPhrase = SearchPhrase;
             criteria.Locale = Locale;
             criteria.Skip = Skip;

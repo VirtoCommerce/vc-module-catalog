@@ -238,6 +238,7 @@
     <Compile Include="Search\Indexing\ProductDocumentBuilder.cs" />
     <Compile Include="Search\Indexing\ProductDocumentChangesProvider.cs" />
     <Compile Include="Search\IProductSearchService.cs" />
+    <Compile Include="Search\NumericRange.cs" />
     <Compile Include="Search\ProductSearch.cs" />
     <Compile Include="Search\ProductSearchCriteria.cs" />
     <Compile Include="Search\ProductSearchRequestBuilder.cs" />

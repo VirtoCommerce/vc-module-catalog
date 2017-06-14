@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Data.Search.Filtering;
 using VirtoCommerce.Domain.Search;
@@ -55,33 +56,39 @@ namespace VirtoCommerce.CatalogModule.Data.Search
         {
             var result = new List<ISearchFilter>
             {
-                CreateDateRangeFilter("startdate", criteria.StartDateFrom, criteria.StartDate, false, true)
+                CreateCatalogDateRangeFilter("startdate", criteria.StartDateFrom, criteria.StartDate, false, true)
             };
 
             if (criteria.EndDate != null)
             {
-                result.Add(CreateDateRangeFilter("enddate", criteria.EndDate, null, false, false));
+                result.Add(CreateCatalogDateRangeFilter("enddate", criteria.EndDate, null, false, false));
             }
 
             if (!criteria.ClassTypes.IsNullOrEmpty())
             {
-                result.Add(CreateAttributeFilter("__type", criteria.ClassTypes));
+                result.Add(CreateCatalogAttributeFilter("__type", criteria.ClassTypes));
             }
 
             if (!string.IsNullOrEmpty(criteria.Catalog))
             {
-                result.Add(CreateAttributeFilter("catalog", criteria.Catalog.ToLowerInvariant()));
+                result.Add(CreateCatalogAttributeFilter("catalog", criteria.Catalog.ToLowerInvariant()));
             }
 
             if (!criteria.Outlines.IsNullOrEmpty())
             {
                 var outlines = criteria.Outlines.Select(o => o.TrimEnd('/', '*').ToLowerInvariant());
-                result.Add(CreateAttributeFilter("__outline", outlines));
+                result.Add(CreateCatalogAttributeFilter("__outline", outlines));
             }
 
             if (!criteria.WithHidden)
             {
-                result.Add(CreateAttributeFilter("status", "visible"));
+                result.Add(CreateCatalogAttributeFilter("status", "visible"));
+            }
+
+            if (criteria.PriceRange != null)
+            {
+                var range = criteria.PriceRange;
+                result.Add(CreateCatalogPriceRangeFilter(criteria.Currency, range.Lower, range.Upper, range.IncludeLower, range.IncludeUpper));
             }
 
             if (criteria.CurrentFilters != null)
@@ -92,7 +99,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return result;
         }
 
-        private static ISearchFilter CreateAttributeFilter(string key, string value)
+        private static ISearchFilter CreateCatalogAttributeFilter(string key, string value)
         {
             return new AttributeFilter
             {
@@ -101,7 +108,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             };
         }
 
-        private static ISearchFilter CreateAttributeFilter(string key, IEnumerable<string> values)
+        private static ISearchFilter CreateCatalogAttributeFilter(string key, IEnumerable<string> values)
         {
             return new AttributeFilter
             {
@@ -110,9 +117,18 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             };
         }
 
-        private static ISearchFilter CreateDateRangeFilter(string key, DateTime? lower, DateTime? upper, bool includeLower, bool includeUpper)
+        private static ISearchFilter CreateCatalogDateRangeFilter(string key, DateTime? lower, DateTime? upper, bool includeLower, bool includeUpper)
         {
             return CreateCatalogRangeFilter(key, lower?.ToString("O"), upper?.ToString("O"), includeLower, includeUpper);
+        }
+
+        private static ISearchFilter CreateCatalogPriceRangeFilter(string currency, decimal? lower, decimal? upper, bool includeLower, bool includeUpper)
+        {
+            return new PriceRangeFilter
+            {
+                Currency = currency,
+                Values = new[] { CreateCatalogRangeFilterValue(lower?.ToString(CultureInfo.InvariantCulture), upper?.ToString(CultureInfo.InvariantCulture), includeLower, includeUpper) },
+            };
         }
 
         private static ISearchFilter CreateCatalogRangeFilter(string key, string lower, string upper, bool includeLower, bool includeUpper)
@@ -120,16 +136,18 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return new Filtering.RangeFilter
             {
                 Key = key,
-                Values = new[]
-                {
-                    new Filtering.RangeFilterValue
-                    {
-                        Lower = lower,
-                        Upper = upper,
-                        IncludeLower = includeLower,
-                        IncludeUpper = includeUpper,
-                    }
-                },
+                Values = new[] { CreateCatalogRangeFilterValue(lower, upper, includeLower, includeUpper) },
+            };
+        }
+
+        private static Filtering.RangeFilterValue CreateCatalogRangeFilterValue(string lower, string upper, bool includeLower, bool includeUpper)
+        {
+            return new Filtering.RangeFilterValue
+            {
+                Lower = lower,
+                Upper = upper,
+                IncludeLower = includeLower,
+                IncludeUpper = includeUpper,
             };
         }
 

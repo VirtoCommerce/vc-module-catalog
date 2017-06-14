@@ -13,6 +13,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
         public virtual string Locale { get; set; }
         public virtual string Currency { get; set; }
         public virtual IList<string> Pricelists { get; set; }
+        public NumericRange PriceRange { get; set; }
 
         public virtual IList<ISearchFilter> CurrentFilters { get; set; }
 
