@@ -13,6 +13,8 @@ using VirtoCommerce.CatalogModule.Web.Security;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Commerce.Services;
 using VirtoCommerce.Domain.Search;
+using VirtoCommerce.Domain.Store.Model;
+using VirtoCommerce.Platform.Core.DynamicProperties;
 using VirtoCommerce.Platform.Core.ExportImport;
 using VirtoCommerce.Platform.Core.Modularity;
 using VirtoCommerce.Platform.Core.Security;
@@ -121,6 +123,19 @@ namespace VirtoCommerce.CatalogModule.Web
             var httpConfiguration = _container.Resolve<HttpConfiguration>();
             httpConfiguration.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new ProductSearchJsonConverter());
             httpConfiguration.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new CategorySearchJsonConverter());
+
+            // Register dynamic property for storing browsing filters
+            var filteredBrowsingProperty = new DynamicProperty
+            {
+                Id = "2b15f370ab524186bec1ace82509a60a",
+                Name = "FilteredBrowsing",
+                ObjectType = typeof(Store).FullName,
+                ValueType = DynamicPropertyValueType.LongText,
+                CreatedBy = "Auto"
+            };
+
+            var dynamicPropertyService = _container.Resolve<IDynamicPropertyService>();
+            dynamicPropertyService.SaveProperties(new[] { filteredBrowsingProperty });
         }
 
         #endregion

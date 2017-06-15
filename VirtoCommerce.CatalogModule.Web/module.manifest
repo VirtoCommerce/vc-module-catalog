@@ -77,7 +77,7 @@
                 </arrayValues>
             </setting>
         </group>
-        <group name="Search|General">
+        <group name="Search|Catalog">
             <setting>
                 <name>VirtoCommerce.SearchApi.UseCatalogIndexedSearchInManager</name>
                 <valueType>boolean</valueType>
