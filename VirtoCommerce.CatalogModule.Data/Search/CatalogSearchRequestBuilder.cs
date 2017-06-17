@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using VirtoCommerce.Domain.Search;
-using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.Search
 {
@@ -9,22 +7,19 @@ namespace VirtoCommerce.CatalogModule.Data.Search
     {
         public abstract string DocumentType { get; }
 
-        public virtual void BuildRequest(SearchRequest request, SearchCriteria criteria)
+        public virtual SearchRequest BuildRequest(SearchCriteria criteria)
         {
-            if (criteria?.DocumentType.EqualsInvariant(DocumentType) == true)
+            var request = new SearchRequest
             {
-                request.Filter = GetFilters(criteria).And();
-                request.Sorting = GetSorting(criteria);
-                request.Skip = criteria.Skip;
-                request.Take = criteria.Take;
+                SearchKeywords = criteria.SearchPhrase,
+                SearchFields = new[] { "__content" },
+                Filter = GetFilters(criteria).And(),
+                Sorting = GetSorting(criteria),
+                Skip = criteria.Skip,
+                Take = criteria.Take
+            };
 
-                var catalogSearchCriteria = criteria as CatalogSearchCriteria;
-                if (catalogSearchCriteria != null)
-                {
-                    request.SearchKeywords = catalogSearchCriteria.SearchPhrase;
-                    request.SearchFields = new[] { "__content" };
-                }
-            }
+            return request;
         }
 
 
@@ -32,9 +27,9 @@ namespace VirtoCommerce.CatalogModule.Data.Search
         {
             var filters = new List<IFilter>();
 
-            if (criteria.Ids?.Any() == true)
+            if (criteria.Filters != null)
             {
-                filters.Add(new IdsFilter { Values = criteria.Ids });
+                filters.AddRange(criteria.Filters);
             }
 
             return filters;

@@ -27,7 +27,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
             var categoryId = Outline.AsCategoryId();
             var sorts = Sort.AsSortInfoes();
-            var priorityFieldName = $"priority_{catalog}_{categoryId}".ToLowerInvariant();
+            var priorityFieldName = StringsHelper.JoinNonEmptyStrings("_", "priority", catalog, categoryId).ToLowerInvariant();
 
             if (!sorts.IsNullOrEmpty())
             {

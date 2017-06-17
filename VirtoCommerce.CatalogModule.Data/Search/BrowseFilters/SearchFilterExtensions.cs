@@ -4,13 +4,13 @@ using System.Linq;
 using Omu.ValueInjecter;
 using VirtoCommerce.CatalogModule.Web.Model;
 
-namespace VirtoCommerce.CatalogModule.Data.Search.Filtering
+namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
 {
     public static class SearchFilterExtensions
     {
-        public static IList<ISearchFilterValue> GetValues(this ISearchFilter filter)
+        public static IList<IBrowseFilterValue> GetValues(this IBrowseFilter filter)
         {
-            ISearchFilterValue[] result = null;
+            IBrowseFilterValue[] result = null;
 
             var attributeFilter = filter as AttributeFilter;
             var rangeFilter = filter as RangeFilter;
@@ -19,25 +19,25 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Filtering
 
             if (attributeFilter != null)
             {
-                result = attributeFilter.Values?.OfType<ISearchFilterValue>().ToArray();
+                result = attributeFilter.Values?.OfType<IBrowseFilterValue>().ToArray();
             }
             else if (rangeFilter != null)
             {
-                result = rangeFilter.Values?.OfType<ISearchFilterValue>().ToArray();
+                result = rangeFilter.Values?.OfType<IBrowseFilterValue>().ToArray();
             }
             else if (priceRangeFilter != null)
             {
-                result = priceRangeFilter.Values?.OfType<ISearchFilterValue>().ToArray();
+                result = priceRangeFilter.Values?.OfType<IBrowseFilterValue>().ToArray();
             }
             else if (categoryFilter != null)
             {
-                result = categoryFilter.Values?.OfType<ISearchFilterValue>().ToArray();
+                result = categoryFilter.Values?.OfType<IBrowseFilterValue>().ToArray();
             }
 
             return result;
         }
 
-        public static IList<AggregationLabel> GetValueLabels(this IEnumerable<ISearchFilterValue> values)
+        public static IList<AggregationLabel> GetValueLabels(this IEnumerable<IBrowseFilterValue> values)
         {
             var result = values
                 .SelectMany(GetValueLabels)
@@ -53,7 +53,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Filtering
             return result.Any() ? result : null;
         }
 
-        private static IList<AggregationLabel> GetValueLabels(this ISearchFilterValue value)
+        private static IList<AggregationLabel> GetValueLabels(this IBrowseFilterValue value)
         {
             var result = new List<AggregationLabel>();
 
@@ -75,9 +75,9 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Filtering
             return result;
         }
 
-        public static ISearchFilter Convert(this ISearchFilter filter, IList<string> keys)
+        public static IBrowseFilter Convert(this IBrowseFilter filter, IList<string> keys)
         {
-            ISearchFilter result = null;
+            IBrowseFilter result = null;
 
             if (filter != null && keys != null)
             {

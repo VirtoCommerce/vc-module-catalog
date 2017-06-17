@@ -31,14 +31,9 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             criteria.Ids = Ids;
             criteria.SearchPhrase = SearchPhrase;
             criteria.LanguageCode = LanguageCode;
+            criteria.Outline = string.Join("/", catalog, Outline).TrimEnd('/', '*').ToLowerInvariant();
             criteria.Skip = Skip;
             criteria.Take = Take;
-
-            var outline = string.Join("/", catalog, Outline).TrimEnd('/', '*').ToLowerInvariant();
-            if (!string.IsNullOrEmpty(outline))
-            {
-                criteria.Outlines.Add(outline);
-            }
 
             return criteria;
         }

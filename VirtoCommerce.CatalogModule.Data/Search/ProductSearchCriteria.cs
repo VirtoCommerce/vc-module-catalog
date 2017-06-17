@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using VirtoCommerce.CatalogModule.Data.Search.Filtering;
+using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
 using VirtoCommerce.Domain.Search;
 
 namespace VirtoCommerce.CatalogModule.Data.Search
@@ -13,9 +13,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search
         public virtual IList<string> Pricelists { get; set; }
         public NumericRange PriceRange { get; set; }
 
-        public virtual IList<ISearchFilter> CurrentFilters { get; set; }
-
-        public virtual IList<ISearchFilter> Filters { get; set; }
+        public virtual IList<IBrowseFilter> BrowseFilters { get; set; }
+        public virtual IList<IBrowseFilter> CurrentFilters { get; set; }
 
         /// <summary>
         /// Gets or sets the class types.

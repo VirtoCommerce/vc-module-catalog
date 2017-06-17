@@ -1,6 +1,6 @@
-﻿namespace VirtoCommerce.CatalogModule.Data.Search.Filtering
+﻿namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
 {
-    public class CategoryFilterValue : ISearchFilterValue
+    public class CategoryFilterValue : IBrowseFilterValue
     {
         public string Id { get; set; }
 

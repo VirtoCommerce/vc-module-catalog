@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using VirtoCommerce.CatalogModule.Data.Search.Filtering;
+using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
 using VirtoCommerce.Domain.Search;
 using VirtoCommerce.Platform.Core.Common;
 
@@ -22,7 +22,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
         public NumericRange PriceRange { get; set; }
 
 
-        public virtual T AsCriteria<T>(string catalog, IList<ISearchFilter> allFilters)
+        public virtual T AsCriteria<T>(string catalog, IList<IBrowseFilter> allFilters)
             where T : ProductSearchCriteria, new()
         {
             var criteria = base.AsCriteria<T>(catalog);
@@ -35,7 +35,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 .Where(f => !(f is PriceRangeFilter) || ((PriceRangeFilter)f).Currency.EqualsInvariant(Currency))
                 .ToList();
 
-            criteria.Filters = GetFacets(filters);
+            criteria.BrowseFilters = GetFacets(filters);
             criteria.CurrentFilters = GetFilters(filters, Terms);
             criteria.Sorting = GetSorting(catalog);
 
@@ -43,9 +43,9 @@ namespace VirtoCommerce.CatalogModule.Data.Search
         }
 
 
-        private static IList<ISearchFilter> GetFacets(IList<ISearchFilter> filters)
+        private static IList<IBrowseFilter> GetFacets(IList<IBrowseFilter> filters)
         {
-            var result = new List<ISearchFilter>();
+            var result = new List<IBrowseFilter>();
 
             if (filters != null)
             {
@@ -55,14 +55,14 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return result;
         }
 
-        private static IList<ISearchFilter> GetFilters(IList<ISearchFilter> filters, IEnumerable<string> termStrings)
+        private static IList<IBrowseFilter> GetFilters(IList<IBrowseFilter> filters, IEnumerable<string> termStrings)
         {
-            var result = new List<ISearchFilter>();
+            var result = new List<IBrowseFilter>();
 
             var terms = termStrings.AsKeyValues();
             if (terms.Any())
             {
-                var filtersWithValues = filters
+                var filtersAndValues = filters
                     ?.Select(x => new { Filter = x, Values = x.GetValues() })
                     .ToList();
 
@@ -76,11 +76,10 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                         foreach (var termValue in term.Values)
                         {
                             // try to find filter by value
-                            var foundFilter = filtersWithValues?.FirstOrDefault(x => x.Values.Any(y => y.Id.Equals(termValue)));
-
-                            if (foundFilter != null)
+                            var filterAndValues = filtersAndValues?.FirstOrDefault(x => x.Values.Any(y => y.Id.Equals(termValue)));
+                            if (filterAndValues != null)
                             {
-                                filter = foundFilter.Filter;
+                                filter = filterAndValues.Filter;
 
                                 var appliedFilter = filter.Convert(term.Values);
                                 result.Add(appliedFilter);
@@ -123,7 +122,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
             var categoryId = Outline.AsCategoryId();
             var sorts = Sort.AsSortInfoes();
-            var priorityFieldName = $"priority_{catalog}_{categoryId}".ToLowerInvariant();
+            var priorityFieldName = StringsHelper.JoinNonEmptyStrings("_", "priority", catalog, categoryId).ToLowerInvariant();
 
             if (!sorts.IsNullOrEmpty())
             {
@@ -166,7 +165,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return result;
         }
 
-        private static ISearchFilter CreateAttributeFilter(string key, IEnumerable<string> values)
+        private static IBrowseFilter CreateAttributeFilter(string key, IEnumerable<string> values)
         {
             return new AttributeFilter
             {

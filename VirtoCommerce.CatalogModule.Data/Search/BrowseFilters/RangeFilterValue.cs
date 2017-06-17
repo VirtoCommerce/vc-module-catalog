@@ -1,8 +1,8 @@
 ﻿using System.Xml.Serialization;
 
-namespace VirtoCommerce.CatalogModule.Data.Search.Filtering
+namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
 {
-    public class RangeFilterValue : ISearchFilterValue
+    public class RangeFilterValue : IBrowseFilterValue
     {
         [XmlAttribute("id")]
         public string Id { get; set; }

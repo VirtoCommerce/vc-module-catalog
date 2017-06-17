@@ -19,12 +19,13 @@ namespace VirtoCommerce.CatalogModule.Data.Search
         private readonly ICategoryService _categoryService;
         private readonly IBlobUrlResolver _blobUrlResolver;
 
-        public CategorySearchService(ISearchProvider searchProvider, ISearchRequestBuilder[] searchRequestBuilders, IStoreService storeService, ISettingsManager settingsManager, ICategoryService categoryService, IBlobUrlResolver blobUrlResolver)
-            : base(searchProvider, searchRequestBuilders, storeService, settingsManager)
+        public CategorySearchService(IStoreService storeService, ISearchCriteriaPreprocessor[] searchCriteriaPreprocessors, ISearchRequestBuilder[] searchRequestBuilders, ISearchProvider searchProvider, ISettingsManager settingsManager, ICategoryService categoryService, IBlobUrlResolver blobUrlResolver)
+            : base(storeService, searchCriteriaPreprocessors, searchRequestBuilders, searchProvider, settingsManager)
         {
             _categoryService = categoryService;
             _blobUrlResolver = blobUrlResolver;
         }
+
 
         protected override SearchCriteria GetSearchCriteria(CategorySearch search, Store store)
         {
@@ -32,22 +33,23 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return result;
         }
 
-        protected override IList<Category> LoadMissingItems(string[] missingItemIds, SearchCriteria searchCriteria, CategorySearch search)
+        protected override IList<Category> LoadMissingItems(string[] missingItemIds, SearchCriteria criteria, CategorySearch search)
         {
-            var catalog = (searchCriteria as CategorySearchCriteria)?.Catalog;
+            var catalog = (criteria as CategorySearchCriteria)?.Catalog;
             var categories = _categoryService.GetByIds(missingItemIds, GetResponseGroup(search), catalog);
             var result = categories.Select(p => p.ToWebModel(_blobUrlResolver)).ToArray();
             return result;
         }
 
+        protected override void ReduceSearchResults(IEnumerable<Category> items, CategorySearch search)
+        {
+        }
+
+
         protected virtual CategoryResponseGroup GetResponseGroup(CategorySearch search)
         {
             var result = EnumUtility.SafeParse(search.ResponseGroup, CategoryResponseGroup.Full & ~CategoryResponseGroup.WithProperties);
             return result;
-        }
-
-        protected override void ReduceSearchResults(IEnumerable<Category> items, CategorySearch search)
-        {
         }
     }
 }

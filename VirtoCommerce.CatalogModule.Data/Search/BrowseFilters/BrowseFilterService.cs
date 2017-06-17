@@ -1,19 +1,18 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Xml.Serialization;
-using VirtoCommerce.CatalogModule.Data.Search.Filtering;
 using VirtoCommerce.Domain.Store.Model;
 using VirtoCommerce.Platform.Core.DynamicProperties;
 
-namespace VirtoCommerce.CatalogModule.Data.Search
+namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
 {
     public class BrowseFilterService : IBrowseFilterService
     {
         private static readonly XmlSerializer _serializer = new XmlSerializer(typeof(FilteredBrowsing));
 
-        public virtual IList<ISearchFilter> GetFilters(IDictionary<string, object> context)
+        public virtual IList<IBrowseFilter> GetFilters(IDictionary<string, object> context)
         {
-            var filters = new List<ISearchFilter>();
+            var filters = new List<IBrowseFilter>();
 
             var store = GetObjectValue(context, "Store") as Store;
             if (store != null)

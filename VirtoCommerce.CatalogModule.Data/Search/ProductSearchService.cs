@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using VirtoCommerce.CatalogModule.Data.Search.Filtering;
+using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
 using VirtoCommerce.CatalogModule.Web.Converters;
 using VirtoCommerce.CatalogModule.Web.Model;
 using VirtoCommerce.Domain.Catalog.Model;
@@ -14,8 +14,8 @@ using VirtoCommerce.Platform.Core.Settings;
 using Aggregation = VirtoCommerce.CatalogModule.Web.Model.Aggregation;
 using AggregationItem = VirtoCommerce.CatalogModule.Web.Model.AggregationItem;
 using AggregationLabel = VirtoCommerce.CatalogModule.Web.Model.AggregationLabel;
-using RangeFilter = VirtoCommerce.CatalogModule.Data.Search.Filtering.RangeFilter;
-using RangeFilterValue = VirtoCommerce.CatalogModule.Data.Search.Filtering.RangeFilterValue;
+using RangeFilter = VirtoCommerce.CatalogModule.Data.Search.BrowseFilters.RangeFilter;
+using RangeFilterValue = VirtoCommerce.CatalogModule.Data.Search.BrowseFilters.RangeFilterValue;
 using SearchCriteria = VirtoCommerce.Domain.Search.SearchCriteria;
 
 namespace VirtoCommerce.CatalogModule.Data.Search
@@ -26,13 +26,14 @@ namespace VirtoCommerce.CatalogModule.Data.Search
         private readonly IBlobUrlResolver _blobUrlResolver;
         private readonly IBrowseFilterService _browseFilterService;
 
-        public ProductSearchService(ISearchProvider searchProvider, ISearchRequestBuilder[] searchRequestBuilders, IStoreService storeService, ISettingsManager settingsManager, IItemService itemService, IBlobUrlResolver blobUrlResolver, IBrowseFilterService browseFilterService)
-            : base(searchProvider, searchRequestBuilders, storeService, settingsManager)
+        public ProductSearchService(IStoreService storeService, ISearchCriteriaPreprocessor[] searchCriteriaPreprocessors, ISearchRequestBuilder[] searchRequestBuilders, ISearchProvider searchProvider, ISettingsManager settingsManager, IItemService itemService, IBlobUrlResolver blobUrlResolver, IBrowseFilterService browseFilterService)
+            : base(storeService, searchCriteriaPreprocessors, searchRequestBuilders, searchProvider, settingsManager)
         {
             _browseFilterService = browseFilterService;
             _itemService = itemService;
             _blobUrlResolver = blobUrlResolver;
         }
+
 
         protected override SearchCriteria GetSearchCriteria(ProductSearch search, Store store)
         {
@@ -41,17 +42,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return result;
         }
 
-        protected override IList<Product> LoadMissingItems(string[] missingItemIds, SearchCriteria searchCriteria, ProductSearch search)
+        protected override IList<Product> LoadMissingItems(string[] missingItemIds, SearchCriteria criteria, ProductSearch search)
         {
-            var catalog = (searchCriteria as ProductSearchCriteria)?.Catalog;
+            var catalog = (criteria as ProductSearchCriteria)?.Catalog;
             var products = _itemService.GetByIds(missingItemIds, GetResponseGroup(search), catalog);
             var result = products.Select(p => p.ToWebModel(_blobUrlResolver)).ToArray();
-            return result;
-        }
-
-        protected virtual ItemResponseGroup GetResponseGroup(ProductSearch search)
-        {
-            var result = EnumUtility.SafeParse(search.ResponseGroup, ItemResponseGroup.ItemLarge & ~ItemResponseGroup.ItemProperties);
             return result;
         }
 
@@ -63,6 +58,13 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             {
                 ReduceSearchResult(obj, responseGroup);
             }
+        }
+
+
+        protected virtual ItemResponseGroup GetResponseGroup(ProductSearch search)
+        {
+            var result = EnumUtility.SafeParse(search.ResponseGroup, ItemResponseGroup.ItemLarge & ~ItemResponseGroup.ItemProperties);
+            return result;
         }
 
         protected virtual void ReduceSearchResult(Product product, ItemResponseGroup responseGroup)
@@ -108,7 +110,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             }
         }
 
-        protected virtual IList<ISearchFilter> GetPredefinedFilters(Store store)
+        protected virtual IList<IBrowseFilter> GetPredefinedFilters(Store store)
         {
             var context = new Dictionary<string, object>
             {
@@ -118,15 +120,15 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return _browseFilterService.GetFilters(context);
         }
 
-        protected override Aggregation[] ConvertAggregations(IList<AggregationResponse> aggregationResponses, SearchCriteria searchCriteria)
+        protected override Aggregation[] ConvertAggregations(IList<AggregationResponse> aggregationResponses, SearchCriteria criteria)
         {
             var result = new List<Aggregation>();
 
-            var productSearchCriteria = searchCriteria as ProductSearchCriteria;
+            var productSearchCriteria = criteria as ProductSearchCriteria;
 
-            if (productSearchCriteria?.Filters != null && aggregationResponses?.Any() == true)
+            if (productSearchCriteria?.BrowseFilters != null && aggregationResponses?.Any() == true)
             {
-                foreach (var filter in productSearchCriteria.Filters)
+                foreach (var filter in productSearchCriteria.BrowseFilters)
                 {
                     Aggregation aggregation = null;
 

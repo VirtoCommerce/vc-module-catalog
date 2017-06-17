@@ -1,12 +1,9 @@
-﻿using System.Collections.Generic;
-using VirtoCommerce.Domain.Search;
+﻿using VirtoCommerce.Domain.Search;
 
 namespace VirtoCommerce.CatalogModule.Data.Search
 {
     public abstract class CatalogSearchCriteria : SearchCriteria
     {
-        public virtual string SearchPhrase { get; set; }
-
         public virtual string LanguageCode { get; set; }
 
         /// <summary>
@@ -22,7 +19,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
         /// </summary>
         /// <example>Everything/digital-cameras</example>
         /// <value>The outlines.</value>
-        public virtual IList<string> Outlines { get; set; } = new List<string>();
+        public virtual string Outline { get; set; }
 
         /// <summary>
         /// Gets the default sort order.
