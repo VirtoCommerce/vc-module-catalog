@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Search;
 using VirtoCommerce.Platform.Core.Common;
 
@@ -16,6 +17,12 @@ namespace VirtoCommerce.CatalogModule.Data.Search
         {
             var criteria = base.AsCriteria<T>(catalog);
 
+            var categorySearchCriteria = criteria as CategorySearchCriteria;
+            if (categorySearchCriteria != null)
+            {
+                categorySearchCriteria.ResponseGroup = EnumUtility.SafeParse(ResponseGroup, CategoryResponseGroup.Full & ~CategoryResponseGroup.WithProperties);
+            }
+
             criteria.Sorting = GetSorting(catalog);
 
             return criteria;
@@ -27,7 +34,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
             var categoryId = Outline.AsCategoryId();
             var sorts = Sort.AsSortInfoes();
-            var priorityFieldName = $"priority_{catalog}_{categoryId}".ToLowerInvariant();
+            var priorityFieldName = StringsHelper.JoinNonEmptyStrings("_", "priority", catalog, categoryId).ToLowerInvariant();
 
             if (!sorts.IsNullOrEmpty())
             {

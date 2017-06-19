@@ -5,6 +5,7 @@ using Microsoft.Practices.Unity;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Data.Search;
+using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
 using VirtoCommerce.CatalogModule.Data.Search.Indexing;
 using VirtoCommerce.CatalogModule.Data.Services;
 using VirtoCommerce.CatalogModule.Web.ExportImport;
@@ -65,7 +66,7 @@ namespace VirtoCommerce.CatalogModule.Web
             _container.RegisterType<ICategoryService, CategoryServiceImpl>();
             _container.RegisterType<ICatalogService, CatalogServiceImpl>();
             _container.RegisterType<IPropertyService, PropertyServiceImpl>();
-            _container.RegisterType<ICatalogSearchService, CatalogSearchServiceImpl>();
+            _container.RegisterType<ICatalogSearchService, CatalogSearchServiceDecorator>();
             _container.RegisterType<ISkuGenerator, DefaultSkuGenerator>();
             _container.RegisterType<ISeoDuplicatesDetector, CatalogSeoDublicatesDetector>(new ContainerControlledLifetimeManager());
             _container.RegisterType<IOutlineService, OutlineService>();
@@ -75,13 +76,16 @@ namespace VirtoCommerce.CatalogModule.Web
 
             #region Search
 
+            _container.RegisterType<ISearchCriteriaPreprocessor, CatalogSearchCriteriaPreprocessor>(nameof(CatalogSearchCriteriaPreprocessor));
+            _container.RegisterType<ISearchCriteriaPreprocessor, ProductSearchCriteriaPreprocessor>(nameof(ProductSearchCriteriaPreprocessor));
+
+            _container.RegisterType<ISearchRequestBuilder, ProductSearchRequestBuilder>(nameof(ProductSearchRequestBuilder));
+            _container.RegisterType<ISearchRequestBuilder, CategorySearchRequestBuilder>(nameof(CategorySearchRequestBuilder));
+
             _container.RegisterType<IBrowseFilterService, BrowseFilterService>();
 
             _container.RegisterType<IProductSearchService, ProductSearchService>();
             _container.RegisterType<ICategorySearchService, CategorySearchService>();
-
-            _container.RegisterType<ISearchRequestBuilder, ProductSearchRequestBuilder>(nameof(ProductSearchRequestBuilder));
-            _container.RegisterType<ISearchRequestBuilder, CategorySearchRequestBuilder>(nameof(CategorySearchRequestBuilder));
 
             // Product indexing configuration
             var productIndexingConfiguration = new IndexDocumentConfiguration

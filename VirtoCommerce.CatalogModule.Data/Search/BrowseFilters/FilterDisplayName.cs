@@ -1,6 +1,6 @@
 ﻿using System.Xml.Serialization;
 
-namespace VirtoCommerce.CatalogModule.Data.Search.Filtering
+namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
 {
     public class FilterDisplayName
     {
