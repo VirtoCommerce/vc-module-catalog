@@ -342,6 +342,27 @@ angular.module(catalogsModuleName, [
 	    };
 	    scopeResolver.register(categorySelectScope);
 
+
+	    // register WIDGETS
+	    var indexWidget = {
+	        controller: 'virtoCommerce.coreModule.searchIndex.indexWidgetController',
+	        // size: [3, 1],
+	        template: 'Modules/$(VirtoCommerce.Core)/Scripts/SearchIndex/widgets/index-widget.tpl.html'
+	    };
+
+	    // integration: index in product details
+	    var widgetToRegister = angular.extend({}, indexWidget, { documentType: 'Product' })
+	    widgetService.registerWidget(widgetToRegister, 'itemDetail');
+	    // integration: index in CATEGORY details
+	    widgetToRegister = angular.extend({}, indexWidget, { documentType: 'Category' })
+	    widgetService.registerWidget(widgetToRegister, 'categoryDetail');
+		    
 	    // predefine search filters for catalog search
-	    predefinedSearchFilters.register(1477584000000, 'catalogSearchFiltersDate', [{ name: 'catalog.blades.categories-items-list.labels.filter-new' }]);
+	    predefinedSearchFilters.register(1477584000000, 'catalogSearchFiltersDate', [
+          { name: 'catalog.blades.categories-items-list.labels.filter-new' },
+          { keyword: 'is:hidden', id: 4, name: 'catalog.blades.categories-items-list.labels.filter-notActive' },
+          { keyword: 'price_usd:[100 TO 200]', id: 3, name: 'catalog.blades.categories-items-list.labels.filter-priceRange' },
+          { keyword: 'is:priced', id: 2, name: 'catalog.blades.categories-items-list.labels.filter-withPrice' },
+          { keyword: 'is:unpriced', id: 1, name: 'catalog.blades.categories-items-list.labels.filter-priceless' }
+	    ]);
 	}]);

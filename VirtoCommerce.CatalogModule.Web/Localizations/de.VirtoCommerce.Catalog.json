@@ -60,12 +60,17 @@
         "title-mapping": "Kategorien & Produkte für die Zuordnung auswählen",
         "subtitle-mapping": "Erstellen einer Verknüpfung innerhalb virtueller Katalog",
         "labels": {
-          "filter-new": "<strong>Neuen Filter hinzufügen</strong>",
-          "unnamed-filter": "Unbenannter Filter",
-          "inactive": "Inaktiv",
-          "picture": "Bild",
-          "name": "Name",
-          "sku": "Art.-Nr."
+            "filter-withPrice": "Hat Preis definiert",
+            "filter-priceRange": "Preis zwischen",
+            "filter-lowStock": "Wenig auf Lager",
+            "filter-notActive": "Nicht aktiv",
+            "filter-priceless": "Ohne Preis",
+            "filter-new": "<strong>Neuen Filter hinzufügen</strong>",
+            "unnamed-filter": "Unbenannter Filter",
+            "inactive": "Inaktiv",
+            "picture": "Bild",
+            "name": "Name",
+            "sku": "Art.-Nr."
         },
         "placeholders": {
           "select-filter": "Filter wählen."
