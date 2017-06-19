@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
+using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Search;
 using VirtoCommerce.Platform.Core.Common;
 
@@ -30,6 +31,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             criteria.Currency = Currency;
             criteria.Pricelists = Pricelists;
             criteria.PriceRange = PriceRange;
+            criteria.ResponseGroup = EnumUtility.SafeParse(ResponseGroup, ItemResponseGroup.ItemLarge & ~ItemResponseGroup.ItemProperties);
+
 
             var filters = allFilters
                 .Where(f => !(f is PriceRangeFilter) || ((PriceRangeFilter)f).Currency.EqualsInvariant(Currency))

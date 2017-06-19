@@ -42,17 +42,20 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return result;
         }
 
-        protected override IList<Product> LoadMissingItems(string[] missingItemIds, SearchCriteria criteria, ProductSearch search)
+        protected override IList<Product> LoadMissingItems(string[] missingItemIds, SearchCriteria criteria)
         {
             var catalog = (criteria as ProductSearchCriteria)?.Catalog;
-            var products = _itemService.GetByIds(missingItemIds, GetResponseGroup(search), catalog);
+            var responseGroup = GetResponseGroup(criteria as ProductSearchCriteria);
+
+            var products = _itemService.GetByIds(missingItemIds, responseGroup, catalog);
+
             var result = products.Select(p => p.ToWebModel(_blobUrlResolver)).ToArray();
             return result;
         }
 
-        protected override void ReduceSearchResults(IEnumerable<Product> items, ProductSearch search)
+        protected override void ReduceSearchResults(IEnumerable<Product> items, SearchCriteria criteria)
         {
-            var responseGroup = GetResponseGroup(search);
+            var responseGroup = GetResponseGroup(criteria as ProductSearchCriteria);
 
             foreach (var obj in items)
             {
@@ -61,9 +64,9 @@ namespace VirtoCommerce.CatalogModule.Data.Search
         }
 
 
-        protected virtual ItemResponseGroup GetResponseGroup(ProductSearch search)
+        protected virtual ItemResponseGroup GetResponseGroup(ProductSearchCriteria criteria)
         {
-            var result = EnumUtility.SafeParse(search.ResponseGroup, ItemResponseGroup.ItemLarge & ~ItemResponseGroup.ItemProperties);
+            var result = criteria?.ResponseGroup ?? ItemResponseGroup.ItemLarge & ~ItemResponseGroup.ItemProperties;
             return result;
         }
 

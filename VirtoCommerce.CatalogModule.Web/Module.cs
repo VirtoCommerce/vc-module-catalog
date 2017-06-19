@@ -66,7 +66,7 @@ namespace VirtoCommerce.CatalogModule.Web
             _container.RegisterType<ICategoryService, CategoryServiceImpl>();
             _container.RegisterType<ICatalogService, CatalogServiceImpl>();
             _container.RegisterType<IPropertyService, PropertyServiceImpl>();
-            _container.RegisterType<ICatalogSearchService, CatalogSearchServiceImpl>();
+            _container.RegisterType<ICatalogSearchService, CatalogSearchServiceDecorator>();
             _container.RegisterType<ISkuGenerator, DefaultSkuGenerator>();
             _container.RegisterType<ISeoDuplicatesDetector, CatalogSeoDublicatesDetector>(new ContainerControlledLifetimeManager());
             _container.RegisterType<IOutlineService, OutlineService>();

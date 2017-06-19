@@ -7,7 +7,6 @@ using VirtoCommerce.Domain.Search;
 using VirtoCommerce.Domain.Store.Model;
 using VirtoCommerce.Domain.Store.Services;
 using VirtoCommerce.Platform.Core.Assets;
-using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Settings;
 using Category = VirtoCommerce.CatalogModule.Web.Model.Category;
 using SearchCriteria = VirtoCommerce.Domain.Search.SearchCriteria;
@@ -33,22 +32,25 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return result;
         }
 
-        protected override IList<Category> LoadMissingItems(string[] missingItemIds, SearchCriteria criteria, CategorySearch search)
+        protected override IList<Category> LoadMissingItems(string[] missingItemIds, SearchCriteria criteria)
         {
             var catalog = (criteria as CategorySearchCriteria)?.Catalog;
-            var categories = _categoryService.GetByIds(missingItemIds, GetResponseGroup(search), catalog);
+            var responseGroup = GetResponseGroup(criteria as CategorySearchCriteria);
+
+            var categories = _categoryService.GetByIds(missingItemIds, responseGroup, catalog);
+
             var result = categories.Select(p => p.ToWebModel(_blobUrlResolver)).ToArray();
             return result;
         }
 
-        protected override void ReduceSearchResults(IEnumerable<Category> items, CategorySearch search)
+        protected override void ReduceSearchResults(IEnumerable<Category> items, SearchCriteria criteria)
         {
         }
 
 
-        protected virtual CategoryResponseGroup GetResponseGroup(CategorySearch search)
+        protected virtual CategoryResponseGroup GetResponseGroup(CategorySearchCriteria criteria)
         {
-            var result = EnumUtility.SafeParse(search.ResponseGroup, CategoryResponseGroup.Full & ~CategoryResponseGroup.WithProperties);
+            var result = criteria?.ResponseGroup ?? CategoryResponseGroup.Full & ~CategoryResponseGroup.WithProperties;
             return result;
         }
     }

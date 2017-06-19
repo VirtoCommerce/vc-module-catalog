@@ -39,20 +39,28 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             if (store != null)
             {
                 var criteria = GetSearchCriteria(search, store);
+                result = await SearchAsync(criteria);
+            }
 
-                _searchCriteriaPreprocessors.ForEach(p => p.Process(criteria));
+            return result;
+        }
 
-                var requestBuilder = GetRequestBuilder(criteria);
-                var request = requestBuilder?.BuildRequest(criteria);
+        public virtual async Task<TResult> SearchAsync(SearchCriteria criteria)
+        {
+            var result = AbstractTypeFactory<TResult>.TryCreateInstance();
 
-                var response = await _searchProvider.SearchAsync(criteria.DocumentType, request);
+            _searchCriteriaPreprocessors.ForEach(p => p.Process(criteria));
 
-                if (response != null)
-                {
-                    result.TotalCount = response.TotalCount;
-                    result.Items = ConvertDocuments(response.Documents, criteria, search);
-                    result.Aggregations = ConvertAggregations(response.Aggregations, criteria);
-                }
+            var requestBuilder = GetRequestBuilder(criteria);
+            var request = requestBuilder?.BuildRequest(criteria);
+
+            var response = await _searchProvider.SearchAsync(criteria.DocumentType, request);
+
+            if (response != null)
+            {
+                result.TotalCount = response.TotalCount;
+                result.Items = ConvertDocuments(response.Documents, criteria);
+                result.Aggregations = ConvertAggregations(response.Aggregations, criteria);
             }
 
             return result;
@@ -60,8 +68,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
 
         protected abstract SearchCriteria GetSearchCriteria(TSearch search, Store store);
-        protected abstract IList<TItem> LoadMissingItems(string[] missingItemIds, SearchCriteria criteria, TSearch search);
-        protected abstract void ReduceSearchResults(IEnumerable<TItem> items, TSearch search);
+        protected abstract IList<TItem> LoadMissingItems(string[] missingItemIds, SearchCriteria criteria);
+        protected abstract void ReduceSearchResults(IEnumerable<TItem> items, SearchCriteria criteria);
 
 
         protected virtual ISearchRequestBuilder GetRequestBuilder(SearchCriteria criteria)
@@ -75,7 +83,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return queryBuilder;
         }
 
-        protected virtual TItem[] ConvertDocuments(IList<SearchDocument> documents, SearchCriteria criteria, TSearch search)
+        protected virtual TItem[] ConvertDocuments(IList<SearchDocument> documents, SearchCriteria criteria)
         {
             TItem[] result = null;
 
@@ -91,7 +99,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
                 if (missingObjectIds.Any())
                 {
-                    var missingItems = LoadMissingItems(missingObjectIds, criteria, search);
+                    var missingItems = LoadMissingItems(missingObjectIds, criteria);
 
                     foreach (var item in missingItems)
                     {
@@ -99,7 +107,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                     }
                 }
 
-                ReduceSearchResults(itemsMap.Values.Where(v => v != null), search);
+                ReduceSearchResults(itemsMap.Values.Where(v => v != null), criteria);
 
                 // Preserve original sorting order
                 result = documents.Select(doc => itemsMap[doc.Id.ToString()]).ToArray();

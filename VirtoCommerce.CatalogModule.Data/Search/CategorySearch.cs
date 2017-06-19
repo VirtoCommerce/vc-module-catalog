@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Search;
 using VirtoCommerce.Platform.Core.Common;
 
@@ -15,6 +16,12 @@ namespace VirtoCommerce.CatalogModule.Data.Search
         public override T AsCriteria<T>(string catalog)
         {
             var criteria = base.AsCriteria<T>(catalog);
+
+            var categorySearchCriteria = criteria as CategorySearchCriteria;
+            if (categorySearchCriteria != null)
+            {
+                categorySearchCriteria.ResponseGroup = EnumUtility.SafeParse(ResponseGroup, CategoryResponseGroup.Full & ~CategoryResponseGroup.WithProperties);
+            }
 
             criteria.Sorting = GetSorting(catalog);
 

@@ -125,38 +125,41 @@ namespace VirtoCommerce.CatalogModule.Data.Search
         {
             var result = new List<AggregationRequest>();
 
-            foreach (var filter in criteria.BrowseFilters)
+            if (criteria.BrowseFilters != null)
             {
-                var existingFilters = GetFiltersExceptSpecified(criteria, filter.Key);
-
-                var attributeFilter = filter as AttributeFilter;
-                var priceRangeFilter = filter as PriceRangeFilter;
-                var rangeFilter = filter as BrowseFilters.RangeFilter;
-
-                AggregationRequest aggregationRequest = null;
-                IList<AggregationRequest> aggregationRequests = null;
-
-                if (attributeFilter != null)
+                foreach (var filter in criteria.BrowseFilters)
                 {
-                    aggregationRequest = GetAttributeFilterAggregationRequest(attributeFilter, existingFilters);
-                }
-                else if (rangeFilter != null)
-                {
-                    aggregationRequests = GetRangeFilterAggregationRequests(rangeFilter, existingFilters);
-                }
-                else if (priceRangeFilter != null && priceRangeFilter.Currency.EqualsInvariant(criteria.Currency))
-                {
-                    aggregationRequests = GetPriceRangeFilterAggregationRequests(priceRangeFilter, criteria, existingFilters);
-                }
+                    var existingFilters = GetFiltersExceptSpecified(criteria, filter.Key);
 
-                if (aggregationRequest != null)
-                {
-                    result.Add(aggregationRequest);
-                }
+                    var attributeFilter = filter as AttributeFilter;
+                    var priceRangeFilter = filter as PriceRangeFilter;
+                    var rangeFilter = filter as BrowseFilters.RangeFilter;
 
-                if (aggregationRequests != null)
-                {
-                    result.AddRange(aggregationRequests.Where(f => f != null));
+                    AggregationRequest aggregationRequest = null;
+                    IList<AggregationRequest> aggregationRequests = null;
+
+                    if (attributeFilter != null)
+                    {
+                        aggregationRequest = GetAttributeFilterAggregationRequest(attributeFilter, existingFilters);
+                    }
+                    else if (rangeFilter != null)
+                    {
+                        aggregationRequests = GetRangeFilterAggregationRequests(rangeFilter, existingFilters);
+                    }
+                    else if (priceRangeFilter != null && priceRangeFilter.Currency.EqualsInvariant(criteria.Currency))
+                    {
+                        aggregationRequests = GetPriceRangeFilterAggregationRequests(priceRangeFilter, criteria, existingFilters);
+                    }
+
+                    if (aggregationRequest != null)
+                    {
+                        result.Add(aggregationRequest);
+                    }
+
+                    if (aggregationRequests != null)
+                    {
+                        result.AddRange(aggregationRequests.Where(f => f != null));
+                    }
                 }
             }
 
