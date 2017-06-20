@@ -30,6 +30,12 @@
                     </div>
                 </div>
                 <div class="form-group">
+                    <label class="form-label">{{ 'catalog.blades.item-detail.labels.gtin' | translate }}</label>
+                    <div class="form-input __number">
+                        <input ng-class="{'error': detailForm.gtin.$invalid && !detailForm.gtin.$pristine}" class="form-control" ng-model="blade.item.gtin"  name="gtin" type="text" ng-maxlength="14" />
+                    </div>
+                </div>
+                <div class="form-group">
                     <div class="columns">
                         <div class="column">
                             <div class="form-group">
