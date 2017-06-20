@@ -29,13 +29,7 @@
                         <textarea class="__small" ng-class="{'error': detailForm.itemName.$invalid && !detailForm.itemName.$pristine}" required cols="30" rows="2" ng-model="blade.item.name" name="itemName" placeholder="{{ 'catalog.blades.item-detail.placeholders.sku' | translate }}"></textarea>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">{{ 'catalog.blades.item-detail.labels.gtin' | translate }}</label>
-                    <div class="form-input __number">
-                        <input ng-class="{'error': detailForm.gtin.$invalid && !detailForm.gtin.$pristine}" class="form-control" ng-model="blade.item.gtin" name="gtin" type="text" ng-maxlength="14" />
-                    </div>
-                </div>
-                <div class="form-group">
+                <div class="form-group clearfix">
                     <div class="columns">
                         <div class="column">
                             <div class="form-group">
@@ -83,7 +77,13 @@
                         </div>
                     </div>
                 </div>
-                <div class="form-group" ng-if="blade.item.productType!=='Digital'">
+                <div class="form-group">
+                    <label class="form-label">{{ 'catalog.blades.item-detail.labels.gtin' | translate }}</label>
+                    <div class="form-input __number">
+                        <input ng-class="{'error': detailForm.gtin.$invalid && !detailForm.gtin.$pristine}" placeholder="{{ 'catalog.blades.item-detail.placeholders.gtin' | translate }}" class="form-control" ng-model="blade.item.gtin" name="gtin" type="text" ng-maxlength="14" />
+                    </div>
+                </div>
+                <div ng-if="blade.item.productType!=='Digital'">
                     <div class="columns">
                         <div class="column">
                             <div class="form-group">
