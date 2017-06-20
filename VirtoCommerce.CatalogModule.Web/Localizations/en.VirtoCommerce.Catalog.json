@@ -222,25 +222,26 @@
                 }
             },
 
-            "item-detail": {
-                "subtitle-variation": "Variation details",
+              "item-detail": {
+                  "subtitle-variation": "Variation details",
                 "labels": {
-                    "sku": "SKU",
-                    "priority": "Priority",
-                    "name": "Name",
-                    "can-be-purchased": "Can be purchased",
-                    "store-visible": "Store visible",
-                    "track-inventory": "Track inventory",
-                    "has-user-agreement": "Has user agreement",
-                    "min-quantity": "Min. quantity",
-                    "max-quantity": "Max. quantity",
-                    "vendor": "Vendor",
-                    "tax-type": "Tax type",
-                    "weight-unit": "Weight unit",
-                    "weight": "Weight",
-                    "max-downloads": "Max. number of downloads",
-                    "expiration-date": "Download expiration date",
-                    "download-type": "Download type"
+                  "sku": "SKU",
+                  "priority": "Priority",
+                  "name": "Name",
+                  "can-be-purchased": "Can be purchased",
+                  "store-visible": "Store visible",
+                  "track-inventory": "Track inventory",
+                  "has-user-agreement": "Has user agreement",
+                  "min-quantity": "Min. quantity",
+                  "max-quantity": "Max. quantity",
+                  "vendor": "Vendor",
+                  "tax-type": "Tax type",
+                  "weight-unit": "Weight unit",
+                  "weight": "Weight",
+                  "max-downloads": "Max. number of downloads",
+                  "expiration-date": "Download expiration date",
+                  "download-type": "Download type",
+                  "gtin": "GTIN"
                 },
                 "validations": {
                     "sku": "SKU can't contain $+;=%{}[]|\/@ ~!^*&()?:'<>, characters"
