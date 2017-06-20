@@ -250,7 +250,8 @@
           "weight-unit": "Wählen Sie aus...",
           "weight": "Gewicht eingeben",
           "expiration-date": "Datum auswählen",
-          "download-type": "Wählen Sie aus..."
+          "download-type": "Wählen Sie aus...",
+          "gtin": "GTIN eingeben"
         }
       },
       "catalog-items-select": {
