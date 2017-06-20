@@ -30,6 +30,12 @@
                     </div>
                 </div>
                 <div class="form-group">
+                    <label class="form-label">{{ 'catalog.blades.item-detail.labels.gtin' | translate }}</label>
+                    <div class="form-input __number">
+                        <input ng-class="{'error': detailForm.gtin.$invalid && !detailForm.gtin.$pristine}" class="form-control" ng-model="blade.item.gtin"  name="gtin" type="text" ng-maxlength="14" />
+                    </div>
+                </div>
+                <div class="form-group">
                     <div class="columns">
                         <div class="column">
                             <div class="form-group">
@@ -124,7 +130,7 @@
                             <div class="form-group">
                                 <label class="form-label">{{ 'catalog.blades.item-detail.labels.expiration-date' | translate }}</label>
                                 <div class="form-input __calendar">
-                                    <input placeholder="{{ 'catalog.blades.item-detail.placeholders.expiration-date' | translate }}" ng-model="blade.item.downloadExpiration" datepicker-popup="shortDate" is-open="datepickers.str" close-text="Close" />
+                                    <input placeholder="{{ 'catalog.blades.item-detail.placeholders.expiration-date' | translate }}" ng-model="blade.item.downloadExpiration" datepicker-popup="" is-open="datepickers.str" />
                                     <button class="btn" type="button" ng-click="open($event,'str')">
                                         <i class="btn-ico fa fa-calendar"></i>
                                     </button>

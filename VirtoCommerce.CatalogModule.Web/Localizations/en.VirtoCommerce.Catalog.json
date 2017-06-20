@@ -240,7 +240,8 @@
                     "weight": "Weight",
                     "max-downloads": "Max. number of downloads",
                     "expiration-date": "Download expiration date",
-                    "download-type": "Download type"
+                    "download-type": "Download type",
+                    "gtin": "GTIN"
                 },
                 "validations": {
                     "sku": "SKU can't contain $+;=%{}[]|\/@ ~!^*&()?:'<>, characters"

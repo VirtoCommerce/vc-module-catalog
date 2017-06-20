@@ -235,7 +235,8 @@
           "weight": "Gewicht",
           "max-downloads": "Max. Anzahl der Herunterladungen",
           "expiration-date": "Ablaufdatum herunterladen",
-          "download-type": "Typ herunterladen"
+          "download-type": "Typ herunterladen",
+          "gtin": "GTIN"
         },
         "validations": {
           "sku": "Art.-Nr. kann nicht enthalten $ +"
