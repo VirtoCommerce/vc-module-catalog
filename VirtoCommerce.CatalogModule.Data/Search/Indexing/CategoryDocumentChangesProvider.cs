@@ -5,25 +5,40 @@ using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Domain.Search;
+using VirtoCommerce.Platform.Core.ChangeLog;
+using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 {
     public class CategoryDocumentChangesProvider : IIndexDocumentChangesProvider
     {
-        private readonly Func<ICatalogRepository> _catalogRepositoryFactory;
+        public const string ChangeLogObjectType = nameof(Category);
 
-        public CategoryDocumentChangesProvider(Func<ICatalogRepository> catalogRepositoryFactory)
+        private readonly Func<ICatalogRepository> _catalogRepositoryFactory;
+        private readonly IChangeLogService _changeLogService;
+
+        public CategoryDocumentChangesProvider(Func<ICatalogRepository> catalogRepositoryFactory, IChangeLogService changeLogService)
         {
             _catalogRepositoryFactory = catalogRepositoryFactory;
+            _changeLogService = changeLogService;
         }
 
         public virtual Task<long> GetTotalChangesCountAsync(DateTime? startDate, DateTime? endDate)
         {
             long result;
 
-            using (var repository = _catalogRepositoryFactory())
+            if (startDate == null && endDate == null)
             {
-                result = GetCategoryQuery(repository, startDate, endDate).Count();
+                // Get total categories count
+                using (var repository = _catalogRepositoryFactory())
+                {
+                    result = repository.Categories.Count();
+                }
+            }
+            else
+            {
+                // Get changes count from operation log
+                result = _changeLogService.FindChangeHistory(ChangeLogObjectType, startDate, endDate).Count();
             }
 
             return Task.FromResult(result);
@@ -33,50 +48,47 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         {
             IList<IndexDocumentChange> result;
 
-            using (var repository = _catalogRepositoryFactory())
+            if (startDate == null && endDate == null)
             {
-                var query = GetCategoryQuery(repository, startDate, endDate);
-
-                if (startDate == null && endDate == null)
+                // Get documents from repository and return them as changes
+                using (var repository = _catalogRepositoryFactory())
                 {
-                    query = query.OrderBy(c => c.CreatedDate);
-                }
-                else
-                {
-                    query = query.OrderBy(c => c.ModifiedDate);
-                }
+                    var productIds = repository.Categories
+                        .OrderBy(i => i.CreatedDate)
+                        .Select(i => i.Id)
+                        .Skip((int)skip)
+                        .Take((int)take)
+                        .ToArray();
 
-                var categories = query.Skip((int)skip).Take((int)take).ToArray();
+                    result = productIds.Select(id =>
+                        new IndexDocumentChange
+                        {
+                            DocumentId = id,
+                            ChangeType = IndexDocumentChangeType.Modified,
+                            ChangeDate = DateTime.UtcNow
+                        }
+                    ).ToArray();
+                }
+            }
+            else
+            {
+                // Get changes from operation log
+                var operations = _changeLogService.FindChangeHistory(ChangeLogObjectType, startDate, endDate)
+                    .Skip((int)skip)
+                    .Take((int)take)
+                    .ToArray();
 
-                result = categories.Select(c =>
+                result = operations.Select(o =>
                     new IndexDocumentChange
                     {
-                        DocumentId = c.Id,
-                        ChangeType = IndexDocumentChangeType.Modified,
-                        ChangeDate = c.ModifiedDate ?? c.CreatedDate,
+                        DocumentId = o.ObjectId,
+                        ChangeType = o.OperationType == EntryState.Deleted ? IndexDocumentChangeType.Deleted : IndexDocumentChangeType.Modified,
+                        ChangeDate = o.ModifiedDate ?? o.CreatedDate,
                     }
                 ).ToArray();
             }
 
             return Task.FromResult(result);
-        }
-
-
-        private static IQueryable<Category> GetCategoryQuery(ICatalogRepository repository, DateTime? startDate, DateTime? endDate)
-        {
-            var query = repository.Categories;
-
-            if (startDate != null)
-            {
-                query = query.Where(c => c.ModifiedDate > startDate);
-            }
-
-            if (endDate != null)
-            {
-                query = query.Where(c => c.ModifiedDate <= endDate);
-            }
-
-            return query;
         }
     }
 }
