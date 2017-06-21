@@ -90,6 +90,7 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="CatalogConstants.cs" />
     <Compile Include="Converters\AssetConverter.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -193,27 +194,27 @@
       <DependentUpon>201610181353548_AssociationQuantity.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
-    <Compile Include="Model\Asset.cs" />
-    <Compile Include="Model\Association.cs" />
-    <Compile Include="Model\Catalog.cs" />
-    <Compile Include="Model\CatalogLanguage.cs" />
-    <Compile Include="Model\Category.cs" />
-    <Compile Include="Model\CategoryItemRelation.cs" />
-    <Compile Include="Model\CategoryRelation.cs" />
-    <Compile Include="Model\EditorialReview.cs" />
-    <Compile Include="Model\Image.cs" />
-    <Compile Include="Model\Item.cs" />
-    <Compile Include="Model\Property.cs" />
-    <Compile Include="Model\PropertyAttribute.cs" />
-    <Compile Include="Model\PropertyDictionaryValue.cs" />
-    <Compile Include="Model\PropertyValue.cs" />
+    <Compile Include="Model\AssetEntity.cs" />
+    <Compile Include="Model\AssociationEntity.cs" />
+    <Compile Include="Model\CatalogEntity.cs" />
+    <Compile Include="Model\CatalogLanguageEntity.cs" />
+    <Compile Include="Model\CategoryEntity.cs" />
+    <Compile Include="Model\CategoryItemRelationEntity.cs" />
+    <Compile Include="Model\CategoryRelationEntity.cs" />
+    <Compile Include="Model\EditorialReviewEntity.cs" />
+    <Compile Include="Model\ImageEntity.cs" />
+    <Compile Include="Model\ItemEntity.cs" />
+    <Compile Include="Model\PropertyDisplayNameEntity.cs" />
+    <Compile Include="Model\PropertyEntity.cs" />
+    <Compile Include="Model\PropertyAttributeEntity.cs" />
+    <Compile Include="Model\PropertyDictionaryValueEntity.cs" />
+    <Compile Include="Model\PropertyValueEntity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\CatalogRepositoryImpl.cs" />
     <Compile Include="Repositories\ICatalogRepository.cs" />
     <Compile Include="Services\AssociationServiceImpl.cs" />
     <Compile Include="Services\CatalogSearchServiceImpl.cs" />
     <Compile Include="Services\CatalogSeoDublicatesDetector.cs" />
-    <Compile Include="Services\CatalogServiceBase.cs" />
     <Compile Include="Services\CategoryServiceImpl.cs" />
     <Compile Include="Services\ItemServiceImpl.cs" />
     <Compile Include="Services\CatalogServiceImpl.cs" />

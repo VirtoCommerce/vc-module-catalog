@@ -21,7 +21,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
         /// </summary>
         /// <param name="catalogBase"></param>
         /// <returns></returns>
-        public static coreModel.Catalog ToCoreModel(this dataModel.Catalog dbCatalog, bool convertProps = true)
+        public static coreModel.Catalog ToCoreModel(this dataModel.CatalogEntity dbCatalog, bool convertProps = true)
         {
             if (dbCatalog == null)
                 throw new ArgumentNullException("catalog");
@@ -32,7 +32,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
             retVal.IsVirtual = dbCatalog.Virtual;
             retVal.Languages = new List<coreModel.CatalogLanguage>();
 
-            var defaultLanguage = (new dataModel.CatalogLanguage { Language = string.IsNullOrEmpty(dbCatalog.DefaultLanguage) ? "en-us" : dbCatalog.DefaultLanguage }).ToCoreModel(retVal);
+            var defaultLanguage = (new dataModel.CatalogLanguageEntity { Language = string.IsNullOrEmpty(dbCatalog.DefaultLanguage) ? "en-us" : dbCatalog.DefaultLanguage }).ToCoreModel(retVal);
             defaultLanguage.IsDefault = true;
             retVal.Languages = new List<coreModel.CatalogLanguage>();
             retVal.Languages.Add(defaultLanguage);
@@ -49,7 +49,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
             {
                 retVal.PropertyValues = dbCatalog.CatalogPropertyValues.Select(x => x.ToCoreModel()).ToList();
                 //Self properties
-                retVal.Properties = dbCatalog.Properties.Where(x => x.CategoryId == null).OrderBy(x => x.Name).Select(x => x.ToCoreModel(new dataModel.Catalog[] { dbCatalog }, new dataModel.Category[] { })).ToList();
+                retVal.Properties = dbCatalog.Properties.Where(x => x.CategoryId == null).OrderBy(x => x.Name).Select(x => x.ToCoreModel(new dataModel.CatalogEntity[] { dbCatalog }, new dataModel.CategoryEntity[] { })).ToList();
 
                 //Next need set Property in PropertyValues objects
                 foreach (var propValue in retVal.PropertyValues.ToArray())
@@ -76,7 +76,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
         /// </summary>
         /// <param name="catalog"></param>
         /// <returns></returns>
-        public static dataModel.Catalog ToDataModel(this coreModel.Catalog catalog, PrimaryKeyResolvingMap pkMap)
+        public static dataModel.CatalogEntity ToDataModel(this coreModel.Catalog catalog, PrimaryKeyResolvingMap pkMap)
         {
             if (catalog == null)
                 throw new ArgumentNullException("catalog");
@@ -84,12 +84,12 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
             if (catalog.DefaultLanguage == null)
                 throw new NullReferenceException("DefaultLanguage");
 
-            var retVal = new dataModel.Catalog();
+            var retVal = new dataModel.CatalogEntity();
             pkMap.AddPair(catalog, retVal);
 
             if (catalog.PropertyValues != null)
             {
-                retVal.CatalogPropertyValues = new ObservableCollection<dataModel.PropertyValue>();
+                retVal.CatalogPropertyValues = new ObservableCollection<dataModel.PropertyValueEntity>();
                 foreach (var propertyValue in catalog.PropertyValues)
                 {
                     if (!propertyValue.IsInherited && propertyValue.Value != null && !string.IsNullOrEmpty(propertyValue.Value.ToString()))
@@ -107,7 +107,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 
             if (catalog.Languages != null)
             {
-                retVal.CatalogLanguages = new ObservableCollection<dataModel.CatalogLanguage>();
+                retVal.CatalogLanguages = new ObservableCollection<dataModel.CatalogLanguageEntity>();
                 retVal.CatalogLanguages.AddRange(catalog.Languages.Select(x => x.ToDataModel()));
             }
 
@@ -120,7 +120,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
         /// </summary>
         /// <param name="source"></param>
         /// <param name="target"></param>
-        public static void Patch(this dataModel.Catalog source, dataModel.Catalog target)
+        public static void Patch(this dataModel.CatalogEntity source, dataModel.CatalogEntity target)
         {
             if (target == null)
                 throw new ArgumentNullException("target");
@@ -131,7 +131,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
             //Languages patch
             if (!source.CatalogLanguages.IsNullCollection())
             {
-                var languageComparer = AnonymousComparer.Create((dataModel.CatalogLanguage x) => x.Language);
+                var languageComparer = AnonymousComparer.Create((dataModel.CatalogLanguageEntity x) => x.Language);
                 source.CatalogLanguages.Patch(target.CatalogLanguages, languageComparer,
                                                      (sourceLang, targetlang) => sourceLang.Patch(targetlang));
             }

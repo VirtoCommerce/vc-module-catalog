@@ -15,7 +15,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
         /// </summary>
         /// <param name="catalogBase"></param>
         /// <returns></returns>
-        public static coreModel.PropertyDictionaryValue ToCoreModel(this dataModel.PropertyDictionaryValue dbPropDictValue)
+        public static coreModel.PropertyDictionaryValue ToCoreModel(this dataModel.PropertyDictionaryValueEntity dbPropDictValue)
         {
  			var retVal = new coreModel.PropertyDictionaryValue();
             retVal.Alias = dbPropDictValue.Alias;
@@ -32,9 +32,9 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
         /// </summary>
         /// <param name="catalog"></param>
         /// <returns></returns>
-        public static dataModel.PropertyDictionaryValue ToDataModel(this coreModel.PropertyDictionaryValue propDictValue)
+        public static dataModel.PropertyDictionaryValueEntity ToDataModel(this coreModel.PropertyDictionaryValue propDictValue)
         {
-            var retVal = new dataModel.PropertyDictionaryValue
+            var retVal = new dataModel.PropertyDictionaryValueEntity
             {
 	            Locale = propDictValue.LanguageCode,
             };
@@ -50,7 +50,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
         /// </summary>
         /// <param name="source"></param>
         /// <param name="target"></param>
-        public static void Patch(this dataModel.PropertyDictionaryValue source, dataModel.PropertyDictionaryValue target)
+        public static void Patch(this dataModel.PropertyDictionaryValueEntity source, dataModel.PropertyDictionaryValueEntity target)
         {
             if (target == null)
                 throw new ArgumentNullException("target");

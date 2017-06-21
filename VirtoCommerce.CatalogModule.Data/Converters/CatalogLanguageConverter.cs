@@ -18,7 +18,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 		/// </summary>
 		/// <param name="catalogBase"></param>
 		/// <returns></returns>
-		public static coreModel.CatalogLanguage ToCoreModel(this dataModel.CatalogLanguage dbLanguage, coreModel.Catalog catalog)
+		public static coreModel.CatalogLanguage ToCoreModel(this dataModel.CatalogLanguageEntity dbLanguage, coreModel.Catalog catalog)
 		{
 			var retVal = new coreModel.CatalogLanguage();
             retVal.Id = dbLanguage.Id;
@@ -34,9 +34,9 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 		/// </summary>
 		/// <param name="catalog"></param>
 		/// <returns></returns>
-		public static dataModel.CatalogLanguage ToDataModel(this coreModel.CatalogLanguage language)
+		public static dataModel.CatalogLanguageEntity ToDataModel(this coreModel.CatalogLanguage language)
 		{
-			var retVal = new dataModel.CatalogLanguage
+			var retVal = new dataModel.CatalogLanguageEntity
 			{
 				Language = language.LanguageCode,
 			};
@@ -50,12 +50,12 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 		/// </summary>
 		/// <param name="source"></param>
 		/// <param name="target"></param>
-		public static void Patch(this dataModel.CatalogLanguage source, dataModel.CatalogLanguage target)
+		public static void Patch(this dataModel.CatalogLanguageEntity source, dataModel.CatalogLanguageEntity target)
 		{
 			if (target == null)
 				throw new ArgumentNullException("target");
 
-			var patchInjectionPolicy = new PatchInjection<dataModel.CatalogLanguage>(x => x.Language);
+			var patchInjectionPolicy = new PatchInjection<dataModel.CatalogLanguageEntity>(x => x.Language);
 			target.InjectFrom(patchInjectionPolicy, source);
 
 		}

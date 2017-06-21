@@ -15,7 +15,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
         /// Converting to model type
         /// </summary>
         /// <returns></returns>
-        public static coreModel.CatalogProduct ToCoreModel(this dataModel.Item dbItem, dataModel.Catalog[] allCatalogs, dataModel.Category[] allCategories, bool convertChildrens = true)
+        public static coreModel.CatalogProduct ToCoreModel(this dataModel.ItemEntity dbItem, dataModel.CatalogEntity[] allCatalogs, dataModel.CategoryEntity[] allCategories, bool convertChildrens = true)
         {
             var retVal = new coreModel.CatalogProduct();
             retVal.InjectFrom(dbItem);
@@ -163,9 +163,9 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
         /// <param name="product"></param>
         /// <param name="pkMap"></param>
         /// <returns></returns>
-        public static dataModel.Item ToDataModel(this coreModel.CatalogProduct product, PrimaryKeyResolvingMap pkMap)
+        public static dataModel.ItemEntity ToDataModel(this coreModel.CatalogProduct product, PrimaryKeyResolvingMap pkMap)
         {
-            var retVal = new dataModel.Item();
+            var retVal = new dataModel.ItemEntity();
             pkMap.AddPair(product, retVal);
             retVal.InjectFrom(product);
 
@@ -193,7 +193,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
             #region ItemPropertyValues
             if (product.PropertyValues != null)
             {
-                retVal.ItemPropertyValues = new ObservableCollection<dataModel.PropertyValue>();
+                retVal.ItemPropertyValues = new ObservableCollection<dataModel.PropertyValueEntity>();
                 foreach(var propertyValue in product.PropertyValues)
                 {
                     if(!propertyValue.IsInherited && propertyValue.Value != null && !string.IsNullOrEmpty(propertyValue.Value.ToString()))
@@ -208,21 +208,21 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
             #region Assets
             if (product.Assets != null)
             {
-                retVal.Assets = new ObservableCollection<dataModel.Asset>(product.Assets.Where(x => !x.IsInherited).Select(x => x.ToDataModel(pkMap)));
+                retVal.Assets = new ObservableCollection<dataModel.AssetEntity>(product.Assets.Where(x => !x.IsInherited).Select(x => x.ToDataModel(pkMap)));
             }
             #endregion
 
             #region Images
             if (product.Images != null)
             {
-                retVal.Images = new ObservableCollection<dataModel.Image>(product.Images.Where(x => !x.IsInherited).Select(x => x.ToDataModel(pkMap)));
+                retVal.Images = new ObservableCollection<dataModel.ImageEntity>(product.Images.Where(x => !x.IsInherited).Select(x => x.ToDataModel(pkMap)));
             }
             #endregion
 
             #region Links
             if (product.Links != null)
             {
-                retVal.CategoryLinks = new ObservableCollection<dataModel.CategoryItemRelation>();
+                retVal.CategoryLinks = new ObservableCollection<dataModel.CategoryItemRelationEntity>();
                 retVal.CategoryLinks.AddRange(product.Links.Select(x => x.ToDataModel(product)));
             }
             #endregion
@@ -230,7 +230,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
             #region EditorialReview
             if (product.Reviews != null)
             {
-                retVal.EditorialReviews = new ObservableCollection<dataModel.EditorialReview>();
+                retVal.EditorialReviews = new ObservableCollection<dataModel.EditorialReviewEntity>();
                 retVal.EditorialReviews.AddRange(product.Reviews.Where(x => !x.IsInherited).Select(x => x.ToDataModel(retVal, pkMap)));
             }
             #endregion
@@ -238,7 +238,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
             #region Associations
             if (product.Associations != null)
             {
-                retVal.Associations = new ObservableCollection<dataModel.Association>(product.Associations.Select(x => x.ToDataModel()));
+                retVal.Associations = new ObservableCollection<dataModel.AssociationEntity>(product.Associations.Select(x => x.ToDataModel()));
             }
             #endregion
 
@@ -251,7 +251,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
         /// <param name="source"></param>
         /// <param name="target"></param>
         /// <param name="pkMap"></param>
-        public static void Patch(this coreModel.CatalogProduct source, dataModel.Item target, PrimaryKeyResolvingMap pkMap)
+        public static void Patch(this coreModel.CatalogProduct source, dataModel.ItemEntity target, PrimaryKeyResolvingMap pkMap)
         {
             if (target == null)
                 throw new ArgumentNullException(nameof(target));
@@ -340,7 +340,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
             #region Association
             if (!dbSource.Associations.IsNullCollection())
             {
-                var associationComparer = AnonymousComparer.Create((dataModel.Association x) => x.AssociationType + ":" + x.AssociatedItemId + ":" + x.AssociatedCategoryId);
+                var associationComparer = AnonymousComparer.Create((dataModel.AssociationEntity x) => x.AssociationType + ":" + x.AssociatedItemId + ":" + x.AssociatedCategoryId);
                 dbSource.Associations.Patch(target.Associations, associationComparer,
                                              (sourceAssociation, targetAssociation) => sourceAssociation.Patch(targetAssociation));
             }

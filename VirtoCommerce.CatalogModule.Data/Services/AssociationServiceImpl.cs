@@ -44,7 +44,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public void SaveChanges(IHasAssociations[] owners)
         {
-            var changedDbAssociations = new List<dataModel.Association>(); 
+            var changedDbAssociations = new List<dataModel.AssociationEntity>(); 
             foreach(var owner in owners)
             {
                 if(owner.Associations != null)
@@ -64,11 +64,11 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 var itemIds = owners.Where(x => x.Id != null).Select(x => x.Id).ToArray();
                 var existDbAssociations = repository.Associations.Where(x => itemIds.Contains(x.Id)).ToArray();
 
-                var target = new { Associations = new ObservableCollection<dataModel.Association>(existDbAssociations) };
-                var source = new { Associations = new ObservableCollection<dataModel.Association>(changedDbAssociations) };
+                var target = new { Associations = new ObservableCollection<dataModel.AssociationEntity>(existDbAssociations) };
+                var source = new { Associations = new ObservableCollection<dataModel.AssociationEntity>(changedDbAssociations) };
 
                 changeTracker.Attach(target);
-                var associationComparer = AnonymousComparer.Create((dataModel.Association x) => x.ItemId + ":" + x.AssociationType + ":" + x.AssociatedItemId + ":" + x.AssociatedCategoryId);
+                var associationComparer = AnonymousComparer.Create((dataModel.AssociationEntity x) => x.ItemId + ":" + x.AssociationType + ":" + x.AssociatedItemId + ":" + x.AssociatedCategoryId);
                 source.Associations.Patch(target.Associations, associationComparer, (sourceAssociation, targetAssociation) => sourceAssociation.Patch(targetAssociation));
 
                 CommitChanges(repository);

@@ -18,7 +18,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 		/// </summary>
 		/// <param name="catalogBase"></param>
 		/// <returns></returns>
-		public static coreModel.PropertyAttribute ToCoreModel(this dataModel.PropertyAttribute dbAttribute, coreModel.Property property)
+		public static coreModel.PropertyAttribute ToCoreModel(this dataModel.PropertyAttributeEntity dbAttribute, coreModel.Property property)
 		{
 			if (property == null)
 				throw new ArgumentNullException("dbProperty");
@@ -43,9 +43,9 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 		/// </summary>
 		/// <param name="catalog"></param>
 		/// <returns></returns>
-		public static dataModel.PropertyAttribute ToDataModel(this coreModel.PropertyAttribute attribute)
+		public static dataModel.PropertyAttributeEntity ToDataModel(this coreModel.PropertyAttribute attribute)
 		{
-			var retVal = new dataModel.PropertyAttribute();
+			var retVal = new dataModel.PropertyAttributeEntity();
 	
 			retVal.InjectFrom(attribute);
 	
@@ -60,12 +60,12 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 		/// </summary>
 		/// <param name="source"></param>
 		/// <param name="target"></param>
-		public static void Patch(this dataModel.PropertyAttribute source, dataModel.PropertyAttribute target)
+		public static void Patch(this dataModel.PropertyAttributeEntity source, dataModel.PropertyAttributeEntity target)
 		{
 			if (target == null)
 				throw new ArgumentNullException("target");
 
-			var patchInjectionPolicy = new PatchInjection<dataModel.PropertyAttribute>(x => x.PropertyAttributeName, x => x.PropertyAttributeValue);
+			var patchInjectionPolicy = new PatchInjection<dataModel.PropertyAttributeEntity>(x => x.PropertyAttributeName, x => x.PropertyAttributeValue);
 			target.InjectFrom(patchInjectionPolicy, source);
 		}
 

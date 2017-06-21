@@ -21,7 +21,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
         /// <param name="properties">The properties.</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentNullException">dbPropValue</exception>
-        public static coreModel.PropertyValue ToCoreModel(this dataModel.PropertyValue dbPropValue)
+        public static coreModel.PropertyValue ToCoreModel(this dataModel.PropertyValueEntity dbPropValue)
         {
             if (dbPropValue == null)
                 throw new ArgumentNullException("dbPropValue");
@@ -50,12 +50,12 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
         /// <param name="propValue">The property value.</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentNullException">propValue</exception>
-        public static dataModel.PropertyValue ToDataModel(this coreModel.PropertyValue propValue, PrimaryKeyResolvingMap pkMap) 
+        public static dataModel.PropertyValueEntity ToDataModel(this coreModel.PropertyValue propValue, PrimaryKeyResolvingMap pkMap) 
         {
             if (propValue == null)
                 throw new ArgumentNullException("propValue");
 
-            var retVal = new dataModel.PropertyValue();
+            var retVal = new dataModel.PropertyValueEntity();
             pkMap.AddPair(propValue, retVal);
             retVal.InjectFrom(propValue);
    
@@ -73,7 +73,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
         /// </summary>
         /// <param name="source"></param>
         /// <param name="target"></param>
-        public static void Patch(this dataModel.PropertyValue source, dataModel.PropertyValue target)
+        public static void Patch(this dataModel.PropertyValueEntity source, dataModel.PropertyValueEntity target)
         {
             if (target == null)
             {
@@ -81,13 +81,13 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
             }
 
 
-            var patchInjectionPolicy = new PatchInjection<dataModel.PropertyValue>(x => x.BooleanValue, x => x.DateTimeValue,
+            var patchInjectionPolicy = new PatchInjection<dataModel.PropertyValueEntity>(x => x.BooleanValue, x => x.DateTimeValue,
                                                                                   x => x.DecimalValue, x => x.IntegerValue,
                                                                                   x => x.KeyValue, x => x.LongTextValue, x => x.ShortTextValue);
             target.InjectFrom(patchInjectionPolicy, source);
         }
 
-        private static object GetPropertyValue(dataModel.PropertyValue propertyValue)
+        private static object GetPropertyValue(dataModel.PropertyValueEntity propertyValue)
         {
             
             switch (propertyValue.ValueType)
@@ -108,7 +108,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 
     }
 
-        private static void SetPropertyValue(dataModel.PropertyValue retVal, coreModel.PropertyValueType type, string value)
+        private static void SetPropertyValue(dataModel.PropertyValueEntity retVal, coreModel.PropertyValueType type, string value)
         {
             switch (type)
             {

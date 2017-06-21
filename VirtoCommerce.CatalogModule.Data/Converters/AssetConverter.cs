@@ -19,7 +19,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 		/// </summary>
 		/// <param name="catalogBase"></param>
 		/// <returns></returns>
-		public static coreModel.Image ToCoreModel(this dataModel.Image dbImage)
+		public static coreModel.Image ToCoreModel(this dataModel.ImageEntity dbImage)
 		{
 			if (dbImage == null)
 				throw new ArgumentNullException("dbImage");
@@ -46,7 +46,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 		/// </summary>
 		/// <param name="catalogBase"></param>
 		/// <returns></returns>
-		public static coreModel.Asset ToCoreModel(this dataModel.Asset dbAsset)
+		public static coreModel.Asset ToCoreModel(this dataModel.AssetEntity dbAsset)
 		{
 			if (dbAsset == null)
 				throw new ArgumentNullException("dbAsset");
@@ -61,12 +61,12 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 		/// <summary>
 		/// Converting to foundation type
 		/// </summary>
-		public static dataModel.Image ToDataModel(this coreModel.Image image, PrimaryKeyResolvingMap pkMap)
+		public static dataModel.ImageEntity ToDataModel(this coreModel.Image image, PrimaryKeyResolvingMap pkMap)
 		{
 			if (image == null)
 				throw new ArgumentNullException("image");
 
-			var retVal = new dataModel.Image();
+			var retVal = new dataModel.ImageEntity();
             pkMap.AddPair(image, retVal);
             retVal.InjectFrom(image);
 	
@@ -76,12 +76,12 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 		/// <summary>
 		/// Converting to foundation type
 		/// </summary>
-		public static dataModel.Asset ToDataModel(this coreModel.Asset asset, PrimaryKeyResolvingMap pkMap)
+		public static dataModel.AssetEntity ToDataModel(this coreModel.Asset asset, PrimaryKeyResolvingMap pkMap)
 		{
 			if (asset == null)
 				throw new ArgumentNullException("asset");
 
-			var retVal = new dataModel.Asset();
+			var retVal = new dataModel.AssetEntity();
             pkMap.AddPair(asset, retVal);
             retVal.InjectFrom(asset);
 			return retVal;
@@ -92,12 +92,12 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 		/// </summary>
 		/// <param name="source"></param>
 		/// <param name="target"></param>
-		public static void Patch(this dataModel.Asset source, dataModel.Asset target)
+		public static void Patch(this dataModel.AssetEntity source, dataModel.AssetEntity target)
 		{
 			if (target == null)
 				throw new ArgumentNullException("target");
 			
-			var patchInjectionPolicy = new PatchInjection<dataModel.Asset>(x => x.LanguageCode, x=> x.Name );
+			var patchInjectionPolicy = new PatchInjection<dataModel.AssetEntity>(x => x.LanguageCode, x=> x.Name );
 			target.InjectFrom(patchInjectionPolicy, source);
 
 		}
@@ -107,12 +107,12 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 		/// </summary>
 		/// <param name="source"></param>
 		/// <param name="target"></param>
-		public static void Patch(this dataModel.Image source, dataModel.Image target)
+		public static void Patch(this dataModel.ImageEntity source, dataModel.ImageEntity target)
 		{
 			if (target == null)
 				throw new ArgumentNullException("target");
 
-			var patchInjectionPolicy = new PatchInjection<dataModel.Image>(x => x.LanguageCode, x => x.Name, x => x.SortOrder);
+			var patchInjectionPolicy = new PatchInjection<dataModel.ImageEntity>(x => x.LanguageCode, x => x.Name, x => x.SortOrder);
 			target.InjectFrom(patchInjectionPolicy, source);
 
 		}

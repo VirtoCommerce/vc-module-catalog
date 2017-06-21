@@ -16,7 +16,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 		/// </summary>
 		/// <param name="catalogBase"></param>
 		/// <returns></returns>
-		public static coreModel.EditorialReview ToCoreModel(this dataModel.EditorialReview dbReview)
+		public static coreModel.EditorialReview ToCoreModel(this dataModel.EditorialReviewEntity dbReview)
 		{
 			if (dbReview == null)
 				throw new ArgumentNullException("dbReview");
@@ -40,12 +40,12 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 		/// <param name="itemAsset">The item asset.</param>
 		/// <returns></returns>
 		/// <exception cref="System.ArgumentNullException">itemAsset</exception>
-		public static dataModel.EditorialReview ToDataModel(this coreModel.EditorialReview review, dataModel.Item product, PrimaryKeyResolvingMap pkMap)
+		public static dataModel.EditorialReviewEntity ToDataModel(this coreModel.EditorialReview review, dataModel.ItemEntity product, PrimaryKeyResolvingMap pkMap)
 		{
 			if (review == null)
 				throw new ArgumentNullException("review");
 
-			var retVal = new dataModel.EditorialReview();
+			var retVal = new dataModel.EditorialReviewEntity();
             pkMap.AddPair(review, retVal);
             retVal.InjectFrom(review);
 
@@ -62,12 +62,12 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 		/// </summary>
 		/// <param name="source"></param>
 		/// <param name="target"></param>
-		public static void Patch(this dataModel.EditorialReview source, dataModel.EditorialReview target)
+		public static void Patch(this dataModel.EditorialReviewEntity source, dataModel.EditorialReviewEntity target)
 		{
 			if (target == null)
 				throw new ArgumentNullException("target");
 
-			var patchInjectionPolicy = new PatchInjection<dataModel.EditorialReview>(x => x.Content, x => x.Locale, x=>x.Source);
+			var patchInjectionPolicy = new PatchInjection<dataModel.EditorialReviewEntity>(x => x.Content, x => x.Locale, x=>x.Source);
 			target.InjectFrom(patchInjectionPolicy, source);
 
 		}

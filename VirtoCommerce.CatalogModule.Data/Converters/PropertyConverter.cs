@@ -19,7 +19,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 		/// </summary>
 		/// <param name="catalogBase"></param>
 		/// <returns></returns>
-		public static coreModel.Property ToCoreModel(this dataModel.Property dbProperty, dataModel.Catalog[] allCatalogs, dataModel.Category[] allCategories)
+		public static coreModel.Property ToCoreModel(this dataModel.PropertyEntity dbProperty, dataModel.CatalogEntity[] allCatalogs, dataModel.CategoryEntity[] allCategories)
 		{
 			if (dbProperty == null)
 				throw new ArgumentNullException("dbProperty");
@@ -67,8 +67,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 					{
 						displayName.Name = displayNameAttribute.Value;
 					}
-				}
-			
+				}			
 			}
 
 			if (dbProperty.DictionaryValues != null)
@@ -86,12 +85,12 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 		/// </summary>
 		/// <param name="catalog"></param>
 		/// <returns></returns>
-		public static dataModel.Property ToDataModel(this coreModel.Property property, PrimaryKeyResolvingMap pkMap)
+		public static dataModel.PropertyEntity ToDataModel(this coreModel.Property property, PrimaryKeyResolvingMap pkMap)
 		{
 			if (property == null)
 				throw new ArgumentNullException("property");
 
-			var retVal = new dataModel.Property();
+			var retVal = new dataModel.PropertyEntity();
             pkMap.AddPair(property, retVal);
 
             retVal.InjectFrom(property);
@@ -105,7 +104,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 
 			if (property.Attributes != null)
 			{
-				retVal.PropertyAttributes = new ObservableCollection<dataModel.PropertyAttribute>();
+				retVal.PropertyAttributes = new ObservableCollection<dataModel.PropertyAttributeEntity>();
 				foreach (var attribute in property.Attributes)
 				{
 					var dbAttribute = attribute.ToDataModel();
@@ -117,7 +116,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 
 			if (property.DictionaryValues != null)
 			{
-				retVal.DictionaryValues = new ObservableCollection<dataModel.PropertyDictionaryValue>();
+				retVal.DictionaryValues = new ObservableCollection<dataModel.PropertyDictionaryValueEntity>();
 				foreach (var dictValue in property.DictionaryValues)
 				{
 					var dbDictValue = dictValue.ToDataModel();
@@ -135,7 +134,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 					var existAttribute = retVal.PropertyAttributes.FirstOrDefault(x => x.PropertyAttributeName == attributeName);
 					if(existAttribute == null)
 					{
-						existAttribute = new dataModel.PropertyAttribute
+						existAttribute = new dataModel.PropertyAttributeEntity
 						{
                             PropertyId = property.Id,
 							PropertyAttributeName = attributeName,
@@ -154,12 +153,12 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 		/// </summary>
 		/// <param name="source"></param>
 		/// <param name="target"></param>
-		public static void Patch(this dataModel.Property source, dataModel.Property target)
+		public static void Patch(this dataModel.PropertyEntity source, dataModel.PropertyEntity target)
 		{
 			if (target == null)
 				throw new ArgumentNullException("target");
 
-			var patchInjectionPolicy = new PatchInjection<dataModel.Property>(x => x.PropertyValueType, x => x.IsEnum, x => x.IsMultiValue, x => x.IsLocaleDependant,
+			var patchInjectionPolicy = new PatchInjection<dataModel.PropertyEntity>(x => x.PropertyValueType, x => x.IsEnum, x => x.IsMultiValue, x => x.IsLocaleDependant,
 																			   x => x.IsRequired, x => x.TargetType, x => x.Name);
 			target.InjectFrom(patchInjectionPolicy, source);
 
@@ -167,7 +166,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 			//Attributes patch
 			if (!source.PropertyAttributes.IsNullCollection())
 			{
-				var attributeComparer = AnonymousComparer.Create((dataModel.PropertyAttribute x) => x.IsTransient() ?  x.PropertyAttributeName : x.Id);
+				var attributeComparer = AnonymousComparer.Create((dataModel.PropertyAttributeEntity x) => x.IsTransient() ?  x.PropertyAttributeName : x.Id);
 				source.PropertyAttributes.Patch(target.PropertyAttributes, attributeComparer, (sourceAsset, targetAsset) => sourceAsset.Patch(targetAsset));
 			}
 			//Property dict values

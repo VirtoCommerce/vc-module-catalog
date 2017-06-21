@@ -19,7 +19,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
         /// </summary>
         /// <param name="dbAssociation"></param>
         /// <returns></returns>
-        public static coreModel.ProductAssociation ToCoreModel(this dataModel.Association dbAssociation, dataModel.Catalog[] allCatalogs, dataModel.Category[] allCategories)
+        public static coreModel.ProductAssociation ToCoreModel(this dataModel.AssociationEntity dbAssociation, dataModel.CatalogEntity[] allCatalogs, dataModel.CategoryEntity[] allCategories)
 		{
 			if (dbAssociation == null)
 				throw new ArgumentNullException("dbAssociation");
@@ -65,12 +65,12 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
         /// </summary>
         /// <param name="association"></param>
         /// <returns></returns>
-        public static dataModel.Association ToDataModel(this coreModel.ProductAssociation association)
+        public static dataModel.AssociationEntity ToDataModel(this coreModel.ProductAssociation association)
 		{
 			if (association == null)
 				throw new ArgumentNullException("association");
 
-			var retVal = new dataModel.Association
+			var retVal = new dataModel.AssociationEntity
 			{   
                 Priority = association.Priority,
 				AssociationType = association.Type,
@@ -100,7 +100,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 		/// </summary>
 		/// <param name="source"></param>
 		/// <param name="target"></param>
-		public static void Patch(this dataModel.Association source, dataModel.Association target)
+		public static void Patch(this dataModel.AssociationEntity source, dataModel.AssociationEntity target)
 		{
             target.Priority = source.Priority;
             target.Tags = source.Tags;

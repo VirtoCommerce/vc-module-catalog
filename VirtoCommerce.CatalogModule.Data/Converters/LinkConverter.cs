@@ -16,7 +16,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 		/// </summary>
 		/// <param name="catalogBase"></param>
 		/// <returns></returns>
-		public static coreModel.CategoryLink ToCoreModel(this dataModel.CategoryItemRelation categoryItemRelation, dataModel.Catalog[] allCatalogs, dataModel.Category[] allCategories)
+		public static coreModel.CategoryLink ToCoreModel(this dataModel.CategoryItemRelationEntity categoryItemRelation, dataModel.CatalogEntity[] allCatalogs, dataModel.CategoryEntity[] allCategories)
 		{
 			if (categoryItemRelation == null)
 				throw new ArgumentNullException("categoryItemRelation");
@@ -42,7 +42,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 		/// </summary>
 		/// <param name="catalog"></param>
 		/// <returns></returns>
-		public static coreModel.CategoryLink ToCoreModel(this dataModel.CategoryRelation linkedCategory, dataModel.Catalog[] allCatalogs, dataModel.Category[] allCategories)
+		public static coreModel.CategoryLink ToCoreModel(this dataModel.CategoryRelationEntity linkedCategory, dataModel.CatalogEntity[] allCatalogs, dataModel.CategoryEntity[] allCategories)
 		{
 			if (linkedCategory == null)
 				throw new ArgumentNullException("linkedCategory");
@@ -65,9 +65,9 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 		/// </summary>
 		/// <param name="catalog"></param>
 		/// <returns></returns>
-		public static dataModel.CategoryItemRelation ToDataModel(this coreModel.CategoryLink categoryLink, coreModel.CatalogProduct product)
+		public static dataModel.CategoryItemRelationEntity ToDataModel(this coreModel.CategoryLink categoryLink, coreModel.CatalogProduct product)
 		{
-			var retVal = new dataModel.CategoryItemRelation
+			var retVal = new dataModel.CategoryItemRelationEntity
 			{
 				 CategoryId = categoryLink.CategoryId,
 				 ItemId = product.Id,
@@ -82,9 +82,9 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 		/// </summary>
 		/// <param name="catalog"></param>
 		/// <returns></returns>
-		public static dataModel.CategoryRelation ToDataModel(this coreModel.CategoryLink categoryLink, coreModel.Category category)
+		public static dataModel.CategoryRelationEntity ToDataModel(this coreModel.CategoryLink categoryLink, coreModel.Category category)
 		{
-			var retVal = new dataModel.CategoryRelation
+			var retVal = new dataModel.CategoryRelationEntity
 			{
 				SourceCategoryId = category.Id,
 				TargetCategoryId = categoryLink.CategoryId,
@@ -98,7 +98,7 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 		/// </summary>
 		/// <param name="source"></param>
 		/// <param name="target"></param>
-		public static void Patch(this dataModel.CategoryRelation source, dataModel.CategoryRelation target)
+		public static void Patch(this dataModel.CategoryRelationEntity source, dataModel.CategoryRelationEntity target)
 		{
 			//Nothing todo. Because we not support change  link
 		}
@@ -108,23 +108,23 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 		/// </summary>
 		/// <param name="source"></param>
 		/// <param name="target"></param>
-		public static void Patch(this dataModel.CategoryItemRelation source, dataModel.CategoryItemRelation target)
+		public static void Patch(this dataModel.CategoryItemRelationEntity source, dataModel.CategoryItemRelationEntity target)
 		{
 			//Nothing todo. Because we not support change link
 		}
 
 	}
 
-	public class CategoryItemRelationComparer : IEqualityComparer<dataModel.CategoryItemRelation>
+	public class CategoryItemRelationComparer : IEqualityComparer<dataModel.CategoryItemRelationEntity>
 	{
 		#region IEqualityComparer<CategoryItemRelation> Members
 
-		public bool Equals(dataModel.CategoryItemRelation x, dataModel.CategoryItemRelation y)
+		public bool Equals(dataModel.CategoryItemRelationEntity x, dataModel.CategoryItemRelationEntity y)
 		{
             return GetHashCode(x) == GetHashCode(y);
 		}
 
-		public int GetHashCode(dataModel.CategoryItemRelation obj)
+		public int GetHashCode(dataModel.CategoryItemRelationEntity obj)
 		{
             int hash = 17;
             hash = hash * 23 + obj.CatalogId.GetHashCode();
@@ -139,16 +139,16 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
 		#endregion
 	}
 
-	public class LinkedCategoryComparer : IEqualityComparer<dataModel.CategoryRelation>
+	public class LinkedCategoryComparer : IEqualityComparer<dataModel.CategoryRelationEntity>
 	{
 		#region IEqualityComparer<LinkedCategory> Members
 
-		public bool Equals(dataModel.CategoryRelation x, dataModel.CategoryRelation y)
+		public bool Equals(dataModel.CategoryRelationEntity x, dataModel.CategoryRelationEntity y)
 		{
             return GetHashCode(x) == GetHashCode(y);
         }
 
-		public int GetHashCode(dataModel.CategoryRelation obj)
+		public int GetHashCode(dataModel.CategoryRelationEntity obj)
 		{
             var hash = 17;
             hash = hash * 23 + obj.SourceCategoryId.GetHashCode();

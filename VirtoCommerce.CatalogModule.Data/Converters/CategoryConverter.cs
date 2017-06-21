@@ -42,9 +42,9 @@ namespace VirtoCommerce.CatalogModule.Data.Converters
             retVal.IsActive = dbCategory.IsActive;
 
             retVal.IsVirtual = retVal.Catalog.IsVirtual;
-            retVal.Links = dbCategory.OutgoingLinks.Select(x => x.ToCoreModel(allCatalogs, allCategories)).ToList();      
+            retVal.Links = dbCategory.OutgoingLinks.Select(x => x.ToCoreModel(allCatalogs, allCategories)).ToList();
             //Getting all Parents from cached categories      
-            retVal.Parents = allCategories.First(x=>x.Id == dbCategory.Id).AllParents.Select(x => x.ToCoreModel(allCatalogs, allCategories)).ToArray();
+            retVal.Parents = allCategories.First(x => x.Id == dbCategory.Id).AllParents.Select(x => x.ToCoreModel(allCatalogs, allCategories)).ToArray();
             retVal.Level = retVal.Parents.Count();
 
 
