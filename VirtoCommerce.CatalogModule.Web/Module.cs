@@ -76,13 +76,10 @@ namespace VirtoCommerce.CatalogModule.Web
 
             #region Search
 
-            _container.RegisterType<ISearchCriteriaPreprocessor, CatalogSearchCriteriaPreprocessor>(nameof(CatalogSearchCriteriaPreprocessor));
-            _container.RegisterType<ISearchCriteriaPreprocessor, ProductSearchCriteriaPreprocessor>(nameof(ProductSearchCriteriaPreprocessor));
+            _container.RegisterType<IBrowseFilterService, BrowseFilterService>();
 
             _container.RegisterType<ISearchRequestBuilder, ProductSearchRequestBuilder>(nameof(ProductSearchRequestBuilder));
             _container.RegisterType<ISearchRequestBuilder, CategorySearchRequestBuilder>(nameof(CategorySearchRequestBuilder));
-
-            _container.RegisterType<IBrowseFilterService, BrowseFilterService>();
 
             _container.RegisterType<IProductSearchService, ProductSearchService>();
             _container.RegisterType<ICategorySearchService, CategorySearchService>();
@@ -125,8 +122,8 @@ namespace VirtoCommerce.CatalogModule.Web
             securityScopeService.RegisterSope(() => new CatalogSelectedCategoryScope(_container.Resolve<ICategoryService>()));
 
             var httpConfiguration = _container.Resolve<HttpConfiguration>();
-            httpConfiguration.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new ProductSearchJsonConverter());
-            httpConfiguration.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new CategorySearchJsonConverter());
+            httpConfiguration.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new ProductSearchCriteriaJsonConverter());
+            httpConfiguration.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new CategorySearchCriteriaJsonConverter());
 
             // Register dynamic property for storing browsing filters
             var filteredBrowsingProperty = new DynamicProperty

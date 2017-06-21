@@ -3,58 +3,37 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Web.Model;
+using VirtoCommerce.Domain.Commerce.Model.Search;
 using VirtoCommerce.Domain.Search;
-using VirtoCommerce.Domain.Store.Model;
-using VirtoCommerce.Domain.Store.Services;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Settings;
-using SearchCriteria = VirtoCommerce.Domain.Search.SearchCriteria;
 
 namespace VirtoCommerce.CatalogModule.Data.Search
 {
-    public abstract class CatalogSearchService<TSearch, TItem, TResult>
+    public abstract class CatalogSearchService2<TItem, TCriteria, TResult>
         where TItem : Entity
+        where TCriteria : SearchCriteriaBase
         where TResult : CatalogSearchResult<TItem>
     {
-        private readonly IStoreService _storeService;
-        private readonly ISearchCriteriaPreprocessor[] _searchCriteriaPreprocessors;
         private readonly ISearchRequestBuilder[] _searchRequestBuilders;
         private readonly ISearchProvider _searchProvider;
         private readonly ISettingsManager _settingsManager;
 
-        protected CatalogSearchService(IStoreService storeService, ISearchCriteriaPreprocessor[] searchCriteriaPreprocessors, ISearchRequestBuilder[] searchRequestBuilders, ISearchProvider searchProvider, ISettingsManager settingsManager)
+        protected CatalogSearchService2(ISearchRequestBuilder[] searchRequestBuilders, ISearchProvider searchProvider, ISettingsManager settingsManager)
         {
-            _storeService = storeService;
-            _searchCriteriaPreprocessors = searchCriteriaPreprocessors;
             _searchRequestBuilders = searchRequestBuilders;
             _searchProvider = searchProvider;
             _settingsManager = settingsManager;
         }
 
-        public virtual async Task<TResult> SearchAsync(string storeId, TSearch search)
+        public virtual async Task<TResult> SearchAsync(TCriteria criteria)
         {
             var result = AbstractTypeFactory<TResult>.TryCreateInstance();
-
-            var store = _storeService.GetById(storeId);
-            if (store != null)
-            {
-                var criteria = GetSearchCriteria(search, store);
-                result = await SearchAsync(criteria);
-            }
-
-            return result;
-        }
-
-        public virtual async Task<TResult> SearchAsync(SearchCriteria criteria)
-        {
-            var result = AbstractTypeFactory<TResult>.TryCreateInstance();
-
-            _searchCriteriaPreprocessors.ForEach(p => p.Process(criteria));
 
             var requestBuilder = GetRequestBuilder(criteria);
             var request = requestBuilder?.BuildRequest(criteria);
 
-            var response = await _searchProvider.SearchAsync(criteria.DocumentType, request);
+            var response = await _searchProvider.SearchAsync(criteria.ObjectType, request);
 
             if (response != null)
             {
@@ -67,23 +46,23 @@ namespace VirtoCommerce.CatalogModule.Data.Search
         }
 
 
-        protected abstract SearchCriteria GetSearchCriteria(TSearch search, Store store);
-        protected abstract IList<TItem> LoadMissingItems(string[] missingItemIds, SearchCriteria criteria);
-        protected abstract void ReduceSearchResults(IEnumerable<TItem> items, SearchCriteria criteria);
+        protected abstract IList<TItem> LoadMissingItems(string[] missingItemIds, TCriteria criteria);
+        protected abstract void ReduceSearchResults(IEnumerable<TItem> items, TCriteria criteria);
+        protected abstract Aggregation[] ConvertAggregations(IList<AggregationResponse> aggregationResponses, TCriteria criteria);
 
 
-        protected virtual ISearchRequestBuilder GetRequestBuilder(SearchCriteria criteria)
+        protected virtual ISearchRequestBuilder GetRequestBuilder(TCriteria criteria)
         {
             if (_searchRequestBuilders == null)
                 throw new InvalidOperationException("No query builders defined");
 
-            var queryBuilder = _searchRequestBuilders.SingleOrDefault(b => b.DocumentType.Equals(criteria.DocumentType)) ??
+            var queryBuilder = _searchRequestBuilders.SingleOrDefault(b => b.DocumentType.Equals(criteria.ObjectType)) ??
                                _searchRequestBuilders.First(b => b.DocumentType.Equals(string.Empty));
 
             return queryBuilder;
         }
 
-        protected virtual TItem[] ConvertDocuments(IList<SearchDocument> documents, SearchCriteria criteria)
+        protected virtual TItem[] ConvertDocuments(IList<SearchDocument> documents, TCriteria criteria)
         {
             TItem[] result = null;
 
@@ -114,11 +93,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             }
 
             return result;
-        }
-
-        protected virtual Aggregation[] ConvertAggregations(IList<AggregationResponse> aggregationResponses, SearchCriteria criteria)
-        {
-            return null;
         }
     }
 }

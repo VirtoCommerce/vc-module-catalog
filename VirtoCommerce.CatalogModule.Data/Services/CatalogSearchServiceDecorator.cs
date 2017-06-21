@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Data.Search;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
+using VirtoCommerce.Domain.Search;
 using VirtoCommerce.Platform.Core.Settings;
 using SearchCriteria = VirtoCommerce.Domain.Catalog.Model.SearchCriteria;
 
@@ -46,18 +46,21 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 // TODO: create outline for category
                 // TODO: implement sorting
 
+                const ItemResponseGroup responseGroup = ItemResponseGroup.ItemInfo | ItemResponseGroup.Outlines;
+
                 var serviceCriteria = new ProductSearchCriteria
                 {
+                    ObjectType = KnownDocumentTypes.Product,
                     SearchPhrase = criteria.Keyword,
-                    Catalog = criteria.CatalogId,
+                    CatalogId = criteria.CatalogId,
                     Outline = criteria.CategoryId,
                     WithHidden = criteria.WithHidden,
                     Skip = criteria.Skip,
                     Take = criteria.Take,
-                    ResponseGroup = ItemResponseGroup.ItemInfo | ItemResponseGroup.Outlines,
+                    ResponseGroup = responseGroup.ToString(),
                 };
 
-                SearchItems(result, serviceCriteria);
+                SearchItems(result, serviceCriteria, responseGroup);
             }
             else
             {
@@ -69,12 +72,12 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         }
 
 
-        private void SearchItems(SearchResult result, ProductSearchCriteria criteria)
+        private void SearchItems(SearchResult result, ProductSearchCriteria criteria, ItemResponseGroup responseGroup)
         {
-            Task.Factory.StartNew(s => SearchItemsAsync(result, criteria), this, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
+            Task.Run(() => SearchItemsAsync(result, criteria, responseGroup)).GetAwaiter().GetResult();
         }
 
-        private async Task SearchItemsAsync(SearchResult result, ProductSearchCriteria criteria)
+        private async Task SearchItemsAsync(SearchResult result, ProductSearchCriteria criteria, ItemResponseGroup responseGroup)
         {
             var items = new List<CatalogProduct>();
             var itemsOrderedList = new List<string>();
@@ -109,10 +112,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 itemsOrderedList.AddRange(uniqueKeys);
 
                 // if we can determine catalog, pass it to the service
-                var catalog = criteria.Catalog;
+                var catalog = criteria.CatalogId;
 
                 // Now load items from repository
-                var currentItems = _itemService.GetByIds(uniqueKeys.ToArray(), criteria.ResponseGroup, catalog);
+                var currentItems = _itemService.GetByIds(uniqueKeys.ToArray(), responseGroup, catalog);
 
                 var orderedList = currentItems.OrderBy(i => itemsOrderedList.IndexOf(i.Id));
                 items.AddRange(orderedList);

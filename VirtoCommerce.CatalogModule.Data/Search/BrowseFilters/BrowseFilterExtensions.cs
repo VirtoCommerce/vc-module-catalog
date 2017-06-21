@@ -6,8 +6,46 @@ using VirtoCommerce.CatalogModule.Web.Model;
 
 namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
 {
-    public static class SearchFilterExtensions
+    public static class BrowseFilterExtensions
     {
+        public static IList<AggregationLabel> GetValueLabels(this IEnumerable<IBrowseFilterValue> values)
+        {
+            var result = values
+                .SelectMany(GetValueLabels)
+                .Where(l => !string.IsNullOrEmpty(l.Language) && !string.IsNullOrEmpty(l.Label))
+                .GroupBy(v => v.Language, StringComparer.OrdinalIgnoreCase)
+                .SelectMany(g => g
+                    .GroupBy(g2 => g2.Label, StringComparer.OrdinalIgnoreCase)
+                    .Select(g2 => g2.FirstOrDefault()))
+                .OrderBy(v => v.Language)
+                .ThenBy(v => v.Label)
+                .ToArray();
+
+            return result.Any() ? result : null;
+        }
+
+        public static IList<AggregationLabel> GetValueLabels(this IBrowseFilterValue value)
+        {
+            var result = new List<AggregationLabel>();
+
+            var attributeFilterValue = value as AttributeFilterValue;
+            var rangeFilterValue = value as RangeFilterValue;
+
+            if (attributeFilterValue != null)
+            {
+                result.Add(new AggregationLabel { Language = attributeFilterValue.Language, Label = attributeFilterValue.Value });
+            }
+            else if (rangeFilterValue?.Displays != null)
+            {
+                var labels = rangeFilterValue.Displays
+                    .Select(d => new AggregationLabel { Language = d.Language, Label = d.Value })
+                    .ToArray();
+                result.AddRange(labels);
+            }
+
+            return result;
+        }
+
         public static IList<IBrowseFilterValue> GetValues(this IBrowseFilter filter)
         {
             IBrowseFilterValue[] result = null;
@@ -37,52 +75,14 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
             return result;
         }
 
-        public static IList<AggregationLabel> GetValueLabels(this IEnumerable<IBrowseFilterValue> values)
-        {
-            var result = values
-                .SelectMany(GetValueLabels)
-                .Where(l => !string.IsNullOrEmpty(l.Language) && !string.IsNullOrEmpty(l.Label))
-                .GroupBy(v => v.Language, StringComparer.OrdinalIgnoreCase)
-                .SelectMany(g => g
-                    .GroupBy(g2 => g2.Label, StringComparer.OrdinalIgnoreCase)
-                    .Select(g2 => g2.FirstOrDefault()))
-                .OrderBy(v => v.Language)
-                .ThenBy(v => v.Label)
-                .ToArray();
-
-            return result.Any() ? result : null;
-        }
-
-        private static IList<AggregationLabel> GetValueLabels(this IBrowseFilterValue value)
-        {
-            var result = new List<AggregationLabel>();
-
-            var attributeFilterValue = value as AttributeFilterValue;
-            var rangeFilterValue = value as RangeFilterValue;
-
-            if (attributeFilterValue != null)
-            {
-                result.Add(new AggregationLabel { Language = attributeFilterValue.Language, Label = attributeFilterValue.Value });
-            }
-            else if (rangeFilterValue?.Displays != null)
-            {
-                var labels = rangeFilterValue.Displays
-                    .Select(d => new AggregationLabel { Language = d.Language, Label = d.Value })
-                    .ToArray();
-                result.AddRange(labels);
-            }
-
-            return result;
-        }
-
-        public static IBrowseFilter Convert(this IBrowseFilter filter, IList<string> keys)
+        public static IBrowseFilter Copy(this IBrowseFilter filter, IList<string> keys)
         {
             IBrowseFilter result = null;
 
             if (filter != null && keys != null)
             {
                 // get values that we have filters set for
-                var values = from v in filter.GetValues() where keys.Contains(v.Id, StringComparer.OrdinalIgnoreCase) select v;
+                var values = filter.GetValues().Where(v => keys.Contains(v.Id, StringComparer.OrdinalIgnoreCase));
 
                 var attributeFilter = filter as AttributeFilter;
                 var rangeFilter = filter as RangeFilter;

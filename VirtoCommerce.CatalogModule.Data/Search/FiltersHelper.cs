@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using VirtoCommerce.Domain.Search;
 using VirtoCommerce.Platform.Core.Common;
 
@@ -17,12 +18,12 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             };
         }
 
-        public static IFilter CreateTermFilter(string fieldName, IList<string> values)
+        public static IFilter CreateTermFilter(string fieldName, IEnumerable<string> values)
         {
             return new TermFilter
             {
                 FieldName = fieldName,
-                Values = values,
+                Values = values.ToArray(),
             };
         }
 

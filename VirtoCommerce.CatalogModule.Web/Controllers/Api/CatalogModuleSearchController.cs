@@ -5,6 +5,7 @@ using VirtoCommerce.CatalogModule.Data.Search;
 using VirtoCommerce.CatalogModule.Web.Converters;
 using VirtoCommerce.CatalogModule.Web.Model;
 using VirtoCommerce.Domain.Catalog.Services;
+using VirtoCommerce.Domain.Search;
 using VirtoCommerce.Platform.Core.Assets;
 using VirtoCommerce.Platform.Core.Security;
 using SearchCriteria = VirtoCommerce.CatalogModule.Web.Model.SearchCriteria;
@@ -47,20 +48,22 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         }
 
         [HttpPost]
-        [Route("{storeId}/products")]
+        [Route("products")]
         [ResponseType(typeof(ProductSearchResult))]
-        public async Task<IHttpActionResult> SearchProducts(string storeId, ProductSearch criteria)
+        public async Task<IHttpActionResult> SearchProducts(ProductSearchCriteria criteria)
         {
-            var result = await _productSearchService.SearchAsync(storeId, criteria);
+            criteria.ObjectType = KnownDocumentTypes.Product;
+            var result = await _productSearchService.SearchAsync(criteria);
             return Ok(result);
         }
 
         [HttpPost]
-        [Route("{storeId}/categories")]
+        [Route("categories")]
         [ResponseType(typeof(CategorySearchResult))]
-        public async Task<IHttpActionResult> SearchCategories(string storeId, CategorySearch criteria)
+        public async Task<IHttpActionResult> SearchCategories(CategorySearchCriteria criteria)
         {
-            var result = await _categorySearchService.SearchAsync(storeId, criteria);
+            criteria.ObjectType = KnownDocumentTypes.Category;
+            var result = await _categorySearchService.SearchAsync(criteria);
             return Ok(result);
         }
     }

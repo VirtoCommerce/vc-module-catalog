@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.Search
 {
@@ -25,28 +24,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return result;
         }
 
-        /// <summary>
-        /// Parses strings of form "sort=name desc,price asc" and so on.
-        /// </summary>
-        /// <param name="query"></param>
-        /// <returns></returns>
-        public static SortInfo[] AsSortInfoes(this string[] query)
-        {
-            var result = new List<SortInfo>();
-
-            if (query != null && query.Length > 0)
-            {
-                var directionDelimeter = new[] { '-' };
-
-                result.AddRange(query
-                        .Select(item => item.Split(directionDelimeter, 2))
-                        .Select(item => new SortInfo { SortColumn = item[0], SortDirection = item.Length == 1 ? SortDirection.Ascending : item[1] == "descending" || item[1] == "desc" ? SortDirection.Descending : SortDirection.Ascending })
-                    );
-            }
-
-            return result.ToArray();
-        }
-
         public static string AsCategoryId(this string outline)
         {
             if (string.IsNullOrEmpty(outline))
@@ -57,18 +34,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             var outlineArray = outline.Split('/');
 
             return outlineArray.Length > 0 ? outlineArray[outlineArray.Length - 1] : string.Empty;
-        }
-
-        public static string AsCatalog(this string outline)
-        {
-            if (string.IsNullOrEmpty(outline))
-            {
-                return string.Empty;
-            }
-
-            var outlineArray = outline.Split('/');
-
-            return outlineArray.Length > 0 ? outlineArray[0] : string.Empty;
         }
     }
 

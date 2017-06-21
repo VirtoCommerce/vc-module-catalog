@@ -1,21 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
-using VirtoCommerce.Domain.Catalog.Model;
-using VirtoCommerce.Domain.Search;
 
 namespace VirtoCommerce.CatalogModule.Data.Search
 {
     public class ProductSearchCriteria : CatalogSearchCriteria
     {
-        public override string DocumentType { get; } = KnownDocumentTypes.Product;
+        public string[] Terms { get; set; }
 
-        public virtual string Currency { get; set; }
-        public virtual IList<string> Pricelists { get; set; }
+        public string Currency { get; set; }
+
+        public string[] Pricelists { get; set; }
+
         public NumericRange PriceRange { get; set; }
-
-        public virtual IList<IBrowseFilter> BrowseFilters { get; set; }
-        public virtual IList<IBrowseFilter> CurrentFilters { get; set; }
 
         /// <summary>
         /// Gets or sets the class types.
@@ -45,14 +41,5 @@ namespace VirtoCommerce.CatalogModule.Data.Search
         /// </summary>
         /// <value>The end date.</value>
         public virtual DateTime? EndDate { get; set; }
-
-        /// <summary>
-        /// Gets or sets the response groups.
-        /// </summary>
-        /// <value>
-        /// The response groups.
-        /// </value>
-        public virtual IList<string> ResponseGroups { get; set; }
-        public virtual ItemResponseGroup ResponseGroup { get; set; }
     }
 }

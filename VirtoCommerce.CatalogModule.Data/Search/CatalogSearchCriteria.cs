@@ -1,30 +1,23 @@
-﻿using VirtoCommerce.Domain.Search;
+﻿using System.Collections.Generic;
+using VirtoCommerce.Domain.Commerce.Model.Search;
 
 namespace VirtoCommerce.CatalogModule.Data.Search
 {
-    public abstract class CatalogSearchCriteria : SearchCriteria
+    public abstract class CatalogSearchCriteria : SearchCriteriaBase
     {
-        public virtual string LanguageCode { get; set; }
+        public IList<string> Ids { get; set; }
+
+        public string SearchPhrase { get; set; }
+
+        public string LanguageCode { get; set; }
+
+        public string StoreId { get; set; }
+
+        public string CatalogId { get; set; }
 
         /// <summary>
-        /// Gets or sets the catalog.
+        /// CategoryId1/CategoryId2, no catalog should be included in the outline
         /// </summary>
-        /// <value>
-        /// The catalog.
-        /// </value>
-        public virtual string Catalog { get; set; }
-
-        /// <summary>
-        /// Gets or sets the outlines. Outline consists of "Category1/Category2".
-        /// </summary>
-        /// <example>Everything/digital-cameras</example>
-        /// <value>The outlines.</value>
-        public virtual string Outline { get; set; }
-
-        /// <summary>
-        /// Gets the default sort order.
-        /// </summary>
-        /// <value>The default sort order.</value>
-        public static SortingField DefaultSortOrder => new SortingField { FieldName = "__sort" };
+        public string Outline { get; set; }
     }
 }

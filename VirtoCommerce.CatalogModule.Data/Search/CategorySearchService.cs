@@ -4,38 +4,30 @@ using VirtoCommerce.CatalogModule.Web.Converters;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Search;
-using VirtoCommerce.Domain.Store.Model;
-using VirtoCommerce.Domain.Store.Services;
 using VirtoCommerce.Platform.Core.Assets;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Settings;
+using Aggregation = VirtoCommerce.CatalogModule.Web.Model.Aggregation;
 using Category = VirtoCommerce.CatalogModule.Web.Model.Category;
-using SearchCriteria = VirtoCommerce.Domain.Search.SearchCriteria;
 
 namespace VirtoCommerce.CatalogModule.Data.Search
 {
-    public class CategorySearchService : CatalogSearchService<CategorySearch, Category, CategorySearchResult>, ICategorySearchService
+    public class CategorySearchService : CatalogSearchService2<Category, CategorySearchCriteria, CategorySearchResult>, ICategorySearchService
     {
         private readonly ICategoryService _categoryService;
         private readonly IBlobUrlResolver _blobUrlResolver;
 
-        public CategorySearchService(IStoreService storeService, ISearchCriteriaPreprocessor[] searchCriteriaPreprocessors, ISearchRequestBuilder[] searchRequestBuilders, ISearchProvider searchProvider, ISettingsManager settingsManager, ICategoryService categoryService, IBlobUrlResolver blobUrlResolver)
-            : base(storeService, searchCriteriaPreprocessors, searchRequestBuilders, searchProvider, settingsManager)
+        public CategorySearchService(ISearchRequestBuilder[] searchRequestBuilders, ISearchProvider searchProvider, ISettingsManager settingsManager, ICategoryService categoryService, IBlobUrlResolver blobUrlResolver)
+            : base(searchRequestBuilders, searchProvider, settingsManager)
         {
             _categoryService = categoryService;
             _blobUrlResolver = blobUrlResolver;
         }
 
-
-        protected override SearchCriteria GetSearchCriteria(CategorySearch search, Store store)
+        protected override IList<Category> LoadMissingItems(string[] missingItemIds, CategorySearchCriteria criteria)
         {
-            var result = search.AsCriteria<CategorySearchCriteria>(store.Catalog);
-            return result;
-        }
-
-        protected override IList<Category> LoadMissingItems(string[] missingItemIds, SearchCriteria criteria)
-        {
-            var catalog = (criteria as CategorySearchCriteria)?.Catalog;
-            var responseGroup = GetResponseGroup(criteria as CategorySearchCriteria);
+            var catalog = criteria?.CatalogId;
+            var responseGroup = GetResponseGroup(criteria);
 
             var categories = _categoryService.GetByIds(missingItemIds, responseGroup, catalog);
 
@@ -43,14 +35,19 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return result;
         }
 
-        protected override void ReduceSearchResults(IEnumerable<Category> items, SearchCriteria criteria)
+        protected override void ReduceSearchResults(IEnumerable<Category> items, CategorySearchCriteria criteria)
         {
+        }
+
+        protected override Aggregation[] ConvertAggregations(IList<AggregationResponse> aggregationResponses, CategorySearchCriteria criteria)
+        {
+            return null;
         }
 
 
         protected virtual CategoryResponseGroup GetResponseGroup(CategorySearchCriteria criteria)
         {
-            var result = criteria?.ResponseGroup ?? CategoryResponseGroup.Full & ~CategoryResponseGroup.WithProperties;
+            var result = EnumUtility.SafeParse(criteria?.ResponseGroup, CategoryResponseGroup.Full & ~CategoryResponseGroup.WithProperties);
             return result;
         }
     }

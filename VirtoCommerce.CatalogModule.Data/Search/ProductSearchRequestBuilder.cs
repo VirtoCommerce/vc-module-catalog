@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
+using VirtoCommerce.Domain.Commerce.Model.Search;
 using VirtoCommerce.Domain.Search;
 using VirtoCommerce.Platform.Core.Common;
 using RangeFilter = VirtoCommerce.Domain.Search.RangeFilter;
@@ -8,86 +10,276 @@ using RangeFilterValue = VirtoCommerce.Domain.Search.RangeFilterValue;
 
 namespace VirtoCommerce.CatalogModule.Data.Search
 {
-    public class ProductSearchRequestBuilder : CatalogSearchRequestBuilder
+    public class ProductSearchRequestBuilder : ISearchRequestBuilder
     {
-        public override string DocumentType { get; } = KnownDocumentTypes.Product;
+        private readonly ISearchPhraseParser _searchPhraseParser;
+        private readonly IBrowseFilterService _browseFilterService;
 
-        public override SearchRequest BuildRequest(SearchCriteria criteria)
+        public ProductSearchRequestBuilder(ISearchPhraseParser searchPhraseParser, IBrowseFilterService browseFilterService)
         {
-            var request = base.BuildRequest(criteria);
+            _searchPhraseParser = searchPhraseParser;
+            _browseFilterService = browseFilterService;
+        }
+
+        public virtual string DocumentType { get; } = KnownDocumentTypes.Product;
+
+        public virtual SearchRequest BuildRequest(SearchCriteriaBase criteria)
+        {
+            SearchRequest request = null;
 
             var productSearchCriteria = criteria as ProductSearchCriteria;
             if (productSearchCriteria != null)
             {
-                request.Aggregations = GetAggregationRequests(productSearchCriteria);
+                // Getting filters modifies search phrase
+                var allFilters = GetAllFilters(productSearchCriteria);
+
+                request = new SearchRequest
+                {
+                    SearchKeywords = productSearchCriteria.SearchPhrase,
+                    SearchFields = new[] { "__content" },
+                    Filter = GetFilters(allFilters).And(),
+                    Sorting = GetSorting(productSearchCriteria),
+                    Skip = criteria.Skip,
+                    Take = criteria.Take,
+                    Aggregations = GetAggregationRequests(productSearchCriteria, allFilters),
+                };
             }
 
             return request;
         }
 
-        protected override IList<IFilter> GetFilters(SearchCriteria criteria)
+
+        protected virtual IList<SortingField> GetSorting(ProductSearchCriteria criteria)
         {
-            return GetFiltersExceptSpecified(criteria, null);
-        }
+            var result = new List<SortingField>();
 
+            var categoryId = criteria.Outline.AsCategoryId();
+            var priorityFieldName = StringsHelper.JoinNonEmptyStrings("_", "priority", criteria.CatalogId, categoryId).ToLowerInvariant();
 
-        private IList<IFilter> GetFiltersExceptSpecified(SearchCriteria criteria, string excludeFieldName)
-        {
-            var result = base.GetFilters(criteria);
-
-            var productSearchCriteria = criteria as ProductSearchCriteria;
-            if (productSearchCriteria?.CurrentFilters?.Any() == true)
+            foreach (var sortInfo in criteria.SortInfos)
             {
-                result.AddRange(productSearchCriteria.CurrentFilters
-                    .Where(f => !f.Key.EqualsInvariant(excludeFieldName))
-                    .Select(f => ConvertFilter(f, productSearchCriteria))
-                    .Where(f => f != null));
+                var fieldName = sortInfo.SortColumn.ToLowerInvariant();
+                var isDescending = sortInfo.SortDirection == SortDirection.Descending;
+
+                switch (fieldName)
+                {
+                    case "price":
+                        if (criteria.Pricelists != null)
+                        {
+                            result.AddRange(
+                                criteria.Pricelists.Select(priceList => new SortingField($"price_{criteria.Currency}_{priceList}".ToLowerInvariant(), isDescending)));
+                        }
+                        break;
+                    case "priority":
+                        result.Add(new SortingField(priorityFieldName, isDescending));
+                        result.Add(new SortingField("priority", isDescending));
+                        break;
+                    case "name":
+                    case "title":
+                        result.Add(new SortingField("name", isDescending));
+                        break;
+                    default:
+                        result.Add(new SortingField(fieldName, isDescending));
+                        break;
+                }
+            }
+
+            if (!result.Any())
+            {
+                result.Add(new SortingField(priorityFieldName, true));
+                result.Add(new SortingField("priority", true));
+                result.Add(new SortingField("__sort"));
             }
 
             return result;
         }
 
-        private static IFilter ConvertFilter(IBrowseFilter filter, ProductSearchCriteria criteria)
+        protected virtual IList<IFilter> GetFilters(FiltersContainer allFilters)
+        {
+            return allFilters.GetFiltersExceptSpecified(null);
+        }
+
+
+        private FiltersContainer GetAllFilters(ProductSearchCriteria criteria)
+        {
+            var permanentFilters = GetPermanentFilters(criteria);
+            var removableFilters = GetRemovableFilters(criteria, permanentFilters);
+
+            return new FiltersContainer
+            {
+                PermanentFilters = permanentFilters,
+                RemovableFilters = removableFilters,
+            };
+        }
+
+        private IList<IFilter> GetPermanentFilters(ProductSearchCriteria criteria)
+        {
+            var result = new List<IFilter>();
+
+            if (!string.IsNullOrEmpty(criteria.SearchPhrase))
+            {
+                var parseResult = _searchPhraseParser.Parse(criteria.SearchPhrase);
+                criteria.SearchPhrase = parseResult.SearchPhrase;
+                result.AddRange(parseResult.Filters);
+            }
+
+            if (criteria.Ids != null)
+            {
+                result.Add(new IdsFilter { Values = criteria.Ids });
+            }
+
+            if (!string.IsNullOrEmpty(criteria.CatalogId))
+            {
+                result.Add(FiltersHelper.CreateTermFilter("catalog", criteria.CatalogId.ToLowerInvariant()));
+            }
+
+            if (!criteria.Outline.IsNullOrEmpty())
+            {
+                var outline = string.Join("/", criteria.CatalogId, criteria.Outline).TrimEnd('/', '*').ToLowerInvariant();
+                result.Add(FiltersHelper.CreateTermFilter("__outline", outline));
+            }
+
+            result.Add(FiltersHelper.CreateDateRangeFilter("startdate", criteria.StartDateFrom, criteria.StartDate, false, true));
+
+            if (criteria.EndDate != null)
+            {
+                result.Add(FiltersHelper.CreateDateRangeFilter("enddate", criteria.EndDate, null, false, false));
+            }
+
+            if (!criteria.ClassTypes.IsNullOrEmpty())
+            {
+                result.Add(FiltersHelper.CreateTermFilter("__type", criteria.ClassTypes));
+            }
+
+            if (!criteria.WithHidden)
+            {
+                result.Add(FiltersHelper.CreateTermFilter("status", "visible"));
+            }
+
+            if (criteria.PriceRange != null)
+            {
+                var range = criteria.PriceRange;
+                result.Add(FiltersHelper.CreatePriceRangeFilter(criteria.Currency, null, range.Lower, range.Upper, range.IncludeLower, range.IncludeUpper));
+            }
+
+            return result;
+        }
+
+        private IList<KeyValuePair<string, IFilter>> GetRemovableFilters(ProductSearchCriteria criteria, IList<IFilter> permanentFilters)
+        {
+            var result = new List<KeyValuePair<string, IFilter>>();
+
+            var terms = criteria.Terms.AsKeyValues();
+            if (terms.Any())
+            {
+                var browseFilters = GetBrowseFilters(criteria);
+
+                var filtersAndValues = browseFilters
+                    ?.Select(x => new { Filter = x, Values = x.GetValues() })
+                    .ToList();
+
+                foreach (var term in terms)
+                {
+                    var browseFilter = browseFilters?.SingleOrDefault(x => x.Key.EqualsInvariant(term.Key));
+
+                    // Handle special filter term with a key = "tags", it contains just values and we need to determine which filter to use
+                    if (browseFilter == null && term.Key == "tags")
+                    {
+                        foreach (var termValue in term.Values)
+                        {
+                            // Try to find filter by value
+                            var filterAndValues = filtersAndValues?.FirstOrDefault(x => x.Values.Any(y => y.Id.Equals(termValue)));
+                            if (filterAndValues != null)
+                            {
+                                var filter = ConvertBrowseFilter(filterAndValues.Filter, term.Values, criteria);
+                                permanentFilters.Add(filter);
+                            }
+                        }
+                    }
+                    else if (browseFilter != null) // Predefined filter
+                    {
+                        var filter = ConvertBrowseFilter(browseFilter, term.Values, criteria);
+                        result.Add(new KeyValuePair<string, IFilter>(browseFilter.Key, filter));
+                    }
+                    else // Custom term
+                    {
+                        var filter = FiltersHelper.CreateTermFilter(term.Key, term.Values);
+                        permanentFilters.Add(filter);
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        private static IFilter ConvertBrowseFilter(IBrowseFilter filter, IList<string> valueIds, ProductSearchCriteria criteria)
         {
             IFilter result = null;
 
-            var attributeFilter = filter as AttributeFilter;
-            var rangeFilter = filter as BrowseFilters.RangeFilter;
-            var priceRangeFilter = filter as PriceRangeFilter;
+            if (filter != null && valueIds != null)
+            {
+                var attributeFilter = filter as AttributeFilter;
+                var rangeFilter = filter as BrowseFilters.RangeFilter;
+                var priceRangeFilter = filter as PriceRangeFilter;
 
-            if (attributeFilter != null)
-            {
-                result = ConvertAttributeFilter(attributeFilter);
-            }
-            else if (rangeFilter != null)
-            {
-                result = ConvertRangeFilter(rangeFilter);
-            }
-            else if (priceRangeFilter != null)
-            {
-                result = ConvertPriceRangeFilter(priceRangeFilter, criteria);
+                if (attributeFilter != null)
+                {
+                    result = ConvertAttributeFilter(attributeFilter, valueIds);
+                }
+                else if (rangeFilter != null)
+                {
+                    result = ConvertRangeFilter(rangeFilter, valueIds);
+                }
+                else if (priceRangeFilter != null)
+                {
+                    result = ConvertPriceRangeFilter(priceRangeFilter, valueIds, criteria);
+                }
             }
 
             return result;
         }
 
-        private static IFilter ConvertAttributeFilter(AttributeFilter attributeFilter)
+        private static IFilter ConvertAttributeFilter(AttributeFilter attributeFilter, IList<string> valueIds)
         {
             var result = new TermFilter
             {
                 FieldName = attributeFilter.Key,
-                Values = attributeFilter.Values?.Select(v => v.Value).ToArray(),
+                Values = attributeFilter.Values
+                ?.Where(v => valueIds.Contains(v.Id, StringComparer.OrdinalIgnoreCase))
+                .Select(v => v.Value)
+                .ToArray() ?? valueIds,
             };
 
             return result;
         }
 
-        private static IFilter ConvertRangeFilter(BrowseFilters.RangeFilter rangeFilter)
+        private static IFilter ConvertPriceRangeFilter(PriceRangeFilter priceRangeFilter, IList<string> valueIds, ProductSearchCriteria criteria)
+        {
+            IFilter result = null;
+
+            if (string.IsNullOrEmpty(criteria.Currency) || priceRangeFilter.Currency.EqualsInvariant(criteria.Currency))
+            {
+                var filters = priceRangeFilter.Values
+                    ?.Where(v => valueIds.Contains(v.Id, StringComparer.OrdinalIgnoreCase))
+                    .Select(v => FiltersHelper.CreatePriceRangeFilter(priceRangeFilter.Currency, criteria.Pricelists, v.Lower, v.Upper, v.IncludeLower, v.IncludeUpper))
+                    .Where(f => f != null)
+                    .ToList();
+
+                result = filters.Or();
+            }
+
+            return result;
+        }
+
+        private static IFilter ConvertRangeFilter(BrowseFilters.RangeFilter rangeFilter, IList<string> valueIds)
         {
             var result = new RangeFilter
             {
                 FieldName = rangeFilter.Key,
-                Values = rangeFilter.Values?.Select(ConvertRangeFilterValue).ToArray(),
+                Values = rangeFilter.Values
+                    ?.Where(v => valueIds.Contains(v.Id, StringComparer.OrdinalIgnoreCase))
+                    .Select(ConvertRangeFilterValue)
+                    .ToArray(),
             };
 
             return result;
@@ -104,32 +296,18 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             };
         }
 
-        private static IFilter ConvertPriceRangeFilter(PriceRangeFilter priceRangeFilter, ProductSearchCriteria criteria)
-        {
-            IFilter result = null;
+        #region Aggregations
 
-            if (string.IsNullOrEmpty(criteria.Currency) || priceRangeFilter.Currency.EqualsInvariant(criteria.Currency))
-            {
-                var filters = priceRangeFilter.Values
-                    .Select(v => FiltersHelper.CreatePriceRangeFilter(priceRangeFilter.Currency, criteria.Pricelists, v.Lower, v.Upper, v.IncludeLower, v.IncludeUpper))
-                    .Where(f => f != null)
-                    .ToList();
-
-                result = filters.Or();
-            }
-
-            return result;
-        }
-
-        private IList<AggregationRequest> GetAggregationRequests(ProductSearchCriteria criteria)
+        private IList<AggregationRequest> GetAggregationRequests(ProductSearchCriteria criteria, FiltersContainer allFilters)
         {
             var result = new List<AggregationRequest>();
 
-            if (criteria.BrowseFilters != null)
+            var browseFilters = GetBrowseFilters(criteria);
+            if (browseFilters != null)
             {
-                foreach (var filter in criteria.BrowseFilters)
+                foreach (var filter in browseFilters)
                 {
-                    var existingFilters = GetFiltersExceptSpecified(criteria, filter.Key);
+                    var existingFilters = allFilters.GetFiltersExceptSpecified(filter.Key);
 
                     var attributeFilter = filter as AttributeFilter;
                     var priceRangeFilter = filter as PriceRangeFilter;
@@ -162,6 +340,17 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                     }
                 }
             }
+
+            return result;
+        }
+
+        private IList<IBrowseFilter> GetBrowseFilters(ProductSearchCriteria criteria)
+        {
+            var browseFilters = _browseFilterService.GetFilters(criteria.StoreId);
+
+            var result = browseFilters
+                ?.Where(f => !(f is PriceRangeFilter) || ((PriceRangeFilter)f).Currency.EqualsInvariant(criteria.Currency))
+                .ToList();
 
             return result;
         }
@@ -213,5 +402,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
             return result;
         }
+
+        #endregion
     }
 }

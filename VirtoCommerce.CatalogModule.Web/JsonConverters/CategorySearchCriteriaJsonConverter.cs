@@ -6,23 +6,23 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Web.JsonConverters
 {
-    public class ProductSearchJsonConverter : JsonConverter
+    public class CategorySearchCriteriaJsonConverter : JsonConverter
     {
         public override bool CanWrite => false;
         public override bool CanRead => true;
 
         public override bool CanConvert(Type objectType)
         {
-            return objectType == typeof(ProductSearch);
+            return objectType == typeof(CategorySearchCriteria);
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             object result = null;
 
-            if (objectType == typeof(ProductSearch))
+            if (objectType == typeof(CategorySearchCriteria))
             {
-                result = AbstractTypeFactory<ProductSearch>.TryCreateInstance();
+                result = AbstractTypeFactory<CategorySearchCriteria>.TryCreateInstance();
             }
 
             var obj = JObject.Load(reader);

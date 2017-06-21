@@ -74,10 +74,10 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="VirtoCommerce.Domain, Version=2.23.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VirtoCommerce.Domain.2.23.0-rc4\lib\net461\VirtoCommerce.Domain.dll</HintPath>
+      <HintPath>..\packages\VirtoCommerce.Domain.2.23.0-rc5\lib\net461\VirtoCommerce.Domain.dll</HintPath>
     </Reference>
-    <Reference Include="VirtoCommerce.Platform.Core, Version=2.13.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VirtoCommerce.Platform.Core.2.13.0\lib\net461\VirtoCommerce.Platform.Core.dll</HintPath>
+    <Reference Include="VirtoCommerce.Platform.Core, Version=2.13.8.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VirtoCommerce.Platform.Core.2.13.9-rc1\lib\net461\VirtoCommerce.Platform.Core.dll</HintPath>
     </Reference>
     <Reference Include="VirtoCommerce.Platform.Data, Version=2.13.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\VirtoCommerce.Platform.Data.2.13.0\lib\net461\VirtoCommerce.Platform.Data.dll</HintPath>
@@ -209,6 +209,7 @@
     <Compile Include="Repositories\ICatalogRepository.cs" />
     <Compile Include="Search\BrowseFilters\AttributeFilter.cs" />
     <Compile Include="Search\BrowseFilters\AttributeFilterValue.cs" />
+    <Compile Include="Search\BrowseFilters\BrowseFilterExtensions.cs" />
     <Compile Include="Search\BrowseFilters\BrowseFilterService.cs" />
     <Compile Include="Search\BrowseFilters\CategoryFilter.cs" />
     <Compile Include="Search\BrowseFilters\CategoryFilterValue.cs" />
@@ -221,19 +222,14 @@
     <Compile Include="Search\BrowseFilters\PriceRangeFilter.cs" />
     <Compile Include="Search\BrowseFilters\RangeFilter.cs" />
     <Compile Include="Search\BrowseFilters\RangeFilterValue.cs" />
-    <Compile Include="Search\BrowseFilters\SearchFilterExtensions.cs" />
-    <Compile Include="Search\CatalogSearch.cs" />
     <Compile Include="Search\CatalogSearchCriteria.cs" />
-    <Compile Include="Search\CatalogSearchCriteriaPreprocessor.cs" />
-    <Compile Include="Search\CatalogSearchRequestBuilder.cs" />
     <Compile Include="Search\CatalogSearchResult.cs" />
     <Compile Include="Search\CatalogSearchService.cs" />
-    <Compile Include="Search\CategorySearch.cs" />
     <Compile Include="Search\CategorySearchCriteria.cs" />
     <Compile Include="Search\CategorySearchRequestBuilder.cs" />
     <Compile Include="Search\CategorySearchResult.cs" />
     <Compile Include="Search\CategorySearchService.cs" />
-    <Compile Include="Search\EnumerableExtensions.cs" />
+    <Compile Include="Search\FiltersContainer.cs" />
     <Compile Include="Search\FiltersHelper.cs" />
     <Compile Include="Search\ICategorySearchService.cs" />
     <Compile Include="Search\IndexDocumentHelper.cs" />
@@ -244,9 +240,7 @@
     <Compile Include="Search\Indexing\ProductDocumentChangesProvider.cs" />
     <Compile Include="Search\IProductSearchService.cs" />
     <Compile Include="Search\NumericRange.cs" />
-    <Compile Include="Search\ProductSearch.cs" />
     <Compile Include="Search\ProductSearchCriteria.cs" />
-    <Compile Include="Search\ProductSearchCriteriaPreprocessor.cs" />
     <Compile Include="Search\ProductSearchRequestBuilder.cs" />
     <Compile Include="Search\ProductSearchResult.cs" />
     <Compile Include="Search\ProductSearchService.cs" />
@@ -343,6 +337,7 @@
       <Name>VirtoCommerce.CatalogModule.Web.Core</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
