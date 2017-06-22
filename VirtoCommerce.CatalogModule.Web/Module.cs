@@ -1,13 +1,21 @@
 ﻿using System;
 using System.IO;
+using System.Web.Http;
 using Microsoft.Practices.Unity;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
+using VirtoCommerce.CatalogModule.Data.Search;
+using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
+using VirtoCommerce.CatalogModule.Data.Search.Indexing;
 using VirtoCommerce.CatalogModule.Data.Services;
 using VirtoCommerce.CatalogModule.Web.ExportImport;
+using VirtoCommerce.CatalogModule.Web.JsonConverters;
 using VirtoCommerce.CatalogModule.Web.Security;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Commerce.Services;
+using VirtoCommerce.Domain.Search;
+using VirtoCommerce.Domain.Store.Model;
+using VirtoCommerce.Platform.Core.DynamicProperties;
 using VirtoCommerce.Platform.Core.ExportImport;
 using VirtoCommerce.Platform.Core.Modularity;
 using VirtoCommerce.Platform.Core.Security;
@@ -50,7 +58,8 @@ namespace VirtoCommerce.CatalogModule.Web
 
             Func<ICatalogRepository> catalogRepFactory = () =>
                 new CatalogRepositoryImpl(_connectionStringName, new EntityPrimaryKeyGeneratorInterceptor(), _container.Resolve<AuditableInterceptor>(),
-                    new ChangeLogInterceptor(_container.Resolve<Func<IPlatformRepository>>(), ChangeLogPolicy.Cumulative, new[] { typeof(Item).Name }, _container.Resolve<IUserNameResolver>()));
+                    new ChangeLogInterceptor(_container.Resolve<Func<IPlatformRepository>>(), ChangeLogPolicy.Cumulative, new[] { nameof(Item) }, _container.Resolve<IUserNameResolver>()),
+                    new ChangeLogInterceptor(_container.Resolve<Func<IPlatformRepository>>(), ChangeLogPolicy.Cumulative, new[] { nameof(Category) }, _container.Resolve<IUserNameResolver>()));
 
             _container.RegisterInstance(catalogRepFactory);
 
@@ -58,20 +67,77 @@ namespace VirtoCommerce.CatalogModule.Web
             _container.RegisterType<ICategoryService, CategoryServiceImpl>();
             _container.RegisterType<ICatalogService, CatalogServiceImpl>();
             _container.RegisterType<IPropertyService, PropertyServiceImpl>();
-            _container.RegisterType<ICatalogSearchService, CatalogSearchServiceImpl>();
+            _container.RegisterType<ICatalogSearchService, CatalogSearchServiceDecorator>();
             _container.RegisterType<ISkuGenerator, DefaultSkuGenerator>();
             _container.RegisterType<ISeoDuplicatesDetector, CatalogSeoDublicatesDetector>(new ContainerControlledLifetimeManager());
             _container.RegisterType<IOutlineService, OutlineService>();
             _container.RegisterType<IAssociationService, AssociationServiceImpl>();
 
             #endregion
+
+            #region Search
+
+            _container.RegisterType<IBrowseFilterService, BrowseFilterService>();
+
+            _container.RegisterType<ISearchRequestBuilder, ProductSearchRequestBuilder>(nameof(ProductSearchRequestBuilder));
+            _container.RegisterType<ISearchRequestBuilder, CategorySearchRequestBuilder>(nameof(CategorySearchRequestBuilder));
+
+            _container.RegisterType<IProductSearchService, ProductSearchService>();
+            _container.RegisterType<ICategorySearchService, CategorySearchService>();
+
+            // Product indexing configuration
+            var productIndexingConfiguration = new IndexDocumentConfiguration
+            {
+                DocumentType = KnownDocumentTypes.Product,
+                DocumentSource = new IndexDocumentSource
+                {
+                    ChangesProvider = _container.Resolve<ProductDocumentChangesProvider>(),
+                    DocumentBuilder = _container.Resolve<ProductDocumentBuilder>(),
+                },
+            };
+
+            _container.RegisterInstance(productIndexingConfiguration.DocumentType, productIndexingConfiguration);
+
+            // Category indexing configuration
+            var categoryIndexingConfiguration = new IndexDocumentConfiguration
+            {
+                DocumentType = KnownDocumentTypes.Category,
+                DocumentSource = new IndexDocumentSource
+                {
+                    ChangesProvider = _container.Resolve<CategoryDocumentChangesProvider>(),
+                    DocumentBuilder = _container.Resolve<CategoryDocumentBuilder>(),
+                },
+            };
+
+            _container.RegisterInstance(categoryIndexingConfiguration.DocumentType, categoryIndexingConfiguration);
+
+            #endregion
         }
 
         public override void PostInitialize()
         {
+            base.PostInitialize();
+
             var securityScopeService = _container.Resolve<IPermissionScopeService>();
             securityScopeService.RegisterSope(() => new CatalogSelectedScope());
-            securityScopeService.RegisterSope(() => new CatalogSelectedCategoryScope(_container.Resolve<ICategoryService>()));         
+            securityScopeService.RegisterSope(() => new CatalogSelectedCategoryScope(_container.Resolve<ICategoryService>()));
+
+            var httpConfiguration = _container.Resolve<HttpConfiguration>();
+            httpConfiguration.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new ProductSearchCriteriaJsonConverter());
+            httpConfiguration.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new CategorySearchCriteriaJsonConverter());
+
+            // Register dynamic property for storing browsing filters
+            var filteredBrowsingProperty = new DynamicProperty
+            {
+                Id = "2b15f370ab524186bec1ace82509a60a",
+                Name = "FilteredBrowsing",
+                ObjectType = typeof(Store).FullName,
+                ValueType = DynamicPropertyValueType.LongText,
+                CreatedBy = "Auto"
+            };
+
+            var dynamicPropertyService = _container.Resolve<IDynamicPropertyService>();
+            dynamicPropertyService.SaveProperties(new[] { filteredBrowsingProperty });
         }
 
         #endregion
@@ -90,15 +156,15 @@ namespace VirtoCommerce.CatalogModule.Web
             exportJob.DoImport(inputStream, manifest, progressCallback);
         }
 
-
         public string ExportDescription
         {
             get
             {
                 var settingManager = _container.Resolve<ISettingsManager>();
-                return settingManager.GetValue("Catalog.ExportImport.Description", String.Empty);
+                return settingManager.GetValue("Catalog.ExportImport.Description", string.Empty);
             }
         }
+
         #endregion
     }
 }

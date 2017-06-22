@@ -61,8 +61,13 @@
                 "subtitle-search": "Search results for \"{{keyword}}\"",
                 "title-mapping": "Choose Categories & Items for mapping",
                 "subtitle-mapping": "Creating a Link inside virtual catalog",
-                "labels": {                
+                "labels": {
                     "filter-new": "<strong>Add new filter</strong>",
+                    "filter-priceless": "Without price",
+                    "filter-withPrice": "Has price defined",
+                    "filter-priceRange": "Price between",
+                    "filter-lowStock": "Low on stock",
+                    "filter-notActive": "Not active",
                     "unnamed-filter": "Unnamed filter",
                     "inactive": "Inactive",
                     "picture": "Pic",
