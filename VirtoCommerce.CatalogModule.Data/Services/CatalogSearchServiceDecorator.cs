@@ -84,10 +84,13 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
             result.ProductsTotalCount = (int)searchResults.TotalCount;
 
-            // Now load items from repository preserving original order
-            var itemIds = searchResults.Items.Select(x => x.Id.ToString()).ToList();
-            result.Products = _itemService.GetByIds(itemIds.ToArray(), responseGroup, criteria.CatalogId)
-                .OrderBy(i => itemIds.IndexOf(i.Id)).ToArray();
+            if (!searchResults.Items.IsNullOrEmpty())
+            {
+                // Now load items from repository preserving original order
+                var itemIds = searchResults.Items.Select(x => x.Id.ToString()).ToList();
+                result.Products = _itemService.GetByIds(itemIds.ToArray(), responseGroup, criteria.CatalogId)
+                    .OrderBy(i => itemIds.IndexOf(i.Id)).ToArray();
+            }
         }
     }
 }
