@@ -79,16 +79,16 @@
         </group>
         <group name="Search|Catalog">
             <setting>
-                <name>VirtoCommerce.SearchApi.UseCatalogIndexedSearchInManager</name>
+                <name>Catalog.Search.UseCatalogIndexedSearchInManager</name>
                 <valueType>boolean</valueType>
                 <defaultValue>true</defaultValue>
                 <title>Use indexed search for catalog</title>
                 <description>Enable or disable indexed search for catalog module with advanced syntax</description>
             </setting>
             <setting>
-                <name>VirtoCommerce.SearchApi.UseFullObjectIndexStoring</name>
+                <name>Catalog.Search.UseFullObjectIndexStoring</name>
                 <valueType>boolean</valueType>
-                <defaultValue>true</defaultValue>
+                <defaultValue>false</defaultValue>
                 <title>Store serialized catalog objects in the index</title>
                 <description>Store serialized catalog objects in the index and return them in search results</description>
             </setting>

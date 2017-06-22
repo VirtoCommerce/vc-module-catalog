@@ -39,7 +39,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
             SearchResult result;
 
-            var useIndexedSearch = _settingsManager.GetValue("VirtoCommerce.SearchApi.UseCatalogIndexedSearchInManager", true);
+            var useIndexedSearch = _settingsManager.GetValue("Catalog.Search.UseCatalogIndexedSearchInManager", true);
             var searchProducts = criteria.ResponseGroup.HasFlag(SearchResponseGroup.WithProducts);
 
             if (useIndexedSearch && searchProducts && !string.IsNullOrEmpty(criteria.Keyword))
