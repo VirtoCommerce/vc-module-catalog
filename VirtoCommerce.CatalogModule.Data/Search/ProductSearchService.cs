@@ -4,6 +4,7 @@ using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
 using VirtoCommerce.CatalogModule.Web.Converters;
 using VirtoCommerce.CatalogModule.Web.Model;
 using VirtoCommerce.Domain.Catalog.Model;
+using VirtoCommerce.Domain.Catalog.Model.Search;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Search;
 using VirtoCommerce.Platform.Core.Assets;
@@ -17,7 +18,7 @@ using RangeFilterValue = VirtoCommerce.CatalogModule.Data.Search.BrowseFilters.R
 
 namespace VirtoCommerce.CatalogModule.Data.Search
 {
-    public class ProductSearchService : CatalogSearchService2<Product, ProductSearchCriteria, ProductSearchResult>, IProductSearchService
+    public class ProductSearchService : CatalogSearchService<Product, ProductSearchCriteria, ProductSearchResult>, IProductSearchService
     {
         private readonly IItemService _itemService;
         private readonly IBlobUrlResolver _blobUrlResolver;

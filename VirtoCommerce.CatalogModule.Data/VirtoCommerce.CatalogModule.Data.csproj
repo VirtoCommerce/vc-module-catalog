@@ -74,7 +74,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="VirtoCommerce.Domain, Version=2.23.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VirtoCommerce.Domain.2.23.0-rc5\lib\net461\VirtoCommerce.Domain.dll</HintPath>
+      <HintPath>..\packages\VirtoCommerce.Domain.2.23.0-rc6\lib\net461\VirtoCommerce.Domain.dll</HintPath>
     </Reference>
     <Reference Include="VirtoCommerce.Platform.Core, Version=2.13.8.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\VirtoCommerce.Platform.Core.2.13.9-rc1\lib\net461\VirtoCommerce.Platform.Core.dll</HintPath>
@@ -222,10 +222,8 @@
     <Compile Include="Search\BrowseFilters\PriceRangeFilter.cs" />
     <Compile Include="Search\BrowseFilters\RangeFilter.cs" />
     <Compile Include="Search\BrowseFilters\RangeFilterValue.cs" />
-    <Compile Include="Search\CatalogSearchCriteria.cs" />
     <Compile Include="Search\CatalogSearchResult.cs" />
     <Compile Include="Search\CatalogSearchService.cs" />
-    <Compile Include="Search\CategorySearchCriteria.cs" />
     <Compile Include="Search\CategorySearchRequestBuilder.cs" />
     <Compile Include="Search\CategorySearchResult.cs" />
     <Compile Include="Search\CategorySearchService.cs" />
@@ -239,8 +237,6 @@
     <Compile Include="Search\Indexing\ProductDocumentBuilder.cs" />
     <Compile Include="Search\Indexing\ProductDocumentChangesProvider.cs" />
     <Compile Include="Search\IProductSearchService.cs" />
-    <Compile Include="Search\NumericRange.cs" />
-    <Compile Include="Search\ProductSearchCriteria.cs" />
     <Compile Include="Search\ProductSearchRequestBuilder.cs" />
     <Compile Include="Search\ProductSearchResult.cs" />
     <Compile Include="Search\ProductSearchService.cs" />

@@ -3,8 +3,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Data.Search;
 using VirtoCommerce.Domain.Catalog.Model;
+using VirtoCommerce.Domain.Catalog.Model.Search;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Search;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Settings;
 using SearchCriteria = VirtoCommerce.Domain.Catalog.Model.SearchCriteria;
 
@@ -48,17 +50,16 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
                 const ItemResponseGroup responseGroup = ItemResponseGroup.ItemInfo | ItemResponseGroup.Outlines;
 
-                var serviceCriteria = new ProductSearchCriteria
-                {
-                    ObjectType = KnownDocumentTypes.Product,
-                    SearchPhrase = criteria.Keyword,
-                    CatalogId = criteria.CatalogId,
-                    Outline = criteria.CategoryId,
-                    WithHidden = criteria.WithHidden,
-                    Skip = criteria.Skip,
-                    Take = criteria.Take,
-                    ResponseGroup = responseGroup.ToString(),
-                };
+                var serviceCriteria = AbstractTypeFactory<ProductSearchCriteria>.TryCreateInstance();
+
+                serviceCriteria.ObjectType = KnownDocumentTypes.Product;
+                serviceCriteria.SearchPhrase = criteria.Keyword;
+                serviceCriteria.CatalogId = criteria.CatalogId;
+                serviceCriteria.Outline = criteria.CategoryId;
+                serviceCriteria.WithHidden = criteria.WithHidden;
+                serviceCriteria.Skip = criteria.Skip;
+                serviceCriteria.Take = criteria.Take;
+                serviceCriteria.ResponseGroup = responseGroup.ToString();
 
                 SearchItems(result, serviceCriteria, responseGroup);
             }

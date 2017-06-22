@@ -2,6 +2,7 @@
 using System.Linq;
 using VirtoCommerce.CatalogModule.Web.Converters;
 using VirtoCommerce.Domain.Catalog.Model;
+using VirtoCommerce.Domain.Catalog.Model.Search;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Search;
 using VirtoCommerce.Platform.Core.Assets;
@@ -12,7 +13,7 @@ using Category = VirtoCommerce.CatalogModule.Web.Model.Category;
 
 namespace VirtoCommerce.CatalogModule.Data.Search
 {
-    public class CategorySearchService : CatalogSearchService2<Category, CategorySearchCriteria, CategorySearchResult>, ICategorySearchService
+    public class CategorySearchService : CatalogSearchService<Category, CategorySearchCriteria, CategorySearchResult>, ICategorySearchService
     {
         private readonly ICategoryService _categoryService;
         private readonly IBlobUrlResolver _blobUrlResolver;

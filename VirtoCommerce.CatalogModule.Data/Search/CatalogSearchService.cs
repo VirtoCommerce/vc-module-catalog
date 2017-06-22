@@ -10,7 +10,7 @@ using VirtoCommerce.Platform.Core.Settings;
 
 namespace VirtoCommerce.CatalogModule.Data.Search
 {
-    public abstract class CatalogSearchService2<TItem, TCriteria, TResult>
+    public abstract class CatalogSearchService<TItem, TCriteria, TResult>
         where TItem : Entity
         where TCriteria : SearchCriteriaBase
         where TResult : CatalogSearchResult<TItem>
@@ -19,7 +19,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
         private readonly ISearchProvider _searchProvider;
         private readonly ISettingsManager _settingsManager;
 
-        protected CatalogSearchService2(ISearchRequestBuilder[] searchRequestBuilders, ISearchProvider searchProvider, ISettingsManager settingsManager)
+        protected CatalogSearchService(ISearchRequestBuilder[] searchRequestBuilders, ISearchProvider searchProvider, ISettingsManager settingsManager)
         {
             _searchRequestBuilders = searchRequestBuilders;
             _searchProvider = searchProvider;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
+using VirtoCommerce.Domain.Catalog.Model.Search;
 using VirtoCommerce.Domain.Commerce.Model.Search;
 using VirtoCommerce.Domain.Search;
 using VirtoCommerce.Platform.Core.Common;
@@ -123,9 +124,9 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 result.AddRange(parseResult.Filters);
             }
 
-            if (criteria.Ids != null)
+            if (criteria.ObjectIds != null)
             {
-                result.Add(new IdsFilter { Values = criteria.Ids });
+                result.Add(new IdsFilter { Values = criteria.ObjectIds });
             }
 
             if (!string.IsNullOrEmpty(criteria.CatalogId))

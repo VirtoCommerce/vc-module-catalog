@@ -127,7 +127,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="VirtoCommerce.Domain, Version=2.23.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VirtoCommerce.Domain.2.23.0-rc5\lib\net461\VirtoCommerce.Domain.dll</HintPath>
+      <HintPath>..\packages\VirtoCommerce.Domain.2.23.0-rc6\lib\net461\VirtoCommerce.Domain.dll</HintPath>
     </Reference>
     <Reference Include="VirtoCommerce.Platform.Core, Version=2.13.8.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\VirtoCommerce.Platform.Core.2.13.9-rc1\lib\net461\VirtoCommerce.Platform.Core.dll</HintPath>

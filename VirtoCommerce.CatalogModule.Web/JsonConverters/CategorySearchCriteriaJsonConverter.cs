@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using VirtoCommerce.CatalogModule.Data.Search;
+using VirtoCommerce.Domain.Catalog.Model.Search;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Web.JsonConverters

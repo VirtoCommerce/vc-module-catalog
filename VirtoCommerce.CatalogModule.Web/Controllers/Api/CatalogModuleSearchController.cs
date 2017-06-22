@@ -4,6 +4,7 @@ using System.Web.Http.Description;
 using VirtoCommerce.CatalogModule.Data.Search;
 using VirtoCommerce.CatalogModule.Web.Converters;
 using VirtoCommerce.CatalogModule.Web.Model;
+using VirtoCommerce.Domain.Catalog.Model.Search;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Search;
 using VirtoCommerce.Platform.Core.Assets;
