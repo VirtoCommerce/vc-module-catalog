@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Data.Search;
 using VirtoCommerce.Domain.Catalog.Model;
@@ -81,14 +79,15 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         private async Task SearchItemsAsync(SearchResult result, ProductSearchCriteria criteria, ItemResponseGroup responseGroup)
         {
-            var items = new List<CatalogProduct>();
             // Search using criteria, it will only return IDs of the items
-            var searchResults = await _productSearchService.SearchAsync(criteria);            
-             var itemIds = searchResults.Items.Select(x => x.Id.ToString()).ToList();
-            // Now load items from repository with preserve order
-            result.Products = _itemService.GetByIds(itemIds.ToArray(), responseGroup, criteria.CatalogId)
-                                           .OrderBy(i => itemIds.IndexOf(i.Id)).ToArray();
+            var searchResults = await _productSearchService.SearchAsync(criteria);
+
             result.ProductsTotalCount = (int)searchResults.TotalCount;
+
+            // Now load items from repository preserving original order
+            var itemIds = searchResults.Items.Select(x => x.Id.ToString()).ToList();
+            result.Products = _itemService.GetByIds(itemIds.ToArray(), responseGroup, criteria.CatalogId)
+                .OrderBy(i => itemIds.IndexOf(i.Id)).ToArray();
         }
     }
 }
