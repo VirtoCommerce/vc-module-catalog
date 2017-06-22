@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Data.Search;
 using VirtoCommerce.Domain.Catalog.Model;
@@ -81,60 +82,13 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private async Task SearchItemsAsync(SearchResult result, ProductSearchCriteria criteria, ItemResponseGroup responseGroup)
         {
             var items = new List<CatalogProduct>();
-            var itemsOrderedList = new List<string>();
-
-            var foundItemCount = 0;
-            var dbItemCount = 0;
-            var searchRetry = 0;
-
-            ProductSearchResult searchResults;
-
-            do
-            {
-                // Search using criteria, it will only return IDs of the items
-                searchResults = await _productSearchService.SearchAsync(criteria);
-
-                searchRetry++;
-
-                if (searchResults?.Items == null)
-                {
-                    continue;
-                }
-
-                //Get only new found itemIds
-                var uniqueKeys = searchResults.Items.Select(x => x.Id.ToString()).Except(itemsOrderedList).ToArray();
-                foundItemCount = uniqueKeys.Length;
-
-                if (!searchResults.Items.Any())
-                {
-                    continue;
-                }
-
-                itemsOrderedList.AddRange(uniqueKeys);
-
-                // if we can determine catalog, pass it to the service
-                var catalog = criteria.CatalogId;
-
-                // Now load items from repository
-                var currentItems = _itemService.GetByIds(uniqueKeys.ToArray(), responseGroup, catalog);
-
-                var orderedList = currentItems.OrderBy(i => itemsOrderedList.IndexOf(i.Id));
-                items.AddRange(orderedList);
-                dbItemCount = currentItems.Length;
-
-                //If some items were removed and search is out of sync try getting extra items
-                if (foundItemCount > dbItemCount)
-                {
-                    criteria.Take += (foundItemCount - dbItemCount);
-                }
-            }
-            while (foundItemCount > dbItemCount && searchResults?.Items != null && searchResults.Items.Any() && searchRetry <= 3 &&
-                (criteria.Take + criteria.Skip) < searchResults.TotalCount);
-
-            result.Products = items.ToArray();
-
-            if (searchResults != null)
-                result.ProductsTotalCount = (int)searchResults.TotalCount;
+            // Search using criteria, it will only return IDs of the items
+            var searchResults = await _productSearchService.SearchAsync(criteria);            
+             var itemIds = searchResults.Items.Select(x => x.Id.ToString()).ToList();
+            // Now load items from repository with preserve order
+            result.Products = _itemService.GetByIds(itemIds.ToArray(), responseGroup, criteria.CatalogId)
+                                           .OrderBy(i => itemIds.IndexOf(i.Id)).ToArray();
+            result.ProductsTotalCount = (int)searchResults.TotalCount;
         }
     }
 }
