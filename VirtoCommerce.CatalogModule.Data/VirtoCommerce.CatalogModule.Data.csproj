@@ -210,6 +210,7 @@
     <Compile Include="Search\BrowseFilters\AttributeFilter.cs" />
     <Compile Include="Search\BrowseFilters\AttributeFilterValue.cs" />
     <Compile Include="Search\BrowseFilters\BrowseFilterExtensions.cs" />
+    <Compile Include="Search\BrowseFilters\BrowseFilterProperty.cs" />
     <Compile Include="Search\BrowseFilters\BrowseFilterService.cs" />
     <Compile Include="Search\BrowseFilters\CategoryFilter.cs" />
     <Compile Include="Search\BrowseFilters\CategoryFilterValue.cs" />

@@ -144,6 +144,7 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Controllers\Api\CatalogBaseController.cs" />
+    <Compile Include="Controllers\Api\CatalogBrowseFiltersController.cs" />
     <Compile Include="Controllers\Api\CatalogModuleCatalogsController.cs" />
     <Compile Include="Controllers\Api\CatalogModuleCategoriesController.cs" />
     <Compile Include="Controllers\Api\CatalogModuleExportImportController.cs" />

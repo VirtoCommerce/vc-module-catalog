@@ -130,7 +130,7 @@ namespace VirtoCommerce.CatalogModule.Web
             var filteredBrowsingProperty = new DynamicProperty
             {
                 Id = "2b15f370ab524186bec1ace82509a60a",
-                Name = "FilteredBrowsing",
+                Name = BrowseFilterService.FilteredBrowsingPropertyName,
                 ObjectType = typeof(Store).FullName,
                 ValueType = DynamicPropertyValueType.LongText,
                 CreatedBy = "Auto"

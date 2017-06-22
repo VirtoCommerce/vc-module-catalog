@@ -146,7 +146,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
         protected virtual IList<IBrowseFilter> GetBrowseFilters(ProductSearchCriteria criteria)
         {
-            var allFilters = _browseFilterService.GetFilters(criteria.StoreId);
+            var allFilters = _browseFilterService.GetAllFilters(criteria.StoreId);
 
             var result = allFilters
                 ?.Where(f => !(f is PriceRangeFilter) || ((PriceRangeFilter)f).Currency.EqualsInvariant(criteria.Currency))
