@@ -129,18 +129,7 @@ angular.module(catalogsModuleName, [
           };
 	    pushNotificationTemplateResolver.register(historyImportTemplate);
 
-	    //Register dashboard widgets
-	    //widgetService.registerWidget({
-	    //    isVisible: function () { return authService.checkPermission('catalog:???'); },
-	    //    controller: 'virtoCommerce.catalogModule.dashboard.catalogsWidgetController',
-	    //    template: 'tile-count.html'
-	    //}, 'mainDashboard');
-	    //widgetService.registerWidget({
-	    //    isVisible: function () { return authService.checkPermission('catalog:???'); },
-	    //    controller: 'virtoCommerce.catalogModule.dashboard.productsWidgetController',
-	    //    template: 'tile-count.html'
-	    //}, 'mainDashboard');
-
+	
 	    //Register image widget
 	    var itemImageWidget = {
 	        controller: 'virtoCommerce.catalogModule.itemImageWidgetController',
@@ -172,22 +161,7 @@ angular.module(catalogsModuleName, [
 	    };
 	    widgetService.registerWidget(itemSeoWidget, 'itemDetail');
 
-	    //seoObjectBladesResolver.registerBladeForSeoObjectType('catalogProduct', function (seoInfo) {
-	    //	return {
-	    //		id: "product-detail",
-	    //		itemId: seoInfo.objectId,
-	    //		controller: 'virtoCommerce.catalogModule.itemDetailController',
-	    //		template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/item-detail.tpl.html'
-	    //	};
-	    //});
-	    //seoObjectBladesResolver.registerBladeForSeoObjectType('category', function (seoInfo) {
-	    //	return {
-	    //		id: "listCategoryDetail",
-	    //		currentEntityId: seoInfo.objectId,
-	    //		controller: 'virtoCommerce.catalogModule.categoryDetailController',
-	    //		template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/category-detail.tpl.html',
-	    //	};
-	    //});
+	    
 
 	    //Register dimensions widget
 	    var dimensionsWidget = {
@@ -357,6 +331,12 @@ angular.module(catalogsModuleName, [
 	    widgetToRegister = angular.extend({}, indexWidget, { documentType: 'Category' })
 	    widgetService.registerWidget(widgetToRegister, 'categoryDetail');
 		    
+	    // browse filters in STORE details
+	    widgetService.registerWidget({
+	        controller: 'virtoCommerce.catalogModule.browseFiltersWidgetController',
+	        template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/browseFiltersWidget.tpl.html'
+	    }, 'storeDetail');
+
 	    // predefine search filters for catalog search
 	    predefinedSearchFilters.register(1477584000000, 'catalogSearchFiltersDate', [
           { name: 'catalog.blades.categories-items-list.labels.filter-new' },
