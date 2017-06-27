@@ -350,8 +350,8 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             }
 
             // Load parents
-            //var parentIds = retVal.Where(x => x.Parent == null && x.ParentId != null).Select(x => x.ParentId).ToArray();
-            //var parents = GetItemByIds(parentIds, respGroup);
+            var parentIds = retVal.Where(x => x.Parent == null && x.ParentId != null).Select(x => x.ParentId).ToArray();
+            var parents = GetItemByIds(parentIds, respGroup);
             return retVal;
         }
 

@@ -48,8 +48,16 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             catalog.Id = this.Id;         
             catalog.Name = this.Name;
             catalog.IsVirtual = this.Virtual;
-            catalog.Languages = new[] { new CatalogLanguageEntity { Language = string.IsNullOrEmpty(this.DefaultLanguage) ? "en-US" : this.DefaultLanguage } }.Concat(this.CatalogLanguages).Select(x => x.ToModel(AbstractTypeFactory<CatalogLanguage>.TryCreateInstance())).ToList();
 
+            catalog.Languages = new List<CatalogLanguage>();
+            var defaultLanguage = (new CatalogLanguageEntity { Language = string.IsNullOrEmpty(this.DefaultLanguage) ? "en-us" : this.DefaultLanguage }).ToModel(AbstractTypeFactory<CatalogLanguage>.TryCreateInstance());
+            defaultLanguage.IsDefault = true;
+            catalog.Languages.Add(defaultLanguage);
+            //populate additional languages
+            foreach (var additionalLanguage in this.CatalogLanguages.Where(x => x.Language != defaultLanguage.LanguageCode).Select(x => x.ToModel(AbstractTypeFactory<CatalogLanguage>.TryCreateInstance())))
+            {
+                catalog.Languages.Add(additionalLanguage);
+            }
             catalog.PropertyValues = this.CatalogPropertyValues.Select(x => x.ToModel(AbstractTypeFactory<PropertyValue>.TryCreateInstance())).ToList();
             //Self properties
             catalog.Properties = this.Properties.Where(x => x.CategoryId == null)

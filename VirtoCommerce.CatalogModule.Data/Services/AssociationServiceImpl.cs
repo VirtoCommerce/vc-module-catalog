@@ -2,30 +2,28 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using CacheManager.Core;
-using VirtoCommerce.CatalogModule.Data.Converters;
+using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Data.Infrastructure;
-using dataModel = VirtoCommerce.CatalogModule.Data.Model;
+
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
-    public class AssociationServiceImpl : CatalogServiceBase, IAssociationService
+    public class AssociationServiceImpl : ServiceBase, IAssociationService
     {
-        public AssociationServiceImpl(Func<ICatalogRepository> catalogRepositoryFactory, ICacheManager<object> cacheManager)
-            :base(catalogRepositoryFactory, cacheManager)
+        private readonly Func<ICatalogRepository> _repositoryFactory;
+        public AssociationServiceImpl(Func<ICatalogRepository> repositoryFactory)            
         {
+            _repositoryFactory = repositoryFactory;
         }
         #region IAssociationService members
         public void LoadAssociations(IHasAssociations[] owners)
         {
-            using (var repository = base.CatalogRepositoryFactory())
+            using (var repository = _repositoryFactory())
             {
-                var productEntities = repository.GetItemByIds(owners.Select(x => x.Id).ToArray(), ItemResponseGroup.ItemAssociations);
-                var allCategories = base.AllCachedCategories;
-                var allCatalogs = base.AllCachedCatalogs;
+                var productEntities = repository.GetItemByIds(owners.Select(x => x.Id).ToArray(), ItemResponseGroup.ItemAssociations);        
                 foreach (var productEntity in productEntities)
                 {
                     var owner = owners.FirstOrDefault(x => x.Id == productEntity.Id);
@@ -36,7 +34,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                             owner.Associations = new List<ProductAssociation>();
                         }
                         owner.Associations.Clear();
-                        owner.Associations.AddRange(productEntity.Associations.Select(x => x.ToCoreModel(allCatalogs, allCategories)));
+                        owner.Associations.AddRange(productEntity.Associations.Select(x => x.ToModel(AbstractTypeFactory<ProductAssociation>.TryCreateInstance())));
                     }
                 }
             }
@@ -44,31 +42,31 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public void SaveChanges(IHasAssociations[] owners)
         {
-            var changedDbAssociations = new List<dataModel.AssociationEntity>(); 
-            foreach(var owner in owners)
+            var changedEntities = new List<AssociationEntity>();
+            foreach (var owner in owners)
             {
-                if(owner.Associations != null)
+                if (owner.Associations != null)
                 {
-                    var dbAssociations = owner.Associations.Select(x => x.ToDataModel()).ToArray();
-                    foreach(var dbAssociation in dbAssociations)
+                    var dbAssociations = owner.Associations.Select(x => AbstractTypeFactory<AssociationEntity>.TryCreateInstance().FromModel(x)).ToArray();
+                    foreach (var dbAssociation in dbAssociations)
                     {
                         dbAssociation.ItemId = owner.Id;
                     }
-                    changedDbAssociations.AddRange(dbAssociations);
+                    changedEntities.AddRange(dbAssociations);
                 }
             }
 
-            using (var repository = base.CatalogRepositoryFactory())
+            using (var repository = _repositoryFactory())
             using (var changeTracker = GetChangeTracker(repository))
             {
                 var itemIds = owners.Where(x => x.Id != null).Select(x => x.Id).ToArray();
-                var existDbAssociations = repository.Associations.Where(x => itemIds.Contains(x.Id)).ToArray();
+                var existEntities = repository.Associations.Where(x => itemIds.Contains(x.Id)).ToArray();
 
-                var target = new { Associations = new ObservableCollection<dataModel.AssociationEntity>(existDbAssociations) };
-                var source = new { Associations = new ObservableCollection<dataModel.AssociationEntity>(changedDbAssociations) };
+                var target = new { Associations = new ObservableCollection<AssociationEntity>(existEntities) };
+                var source = new { Associations = new ObservableCollection<AssociationEntity>(changedEntities) };
 
                 changeTracker.Attach(target);
-                var associationComparer = AnonymousComparer.Create((dataModel.AssociationEntity x) => x.ItemId + ":" + x.AssociationType + ":" + x.AssociatedItemId + ":" + x.AssociatedCategoryId);
+                var associationComparer = AnonymousComparer.Create((AssociationEntity x) => x.ItemId + ":" + x.AssociationType + ":" + x.AssociatedItemId + ":" + x.AssociatedCategoryId);
                 source.Associations.Patch(target.Associations, associationComparer, (sourceAssociation, targetAssociation) => sourceAssociation.Patch(targetAssociation));
 
                 CommitChanges(repository);

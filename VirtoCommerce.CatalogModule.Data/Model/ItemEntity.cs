@@ -132,7 +132,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             }
         }
 
-        public virtual CatalogProduct ToModel(CatalogProduct product)
+        public virtual CatalogProduct ToModel(CatalogProduct product, bool convertChildrens = true, bool convertAssociations = true)
         {
             if (product == null)
                 throw new ArgumentNullException(nameof(product));
@@ -185,22 +185,32 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             // EditorialReviews
             product.Reviews = this.EditorialReviews.Select(x => x.ToModel(AbstractTypeFactory<EditorialReview>.TryCreateInstance())).ToList();
 
-            // Associations
-            product.Associations = this.Associations.Select(x => x.ToModel(AbstractTypeFactory<ProductAssociation>.TryCreateInstance())).OrderBy(x => x.Priority).ToList();
-
-            //Self item property values
-            product.PropertyValues = this.ItemPropertyValues.OrderBy(x => x.Name).Select(x => AbstractTypeFactory<PropertyValue>.TryCreateInstance()).ToList();
-
-            // Variations
-            product.Variations = new List<CatalogProduct>();
-            foreach (var variation in this.Childrens)
+            if (convertAssociations)
             {
-                var productVariation = variation.ToModel(AbstractTypeFactory<CatalogProduct>.TryCreateInstance(), false);
-                productVariation.MainProduct = product;
-                productVariation.MainProductId = product.Id;
-                product.Variations.Add(productVariation);
+                // Associations
+                product.Associations = this.Associations.Select(x => x.ToModel(AbstractTypeFactory<ProductAssociation>.TryCreateInstance())).OrderBy(x => x.Priority).ToList();
             }
 
+            //Self item property values
+            product.PropertyValues = this.ItemPropertyValues.OrderBy(x => x.Name).Select(x =>x.ToModel(AbstractTypeFactory<PropertyValue>.TryCreateInstance())).ToList();
+
+            if(this.Parent != null)
+            {
+                product.MainProduct = this.Parent.ToModel(AbstractTypeFactory<CatalogProduct>.TryCreateInstance(), false, convertAssociations);
+            }
+
+            if (convertChildrens)
+            {
+                // Variations
+                product.Variations = new List<CatalogProduct>();
+                foreach (var variation in this.Childrens)
+                {
+                    var productVariation = variation.ToModel(AbstractTypeFactory<CatalogProduct>.TryCreateInstance());
+                    productVariation.MainProduct = product;
+                    productVariation.MainProductId = product.Id;
+                    product.Variations.Add(productVariation);
+                }
+            }
             return product;
         }
 
@@ -209,12 +219,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             if (product == null)
                 throw new ArgumentNullException(nameof(product));
 
-            pkMap.AddPair(product, this);
-
-            if (product.StartDate == default(DateTime))
-            {
-                this.StartDate = DateTime.UtcNow;
-            }
+            pkMap.AddPair(product, this);          
 
             this.Id = product.Id;
             this.CreatedDate = product.CreatedDate;
@@ -246,13 +251,14 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             this.Priority = product.Priority;
             this.ProductType = product.ProductType;
             this.ShippingType = product.ShippingType;
-            this.StartDate = product.StartDate;
             this.TaxType = product.TaxType;
             this.TrackInventory = product.TrackInventory ?? true;
             this.Vendor = product.Vendor;
             this.Weight = product.Weight;
             this.WeightUnit = product.WeightUnit;
             this.Width = product.Width;
+
+            this.StartDate = product.StartDate == default(DateTime) ? DateTime.UtcNow : product.StartDate;
 
             //Constant fields
             //Only for main product

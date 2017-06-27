@@ -95,7 +95,8 @@ namespace VirtoCommerce.CatalogModule.Test
 
         private static ICategoryService GetCategoryService()
         {
-            return new CategoryServiceImpl(GetCatalogRepository, GetCommerceService(), GetOutlineService(), null);
+            return null;
+            //return new CategoryServiceImpl(GetCatalogRepository, GetCommerceService(), GetOutlineService(), null);
         }
 
         private static ICatalogService GetCatalogService()
@@ -105,7 +106,8 @@ namespace VirtoCommerce.CatalogModule.Test
 
         private static IItemService GetItemService()
         {
-            return new ItemServiceImpl(GetCatalogRepository, GetCommerceService(), GetOutlineService(), null);
+            return null;
+            //return new ItemServiceImpl(GetCatalogRepository, GetCommerceService(), GetOutlineService(), null);
         }
 
         private static ICommerceService GetCommerceService()

@@ -38,55 +38,6 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         [StringLength(64)]
         public string Locale { get; set; }
 
-        [NotMapped]
-        public object Value
-        {
-            get
-            {
-                switch (this.ValueType)
-                {
-                    case (int)PropertyValueType.Boolean:
-                        return this.BooleanValue;
-                    case (int)PropertyValueType.DateTime:
-                        return this.DateTimeValue;
-                    case (int)PropertyValueType.Number:
-                        return this.DecimalValue;
-                    case (int)PropertyValueType.LongText:
-                        return this.LongTextValue;
-                    case (int)PropertyValueType.Integer:
-                        return this.IntegerValue;
-                    default:
-                        return this.ShortTextValue;
-                }
-
-            }
-            set
-            {
-                switch ((PropertyValueType)this.ValueType)
-                {
-                    case PropertyValueType.LongText:
-                        this.LongTextValue = Convert.ToString(value);
-                        break;
-                    case PropertyValueType.ShortText:
-                        this.ShortTextValue = Convert.ToString(value);
-                        break;
-                    case PropertyValueType.Number:
-                        this.DecimalValue = Convert.ToDecimal(value);                     
-                        break;
-                    case PropertyValueType.DateTime:
-                        this.DateTimeValue = Convert.ToDateTime(value);
-                        break;
-                    case PropertyValueType.Boolean:
-                        this.BooleanValue = Convert.ToBoolean(value);
-                        break;
-                    case PropertyValueType.Integer:
-                        this.IntegerValue = Convert.ToInt32(value);
-                        break;
-                    default:
-                        throw new NotSupportedException();
-                }
-            }
-        }
 
         #region Navigation Properties
         public string ItemId { get; set; }
@@ -113,9 +64,9 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             propValue.Alias = this.Alias;
             propValue.LanguageCode = this.Locale;
             propValue.PropertyName = this.Name;
-            propValue.Value = this.Value;
             propValue.ValueId = this.KeyValue;
             propValue.ValueType = (PropertyValueType)this.ValueType;
+            propValue.Value = GetValue(propValue.ValueType);
 
             return propValue;
         }
@@ -136,9 +87,9 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             this.Alias = propValue.Alias;
             this.Locale = propValue.LanguageCode;
             this.Name = propValue.PropertyName;
-            this.Value = propValue.Value;
-            this.KeyValue = propValue.ValueId;
             this.ValueType = (int)propValue.ValueType;
+            this.KeyValue = propValue.ValueId;
+            SetValue(propValue.ValueType, propValue.Value);
 
             return this;
         }
@@ -158,6 +109,51 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             target.ValueType = this.ValueType;
         }     
 
-       
+
+        protected virtual object GetValue(PropertyValueType valueType)
+        {
+            switch (this.ValueType)
+            {
+                case (int)PropertyValueType.Boolean:
+                    return this.BooleanValue;
+                case (int)PropertyValueType.DateTime:
+                    return this.DateTimeValue;
+                case (int)PropertyValueType.Number:
+                    return this.DecimalValue;
+                case (int)PropertyValueType.LongText:
+                    return this.LongTextValue;
+                case (int)PropertyValueType.Integer:
+                    return this.IntegerValue;
+                default:
+                    return this.ShortTextValue;
+            }
+        }
+
+        protected virtual void SetValue(PropertyValueType valueType, object value)
+        {
+            switch (valueType)
+            {
+                case PropertyValueType.LongText:
+                    this.LongTextValue = Convert.ToString(value);
+                    break;
+                case PropertyValueType.ShortText:
+                    this.ShortTextValue = Convert.ToString(value);
+                    break;
+                case PropertyValueType.Number:
+                    this.DecimalValue = Convert.ToDecimal(value);
+                    break;
+                case PropertyValueType.DateTime:
+                    this.DateTimeValue = Convert.ToDateTime(value);
+                    break;
+                case PropertyValueType.Boolean:
+                    this.BooleanValue = Convert.ToBoolean(value);
+                    break;
+                case PropertyValueType.Integer:
+                    this.IntegerValue = Convert.ToInt32(value);
+                    break;
+                default:
+                    throw new NotSupportedException();
+            }
+        }
     }
 }

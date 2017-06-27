@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using CacheManager.Core;
 using Omu.ValueInjecter;
-using VirtoCommerce.CatalogModule.Data.Converters;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Domain.Catalog.Model;
@@ -35,36 +34,9 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         #region ICategoryService Members
         public virtual Category[] GetByIds(string[] categoryIds, CategoryResponseGroup responseGroup, string catalogId = null)
         {
-            var preloadedCategories = PreloadCategories().Where(x => categoryIds.Contains(x.Id)).ToArray();
-            var result = new List<Category>();
-           
-            foreach(var preloadedCategory in preloadedCategories)
-            {
-                //Create new category instance and copy all value properties
-                var category = AbstractTypeFactory<Category>.TryCreateInstance();
-                category.InjectFrom(preloadedCategory);
-                //Set all reference properties from preloaded category
-                category.Catalog = preloadedCategory.Catalog;
-                category.Properties = preloadedCategory.Properties;
-                category.Parents = preloadedCategory.Parents;
-                category.Links = preloadedCategory.Links;
-                category.Images = preloadedCategory.Images;               
-            }
-   
-            // Fill outlines for products
-            if (responseGroup.HasFlag(CategoryResponseGroup.WithOutlines))
-            {
-                _outlineService.FillOutlinesForObjects(result, catalogId);
-            }
-
-            if ((responseGroup & CategoryResponseGroup.WithSeo) == CategoryResponseGroup.WithSeo)
-            {
-                var objectsWithSeo = new List<ISeoSupport>(result);
-
-                var outlineItems = result.Where(c => c.Outlines != null).SelectMany(c => c.Outlines.SelectMany(o => o.Items));
-                objectsWithSeo.AddRange(outlineItems);
-                _commerceService.LoadSeoForObjects(objectsWithSeo.ToArray());
-            }
+            var result = PreloadCategories(catalogId).Where(x => categoryIds.Contains(x.Id))
+                                                     .Select(x => MemberwiseCloneCategory(x))
+                                                     .ToArray();
 
             //Reduce details according to response group
             foreach (var category in result)
@@ -87,7 +59,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 }
             }
 
-            return result.ToArray();
+            return result;
         }
 
         public virtual Category GetById(string categoryId, CategoryResponseGroup responseGroup, string catalogId = null)
@@ -170,9 +142,41 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _cacheManager.ClearRegion(CatalogConstants.CacheRegion);
         }
 
-        protected virtual Category[] PreloadCategories()
+        //TODO: need to move in domain
+        protected virtual Category MemberwiseCloneCategory(Category category)
         {
-            return _cacheManager.Get("AllCategories", CatalogConstants.CacheRegion, () =>
+            var retVal = AbstractTypeFactory<Category>.TryCreateInstance();
+
+            retVal.Id = category.Id;
+            retVal.CatalogId = category.CatalogId;
+            retVal.Children = category.Children;
+            retVal.Code = category.Code;
+            retVal.CreatedBy = category.CreatedBy;
+            retVal.CreatedDate = category.CreatedDate;
+            retVal.IsActive = category.IsActive;
+            retVal.IsVirtual = category.IsVirtual;
+            retVal.Level = category.Level;
+            retVal.ModifiedBy = category.ModifiedBy;
+            retVal.ModifiedDate = category.ModifiedDate;
+            retVal.Name = category.Name;
+            retVal.PackageType = category.PackageType;
+            retVal.ParentId = category.ParentId;
+            retVal.Path = category.Path;
+            retVal.Priority = category.Priority;
+            retVal.TaxType = category.TaxType;
+
+            //Set all reference properties from preloaded category
+            retVal.Catalog = category.Catalog;
+            retVal.Properties = category.Properties;
+            retVal.Parents = category.Parents;
+            retVal.Links = category.Links;
+            retVal.Images = category.Images;
+            return retVal;
+        }
+
+        protected virtual Category[] PreloadCategories(string catalogId)
+        {
+            return _cacheManager.Get($"AllCategories-{catalogId}", CatalogConstants.CacheRegion, () =>
             {
                 var result = new List<Category>();
                 CategoryEntity[] entities = null;
@@ -189,6 +193,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     entities = repository.GetCategoriesByIds(repository.Categories.Select(x => x.Id).ToArray(), Domain.Catalog.Model.CategoryResponseGroup.Full);
                 }
 
+                var catalogsMap = _catalogService.GetCatalogsList().ToDictionary(x => x.Id);
+
                 foreach (var entity in entities.OrderBy(x => x.AllParents.Count()))
                 {
                     var allParents = new List<Category>();
@@ -197,7 +203,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     {
                         allParents.Add(result.First(x => x.Id == parent.Id));
                     }
-                    category.Catalog = _catalogService.GetById(category.CatalogId);
+                    category.Catalog = catalogsMap[category.CatalogId];
                     category.IsVirtual = category.Catalog.IsVirtual;
                     category.Parents = allParents.ToArray();
                     category.Level = category.Parents.Count();
@@ -240,22 +246,29 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
                 foreach (var link in result.SelectMany(x => x.Links))
                 {
-                    link.Catalog = _catalogService.GetById(link.CatalogId);
+                    link.Catalog = catalogsMap[link.CatalogId];
                     link.Category = result.First(x => x.Id == link.CategoryId);
                 }
 
                 foreach (var property in result.SelectMany(x => x.Properties).Distinct())
                 {
-                    property.Catalog = _catalogService.GetById(property.CatalogId);
+                    property.Catalog = catalogsMap[property.CatalogId];
                     if (property.CategoryId != null)
                     {
                         property.Category = result.First(x => x.Id == property.CategoryId);
                     }
                 }
 
+                // Fill outlines for products            
+                _outlineService.FillOutlinesForObjects(result, catalogId);
+
+                var objectsWithSeo = new List<ISeoSupport>(result);
+                var outlineItems = result.Where(c => c.Outlines != null).SelectMany(c => c.Outlines.SelectMany(o => o.Items));
+                objectsWithSeo.AddRange(outlineItems);
+                _commerceService.LoadSeoForObjects(objectsWithSeo.ToArray());
+
                 return result.ToArray();
             });
-
         }
     }
 }

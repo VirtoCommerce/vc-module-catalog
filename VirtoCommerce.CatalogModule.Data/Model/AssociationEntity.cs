@@ -51,11 +51,13 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
             if (this.AssociatedCategoryId != null)
             {
+                association.AssociatedObject = this.AssociatedCategory.ToModel(AbstractTypeFactory<Category>.TryCreateInstance());
                 association.AssociatedObjectType = "category";
             }
 
             if (this.AssociatedItem != null)
             {
+                association.AssociatedObject = this.AssociatedItem.ToModel(AbstractTypeFactory<CatalogProduct>.TryCreateInstance(), false, false);
                 association.AssociatedObjectType = "product";
             }
 

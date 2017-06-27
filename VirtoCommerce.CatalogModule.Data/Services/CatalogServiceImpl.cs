@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using CacheManager.Core;
 using Omu.ValueInjecter;
-using VirtoCommerce.CatalogModule.Data.Converters;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Domain.Catalog.Model;
@@ -32,7 +31,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public Catalog GetById(string catalogId)
         {
-            var result = PreloadCatalogs().Where(x => x.Id == catalogId).FirstOrDefault();
+            //Clone required because client code may change resulting objects
+            var result = PreloadCatalogs().Where(x => x.Id == catalogId).Select(x => MemberwiseCloneCatalog(x)).FirstOrDefault();
             return result;
         }
 
@@ -59,10 +59,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
         }
 
-
         public IEnumerable<Catalog> GetCatalogsList()
         {
-            return PreloadCatalogs().OrderBy(x => x.Name);
+            //Clone required because client code may change resulting objects
+            return PreloadCatalogs().Select(x => MemberwiseCloneCatalog(x)).OrderBy(x => x.Name);
         }
 
         #endregion
@@ -99,6 +99,19 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         protected virtual void ResetCache()
         {
             _cacheManager.ClearRegion(CatalogConstants.CacheRegion);
+        }
+
+       
+        protected virtual Catalog MemberwiseCloneCatalog(Catalog catalog)
+        {
+            var retVal = AbstractTypeFactory<Catalog>.TryCreateInstance();
+            retVal.Id = catalog.Id;
+            retVal.IsVirtual = catalog.IsVirtual;
+            retVal.Name = catalog.Name;
+            retVal.Properties = catalog.Properties;
+            retVal.Languages = catalog.Languages;
+            retVal.PropertyValues = catalog.PropertyValues;
+            return retVal;
         }
 
         protected virtual Catalog[] PreloadCatalogs()

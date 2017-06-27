@@ -91,24 +91,6 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="CatalogConstants.cs" />
-    <Compile Include="Converters\AssetConverter.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Converters\CatalogConverter.cs" />
-    <Compile Include="Converters\CatalogLanguageConverter.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Converters\CategoryConverter.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Converters\EditorialReviewConverter.cs" />
-    <Compile Include="Converters\LinkConverter.cs" />
-    <Compile Include="Converters\ItemConverter.cs" />
-    <Compile Include="Converters\ProductAssociationConverter.cs" />
-    <Compile Include="Converters\PropertyAttributeConverter.cs" />
-    <Compile Include="Converters\PropertyConverter.cs" />
-    <Compile Include="Converters\PropertyDictionaryValueConverter.cs" />
-    <Compile Include="Converters\PropertyValueConverter.cs" />
     <Compile Include="Migrations\201504301302574_Initial.cs" />
     <Compile Include="Migrations\201504301302574_Initial.Designer.cs">
       <DependentUpon>201504301302574_Initial.cs</DependentUpon>
@@ -192,6 +174,10 @@
     <Compile Include="Migrations\201610181353548_AssociationQuantity.cs" />
     <Compile Include="Migrations\201610181353548_AssociationQuantity.Designer.cs">
       <DependentUpon>201610181353548_AssociationQuantity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201706261011171_PropertyDisplayNames.cs" />
+    <Compile Include="Migrations\201706261011171_PropertyDisplayNames.Designer.cs">
+      <DependentUpon>201706261011171_PropertyDisplayNames.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Model\AssetEntity.cs" />
@@ -294,6 +280,12 @@
     <EmbeddedResource Include="Migrations\201610181353548_AssociationQuantity.resx">
       <DependentUpon>201610181353548_AssociationQuantity.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201706261011171_PropertyDisplayNames.resx">
+      <DependentUpon>201706261011171_PropertyDisplayNames.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Converters\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
