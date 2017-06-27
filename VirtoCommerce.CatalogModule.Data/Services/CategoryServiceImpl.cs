@@ -57,6 +57,14 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 {
                     category.Properties = null;
                 }
+                if (!responseGroup.HasFlag(CategoryResponseGroup.WithOutlines))
+                {
+                    category.Outlines = null;
+                }
+                if (!responseGroup.HasFlag(CategoryResponseGroup.WithSeo))
+                {
+                    category.SeoInfos = null;
+                }
             }
 
             return result;
@@ -166,9 +174,9 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             retVal.TaxType = category.TaxType;
 
             //Set all reference properties from preloaded category
-            retVal.SeoInfos = category.SeoInfos;
             retVal.Outlines = category.Outlines;
             retVal.PropertyValues = category.PropertyValues;
+            retVal.SeoInfos = category.SeoInfos;
             retVal.Catalog = category.Catalog;
             retVal.Properties = category.Properties;
             retVal.Parents = category.Parents;
