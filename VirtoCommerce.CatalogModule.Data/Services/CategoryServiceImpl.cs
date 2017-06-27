@@ -166,11 +166,15 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             retVal.TaxType = category.TaxType;
 
             //Set all reference properties from preloaded category
+            retVal.Outlines = category.Outlines;
+            retVal.PropertyValues = category.PropertyValues;
+            retVal.SeoInfos = category.SeoInfos;
             retVal.Catalog = category.Catalog;
             retVal.Properties = category.Properties;
             retVal.Parents = category.Parents;
             retVal.Links = category.Links;
             retVal.Images = category.Images;
+            retVal.Children = category.Children;
             return retVal;
         }
 
