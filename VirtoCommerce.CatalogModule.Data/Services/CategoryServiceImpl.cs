@@ -174,6 +174,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             retVal.Parents = category.Parents;
             retVal.Links = category.Links;
             retVal.Images = category.Images;
+            retVal.Children = category.Children;
             return retVal;
         }
 

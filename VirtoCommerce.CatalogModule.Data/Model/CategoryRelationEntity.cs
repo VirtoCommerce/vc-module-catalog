@@ -58,8 +58,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
         public int GetHashCode(CategoryRelationEntity obj)
         {
-            var hash = 17;
-            hash = hash * 23 + obj.SourceCategoryId.GetHashCode();
+            var hash = 17 * 23;
             if (obj.TargetCategoryId != null)
             {
                 hash = hash * 23 + obj.TargetCategoryId.GetHashCode();
