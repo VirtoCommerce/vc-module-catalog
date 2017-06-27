@@ -57,6 +57,14 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 {
                     category.Properties = null;
                 }
+                if (!responseGroup.HasFlag(CategoryResponseGroup.WithOutlines))
+                {
+                    category.Outlines = null;
+                }
+                if (!responseGroup.HasFlag(CategoryResponseGroup.WithSeo))
+                {
+                    category.SeoInfos = null;
+                }
             }
 
             return result;
