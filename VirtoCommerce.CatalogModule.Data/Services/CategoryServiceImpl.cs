@@ -259,7 +259,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 foreach (var link in result.SelectMany(x => x.Links))
                 {
                     link.Catalog = catalogsMap[link.CatalogId];
-                    link.Category = result.First(x => x.Id == link.CategoryId);
+                    if (link.CategoryId != null)
+                    {
+                        link.Category = result.First(x => x.Id == link.CategoryId);
+                    }
                 }
 
                 foreach (var property in result.SelectMany(x => x.Properties).Distinct())

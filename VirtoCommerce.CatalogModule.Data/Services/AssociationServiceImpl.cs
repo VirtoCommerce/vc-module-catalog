@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using VirtoCommerce.CatalogModule.Data.Extensions;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Domain.Catalog.Model;
@@ -23,6 +24,9 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
             using (var repository = _repositoryFactory())
             {
+                //Optimize performance and CPU usage
+                repository.DisableChangesTracking();
+
                 var productEntities = repository.GetItemByIds(owners.Select(x => x.Id).ToArray(), ItemResponseGroup.ItemAssociations);        
                 foreach (var productEntity in productEntities)
                 {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CacheManager.Core;
 using Omu.ValueInjecter;
+using VirtoCommerce.CatalogModule.Data.Extensions;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Domain.Catalog.Model;
@@ -120,14 +121,9 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             {
                 using (var repository = _repositoryFactory())
                 {
-                    //EF multi-thread issue for cached entities
-                    //http://stackoverflow.com/questions/29106477/nullreferenceexception-in-entity-framework-from-trygetcachedrelatedend
-                    if (repository is System.Data.Entity.DbContext)
-                    {
-                        var dbConfiguration = ((System.Data.Entity.DbContext)repository).Configuration;
-                        dbConfiguration.ProxyCreationEnabled = false;
-                        dbConfiguration.AutoDetectChangesEnabled = false;
-                    }
+                    //Optimize performance and CPU usage
+                    repository.DisableChangesTracking();
+
                     return repository.GetCatalogsByIds(repository.Catalogs.Select(x => x.Id).ToArray())
                                       .Select(x => x.ToModel(AbstractTypeFactory<Catalog>.TryCreateInstance()))
                                       .ToArray();
