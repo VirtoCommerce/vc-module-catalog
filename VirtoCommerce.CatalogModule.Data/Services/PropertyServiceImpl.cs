@@ -1,62 +1,70 @@
 ﻿using System;
 using System.Linq;
 using CacheManager.Core;
-using VirtoCommerce.CatalogModule.Data.Converters;
+using VirtoCommerce.CatalogModule.Data.Extensions;
+using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
+using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Data.Infrastructure;
-using coreModel = VirtoCommerce.Domain.Catalog.Model;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
-    public class PropertyServiceImpl : CatalogServiceBase, IPropertyService
+    public class PropertyServiceImpl : ServiceBase, IPropertyService
     {
-        public PropertyServiceImpl(Func<ICatalogRepository> catalogRepositoryFactory, ICacheManager<object> cacheManager)
-            : base(catalogRepositoryFactory, cacheManager)
+        private readonly Func<ICatalogRepository> _repositoryFactory;
+        private readonly ICacheManager<object> _cacheManager;
+        public PropertyServiceImpl(Func<ICatalogRepository> repositoryFactory, ICacheManager<object> cacheManager)
         {
+            _repositoryFactory = repositoryFactory;
+            _cacheManager = cacheManager;
         }
 
         #region IPropertyService Members
 
-        public coreModel.Property GetById(string propertyId)
+        public Property GetById(string propertyId)
         {
             return GetByIds(new[] { propertyId }).FirstOrDefault();
         }
 
-        public coreModel.Property[] GetByIds(string[] propertyIds)
+        public Property[] GetByIds(string[] propertyIds)
         {
-            using (var repository = base.CatalogRepositoryFactory())
+            using (var repository = _repositoryFactory())
             {
-                var dbProperties = repository.GetPropertiesByIds(propertyIds);
-                var result = dbProperties.Select(dbProperty => dbProperty.ToCoreModel(base.AllCachedCatalogs, base.AllCachedCategories)).ToArray();
+                //Optimize performance and CPU usage
+                repository.DisableChangesTracking();
+
+                var entities = repository.GetPropertiesByIds(propertyIds);
+                var result = entities.Select(x => x.ToModel(AbstractTypeFactory<Property>.TryCreateInstance())).ToArray();
                 return result;
             }
         }
 
-        public coreModel.Property[] GetAllCatalogProperties(string catalogId)
+        public Property[] GetAllCatalogProperties(string catalogId)
         {
-            using (var repository = base.CatalogRepositoryFactory())
+            using (var repository = _repositoryFactory())
             {
-                var allCachedCatalogs = base.AllCachedCatalogs;
-                var allCachedCategories = base.AllCachedCategories;
-                var dbProperties = repository.GetAllCatalogProperties(catalogId);
-                var result = dbProperties.Select(dbProperty => dbProperty.ToCoreModel(allCachedCatalogs, allCachedCategories)).ToArray();
+                //Optimize performance and CPU usage
+                repository.DisableChangesTracking();
+
+                var entities = repository.GetAllCatalogProperties(catalogId);
+                var result = entities.Select(x => x.ToModel(AbstractTypeFactory<Property>.TryCreateInstance())).ToArray();
                 return result;
             }
         }
 
 
-        public coreModel.Property[] GetAllProperties()
+        public Property[] GetAllProperties()
         {
-            using (var repository = base.CatalogRepositoryFactory())
+            using (var repository = _repositoryFactory())
             {
                 return GetByIds(repository.Properties.Select(x => x.Id).ToArray());
             }
         }
 
 
-        public coreModel.Property Create(coreModel.Property property)
+        public Property Create(Property property)
         {
             if (property.CatalogId == null)
             {
@@ -69,7 +77,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return result;
         }
 
-        public void Update(coreModel.Property[] properties)
+        public void Update(Property[] properties)
         {
             SaveChanges(properties);
         }
@@ -77,22 +85,22 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public void Delete(string[] propertyIds)
         {
-            using (var repository = base.CatalogRepositoryFactory())
+            using (var repository = _repositoryFactory())
             {
-                var dbProperties = repository.GetPropertiesByIds(propertyIds);
+                var entities = repository.GetPropertiesByIds(propertyIds);
 
-                foreach (var dbProperty in dbProperties)
+                foreach (var entity in entities)
                 {
-                    repository.Remove(dbProperty);
+                    repository.Remove(entity);
                 }
 
                 CommitChanges(repository);
                 //Reset cached categories and catalogs
-                base.InvalidateCache();
+                ResetCache();
             }
         }
 
-        public coreModel.PropertyDictionaryValue[] SearchDictionaryValues(string propertyId, string keyword)
+        public PropertyDictionaryValue[] SearchDictionaryValues(string propertyId, string keyword)
         {
             var property = GetById(propertyId);
             var result = property.DictionaryValues.ToArray();
@@ -100,22 +108,22 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             {
                 result = result.Where(x => x.Value.Contains(keyword)).ToArray();
             }
-            return result;         
+            return result;
         }
         #endregion
 
-        protected virtual void SaveChanges(coreModel.Property[] properties)
+        protected virtual void SaveChanges(Property[] properties)
         {
             var pkMap = new PrimaryKeyResolvingMap();
 
-            using (var repository = base.CatalogRepositoryFactory())
+            using (var repository = _repositoryFactory())
             using (var changeTracker = GetChangeTracker(repository))
             {
                 var dbExistEntities = repository.GetPropertiesByIds(properties.Where(x => !x.IsTransient()).Select(x => x.Id).ToArray());
                 foreach (var property in properties)
                 {
                     var originalEntity = dbExistEntities.FirstOrDefault(x => x.Id == property.Id);
-                    var modifiedEntity = property.ToDataModel(pkMap);
+                    var modifiedEntity = AbstractTypeFactory<PropertyEntity>.TryCreateInstance().FromModel(property, pkMap);
                     if (originalEntity != null)
                     {
                         changeTracker.Attach(originalEntity);
@@ -129,8 +137,13 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 CommitChanges(repository);
                 pkMap.ResolvePrimaryKeys();
                 //Reset cached categories and catalogs
-                base.InvalidateCache();
+                ResetCache();
             }
+        }
+
+        protected virtual void ResetCache()
+        {
+            _cacheManager.ClearRegion(CatalogConstants.CacheRegion);
         }
     }
 }

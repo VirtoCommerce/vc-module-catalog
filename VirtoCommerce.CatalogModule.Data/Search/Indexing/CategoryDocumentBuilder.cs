@@ -34,7 +34,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         protected virtual IList<Category> GetCategories(IList<string> categoryIds)
         {
-            return _categoryService.GetByIds(categoryIds.ToArray(), CategoryResponseGroup.WithProperties | CategoryResponseGroup.WithOutlines | CategoryResponseGroup.WithImages | CategoryResponseGroup.WithSeo);
+            return _categoryService.GetByIds(categoryIds.ToArray(), CategoryResponseGroup.WithProperties | CategoryResponseGroup.WithOutlines | CategoryResponseGroup.WithImages | CategoryResponseGroup.WithSeo | CategoryResponseGroup.WithLinks);
         }
 
         protected virtual IndexDocument CreateDocument(Category category)

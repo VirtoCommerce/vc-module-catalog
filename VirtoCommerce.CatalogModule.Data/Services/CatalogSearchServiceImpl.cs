@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using VirtoCommerce.CatalogModule.Data.Extensions;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
@@ -61,6 +62,9 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
             using (var repository = _catalogRepositoryFactory())
             {
+                //Optimize performance and CPU usage
+                repository.DisableChangesTracking();
+
                 var query = repository.Categories.Where(x => criteria.WithHidden || x.IsActive);
 
                 //Get list of search in categories
@@ -150,6 +154,9 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
             using (var repository = _catalogRepositoryFactory())
             {
+                //Optimize performance and CPU usage
+                repository.DisableChangesTracking();
+
                 var catalogIds = criteria.CatalogIds;
                 if (catalogIds.IsNullOrEmpty())
                 {
@@ -188,6 +195,9 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
             using (var repository = _catalogRepositoryFactory())
             {
+                //Optimize performance and CPU usage
+                repository.DisableChangesTracking();
+
                 //list of search categories
                 var searchCategoryIds = criteria.CategoryIds;
                 if (criteria.SearchInChildren)

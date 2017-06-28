@@ -12,7 +12,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 {
     public class ProductDocumentChangesProvider : IIndexDocumentChangesProvider
     {
-        public const string ChangeLogObjectType = nameof(Item);
+        public const string ChangeLogObjectType = nameof(ItemEntity);
 
         private readonly Func<ICatalogRepository> _catalogRepositoryFactory;
         private readonly IChangeLogService _changeLogService;
