@@ -23,7 +23,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             _changeLogService = changeLogService;
         }
 
-        public Task<long> GetTotalChangesCountAsync(DateTime? startDate, DateTime? endDate)
+        public virtual Task<long> GetTotalChangesCountAsync(DateTime? startDate, DateTime? endDate)
         {
             long result;
 
@@ -44,7 +44,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             return Task.FromResult(result);
         }
 
-        public Task<IList<IndexDocumentChange>> GetChangesAsync(DateTime? startDate, DateTime? endDate, long skip, long take)
+        public virtual Task<IList<IndexDocumentChange>> GetChangesAsync(DateTime? startDate, DateTime? endDate, long skip, long take)
         {
             IList<IndexDocumentChange> result;
 

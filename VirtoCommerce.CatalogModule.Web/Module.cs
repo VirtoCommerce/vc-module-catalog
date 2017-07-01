@@ -58,8 +58,7 @@ namespace VirtoCommerce.CatalogModule.Web
 
             Func<ICatalogRepository> catalogRepFactory = () =>
                 new CatalogRepositoryImpl(_connectionStringName, new EntityPrimaryKeyGeneratorInterceptor(), _container.Resolve<AuditableInterceptor>(),
-                    new ChangeLogInterceptor(_container.Resolve<Func<IPlatformRepository>>(), ChangeLogPolicy.Cumulative, new[] { nameof(ItemEntity) }, _container.Resolve<IUserNameResolver>()),
-                    new ChangeLogInterceptor(_container.Resolve<Func<IPlatformRepository>>(), ChangeLogPolicy.Cumulative, new[] { nameof(CategoryEntity) }, _container.Resolve<IUserNameResolver>()));
+                    new ChangeLogInterceptor(_container.Resolve<Func<IPlatformRepository>>(), ChangeLogPolicy.Cumulative, new[] { nameof(ItemEntity), nameof(CategoryEntity) }, _container.Resolve<IUserNameResolver>()));
 
             _container.RegisterInstance(catalogRepFactory);
 
@@ -84,32 +83,6 @@ namespace VirtoCommerce.CatalogModule.Web
 
             _container.RegisterType<IProductSearchService, ProductSearchService>();
             _container.RegisterType<ICategorySearchService, CategorySearchService>();
-
-            // Product indexing configuration
-            var productIndexingConfiguration = new IndexDocumentConfiguration
-            {
-                DocumentType = KnownDocumentTypes.Product,
-                DocumentSource = new IndexDocumentSource
-                {
-                    ChangesProvider = _container.Resolve<ProductDocumentChangesProvider>(),
-                    DocumentBuilder = _container.Resolve<ProductDocumentBuilder>(),
-                },
-            };
-
-            _container.RegisterInstance(productIndexingConfiguration.DocumentType, productIndexingConfiguration);
-
-            // Category indexing configuration
-            var categoryIndexingConfiguration = new IndexDocumentConfiguration
-            {
-                DocumentType = KnownDocumentTypes.Category,
-                DocumentSource = new IndexDocumentSource
-                {
-                    ChangesProvider = _container.Resolve<CategoryDocumentChangesProvider>(),
-                    DocumentBuilder = _container.Resolve<CategoryDocumentBuilder>(),
-                },
-            };
-
-            _container.RegisterInstance(categoryIndexingConfiguration.DocumentType, categoryIndexingConfiguration);
 
             #endregion
         }
@@ -138,6 +111,32 @@ namespace VirtoCommerce.CatalogModule.Web
 
             var dynamicPropertyService = _container.Resolve<IDynamicPropertyService>();
             dynamicPropertyService.SaveProperties(new[] { filteredBrowsingProperty });
+
+            // Product indexing configuration
+            var productIndexingConfiguration = new IndexDocumentConfiguration
+            {
+                DocumentType = KnownDocumentTypes.Product,
+                DocumentSource = new IndexDocumentSource
+                {
+                    ChangesProvider = _container.Resolve<ProductDocumentChangesProvider>(),
+                    DocumentBuilder = _container.Resolve<ProductDocumentBuilder>(),
+                },
+            };
+
+            _container.RegisterInstance(productIndexingConfiguration.DocumentType, productIndexingConfiguration);
+
+            // Category indexing configuration
+            var categoryIndexingConfiguration = new IndexDocumentConfiguration
+            {
+                DocumentType = KnownDocumentTypes.Category,
+                DocumentSource = new IndexDocumentSource
+                {
+                    ChangesProvider = _container.Resolve<CategoryDocumentChangesProvider>(),
+                    DocumentBuilder = _container.Resolve<CategoryDocumentBuilder>(),
+                },
+            };
+
+            _container.RegisterInstance(categoryIndexingConfiguration.DocumentType, categoryIndexingConfiguration);
         }
 
         #endregion

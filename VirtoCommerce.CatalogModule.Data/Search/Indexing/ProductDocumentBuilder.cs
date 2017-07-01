@@ -23,11 +23,15 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             _blobUrlResolver = blobUrlResolver;
         }
 
-        public Task<IList<IndexDocument>> GetDocumentsAsync(IList<string> documentIds)
+        public virtual Task<IList<IndexDocument>> GetDocumentsAsync(IList<string> documentIds)
         {
             var products = GetProducts(documentIds);
 
-            IList<IndexDocument> result = products.Select(CreateDocument).ToArray();
+            IList<IndexDocument> result = products
+                .Select(CreateDocument)
+                .Where(doc => doc != null)
+                .ToArray();
+
             return Task.FromResult(result);
         }
 
@@ -60,9 +64,12 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             document.Add(new IndexDocumentField("vendor", product.Vendor ?? "") { IsRetrievable = true, IsFilterable = true });
 
             // Add priority in virtual categories to search index
-            foreach (var link in product.Links)
+            if (product.Links != null)
             {
-                document.Add(new IndexDocumentField($"priority_{link.CatalogId}_{link.CategoryId}", link.Priority) { IsRetrievable = true, IsFilterable = true });
+                foreach (var link in product.Links)
+                {
+                    document.Add(new IndexDocumentField($"priority_{link.CatalogId}_{link.CategoryId}", link.Priority) {IsRetrievable = true, IsFilterable = true});
+                }
             }
 
             // Add catalogs to search index
