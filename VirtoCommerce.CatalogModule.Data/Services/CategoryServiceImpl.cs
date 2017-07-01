@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CacheManager.Core;
 using Omu.ValueInjecter;
+using VirtoCommerce.CatalogModule.Data.Extensions;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Domain.Catalog.Model;
@@ -194,14 +195,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 CategoryEntity[] entities = null;
                 using (var repository = _repositoryFactory())
                 {
-                    //EF multi-thread issue for cached entities
-                    //http://stackoverflow.com/questions/29106477/nullreferenceexception-in-entity-framework-from-trygetcachedrelatedend
-                    if (repository is System.Data.Entity.DbContext)
-                    {
-                        var dbConfiguration = ((System.Data.Entity.DbContext)repository).Configuration;
-                        dbConfiguration.ProxyCreationEnabled = false;
-                        dbConfiguration.AutoDetectChangesEnabled = false;
-                    }
+                    repository.DisableChangesTracking();
+
                     entities = repository.GetCategoriesByIds(repository.Categories.Select(x => x.Id).ToArray(), Domain.Catalog.Model.CategoryResponseGroup.Full);
                 }
 
@@ -259,7 +254,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 foreach (var link in result.SelectMany(x => x.Links))
                 {
                     link.Catalog = catalogsMap[link.CatalogId];
-                    link.Category = result.First(x => x.Id == link.CategoryId);
+                    if (link.CategoryId != null)
+                    {
+                        link.Category = result.First(x => x.Id == link.CategoryId);
+                    }
                 }
 
                 foreach (var property in result.SelectMany(x => x.Properties).Distinct())
