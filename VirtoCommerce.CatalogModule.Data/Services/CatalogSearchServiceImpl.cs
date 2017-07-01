@@ -32,7 +32,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         }
 
-        public SearchResult Search(SearchCriteria criteria)
+        public virtual SearchResult Search(SearchCriteria criteria)
         {
             var retVal = new SearchResult();
             var taskList = new List<Task>();
@@ -57,7 +57,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return retVal;
         }
 
-        private void SearchCategories(SearchCriteria criteria, SearchResult result)
+
+        protected virtual void SearchCategories(SearchCriteria criteria, SearchResult result)
         {
             using (var repository = _catalogRepositoryFactory())
             {
@@ -146,7 +147,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
         }
 
-        private void SearchCatalogs(SearchCriteria criteria, SearchResult result)
+        protected virtual void SearchCatalogs(SearchCriteria criteria, SearchResult result)
         {
             using (var repository = _catalogRepositoryFactory())
             {
@@ -175,7 +176,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
         }
 
-        private void SearchItems(SearchCriteria criteria, SearchResult result)
+        protected virtual void SearchItems(SearchCriteria criteria, SearchResult result)
         {
             var sortInfos = criteria.SortInfos;
             if (sortInfos.IsNullOrEmpty())
@@ -292,7 +293,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         }
 
-        private static void TryTransformSortingInfoColumnNames(IDictionary<string, string> transformationMap, SortInfo[] sortingInfos)
+        protected virtual void TryTransformSortingInfoColumnNames(IDictionary<string, string> transformationMap, SortInfo[] sortingInfos)
         {
             //Try to replace sorting columns names
             foreach (var sortInfo in sortingInfos)

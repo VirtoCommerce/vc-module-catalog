@@ -4,10 +4,10 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 {
     public abstract class CatalogSearchResult<TItem>
     {
-        public long TotalCount { get; set; }
+        public virtual long TotalCount { get; set; }
 
-        public TItem[] Items { get; set; }
+        public virtual TItem[] Items { get; set; }
 
-        public Aggregation[] Aggregations { get; set; }
+        public virtual Aggregation[] Aggregations { get; set; }
     }
 }

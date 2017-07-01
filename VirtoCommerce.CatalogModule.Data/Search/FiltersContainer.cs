@@ -7,10 +7,10 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 {
     public class FiltersContainer
     {
-        public IList<IFilter> PermanentFilters { get; set; } = new List<IFilter>();
-        public IList<KeyValuePair<string, IFilter>> RemovableFilters { get; set; } = new List<KeyValuePair<string, IFilter>>();
+        public virtual IList<IFilter> PermanentFilters { get; set; } = new List<IFilter>();
+        public virtual IList<KeyValuePair<string, IFilter>> RemovableFilters { get; set; } = new List<KeyValuePair<string, IFilter>>();
 
-        public IList<IFilter> GetFiltersExceptSpecified(string excludeFieldName)
+        public virtual IList<IFilter> GetFiltersExceptSpecified(string excludeFieldName)
         {
             var removableFilters = RemovableFilters
                 .Where(kvp => !kvp.Key.EqualsInvariant(excludeFieldName))

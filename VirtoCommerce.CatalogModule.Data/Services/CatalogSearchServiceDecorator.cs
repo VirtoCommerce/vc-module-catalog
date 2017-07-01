@@ -33,7 +33,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _settingsManager = settingsManager;
         }
 
-        public SearchResult Search(SearchCriteria criteria)
+        public virtual SearchResult Search(SearchCriteria criteria)
         {
             SearchResult result;
 
@@ -72,12 +72,12 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         }
 
 
-        private void SearchItems(SearchResult result, ProductSearchCriteria criteria, ItemResponseGroup responseGroup)
+        protected virtual void SearchItems(SearchResult result, ProductSearchCriteria criteria, ItemResponseGroup responseGroup)
         {
             Task.Run(() => SearchItemsAsync(result, criteria, responseGroup)).GetAwaiter().GetResult();
         }
 
-        private async Task SearchItemsAsync(SearchResult result, ProductSearchCriteria criteria, ItemResponseGroup responseGroup)
+        protected virtual async Task SearchItemsAsync(SearchResult result, ProductSearchCriteria criteria, ItemResponseGroup responseGroup)
         {
             // Search using criteria, it will only return IDs of the items
             var searchResults = await _productSearchService.SearchAsync(criteria);
