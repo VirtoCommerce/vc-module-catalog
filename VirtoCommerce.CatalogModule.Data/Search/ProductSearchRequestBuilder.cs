@@ -362,6 +362,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 FieldName = attributeFilter.Key,
                 Values = attributeFilter.Values?.Select(v => v.Id).ToArray(),
                 Filter = existingFilters.And(),
+                Size = attributeFilter.FacetSize,
             };
         }
 
