@@ -22,6 +22,7 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             if (propValue.Property != null)
             {
                 retVal.PropertyId = propValue.Property.Id;
+                retVal.PropertyMultivalue = propValue.Property.Multivalue;
             }
             retVal.Value = propValue.Value;
       

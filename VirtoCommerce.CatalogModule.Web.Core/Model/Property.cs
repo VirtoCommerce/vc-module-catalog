@@ -26,6 +26,7 @@ namespace VirtoCommerce.CatalogModule.Web.Model
             CatalogId = catalogId;
             IsManageable = false;
             Multilanguage = !string.IsNullOrEmpty(propValue.LanguageCode);
+            Multivalue = propValue.PropertyMultivalue;
             Name = propValue.PropertyName;
             Type = propertyType;
             ValueType = propValue.ValueType;
