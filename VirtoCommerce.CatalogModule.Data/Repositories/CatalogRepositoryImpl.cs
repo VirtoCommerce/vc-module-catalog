@@ -76,6 +76,11 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             modelBuilder.Entity<dataModel.PropertyValueEntity>().HasOptional(m => m.Catalog).WithMany(x => x.CatalogPropertyValues).HasForeignKey(x => x.CatalogId).WillCascadeOnDelete(false);
             #endregion
 
+            #region PropertyValidationRule
+            modelBuilder.Entity<dataModel.PropertyValidationRuleEntity>().ToTable("PropertyValidationRule").HasKey(x => x.Id).Property(x => x.Id);
+            modelBuilder.Entity<dataModel.PropertyValidationRuleEntity>().HasRequired(m => m.Property).WithMany(x => x.ValidationRules).HasForeignKey(x => x.PropertyId).WillCascadeOnDelete(true);
+
+            #endregion
 
             #region CatalogImage
             modelBuilder.Entity<dataModel.ImageEntity>().ToTable("CatalogImage").HasKey(x => x.Id).Property(x => x.Id);

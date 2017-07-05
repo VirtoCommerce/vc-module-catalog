@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.Model
 {
-    public class PropertyValidationRule
+    public class PropertyValidationRuleEntity : Entity
     {
         public bool IsUnique { get; set; }
 
@@ -25,5 +23,19 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         public PropertyEntity Property { get; set; }
 
         #endregion
+
+
+        //public virtual PropertyValidationRule ToModel(PropertyValidationRule displayName)
+        //{
+        //}
+
+        //public virtual PropertyValidationRuleEntity FromModel(PropertyValidationRule displayName)
+        //{
+        //}
+
+        public virtual void Patch(PropertyValidationRuleEntity target)
+        {
+
+        }
     }
 }

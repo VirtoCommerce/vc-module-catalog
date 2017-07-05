@@ -16,6 +16,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             DictionaryValues = new NullCollection<PropertyDictionaryValueEntity>();
             PropertyAttributes = new NullCollection<PropertyAttributeEntity>();
             DisplayNames = new NullCollection<PropertyDisplayNameEntity>();
+            ValidationRules = new NullCollection<PropertyValidationRuleEntity>();
         }
 
         [Required]
@@ -61,6 +62,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         public virtual ObservableCollection<PropertyDictionaryValueEntity> DictionaryValues { get; set; }
         public virtual ObservableCollection<PropertyAttributeEntity> PropertyAttributes { get; set; }
         public virtual ObservableCollection<PropertyDisplayNameEntity> DisplayNames { get; set; }
+        public virtual ObservableCollection<PropertyValidationRuleEntity> ValidationRules { get; set; }
 
         #endregion
 
