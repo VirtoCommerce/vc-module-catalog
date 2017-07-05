@@ -8,5 +8,14 @@ namespace VirtoCommerce.CatalogModule.Web.Model
 {
     public class PropertyValidationRule
     {
+        public string Id { get; set; }
+
+        public bool IsUnique { get; set; }
+
+        public int? CharCountMin { get; set; }
+
+        public int? CharCountMax { get; set; }
+
+        public string RegExp { get; set; }
     }
 }

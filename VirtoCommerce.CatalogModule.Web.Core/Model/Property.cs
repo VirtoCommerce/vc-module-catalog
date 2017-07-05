@@ -166,6 +166,11 @@ namespace VirtoCommerce.CatalogModule.Web.Model
         public ICollection<PropertyDisplayName> DisplayNames { get; set; }
 
         /// <summary>
+        /// Gets or sets validation rules
+        /// </summary>
+        public PropertyValidationRule ValidationRule { get; set; }
+
+        /// <summary>
         /// System flag used to mark that object was inherited from other
         /// </summary>
         public bool IsInherited { get; set; }

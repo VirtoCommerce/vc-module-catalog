@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.Model
@@ -25,17 +25,40 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         #endregion
 
 
-        //public virtual PropertyValidationRule ToModel(PropertyValidationRule displayName)
-        //{
-        //}
+        public virtual PropertyValidationRule ToModel(PropertyValidationRule rule)
+        {
+            if (rule == null)
+                throw new ArgumentNullException(nameof(rule));
 
-        //public virtual PropertyValidationRuleEntity FromModel(PropertyValidationRule displayName)
-        //{
-        //}
+            rule.CharCountMax = this.CharCountMax;
+            rule.CharCountMin = this.CharCountMin;
+            rule.IsUnique = this.IsUnique;
+            rule.RegExp = this.RegExp;
+            rule.PropertyId = this.PropertyId;
+
+            return rule;
+        }
+
+        public virtual PropertyValidationRuleEntity FromModel(PropertyValidationRule rule)
+        {
+            if (rule == null)
+                throw new ArgumentNullException(nameof(rule));
+
+            this.CharCountMax = rule.CharCountMax;
+            this.CharCountMin = rule.CharCountMin;
+            this.IsUnique = rule.IsUnique;
+            this.RegExp = rule.RegExp;
+            this.PropertyId = rule.PropertyId;
+
+            return this;
+        }
 
         public virtual void Patch(PropertyValidationRuleEntity target)
         {
-
+            target.CharCountMax = this.CharCountMax;
+            target.CharCountMin = this.CharCountMin;
+            target.IsUnique = this.IsUnique;
+            target.RegExp = this.RegExp;
         }
     }
 }

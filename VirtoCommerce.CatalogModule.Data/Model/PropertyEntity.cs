@@ -92,6 +92,8 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             property.DictionaryValues = this.DictionaryValues.Select(x => x.ToModel(AbstractTypeFactory<PropertyDictionaryValue>.TryCreateInstance())).ToList();
             property.Attributes = this.PropertyAttributes.Select(x => x.ToModel(AbstractTypeFactory<PropertyAttribute>.TryCreateInstance())).ToList();
             property.DisplayNames = this.DisplayNames.Select(x => x.ToModel(AbstractTypeFactory<PropertyDisplayName>.TryCreateInstance())).ToList();
+            property.ValidationRules = this.ValidationRules.Select(x => x.ToModel(AbstractTypeFactory<PropertyValidationRule>.TryCreateInstance())).ToList();
+
 
             return property;
         }
@@ -134,6 +136,11 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             {
                 this.DisplayNames = new ObservableCollection<PropertyDisplayNameEntity>(property.DisplayNames.Select(x => AbstractTypeFactory<PropertyDisplayNameEntity>.TryCreateInstance().FromModel(x)));
             }
+
+            if (property.ValidationRules != null)
+            {
+                this.ValidationRules = new ObservableCollection<PropertyValidationRuleEntity>(property.ValidationRules.Select(x => AbstractTypeFactory<PropertyValidationRuleEntity>.TryCreateInstance().FromModel(x)));
+            }
             return this;
         }
 
@@ -160,6 +167,11 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             {
                 var displayNamesComparer = AnonymousComparer.Create((PropertyDisplayNameEntity x) => $"{x.Name}-{x.Locale}");
                 this.DisplayNames.Patch(target.DisplayNames, displayNamesComparer, (sourceDisplayName, targetDisplayName) => sourceDisplayName.Patch(targetDisplayName));
+            }
+
+            if (!this.ValidationRules.IsNullCollection())
+            {
+                this.ValidationRules.Patch(target.ValidationRules, (sourceRule, targetRule) => sourceRule.Patch(targetRule));
             }
         }
     }
