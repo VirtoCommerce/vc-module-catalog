@@ -193,6 +193,7 @@
     <Compile Include="Model\PropertyEntity.cs" />
     <Compile Include="Model\PropertyAttributeEntity.cs" />
     <Compile Include="Model\PropertyDictionaryValueEntity.cs" />
+    <Compile Include="Model\PropertyValidationRule.cs" />
     <Compile Include="Model\PropertyValueEntity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\CatalogRepositoryImpl.cs" />
