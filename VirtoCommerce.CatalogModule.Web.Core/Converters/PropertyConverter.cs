@@ -2,6 +2,7 @@
 using Omu.ValueInjecter;
 using coreModel = VirtoCommerce.Domain.Catalog.Model;
 using webModel = VirtoCommerce.CatalogModule.Web.Model;
+using System.Collections.Generic;
 
 namespace VirtoCommerce.CatalogModule.Web.Converters
 {
@@ -38,6 +39,8 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             }
             retVal.DisplayNames = property.DisplayNames;
 
+            retVal.ValidationRule = property.ValidationRules.FirstOrDefault()?.ToWebModel();
+
             return retVal;
         }
 
@@ -56,6 +59,10 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             if (property.Attributes != null)
             {
                 retVal.Attributes = property.Attributes.Select(x => x.ToCoreModel()).ToList();
+            }
+            if (property.ValidationRule != null)
+            {
+                retVal.ValidationRules = new List<coreModel.PropertyValidationRule>() { property.ValidationRule.ToCoreModel() };
             }
 
             return retVal;

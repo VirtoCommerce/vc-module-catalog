@@ -71,8 +71,8 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="VirtoCommerce.Domain, Version=2.23.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VirtoCommerce.Domain.2.23.0\lib\net461\VirtoCommerce.Domain.dll</HintPath>
+    <Reference Include="VirtoCommerce.Domain, Version=2.24.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VirtoCommerce.Domain.2.24.0\lib\net461\VirtoCommerce.Domain.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="VirtoCommerce.Platform.Core, Version=2.13.9.0, Culture=neutral, processorArchitecture=MSIL">
@@ -178,6 +178,10 @@
     <Compile Include="Migrations\201706261011171_PropertyDisplayNames.Designer.cs">
       <DependentUpon>201706261011171_PropertyDisplayNames.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201707051005213_PropertyValidation.cs" />
+    <Compile Include="Migrations\201707051005213_PropertyValidation.Designer.cs">
+      <DependentUpon>201707051005213_PropertyValidation.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Model\AssetEntity.cs" />
     <Compile Include="Model\AssociationEntity.cs" />
@@ -193,6 +197,7 @@
     <Compile Include="Model\PropertyEntity.cs" />
     <Compile Include="Model\PropertyAttributeEntity.cs" />
     <Compile Include="Model\PropertyDictionaryValueEntity.cs" />
+    <Compile Include="Model\PropertyValidationRuleEntity.cs" />
     <Compile Include="Model\PropertyValueEntity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\CatalogRepositoryImpl.cs" />
@@ -242,6 +247,9 @@
     <Compile Include="Services\CatalogServiceImpl.cs" />
     <Compile Include="Services\OutlineService.cs" />
     <Compile Include="Services\PropertyServiceImpl.cs" />
+    <Compile Include="Services\Validation\PropertyRegexpValidator.cs" />
+    <Compile Include="Services\Validation\PropertyLenghtValidator.cs" />
+    <Compile Include="Services\Validation\PropertyUniquenessValidator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
@@ -318,6 +326,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201706261011171_PropertyDisplayNames.resx">
       <DependentUpon>201706261011171_PropertyDisplayNames.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201707051005213_PropertyValidation.resx">
+      <DependentUpon>201707051005213_PropertyValidation.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
