@@ -1,5 +1,5 @@
 ﻿angular.module('virtoCommerce.catalogModule')
-    .controller('virtoCommerce.catalogModule.propertyDetailController', ['$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', function ($scope, properties, bladeNavigationService, dialogService) {
+.controller('virtoCommerce.catalogModule.propertyDetailController', ['$scope', 'virtoCommerce.catalogModule.properties', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', function ($scope, properties, bladeNavigationService, dialogService) {
     var blade = $scope.blade;
     blade.updatePermission = 'catalog:update';
     blade.origEntity = {};
@@ -41,7 +41,6 @@
     $scope.openChild = function (childType) {
         var newBlade = { id: "propertyChild" };
         newBlade.property = blade.currentEntity;
-        console.log(blade);
         switch (childType) {
             case 'attr':
                 newBlade.title = 'catalog.blades.property-attributes.title';
@@ -51,9 +50,9 @@
                 newBlade.template = 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-attributes.tpl.html';
                 break;
             case 'validationRules':
-                newBlade.title = 'catalog.blades.validation-rules.title';
+                newBlade.title = 'catalog.blades.property-validationRules.title';
                 newBlade.titleValues = { name: blade.origEntity.name ? blade.origEntity.name : blade.currentEntity.name };
-                newBlade.subtitle = 'catalog.blades.validation-rules.subtitle';
+                newBlade.subtitle = 'catalog.blades.property-validationRules.subtitle';
                 newBlade.controller = 'virtoCommerce.catalogModule.propertyValidationRulesController';
                 newBlade.template = 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-validationRules.tpl.html';
                 break;
@@ -76,6 +75,13 @@
         bladeNavigationService.showBlade(newBlade, blade);
         $scope.currentChild = childType;
     }
+
+    function initializeBlade(data) {
+        if (data.valueType === 'Number' && data.dictionaryValues) {
+            _.forEach(data.dictionaryValues, function (entry) {
+                entry.value = parseFloat(entry.value);
+            });
+        }
 
         blade.currentEntity = angular.copy(data);
         blade.origEntity = data;
