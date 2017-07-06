@@ -3,18 +3,14 @@ using System.Linq;
 using System.Collections.Generic;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Domain.Catalog.Model;
+using VirtoCommerce.Domain.Catalog.Services;
 
 namespace VirtoCommerce.CatalogModule.Data.Services.Validation
 {
-    public interface IPropertyValueValidator
-    {
-        string[] Validate(PropertyValidationRule validationRule, PropertyValue value);
-    }
-
     public class PropertyUniquenessValidator : IPropertyValueValidator
     {
         private readonly Func<ICatalogRepository> _repositoryFactory;
-        private IPropertyValueValidator _next;
+        private readonly IPropertyValueValidator _next;
 
         public PropertyUniquenessValidator(Func<ICatalogRepository> repositoryFactory, IPropertyValueValidator validator)
         {

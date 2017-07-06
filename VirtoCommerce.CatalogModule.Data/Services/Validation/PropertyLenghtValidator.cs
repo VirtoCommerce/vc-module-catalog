@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using VirtoCommerce.Domain.Catalog.Model;
+using VirtoCommerce.Domain.Catalog.Services;
 
 namespace VirtoCommerce.CatalogModule.Data.Services.Validation
 {
     public class PropertyLenghtValidator : IPropertyValueValidator
     {
-        private IPropertyValueValidator _next;
+        private readonly IPropertyValueValidator _next;
 
         public PropertyLenghtValidator(IPropertyValueValidator validator)
         {
@@ -21,19 +22,19 @@ namespace VirtoCommerce.CatalogModule.Data.Services.Validation
             if ((rule.CharCountMax.HasValue && rule.CharCountMin.HasValue) &&
                 (value.Length < rule.CharCountMin || value.Length > rule.CharCountMax))
             {
-                return new string[] { "propertyRangeLenghtValidatorError" };
+                return new[] { "propertyRangeLenghtValidatorError" };
             }
 
             if ((rule.CharCountMax.HasValue && !rule.CharCountMin.HasValue) &&
                 (value.Length > rule.CharCountMax))
             {
-                return new string[] { "propertyMaxLenghtValidatorError" };
+                return new[] { "propertyMaxLenghtValidatorError" };
             }
 
             if ((!rule.CharCountMax.HasValue && rule.CharCountMin.HasValue) &&
                 (value.Length < rule.CharCountMin))
             {
-                return new string[] { "propertyMinLenghtValidatorError" };
+                return new[] { "propertyMinLenghtValidatorError" };
             }
 
             if (_next != null)

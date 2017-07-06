@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using VirtoCommerce.Domain.Catalog.Model;
+using VirtoCommerce.Domain.Catalog.Services;
 
 namespace VirtoCommerce.CatalogModule.Data.Services.Validation
 {
     public class PropertyRegexpValidator : IPropertyValueValidator
     {
-        private IPropertyValueValidator _next;
+        private readonly IPropertyValueValidator _next;
 
         public PropertyRegexpValidator(IPropertyValueValidator validator)
         {

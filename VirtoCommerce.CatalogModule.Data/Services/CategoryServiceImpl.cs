@@ -6,6 +6,7 @@ using Omu.ValueInjecter;
 using VirtoCommerce.CatalogModule.Data.Extensions;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
+using VirtoCommerce.CatalogModule.Data.Services.Validation;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Commerce.Model;
@@ -21,12 +22,17 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private readonly ICommerceService _commerceService;
         private readonly IOutlineService _outlineService;
         private readonly ICacheManager<object> _cacheManager;
+        private readonly IPropertyValueValidator _propertyValuesValidator;
         private readonly Func<ICatalogRepository> _repositoryFactory;
         private readonly ICatalogService _catalogService;
-        public CategoryServiceImpl(Func<ICatalogRepository> catalogRepositoryFactory, ICommerceService commerceService, IOutlineService outlineService, ICatalogService catalogService, ICacheManager<object> cacheManager)
+        
+
+        public CategoryServiceImpl(Func<ICatalogRepository> catalogRepositoryFactory, ICommerceService commerceService, IOutlineService outlineService, ICatalogService catalogService, ICacheManager<object> cacheManager,
+            IPropertyValueValidator propertyValuesValidator)
         {
             _repositoryFactory = catalogRepositoryFactory;
             _cacheManager = cacheManager;
+            _propertyValuesValidator = propertyValuesValidator;
             _commerceService = commerceService;
             _outlineService = outlineService;
             _catalogService = catalogService;
@@ -120,6 +126,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             using (var repository = _repositoryFactory())
             using (var changeTracker = GetChangeTracker(repository))
             {
+                ValidateCategoryProperties(categories);
+
                 var dbExistCategories = repository.GetCategoriesByIds(categories.Where(x => !x.IsTransient()).Select(x => x.Id).ToArray(), Domain.Catalog.Model.CategoryResponseGroup.Full);
                 foreach (var category in categories)
                 {
@@ -269,7 +277,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     }
                 }
 
-                // Fill outlines for products            
+                // Fill outlines for categories            
                 _outlineService.FillOutlinesForObjects(result, catalogId);
 
                 var objectsWithSeo = new List<ISeoSupport>(result);
@@ -279,6 +287,33 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
                 return result.ToArray();
             });
+        }
+
+        private void ValidateCategoryProperties(Category[] categories)
+        {
+            var errors = new List<string>();
+
+            var preloadedCategories = GetByIds(categories.Select(x => x.Id).ToArray(), CategoryResponseGroup.Full);
+            var preloadedProperties = preloadedCategories.SelectMany(x => x.Properties);
+            var rulesDictionary = new Dictionary<string, List<PropertyValidationRule>>();
+
+            foreach (var property in preloadedProperties)
+            {
+                if (!rulesDictionary.ContainsKey(property.Name) && property.ValidationRules.Any())
+                    rulesDictionary.Add(property.Name, property.ValidationRules.ToList());
+            }
+
+            foreach (var propValue in categories.SelectMany(x=>x.PropertyValues))
+            {
+                var rules = new List<PropertyValidationRule>();
+                if (rulesDictionary.ContainsKey(propValue.PropertyName))
+                    rules = rulesDictionary[propValue.PropertyName];
+
+                rules.ForEach(rule => { errors.AddRange(_propertyValuesValidator.Validate(rule, propValue)); });
+            }
+
+            if (errors.Any())
+                throw new Exception("Category properties has validation error");
         }
     }
 }

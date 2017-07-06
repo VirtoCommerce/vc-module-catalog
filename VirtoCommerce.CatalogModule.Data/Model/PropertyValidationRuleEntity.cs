@@ -30,6 +30,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             if (rule == null)
                 throw new ArgumentNullException(nameof(rule));
 
+            rule.Id = this.Id;
             rule.CharCountMax = this.CharCountMax;
             rule.CharCountMin = this.CharCountMin;
             rule.IsUnique = this.IsUnique;
@@ -44,6 +45,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             if (rule == null)
                 throw new ArgumentNullException(nameof(rule));
 
+            this.Id = rule.Id;
             this.CharCountMax = rule.CharCountMax;
             this.CharCountMin = rule.CharCountMin;
             this.IsUnique = rule.IsUnique;

@@ -208,7 +208,11 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             get { return GetAsQueryable<dataModel.CategoryRelationEntity>(); }
         }
 
-     
+        public IQueryable<dataModel.PropertyValidationRuleEntity> PropertyValidationRules
+        {
+            get { return GetAsQueryable<dataModel.PropertyValidationRuleEntity>(); }
+        }
+
         public dataModel.CatalogEntity[] GetCatalogsByIds(string[] catalogIds)
         {
             var retVal = Catalogs.Include(x => x.CatalogLanguages)
@@ -366,7 +370,8 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             var retVal = Properties.Where(x => propIds.Contains(x.Id)).ToArray();
             var propAttributes = PropertyAttributes.Where(x => propIds.Contains(x.PropertyId)).ToArray();
             var propDisplayNames = PropertyDisplayNames.Where(x => propIds.Contains(x.PropertyId)).ToArray();
-            
+            var propValidationRules = PropertyValidationRules.Where(x => propIds.Contains(x.PropertyId)).ToArray();
+
             //Do not load dictionary values for not enum properties
             var dictPropertiesIds = retVal.Where(x => x.IsEnum).Select(x => x.Id).ToArray();
             if (!dictPropertiesIds.IsNullOrEmpty())

@@ -11,7 +11,7 @@ using VirtoCommerce.Domain.Commerce.Model;
 using VirtoCommerce.Domain.Commerce.Services;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Data.Infrastructure;
-
+using VirtoCommerce.CatalogModule.Data.Services.Validation;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
@@ -22,13 +22,17 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private readonly ICommerceService _commerceService;
         private readonly IOutlineService _outlineService;
         private readonly Func<ICatalogRepository> _repositoryFactory;
-        public ItemServiceImpl(Func<ICatalogRepository> catalogRepositoryFactory, ICommerceService commerceService, IOutlineService outlineService, ICatalogService catalogService, ICategoryService categoryService, ICacheManager<object> cacheManager)
+        private readonly IPropertyValueValidator _propertyValueValdator;
+
+        public ItemServiceImpl(Func<ICatalogRepository> catalogRepositoryFactory, ICommerceService commerceService, IOutlineService outlineService, ICatalogService catalogService, ICategoryService categoryService, ICacheManager<object> cacheManager,
+            IPropertyValueValidator propertyValuesValidator)
         {
             _catalogService = catalogService;
             _categoryService = categoryService;
             _commerceService = commerceService;
             _outlineService = outlineService;
             _repositoryFactory = catalogRepositoryFactory;
+            _propertyValueValdator = propertyValuesValidator;
         }
 
         #region IItemService Members
@@ -153,6 +157,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             using (var repository = _repositoryFactory())
             using (var changeTracker = GetChangeTracker(repository))
             {
+                ValidateProductProperties(products);
+
                 var dbExistProducts = repository.GetItemByIds(products.Where(x => !x.IsTransient()).Select(x => x.Id).ToArray(), Domain.Catalog.Model.ItemResponseGroup.ItemLarge);
                 foreach (var product in products)
                 {
@@ -319,6 +325,26 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     ApplyInheritanceRules(product.Variations.ToArray());
                 }
             }
+        }
+
+        private void ValidateProductProperties(CatalogProduct[] products)
+        {
+            var errors = new List<string>();
+            LoadProductDependencies(products, false);
+            ApplyInheritanceRules(products);
+
+            var propValues = products.SelectMany(x => x.PropertyValues).ToList();
+            foreach (var propValue in propValues)
+            {
+                var rules = propValue.Property.ValidationRules;
+                foreach (var rule in rules)
+                {
+                    errors.AddRange(_propertyValueValdator.Validate(rule, propValue));
+                }
+            }
+
+            if (errors.Any())
+                throw new Exception("Product validation errors");
         }
     }
 }
