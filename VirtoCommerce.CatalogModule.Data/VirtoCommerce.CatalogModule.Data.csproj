@@ -247,6 +247,10 @@
     <Compile Include="Services\CatalogServiceImpl.cs" />
     <Compile Include="Services\OutlineService.cs" />
     <Compile Include="Services\PropertyServiceImpl.cs" />
+    <Compile Include="Services\Validation\PropertyRegexpValidator.cs" />
+    <Compile Include="Services\Validation\PropertyLenghtValidator.cs" />
+    <Compile Include="Services\Validation\PropertyUniquenessValidator.cs" />
+    <Compile Include="Services\Validation\ValidationService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

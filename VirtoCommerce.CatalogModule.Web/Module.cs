@@ -23,6 +23,7 @@ using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.Platform.Data.Infrastructure;
 using VirtoCommerce.Platform.Data.Infrastructure.Interceptors;
 using VirtoCommerce.Platform.Data.Repositories;
+using VirtoCommerce.CatalogModule.Data.Services.Validation;
 
 namespace VirtoCommerce.CatalogModule.Web
 {
@@ -83,6 +84,18 @@ namespace VirtoCommerce.CatalogModule.Web
 
             _container.RegisterType<IProductSearchService, ProductSearchService>();
             _container.RegisterType<ICategorySearchService, CategorySearchService>();
+
+            #endregion
+
+            #region Validation
+
+            Func<IUnityContainer, object> validationChain = container =>
+             new PropertyUniquenessValidator(_container.Resolve<Func<ICatalogRepository>>(),
+                 new PropertyLenghtValidator(
+                     new PropertyRegexpValidator(null)));
+
+            _container.RegisterType<IPropertyValueValidator>(new InjectionFactory(validationChain));
+            _container.RegisterType<IValidationService, ValidationService>();
 
             #endregion
         }
