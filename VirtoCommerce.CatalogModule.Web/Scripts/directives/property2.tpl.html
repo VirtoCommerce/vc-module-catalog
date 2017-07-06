@@ -2,24 +2,54 @@
 
     <div id='valuePlaceHolder'></div>
 
-    <script type="text/ng-template" id="ShortText.html">
+<script type="text/ng-template" id="ShortText.html">
         <div class="form-input">
             <input ng-disabled="currentEntity.isReadOnly"
                    ng-required="currentEntity.required && !currentEntity.isReadOnly"
                    ng-model="context.currentPropValues[0].value"
-                   name="{{currentEntity.valueType}}"
+                   name="{{currentEntity.name}}"
+                   ng-maxlength="currentEntity.validationRule.charCountMax"
+                   ng-minlength="currentEntity.validationRule.charCountMin"
+                   ng-pattern="currentEntity.validationRule.regExp" 
                    placeholder="Please enter short text"
                    type="text">
         </div>
+        <div class="form-error" ng-show="context.form[currentEntity.name].$error.required">
+            {{ 'catalog.blades.property-list.validations.required' | translate }}
+        </div>
+        <div class="form-error" ng-show="context.form[currentEntity.name].$error.maxlength">
+            {{ 'catalog.blades.property-list.validations.maxLength' | translate: { max: currentEntity.validationRule.charCountMax } }}
+        </div>  
+        <div class="form-error" ng-show="context.form[currentEntity.name].$error.minlength">
+            {{ 'catalog.blades.property-list.validations.minLenght' | translate: { min: currentEntity.validationRule.charCountMin } }}
+        </div>  
+        <div class="form-error" ng-if="context.form[currentEntity.name].$error.pattern">
+            {{ 'catalog.blades.property-list.validations.pattern' | translate }}
+        </div>
     </script>
 
-    <script type="text/ng-template" id="LongText.html">
+<script type="text/ng-template" id="LongText.html">
         <div class="form-input">
             <textarea ng-disabled="currentEntity.isReadOnly"
                       ng-required="currentEntity.required && !currentEntity.isReadOnly"
                       ng-model="context.currentPropValues[0].value"
-                      name="{{currentEntity.valueType}}"
+                      name="{{currentEntity.name}}"
+                      ng-maxlength="currentEntity.validationRule.charCountMax"
+                      ng-minlength="currentEntity.validationRule.charCountMin"
+                      ng-pattern="currentEntity.validationRule.regExp" 
                       placeholder="Please enter long text"></textarea>
+        </div>
+        <div class="form-error" ng-show="context.form[currentEntity.name].$error.required">
+            {{ 'catalog.blades.property-list.validations.required' | translate }}
+        </div>
+        <div class="form-error" ng-show="context.form[currentEntity.name].$error.maxlength">
+            {{ 'catalog.blades.property-list.validations.maxLength' | translate: { max: currentEntity.validationRule.charCountMax } }}
+        </div>
+        <div class="form-error" ng-show="context.form[currentEntity.name].$error.minlength">
+            {{ 'catalog.blades.property-list.validations.minLenght' | translate: { min: currentEntity.validationRule.charCountMin } }}
+        </div>
+        <div class="form-error" ng-if="context.form[currentEntity.name].$error.pattern">
+            {{ 'catalog.blades.property-list.validations.pattern' | translate }}
         </div>
     </script>
 
@@ -156,31 +186,62 @@
     </script>
 
 
-    <script type="text/ng-template" id="ShortText-multilang.html">
+<script type="text/ng-template" id="ShortText-multilang.html">
         <div class="form-group" ng-repeat="(language, langValuesGroup) in context.langValuesMap">
             <div class="form-input __langs">
                 <span class="flag flag-{{language.substr(3).toLowerCase()}}"></span>
                 <input ng-disabled="currentEntity.isReadOnly"
                        ng-required="currentEntity.required && !currentEntity.isReadOnly"
                        ng-model="langValuesGroup.currentPropValues[0].value"
-                       name="{{currentEntity.valueType}}"
+                       name="{{currentEntity.name}}"
                        placeholder="Please enter value"
-                       type="text">
+                       type="text"
+                       ng-maxlength="currentEntity.validationRule.charCountMax"
+                       ng-minlength="currentEntity.validationRule.charCountMin"
+                       ng-pattern="currentEntity.validationRule.regExp" >
+            </div>
+            <div class="form-error" ng-show="context.form[currentEntity.name].$error.required">
+                {{ 'catalog.blades.property-list.validations.required' | translate }}
+            </div>
+            <div class="form-error" ng-show="context.form[currentEntity.name].$error.maxlength">
+                {{ 'catalog.blades.property-list.validations.maxLength' | translate: { max: currentEntity.validationRule.charCountMax } }}
+            </div>
+            <div class="form-error" ng-show="context.form[currentEntity.name].$error.minlength">
+                {{ 'catalog.blades.property-list.validations.minLenght' | translate: { min: currentEntity.validationRule.charCountMin } }}
+            </div>
+            <div class="form-error" ng-if="context.form[currentEntity.name].$error.pattern">
+                {{ 'catalog.blades.property-list.validations.pattern' | translate }}
             </div>
         </div>
     </script>
-    <script type="text/ng-template" id="LongText-multilang.html">
+
+<script type="text/ng-template" id="LongText-multilang.html">
         <div class="form-group" ng-repeat="(language, langValuesGroup) in context.langValuesMap">
             <div class="form-input __langs">
                 <span class="flag flag-{{language.substr(3).toLowerCase()}}"></span>
                 <textarea ng-disabled="currentEntity.isReadOnly"
                           ng-required="currentEntity.required && !currentEntity.isReadOnly"
                           ng-model="langValuesGroup.currentPropValues[0].value"
-                          name="{{currentEntity.valueType}}" />
+                          name="{{currentEntity.name}}" 
+                          ng-maxlength="currentEntity.validationRule.charCountMax"
+                          ng-minlength="currentEntity.validationRule.charCountMin"
+                          ng-pattern="currentEntity.validationRule.regExp" />
+            </div>
+            <div class="form-error" ng-show="context.form[currentEntity.name].$error.required">
+                {{ 'catalog.blades.property-list.validations.required' | translate }}
+            </div>
+            <div class="form-error" ng-show="context.form[currentEntity.name].$error.maxlength">
+                {{ 'catalog.blades.property-list.validations.maxLength' | translate: { max: currentEntity.validationRule.charCountMax } }}
+            </div>
+            <div class="form-error" ng-show="context.form[currentEntity.name].$error.minlength">
+                {{ 'catalog.blades.property-list.validations.minLenght' | translate: { min: currentEntity.validationRule.charCountMin } }}
+            </div>
+            <div class="form-error" ng-if="context.form[currentEntity.name].$error.pattern">
+                {{ 'catalog.blades.property-list.validations.pattern' | translate }}
             </div>
         </div>
     </script>
-    <script type="text/ng-template" id="Number-multilang.html">
+<script type="text/ng-template" id="Number-multilang.html">
         <div class="form-group" ng-repeat="(language, langValuesGroup) in context.langValuesMap">
             <div class="form-input __number">
                 <input ng-disabled="currentEntity.isReadOnly"

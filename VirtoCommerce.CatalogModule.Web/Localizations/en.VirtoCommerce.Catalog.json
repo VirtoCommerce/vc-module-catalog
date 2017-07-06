@@ -163,9 +163,15 @@
             },
             "property-list": {
                 "subtitle": "Properties list",
-                "labels": {
-                    "empty-list": "None"
-                }
+              "labels": {
+                "empty-list": "None"
+              },
+              "validations": {
+                "required": "This field is required",
+                "maxLength": "This field should not be greater than {{max}} characters",
+                "minLenght": "This field should not be lesser than {{min}} characters",
+                "pattern": "This field doesn't match pattern"
+              }
             },
             "item-property-detail": {
                 "title": "Edit item property",
