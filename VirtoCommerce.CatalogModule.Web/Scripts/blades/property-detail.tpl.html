@@ -47,16 +47,39 @@
                     </label>
                 </div>
             </div>
-
+            <form name="formScope" class="form">
+                <div class="form-group">
+                    <label class="form-label">{{ 'catalog.blades.property-detail.labels.applies-to' | translate }}</label>
+                    <div class="form-input">
+                        <ui-select ng-model="blade.currentEntity.type">
+                            <ui-select-match >{{$select.selected}}</ui-select-match>
+                            <ui-select-choices repeat="propertyType in blade.availablePropertyTypes | filter: $select.search">
+                                <span ng-click="blade.currentEntity.type">{{propertyType}}</span>
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+                </div>
+            </form>
+            <form name="formScope" class="form">
+                <label class="form-label">{{ 'catalog.blades.property-detail.labels.value-type' | translate }}</label>
+                <div class="form-input">
+                    <ui-select ng-model="blade.currentEntity.valueType">
+                        <ui-select-match>{{blade.currentEntity.valueType |translate}}</ui-select-match>
+                        <ui-select-choices repeat="valueType in blade.availableValueTypes | filter: $select.search">
+                            <div>{{valueType|translate}}</div>
+                        </ui-select-choices>
+                    </ui-select>
+                </div>
+            </form>
             <ul class="list __items">
-                <li class="list-item" ng-class="{'__selected': currentChild === 'appliesto'}" ng-click='openChild("appliesto")'>
+                <li class="list-item" ng-class="{'__selected': currentChild === 'va'}" ng-click='openChild("appliesto")'>
                     <span class="list-t">{{ 'catalog.blades.property-detail.labels.applies-to' | translate }}</span>
                     <span class="list-descr">{{blade.currentEntity.type}}</span>
                 </li>
-                <li class="list-item" ng-class="{'__selected': currentChild === 'valType'}" ng-click='openChild("valType")'>
+                <!--<li class="list-item" ng-class="{'__selected': currentChild === 'valType'}" ng-click='openChild("valType")'>
                     <span class="list-t">{{ 'catalog.blades.property-detail.labels.value-type' | translate }}</span>
                     <span class="list-descr">{{blade.currentEntity.valueType}}</span>
-                </li>
+                </li>-->
                 <li class="list-item" ng-class="{'__selected': currentChild === 'dict', '__disabled': !blade.currentEntity.dictionary }" ng-click='openChild("dict")'>
                     <span class="list-t">{{ 'catalog.blades.property-detail.labels.dictionary' | translate }}</span>
                     <span class="list-descr">{{ 'catalog.blades.property-detail.labels.manage-dictionary' | translate }}</span>

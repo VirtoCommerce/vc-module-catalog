@@ -236,9 +236,9 @@
     <Content Include="Scripts\blades\property-dictionary.js" />
     <Content Include="Scripts\blades\property-attributes.tpl.html" />
     <Content Include="Scripts\blades\property-dictionary.tpl.html" />
-    <Content Include="Scripts\blades\property-valueType.js" />
+    <Content Include="Scripts\blades\property-validationRules.js" />
     <Content Include="Scripts\blades\property-type.js" />
-    <Content Include="Scripts\blades\property-valueType.tpl.html" />
+    <Content Include="Scripts\blades\property-validationRules.tpl.html" />
     <Content Include="Scripts\blades\property-type.tpl.html" />
     <Content Include="Scripts\blades\catalog-languages.tpl.html" />
     <Content Include="Scripts\blades\catalog-languages.js" />

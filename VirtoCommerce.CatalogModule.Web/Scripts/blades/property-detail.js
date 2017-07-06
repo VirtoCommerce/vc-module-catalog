@@ -1,12 +1,20 @@
 ﻿angular.module('virtoCommerce.catalogModule')
-.controller('virtoCommerce.catalogModule.propertyDetailController', ['$scope', 'virtoCommerce.catalogModule.properties', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', function ($scope, properties, bladeNavigationService, dialogService) {
+    .controller('virtoCommerce.catalogModule.propertyDetailController', ['$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', function ($scope, properties, bladeNavigationService, dialogService) {
     var blade = $scope.blade;
     blade.updatePermission = 'catalog:update';
     blade.origEntity = {};
-
     $scope.currentChild = undefined;
     blade.title = "catalog.blades.property-detail.title";
     blade.subtitle = "catalog.blades.property-detail.subtitle";
+    blade.availableValueTypes = [
+        'platform.properties.short-text.title',
+        'platform.properties.long-text.title',
+        'platform.properties.decimal.title',
+        'platform.properties.date-time.title',
+        'platform.properties.boolean.title',
+        'platform.properties.integer.title'
+    ];
+    blade.availablePropertyTypes = blade.catalogId ? ['Product', 'Variation', 'Category', 'Catalog'] : ['Product', 'Variation', 'Category'];
     blade.refresh = function (parentRefresh) {
         if (blade.currentEntityId) {
             properties.get({ propertyId: blade.currentEntityId }, function (data) {
@@ -33,7 +41,7 @@
     $scope.openChild = function (childType) {
         var newBlade = { id: "propertyChild" };
         newBlade.property = blade.currentEntity;
-
+        console.log(blade);
         switch (childType) {
             case 'attr':
                 newBlade.title = 'catalog.blades.property-attributes.title';
@@ -42,12 +50,12 @@
                 newBlade.controller = 'virtoCommerce.catalogModule.propertyAttributesController';
                 newBlade.template = 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-attributes.tpl.html';
                 break;
-            case 'valType':
-                newBlade.title = 'catalog.blades.property-valueType.title';
+            case 'validationRules':
+                newBlade.title = 'catalog.blades.validation-rules.title';
                 newBlade.titleValues = { name: blade.origEntity.name ? blade.origEntity.name : blade.currentEntity.name };
-                newBlade.subtitle = 'catalog.blades.property-valueType.subtitle';
-                newBlade.controller = 'virtoCommerce.catalogModule.propertyValueTypeController';
-                newBlade.template = 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-valueType.tpl.html';
+                newBlade.subtitle = 'catalog.blades.validation-rules.subtitle';
+                newBlade.controller = 'virtoCommerce.catalogModule.propertyValidationRulesController';
+                newBlade.template = 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-validationRules.tpl.html';
                 break;
             case 'appliesto':
                 newBlade.title = 'catalog.blades.property-type.title';
@@ -68,13 +76,6 @@
         bladeNavigationService.showBlade(newBlade, blade);
         $scope.currentChild = childType;
     }
-
-    function initializeBlade(data) {
-        if (data.valueType === 'Number' && data.dictionaryValues) {
-            _.forEach(data.dictionaryValues, function (entry) {
-                entry.value = parseFloat(entry.value);
-            });
-        }
 
         blade.currentEntity = angular.copy(data);
         blade.origEntity = data;
