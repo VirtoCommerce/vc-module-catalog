@@ -24,19 +24,19 @@ namespace VirtoCommerce.CatalogModule.Data.Services.Validation
                 if ((rule.CharCountMax.HasValue && rule.CharCountMin.HasValue) &&
                     (value.Length < rule.CharCountMin || value.Length > rule.CharCountMax))
                 {
-                    return new[] {"propertyRangeLenghtValidatorError"};
+                    errors.Add("propertyRangeLenghtValidatorError");
                 }
 
                 if ((rule.CharCountMax.HasValue && !rule.CharCountMin.HasValue) &&
                     (value.Length > rule.CharCountMax))
                 {
-                    return new[] {"propertyMaxLenghtValidatorError"};
+                    errors.Add("propertyMaxLenghtValidatorError");
                 }
 
                 if ((!rule.CharCountMax.HasValue && rule.CharCountMin.HasValue) &&
                     (value.Length < rule.CharCountMin))
                 {
-                    return new[] {"propertyMinLenghtValidatorError"};
+                    errors.Add("propertyMinLenghtValidatorError");
                 }
             }
 

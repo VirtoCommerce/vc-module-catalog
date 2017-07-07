@@ -138,29 +138,30 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         private void ValidateCatalogProperties(Catalog[] catalogs)
         {
-            var errors = new List<string>();
-
+            var allErrors = new List<string>();
             var preloadedCategories = catalogs.Select(x => GetById(x.Id));
             var preloadedProperties = preloadedCategories.SelectMany(x => x.Properties);
             var rulesDictionary = new Dictionary<string, List<PropertyValidationRule>>();
 
             foreach (var property in preloadedProperties)
             {
-                if (!rulesDictionary.ContainsKey(property.Name) && property.ValidationRules.Any())
-                    rulesDictionary.Add(property.Name, property.ValidationRules.ToList());
+                if (!rulesDictionary.ContainsKey(property.Id) && property.ValidationRules.Any())
+                    rulesDictionary.Add(property.Id, property.ValidationRules.ToList());
             }
 
             foreach (var propValue in catalogs.SelectMany(x => x.PropertyValues))
             {
                 var rules = new List<PropertyValidationRule>();
-                if (rulesDictionary.ContainsKey(propValue.PropertyName))
-                    rules = rulesDictionary[propValue.PropertyName];
+                if (rulesDictionary.ContainsKey(propValue.PropertyId))
+                    rules = rulesDictionary[propValue.PropertyId];
 
+                var errors = new List<string>();
                 rules.ForEach(rule => { errors.AddRange(_propertyValuesValidator.Validate(rule, propValue)); });
+                allErrors.AddRange(errors.FormatPropertyErrors(propValue));
             }
 
-            if (errors.Any())
-                throw new Exception("Category properties has validation error");
+            if (allErrors.Any())
+                throw new Exception($"Catalog properties has validation error: {string.Join(Environment.NewLine, allErrors)}");
         }
     }
 }
