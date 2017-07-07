@@ -4,16 +4,9 @@
             <div class="form">
                 <div class="form-control __checkbox">
                     <label class="form-label">
-                        <input type="checkbox" ng-model="blade.currentEntity.required">
+                        <input type="checkbox" ng-model="blade.propertyValidationRule.required">
                         <span class="check"></span>
                         <span class="name">{{ 'catalog.blades.property-detail.labels.required' | translate }}</span>
-                    </label>
-                </div>
-                <div class="form-control __checkbox">
-                    <label class="form-label">
-                        <input type="checkbox" ng-model="blade.propertyValidationRule.isUniquie">
-                        <span class="check"></span>
-                        <span class="name">Uniquie property</span>
                     </label>
                 </div>
                 <div class="form-control __checkbox">
@@ -25,8 +18,8 @@
                 </div>
             </div>
 
-            <form class="form">
-                <div class="columns clearfix">
+            <form class="form" name="rules" >
+                <div class="columns clearfix" ng-init="setForm(rules)">
                     <div class="column">
                       <div class="form-group">
                         <div ng-disabled="" class="form-input">
@@ -89,10 +82,10 @@
                     <div class="column">
                         <div class="form-group">
                             <span class="form-input">
-                                <input ng-pattern="blade.propertyValidationRule.seatPattern" ng-disabled="
+                                <input ng-disabled="
                                        !blade.propertyValidationRule.isSpecificPattern||
                                        !blade.propertyValidationRule.selectedPattern" 
-                                       placeholder="little form" ng-model="blade.propertyValidationRule.pattern"/>
+                                       placeholder="little form" ng-model="blade.propertyValidationRule.seatPattern"/>
                             </span>
                         </div>
                     </div>
