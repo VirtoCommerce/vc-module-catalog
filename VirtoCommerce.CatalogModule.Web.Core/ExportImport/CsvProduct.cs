@@ -217,6 +217,12 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
             }
         }
 
+        public string ReviewType
+        {
+            get { return EditorialReview.ReviewType; }
+            set { EditorialReview.ReviewType = value; }
+        }
+
         public string Review
         {
             get { return EditorialReview.Content; }
@@ -243,6 +249,31 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
         {
             get { return SeoInfo.MetaDescription; }
             set { SeoInfo.MetaDescription = value; }
+        }
+      
+        /// <summary>
+        /// Merge from other product, without any deletion, only update and create allowed
+        /// 
+        /// </summary>
+        /// <param name="product"></param>
+        public void MergeFrom(CatalogProduct product)
+        {
+            Id = product.Id;
+
+            var imgComparer = AnonymousComparer.Create((Image x) => x.Url);
+            Images = Images.Concat(product.Images).Distinct(imgComparer).ToList();
+
+            var assetComparer = AnonymousComparer.Create((Asset x) => x.Url);
+            Assets = Assets.Concat(product.Assets).Distinct(assetComparer).ToList();
+
+            var reviewsComparer = AnonymousComparer.Create((EditorialReview x) => string.Join(":", x.Content, x.ReviewType, x.LanguageCode));
+            Reviews = Reviews.Concat(product.Reviews).Distinct(reviewsComparer).ToList();
+
+            var properyValueComparer = AnonymousComparer.Create((PropertyValue x) => x.PropertyName);
+            PropertyValues = PropertyValues.Concat(product.PropertyValues).Distinct(properyValueComparer).ToList();
+
+            var seoComparer = AnonymousComparer.Create((SeoInfo x) => string.Join(":", x.SemanticUrl, x.LanguageCode));
+            SeoInfos = SeoInfos.Concat(product.SeoInfos).Distinct(seoComparer).ToList();
         }
     }
 }

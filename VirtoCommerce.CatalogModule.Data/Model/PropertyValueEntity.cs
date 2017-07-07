@@ -140,10 +140,10 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                     this.ShortTextValue = Convert.ToString(value);
                     break;
                 case PropertyValueType.Number:
-                    this.DecimalValue = Convert.ToDecimal(value);
+                    this.DecimalValue = Convert.ToDecimal(value, CultureInfo.InvariantCulture);
                     break;
                 case PropertyValueType.DateTime:
-                    this.DateTimeValue = Convert.ToDateTime(value);
+                    this.DateTimeValue = Convert.ToDateTime(value, CultureInfo.InvariantCulture);
                     break;
                 case PropertyValueType.Boolean:
                     this.BooleanValue = Convert.ToBoolean(value);

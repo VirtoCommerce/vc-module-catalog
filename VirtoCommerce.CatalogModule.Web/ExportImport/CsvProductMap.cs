@@ -4,6 +4,8 @@ using System.Globalization;
 using System.Linq;
 using CsvHelper.Configuration;
 using coreModel = VirtoCommerce.Domain.Catalog.Model;
+using CsvHelper.TypeConversion;
+using System.ComponentModel;
 
 namespace VirtoCommerce.CatalogModule.Web.ExportImport
 {
@@ -21,7 +23,8 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                     var newMap = new CsvPropertyMap(propertyInfo);
                     newMap.TypeConverterOption(CultureInfo.InvariantCulture);
                     newMap.TypeConverterOption(NumberStyles.Any);
-                    newMap.TypeConverterOption(true, "yes", "false");
+                    newMap.TypeConverterOption(true, "yes", "true");
+                    newMap.TypeConverterOption(false, "false", "no");
                     if (!string.IsNullOrEmpty(mappingItem.CsvColumnName))
                     {
                         //Map fields if mapping specified
@@ -30,7 +33,8 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                     //And default values if it specified
                     if (mappingItem.CustomValue != null)
                     {
-                        newMap.Default(mappingItem.CustomValue);
+                        var typeConverter = TypeDescriptor.GetConverter(propertyInfo.PropertyType);
+                         newMap.Default(typeConverter.ConvertFromString(mappingItem.CustomValue));
                     }
                     PropertyMaps.Add(newMap);
                 }
