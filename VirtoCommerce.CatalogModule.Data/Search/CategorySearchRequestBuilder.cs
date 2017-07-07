@@ -79,6 +79,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
             var categoryId = criteria.Outline.AsCategoryId();
             var priorityFieldName = StringsHelper.JoinNonEmptyStrings("_", "priority", criteria.CatalogId, categoryId).ToLowerInvariant();
+            var priorityFields = new[] { "priority", priorityFieldName }.Distinct().ToArray();
 
             foreach (var sortInfo in criteria.SortInfos)
             {
@@ -88,8 +89,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 switch (fieldName)
                 {
                     case "priority":
-                        result.Add(new SortingField(priorityFieldName, isDescending));
-                        result.Add(new SortingField("priority", isDescending));
+                        result.AddRange(priorityFields.Select(priorityField => new SortingField(priorityField, isDescending)));
                         break;
                     case "name":
                     case "title":
@@ -103,8 +103,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
             if (!result.Any())
             {
-                result.Add(new SortingField(priorityFieldName, true));
-                result.Add(new SortingField("priority", true));
+                result.AddRange(priorityFields.Select(priorityField => new SortingField(priorityField, true)));
                 result.Add(new SortingField("__sort"));
             }
 
