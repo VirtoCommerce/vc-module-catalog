@@ -329,22 +329,20 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         private void ValidateProductProperties(CatalogProduct[] products)
         {
-            var errors = new List<string>();
+            var allErrors = new List<string>();
             LoadProductDependencies(products, false);
             ApplyInheritanceRules(products);
 
-            var propValues = products.SelectMany(x => x.PropertyValues).ToList();
-            foreach (var propValue in propValues)
+            foreach (var propValue in products.SelectMany(x => x.PropertyValues))
             {
-                var rules = propValue.Property.ValidationRules;
-                foreach (var rule in rules)
-                {
-                    errors.AddRange(_propertyValueValdator.Validate(rule, propValue));
-                }
+                var errors = new List<string>();
+                var rules = propValue.Property.ValidationRules.ToList();
+                rules.ForEach(rule => { errors.AddRange(_propertyValueValdator.Validate(rule, propValue)); });
+                allErrors.AddRange(errors.FormatPropertyErrors(propValue));
             }
 
-            if (errors.Any())
-                throw new Exception("Product validation errors");
+            if (allErrors.Any())
+                throw new Exception($"Product validation errors: {string.Join(Environment.NewLine, allErrors)}");
         }
     }
 }

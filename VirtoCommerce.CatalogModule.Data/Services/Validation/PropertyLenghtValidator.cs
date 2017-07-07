@@ -17,24 +17,27 @@ namespace VirtoCommerce.CatalogModule.Data.Services.Validation
         {
             var errors = new List<string>();
 
-            var value = propertyValue.Value.ToString();
-
-            if ((rule.CharCountMax.HasValue && rule.CharCountMin.HasValue) &&
-                (value.Length < rule.CharCountMin || value.Length > rule.CharCountMax))
+            if (propertyValue.ValueType == PropertyValueType.ShortText || propertyValue.ValueType == PropertyValueType.LongText)
             {
-                return new[] { "propertyRangeLenghtValidatorError" };
-            }
+                var value = propertyValue.Value.ToString();
 
-            if ((rule.CharCountMax.HasValue && !rule.CharCountMin.HasValue) &&
-                (value.Length > rule.CharCountMax))
-            {
-                return new[] { "propertyMaxLenghtValidatorError" };
-            }
+                if ((rule.CharCountMax.HasValue && rule.CharCountMin.HasValue) &&
+                    (value.Length < rule.CharCountMin || value.Length > rule.CharCountMax))
+                {
+                    errors.Add("propertyRangeLenghtValidatorError");
+                }
 
-            if ((!rule.CharCountMax.HasValue && rule.CharCountMin.HasValue) &&
-                (value.Length < rule.CharCountMin))
-            {
-                return new[] { "propertyMinLenghtValidatorError" };
+                if ((rule.CharCountMax.HasValue && !rule.CharCountMin.HasValue) &&
+                    (value.Length > rule.CharCountMax))
+                {
+                    errors.Add("propertyMaxLenghtValidatorError");
+                }
+
+                if ((!rule.CharCountMax.HasValue && rule.CharCountMin.HasValue) &&
+                    (value.Length < rule.CharCountMin))
+                {
+                    errors.Add("propertyMinLenghtValidatorError");
+                }
             }
 
             if (_next != null)
