@@ -6,15 +6,9 @@
     $scope.currentChild = undefined;
     blade.title = "catalog.blades.property-detail.title";
     blade.subtitle = "catalog.blades.property-detail.subtitle";
-    blade.availableValueTypes = [
-        'platform.properties.short-text.title',
-        'platform.properties.long-text.title',
-        'platform.properties.decimal.title',
-        'platform.properties.date-time.title',
-        'platform.properties.boolean.title',
-        'platform.properties.integer.title'
-    ];
+    blade.availableValueTypes = ['short-text','long-text','decimal','date-time','boolean','integer'];
     blade.availablePropertyTypes = blade.catalogId ? ['Product', 'Variation', 'Category', 'Catalog'] : ['Product', 'Variation', 'Category'];
+
     blade.refresh = function (parentRefresh) {
         if (blade.currentEntityId) {
             properties.get({ propertyId: blade.currentEntityId }, function (data) {
@@ -57,12 +51,12 @@
                 newBlade.template = 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-validationRules.tpl.html';
                 break;
             case 'appliesto':
-                newBlade.title = 'catalog.blades.property-type.title';
+                newBlade.title = 'Manage property validation rules';
                 newBlade.titleValues = { name: blade.origEntity.name ? blade.origEntity.name : blade.currentEntity.name };
                 newBlade.subtitle = 'catalog.blades.property-type.subtitle';
-                newBlade.controller = 'virtoCommerce.catalogModule.propertyTypeController';
-                newBlade.template = 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-type.tpl.html';
-                newBlade.availablePropertyTypes = blade.catalogId ? ['Product', 'Variation', 'Category', 'Catalog'] : ['Product', 'Variation', 'Category'];
+                newBlade.subtitle = 'catalog.blades.property-validationRules.subtitle';
+                newBlade.controller = 'virtoCommerce.catalogModule.propertyValidationRulesController';
+                newBlade.template = 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-validationRules.tpl.html';
                 break;
             case 'dict':
                 newBlade.title = 'catalog.blades.property-dictionary.title';

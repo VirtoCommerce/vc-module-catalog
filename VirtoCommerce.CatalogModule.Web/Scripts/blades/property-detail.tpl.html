@@ -20,13 +20,6 @@
             <div class="form">
                 <div class="form-control __checkbox">
                     <label class="form-label">
-                        <input type="checkbox" ng-model="blade.currentEntity.required">
-                        <span class="check"></span>
-                        <span class="name">{{ 'catalog.blades.property-detail.labels.required' | translate }}</span>
-                    </label>
-                </div>
-                <div class="form-control __checkbox">
-                    <label class="form-label">
                         <input type="checkbox" ng-model="blade.currentEntity.dictionary">
                         <span class="check"></span>
                         <span class="name">{{ 'catalog.blades.property-detail.labels.dictionary' | translate }}</span>
@@ -51,8 +44,8 @@
                 <div class="form-group">
                     <label class="form-label">{{ 'catalog.blades.property-detail.labels.applies-to' | translate }}</label>
                     <div class="form-input">
-                        <ui-select ng-model="blade.currentEntity.type">
-                            <ui-select-match >{{$select.selected}}</ui-select-match>
+                        <ui-select ng-model="blade.currentEntity.type" class="capitalizeText">
+                            <ui-select-match>{{$select.selected}}</ui-select-match>
                             <ui-select-choices repeat="propertyType in blade.availablePropertyTypes | filter: $select.search">
                                 <span ng-click="blade.currentEntity.type">{{propertyType}}</span>
                             </ui-select-choices>
@@ -66,20 +59,16 @@
                     <ui-select ng-model="blade.currentEntity.valueType">
                         <ui-select-match>{{blade.currentEntity.valueType |translate}}</ui-select-match>
                         <ui-select-choices repeat="valueType in blade.availableValueTypes | filter: $select.search">
-                            <div>{{valueType|translate}}</div>
+                            <div>{{'platform.properties.'+valueType+'.title'|translate}}</div>
                         </ui-select-choices>
                     </ui-select>
                 </div>
             </form>
             <ul class="list __items">
                 <li class="list-item" ng-class="{'__selected': currentChild === 'va'}" ng-click='openChild("appliesto")'>
-                    <span class="list-t">{{ 'catalog.blades.property-detail.labels.applies-to' | translate }}</span>
-                    <span class="list-descr">{{blade.currentEntity.type}}</span>
+                    <span class="list-t">{{ 'Validation rules' }}</span>
+                    <span class="list-descr">{{ 'Manage validation rules' }}</span>
                 </li>
-                <!--<li class="list-item" ng-class="{'__selected': currentChild === 'valType'}" ng-click='openChild("valType")'>
-                    <span class="list-t">{{ 'catalog.blades.property-detail.labels.value-type' | translate }}</span>
-                    <span class="list-descr">{{blade.currentEntity.valueType}}</span>
-                </li>-->
                 <li class="list-item" ng-class="{'__selected': currentChild === 'dict', '__disabled': !blade.currentEntity.dictionary }" ng-click='openChild("dict")'>
                     <span class="list-t">{{ 'catalog.blades.property-detail.labels.dictionary' | translate }}</span>
                     <span class="list-descr">{{ 'catalog.blades.property-detail.labels.manage-dictionary' | translate }}</span>
