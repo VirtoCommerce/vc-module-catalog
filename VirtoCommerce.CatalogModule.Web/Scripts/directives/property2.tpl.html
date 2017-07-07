@@ -14,18 +14,7 @@
                    placeholder="Please enter short text"
                    type="text">
         </div>
-        <div class="form-error" ng-show="context.form[currentEntity.name].$error.required">
-            {{ 'catalog.blades.property-list.validations.required' | translate }}
-        </div>
-        <div class="form-error" ng-show="context.form[currentEntity.name].$error.maxlength">
-            {{ 'catalog.blades.property-list.validations.maxLength' | translate: { max: currentEntity.validationRule.charCountMax } }}
-        </div>  
-        <div class="form-error" ng-show="context.form[currentEntity.name].$error.minlength">
-            {{ 'catalog.blades.property-list.validations.minLenght' | translate: { min: currentEntity.validationRule.charCountMin } }}
-        </div>  
-        <div class="form-error" ng-if="context.form[currentEntity.name].$error.pattern">
-            {{ 'catalog.blades.property-list.validations.pattern' | translate }}
-        </div>
+        <va-property-messages></va-property-messages>
     </script>
 
 <script type="text/ng-template" id="LongText.html">
@@ -39,18 +28,7 @@
                       ng-pattern="currentEntity.validationRule.regExp" 
                       placeholder="Please enter long text"></textarea>
         </div>
-        <div class="form-error" ng-show="context.form[currentEntity.name].$error.required">
-            {{ 'catalog.blades.property-list.validations.required' | translate }}
-        </div>
-        <div class="form-error" ng-show="context.form[currentEntity.name].$error.maxlength">
-            {{ 'catalog.blades.property-list.validations.maxLength' | translate: { max: currentEntity.validationRule.charCountMax } }}
-        </div>
-        <div class="form-error" ng-show="context.form[currentEntity.name].$error.minlength">
-            {{ 'catalog.blades.property-list.validations.minLenght' | translate: { min: currentEntity.validationRule.charCountMin } }}
-        </div>
-        <div class="form-error" ng-if="context.form[currentEntity.name].$error.pattern">
-            {{ 'catalog.blades.property-list.validations.pattern' | translate }}
-        </div>
+        <va-property-messages></va-property-messages>
     </script>
 
     <script type="text/ng-template" id="Number.html">
@@ -97,27 +75,37 @@
         </label>
     </script>
 
-    <script type="text/ng-template" id="ShortText-multivalue.html">
+<script type="text/ng-template" id="ShortText-multivalue.html">
         <tags-input ng-model="context.currentPropValues"
                     ng-disabled="currentEntity.isReadOnly"
                     min-tags="{{(currentEntity.required && !currentEntity.isReadOnly) ? 1 : undefined}}"
                     add-on-blur="false"
                     name="{{currentEntity.valueType}}"
                     display-property="value"
-                    placeholder="Add value">
+                    placeholder="Add value"
+                    max-length="{{currentEntity.validationRule.charCountMax}}"
+                    min-length="{{currentEntity.validationRule.charCountMin}}"
+                    allowed-tags-pattern="{{currentEntity.validationRule.regExp}}" >
         </tags-input>
     </script>
-    <script type="text/ng-template" id="LongText-multivalue.html">
+<script type="text/ng-template" id="LongText-multivalue.html">
         <div class="form-group" ng-repeat="val in context.currentPropValues track by $index">
             <div class="form-input">
                 <textarea ng-disabled="currentEntity.isReadOnly"
                           ng-required="currentEntity.required && !currentEntity.isReadOnly"
                           ng-model="val.value"
-                          name="{{currentEntity.valueType}}" />
+                          name="{{currentEntity.name}}" 
+                          ng-maxlength="currentEntity.validationRule.charCountMax"
+                          ng-minlength="currentEntity.validationRule.charCountMin"
+                          ng-pattern="currentEntity.validationRule.regExp" />
+                          <va-property-messages></va-property-messages>
                 <a ng-if="!currentEntity.isReadOnly" ng-click="context.currentPropValues.splice(context.currentPropValues.indexOf(val),1)">remove</a>
             </div>
             <a ng-if="!currentEntity.isReadOnly" ng-click="context.currentPropValues.push({value:''})" style="cursor:pointer;">add value</a>
         </div>
+    
+
+
     </script>
     <script type="text/ng-template" id="Integer-multivalue.html">
         <tags-input ng-model="context.currentPropValues"
@@ -200,18 +188,7 @@
                        ng-minlength="currentEntity.validationRule.charCountMin"
                        ng-pattern="currentEntity.validationRule.regExp" >
             </div>
-            <div class="form-error" ng-show="context.form[currentEntity.name].$error.required">
-                {{ 'catalog.blades.property-list.validations.required' | translate }}
-            </div>
-            <div class="form-error" ng-show="context.form[currentEntity.name].$error.maxlength">
-                {{ 'catalog.blades.property-list.validations.maxLength' | translate: { max: currentEntity.validationRule.charCountMax } }}
-            </div>
-            <div class="form-error" ng-show="context.form[currentEntity.name].$error.minlength">
-                {{ 'catalog.blades.property-list.validations.minLenght' | translate: { min: currentEntity.validationRule.charCountMin } }}
-            </div>
-            <div class="form-error" ng-if="context.form[currentEntity.name].$error.pattern">
-                {{ 'catalog.blades.property-list.validations.pattern' | translate }}
-            </div>
+            <va-property-messages></va-property-messages>
         </div>
     </script>
 
@@ -227,18 +204,7 @@
                           ng-minlength="currentEntity.validationRule.charCountMin"
                           ng-pattern="currentEntity.validationRule.regExp" />
             </div>
-            <div class="form-error" ng-show="context.form[currentEntity.name].$error.required">
-                {{ 'catalog.blades.property-list.validations.required' | translate }}
-            </div>
-            <div class="form-error" ng-show="context.form[currentEntity.name].$error.maxlength">
-                {{ 'catalog.blades.property-list.validations.maxLength' | translate: { max: currentEntity.validationRule.charCountMax } }}
-            </div>
-            <div class="form-error" ng-show="context.form[currentEntity.name].$error.minlength">
-                {{ 'catalog.blades.property-list.validations.minLenght' | translate: { min: currentEntity.validationRule.charCountMin } }}
-            </div>
-            <div class="form-error" ng-if="context.form[currentEntity.name].$error.pattern">
-                {{ 'catalog.blades.property-list.validations.pattern' | translate }}
-            </div>
+            <va-property-messages></va-property-messages>
         </div>
     </script>
 <script type="text/ng-template" id="Number-multilang.html">
@@ -255,7 +221,7 @@
     </script>
 
 
-    <script type="text/ng-template" id="ShortText-multivalue-multilang.html">
+<script type="text/ng-template" id="ShortText-multivalue-multilang.html">
         <div class="form-group" ng-repeat="(language, langValuesGroup) in context.langValuesMap">
             <div class="form-input __langs">
                 <span class="flag flag-{{language.substr(3).toLowerCase()}}"></span>
@@ -265,18 +231,26 @@
                             add-on-blur="false"
                             name="{{currentEntity.valueType}}"
                             display-property="value"
-                            placeholder="Add value">
+                            placeholder="Add value"
+                            ng-maxlength="currentEntity.validationRule.charCountMax"
+                            ng-minlength="currentEntity.validationRule.charCountMin"
+                            ng-pattern="currentEntity.validationRule.regExp" />
                 </tags-input>
             </div>
         </div>
     </script>
-    <script type="text/ng-template" id="LongText-multivalue-multilang.html">
+<script type="text/ng-template" id="LongText-multivalue-multilang.html">
         <div class="form-group" ng-repeat="(language, langValuesGroup) in context.langValuesMap">
             <div class="form-input __langs" ng-repeat="val in langValuesGroup.currentPropValues track by $index">
                 <span class="flag flag-{{language.substr(3).toLowerCase()}}"></span>
                 <textarea ng-disabled="currentEntity.isReadOnly"
                           ng-required="currentEntity.required && !currentEntity.isReadOnly"
-                          ng-model="val.value" />
+                          ng-model="val.value" 
+                          name="{{currentEntity.name}}" 
+                          ng-maxlength="currentEntity.validationRule.charCountMax"
+                          ng-minlength="currentEntity.validationRule.charCountMin"
+                          ng-pattern="currentEntity.validationRule.regExp" />
+                <va-property-messages></va-property-messages>
                 <a ng-if="!currentEntity.isReadOnly" ng-click="langValuesGroup.currentPropValues.splice(langValuesGroup.currentPropValues.indexOf(val),1)">remove</a>
             </div>
             <a ng-if="!currentEntity.isReadOnly" ng-click="langValuesGroup.currentPropValues.push({value:'', languageCode:language})" style="cursor:pointer;">add value</a>

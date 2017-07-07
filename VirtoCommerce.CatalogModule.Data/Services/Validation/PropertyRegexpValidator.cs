@@ -18,7 +18,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services.Validation
         {
             var errors = new List<string>();
 
-            if (!string.IsNullOrEmpty(rule.RegExp))
+            if (!string.IsNullOrEmpty(rule.RegExp) && 
+                (propertyValue.ValueType == PropertyValueType.ShortText || propertyValue.ValueType == PropertyValueType.LongText))
             {
                 var regexp = new Regex(rule.RegExp, RegexOptions.IgnoreCase);
                 var match = regexp.Match(propertyValue.Value.ToString());
