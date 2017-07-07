@@ -266,11 +266,11 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
             var assetComparer = AnonymousComparer.Create((Asset x) => x.Url);
             Assets = Assets.Concat(product.Assets).Distinct(assetComparer).ToList();
 
-            var reviewsComparer = AnonymousComparer.Create((EditorialReview x) => string.Join(":", x.Content, x.ReviewType, x.LanguageCode));
+            var reviewsComparer = AnonymousComparer.Create((EditorialReview x) => string.Join(":", x.ReviewType, x.LanguageCode));
             Reviews = Reviews.Concat(product.Reviews).Distinct(reviewsComparer).ToList();
 
             var properyValueComparer = AnonymousComparer.Create((PropertyValue x) => x.PropertyName);
-            PropertyValues = PropertyValues.Concat(product.PropertyValues).Distinct(properyValueComparer).ToList();
+            PropertyValues = product.PropertyValues.Concat(PropertyValues).Distinct(properyValueComparer).ToList();
 
             var seoComparer = AnonymousComparer.Create((SeoInfo x) => string.Join(":", x.SemanticUrl, x.LanguageCode));
             SeoInfos = SeoInfos.Concat(product.SeoInfos).Distinct(seoComparer).ToList();

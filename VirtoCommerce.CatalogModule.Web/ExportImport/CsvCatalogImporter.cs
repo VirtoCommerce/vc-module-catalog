@@ -164,9 +164,9 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
             var totalProductsCount = csvProducts.Count();
             //Order to save main products first then variations
             csvProducts = csvProducts.OrderBy(x => x.MainProductId != null).ToList();
-            for (int i = 0; i < totalProductsCount; i += 50)
+            for (int i = 0; i < totalProductsCount; i += 10)
             {
-                var products = csvProducts.Skip(i).Take(50);
+                var products = csvProducts.Skip(i).Take(10);
                 try
                 {
                     //Save main products first and then variations
