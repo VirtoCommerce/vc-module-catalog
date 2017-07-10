@@ -41,9 +41,9 @@
             $scope.blade.parentBlade.currentEntity.required = $scope.blade.propertyValidationRule.required;
             $scope.blade.parentBlade.currentEntity.validationRule = {
                 id: $scope.blade.propertyValidationRule.id,
-                charCountMin: $scope.blade.propertyValidationRule.charCountMin,
-                charCountMax: $scope.blade.propertyValidationRule.charCountMax,
-                regExp: $scope.blade.propertyValidationRule.seatPattern
+                charCountMin: $scope.blade.propertyValidationRule.selectedLimit ? $scope.blade.propertyValidationRule.charCountMin : null,
+                charCountMax: $scope.blade.propertyValidationRule.selectedLimit ? $scope.blade.propertyValidationRule.charCountMax : null,
+                regExp: $scope.blade.propertyValidationRule.isSpecificPattern ? $scope.blade.propertyValidationRule.seatPattern : null
             };
             $scope.bladeClose();
         };
