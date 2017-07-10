@@ -1,54 +1,52 @@
 ﻿<div class="blade-static __bottom" ng-include="'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/common/templates/ok-cancel.tpl.html'"></div>
 <div class="blade-content">
     <div class="blade-inner">
+        
         <div class="inner-block">
-            <form class="form" ng-if="blade.hasAssetCreatePermission">
-                <div class="sub-t">{{ 'catalog.blades.images.labels.select-image-category' | translate }}</div>
-                <div class="column">
-                    <div class="form-group">
-                        <label class="form-label">{{ 'catalog.blades.images.labels.image-category' | translate }} <a href="" ng-click="openDictionarySettingManagement()" class="form-edit" va-permission="catalog:imagetypes"><i class="form-ico fa fa-pencil"></i></a></label>
-                        <div class="form-input">
-                            <ui-select ng-model="blade.imageType" on-select="changeImageCategory($item, $model)">
-                                <ui-select-match allow-clear="true" placeholder="{{ 'catalog.blades.images.placeholders.image-category' | translate }}">{{$select.selected}}</ui-select-match>
-                                <ui-select-choices repeat="x in imageTypes | filter: $select.search">
-                                    <span ng-bind-html="x | highlight: $select.search"></span>
-                                </ui-select-choices>
-                            </ui-select>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="sub-t">{{ 'catalog.blades.images.labels.select-images' | translate }}</div>
-
-                <div ng-show="uploader.isHTML5">
-                    <!-- 3. ng-file-over | ng-file-over="className" -->
-                    <div over-class="bd-blue" nv-file-over nv-file-drop uploader="uploader" class="drag-area">
-                        <div class="drag-content">{{ 'catalog.blades.images.labels.drag-drop-comment' | translate }}</div>
-                    </div>
-                </div>
-
-                <!-- 2. ng-file-select | ng-file-select="options" -->
-                <div class="form-input __file">
-                    <input type="file" multiple uploader="uploader" nv-file-select style="z-index: 0;" tabindex="-1">
-                    <input type="text" style="z-index: 1; cursor: default;" readonly="">
-                    <button class="btn __file" type="button" onclick="$('input[type=file]').trigger('click')" title="Open image file">
-                        <i class="btn-ico fa fa-image"></i>
-                    </button>
-                </div>
-
-                <div class="form-input __file">
-                    <input ng-model="blade.newExternalImageUrl" type="url" placeholder="{{ 'catalog.blades.images.placeholders.image-url' | translate }}" tabindex="-1">
-                    <button class="btn __file" type="button" ng-click="addImageFromUrl()" title="Add image by URL">
-                        <i class="btn-ico fa fa-plus"></i>
-                    </button>
-                </div>
-            </form>
-
-            <div ng-show="uploader.isUploading">
-                <div class="sub-t">{{ 'catalog.blades.images.labels.progress' | translate }}</div>
-                <div class="progress-bar __aqua" ng-style="{'width': uploader.progress + '%'}"></div>
+            <div class="table-wrapper" ng-init="setGridOptions({
+                data: 'blade.currentEntities',
+                rowTemplate: 'image-list.row.html',
+                rowHeight: 61,
+                columnDefs: [
+                        { name: 'actions', displayName: '', enableColumnResizing: false, enableSorting: false, width: 30, cellTemplate: 'list-actions.cell.html', pinnedLeft:true },
+                        {
+                            name: 'url', displayName: 'platform.blades.asset-list.labels.picture',
+                            enableColumnResizing: false, enableSorting: false, width: 60,
+                            cellTemplate: 'asset-list-icon.cell.html'
+                        },
+                        { name: 'name', displayName: 'platform.blades.asset-list.labels.name', cellTooltip: true },
+                        { name: 'size', displayName: 'platform.blades.asset-list.labels.size'},
+                        { name: 'modifiedDate', displayName: 'platform.blades.asset-list.labels.modified' }
+                ],
+                enablePaginationControls: false,
+                paginationPageSize: pageSettings.itemsPerPageCount
+                 })">
+                <div ui-grid="gridOptions" ui-grid-auto-resize ui-grid-save-state ui-grid-selection ui-grid-resize-columns ui-grid-move-columns ui-grid-pinning ui-grid-pagination ui-grid-height></div>
+                <ul class="menu __context" role="menu" id="ast_menu">
+                    <li class="menu-item" ng-click="makeActive(contextMenuEntity)">
+                        <i class="menu-ico fa fa-download"></i> Make active
+                    </li>
+                    <li class="menu-item" ng-click='delete(contextMenuEntity)' va-permission="platform:asset:delete">
+                        <i class="menu-ico fa fa-trash-o"></i> {{'platform.commands.delete' | translate}}
+                    </li>
+                </ul>
             </div>
+        </div>
+        
+        <script type="text/ng-template" id="image-list.row.html">
+            <div ng-click='grid.appScope.selectNode(row.entity)' ng-repeat="(colRenderIndex, col) in colContainer.renderedColumns track by col.uid" ui-grid-one-bind-id-grid="rowRenderIndex + '-' + col.uid + '-cell'" class="ui-grid-cell" ng-class="{'ui-grid-row-header-cell': col.isRowHeader, '__hovered': grid.appScope.contextMenuEntity === row.entity, '__selected': grid.appScope.blade.selectedNodeId === row.entity.url}" role="{{col.isRowHeader ? 'rowheader' : 'gridcell' }}" ui-grid-cell style="{{'cursor: ' + ((col.name==='actions' || row.entity.type==='folder' || row.entity.isOpenable) ? 'pointer' : 'default')}}" context-menu="grid.appScope.contextMenuEntity = row.entity" data-target="ast_menu"></div>
+        </script>
+        
+        <script type="text/ng-template" id="asset-list-icon.cell.html">
+            <div class="ui-grid-cell-contents">
+                <div class="product-img">
+                    <div class="image" style="background-image: url('{{COL_FIELD}}')"></div>
+                    <!--<i class="table-ico fa" ng-class="row.entity.type === 'folder' ? 'fa-folder' : 'fa-file-o'" ng-if="!row.entity.isImage"></i>-->
+                </div>
+            </div>
+        </script>
 
+        <!--<div class="inner-block">
             <p class="note">{{ 'catalog.blades.images.labels.make-default-image' | translate }}</p>
             <div class="tile-group triple __images-list" ui-sortable="sortableOptions" ng-model="blade.currentEntities">
                 <div class="tile" ng-click="toggleImageSelect($event, image)" ng-class="{'double': $first, '__selected': image.$selected}" ng-repeat="image in blade.currentEntities" ng-include="'imageTemplate.html'"></div>
@@ -57,6 +55,6 @@
 
         <script type="text/ng-template" id="imageTemplate.html">
             <img class="tile-img" ng-src="{{image.url ? image.url : ''}}">
-        </script>
+        </script>-->
     </div>
 </div>

@@ -176,6 +176,8 @@
     <Compile Include="Model\ListEntrySearchCriteria.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Content Include="Scripts\blades\images-add.js" />
+    <Content Include="Scripts\blades\images-add.tpl.html" />
     <Content Include="Scripts\resources\browseFilters.js" />
     <Content Include="Content\css\catalog.css" />
     <Content Include="Content\logo.png" />

@@ -1,10 +1,12 @@
 ﻿angular.module('virtoCommerce.catalogModule')
 .controller('virtoCommerce.catalogModule.imagesController',
-    ['$scope', '$filter', '$translate', 'FileUploader', 'platformWebApp.dialogService',
+    ['$scope', '$filter', '$translate', 'platformWebApp.dialogService',
         'platformWebApp.bladeNavigationService', 'platformWebApp.authService',
-        'platformWebApp.assets.api', 'virtoCommerce.catalogModule.imageTools', 'platformWebApp.settings',
-        function ($scope, $filter, $translate, FileUploader, dialogService, bladeNavigationService, authService, assets, imageTools, settings) {
+        'platformWebApp.assets.api', 'virtoCommerce.catalogModule.imageTools', 'platformWebApp.settings', 'platformWebApp.bladeUtils', 'platformWebApp.uiGridHelper',
+        function ($scope, $filter, $translate, dialogService, bladeNavigationService, authService, assets, imageTools, settings, bladeUtils, uiGridHelper) {
             var blade = $scope.blade;
+            blade.headIcon = 'fa-image';
+
             blade.hasAssetCreatePermission = bladeNavigationService.checkPermission('platform:asset:create');
 
             $scope.isValid = true;
@@ -21,52 +23,7 @@
                 blade.subtitle = 'catalog.widgets.itemImage.blade-subtitle';
                 $scope.imageTypes = settings.getValues({ id: 'Catalog.ImageCategories' });
 
-                if (!$scope.uploader && blade.hasAssetCreatePermission) {
-
-                    // create the uploader            
-                    var uploader = $scope.uploader = new FileUploader({
-                        scope: $scope,
-                        headers: { Accept: 'application/json' },
-                        autoUpload: true,
-                        removeAfterUpload: true
-                    });
-
-                    uploader.url = getImageUrl(item.code, blade.imageType).relative;
-
-                    uploader.onSuccessItem = function (fileItem, images, status, headers) {
-                        angular.forEach(images, function (image) {
-                            //ADD uploaded image                
-                            blade.currentEntities.push(image);
-                            var request = { imageUrl: image.url, isRegenerateAll: true };
-
-                            imageTools.generateThumbnails(request, function (response) {
-                                if (!response || response.error) {
-                                    bladeNavigationService.setError(response.error, blade);
-                                }
-                            });
-                        });
-                    };
-
-                    uploader.onAfterAddingAll = function (addedItems) {
-                        bladeNavigationService.setError(null, blade);
-                    };
-
-                    uploader.onErrorItem = function (item, response, status, headers) {
-                        bladeNavigationService.setError(item._file.name + ' failed: ' + (response.message ? response.message : status), blade);
-                    };
-                }
                 blade.currentEntities = item.images ? angular.copy(item.images) : [];
-            };
-
-            $scope.addImageFromUrl = function () {
-                if (blade.newExternalImageUrl) {
-                    assets.uploadFromUrl({ folderUrl: getImageUrl(blade.item.code, blade.imageType).folderUrl, url: blade.newExternalImageUrl }, function (data) {
-                        _.each(data, function (x) {
-                            blade.currentEntities.push(x);
-                        });
-                        blade.newExternalImageUrl = undefined;
-                    });
-                }
             };
 
             $scope.saveChanges = function () {
@@ -112,11 +69,11 @@
                 });
             };
 
-            blade.headIcon = 'fa-image';
-
             blade.toolbarCommands = [
                 {
-                    name: 'platform.commands.remove', icon: 'fa fa-trash-o', executeMethod: function () { $scope.removeAction(); },
+                    name: 'platform.commands.remove',
+                    icon: 'fa fa-trash-o',
+                    executeMethod: function () { $scope.removeAction(); },
                     canExecuteMethod: function () {
                         var retVal = false;
                         if (blade.currentEntities) {
@@ -126,7 +83,8 @@
                     }
                 },
                 {
-                    name: 'catalog.commands.gallery', icon: 'fa fa-image',
+                    name: 'catalog.commands.gallery',
+                    icon: 'fa fa-image',
                     executeMethod: function () {
                         var dialog = {
                             images: blade.currentEntities,
@@ -137,8 +95,42 @@
                     canExecuteMethod: function () {
                         return blade.currentEntities && _.any(blade.currentEntities);
                     }
+                },
+                {
+                    name: "Add",
+                    icon: 'fa fa-plus',
+                    executeMethod: function () {
+                        var newBlade = {
+                            item: blade.item,
+                            controller: 'virtoCommerce.catalogModule.imagesAddController',
+                            template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/images-add.tpl.html'
+                        };
+                        bladeNavigationService.showBlade(newBlade, blade);
+                    },
+                    canExecuteMethod: function () { return true; }
+                },
+                {
+                    name: "Link",
+                    icon: 'fa fa-link',
+                    executeMethod: function () {
+                        var newBlade = {
+                            title: 'platform.blades.asset-seletc.title',
+                            folder: "catalog",
+                            onSelect: linkAssets,
+                            controller: 'platformWebApp.assets.assetSelectController'
+                        };
+                        bladeNavigationService.showBlade(newBlade, blade);
+                    },
+                    canExecuteMethod: function () { return true; }
                 }
             ];
+
+            function linkAssets(assets) {
+                _.each(assets, function (asset) {
+                    var image = angular.copy(asset);
+                    blade.currentEntities.push(image);
+                });
+            }
 
             $scope.sortableOptions = {
                 update: function (e, ui) {
@@ -159,14 +151,13 @@
                 bladeNavigationService.showBlade(newBlade, blade);
             };
 
-            $scope.changeImageCategory = function ($item, $model) {
-                $scope.uploader.url = getImageUrl(blade.item.code, blade.imageType).relative;
+            $scope.setGridOptions = function (gridOptions) {
+                uiGridHelper.initialize($scope, gridOptions,
+                    function (gridApi) {
+                        $scope.$watch('pageSettings.currentPage', gridApi.pagination.seek);
+                    });
             };
-
-            function getImageUrl(code, imageType) {
-                var folderUrl = 'catalog/' + code + (imageType ? '/' + imageType : '');
-                return { folderUrl: '/' + folderUrl, relative: 'api/platform/assets?folderUrl=' + folderUrl };
-            };
+            bladeUtils.initializePagination($scope, true);
 
             initialize(blade.item);
 
