@@ -250,7 +250,6 @@
     <Compile Include="Services\PropertyServiceImpl.cs" />
     <Compile Include="Services\Validation\PropertyRegexpValidator.cs" />
     <Compile Include="Services\Validation\PropertyLenghtValidator.cs" />
-    <Compile Include="Services\Validation\PropertyUniquenessValidator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

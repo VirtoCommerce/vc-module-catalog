@@ -90,9 +90,8 @@ namespace VirtoCommerce.CatalogModule.Web
             #region Property Validation
 
             Func<IUnityContainer, object> validationChain = container =>
-             new PropertyUniquenessValidator(_container.Resolve<Func<ICatalogRepository>>(),
                  new PropertyLenghtValidator(
-                     new PropertyRegexpValidator(null)));
+                     new PropertyRegexpValidator(null));
 
             _container.RegisterType<IPropertyValueValidator>(new InjectionFactory(validationChain));
 
