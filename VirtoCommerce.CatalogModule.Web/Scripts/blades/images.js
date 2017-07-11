@@ -58,7 +58,7 @@
 
             $scope.removeAction = function (selectedImages) {
                 if (selectedImages == undefined) {
-                    selectedImages = $filter('filter')(blade.currentEntities, { $selected: true });
+                    selectedImages = $scope.gridApi.selection.getSelectedRows();
                 }
 
                 angular.forEach(selectedImages, function (image) {
@@ -76,8 +76,8 @@
                     executeMethod: function () { $scope.removeAction(); },
                     canExecuteMethod: function () {
                         var retVal = false;
-                        if (blade.currentEntities) {
-                            retVal = _.filter(blade.currentEntities, function (x) { return x.$selected; }).length > 0;
+                        if (blade.currentEntities && $scope.gridApi) {
+                            retVal = $scope.gridApi.selection.getSelectedRows().length > 0;
                         }
                         return retVal;
                     }
@@ -114,8 +114,8 @@
                     icon: 'fa fa-link',
                     executeMethod: function () {
                         var newBlade = {
-                            title: 'platform.blades.asset-seletc.title',
-                            folder: "catalog",
+                            title: 'catalog.blades.asset-select.title',
+                            //folder: "catalog",
                             onSelect: linkAssets,
                             controller: 'platformWebApp.assets.assetSelectController'
                         };
@@ -127,17 +127,12 @@
 
             function linkAssets(assets) {
                 _.each(assets, function (asset) {
-                    var image = angular.copy(asset);
-                    blade.currentEntities.push(image);
+                    if (asset.isImage) {
+                        var image = angular.copy(asset);
+                        blade.currentEntities.push(image);
+                    }
                 });
             }
-
-            $scope.sortableOptions = {
-                update: function (e, ui) {
-                },
-                stop: function (e, ui) {
-                }
-            };
 
             $scope.openDictionarySettingManagement = function () {
                 var newBlade = {

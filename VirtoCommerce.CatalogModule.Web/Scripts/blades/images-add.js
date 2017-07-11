@@ -5,7 +5,10 @@
         'platformWebApp.assets.api', 'virtoCommerce.catalogModule.imageTools', 'platformWebApp.settings',
         function ($scope, $filter, $translate, FileUploader, dialogService, bladeNavigationService, authService, assets, imageTools, settings) {
             var blade = $scope.blade;
+            var pb = blade.parentBlade;
             blade.hasAssetCreatePermission = bladeNavigationService.checkPermission('platform:asset:create');
+
+            blade.headIcon = 'fa-image';
 
             $scope.isValid = true;
 
@@ -17,8 +20,7 @@
 
             function initialize(item) {
                 blade.item = item;
-                blade.title = 'catalog.widgets.itemImage.blade-title';
-                blade.subtitle = 'catalog.widgets.itemImage.blade-subtitle';
+                blade.title = 'catalog.blades.image-upload.title';
                 $scope.imageTypes = settings.getValues({ id: 'Catalog.ImageCategories' });
 
                 if (!$scope.uploader && blade.hasAssetCreatePermission) {
@@ -36,7 +38,7 @@
                     uploader.onSuccessItem = function (fileItem, images, status, headers) {
                         angular.forEach(images, function (image) {
                             //ADD uploaded image                
-                            blade.currentEntities.push(image);
+                            pb.currentEntities.push(image);
                             var request = { imageUrl: image.url, isRegenerateAll: true };
 
                             imageTools.generateThumbnails(request, function (response) {
@@ -55,14 +57,14 @@
                         bladeNavigationService.setError(item._file.name + ' failed: ' + (response.message ? response.message : status), blade);
                     };
                 }
-                blade.currentEntities = item.images ? angular.copy(item.images) : [];
+                blade.currentEntities = [];
             };
 
             $scope.addImageFromUrl = function () {
                 if (blade.newExternalImageUrl) {
                     assets.uploadFromUrl({ folderUrl: getImageUrl(blade.item.code, blade.imageType).folderUrl, url: blade.newExternalImageUrl }, function (data) {
                         _.each(data, function (x) {
-                            blade.currentEntities.push(x);
+                            pb.currentEntities.push(x);
                         });
                         blade.newExternalImageUrl = undefined;
                     });
@@ -70,7 +72,6 @@
             };
 
             $scope.saveChanges = function () {
-                blade.item.images = blade.currentEntities;
                 $scope.bladeClose();
             };
 
@@ -86,41 +87,12 @@
                 }
             }
 
-            $scope.removeItem = function (image) {
-                var idx = blade.currentEntities.indexOf(image);
-                if (idx >= 0) {
-                    blade.currentEntities.splice(idx, 1);
-                }
-            };
-
             $scope.copyUrl = function (data) {
                 $translate('catalog.blades.images.labels.copy-url-prompt').then(function (promptMessage) {
                     window.prompt(promptMessage, data.url);
                 });
             }
-
-            $scope.removeAction = function (selectedImages) {
-                if (selectedImages == undefined) {
-                    selectedImages = $filter('filter')(blade.currentEntities, { $selected: true });
-                }
-
-                angular.forEach(selectedImages, function (image) {
-                    var idx = blade.currentEntities.indexOf(image);
-                    if (idx >= 0) {
-                        blade.currentEntities.splice(idx, 1);
-                    }
-                });
-            };
-
-            blade.headIcon = 'fa-image';
          
-            $scope.sortableOptions = {
-                update: function (e, ui) {
-                },
-                stop: function (e, ui) {
-                }
-            };
-
             $scope.openDictionarySettingManagement = function () {
                 var newBlade = {
                     id: 'settingDetailChild',
