@@ -91,8 +91,10 @@ namespace VirtoCommerce.CatalogModule.Web
 
             #region Property Validation
 
-            _container.RegisterType<Func<PropertyValidationRule, PropertyValueValidator>>(
-                new InjectionFactory(c => new Func<PropertyValidationRule, PropertyValueValidator>(rule => new PropertyValueValidator(rule))));
+            Func<PropertyValidationRule, PropertyValueValidator> propertyValueValidatorFactory =
+                rule => new PropertyValueValidator(rule);
+
+            _container.RegisterInstance(propertyValueValidatorFactory);
 
             _container.RegisterType<AbstractValidator<IHasProperties>, HasPropertiesValidator>();
             
