@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CacheManager.Core;
+using FluentValidation;
 using Omu.ValueInjecter;
 using VirtoCommerce.CatalogModule.Data.Extensions;
 using VirtoCommerce.CatalogModule.Data.Model;
@@ -22,17 +23,17 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private readonly ICommerceService _commerceService;
         private readonly IOutlineService _outlineService;
         private readonly ICacheManager<object> _cacheManager;
-        private readonly IPropertyValueValidator _propertyValuesValidator;
+        private readonly AbstractValidator<IHasProperties> _hasPropertyValidator;
         private readonly Func<ICatalogRepository> _repositoryFactory;
         private readonly ICatalogService _catalogService;
         
 
         public CategoryServiceImpl(Func<ICatalogRepository> catalogRepositoryFactory, ICommerceService commerceService, IOutlineService outlineService, ICatalogService catalogService, ICacheManager<object> cacheManager,
-            IPropertyValueValidator propertyValuesValidator)
+            AbstractValidator<IHasProperties> hasPropertyValidator)
         {
             _repositoryFactory = catalogRepositoryFactory;
             _cacheManager = cacheManager;
-            _propertyValuesValidator = propertyValuesValidator;
+            _hasPropertyValidator = hasPropertyValidator;
             _commerceService = commerceService;
             _outlineService = outlineService;
             _catalogService = catalogService;
@@ -291,31 +292,16 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         private void ValidateCategoryProperties(Category[] categories)
         {
-            var allErrors = new List<string>();
+            var preloadedCategories = GetByIds(categories.Select(x => x.Id).ToArray(), CategoryResponseGroup.Full).OfType<IHasProperties>().ToArray();
+            var targets = categories.OfType<IHasProperties>().ToArray();
+            preloadedCategories.CopyProperties(targets);
 
-            var preloadedCategories = GetByIds(categories.Select(x => x.Id).ToArray(), CategoryResponseGroup.Full);
-            var preloadedProperties = preloadedCategories.SelectMany(x => x.Properties);
-            var rulesDictionary = new Dictionary<string, List<PropertyValidationRule>>();
-
-            foreach (var property in preloadedProperties)
+            foreach (var item in targets)
             {
-                if (!rulesDictionary.ContainsKey(property.Id) && property.ValidationRules.Any())
-                    rulesDictionary.Add(property.Id, property.ValidationRules.ToList());
+                var validatioResult = _hasPropertyValidator.Validate(item);
+                if (!validatioResult.IsValid)
+                    throw new Exception($"Category properties has validation error: {string.Join(Environment.NewLine, validatioResult.Errors.Select(x => x.ToString()))}");
             }
-
-            foreach (var propValue in categories.SelectMany(x=>x.PropertyValues))
-            {
-                var rules = new List<PropertyValidationRule>();
-                if (rulesDictionary.ContainsKey(propValue.PropertyId))
-                    rules = rulesDictionary[propValue.PropertyId];
-
-                var errors = new List<string>();
-                rules.ForEach(rule => { errors.AddRange(_propertyValuesValidator.Validate(rule, propValue)); });
-                allErrors.AddRange(errors.FormatPropertyErrors(propValue));
-            }
-
-            if (allErrors.Any())
-                throw new Exception($"Category properties has validation error: {string.Join(Environment.NewLine, allErrors)}");
         }
     }
 }

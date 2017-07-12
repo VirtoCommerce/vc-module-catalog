@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CacheManager.Core;
+using FluentValidation;
 using VirtoCommerce.CatalogModule.Data.Extensions;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
@@ -22,17 +23,17 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private readonly ICommerceService _commerceService;
         private readonly IOutlineService _outlineService;
         private readonly Func<ICatalogRepository> _repositoryFactory;
-        private readonly IPropertyValueValidator _propertyValueValdator;
+        private readonly AbstractValidator<IHasProperties> _hasPropertyValidator;
 
         public ItemServiceImpl(Func<ICatalogRepository> catalogRepositoryFactory, ICommerceService commerceService, IOutlineService outlineService, ICatalogService catalogService, ICategoryService categoryService, ICacheManager<object> cacheManager,
-            IPropertyValueValidator propertyValuesValidator)
+            AbstractValidator<IHasProperties> hasPropertyValidator)
         {
             _catalogService = catalogService;
             _categoryService = categoryService;
             _commerceService = commerceService;
             _outlineService = outlineService;
             _repositoryFactory = catalogRepositoryFactory;
-            _propertyValueValdator = propertyValuesValidator;
+            _hasPropertyValidator = hasPropertyValidator;
         }
 
         #region IItemService Members
@@ -271,6 +272,15 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 foreach (var property in product.Properties)
                 {
                     property.IsInherited = true;
+
+                    if (property.ValidationRules == null) continue;
+                    foreach (var validationRule in property.ValidationRules)
+                    {
+                        if (validationRule.Property == null)
+                        {
+                            validationRule.Property = property;
+                        }
+                    }
                 }
 
                 //Self item property values
@@ -329,20 +339,16 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         private void ValidateProductProperties(CatalogProduct[] products)
         {
-            var allErrors = new List<string>();
             LoadProductDependencies(products, false);
             ApplyInheritanceRules(products);
 
-            foreach (var propValue in products.SelectMany(x => x.PropertyValues))
+            var targets = products.OfType<IHasProperties>();
+            foreach (var item in targets)
             {
-                var errors = new List<string>();
-                var rules = propValue.Property.ValidationRules.ToList();
-                rules.ForEach(rule => { errors.AddRange(_propertyValueValdator.Validate(rule, propValue)); });
-                allErrors.AddRange(errors.FormatPropertyErrors(propValue));
+                var validatioResult = _hasPropertyValidator.Validate(item);
+                if (!validatioResult.IsValid)
+                    throw new Exception($"Product properties has validation error: {string.Join(Environment.NewLine, validatioResult.Errors.Select(x => x.ToString()))}");
             }
-
-            if (allErrors.Any())
-                throw new Exception($"Product validation errors: {string.Join(Environment.NewLine, allErrors)}");
         }
     }
 }

@@ -54,6 +54,10 @@
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="FluentValidation, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7de548da2fbae0f0, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentValidation.7.1.0\lib\net45\FluentValidation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -90,7 +94,7 @@
     </Compile>
     <Compile Include="CatalogConstants.cs" />
     <Compile Include="Extensions\RepositoryExtension.cs" />
-    <Compile Include="Extensions\StringExtentions.cs" />
+    <Compile Include="Extensions\PropertiesExtentions.cs" />
     <Compile Include="Migrations\201504301302574_Initial.cs" />
     <Compile Include="Migrations\201504301302574_Initial.Designer.cs">
       <DependentUpon>201504301302574_Initial.cs</DependentUpon>
@@ -248,8 +252,8 @@
     <Compile Include="Services\CatalogServiceImpl.cs" />
     <Compile Include="Services\OutlineService.cs" />
     <Compile Include="Services\PropertyServiceImpl.cs" />
-    <Compile Include="Services\Validation\PropertyRegexpValidator.cs" />
-    <Compile Include="Services\Validation\PropertyLenghtValidator.cs" />
+    <Compile Include="Services\Validation\PropertyHolderValidator.cs" />
+    <Compile Include="Services\Validation\PropertyValueValidator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

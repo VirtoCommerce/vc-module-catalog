@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Web.Http;
+using FluentValidation;
 using Microsoft.Practices.Unity;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
@@ -24,6 +25,7 @@ using VirtoCommerce.Platform.Data.Infrastructure;
 using VirtoCommerce.Platform.Data.Infrastructure.Interceptors;
 using VirtoCommerce.Platform.Data.Repositories;
 using VirtoCommerce.CatalogModule.Data.Services.Validation;
+using VirtoCommerce.Domain.Catalog.Model;
 
 namespace VirtoCommerce.CatalogModule.Web
 {
@@ -89,12 +91,11 @@ namespace VirtoCommerce.CatalogModule.Web
 
             #region Property Validation
 
-            Func<IUnityContainer, object> validationChain = container =>
-                 new PropertyLenghtValidator(
-                     new PropertyRegexpValidator(null));
+            _container.RegisterType<Func<PropertyValidationRule, PropertyValueValidator>>(
+                new InjectionFactory(c => new Func<PropertyValidationRule, PropertyValueValidator>(rule => new PropertyValueValidator(rule))));
 
-            _container.RegisterType<IPropertyValueValidator>(new InjectionFactory(validationChain));
-
+            _container.RegisterType<AbstractValidator<IHasProperties>, HasPropertiesValidator>();
+            
             #endregion
         }
 
