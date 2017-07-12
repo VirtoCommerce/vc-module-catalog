@@ -8,6 +8,9 @@ using PropertyValidationRule = VirtoCommerce.Domain.Catalog.Model.PropertyValida
 
 namespace VirtoCommerce.CatalogModule.Data.Services.Validation
 {
+    /// <summary>
+    /// Custom validator for IHasProperties object - validates property values by attached PropertyValidationRule
+    /// </summary>
     public class HasPropertiesValidator : AbstractValidator<IHasProperties>
     {
         private readonly Func<PropertyValidationRule, PropertyValueValidator> _propertyValidatorFactory;
