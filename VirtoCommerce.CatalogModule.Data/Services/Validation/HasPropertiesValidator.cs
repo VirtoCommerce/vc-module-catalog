@@ -24,15 +24,17 @@ namespace VirtoCommerce.CatalogModule.Data.Services.Validation
         {
             var validationResults = new List<ValidationResult>();
             var propertyValues = context.InstanceToValidate.PropertyValues;
-            
-            foreach (var propertyValue in propertyValues)
+            if (propertyValues != null)
             {
-                if (propertyValue.Property == null) continue;
-                foreach (var rule in propertyValue.Property.ValidationRules)
+                foreach (var propertyValue in propertyValues)
                 {
-                    var ruleValidator = _propertyValidatorFactory(rule);
-                    var validationResult = ruleValidator.Validate(propertyValue);
-                    validationResults.Add(validationResult);
+                    if (propertyValue.Property == null) continue;
+                    foreach (var rule in propertyValue.Property.ValidationRules)
+                    {
+                        var ruleValidator = _propertyValidatorFactory(rule);
+                        var validationResult = ruleValidator.Validate(propertyValue);
+                        validationResults.Add(validationResult);
+                    }
                 }
             }
 
