@@ -7,7 +7,7 @@
                     <div class="columns">
                         <div class="column">
                             <div class="form-group">
-                                <label class="form-label">1212{{ 'catalog.blades.item-detail.labels.weight-unit' | translate }} <a href="" ng-click="openDictionarySettingManagement('WeightUnits')" class="form-edit" va-permission="platform:setting:update"><i class="form-ico fa fa-pencil"></i></a></label>
+                                <label class="form-label">{{ 'catalog.blades.item-detail.labels.weight-unit' | translate }} <a href="" ng-click="openDictionarySettingManagement('WeightUnits')" class="form-edit" va-permission="platform:setting:update"><i class="form-ico fa fa-pencil"></i></a></label>
                                 <div class="form-input">
                                     <ui-select ng-model="blade.currentEntity.weightUnit">
                                         <ui-select-match allow-clear="true" placeholder="{{ 'catalog.blades.item-detail.placeholders.weight-unit' | translate }}">{{$select.selected}}</ui-select-match>
@@ -54,7 +54,7 @@
                     <div class="columns">
                         <div class="column">
                             <div class="form-group">
-                                <label class="form-label">ффф{{'catalog.widgets.itemDimensions.height' | translate}}</label>
+                                <label class="form-label">{{'catalog.widgets.itemDimensions.height' | translate}}</label>
                                 <div class="form-input __number">
                                     <input smart-float num-type="float" ng-model="blade.currentEntity.height" placeholder="N/A" />
                                 </div>
@@ -62,7 +62,7 @@
                         </div>
                         <div class="column">
                             <div class="form-group">
-                                <label class="form-label">ыыыыы{{'catalog.widgets.itemDimensions.width' | translate}}</label>
+                                <label class="form-label">{{'catalog.widgets.itemDimensions.width' | translate}}</label>
                                 <div class="form-input __number">
                                     <input smart-float num-type="float" ng-model="blade.currentEntity.width" placeholder="N/A" />
                                 </div>

@@ -44,9 +44,9 @@
                 newBlade.template = 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-attributes.tpl.html';
                 break;
             case 'validationRules':
-                newBlade.title = 'catalog.blades.property-validationRules.title';
+                newBlade.title = 'catalog.blades.property-validationRule.title';
                 newBlade.titleValues = { name: blade.origEntity.name ? blade.origEntity.name : blade.currentEntity.name };
-                newBlade.subtitle = 'catalog.blades.property-validationRules.subtitle';
+                newBlade.subtitle = 'catalog.blades.property-validationRule.subtitle';
                 newBlade.controller = 'virtoCommerce.catalogModule.propertyValidationRulesController';
                 newBlade.template = 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-validationRules.tpl.html';
                 break;
@@ -54,7 +54,7 @@
                 newBlade.title = 'Manage property validation rules';
                 newBlade.titleValues = { name: blade.origEntity.name ? blade.origEntity.name : blade.currentEntity.name };
                 newBlade.subtitle = 'catalog.blades.property-type.subtitle';
-                newBlade.subtitle = 'catalog.blades.property-validationRules.subtitle';
+                newBlade.subtitle = 'catalog.blades.property-validationRule.subtitle';
                 newBlade.controller = 'virtoCommerce.catalogModule.propertyValidationRulesController';
                 newBlade.template = 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-validationRules.tpl.html';
                 break;

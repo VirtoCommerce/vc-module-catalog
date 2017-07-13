@@ -66,8 +66,8 @@
             </form>
             <ul class="list __items">
                 <li class="list-item" ng-class="{'__selected': currentChild === 'va'}" ng-click='openChild("appliesto")'>
-                    <span class="list-t">{{ 'Validation rules' }}</span>
-                    <span class="list-descr">{{ 'Manage validation rules' }}</span>
+                    <span class="list-t">{{ 'catalog.blades.property-validationRule.title'|translate }}</span>
+                    <span class="list-descr">{{ 'catalog.blades.property-validationRule.subtitle'|translate }}</span>
                 </li>
                 <li class="list-item" ng-class="{'__selected': currentChild === 'dict', '__disabled': !blade.currentEntity.dictionary }" ng-click='openChild("dict")'>
                     <span class="list-t">{{ 'catalog.blades.property-detail.labels.dictionary' | translate }}</span>

@@ -11,22 +11,29 @@
             isSpecificPattern: rule.regExp != null,
             charCountMin: rule.charCountMin,
             charCountMax: rule.charCountMax,
-            selectedLimit: 'beetween',
-            selectedPattern: 'custom',
-            validationPattern: ['custom', 'email', 'url', 'date'],
-            characterLimit: ['beetween', 'at least', 'not more than'],
-            seatPattern: rule.regExp,
+            characterLimit: ['between', 'at-least', 'not-more-than'],
+            selectedLimit: 'between',
+            validationPatterns: [
+                {
+                    name: 'custom',
+                    pattern: ""
+                },
+                {
+                    name: "email",
+                    pattern: "/\S+@\S+\.\S+/"
+                },
+                {
+                    name: "url",
+                    pattern: "/^(https?:\/\/)?([\w\.]+)\.([a-z]{2,6}\.?)(\/[\w\.]*)*\/?$/"
+                },
+                {
+                    name: "date",
+                    pattern: "(0[1-9]|[12][0-9]|3[01])[ \.-](0[1-9]|1[012])[ \.-](19|20|)\d\d"
+                }
+            ],
+            selectedPattern: { name: 'custom' },
             pattern: rule.regExp
         };
-
-        $scope.checkSelectedPattern = function (selectedPattern) {
-            if (selectedPattern === 'email')
-                $scope.blade.propertyValidationRule.seatPattern = "/\S+@\S+\.\S+/";
-            else if (selectedPattern === 'url')
-                $scope.blade.propertyValidationRule.seatPattern = '/^(https?:\/\/)?([\w\.]+)\.([a-z]{2,6}\.?)(\/[\w\.]*)*\/?$/';
-            else if (selectedPattern === 'date')
-                $scope.blade.propertyValidationRule.seatPattern = '(0[1-9]|[12][0-9]|3[01])[ \.-](0[1-9]|1[012])[ \.-](19|20|)\d\d';
-        }
 
         $scope.selectOption = function (option) {
             $scope.blade.property.valueType = option;
