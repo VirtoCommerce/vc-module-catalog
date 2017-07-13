@@ -2,7 +2,7 @@
     <div class="blade-inner">
         <div class="inner-block">
             <form class="form" name="rules">
-                <div class="form-group">
+                <div class="form-group" ng-init="setForm(rules)">
                     <label class="form-label">{{ 'catalog.blades.property-detail.labels.required' | translate }}</label>
                     <div class="form-input">
                         <label class="form-label __switch">
@@ -26,7 +26,7 @@
                             </label>
                         </div>
                     </div>
-                    <div class="columns clearfix" ng-init="setForm(rules)">
+                    <div class="columns clearfix">
                         <div class="column">
                             <div class="form-group">
                                 <div class="form-input">
