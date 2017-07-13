@@ -2,7 +2,7 @@
 <div class="blade-content">
     <div class="blade-inner">
         <div class="inner-block">
-            <form class="form" ng-if="blade.hasAssetCreatePermission">
+            <form class="form" ng-if="blade.hasAssetCreatePermission" name="uploadForm">
                 <div class="sub-t">{{ 'catalog.blades.images.labels.select-image-category' | translate }}</div>
                 <div class="column">
                     <div class="form-group">
@@ -42,11 +42,25 @@
                         <i class="btn-ico fa fa-plus"></i>
                     </button>
                 </div>
+                
+                <div ng-show="uploader.isUploading">
+                    <div class="sub-t">{{ 'catalog.blades.images.labels.progress' | translate }}</div>
+                    <div class="progress-bar __aqua" ng-style="{'width': uploader.progress + '%'}"></div>
+                </div>
+                
+                <!-- preview -->
+                <div class="sub-t" ng-show="blade.currentEntities.length">{{ 'catalog.blades.images.labels.preview' | translate }}</div>
+                <div class="tile-group triple __images-list">
+                    <div class="tile" ng-repeat="image in blade.currentEntities" ng-include="'imageTemplate.html'"></div>
+                </div>
+
             </form>
 
-            <div ng-show="uploader.isUploading">
-                <div class="sub-t">{{ 'catalog.blades.images.labels.progress' | translate }}</div>
-                <div class="progress-bar __aqua" ng-style="{'width': uploader.progress + '%'}"></div>
-            </div>
+
+        </div>
     </div>
 </div>
+
+<script type="text/ng-template" id="imageTemplate.html">
+    <img class="tile-img" ng-src="{{image.url ? image.url : ''}}">
+</script>

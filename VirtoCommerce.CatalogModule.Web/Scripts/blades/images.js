@@ -56,6 +56,10 @@
                 });
             }
 
+            $scope.downloadUrl = function (image) {
+                window.open(image.url, '_blank');
+            }
+
             $scope.removeAction = function (selectedImages) {
                 if (selectedImages == undefined) {
                     selectedImages = $scope.gridApi.selection.getSelectedRows();
@@ -147,11 +151,13 @@
             };
 
             $scope.setGridOptions = function (gridOptions) {
+                gridOptions.useUiGridDraggableRowsHandle = true;
                 uiGridHelper.initialize($scope, gridOptions,
                     function (gridApi) {
                         $scope.$watch('pageSettings.currentPage', gridApi.pagination.seek);
                     });
             };
+
             bladeUtils.initializePagination($scope, true);
 
             initialize(blade.item);

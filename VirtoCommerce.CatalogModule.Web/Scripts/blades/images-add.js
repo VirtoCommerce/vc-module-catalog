@@ -38,7 +38,7 @@
                     uploader.onSuccessItem = function (fileItem, images, status, headers) {
                         angular.forEach(images, function (image) {
                             //ADD uploaded image                
-                            pb.currentEntities.push(image);
+                            blade.currentEntities.push(image);
                             var request = { imageUrl: image.url, isRegenerateAll: true };
 
                             imageTools.generateThumbnails(request, function (response) {
@@ -64,7 +64,7 @@
                 if (blade.newExternalImageUrl) {
                     assets.uploadFromUrl({ folderUrl: getImageUrl(blade.item.code, blade.imageType).folderUrl, url: blade.newExternalImageUrl }, function (data) {
                         _.each(data, function (x) {
-                            pb.currentEntities.push(x);
+                            blade.currentEntities.push(x);
                         });
                         blade.newExternalImageUrl = undefined;
                     });
@@ -72,6 +72,10 @@
             };
 
             $scope.saveChanges = function () {
+                _.each(blade.currentEntities, function(x) {
+                    pb.currentEntities.push(x);
+                }); 
+
                 $scope.bladeClose();
             };
 
