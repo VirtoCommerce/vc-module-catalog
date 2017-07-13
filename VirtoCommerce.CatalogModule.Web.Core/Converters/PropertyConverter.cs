@@ -64,6 +64,7 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             {
                 retVal.ValidationRules = new List<coreModel.PropertyValidationRule>() { property.ValidationRule.ToCoreModel() };
             }
+            else retVal.ValidationRules = new List<coreModel.PropertyValidationRule>();
 
             return retVal;
         }

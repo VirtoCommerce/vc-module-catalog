@@ -116,6 +116,11 @@
 
     function saveChanges() {
         blade.isLoading = true;
+
+        if (blade.currentEntity.valueType !== "ShortText" && blade.currentEntity.valueType !== "LongText") {
+            blade.currentEntity.validationRule = null;
+        }
+
         properties.update(blade.currentEntity, function (data, headers) {
             blade.currentEntityId = data.id;
             blade.refresh(true);
