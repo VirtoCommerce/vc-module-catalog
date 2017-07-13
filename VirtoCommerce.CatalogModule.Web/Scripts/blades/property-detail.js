@@ -6,7 +6,6 @@
     $scope.currentChild = undefined;
     blade.title = "catalog.blades.property-detail.title";
     blade.subtitle = "catalog.blades.property-detail.subtitle";
-
     blade.availableValueTypes = [
         {
             valueType: "ShortText",
@@ -76,17 +75,9 @@
                 newBlade.controller = 'virtoCommerce.catalogModule.propertyAttributesController';
                 newBlade.template = 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-attributes.tpl.html';
                 break;
-            case 'validationRules':
+            case 'rules':
                 newBlade.title = 'catalog.blades.property-validationRule.title';
                 newBlade.titleValues = { name: blade.origEntity.name ? blade.origEntity.name : blade.currentEntity.name };
-                newBlade.subtitle = 'catalog.blades.property-validationRule.subtitle';
-                newBlade.controller = 'virtoCommerce.catalogModule.propertyValidationRulesController';
-                newBlade.template = 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-validationRules.tpl.html';
-                break;
-            case 'appliesto':
-                newBlade.title = 'Manage property validation rules';
-                newBlade.titleValues = { name: blade.origEntity.name ? blade.origEntity.name : blade.currentEntity.name };
-                newBlade.subtitle = 'catalog.blades.property-type.subtitle';
                 newBlade.subtitle = 'catalog.blades.property-validationRule.subtitle';
                 newBlade.controller = 'virtoCommerce.catalogModule.propertyValidationRulesController';
                 newBlade.template = 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-validationRules.tpl.html';

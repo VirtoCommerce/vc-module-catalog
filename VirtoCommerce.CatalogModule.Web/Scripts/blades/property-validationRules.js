@@ -11,8 +11,8 @@
             isSpecificPattern: rule.regExp != null,
             charCountMin: rule.charCountMin,
             charCountMax: rule.charCountMax,
-            characterLimit: ['between', 'at-least', 'not-more-than'],
             selectedLimit: 'between',
+            characterLimit: ['between', 'at-least', 'not-more-than'],
             validationPatterns: [
                 {
                     name: 'custom',
@@ -35,6 +35,13 @@
             pattern: rule.regExp
         };
 
+        if (rule.charCountMin && !rule.charCountMax)
+            $scope.blade.propertyValidationRule.selectedLimit = 'at-least'
+        else if (!rule.charCountMin && rule.charCountMax)
+            $scope.blade.propertyValidationRule.selectedLimit = 'not-more-than'
+        else if (rule.charCountMin && rule.charCountMax)
+            $scope.blade.propertyValidationRule.selectedLimit = 'between'
+
         $scope.selectOption = function (option) {
             $scope.blade.property.valueType = option;
             $scope.bladeClose();
@@ -42,7 +49,6 @@
 
         $scope.blade.headIcon = 'fa-gear';
         $scope.blade.isLoading = false;
-
 
         $scope.saveChanges = function () {
             $scope.blade.parentBlade.currentEntity.required = $scope.blade.propertyValidationRule.required;
