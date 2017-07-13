@@ -12,7 +12,7 @@ namespace VirtoCommerce.CatalogModule.Data.Extensions
         public static void CopyProperties(this IHasProperties[] preloadedModels, IHasProperties[] targetModels)
         {
             var preloadedProperties = preloadedModels.SelectMany(x => x.Properties).ToList();
-            foreach (var catalog in targetModels)
+            foreach (var catalog in targetModels.Where(x=>x.PropertyValues != null))
             {
                 foreach (var propertyValue in catalog.PropertyValues)
                 {
