@@ -316,10 +316,10 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             }
             #endregion
 
-            //if (product.Variations != null)
-            //{
-            //    this.Childrens = new ObservableCollection<ItemEntity>(product.Variations.Select(x => AbstractTypeFactory<ItemEntity>.TryCreateInstance().FromModel(x, pkMap)));
-            //}
+            if (product.Variations != null)
+            {
+                this.Childrens = new ObservableCollection<ItemEntity>(product.Variations.Select(x => AbstractTypeFactory<ItemEntity>.TryCreateInstance().FromModel(x, pkMap)));
+            }
 
             return this;
         }
