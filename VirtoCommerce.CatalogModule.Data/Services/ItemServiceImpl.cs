@@ -221,7 +221,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
         }
 
-        protected virtual void ApplyInheritanceRules(CatalogProduct[] products)
+        protected virtual void ApplyInheritanceRules(CatalogProduct[] products, bool processVariations = true)
         {
             foreach (var product in products)
             {
@@ -330,7 +330,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     product.PackageType = product.PackageType ?? product.MainProduct.PackageType;
                 }
 
-                if (!product.Variations.IsNullOrEmpty())
+                if (processVariations && !product.Variations.IsNullOrEmpty())
                 {
                     ApplyInheritanceRules(product.Variations.ToArray());
                 }
@@ -340,7 +340,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private void ValidateProductProperties(CatalogProduct[] products)
         {
             LoadProductDependencies(products, false);
-            ApplyInheritanceRules(products);
+            ApplyInheritanceRules(products, false);
 
             var targets = products.OfType<IHasProperties>();
             foreach (var item in targets)
