@@ -37,7 +37,8 @@
 
                     uploader.onSuccessItem = function (fileItem, images, status, headers) {
                         angular.forEach(images, function (image) {
-                            //ADD uploaded image                
+                            //ADD uploaded image
+                            image.isImage = true;
                             blade.currentEntities.push(image);
                             var request = { imageUrl: image.url, isRegenerateAll: true };
 
@@ -64,6 +65,7 @@
                 if (blade.newExternalImageUrl) {
                     assets.uploadFromUrl({ folderUrl: getImageUrl(blade.item.code, blade.imageType).folderUrl, url: blade.newExternalImageUrl }, function (data) {
                         _.each(data, function (x) {
+                            x.isImage = true;
                             blade.currentEntities.push(x);
                         });
                         blade.newExternalImageUrl = undefined;
@@ -72,9 +74,8 @@
             };
 
             $scope.saveChanges = function () {
-                _.each(blade.currentEntities, function(x) {
-                    pb.currentEntities.push(x);
-                }); 
+                if (blade.onSelect)
+                    blade.onSelect(blade.currentEntities);
 
                 $scope.bladeClose();
             };

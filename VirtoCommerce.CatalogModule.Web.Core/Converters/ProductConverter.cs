@@ -157,11 +157,6 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             if (product.Images != null)
             {
                 retVal.Images = product.Images.Select(x => x.ToCoreModel()).ToList();
-                var index = 0;
-                foreach (var image in retVal.Images)
-                {
-                    image.SortOrder = index++;
-                }
             }
 
             if (product.Assets != null)

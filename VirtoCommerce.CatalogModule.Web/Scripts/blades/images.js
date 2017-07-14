@@ -9,8 +9,6 @@
 
             blade.hasAssetCreatePermission = bladeNavigationService.checkPermission('platform:asset:create');
 
-            $scope.isValid = true;
-
             blade.isLoading = false;
 
             blade.refresh = function (item) {
@@ -106,6 +104,7 @@
                     executeMethod: function () {
                         var newBlade = {
                             item: blade.item,
+                            onSelect: linkAssets,
                             controller: 'virtoCommerce.catalogModule.imagesAddController',
                             template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/images-add.tpl.html'
                         };
@@ -130,12 +129,16 @@
             ];
 
             function linkAssets(assets) {
+                var maxEntity = _.max(blade.currentEntities, function (entity) { return entity.sortOrder; });
+                var max = maxEntity.sortOrder;
                 _.each(assets, function (asset) {
                     if (asset.isImage) {
+                        max++;
                         var image = angular.copy(asset);
+                        image.sortOrder = max;
                         blade.currentEntities.push(image);
                     }
-                });
+                }, max);
             }
 
             $scope.openDictionarySettingManagement = function () {
@@ -151,12 +154,22 @@
             };
 
             $scope.setGridOptions = function (gridOptions) {
-                gridOptions.useUiGridDraggableRowsHandle = true;
                 uiGridHelper.initialize($scope, gridOptions,
                     function (gridApi) {
                         $scope.$watch('pageSettings.currentPage', gridApi.pagination.seek);
                     });
             };
+
+            $scope.priorityValid = function(entity) {
+                return !_.isUndefined(entity.sortOrder) && entity.sortOrder >= 0;
+            };
+
+            $scope.isValid = true;
+
+            $scope.$watch("blade.currentEntities", function (data) {
+                var result = _.all(blade.currentEntities, $scope.priorityValid);
+                return $scope.isValid = result;;
+            }, true);
 
             bladeUtils.initializePagination($scope, true);
 
