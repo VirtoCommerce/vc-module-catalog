@@ -129,8 +129,11 @@
             ];
 
             function linkAssets(assets) {
-                var maxEntity = _.max(blade.currentEntities, function (entity) { return entity.sortOrder; });
-                var max = maxEntity.sortOrder;
+                var max = 0;
+                if (blade.currentEntities.length) {
+                    var maxEntity = _.max(blade.currentEntities, function(entity) { return entity.sortOrder; });
+                    max = maxEntity.sortOrder;
+                }
                 _.each(assets, function (asset) {
                     if (asset.isImage) {
                         max++;
