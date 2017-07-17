@@ -58,7 +58,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                                    .ToArray();
             }
 
-            LoadProductDependencies(result);
+            LoadDependencies(result);
             ApplyInheritanceRules(result);
 
             // Fill outlines for products
@@ -187,10 +187,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         }
 
         
-        protected virtual void LoadProductDependencies(CatalogProduct[] products, bool processVariations = true)
+        protected virtual void LoadDependencies(CatalogProduct[] products, bool processVariations = true)
         {
             var catalogsMap = _catalogService.GetCatalogsList().ToDictionary(x => x.Id);
-            var allCategoriesIds = products.Select(x => x.CategoryId).Distinct().ToArray();
+            var allCategoriesIds = products.Select(x => x.CategoryId).Where(x => x != null).Distinct().ToArray();
             var categoriesMap = _categoryService.GetByIds(allCategoriesIds, CategoryResponseGroup.Full).ToDictionary(x => x.Id);
 
             foreach (var product in products)
@@ -212,11 +212,11 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
                 if (product.MainProduct != null)
                 {
-                    LoadProductDependencies(new[] { product.MainProduct }, false);
+                    LoadDependencies(new[] { product.MainProduct }, false);
                 }
                 if (processVariations && !product.Variations.IsNullOrEmpty())
                 {
-                    LoadProductDependencies(product.Variations.ToArray());
+                    LoadDependencies(product.Variations.ToArray());
                 }
             }
         }
@@ -226,7 +226,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             foreach (var product in products)
             {
                 //Inherit images from parent product (if its not set)
-                if (!product.Images.Any() && product.MainProduct != null && !product.MainProduct.Images.IsNullOrEmpty())
+                if (product.Images.IsNullOrEmpty() && product.MainProduct != null && !product.MainProduct.Images.IsNullOrEmpty())
                 {
                     product.Images = product.MainProduct.Images.Select(x => x.Clone()).OfType<Image>().ToList();
                     foreach (var image in product.Images)
@@ -237,7 +237,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 }
 
                 //Inherit assets from parent product (if its not set)
-                if (!product.Assets.Any() && product.MainProduct != null && product.MainProduct.Assets != null)
+                if (product.Assets.IsNullOrEmpty() && product.MainProduct != null && product.MainProduct.Assets != null)
                 {
                     product.Assets = product.MainProduct.Assets.Select(x => x.Clone()).OfType<Asset>().ToList();
                     foreach (var asset in product.Assets)
@@ -248,7 +248,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 }
 
                 //inherit editorial reviews from main product and do not inherit if variation loaded within product
-                if (!product.Reviews.Any() && product.MainProduct != null && product.MainProduct.Reviews != null)
+                if (product.Reviews.IsNullOrEmpty() && product.MainProduct != null && product.MainProduct.Reviews != null)
                 {
                     product.Reviews = product.MainProduct.Reviews.Select(x => x.Clone()).OfType<EditorialReview>().ToList();
                     foreach (var review in product.Reviews)
@@ -269,6 +269,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                                      .OfType<Property>()
                                      .OrderBy(x => x.Name)
                                      .ToList();
+
                 foreach (var property in product.Properties)
                 {
                     property.IsInherited = true;
@@ -339,7 +340,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         private void ValidateProductProperties(CatalogProduct[] products)
         {
-            LoadProductDependencies(products, false);
+            LoadDependencies(products, false);
             ApplyInheritanceRules(products, false);
 
             var targets = products.OfType<IHasProperties>();

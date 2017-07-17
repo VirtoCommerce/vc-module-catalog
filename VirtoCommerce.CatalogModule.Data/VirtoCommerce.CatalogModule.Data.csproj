@@ -94,7 +94,7 @@
     </Compile>
     <Compile Include="CatalogConstants.cs" />
     <Compile Include="Extensions\RepositoryExtension.cs" />
-    <Compile Include="Extensions\PropertiesExtentions.cs" />
+    <Compile Include="Extensions\TreeExtension.cs" />
     <Compile Include="Migrations\201504301302574_Initial.cs" />
     <Compile Include="Migrations\201504301302574_Initial.Designer.cs">
       <DependentUpon>201504301302574_Initial.cs</DependentUpon>

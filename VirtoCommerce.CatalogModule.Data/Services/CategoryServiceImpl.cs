@@ -42,9 +42,16 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         #region ICategoryService Members
         public virtual Category[] GetByIds(string[] categoryIds, CategoryResponseGroup responseGroup, string catalogId = null)
         {
-            var result = PreloadCategories(catalogId).Where(x => categoryIds.Contains(x.Id))
-                                                     .Select(x => MemberwiseCloneCategory(x))
-                                                     .ToArray();
+            var result = new List<Category>();
+            var preloadedCategoriesMap = PreloadCategories(catalogId);
+            foreach (var categoryId in categoryIds.Where(x => x != null))
+            {
+                Category category;
+                if (preloadedCategoriesMap.TryGetValue(categoryId, out category))
+                {
+                    result.Add(MemberwiseCloneCategory(category));
+                }
+            }         
 
             //Reduce details according to response group
             foreach (var category in result)
@@ -75,7 +82,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 }
             }
 
-            return result;
+            return result.ToArray();
         }
 
         public virtual Category GetById(string categoryId, CategoryResponseGroup responseGroup, string catalogId = null)
@@ -196,11 +203,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return retVal;
         }
 
-        protected virtual Category[] PreloadCategories(string catalogId)
+        protected virtual Dictionary<string, Category> PreloadCategories(string catalogId)
         {
             return _cacheManager.Get($"AllCategories-{catalogId}", CatalogConstants.CacheRegion, () =>
-            {
-                var result = new List<Category>();
+            {              
                 CategoryEntity[] entities = null;
                 using (var repository = _repositoryFactory())
                 {
@@ -210,39 +216,94 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 }
 
                 var catalogsMap = _catalogService.GetCatalogsList().ToDictionary(x => x.Id);
+                var result = entities.Select(x => x.ToModel(AbstractTypeFactory<Category>.TryCreateInstance())).ToDictionary(x => x.Id);
 
-                foreach (var entity in entities.OrderBy(x => x.AllParents.Count()))
+                LoadDependencies(result.Values, result);
+                ApplyInheritanceRules(result.Values);                
+
+                // Fill outlines for categories            
+                _outlineService.FillOutlinesForObjects(result.Values, catalogId);
+
+                var objectsWithSeo = new List<ISeoSupport>(result.Values);
+                var outlineItems = result.Values.Where(c => c.Outlines != null).SelectMany(c => c.Outlines.SelectMany(o => o.Items));
+                objectsWithSeo.AddRange(outlineItems);
+                _commerceService.LoadSeoForObjects(objectsWithSeo.ToArray());
+
+                return result;
+            });
+        }
+
+        protected virtual void LoadDependencies(IEnumerable<Category> categories, Dictionary<string, Category> preloadedCategoriesMap)
+        {
+            var catalogsMap = _catalogService.GetCatalogsList().ToDictionary(x => x.Id);
+            foreach(var category in categories)
+            {
+                category.Catalog = catalogsMap[category.CatalogId];
+                category.IsVirtual = category.Catalog.IsVirtual;
+                category.Parents = Array.Empty<Category>();
+                //Load all parent categories
+                if (category.ParentId != null)
                 {
-                    var allParents = new List<Category>();
-                    var category = entity.ToModel(AbstractTypeFactory<Category>.TryCreateInstance());
-                    foreach (var parent in entity.AllParents)
+                    category.Parents = category.GetAncestors(x => x.ParentId != null && preloadedCategoriesMap.ContainsKey(x.ParentId) ?  preloadedCategoriesMap[x.ParentId] : null).ToArray();
+                }
+                category.Level = category.Parents.Count();
+
+                if (!category.Links.IsNullOrEmpty())
+                {
+                    foreach (var link in category.Links)
                     {
-                        allParents.Add(result.First(x => x.Id == parent.Id));
+                        link.Catalog = catalogsMap[link.CatalogId];
+                        if (link.CategoryId != null)
+                        {
+                            link.Category = preloadedCategoriesMap[link.CategoryId];
+                        }
                     }
-                    category.Catalog = catalogsMap[category.CatalogId];
-                    category.IsVirtual = category.Catalog.IsVirtual;
-                    category.Parents = allParents.ToArray();
-                    category.Level = category.Parents.Count();
-                    //Try to inherit taxType from parent category
-                    if (category.TaxType == null && category.Parents != null)
+                }
+
+                if (!category.Properties.IsNullOrEmpty())
+                {
+                    foreach (var property in category.Properties)
                     {
-                        category.TaxType = category.Parents.Select(x => x.TaxType).Where(x => x != null).FirstOrDefault();
+                        property.Catalog = catalogsMap[property.CatalogId];
+                        if (property.CategoryId != null)
+                        {
+                            property.Category = preloadedCategoriesMap[property.CategoryId];
+                        }                       
                     }
-                    //Inherit properties
-                    var properties = category.Catalog.Properties.ToList();
-                    //For parents categories                       
-                    properties.AddRange(category.Parents.SelectMany(x => x.Properties));
+                }
+            }
+
+        }
+
+        protected virtual void ApplyInheritanceRules(IEnumerable<Category> categories)
+        {
+            foreach (var category in categories)
+            {
+                //Try to inherit taxType from parent category
+                if (category.TaxType == null && !category.Parents.IsNullOrEmpty())
+                {
+                    category.TaxType = category.Parents.Select(x => x.TaxType).Where(x => x != null).FirstOrDefault();
+                }
+                //Inherit properties
+                var properties = category.Catalog.Properties.ToList();
+                //For parents categories                       
+                properties.AddRange(category.Parents.SelectMany(x => x.Properties));
+                if (category.Properties != null)
+                {
                     // Self properties
                     properties.AddRange(category.Properties);
+                }
 
-                    //property override - need leave only property has a min distance to target category 
-                    //Algorithm based on index property in resulting list (property with min index will more closed to category)
-                    category.Properties = properties.Select((x, index) => new { PropertyName = x.Name.ToLowerInvariant(), Property = x, Index = index })
-                                               .GroupBy(x => x.PropertyName)
-                                               .Select(x => x.OrderBy(y => y.Index).First().Property)
-                                               .OrderBy(x => x.Name)
-                                               .ToList();
+                //property override - need leave only property has a min distance to target category 
+                //Algorithm based on index property in resulting list (property with min index will more closed to category)
+                category.Properties = properties.Select((x, index) => new { PropertyName = x.Name.ToLowerInvariant(), Property = x, Index = index })
+                                           .GroupBy(x => x.PropertyName)
+                                           .Select(x => x.OrderBy(y => y.Index).First().Property)
+                                           .OrderBy(x => x.Name)
+                                           .ToList();
 
+                if (!category.PropertyValues.IsNullOrEmpty())
+                {
                     //Next need set Property in PropertyValues objects
                     foreach (var propValue in category.PropertyValues.ToArray())
                     {
@@ -257,50 +318,24 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                             }
                         }
                     }
-                    result.Add(category);
                 }
-
-                foreach (var link in result.SelectMany(x => x.Links))
-                {
-                    link.Catalog = catalogsMap[link.CatalogId];
-                    if (link.CategoryId != null)
-                    {
-                        link.Category = result.First(x => x.Id == link.CategoryId);
-                    }
-                }
-
-                foreach (var property in result.SelectMany(x => x.Properties).Distinct())
-                {
-                    property.Catalog = catalogsMap[property.CatalogId];
-                    if (property.CategoryId != null)
-                    {
-                        property.Category = result.First(x => x.Id == property.CategoryId);
-                    }
-                }
-
-                // Fill outlines for categories            
-                _outlineService.FillOutlinesForObjects(result, catalogId);
-
-                var objectsWithSeo = new List<ISeoSupport>(result);
-                var outlineItems = result.Where(c => c.Outlines != null).SelectMany(c => c.Outlines.SelectMany(o => o.Items));
-                objectsWithSeo.AddRange(outlineItems);
-                _commerceService.LoadSeoForObjects(objectsWithSeo.ToArray());
-
-                return result.ToArray();
-            });
+            }
         }
 
         private void ValidateCategoryProperties(Category[] categories)
         {
-            var preloadedCategories = GetByIds(categories.Select(x => x.Id).ToArray(), CategoryResponseGroup.Full).OfType<IHasProperties>().ToArray();
-            var targets = categories.OfType<IHasProperties>().ToArray();
-            preloadedCategories.CopyProperties(targets);
-
-            foreach (var item in targets)
+            var groups = categories.GroupBy(x => x.CatalogId);
+            foreach (var group in groups)
             {
-                var validatioResult = _hasPropertyValidator.Validate(item);
-                if (!validatioResult.IsValid)
-                    throw new Exception($"Category properties has validation error: {string.Join(Environment.NewLine, validatioResult.Errors.Select(x => x.ToString()))}");
+                LoadDependencies(group, PreloadCategories(group.Key));
+                ApplyInheritanceRules(group);
+
+                foreach (var category in group)
+                {
+                    var validatioResult = _hasPropertyValidator.Validate(category);
+                    if (!validatioResult.IsValid)
+                        throw new Exception($"Category properties has validation error: {string.Join(Environment.NewLine, validatioResult.Errors.Select(x => x.ToString()))}");
+                }
             }
         }
     }

@@ -93,7 +93,10 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             property.Attributes = this.PropertyAttributes.Select(x => x.ToModel(AbstractTypeFactory<PropertyAttribute>.TryCreateInstance())).ToList();
             property.DisplayNames = this.DisplayNames.Select(x => x.ToModel(AbstractTypeFactory<PropertyDisplayName>.TryCreateInstance())).ToList();
             property.ValidationRules = this.ValidationRules.Select(x => x.ToModel(AbstractTypeFactory<PropertyValidationRule>.TryCreateInstance())).ToList();
-
+            foreach (var rule in property.ValidationRules)
+            {
+                rule.Property = property;
+            }
 
             return property;
         }
