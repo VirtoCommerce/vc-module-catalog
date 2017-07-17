@@ -244,7 +244,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 //Load all parent categories
                 if (category.ParentId != null)
                 {
-                    category.Parents = category.GetAncestors(x => x.ParentId != null && preloadedCategoriesMap.ContainsKey(x.ParentId) ?  preloadedCategoriesMap[x.ParentId] : null).ToArray();
+                    category.Parents = category.GetAncestors(x => x.ParentId != null && preloadedCategoriesMap.ContainsKey(x.ParentId) ?  preloadedCategoriesMap[x.ParentId] : null).Reverse().ToArray();
                 }
                 category.Level = category.Parents.Count();
 
