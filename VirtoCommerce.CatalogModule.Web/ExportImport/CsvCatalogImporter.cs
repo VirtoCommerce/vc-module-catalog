@@ -295,7 +295,7 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                     propertyValue.Property = csvProduct.Properties.FirstOrDefault(x => x.IsSuitableForValue(propertyValue));
                     if(propertyValue.Property != null)
                     {
-                        propertyValue.Property.ValueType = propertyValue.Property.ValueType;
+                        propertyValue.ValueType = propertyValue.Property.ValueType;
                         if (propertyValue.Property.Dictionary)
                         {
                             var dicValue = propertyValue.Property.DictionaryValues.FirstOrDefault(x => Equals(x.Value, propertyValue.Value));
