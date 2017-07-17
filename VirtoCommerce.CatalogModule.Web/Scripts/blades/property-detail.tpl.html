@@ -16,37 +16,43 @@
                         <input ng-model="data.name" placeholder="{{ 'catalog.blades.property-detail.placeholders.display-name' | translate }}" class="form-control" />
                     </div>
                 </div>
-                
-                <div class="form-group">
-                    <label class="form-label">{{ 'catalog.blades.property-detail.labels.dictionary' | translate }}</label>
-                    <div class="form-input">
-                        <label class="form-label __switch">
-                            <input type="checkbox" ng-model="blade.currentEntity.dictionary" />
-                            <span class="switch"></span>
-                        </label>
+
+                <div class="columns clearfix">
+                    <div class="column">
+                        <div class="form-group">
+                            <label class="form-label">{{ 'catalog.blades.property-detail.labels.dictionary' | translate }}</label>
+                            <div class="form-input">
+                                <label class="form-label __switch">
+                                    <input type="checkbox" ng-model="blade.currentEntity.dictionary" />
+                                    <span class="switch"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="form-group">
+                            <label class="form-label">{{ 'catalog.blades.property-detail.labels.multivalue' | translate }}</label>
+                            <div class="form-input">
+                                <label class="form-label __switch">
+                                    <input type="checkbox" ng-model="blade.currentEntity.multivalue" />
+                                    <span class="switch"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="form-group">
+                            <label class="form-label">{{ 'catalog.blades.property-detail.labels.multi-language' | translate }}</label>
+                            <div class="form-input">
+                                <label class="form-label __switch">
+                                    <input type="checkbox" ng-model="blade.currentEntity.multilanguage" />
+                                    <span class="switch"></span>
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                
-                <div class="form-group">
-                    <label class="form-label">{{ 'catalog.blades.property-detail.labels.multivalue' | translate }}</label>
-                    <div class="form-input">
-                        <label class="form-label __switch">
-                            <input type="checkbox" ng-model="blade.currentEntity.multivalue" />
-                            <span class="switch"></span>
-                        </label>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">{{ 'catalog.blades.property-detail.labels.multi-language' | translate }}</label>
-                    <div class="form-input">
-                        <label class="form-label __switch">
-                            <input type="checkbox" ng-model="blade.currentEntity.multilanguage" />
-                            <span class="switch"></span>
-                        </label>
-                    </div>
-                </div>
-                
+
                 <div class="form-group">
                     <label class="form-label">{{ 'catalog.blades.property-detail.labels.applies-to' | translate }}</label>
                     <div class="form-input">
