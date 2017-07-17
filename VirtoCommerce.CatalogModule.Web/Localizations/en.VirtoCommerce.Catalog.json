@@ -54,7 +54,6 @@
             "select": "Select..."
           }
         },
-
         "categories-items-list": {
           "title": "Categories & Items",
           "subtitle": "Browsing {{name}}",
@@ -87,7 +86,7 @@
             "tax-type": "Tax type"
           },
           "validations": {
-            "code": "Code can't contain $+;=%{}[]|\/@ ~!^*&()?:'<>, characters"
+            "code": "Code can't contain $+;=%{}[]|/@ ~!^*&()?:'<>, characters"
           },
           "placeholders": {
             "name": "Enter category name",
@@ -161,10 +160,38 @@
             "display-name": "Enter display name..."
           }
         },
+        "property-validationRule": {
+          "title": "Validation rules",
+          "subtitle": "Manage validation rules",
+          "match-validation-pattern": "Match a specific pattern",
+          "character-count": "Limit character count",
+          "character-limit": {
+            "between": "between",
+            "at-least": "at least",
+            "not-more-than": "not more than"
+          },
+          "patterns": {
+            "custom": "custom",
+            "email": "email",
+            "url": "url",
+            "date": "date"
+          },
+          "descriptions": {
+            "require": "You won`t be able to publish an entry if there is an existing entry with identical content",
+            "character-limit": "You won`t be able to publish an entry if there is an existing entry with identical content",
+            "pattern": "Make this field match a pattern: e-mail address, URL, or a custom regular expression"
+          }
+        },
         "property-list": {
           "subtitle": "Properties list",
           "labels": {
             "empty-list": "None"
+          },
+          "validations": {
+            "required": "This field is required",
+            "maxLength": "This field should not be greater than {{max}} characters",
+            "minLenght": "This field should not be lesser than {{min}} characters",
+            "pattern": "This field doesn't match pattern"
           }
         },
         "item-property-detail": {
@@ -249,7 +276,7 @@
             "gtin": "GTIN"
           },
           "validations": {
-            "sku": "SKU can't contain $+;=%{}[]|\/@ ~!^*&()?:'<>, characters"
+            "sku": "SKU can't contain $+;=%{}[]|/@ ~!^*&()?:'<>, characters"
           },
           "placeholders": {
             "sku": "Enter item SKU",
@@ -323,8 +350,7 @@
             "image-category": "Image category",
             "drag-drop-comment": "Drag and drop images here",
             "progress": "Progress",
-            "make-default-image": "Drag and drop an image to top left corner of images area to make it the default image.",
-            "preview": "Preview"
+            "make-default-image": "Drag and drop an image to top left corner of images area to make it the default image."
           },
           "placeholders": {
             "image-url": "Paste image URL here",
@@ -402,7 +428,7 @@
         },
         "image-upload": {
           "title": "Upload images"
-        } 
+        }
       },
         "widgets": {
             "catalogLanguages": {

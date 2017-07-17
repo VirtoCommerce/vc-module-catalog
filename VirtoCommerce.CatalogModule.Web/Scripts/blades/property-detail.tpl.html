@@ -8,6 +8,7 @@
                         <input focus-on="" required class="form-control" ng-model="blade.currentEntity.name" />
                     </div>
                 </div>
+
                 <div class="form-group">
                     <label class="form-label" for="">{{ 'catalog.blades.property-detail.labels.display-name' | translate }}</label>
                     <div class="form-input __langs" ng-repeat="data in blade.currentEntity.displayNames">
@@ -15,47 +16,67 @@
                         <input ng-model="data.name" placeholder="{{ 'catalog.blades.property-detail.placeholders.display-name' | translate }}" class="form-control" />
                     </div>
                 </div>
+                
+                <div class="form-group">
+                    <label class="form-label">{{ 'catalog.blades.property-detail.labels.dictionary' | translate }}</label>
+                    <div class="form-input">
+                        <label class="form-label __switch">
+                            <input type="checkbox" ng-model="blade.currentEntity.dictionary" />
+                            <span class="switch"></span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">{{ 'catalog.blades.property-detail.labels.multivalue' | translate }}</label>
+                    <div class="form-input">
+                        <label class="form-label __switch">
+                            <input type="checkbox" ng-model="blade.currentEntity.multivalue" />
+                            <span class="switch"></span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">{{ 'catalog.blades.property-detail.labels.multi-language' | translate }}</label>
+                    <div class="form-input">
+                        <label class="form-label __switch">
+                            <input type="checkbox" ng-model="blade.currentEntity.multilanguage" />
+                            <span class="switch"></span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">{{ 'catalog.blades.property-detail.labels.applies-to' | translate }}</label>
+                    <div class="form-input">
+                        <ui-select ng-model="blade.currentEntity.type" class="capitalizeText">
+                            <ui-select-match>{{$select.selected}}</ui-select-match>
+                            <ui-select-choices repeat="propertyType in blade.availablePropertyTypes | filter: $select.search">
+                                <span ng-click="blade.currentEntity.type">{{propertyType}}</span>
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">{{ 'catalog.blades.property-detail.labels.value-type' | translate }}</label>
+                    <div class="form-input">
+                        <ui-select ng-model="blade.currentEntity.valueType">
+                            <ui-select-match placeholder="">{{ $select.selected.title |translate}}</ui-select-match>
+                            <ui-select-choices repeat="x.valueType as x in blade.availableValueTypes | filter: $select.search">
+                                <div>{{ x.title |translate }}</div>
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+                </div>
+
             </form>
 
-            <div class="form">
-                <div class="form-control __checkbox">
-                    <label class="form-label">
-                        <input type="checkbox" ng-model="blade.currentEntity.required">
-                        <span class="check"></span>
-                        <span class="name">{{ 'catalog.blades.property-detail.labels.required' | translate }}</span>
-                    </label>
-                </div>
-                <div class="form-control __checkbox">
-                    <label class="form-label">
-                        <input type="checkbox" ng-model="blade.currentEntity.dictionary">
-                        <span class="check"></span>
-                        <span class="name">{{ 'catalog.blades.property-detail.labels.dictionary' | translate }}</span>
-                    </label>
-                </div>
-                <div class="form-control __checkbox">
-                    <label class="form-label">
-                        <input type="checkbox" ng-model="blade.currentEntity.multivalue">
-                        <span class="check"></span>
-                        <span class="name">{{ 'catalog.blades.property-detail.labels.multivalue' | translate }}</span>
-                    </label>
-                </div>
-                <div class="form-control __checkbox">
-                    <label class="form-label">
-                        <input type="checkbox" ng-model="blade.currentEntity.multilanguage">
-                        <span class="check"></span>
-                        <span class="name">{{ 'catalog.blades.property-detail.labels.multi-language' | translate }}</span>
-                    </label>
-                </div>
-            </div>
-
             <ul class="list __items">
-                <li class="list-item" ng-class="{'__selected': currentChild === 'appliesto'}" ng-click='openChild("appliesto")'>
-                    <span class="list-t">{{ 'catalog.blades.property-detail.labels.applies-to' | translate }}</span>
-                    <span class="list-descr">{{blade.currentEntity.type}}</span>
-                </li>
-                <li class="list-item" ng-class="{'__selected': currentChild === 'valType'}" ng-click='openChild("valType")'>
-                    <span class="list-t">{{ 'catalog.blades.property-detail.labels.value-type' | translate }}</span>
-                    <span class="list-descr">{{blade.currentEntity.valueType}}</span>
+                <li class="list-item" ng-class="{'__selected': currentChild === 'va'}" ng-click='openChild("rules")'>
+                    <span class="list-t">{{ 'catalog.blades.property-validationRule.title'|translate }}</span>
+                    <span class="list-descr">{{ 'catalog.blades.property-validationRule.subtitle'|translate }}</span>
                 </li>
                 <li class="list-item" ng-class="{'__selected': currentChild === 'dict', '__disabled': !blade.currentEntity.dictionary }" ng-click='openChild("dict")'>
                     <span class="list-t">{{ 'catalog.blades.property-detail.labels.dictionary' | translate }}</span>

@@ -3,7 +3,7 @@
 
     return {
         restrict: 'E',
-        require: 'ngModel',
+        require: ['^form', 'ngModel'],
         replace: true,
         transclude: true,
         templateUrl: 'Modules/$(VirtoCommerce.Catalog)/Scripts/directives/property2.tpl.html',
@@ -12,7 +12,8 @@
             defaultLanguage: "=",
             getPropValues: "&"
         },
-        link: function (scope, element, attr, ngModelController, linker) {
+        link: function (scope, element, attr, ctrls, linker) {
+            var ngModelController = ctrls[1];
 
             scope.currentEntity = ngModelController.$modelValue;
 
@@ -20,6 +21,7 @@
             scope.context.currentPropValues = [];
             scope.context.allDictionaryValues = [];
             scope.context.langValuesMap = {};
+            scope.context.form = ctrls[0];
 
             scope.$watch('context.langValuesMap', function (newValue, oldValue) {
                 if (newValue != oldValue) {

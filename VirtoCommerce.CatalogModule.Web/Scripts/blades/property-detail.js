@@ -3,10 +3,44 @@
     var blade = $scope.blade;
     blade.updatePermission = 'catalog:update';
     blade.origEntity = {};
-
     $scope.currentChild = undefined;
     blade.title = "catalog.blades.property-detail.title";
     blade.subtitle = "catalog.blades.property-detail.subtitle";
+    blade.availableValueTypes = [
+        {
+            valueType: "ShortText",
+            title: "platform.properties.short-text.title",
+            description: "platform.properties.short-text.description"
+        },
+        {
+            valueType: "LongText",
+            title: "platform.properties.long-text.title",
+            description: "platform.properties.long-text.description"
+        },
+        {
+            valueType: "Number",
+            title: "platform.properties.decimal.title",
+            description: "platform.properties.decimal.description"
+        },
+        {
+            valueType: "DateTime",
+            title: "platform.properties.date-time.title",
+            description: "platform.properties.date-time.description"
+        },
+        {
+            valueType: "Boolean",
+            title: "platform.properties.boolean.title",
+            description: "platform.properties.boolean.description"
+        },
+        {
+            valueType: "Integer",
+            title: "platform.properties.integer.title",
+            description: "platform.properties.integer.description"
+        }
+    ];
+
+    blade.availablePropertyTypes = blade.catalogId ? ['Product', 'Variation', 'Category', 'Catalog'] : ['Product', 'Variation', 'Category'];
+
     blade.refresh = function (parentRefresh) {
         if (blade.currentEntityId) {
             properties.get({ propertyId: blade.currentEntityId }, function (data) {
@@ -33,7 +67,6 @@
     $scope.openChild = function (childType) {
         var newBlade = { id: "propertyChild" };
         newBlade.property = blade.currentEntity;
-
         switch (childType) {
             case 'attr':
                 newBlade.title = 'catalog.blades.property-attributes.title';
@@ -42,20 +75,12 @@
                 newBlade.controller = 'virtoCommerce.catalogModule.propertyAttributesController';
                 newBlade.template = 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-attributes.tpl.html';
                 break;
-            case 'valType':
-                newBlade.title = 'catalog.blades.property-valueType.title';
+            case 'rules':
+                newBlade.title = 'catalog.blades.property-validationRule.title';
                 newBlade.titleValues = { name: blade.origEntity.name ? blade.origEntity.name : blade.currentEntity.name };
-                newBlade.subtitle = 'catalog.blades.property-valueType.subtitle';
-                newBlade.controller = 'virtoCommerce.catalogModule.propertyValueTypeController';
-                newBlade.template = 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-valueType.tpl.html';
-                break;
-            case 'appliesto':
-                newBlade.title = 'catalog.blades.property-type.title';
-                newBlade.titleValues = { name: blade.origEntity.name ? blade.origEntity.name : blade.currentEntity.name };
-                newBlade.subtitle = 'catalog.blades.property-type.subtitle';
-                newBlade.controller = 'virtoCommerce.catalogModule.propertyTypeController';
-                newBlade.template = 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-type.tpl.html';
-                newBlade.availablePropertyTypes = blade.catalogId ? ['Product', 'Variation', 'Category', 'Catalog'] : ['Product', 'Variation', 'Category'];
+                newBlade.subtitle = 'catalog.blades.property-validationRule.subtitle';
+                newBlade.controller = 'virtoCommerce.catalogModule.propertyValidationRulesController';
+                newBlade.template = 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-validationRules.tpl.html';
                 break;
             case 'dict':
                 newBlade.title = 'catalog.blades.property-dictionary.title';
@@ -91,6 +116,11 @@
 
     function saveChanges() {
         blade.isLoading = true;
+
+        if (blade.currentEntity.valueType !== "ShortText" && blade.currentEntity.valueType !== "LongText") {
+            blade.currentEntity.validationRule = null;
+        }
+
         properties.update(blade.currentEntity, function (data, headers) {
             blade.currentEntityId = data.id;
             blade.refresh(true);
