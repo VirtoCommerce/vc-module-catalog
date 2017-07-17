@@ -1,13 +1,11 @@
-﻿using System;
+﻿using CacheManager.Core;
+using FluentValidation;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using CacheManager.Core;
-using FluentValidation;
-using Omu.ValueInjecter;
 using VirtoCommerce.CatalogModule.Data.Extensions;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
-using VirtoCommerce.CatalogModule.Data.Services.Validation;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Commerce.Model;
@@ -244,7 +242,9 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 //Load all parent categories
                 if (category.ParentId != null)
                 {
-                    category.Parents = category.GetAncestors(x => x.ParentId != null && preloadedCategoriesMap.ContainsKey(x.ParentId) ?  preloadedCategoriesMap[x.ParentId] : null).Reverse().ToArray();
+                    category.Parents = TreeExtension.GetAncestors(category, x => x.ParentId != null && preloadedCategoriesMap.ContainsKey(x.ParentId) ?  preloadedCategoriesMap[x.ParentId] : null)
+                                                    .Reverse()
+                                                    .ToArray();
                 }
                 category.Level = category.Parents.Count();
 

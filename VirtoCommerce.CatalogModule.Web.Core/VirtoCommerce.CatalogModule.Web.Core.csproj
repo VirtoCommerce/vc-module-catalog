@@ -32,7 +32,7 @@
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
-  <ItemGroup>   
+  <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -54,9 +54,8 @@
       <HintPath>..\packages\VirtoCommerce.Domain.2.24.2\lib\net461\VirtoCommerce.Domain.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="VirtoCommerce.Platform.Core, Version=2.13.9.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VirtoCommerce.Platform.Core.2.13.9\lib\net461\VirtoCommerce.Platform.Core.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="VirtoCommerce.Platform.Core, Version=2.13.10.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VirtoCommerce.Platform.Core.2.13.10\lib\net461\VirtoCommerce.Platform.Core.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
