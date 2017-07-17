@@ -2,8 +2,8 @@
 .controller('virtoCommerce.catalogModule.imagesController',
     ['$scope', '$filter', '$translate', 'platformWebApp.dialogService',
         'platformWebApp.bladeNavigationService', 'platformWebApp.authService',
-        'platformWebApp.assets.api', 'virtoCommerce.catalogModule.imageTools', 'platformWebApp.settings', 'platformWebApp.bladeUtils', 'platformWebApp.uiGridHelper',
-        function ($scope, $filter, $translate, dialogService, bladeNavigationService, authService, assets, imageTools, settings, bladeUtils, uiGridHelper) {
+        'platformWebApp.assets.api', 'virtoCommerce.catalogModule.imageTools', 'platformWebApp.settings', 'platformWebApp.bladeUtils', 'platformWebApp.uiGridHelper', '$timeout',
+        function ($scope, $filter, $translate, dialogService, bladeNavigationService, authService, assets, imageTools, settings, bladeUtils, uiGridHelper, $timeout) {
             var blade = $scope.blade;
             blade.headIcon = 'fa-image';
 
@@ -131,7 +131,7 @@
             function linkAssets(assets) {
                 var max = 0;
                 if (blade.currentEntities.length) {
-                    var maxEntity = _.max(blade.currentEntities, function(entity) { return entity.sortOrder; });
+                    var maxEntity = _.max(blade.currentEntities, function (entity) { return entity.sortOrder; });
                     max = maxEntity.sortOrder;
                 }
                 _.each(assets, function (asset) {
@@ -156,14 +156,41 @@
                 bladeNavigationService.showBlade(newBlade, blade);
             };
 
+            function getEntityGridIndex(searchEntity) {
+                var index = -1;
+                _.each($scope.gridApi.grid.renderContainers.body.visibleRowCache, function (row, idx) {
+                    if (_.isEqual(row.entity, searchEntity)) {
+                        index = idx;
+                        return;
+                    }
+                });
+                return index;
+            }
+
+            var priorityChanged = function (data) {
+                var newIndex = getEntityGridIndex(data.rowEntity);
+                if (newIndex !== data.index) {
+                    $scope.gridApi.cellNav.scrollToFocus(data.rowEntity, data.colDef);
+                }
+            }
+
             $scope.setGridOptions = function (gridOptions) {
+                gridOptions.enableCellEditOnFocus = false;
                 uiGridHelper.initialize($scope, gridOptions,
                     function (gridApi) {
-                        $scope.$watch('pageSettings.currentPage', gridApi.pagination.seek);
+                        gridApi.edit.on.afterCellEdit($scope, function (rowEntity, colDef) {
+                            var index = getEntityGridIndex(rowEntity);
+                            var data = {
+                                rowEntity: rowEntity,
+                                colDef: colDef,
+                                index: index
+                            };
+                            $timeout(priorityChanged, 300, true, data);
+                        });
                     });
             };
 
-            $scope.priorityValid = function(entity) {
+            $scope.priorityValid = function (entity) {
                 return !_.isUndefined(entity.sortOrder) && entity.sortOrder >= 0;
             };
 
@@ -178,4 +205,11 @@
 
             initialize(blade.item);
 
+        }]).run(
+        ['platformWebApp.ui-grid.extension', 'uiGridValidateService', function (gridOptionExtension, uiGridValidateService) {
+            uiGridValidateService.setValidator('minPriorityValidator', function () {
+                return function (oldValue, newValue, rowEntity, colDef) {
+                    return newValue >= 0;
+                };
+            }, function () { return 'Priority value should be equal or more than zero'; });
         }]);
