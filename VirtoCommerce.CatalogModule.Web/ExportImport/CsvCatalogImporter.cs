@@ -292,7 +292,7 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                 foreach (var propertyValue in csvProduct.PropertyValues.ToArray())
                 {
                     //Try to find property meta information
-                    propertyValue.Property = csvProduct.Properties.FirstOrDefault(x => x.IsSuitableForValue(propertyValue));
+                    propertyValue.Property = csvProduct.Properties.FirstOrDefault(x => x.Name.EqualsInvariant(propertyValue.PropertyName));
                     if(propertyValue.Property != null)
                     {
                         propertyValue.ValueType = propertyValue.Property.ValueType;
