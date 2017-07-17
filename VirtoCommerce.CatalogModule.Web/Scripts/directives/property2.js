@@ -200,6 +200,31 @@
             linker(function (clone) {
                 element.append(clone);
             });
+
+            scope.tagsChanged = function(name) {
+                var form = scope.context.form;
+                form[name].$setValidity('minlength', true);
+                form[name].$setValidity('maxlength', true);
+                form[name].$setValidity('pattern', true);
+            };
+
+            scope.addederror = function(tag, name, minValue, maxValue, pattern) {
+                var form = scope.context.form;
+                if (minValue && tag.length < minValue) {
+                    form[name].$setValidity('minlength', false);
+                }
+
+                if (maxValue && tag.length > maxValue) {
+                    form[name].$setValidity('maxlength', false);
+                }
+
+                if (pattern) {
+                    var re = new RegExp(pattern);
+                    if (!re.test(tag)) {
+                        form[name].$setValidity('pattern', false);
+                    }
+                }
+            };
         }
     }
 }]);
