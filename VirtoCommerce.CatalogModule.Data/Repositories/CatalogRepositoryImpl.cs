@@ -76,6 +76,11 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             modelBuilder.Entity<dataModel.PropertyValueEntity>().HasOptional(m => m.Catalog).WithMany(x => x.CatalogPropertyValues).HasForeignKey(x => x.CatalogId).WillCascadeOnDelete(false);
             #endregion
 
+            #region PropertyValidationRule
+            modelBuilder.Entity<dataModel.PropertyValidationRuleEntity>().ToTable("PropertyValidationRule").HasKey(x => x.Id).Property(x => x.Id);
+            modelBuilder.Entity<dataModel.PropertyValidationRuleEntity>().HasRequired(m => m.Property).WithMany(x => x.ValidationRules).HasForeignKey(x => x.PropertyId).WillCascadeOnDelete(true);
+
+            #endregion
 
             #region CatalogImage
             modelBuilder.Entity<dataModel.ImageEntity>().ToTable("CatalogImage").HasKey(x => x.Id).Property(x => x.Id);
@@ -203,7 +208,11 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             get { return GetAsQueryable<dataModel.CategoryRelationEntity>(); }
         }
 
-     
+        public IQueryable<dataModel.PropertyValidationRuleEntity> PropertyValidationRules
+        {
+            get { return GetAsQueryable<dataModel.PropertyValidationRuleEntity>(); }
+        }
+
         public dataModel.CatalogEntity[] GetCatalogsByIds(string[] catalogIds)
         {
             var retVal = Catalogs.Include(x => x.CatalogLanguages)
@@ -361,7 +370,8 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             var retVal = Properties.Where(x => propIds.Contains(x.Id)).ToArray();
             var propAttributes = PropertyAttributes.Where(x => propIds.Contains(x.PropertyId)).ToArray();
             var propDisplayNames = PropertyDisplayNames.Where(x => propIds.Contains(x.PropertyId)).ToArray();
-            
+            var propValidationRules = PropertyValidationRules.Where(x => propIds.Contains(x.PropertyId)).ToArray();
+
             //Do not load dictionary values for not enum properties
             var dictPropertiesIds = retVal.Where(x => x.IsEnum).Select(x => x.Id).ToArray();
             if (!dictPropertiesIds.IsNullOrEmpty())

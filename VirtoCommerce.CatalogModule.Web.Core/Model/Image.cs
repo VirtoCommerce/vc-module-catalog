@@ -10,5 +10,7 @@
             TypeId = "image";
             Group = "images";
         }
+
+        public int SortOrder { get; set; } 
     }
 }

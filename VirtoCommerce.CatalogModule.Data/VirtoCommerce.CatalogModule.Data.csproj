@@ -54,6 +54,10 @@
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="FluentValidation, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7de548da2fbae0f0, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentValidation.7.1.0\lib\net45\FluentValidation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -71,13 +75,12 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="VirtoCommerce.Domain, Version=2.23.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VirtoCommerce.Domain.2.23.0\lib\net461\VirtoCommerce.Domain.dll</HintPath>
+    <Reference Include="VirtoCommerce.Domain, Version=2.24.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VirtoCommerce.Domain.2.24.2\lib\net461\VirtoCommerce.Domain.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="VirtoCommerce.Platform.Core, Version=2.13.9.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VirtoCommerce.Platform.Core.2.13.9\lib\net461\VirtoCommerce.Platform.Core.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="VirtoCommerce.Platform.Core, Version=2.13.10.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VirtoCommerce.Platform.Core.2.13.10\lib\net461\VirtoCommerce.Platform.Core.dll</HintPath>
     </Reference>
     <Reference Include="VirtoCommerce.Platform.Data, Version=2.13.9.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\VirtoCommerce.Platform.Data.2.13.9\lib\net461\VirtoCommerce.Platform.Data.dll</HintPath>
@@ -178,6 +181,10 @@
     <Compile Include="Migrations\201706261011171_PropertyDisplayNames.Designer.cs">
       <DependentUpon>201706261011171_PropertyDisplayNames.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201707051005213_PropertyValidation.cs" />
+    <Compile Include="Migrations\201707051005213_PropertyValidation.Designer.cs">
+      <DependentUpon>201707051005213_PropertyValidation.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Model\AssetEntity.cs" />
     <Compile Include="Model\AssociationEntity.cs" />
@@ -193,6 +200,7 @@
     <Compile Include="Model\PropertyEntity.cs" />
     <Compile Include="Model\PropertyAttributeEntity.cs" />
     <Compile Include="Model\PropertyDictionaryValueEntity.cs" />
+    <Compile Include="Model\PropertyValidationRuleEntity.cs" />
     <Compile Include="Model\PropertyValueEntity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\CatalogRepositoryImpl.cs" />
@@ -242,6 +250,8 @@
     <Compile Include="Services\CatalogServiceImpl.cs" />
     <Compile Include="Services\OutlineService.cs" />
     <Compile Include="Services\PropertyServiceImpl.cs" />
+    <Compile Include="Services\Validation\HasPropertiesValidator.cs" />
+    <Compile Include="Services\Validation\PropertyValueValidator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
@@ -318,6 +328,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201706261011171_PropertyDisplayNames.resx">
       <DependentUpon>201706261011171_PropertyDisplayNames.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201707051005213_PropertyValidation.resx">
+      <DependentUpon>201707051005213_PropertyValidation.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

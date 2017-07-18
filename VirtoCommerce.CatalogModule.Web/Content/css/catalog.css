@@ -248,3 +248,6 @@
     left: 3px;
     top: auto;
 }
+.capitalizeText {
+    text-transform: capitalize;
+}

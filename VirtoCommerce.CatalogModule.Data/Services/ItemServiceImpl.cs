@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CacheManager.Core;
+using FluentValidation;
 using VirtoCommerce.CatalogModule.Data.Extensions;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
@@ -11,7 +12,7 @@ using VirtoCommerce.Domain.Commerce.Model;
 using VirtoCommerce.Domain.Commerce.Services;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Data.Infrastructure;
-
+using VirtoCommerce.CatalogModule.Data.Services.Validation;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
@@ -22,13 +23,17 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private readonly ICommerceService _commerceService;
         private readonly IOutlineService _outlineService;
         private readonly Func<ICatalogRepository> _repositoryFactory;
-        public ItemServiceImpl(Func<ICatalogRepository> catalogRepositoryFactory, ICommerceService commerceService, IOutlineService outlineService, ICatalogService catalogService, ICategoryService categoryService, ICacheManager<object> cacheManager)
+        private readonly AbstractValidator<IHasProperties> _hasPropertyValidator;
+
+        public ItemServiceImpl(Func<ICatalogRepository> catalogRepositoryFactory, ICommerceService commerceService, IOutlineService outlineService, ICatalogService catalogService, ICategoryService categoryService, ICacheManager<object> cacheManager,
+            AbstractValidator<IHasProperties> hasPropertyValidator)
         {
             _catalogService = catalogService;
             _categoryService = categoryService;
             _commerceService = commerceService;
             _outlineService = outlineService;
             _repositoryFactory = catalogRepositoryFactory;
+            _hasPropertyValidator = hasPropertyValidator;
         }
 
         #region IItemService Members
@@ -53,7 +58,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                                    .ToArray();
             }
 
-            LoadProductDependencies(result);
+            LoadDependencies(result);
             ApplyInheritanceRules(result);
 
             // Fill outlines for products
@@ -150,9 +155,14 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
             var pkMap = new PrimaryKeyResolvingMap();
 
+            ValidateProductProperties(products);
+
             using (var repository = _repositoryFactory())
             using (var changeTracker = GetChangeTracker(repository))
             {
+                //Optimize performance and CPU usage
+                repository.DisableChangesTracking();
+
                 var dbExistProducts = repository.GetItemByIds(products.Where(x => !x.IsTransient()).Select(x => x.Id).ToArray(), Domain.Catalog.Model.ItemResponseGroup.ItemLarge);
                 foreach (var product in products)
                 {
@@ -170,6 +180,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                         repository.Add(modifiedEntity);
                     }
                 }
+
+                ((System.Data.Entity.DbContext)repository).ChangeTracker.DetectChanges();
                 CommitChanges(repository);
                 pkMap.ResolvePrimaryKeys();
             }
@@ -180,10 +192,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         }
 
         
-        protected virtual void LoadProductDependencies(CatalogProduct[] products, bool processVariations = true)
+        protected virtual void LoadDependencies(CatalogProduct[] products, bool processVariations = true)
         {
             var catalogsMap = _catalogService.GetCatalogsList().ToDictionary(x => x.Id);
-            var allCategoriesIds = products.Select(x => x.CategoryId).Distinct().ToArray();
+            var allCategoriesIds = products.Select(x => x.CategoryId).Where(x => x != null).Distinct().ToArray();
             var categoriesMap = _categoryService.GetByIds(allCategoriesIds, CategoryResponseGroup.Full).ToDictionary(x => x.Id);
 
             foreach (var product in products)
@@ -205,21 +217,21 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
                 if (product.MainProduct != null)
                 {
-                    LoadProductDependencies(new[] { product.MainProduct }, false);
+                    LoadDependencies(new[] { product.MainProduct }, false);
                 }
                 if (processVariations && !product.Variations.IsNullOrEmpty())
                 {
-                    LoadProductDependencies(product.Variations.ToArray());
+                    LoadDependencies(product.Variations.ToArray());
                 }
             }
         }
 
-        protected virtual void ApplyInheritanceRules(CatalogProduct[] products)
+        protected virtual void ApplyInheritanceRules(CatalogProduct[] products, bool processVariations = true)
         {
             foreach (var product in products)
             {
                 //Inherit images from parent product (if its not set)
-                if (!product.Images.Any() && product.MainProduct != null && !product.MainProduct.Images.IsNullOrEmpty())
+                if (product.Images.IsNullOrEmpty() && product.MainProduct != null && !product.MainProduct.Images.IsNullOrEmpty())
                 {
                     product.Images = product.MainProduct.Images.Select(x => x.Clone()).OfType<Image>().ToList();
                     foreach (var image in product.Images)
@@ -230,7 +242,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 }
 
                 //Inherit assets from parent product (if its not set)
-                if (!product.Assets.Any() && product.MainProduct != null && product.MainProduct.Assets != null)
+                if (product.Assets.IsNullOrEmpty() && product.MainProduct != null && product.MainProduct.Assets != null)
                 {
                     product.Assets = product.MainProduct.Assets.Select(x => x.Clone()).OfType<Asset>().ToList();
                     foreach (var asset in product.Assets)
@@ -241,7 +253,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 }
 
                 //inherit editorial reviews from main product and do not inherit if variation loaded within product
-                if (!product.Reviews.Any() && product.MainProduct != null && product.MainProduct.Reviews != null)
+                if (product.Reviews.IsNullOrEmpty() && product.MainProduct != null && product.MainProduct.Reviews != null)
                 {
                     product.Reviews = product.MainProduct.Reviews.Select(x => x.Clone()).OfType<EditorialReview>().ToList();
                     foreach (var review in product.Reviews)
@@ -262,9 +274,19 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                                      .OfType<Property>()
                                      .OrderBy(x => x.Name)
                                      .ToList();
+
                 foreach (var property in product.Properties)
                 {
                     property.IsInherited = true;
+
+                    if (property.ValidationRules == null) continue;
+                    foreach (var validationRule in property.ValidationRules)
+                    {
+                        if (validationRule.Property == null)
+                        {
+                            validationRule.Property = property;
+                        }
+                    }
                 }
 
                 //Self item property values
@@ -314,10 +336,24 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     product.PackageType = product.PackageType ?? product.MainProduct.PackageType;
                 }
 
-                if (!product.Variations.IsNullOrEmpty())
+                if (processVariations && !product.Variations.IsNullOrEmpty())
                 {
                     ApplyInheritanceRules(product.Variations.ToArray());
                 }
+            }
+        }
+
+        private void ValidateProductProperties(CatalogProduct[] products)
+        {
+            LoadDependencies(products, false);
+            ApplyInheritanceRules(products, false);
+
+            var targets = products.OfType<IHasProperties>();
+            foreach (var item in targets)
+            {
+                var validatioResult = _hasPropertyValidator.Validate(item);
+                if (!validatioResult.IsValid)
+                    throw new Exception($"Product properties has validation error: {string.Join(Environment.NewLine, validatioResult.Errors.Select(x => x.ToString()))}");
             }
         }
     }

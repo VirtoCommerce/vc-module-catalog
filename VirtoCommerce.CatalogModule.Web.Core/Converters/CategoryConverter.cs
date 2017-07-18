@@ -116,6 +116,7 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
                     {
                         propValue.ValueType = property.ValueType;
                         //Need populate required fields
+                        propValue.PropertyId = property.Id;
                         propValue.PropertyName = property.Name;
                         retVal.PropertyValues.Add(propValue.ToCoreModel());
                     }
@@ -125,11 +126,6 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             if (category.Images != null)
             {
                 retVal.Images = category.Images.Select(x => x.ToCoreModel()).ToList();
-                var index = 0;
-                foreach (var image in retVal.Images)
-                {
-                    image.SortOrder = index++;
-                }
             }
 
             return retVal;

@@ -17,8 +17,8 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             retVal.Id = image.Id;
             retVal.LanguageCode = image.LanguageCode;
             retVal.Name = image.Name;
-            retVal.IsInherited = image.IsInherited;         
-
+            retVal.IsInherited = image.IsInherited;
+            retVal.SortOrder = image.SortOrder;
            
             if (blobUrlResolver != null)
             {

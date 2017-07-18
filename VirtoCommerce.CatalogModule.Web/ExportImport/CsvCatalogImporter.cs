@@ -122,7 +122,7 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                     if (category == null)
                     {
                         var code = categoryName.GenerateSlug();
-                        if(string.IsNullOrEmpty(code))
+                        if (string.IsNullOrEmpty(code))
                         {
                             code = Guid.NewGuid().ToString("N");
                         }
@@ -145,97 +145,28 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
             progressInfo.TotalCount = csvProducts.Count;
 
             var defaultFulfilmentCenter = _commerceService.GetAllFulfillmentCenters().FirstOrDefault();
-            DetectParents(csvProducts);
 
-            //Detect already exist product by Code
-            using (var repository = _catalogRepositoryFactory())
-            {
-                var codes = csvProducts.Where(x => x.IsTransient()).Select(x => x.Code).Where(x => x != null).Distinct().ToArray();
-                var existProducts = repository.Items.Where(x => x.CatalogId == catalog.Id && codes.Contains(x.Code)).Select(x => new { Id = x.Id, Code = x.Code }).ToArray();
-                foreach (var existProduct in existProducts)
-                {
-                    var product = csvProducts.FirstOrDefault(x => x.Code == existProduct.Code);
-                    if (product != null)
-                    {
-                        product.Id = product.Id;
-                    }
-                }
-            }
+            ICollection<Property> modifiedProperties;
+            LoadProductDependencies(csvProducts, catalog, out modifiedProperties);
+            MergeFromAlreadyExistProducts(csvProducts, catalog);
 
-            var categoriesIds = csvProducts.Where(x => x.CategoryId != null).Select(x => x.CategoryId).Distinct().ToArray();
-            var categpories = _categoryService.GetByIds(categoriesIds, CategoryResponseGroup.WithProperties);
-
-            var defaultLanguge = catalog.DefaultLanguage != null ? catalog.DefaultLanguage.LanguageCode : "EN-US";
-            var changedProperties = new List<Property>();
+            var defaultLanguge = catalog.DefaultLanguage != null ? catalog.DefaultLanguage.LanguageCode : "en-US";           
             foreach (var csvProduct in csvProducts)
             {
-                csvProduct.CatalogId = catalog.Id;
-                if (string.IsNullOrEmpty(csvProduct.Code))
-                {
-                    csvProduct.Code = _skuGenerator.GenerateSku(csvProduct);
-                }
-                //Set a parent relations
-                if (csvProduct.MainProductId == null && csvProduct.MainProduct != null)
-                {
-                    csvProduct.MainProductId = csvProduct.MainProduct.Id;
-                }
-                csvProduct.EditorialReview.LanguageCode = defaultLanguge;
-                csvProduct.SeoInfo.LanguageCode = defaultLanguge;
-                csvProduct.SeoInfo.SemanticUrl = string.IsNullOrEmpty(csvProduct.SeoInfo.SemanticUrl) ? csvProduct.Code : csvProduct.SeoInfo.SemanticUrl;
-
-                var properties = catalog.Properties;
-                if (csvProduct.CategoryId != null)
-                {
-                    var category = categpories.FirstOrDefault(x => x.Id == csvProduct.CategoryId);
-                    if (category != null)
-                    {
-                        properties = category.Properties;
-                    }
-                }
-
-                //Try to fill properties meta information for values
-                foreach (var propertyValue in csvProduct.PropertyValues)
-                {
-                    if (propertyValue.Value != null)
-                    {
-                        var property = properties.FirstOrDefault(x => string.Equals(x.Name, propertyValue.PropertyName));
-                        if (property != null)
-                        {
-                            propertyValue.ValueType = property.ValueType;
-                            if (property.Dictionary)
-                            {
-                                var dicValue = property.DictionaryValues.FirstOrDefault(x => Equals(x.Value, propertyValue.Value));
-                                if (dicValue == null)
-                                {
-                                    dicValue = new PropertyDictionaryValue
-                                    {
-                                        Alias = propertyValue.Value.ToString(),
-                                        Value = propertyValue.Value.ToString(),
-                                        Id = Guid.NewGuid().ToString()
-                                    };
-                                    property.DictionaryValues.Add(dicValue);
-                                    if(!changedProperties.Contains(property))
-                                    {
-                                        changedProperties.Add(property);
-                                    }
-                                }
-                                propertyValue.ValueId = dicValue.Id;
-                            }
-                        }
-                    }
-                }             
+                //Try to detect and split single property value in to multiple values for multivalue properties 
+                csvProduct.PropertyValues = TryToSplitMultivaluePropertyValues(csvProduct);
             }
 
             progressInfo.Description = string.Format("Saving property dictionary values...");
             progressCallback(progressInfo);
-            _propertyService.Update(changedProperties.ToArray());
+            _propertyService.Update(modifiedProperties.ToArray());
 
             var totalProductsCount = csvProducts.Count();
             //Order to save main products first then variations
             csvProducts = csvProducts.OrderBy(x => x.MainProductId != null).ToList();
-            for (int i = 0; i< totalProductsCount; i += 50)
+            for (int i = 0; i < totalProductsCount; i += 10)
             {
-                var products = csvProducts.Skip(i).Take(50);
+                var products = csvProducts.Skip(i).Take(10);
                 try
                 {
                     //Save main products first and then variations
@@ -271,10 +202,10 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                     //We do not have information about concrete price list id and therefore select first product price then
                     var existPrices = _pricingSearchService.SearchPrices(new Domain.Pricing.Model.Search.PricesSearchCriteria { ProductIds = productIds }).Results;
                     var prices = products.Where(x => x.Price != null && x.Price.EffectiveValue > 0).Select(x => x.Price).ToArray();
-                    foreach(var price in prices)
+                    foreach (var price in prices)
                     {
                         var existPrice = existPrices.FirstOrDefault(x => x.Currency.EqualsInvariant(price.Currency) && x.ProductId.EqualsInvariant(price.ProductId));
-                        if(existPrice != null)
+                        if (existPrice != null)
                         {
                             price.InjectFrom(existPrice);
                         }
@@ -302,16 +233,124 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
             }
         }
 
-        private void DetectParents(List<CsvProduct> csvProducts)
+        private List<PropertyValue> TryToSplitMultivaluePropertyValues(CsvProduct csvProduct)
         {
+            var result = new List<PropertyValue>();
+            //Try to split multivalues
+            foreach (var propValue in csvProduct.PropertyValues)
+            {
+                if (propValue.Value != null && propValue.Property != null && propValue.Property.Multivalue)
+                {
+                    var values = propValue.Value.ToString().Split(',', ';');
+                    foreach (var value in values)
+                    {
+                        var multiPropValue = propValue.Clone() as PropertyValue;
+                        multiPropValue.Value = value;
+                        result.Add(multiPropValue);
+                    }
+                }
+                else
+                {
+                    result.Add(propValue);
+                }
+            }
+            return result;
+        }    
+
+        private void LoadProductDependencies(IEnumerable<CsvProduct> csvProducts, Catalog catalog, out ICollection<Property> modifiedProperties)
+        {
+            modifiedProperties = new List<Property>();
+            var allCategoriesIds = csvProducts.Select(x => x.CategoryId).Distinct().ToArray();
+            var categoriesMap = _categoryService.GetByIds(allCategoriesIds, CategoryResponseGroup.Full).ToDictionary(x => x.Id);
+            var defaultLanguge = catalog.DefaultLanguage != null ? catalog.DefaultLanguage.LanguageCode : "en-US";
+
             foreach (var csvProduct in csvProducts)
             {
+                csvProduct.Catalog = catalog;
+                csvProduct.CatalogId = catalog.Id;
+                if (csvProduct.CategoryId != null)
+                {
+                    csvProduct.Category = categoriesMap[csvProduct.CategoryId];
+                }
+
                 //Try to set parent relations
                 //By id or code reference
                 var parentProduct = csvProducts.FirstOrDefault(x => csvProduct.MainProductId != null && (x.Id == csvProduct.MainProductId || x.Code == csvProduct.MainProductId));
                 csvProduct.MainProduct = parentProduct;
                 csvProduct.MainProductId = parentProduct != null ? parentProduct.Id : null;
+
+                if (string.IsNullOrEmpty(csvProduct.Code))
+                {
+                    csvProduct.Code = _skuGenerator.GenerateSku(csvProduct);
+                }
+                csvProduct.EditorialReview.LanguageCode = defaultLanguge;
+                csvProduct.SeoInfo.LanguageCode = defaultLanguge;
+                csvProduct.SeoInfo.SemanticUrl = string.IsNullOrEmpty(csvProduct.SeoInfo.SemanticUrl) ? csvProduct.Code : csvProduct.SeoInfo.SemanticUrl;
+
+                //Properties inheritance
+                csvProduct.Properties = (csvProduct.Category != null ? csvProduct.Category.Properties : csvProduct.Catalog.Properties).OrderBy(x => x.Name).ToList();
+                foreach (var propertyValue in csvProduct.PropertyValues.ToArray())
+                {
+                    //Try to find property meta information
+                    propertyValue.Property = csvProduct.Properties.FirstOrDefault(x => x.Name.EqualsInvariant(propertyValue.PropertyName));
+                    if(propertyValue.Property != null)
+                    {
+                        propertyValue.ValueType = propertyValue.Property.ValueType;
+                        if (propertyValue.Property.Dictionary)
+                        {
+                            var dicValue = propertyValue.Property.DictionaryValues.FirstOrDefault(x => Equals(x.Value, propertyValue.Value));
+                            if (dicValue == null)
+                            {
+                                dicValue = new PropertyDictionaryValue
+                                {
+                                    Alias = propertyValue.Value.ToString(),
+                                    Value = propertyValue.Value.ToString(),
+                                    Id = Guid.NewGuid().ToString()
+                                };
+                                //need to register modified property for future update
+                                if (!modifiedProperties.Contains(propertyValue.Property))
+                                {
+                                    modifiedProperties.Add(propertyValue.Property);
+                                }
+                            }
+                            propertyValue.ValueId = dicValue.Id;
+                        }
+                    }
+                }
             }
+        }
+
+        //Merge importing products with already exist to prevent erasing already exist data, import should only update or create data
+        private void MergeFromAlreadyExistProducts(IEnumerable<CsvProduct> csvProducts, Catalog catalog)
+        {
+            var transientProducts = csvProducts.Where(x => x.IsTransient()).ToArray();
+            var nonTransientProducts = csvProducts.Where(x => !x.IsTransient()).ToArray();
+
+            var alreadyExistProducts = new List<CatalogProduct>();
+            //Load exist products
+            for (int i = 0; i < nonTransientProducts.Count(); i += 50)
+            {
+                alreadyExistProducts.AddRange(_productService.GetByIds(nonTransientProducts.Skip(i).Take(50).Select(x => x.Id).ToArray(), ItemResponseGroup.ItemLarge));
+            }
+            //Detect already exist product by Code
+            var transientProductsCodes = transientProducts.Select(x => x.Code).Where(x => x != null).Distinct().ToArray();
+            using (var repository = _catalogRepositoryFactory())
+            {
+                var foundProducts = repository.Items.Where(x => x.CatalogId == catalog.Id && transientProductsCodes.Contains(x.Code)).Select(x => new { Id = x.Id, Code = x.Code }).ToArray();
+                for (int i = 0; i < foundProducts.Count(); i += 50)
+                {
+                    alreadyExistProducts.AddRange(_productService.GetByIds(foundProducts.Skip(i).Take(50).Select(x => x.Id).ToArray(), ItemResponseGroup.ItemLarge));
+                }
+            }
+            foreach(var csvProduct in csvProducts)
+            {
+                var existProduct = csvProduct.IsTransient() ? alreadyExistProducts.FirstOrDefault(x => x.Code.EqualsInvariant(csvProduct.Code)) : alreadyExistProducts.FirstOrDefault(x=> x.Id == csvProduct.Id);
+                if(existProduct != null)
+                {
+                    csvProduct.MergeFrom(existProduct);
+                }
+            }           
+
         }
     }
 }

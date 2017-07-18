@@ -2,9 +2,11 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using CacheManager.Core;
+using FluentValidation;
 using Moq;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Data.Services;
+using VirtoCommerce.CatalogModule.Data.Services.Validation;
 using VirtoCommerce.CoreModule.Data.Repositories;
 using VirtoCommerce.CoreModule.Data.Services;
 using VirtoCommerce.Domain.Catalog.Model;
@@ -52,7 +54,7 @@ namespace VirtoCommerce.CatalogModule.Test
         
         private static ICatalogService GetCatalogService()
         {
-            return new CatalogServiceImpl(GetCatalogRepository, GetCommerceService(), new Mock<ICacheManager<object>>().Object);
+            return new CatalogServiceImpl(GetCatalogRepository, GetCommerceService(), new Mock<ICacheManager<object>>().Object, new Mock<AbstractValidator<IHasProperties>>().Object);
         }
 
         private static IItemService GetItemService()
@@ -63,7 +65,7 @@ namespace VirtoCommerce.CatalogModule.Test
 
         private static IPropertyService GetPropertyService()
         {
-            return new PropertyServiceImpl(GetCatalogRepository, new Mock<ICacheManager<object>>().Object);
+            return new PropertyServiceImpl(GetCatalogRepository, new Mock<ICacheManager<object>>().Object, null);
         }
 
         private static ICommerceService GetCommerceService()

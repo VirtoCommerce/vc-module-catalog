@@ -3,7 +3,7 @@
 
     return {
         restrict: 'E',
-        require: 'ngModel',
+        require: ['^form', 'ngModel'],
         replace: true,
         transclude: true,
         templateUrl: 'Modules/$(VirtoCommerce.Catalog)/Scripts/directives/property2.tpl.html',
@@ -12,7 +12,8 @@
             defaultLanguage: "=",
             getPropValues: "&"
         },
-        link: function (scope, element, attr, ngModelController, linker) {
+        link: function (scope, element, attr, ctrls, linker) {
+            var ngModelController = ctrls[1];
 
             scope.currentEntity = ngModelController.$modelValue;
 
@@ -20,6 +21,7 @@
             scope.context.currentPropValues = [];
             scope.context.allDictionaryValues = [];
             scope.context.langValuesMap = {};
+            scope.context.form = ctrls[0];
 
             scope.$watch('context.langValuesMap', function (newValue, oldValue) {
                 if (newValue != oldValue) {
@@ -198,6 +200,50 @@
             linker(function (clone) {
                 element.append(clone);
             });
+
+            function setValid(name) {
+                var form = scope.context.form;
+                form[name].$setValidity('minlength', true);
+                form[name].$setValidity('maxlength', true);
+                form[name].$setValidity('pattern', true);
+            }
+
+            scope.tagsDeleted = function (tag, name, required) {
+                var form = scope.context.form;
+                var values = scope.context.currentPropValues;
+                if (required && values.length === 0) {
+                    form[name].$setValidity('required', false);
+                }
+
+                setValid(name);
+            };
+
+            scope.tagsAdded = function (tag, name) {
+                var form = scope.context.form;
+                if (tag.value) {
+                    form[name].$setValidity('required', true);
+                }
+
+                setValid(name);
+            };
+
+            scope.addederror = function(tag, name, minValue, maxValue, pattern) {
+                var form = scope.context.form;
+                if (minValue && tag.value.length < minValue) {
+                    form[name].$setValidity('minlength', false);
+                }
+
+                if (maxValue && tag.value.length > maxValue) {
+                    form[name].$setValidity('maxlength', false);
+                }
+
+                if (pattern) {
+                    var re = new RegExp(pattern);
+                    if (!re.test(tag.value)) {
+                        form[name].$setValidity('pattern', false);
+                    }
+                }
+            };
         }
     }
 }]);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Web.Http;
+using FluentValidation;
 using Microsoft.Practices.Unity;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
@@ -23,6 +24,8 @@ using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.Platform.Data.Infrastructure;
 using VirtoCommerce.Platform.Data.Infrastructure.Interceptors;
 using VirtoCommerce.Platform.Data.Repositories;
+using VirtoCommerce.CatalogModule.Data.Services.Validation;
+using VirtoCommerce.Domain.Catalog.Model;
 
 namespace VirtoCommerce.CatalogModule.Web
 {
@@ -84,6 +87,17 @@ namespace VirtoCommerce.CatalogModule.Web
             _container.RegisterType<IProductSearchService, ProductSearchService>();
             _container.RegisterType<ICategorySearchService, CategorySearchService>();
 
+            #endregion
+
+            #region Property Validation
+
+            Func<PropertyValidationRule, PropertyValueValidator> propertyValueValidatorFactory =
+                rule => new PropertyValueValidator(rule);
+
+            _container.RegisterInstance(propertyValueValidatorFactory);
+
+            _container.RegisterType<AbstractValidator<IHasProperties>, HasPropertiesValidator>();
+            
             #endregion
         }
 

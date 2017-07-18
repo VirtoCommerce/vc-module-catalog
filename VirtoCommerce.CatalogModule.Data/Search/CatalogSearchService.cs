@@ -89,7 +89,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 ReduceSearchResults(itemsMap.Values.Where(v => v != null), criteria);
 
                 // Preserve original sorting order
-                result = documents.Select(doc => itemsMap[doc.Id.ToString()]).ToArray();
+                result = documents.Select(doc => itemsMap[doc.Id.ToString()]).Where(x => x != null).ToArray();
             }
 
             return result;

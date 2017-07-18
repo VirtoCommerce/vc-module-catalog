@@ -1,9 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using CacheManager.Core;
 using CsvHelper;
+using FluentValidation;
+using Moq;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Data.Services;
+using VirtoCommerce.CatalogModule.Data.Services.Validation;
 using VirtoCommerce.CatalogModule.Web.ExportImport;
 using VirtoCommerce.CoreModule.Data.Repositories;
 using VirtoCommerce.CoreModule.Data.Services;
@@ -101,7 +105,7 @@ namespace VirtoCommerce.CatalogModule.Test
 
         private static ICatalogService GetCatalogService()
         {
-            return new CatalogServiceImpl(GetCatalogRepository, GetCommerceService(), null);
+            return new CatalogServiceImpl(GetCatalogRepository, GetCommerceService(), null, new Mock<AbstractValidator<IHasProperties>>().Object);
         }
 
         private static IItemService GetItemService()
