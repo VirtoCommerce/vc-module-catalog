@@ -1,43 +1,12 @@
 ﻿angular.module('virtoCommerce.catalogModule')
-.controller('virtoCommerce.catalogModule.propertyDetailController', ['$scope', 'virtoCommerce.catalogModule.properties', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', function ($scope, properties, bladeNavigationService, dialogService) {
+.controller('virtoCommerce.catalogModule.propertyDetailController', ['$scope', 'virtoCommerce.catalogModule.properties', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'virtoCommerce.catalogModule.valueTypes', function ($scope, properties, bladeNavigationService, dialogService, valueTypes) {
     var blade = $scope.blade;
     blade.updatePermission = 'catalog:update';
     blade.origEntity = {};
     $scope.currentChild = undefined;
     blade.title = "catalog.blades.property-detail.title";
     blade.subtitle = "catalog.blades.property-detail.subtitle";
-    blade.availableValueTypes = [
-        {
-            valueType: "ShortText",
-            title: "platform.properties.short-text.title",
-            description: "platform.properties.short-text.description"
-        },
-        {
-            valueType: "LongText",
-            title: "platform.properties.long-text.title",
-            description: "platform.properties.long-text.description"
-        },
-        {
-            valueType: "Number",
-            title: "platform.properties.decimal.title",
-            description: "platform.properties.decimal.description"
-        },
-        {
-            valueType: "DateTime",
-            title: "platform.properties.date-time.title",
-            description: "platform.properties.date-time.description"
-        },
-        {
-            valueType: "Boolean",
-            title: "platform.properties.boolean.title",
-            description: "platform.properties.boolean.description"
-        },
-        {
-            valueType: "Integer",
-            title: "platform.properties.integer.title",
-            description: "platform.properties.integer.description"
-        }
-    ];
+    blade.availableValueTypes = valueTypes.get();
 
     blade.availablePropertyTypes = blade.catalogId ? ['Product', 'Variation', 'Category', 'Catalog'] : ['Product', 'Variation', 'Category'];
 
