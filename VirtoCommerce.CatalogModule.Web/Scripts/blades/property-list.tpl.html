@@ -9,7 +9,7 @@
                     </legend>
                     <div class="form-group" ng-repeat="prop in properties = (blade.currentEntities | filter: {type:propGroup.type})">
                         <label class="form-label">
-                            {{prop.name}}
+                            {{prop.name}} {{ getPropertyDisplayName(prop) ? '(' + getPropertyDisplayName(prop) + ')' : '' }}
                             <a  href="" ng-click="editProperty(prop)" class="form-edit">
                                 <i class="form-ico fa fa-pencil"></i>
                             </a>
