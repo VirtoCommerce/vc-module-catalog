@@ -78,7 +78,7 @@
 <script type="text/ng-template" id="ShortText-multivalue.html">
         <tags-input ng-model="context.currentPropValues"
                     ng-disabled="currentEntity.isReadOnly"
-                    ng-required="currentEntity.required && !currentEntity.isReadOnly"
+                    min-tags="{{(currentEntity.required && !currentEntity.isReadOnly) ? 1 : undefined}}"
                     add-on-blur="false"
                     name="{{currentEntity.name}}"
                     display-property="value"
@@ -86,8 +86,9 @@
                     max-length="{{currentEntity.validationRule.charCountMax}}"
                     min-length="{{currentEntity.validationRule.charCountMin}}"
                     allowed-tags-pattern="{{currentEntity.validationRule.regExp}}"
-					on-tag-added="tagsAdded($tag, currentEntity.name)"
-                    on-tag-removed="tagsDeleted($tag, currentEntity.name, currentEntity.required)"
+                    on-tag-added="tagsChanged(currentEntity.name)"
+                    on-tag-removed="tagsChanged(currentEntity.name)"
+                    on-tag-adding="tagsChanged(currentEntity.name)"
                     on-invalid-tag="addederror($tag, currentEntity.name, currentEntity.validationRule.charCountMin, currentEntity.validationRule.charCountMax, currentEntity.validationRule.regExp)" >
         </tags-input>
         <va-property-messages></va-property-messages>
@@ -231,7 +232,7 @@
                 <span class="flag flag-{{language.substr(3).toLowerCase()}}"></span>
                 <tags-input ng-model="langValuesGroup.currentPropValues"
                             ng-disabled="currentEntity.isReadOnly"
-                            ng-required="currentEntity.required && !currentEntity.isReadOnly"
+                            min-tags="{{(currentEntity.required && !currentEntity.isReadOnly) ? 1 : undefined}}"
                             add-on-blur="false"
                             name="{{currentEntity.name}}"
                             display-property="value"
@@ -239,8 +240,9 @@
                             ng-maxlength="currentEntity.validationRule.charCountMax"
                             ng-minlength="currentEntity.validationRule.charCountMin"
                             ng-pattern="currentEntity.validationRule.regExp" 
-					        on-tag-added="tagsAdded($tag, currentEntity.name)"
-                            on-tag-removed="tagsDeleted($tag, currentEntity.name, currentEntity.required)"
+                            on-tag-added="tagsChanged(currentEntity.name)"
+                            on-tag-removed="tagsChanged(currentEntity.name)"
+                            on-tag-adding="tagsChanged(currentEntity.name)"
                             on-invalid-tag="addederror($tag, currentEntity.name, currentEntity.validationRule.charCountMin, currentEntity.validationRule.charCountMax, currentEntity.validationRule.regExp)">
                 </tags-input>
                 <va-property-messages></va-property-messages>

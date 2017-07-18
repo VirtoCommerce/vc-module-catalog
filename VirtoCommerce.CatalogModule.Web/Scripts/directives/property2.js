@@ -201,45 +201,26 @@
                 element.append(clone);
             });
 
-            function setValid(name) {
+            scope.tagsChanged = function(name) {
                 var form = scope.context.form;
                 form[name].$setValidity('minlength', true);
                 form[name].$setValidity('maxlength', true);
                 form[name].$setValidity('pattern', true);
-            }
-
-            scope.tagsDeleted = function (tag, name, required) {
-                var form = scope.context.form;
-                var values = scope.context.currentPropValues;
-                if (required && values.length === 0) {
-                    form[name].$setValidity('required', false);
-                }
-
-                setValid(name);
-            };
-
-            scope.tagsAdded = function (tag, name) {
-                var form = scope.context.form;
-                if (tag.value) {
-                    form[name].$setValidity('required', true);
-                }
-
-                setValid(name);
             };
 
             scope.addederror = function(tag, name, minValue, maxValue, pattern) {
                 var form = scope.context.form;
-                if (minValue && tag.value.length < minValue) {
+                if (minValue && tag.length < minValue) {
                     form[name].$setValidity('minlength', false);
                 }
 
-                if (maxValue && tag.value.length > maxValue) {
+                if (maxValue && tag.length > maxValue) {
                     form[name].$setValidity('maxlength', false);
                 }
 
                 if (pattern) {
                     var re = new RegExp(pattern);
-                    if (!re.test(tag.value)) {
+                    if (!re.test(tag)) {
                         form[name].$setValidity('pattern', false);
                     }
                 }
