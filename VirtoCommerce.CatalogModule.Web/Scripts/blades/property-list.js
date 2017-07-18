@@ -1,5 +1,5 @@
 ﻿angular.module('virtoCommerce.catalogModule')
-.controller('virtoCommerce.catalogModule.propertyListController', ['$scope', 'virtoCommerce.catalogModule.properties', 'platformWebApp.bladeNavigationService', function ($scope, properties, bladeNavigationService) {
+    .controller('virtoCommerce.catalogModule.propertyListController', ['$scope', 'virtoCommerce.catalogModule.properties', 'platformWebApp.bladeNavigationService', function ($scope, properties, bladeNavigationService) {
 	var blade = $scope.blade;
 	$scope.isValid = false;
 	blade.refresh = function (entity) {
@@ -26,6 +26,10 @@
 		blade.currentEntity.properties = blade.currentEntities;
 		$scope.bladeClose();
 	};
+
+    $scope.getPropertyDisplayName = function (prop) {
+        return _.first(_.map(_.filter(prop.displayNames, function (x) { return x && x.languageCode.startsWith(blade.defaultLanguage); }), function (x) { return x.name; }));      
+    };
 
 	$scope.editProperty = function (prop) {
 		if (prop.isManageable) {
