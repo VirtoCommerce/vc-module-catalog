@@ -155,10 +155,13 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
             var pkMap = new PrimaryKeyResolvingMap();
 
+            ValidateProductProperties(products);
+
             using (var repository = _repositoryFactory())
             using (var changeTracker = GetChangeTracker(repository))
             {
-                ValidateProductProperties(products);
+                //Optimize performance and CPU usage
+                repository.DisableChangesTracking();
 
                 var dbExistProducts = repository.GetItemByIds(products.Where(x => !x.IsTransient()).Select(x => x.Id).ToArray(), Domain.Catalog.Model.ItemResponseGroup.ItemLarge);
                 foreach (var product in products)
@@ -177,6 +180,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                         repository.Add(modifiedEntity);
                     }
                 }
+
+                ((System.Data.Entity.DbContext)repository).ChangeTracker.DetectChanges();
                 CommitChanges(repository);
                 pkMap.ResolvePrimaryKeys();
             }
