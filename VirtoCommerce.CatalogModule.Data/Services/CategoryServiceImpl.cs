@@ -25,7 +25,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private readonly AbstractValidator<IHasProperties> _hasPropertyValidator;
         private readonly Func<ICatalogRepository> _repositoryFactory;
         private readonly ICatalogService _catalogService;
-        
+
 
         public CategoryServiceImpl(Func<ICatalogRepository> catalogRepositoryFactory, ICommerceService commerceService, IOutlineService outlineService, ICatalogService catalogService, ICacheManager<object> cacheManager,
             AbstractValidator<IHasProperties> hasPropertyValidator)
@@ -50,7 +50,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 {
                     result.Add(MemberwiseCloneCategory(category));
                 }
-            }         
+            }
 
             //Reduce details according to response group
             foreach (var category in result)
@@ -165,7 +165,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             //Need add seo separately
             _commerceService.UpsertSeoForObjects(categories);
         }
-      
+
         protected virtual void ResetCache()
         {
             _cacheManager.ClearRegion(CatalogConstants.CacheRegion);
@@ -210,18 +210,18 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         protected virtual Dictionary<string, Category> PreloadCategories(string catalogId)
         {
             return _cacheManager.Get($"AllCategories-{catalogId}", CatalogConstants.CacheRegion, () =>
-            {              
+            {
                 CategoryEntity[] entities = null;
                 using (var repository = _repositoryFactory())
                 {
                     repository.DisableChangesTracking();
 
                     entities = repository.GetCategoriesByIds(repository.Categories.Select(x => x.Id).ToArray(), Domain.Catalog.Model.CategoryResponseGroup.Full);
-                }            
+                }
                 var result = entities.Select(x => x.ToModel(AbstractTypeFactory<Category>.TryCreateInstance())).ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase);
 
                 LoadDependencies(result.Values, result);
-                ApplyInheritanceRules(result.Values);                
+                ApplyInheritanceRules(result.Values);
 
                 // Fill outlines for categories            
                 _outlineService.FillOutlinesForObjects(result.Values, catalogId);
@@ -238,15 +238,15 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         protected virtual void LoadDependencies(IEnumerable<Category> categories, Dictionary<string, Category> preloadedCategoriesMap)
         {
             var catalogsMap = _catalogService.GetCatalogsList().ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase);
-            foreach(var category in categories)
-            {              
+            foreach (var category in categories)
+            {
                 category.Catalog = catalogsMap.GetValueOrThrow(category.CatalogId, $"catalog with key {category.CatalogId} not exist");
                 category.IsVirtual = category.Catalog.IsVirtual;
                 category.Parents = Array.Empty<Category>();
                 //Load all parent categories
                 if (category.ParentId != null)
                 {
-                    category.Parents = TreeExtension.GetAncestors(category, x => x.ParentId != null && preloadedCategoriesMap.ContainsKey(x.ParentId) ?  preloadedCategoriesMap[x.ParentId] : null)
+                    category.Parents = TreeExtension.GetAncestors(category, x => x.ParentId != null && preloadedCategoriesMap.ContainsKey(x.ParentId) ? preloadedCategoriesMap[x.ParentId] : null)
                                                     .Reverse()
                                                     .ToArray();
                 }
@@ -259,7 +259,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                         link.Catalog = catalogsMap.GetValueOrThrow(link.CatalogId, $"link catalog with key {link.CatalogId} not exist");
                         if (link.CategoryId != null)
                         {
-                            link.Category = preloadedCategoriesMap.GetValueOrThrow(link.CategoryId, $"link category with key {link.CategoryId} not exist");
+                            if (preloadedCategoriesMap.ContainsKey(link.CategoryId))
+                            {
+                                link.Category = preloadedCategoriesMap[link.CategoryId];
+                            }
                         }
                     }
                 }
@@ -267,12 +270,15 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 if (!category.Properties.IsNullOrEmpty())
                 {
                     foreach (var property in category.Properties)
-                    {                       
+                    {
                         property.Catalog = catalogsMap.GetValueOrThrow(property.CatalogId, $"property catalog with key {property.CatalogId} not exist");
                         if (property.CategoryId != null)
                         {
-                            property.Category = preloadedCategoriesMap.GetValueOrThrow(property.CategoryId, $"property category with key {property.CategoryId} not exist");
-                        }                       
+                            if (preloadedCategoriesMap.ContainsKey(property.CategoryId))
+                            {
+                                property.Category = preloadedCategoriesMap[property.CategoryId];
+                            }
+                        }
                     }
                 }
             }

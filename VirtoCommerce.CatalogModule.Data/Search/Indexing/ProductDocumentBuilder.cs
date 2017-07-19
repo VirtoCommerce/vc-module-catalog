@@ -90,8 +90,19 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 document.Add(new IndexDocumentField("__outline", outline.ToLowerInvariant()) { IsRetrievable = true, IsFilterable = true, IsCollection = true });
             }
 
-            // Index custom properties
+            // Index custom product properties
             IndexCustomProperties(document, product.Properties, product.PropertyValues);
+            //Index product category properties
+            if (product.Category != null)
+            {
+                IndexCustomProperties(document, product.Category.Properties, product.Category.PropertyValues);
+            }
+            //Index catalog properties
+            if (product.Catalog != null)
+            {
+                IndexCustomProperties(document, product.Catalog.Properties, product.Catalog.PropertyValues);
+            }
+
 
             if (product.Variations != null)
             {
