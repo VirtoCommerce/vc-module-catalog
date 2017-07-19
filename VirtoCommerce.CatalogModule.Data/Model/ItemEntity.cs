@@ -48,8 +48,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
         [StringLength(64)]
         [Required]
-        [Index(IsUnique = true)]
-        [CustomValidation(typeof(ItemEntity), "ValidateItemCode", ErrorMessage = @"Code can't contain $+;=%{}[]|\/@ ~!^*&()?:'<>, characters")]
+        [Index(IsUnique = true)]      
         public string Code { get; set; }
 
         [StringLength(128)]
@@ -111,26 +110,8 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         public virtual ItemEntity Parent { get; set; }
 
         public virtual ObservableCollection<ItemEntity> Childrens { get; set; }
-        #endregion
-        
-        public static ValidationResult ValidateItemCode(string value, ValidationContext context)
-        {
-            if (value == null || string.IsNullOrEmpty(value))
-            {
-                return new ValidationResult("Code can't be empty");
-            }
-
-            const string invalidCodeCharacters = @"$+;=%{}[]|\/@ ~!^*&()?:'<>,";
-
-            if (value.IndexOfAny(invalidCodeCharacters.ToCharArray()) > -1)
-            {
-                return new ValidationResult((@"Code must be valid"));
-            }
-            else
-            {
-                return ValidationResult.Success;
-            }
-        }
+        #endregion        
+       
 
         public virtual CatalogProduct ToModel(CatalogProduct product, bool convertChildrens = true, bool convertAssociations = true)
         {
