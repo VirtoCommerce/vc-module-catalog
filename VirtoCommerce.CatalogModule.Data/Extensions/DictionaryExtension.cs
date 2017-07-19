@@ -11,7 +11,11 @@ namespace VirtoCommerce.CatalogModule.Data.Extensions
         public static TValue GetValueOrThrow<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, string exceptionMessage)
         {
             TValue value;
-            return dictionary.TryGetValue(key, out value) ? value : throw new KeyNotFoundException(exceptionMessage);
+            if(!dictionary.TryGetValue(key, out value))
+            {
+                throw new KeyNotFoundException(exceptionMessage);
+            }
+            return value;
         }
     }
 }
