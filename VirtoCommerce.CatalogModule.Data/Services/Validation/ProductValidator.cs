@@ -14,10 +14,9 @@ namespace VirtoCommerce.CatalogModule.Data.Services.Validation
         public ProductValidator()
         {
             
-            RuleFor(product => product.CatalogId).NotNull();
-            RuleFor(product => product.Name).NotNull().MaximumLength(1024);
-            RuleFor(product => product.Code).NotNull().MaximumLength(64);
-            RuleFor(product => product.Code).Must(x => x.IndexOfAny(_illegalCodeChars) < 0).WithMessage("product code contains illegal chars");
+            RuleFor(product => product.CatalogId).NotNull().NotEmpty();
+            RuleFor(product => product.Name).NotNull().NotEmpty().MaximumLength(1024);
+            RuleFor(product => product.Code).NotNull().NotEmpty().MaximumLength(64).DependentRules(d => d.RuleFor(product => product.Code).Must(x => x.IndexOfAny(_illegalCodeChars) < 0).WithMessage("product code contains illegal chars"));
         }
     }
 }
