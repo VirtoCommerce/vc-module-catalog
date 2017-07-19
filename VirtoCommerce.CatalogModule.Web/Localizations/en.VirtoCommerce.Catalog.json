@@ -242,6 +242,7 @@
             "new-value": "New value",
             "current-values": "Current values",
             "value": "Value",
+            "alias": "Alias",
             "language-edit": "Edit values",
             "language-add": "New values"
           },
@@ -250,7 +251,8 @@
             "duplicate": "Duplicate name found"
           },
           "placeholders": {
-            "value": "Enter value"
+            "value": "Enter value",
+            "alias": "Enter an alias"
           }
         },
 
