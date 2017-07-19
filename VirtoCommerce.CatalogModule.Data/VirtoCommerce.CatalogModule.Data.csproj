@@ -92,6 +92,7 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="CatalogConstants.cs" />
+    <Compile Include="Extensions\DictionaryExtension.cs" />
     <Compile Include="Extensions\RepositoryExtension.cs" />
     <Compile Include="Migrations\201504301302574_Initial.cs" />
     <Compile Include="Migrations\201504301302574_Initial.Designer.cs">
@@ -250,7 +251,9 @@
     <Compile Include="Services\CatalogServiceImpl.cs" />
     <Compile Include="Services\OutlineService.cs" />
     <Compile Include="Services\PropertyServiceImpl.cs" />
+    <Compile Include="Services\Validation\CategoryValidator.cs" />
     <Compile Include="Services\Validation\HasPropertiesValidator.cs" />
+    <Compile Include="Services\Validation\ProductValidator.cs" />
     <Compile Include="Services\Validation\PropertyValueValidator.cs" />
   </ItemGroup>
   <ItemGroup>

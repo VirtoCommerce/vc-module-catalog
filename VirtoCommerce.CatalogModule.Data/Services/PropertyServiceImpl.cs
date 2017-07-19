@@ -120,11 +120,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         protected virtual void LoadDependencies(Property[] properties)
         {
-            var catalogsMap = _catalogService.GetCatalogsList().ToDictionary(x => x.Id);
-         
+            var catalogsMap = _catalogService.GetCatalogsList().ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase);         
             foreach (var property in properties)
             {
-                property.Catalog = catalogsMap[property.CatalogId];              
+                property.Catalog = catalogsMap.GetValueOrThrow(property.CatalogId, $"property catalog with key {property.CatalogId} not exist");
             }
         }
 

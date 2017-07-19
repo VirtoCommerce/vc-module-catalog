@@ -6,16 +6,21 @@
                 <div class="form-group" ng-init="setForm(formScope);">
                     <label class="form-label" for="">{{ 'catalog.blades.item-property-detail.labels.property-name' | translate }}</label>
                     <div class="form-input">
-                        <input focus-on="" required class="form-control" ng-model="blade.currentEntity.name" />
+                        <input focus-on="" required class="form-control" ng-model="blade.currentEntity.name"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">{{ 'catalog.blades.property-detail.labels.value-type' | translate }}</label>
+                    <div class="form-input">
+                        <ui-select ng-model="blade.currentEntity.valueType">
+                            <ui-select-match placeholder="">{{ $select.selected.title |translate}}</ui-select-match>
+                            <ui-select-choices repeat="x.valueType as x in blade.availableValueTypes | filter: $select.search">
+                                <div>{{ x.title |translate }}</div>
+                            </ui-select-choices>
+                        </ui-select>
                     </div>
                 </div>
             </form>
-            <ul class="list __items">
-                <li class="list-item" ng-class="{'__selected': currentChild === 'valType'}" ng-click='openChild("valType")'>
-                    <span class="list-t">{{ 'catalog.blades.item-property-detail.labels.value-type' | translate }}</span>
-                    <span class="list-descr">{{blade.currentEntity.valueType}}</span>
-                </li>
-            </ul>
         </div>
     </div>
 </div>
