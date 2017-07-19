@@ -177,8 +177,8 @@
             "date": "date"
           },
           "descriptions": {
-            "require": "You won`t be able to publish an entry if there is an existing entry with identical content",
-            "character-limit": "You won`t be able to publish an entry if there is an existing entry with identical content",
+            "require": "This property is required",
+            "character-limit": "Specify a minimum and/or maximum allowed number of characters for limit character",
             "pattern": "Make this field match a pattern: e-mail address, URL, or a custom regular expression"
           }
         },
