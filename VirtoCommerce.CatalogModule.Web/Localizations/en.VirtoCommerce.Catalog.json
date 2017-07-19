@@ -178,7 +178,7 @@
           },
           "descriptions": {
             "require": "This property is required",
-            "character-limit": "Specify a minimum and/or maximum allowed number of characters for limit character",
+            "character-limit": "Specify a minimum and/or maximum allowed number of characters",
             "pattern": "Make this field match a pattern: e-mail address, URL, or a custom regular expression"
           }
         },
