@@ -138,7 +138,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     entities = repository.GetCatalogsByIds(repository.Catalogs.Select(x => x.Id).ToArray());
                 }
              
-                var result = entities.Select(x => x.ToModel(AbstractTypeFactory<Catalog>.TryCreateInstance())).ToDictionary(x => x.Id);
+                var result = entities.Select(x => x.ToModel(AbstractTypeFactory<Catalog>.TryCreateInstance())).ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase);
 
                 LoadDependencies(result.Values, result);
                 return result;

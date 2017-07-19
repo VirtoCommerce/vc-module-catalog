@@ -6,6 +6,7 @@ using System.Linq;
 using VirtoCommerce.CatalogModule.Data.Extensions;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
+using VirtoCommerce.CatalogModule.Data.Services.Validation;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Commerce.Model;
@@ -129,10 +130,13 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
             var pkMap = new PrimaryKeyResolvingMap();
 
+            ValidateCategoryProperties(categories);
+
             using (var repository = _repositoryFactory())
             using (var changeTracker = GetChangeTracker(repository))
             {
-                ValidateCategoryProperties(categories);
+                //Optimize performance and CPU usage
+                repository.DisableChangesTracking();
 
                 var dbExistCategories = repository.GetCategoriesByIds(categories.Where(x => !x.IsTransient()).Select(x => x.Id).ToArray(), Domain.Catalog.Model.CategoryResponseGroup.Full);
                 foreach (var category in categories)
@@ -151,6 +155,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                         repository.Add(modifiedEntity);
                     }
                 }
+
+                ((System.Data.Entity.DbContext)repository).ChangeTracker.DetectChanges();
                 CommitChanges(repository);
                 pkMap.ResolvePrimaryKeys();
                 //Reset cached categories and catalogs
@@ -211,10 +217,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     repository.DisableChangesTracking();
 
                     entities = repository.GetCategoriesByIds(repository.Categories.Select(x => x.Id).ToArray(), Domain.Catalog.Model.CategoryResponseGroup.Full);
-                }
-
-                var catalogsMap = _catalogService.GetCatalogsList().ToDictionary(x => x.Id);
-                var result = entities.Select(x => x.ToModel(AbstractTypeFactory<Category>.TryCreateInstance())).ToDictionary(x => x.Id);
+                }            
+                var result = entities.Select(x => x.ToModel(AbstractTypeFactory<Category>.TryCreateInstance())).ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase);
 
                 LoadDependencies(result.Values, result);
                 ApplyInheritanceRules(result.Values);                
@@ -233,10 +237,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         protected virtual void LoadDependencies(IEnumerable<Category> categories, Dictionary<string, Category> preloadedCategoriesMap)
         {
-            var catalogsMap = _catalogService.GetCatalogsList().ToDictionary(x => x.Id);
+            var catalogsMap = _catalogService.GetCatalogsList().ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase);
             foreach(var category in categories)
-            {
-                category.Catalog = catalogsMap[category.CatalogId];
+            {              
+                category.Catalog = catalogsMap.GetValueOrThrow(category.CatalogId, $"catalog with key {category.CatalogId} not exist");
                 category.IsVirtual = category.Catalog.IsVirtual;
                 category.Parents = Array.Empty<Category>();
                 //Load all parent categories
@@ -252,10 +256,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 {
                     foreach (var link in category.Links)
                     {
-                        link.Catalog = catalogsMap[link.CatalogId];
+                        link.Catalog = catalogsMap.GetValueOrThrow(link.CatalogId, $"link catalog with key {link.CatalogId} not exist");
                         if (link.CategoryId != null)
                         {
-                            link.Category = preloadedCategoriesMap[link.CategoryId];
+                            link.Category = preloadedCategoriesMap.GetValueOrThrow(link.CategoryId, $"link category with key {link.CategoryId} not exist");
                         }
                     }
                 }
@@ -263,11 +267,11 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 if (!category.Properties.IsNullOrEmpty())
                 {
                     foreach (var property in category.Properties)
-                    {
-                        property.Catalog = catalogsMap[property.CatalogId];
+                    {                       
+                        property.Catalog = catalogsMap.GetValueOrThrow(property.CatalogId, $"property catalog with key {property.CatalogId} not exist");
                         if (property.CategoryId != null)
                         {
-                            property.Category = preloadedCategoriesMap[property.CategoryId];
+                            property.Category = preloadedCategoriesMap.GetValueOrThrow(property.CategoryId, $"property category with key {property.CategoryId} not exist");
                         }                       
                     }
                 }
@@ -324,6 +328,17 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         private void ValidateCategoryProperties(Category[] categories)
         {
+            if (categories == null)
+            {
+                throw new ArgumentNullException(nameof(categories));
+            }
+            //Validate categories 
+            var validator = new CategoryValidator();
+            foreach (var category in categories)
+            {
+                validator.ValidateAndThrow(category);
+            }
+
             var groups = categories.GroupBy(x => x.CatalogId);
             foreach (var group in groups)
             {
@@ -334,7 +349,9 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 {
                     var validatioResult = _hasPropertyValidator.Validate(category);
                     if (!validatioResult.IsValid)
+                    {
                         throw new Exception($"Category properties has validation error: {string.Join(Environment.NewLine, validatioResult.Errors.Select(x => x.ToString()))}");
+                    }
                 }
             }
         }

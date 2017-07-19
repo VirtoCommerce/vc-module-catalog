@@ -63,6 +63,9 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             using (var repository = _repositoryFactory())
             using (var changeTracker = GetChangeTracker(repository))
             {
+                //Optimize performance and CPU usage
+                repository.DisableChangesTracking();
+
                 var itemIds = owners.Where(x => x.Id != null).Select(x => x.Id).ToArray();
                 var existEntities = repository.Associations.Where(x => itemIds.Contains(x.Id)).ToArray();
 
@@ -73,6 +76,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 var associationComparer = AnonymousComparer.Create((AssociationEntity x) => x.ItemId + ":" + x.AssociationType + ":" + x.AssociatedItemId + ":" + x.AssociatedCategoryId);
                 source.Associations.Patch(target.Associations, associationComparer, (sourceAssociation, targetAssociation) => sourceAssociation.Patch(targetAssociation));
 
+                ((System.Data.Entity.DbContext)repository).ChangeTracker.DetectChanges();
                 CommitChanges(repository);
             }
 
