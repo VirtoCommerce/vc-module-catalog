@@ -74,8 +74,12 @@
             };
 
             $scope.saveChanges = function () {
-                if (blade.onSelect)
+                if (blade.onSelect) {
+                    _.each(blade.currentEntities, function (entity) {
+                        entity.languageCode = blade.selectedLanguageCode;
+                    });
                     blade.onSelect(blade.currentEntities);
+                }
 
                 $scope.bladeClose();
             };
