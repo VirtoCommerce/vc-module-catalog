@@ -45,6 +45,7 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
                 retVal.Url = blobUrlResolver.GetAbsoluteUrl(asset.Url);
             }
             retVal.RelativeUrl = asset.Url;
+            retVal.ReadableSize = retVal.Size.ToHumanReadableSize();
             return retVal;
         }
 
