@@ -10,6 +10,9 @@
             TypeId = "asset";
         }
         public long Size { get; set; }
+
+        public string ReadableSize { get; set; }
+        
         public string MimeType { get; set; }
     }
 }
