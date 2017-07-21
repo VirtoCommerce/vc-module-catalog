@@ -166,7 +166,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                         //Next need set Property in PropertyValues objects
                         foreach (var propValue in catalog.PropertyValues.ToArray())
                         {
-                            propValue.Property = catalog.Properties.FirstOrDefault(x => x.IsSuitableForValue(propValue));
+                            propValue.Property = catalog.Properties.Where(x => x.Type == PropertyType.Catalog)
+                                                                   .FirstOrDefault(x => x.IsSuitableForValue(propValue));
                             //Because multilingual dictionary values for all languages may not stored in db then need to add it in result manually from property dictionary values
                             var localizedDictValues = propValue.TryGetAllLocalizedDictValues();
                             foreach (var localizedDictValue in localizedDictValues)

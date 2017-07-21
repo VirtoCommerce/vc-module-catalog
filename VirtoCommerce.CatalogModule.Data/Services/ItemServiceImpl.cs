@@ -299,7 +299,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     foreach (var propertyValue in product.PropertyValues.ToArray())
                     {
                         //Try to find property meta information
-                        propertyValue.Property = product.Properties.FirstOrDefault(x => x.IsSuitableForValue(propertyValue));
+                        propertyValue.Property = product.Properties.Where(x => x.Type == PropertyType.Product || x.Type == PropertyType.Variation)
+                                                                   .FirstOrDefault(x => x.IsSuitableForValue(propertyValue));
                         //Return each localized value for selected dictionary value
                         //Because multilingual dictionary values for all languages may not stored in db need add it in result manually from property dictionary values
                         var localizedDictValues = propertyValue.TryGetAllLocalizedDictValues();
