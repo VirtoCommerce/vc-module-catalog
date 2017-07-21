@@ -104,10 +104,7 @@
 
 
         $scope.setGridOptions = function (gridOptions) {
-            uiGridHelper.initialize($scope, gridOptions,
-                function (gridApi) {
-                    uiGridHelper.bindRefreshOnSortChanged($scope);
-                });
+            uiGridHelper.initialize($scope, gridOptions);
         };
 
 

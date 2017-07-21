@@ -23,9 +23,9 @@
                             <label class="form-label">{{ 'catalog.blades.images.labels.language' | translate }}</label>
                             <div class="form-input">
                                 <ui-select ng-model="blade.selectedLanguageCode" ng-disabled="disabled">
-                                    <ui-select-match allow-clear placeholder="{{'catalog.blades.images.placeholders.language' | translate}}">{{$select.selected.displayName}}</ui-select-match>
-                                    <ui-select-choices repeat="lang.languageCode as lang in blade.languages | filter: {displayName: $select.search}">
-                                        <span ng-bind-html="lang.displayName | highlight: $select.search"></span>
+                                    <ui-select-match allow-clear placeholder="{{'catalog.blades.images.placeholders.language' | translate}}">{{$select.selected}}</ui-select-match>
+                                    <ui-select-choices repeat="x in languages | filter: $select.search">
+                                        <span ng-bind-html="x | highlight: $select.search"></span>
                                     </ui-select-choices>
                                 </ui-select>
                             </div>
