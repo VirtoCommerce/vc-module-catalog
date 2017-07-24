@@ -54,9 +54,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
         {
             var result = new List<SortingField>();
 
-            var categoryId = criteria.Outline.AsCategoryId();
-            var priorityFieldName = StringsHelper.JoinNonEmptyStrings("_", "priority", criteria.CatalogId, categoryId).ToLowerInvariant();
-            var priorityFields = new[] { "priority", priorityFieldName }.Distinct().ToArray();
+            var priorityFields = criteria.GetPriorityFields();
 
             foreach (var sortInfo in criteria.SortInfos)
             {
@@ -132,11 +130,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 result.Add(FiltersHelper.CreateTermFilter("catalog", criteria.CatalogId.ToLowerInvariant()));
             }
 
-            if (!criteria.Outline.IsNullOrEmpty())
-            {
-                var outline = string.Join("/", criteria.CatalogId, criteria.Outline).TrimEnd('/', '*').ToLowerInvariant();
-                result.Add(FiltersHelper.CreateTermFilter("__outline", outline));
-            }
+            result.Add(FiltersHelper.CreateOutlineFilter(criteria));
 
             result.Add(FiltersHelper.CreateDateRangeFilter("startdate", criteria.StartDateFrom, criteria.StartDate, false, true));
 
@@ -168,7 +162,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
         {
             var result = new List<KeyValuePair<string, IFilter>>();
 
-            var terms = criteria.Terms.AsKeyValues();
+            var terms = criteria.GetTerms();
             if (terms.Any())
             {
                 var browseFilters = GetBrowseFilters(criteria);
