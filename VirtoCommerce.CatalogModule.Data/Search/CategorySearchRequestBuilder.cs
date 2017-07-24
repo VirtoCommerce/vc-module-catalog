@@ -70,6 +70,19 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 result.Add(FiltersHelper.CreateTermFilter("__outline", outline));
             }
 
+            if (criteria.Terms != null)
+            {
+                var terms = criteria.Terms.AsKeyValues();
+                if (terms.Any())
+                {
+                    foreach (var term in terms)
+                    {
+                        var filter = FiltersHelper.CreateTermFilter(term.Key, term.Values);
+                        result.Add(filter);
+                    }
+                }
+            }
+
             return result;
         }
 
