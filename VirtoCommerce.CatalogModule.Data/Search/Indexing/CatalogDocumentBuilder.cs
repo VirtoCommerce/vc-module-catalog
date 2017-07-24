@@ -63,33 +63,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                         break;
                 }
             }
-
-            // For each multivalued property add a boolean field indicating whether the property has any value
-            foreach (var property in properties)
-            {
-                if (property.Multivalue)
-                {
-                    var fieldName = property.Name.ToLowerInvariant();
-                    var field = document.Fields.FirstOrDefault(f => f.Name.EqualsInvariant(fieldName));
-
-                    var booleanFieldName = $"has{fieldName}";
-                    var booleanField = document.Fields.FirstOrDefault(f => f.Name.EqualsInvariant(booleanFieldName));
-                    var booleanFieldValue = field?.Values?.Any() == true;
-
-                    if (booleanField != null)
-                    {
-                        booleanField.Values = new object[] { booleanFieldValue };
-                        booleanField.IsRetrievable = true;
-                        booleanField.IsFilterable = true;
-                        booleanField.IsSearchable = false;
-                        booleanField.IsCollection = false;
-                    }
-                    else
-                    {
-                        document.Add(new IndexDocumentField(booleanFieldName, booleanFieldValue) { IsRetrievable = true, IsFilterable = true });
-                    }
-                }
-            }
         }
 
         protected virtual string[] GetOutlineStrings(IEnumerable<Outline> outlines)
