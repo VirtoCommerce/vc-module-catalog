@@ -389,7 +389,7 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
 
             var allImages = haveImagesObjects.SelectMany(x => x.GetFlatObjectsListWithInterface<IHasImages>())
                                        .SelectMany(x => x.Images).ToArray();
-            foreach (var image in allImages)
+            foreach (var image in allImages.Where(x => x.BinaryData != null))
             {
                 //do not save images with external url
                 if (image.Url != null && !image.Url.IsAbsoluteUrl())
