@@ -23,23 +23,27 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         {
             foreach (var propValue in propertyValues.Where(x => x.Value != null))
             {
-                var propertyName = (propValue.PropertyName ?? "").ToLowerInvariant();
                 var property = properties.FirstOrDefault(p => p.Name.EqualsInvariant(propValue.PropertyName) && p.ValueType == propValue.ValueType);
-                var isCollection = property?.Multivalue == true;
 
-                switch (propValue.ValueType)
+                var propertyName = propValue.PropertyName?.ToLowerInvariant();
+                if (!string.IsNullOrEmpty(propertyName))
                 {
-                    case PropertyValueType.Boolean:
-                    case PropertyValueType.DateTime:
-                    case PropertyValueType.Number:
-                        document.Add(new IndexDocumentField(propertyName, propValue.Value) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection });
-                        break;
-                    case PropertyValueType.LongText:
-                        document.Add(new IndexDocumentField(propertyName, propValue.Value.ToString().ToLowerInvariant()) { IsRetrievable = true, IsSearchable = true, IsCollection = isCollection });
-                        break;
-                    case PropertyValueType.ShortText: // do not tokenize small values as they will be used for lookups and filters
-                        document.Add(new IndexDocumentField(propertyName, propValue.Value.ToString()) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection });
-                        break;
+                    var isCollection = property?.Multivalue == true;
+
+                    switch (propValue.ValueType)
+                    {
+                        case PropertyValueType.Boolean:
+                        case PropertyValueType.DateTime:
+                        case PropertyValueType.Number:
+                            document.Add(new IndexDocumentField(propertyName, propValue.Value) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection });
+                            break;
+                        case PropertyValueType.LongText:
+                            document.Add(new IndexDocumentField(propertyName, propValue.Value.ToString().ToLowerInvariant()) { IsRetrievable = true, IsSearchable = true, IsCollection = isCollection });
+                            break;
+                        case PropertyValueType.ShortText: // do not tokenize small values as they will be used for lookups and filters
+                            document.Add(new IndexDocumentField(propertyName, propValue.Value.ToString()) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection });
+                            break;
+                    }
                 }
 
                 // Add value to the searchable content field
@@ -57,6 +61,33 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                         }
 
                         break;
+                }
+            }
+
+            // For each multivalued property add a boolean field indicating whether the property has any value
+            foreach (var property in properties)
+            {
+                if (property.Multivalue)
+                {
+                    var fieldName = property.Name.ToLowerInvariant();
+                    var field = document.Fields.FirstOrDefault(f => f.Name.EqualsInvariant(fieldName));
+
+                    var booleanFieldName = $"has{fieldName}";
+                    var booleanField = document.Fields.FirstOrDefault(f => f.Name.EqualsInvariant(booleanFieldName));
+                    var booleanFieldValue = field?.Values?.Any() == true;
+
+                    if (booleanField != null)
+                    {
+                        booleanField.Values = new object[] { booleanFieldValue };
+                        booleanField.IsRetrievable = true;
+                        booleanField.IsFilterable = true;
+                        booleanField.IsSearchable = false;
+                        booleanField.IsCollection = false;
+                    }
+                    else
+                    {
+                        document.Add(new IndexDocumentField(booleanFieldName, booleanFieldValue) { IsRetrievable = true, IsFilterable = true });
+                    }
                 }
             }
         }
