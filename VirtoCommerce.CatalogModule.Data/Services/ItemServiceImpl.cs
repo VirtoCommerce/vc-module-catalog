@@ -276,39 +276,46 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                                      .OrderBy(x => x.Name)
                                      .ToList();
 
-                foreach (var property in product.Properties)
+                if (!product.Properties.IsNullOrEmpty())
                 {
-                    property.IsInherited = true;
-
-                    if (property.ValidationRules == null) continue;
-                    foreach (var validationRule in property.ValidationRules)
+                    foreach (var property in product.Properties)
                     {
-                        if (validationRule.Property == null)
+                        property.IsInherited = true;
+
+                        if (property.ValidationRules == null) continue;
+                        foreach (var validationRule in property.ValidationRules)
                         {
-                            validationRule.Property = property;
+                            if (validationRule.Property == null)
+                            {
+                                validationRule.Property = property;
+                            }
                         }
                     }
                 }
 
-                //Self item property values
-                foreach (var propertyValue in product.PropertyValues.ToArray())
+                if (!product.PropertyValues.IsNullOrEmpty())
                 {
-                    //Try to find property meta information
-                    propertyValue.Property = product.Properties.FirstOrDefault(x => x.IsSuitableForValue(propertyValue));
-                    //Return each localized value for selected dictionary value
-                    //Because multilingual dictionary values for all languages may not stored in db need add it in result manually from property dictionary values
-                    var localizedDictValues = propertyValue.TryGetAllLocalizedDictValues();
-                    foreach (var localizedDictValue in localizedDictValues)
+                    //Self item property values
+                    foreach (var propertyValue in product.PropertyValues.ToArray())
                     {
-                        if (!product.PropertyValues.Any(x => x.ValueId == localizedDictValue.ValueId && x.LanguageCode == localizedDictValue.LanguageCode))
+                        //Try to find property meta information
+                        propertyValue.Property = product.Properties.Where(x => x.Type == PropertyType.Product || x.Type == PropertyType.Variation)
+                                                                   .FirstOrDefault(x => x.IsSuitableForValue(propertyValue));
+                        //Return each localized value for selected dictionary value
+                        //Because multilingual dictionary values for all languages may not stored in db need add it in result manually from property dictionary values
+                        var localizedDictValues = propertyValue.TryGetAllLocalizedDictValues();
+                        foreach (var localizedDictValue in localizedDictValues)
                         {
-                            product.PropertyValues.Add(localizedDictValue);
+                            if (!product.PropertyValues.Any(x => x.ValueId == localizedDictValue.ValueId && x.LanguageCode == localizedDictValue.LanguageCode))
+                            {
+                                product.PropertyValues.Add(localizedDictValue);
+                            }
                         }
                     }
                 }
 
                 //inherit not overriden property values from main product
-                if (product.MainProduct != null && product.MainProduct.PropertyValues != null)
+                if (product.MainProduct != null && !product.MainProduct.PropertyValues.IsNullOrEmpty())
                 {
                     var mainProductPopValuesGroups = product.MainProduct.PropertyValues.GroupBy(x => x.PropertyName);
                     foreach (var group in mainProductPopValuesGroups)

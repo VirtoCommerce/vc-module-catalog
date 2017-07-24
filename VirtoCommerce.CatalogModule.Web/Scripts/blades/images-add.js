@@ -5,7 +5,7 @@
         'platformWebApp.assets.api', 'virtoCommerce.catalogModule.imageTools', 'platformWebApp.settings',
         function ($scope, $filter, $translate, FileUploader, dialogService, bladeNavigationService, authService, assets, imageTools, settings) {
             var blade = $scope.blade;
-            var pb = blade.parentBlade;
+
             blade.hasAssetCreatePermission = bladeNavigationService.checkPermission('platform:asset:create');
 
             blade.headIcon = 'fa-image';
@@ -18,7 +18,13 @@
                 initialize(item);
             }
 
+            var promise = settings.getValues({ id: 'VirtoCommerce.Core.General.Languages' }).$promise;
+            $scope.languages = [];
             function initialize(item) {
+                promise.then(function (promiseData) {
+                    $scope.languages = promiseData;
+                });
+
                 blade.item = item;
                 blade.title = 'catalog.blades.image-upload.title';
                 $scope.imageTypes = settings.getValues({ id: 'Catalog.ImageCategories' });
@@ -74,8 +80,12 @@
             };
 
             $scope.saveChanges = function () {
-                if (blade.onSelect)
+                if (blade.onSelect) {
+                    _.each(blade.currentEntities, function (entity) {
+                        entity.languageCode = blade.selectedLanguageCode;
+                    });
                     blade.onSelect(blade.currentEntities);
+                }
 
                 $scope.bladeClose();
             };

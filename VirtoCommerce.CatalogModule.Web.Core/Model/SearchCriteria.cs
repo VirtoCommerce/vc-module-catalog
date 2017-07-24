@@ -8,7 +8,12 @@ using VirtoCommerce.Domain.Catalog.Model;
 namespace VirtoCommerce.CatalogModule.Web.Model
 {
     public class SearchCriteria
-    {    
+    {
+        public SearchCriteria()
+        {
+            Take = 20;
+        }
+
         public string StoreId { get; set; }
         public SearchResponseGroup ResponseGroup { get; set; }
         public string Keyword { get; set; }

@@ -350,11 +350,14 @@
             "image-category": "Image category",
             "drag-drop-comment": "Drag and drop images here",
             "progress": "Progress",
-            "make-default-image": "Drag and drop an image to top left corner of images area to make it the default image."
+            "make-default-image": "Drag and drop an image to top left corner of images area to make it the default image.",
+            "language": "Language",
+            "preview": "Preview"
           },
           "placeholders": {
             "image-url": "Paste image URL here",
-            "image-category": "Select..."
+            "image-category": "Select...",
+            "language": "Select language" 
           }
         },
         "item-asset-detail": {
@@ -426,6 +429,12 @@
         "asset-select": {
           "title": "Link images"
         },
+        "images-select": {
+          "title": "Link assets"
+        },
+        "asset-upload": {
+          "title": "Add assets"
+        }, 
         "image-upload": {
           "title": "Upload images"
         }

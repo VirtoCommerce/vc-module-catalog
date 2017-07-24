@@ -159,13 +159,13 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         {
             var categories = new List<coreModel.Category>();
             var dstCatalog = _catalogService.GetById(moveInfo.Catalog);
-            if(dstCatalog.IsVirtual)
+            if (dstCatalog.IsVirtual)
             {
                 throw new InvalidOperationException("Unable to move in virtual catalog");
             }
 
             //Move  categories
-            foreach (var listEntryCategory in moveInfo.ListEntries.Where(x => String.Equals(x.Type, webModel.ListEntryCategory.TypeName, StringComparison.InvariantCultureIgnoreCase)))
+            foreach (var listEntryCategory in moveInfo.ListEntries.Where(x => x.Type.EqualsInvariant(webModel.ListEntryCategory.TypeName)))
             {
                 var category = _categoryService.GetById(listEntryCategory.Id, coreModel.CategoryResponseGroup.Info);
                 if (category.CatalogId != moveInfo.Catalog)
@@ -181,7 +181,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             var products = new List<coreModel.CatalogProduct>();
             //Move products
-            foreach (var listEntryProduct in moveInfo.ListEntries.Where(x => String.Equals(x.Type, webModel.ListEntryProduct.TypeName, StringComparison.InvariantCultureIgnoreCase)))
+            foreach (var listEntryProduct in moveInfo.ListEntries.Where(x => x.Type.EqualsInvariant(webModel.ListEntryProduct.TypeName)))
             {
                 var product = _itemService.GetById(listEntryProduct.Id, Domain.Catalog.Model.ItemResponseGroup.ItemLarge);
                 if (product.CatalogId != moveInfo.Catalog)
@@ -234,7 +234,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                     CatalogId = link.CatalogId
                 };
 
-                if (String.Equals(link.ListEntryType, webModel.ListEntryCategory.TypeName, StringComparison.InvariantCultureIgnoreCase))
+                if (link.ListEntryType.EqualsInvariant(webModel.ListEntryCategory.TypeName))
                 {
                     changedObject = _categoryService.GetById(link.ListEntryId, coreModel.CategoryResponseGroup.Full);
                 }

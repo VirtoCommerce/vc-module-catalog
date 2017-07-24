@@ -6,6 +6,7 @@
         function ($scope, $filter, $translate, dialogService, bladeNavigationService, authService, assets, imageTools, settings, bladeUtils, uiGridHelper, $timeout) {
             var blade = $scope.blade;
             blade.headIcon = 'fa-image';
+            var languages = blade.parentBlade.catalog.languages;
 
             blade.hasAssetCreatePermission = bladeNavigationService.checkPermission('platform:asset:create');
 
@@ -103,6 +104,7 @@
                     icon: 'fa fa-plus',
                     executeMethod: function () {
                         var newBlade = {
+                            languages: languages,
                             item: blade.item,
                             onSelect: linkAssets,
                             controller: 'virtoCommerce.catalogModule.imagesAddController',
@@ -117,7 +119,7 @@
                     icon: 'fa fa-link',
                     executeMethod: function () {
                         var newBlade = {
-                            title: 'catalog.blades.asset-select.title',
+                            title: 'catalog.blades.images-select.title',
                             //folder: "catalog",
                             onSelect: linkAssets,
                             controller: 'platformWebApp.assets.assetSelectController'
@@ -156,21 +158,24 @@
                 bladeNavigationService.showBlade(newBlade, blade);
             };
 
-            function getEntityGridIndex(searchEntity) {
+            function getEntityGridIndex(searchEntity, gridApi) {
                 var index = -1;
-                _.each($scope.gridApi.grid.renderContainers.body.visibleRowCache, function (row, idx) {
-                    if (_.isEqual(row.entity, searchEntity)) {
-                        index = idx;
-                        return;
-                    }
-                });
+                if (gridApi) {
+                    _.each(gridApi.grid.renderContainers.body.visibleRowCache,
+                        function(row, idx) {
+                            if (_.isEqual(row.entity, searchEntity)) {
+                                index = idx;
+                                return;
+                            }
+                        });
+                }
                 return index;
             }
 
             var priorityChanged = function (data) {
-                var newIndex = getEntityGridIndex(data.rowEntity);
+                var newIndex = getEntityGridIndex(data.rowEntity, data.gridApi);
                 if (newIndex !== data.index) {
-                    $scope.gridApi.cellNav.scrollToFocus(data.rowEntity, data.colDef);
+                    data.gridApi.cellNav.scrollToFocus(data.rowEntity, data.colDef);
                 }
             }
 
@@ -179,13 +184,14 @@
                 uiGridHelper.initialize($scope, gridOptions,
                     function (gridApi) {
                         gridApi.edit.on.afterCellEdit($scope, function (rowEntity, colDef) {
-                            var index = getEntityGridIndex(rowEntity);
+                            var index = getEntityGridIndex(rowEntity, gridApi);
                             var data = {
                                 rowEntity: rowEntity,
                                 colDef: colDef,
-                                index: index
+                                index: index,
+                                gridApi: gridApi
                             };
-                            $timeout(priorityChanged, 300, true, data);
+                            $timeout(priorityChanged, 100, true, data);
                         });
                     });
             };
