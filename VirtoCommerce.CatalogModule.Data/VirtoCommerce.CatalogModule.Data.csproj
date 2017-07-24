@@ -238,7 +238,7 @@
     <Compile Include="Search\ProductSearchRequestBuilder.cs" />
     <Compile Include="Search\ProductSearchResult.cs" />
     <Compile Include="Search\ProductSearchService.cs" />
-    <Compile Include="Search\QueryStringExtensions.cs" />
+    <Compile Include="Search\SearchCriteriaExtensions.cs" />
     <Compile Include="Search\StringsHelper.cs" />
     <Compile Include="Services\AssociationServiceImpl.cs" />
     <Compile Include="Services\CatalogSearchServiceDecorator.cs" />

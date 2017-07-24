@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using VirtoCommerce.Domain.Catalog.Model.Search;
 using VirtoCommerce.Domain.Search;
 using VirtoCommerce.Platform.Core.Common;
 
@@ -9,6 +10,19 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 {
     public static class FiltersHelper
     {
+        public static IFilter CreateOutlineFilter(CatalogSearchCriteriaBase criteria)
+        {
+            IFilter result = null;
+
+            var outlines = criteria.GetOutlines();
+            if (outlines.Any())
+            {
+                result = CreateTermFilter("__outline", outlines);
+            }
+
+            return result;
+        }
+
         public static IFilter CreateTermFilter(string fieldName, string value)
         {
             return new TermFilter

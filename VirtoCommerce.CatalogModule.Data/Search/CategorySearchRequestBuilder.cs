@@ -64,24 +64,10 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 result.Add(FiltersHelper.CreateTermFilter("catalog", criteria.CatalogId.ToLowerInvariant()));
             }
 
-            if (!criteria.Outline.IsNullOrEmpty())
-            {
-                var outline = string.Join("/", criteria.CatalogId, criteria.Outline).TrimEnd('/', '*').ToLowerInvariant();
-                result.Add(FiltersHelper.CreateTermFilter("__outline", outline));
-            }
+            result.Add(FiltersHelper.CreateOutlineFilter(criteria));
 
-            if (criteria.Terms != null)
-            {
-                var terms = criteria.Terms.AsKeyValues();
-                if (terms.Any())
-                {
-                    foreach (var term in terms)
-                    {
-                        var filter = FiltersHelper.CreateTermFilter(term.Key, term.Values);
-                        result.Add(filter);
-                    }
-                }
-            }
+            var terms = criteria.GetTerms();
+            result.AddRange(terms.Select(term => FiltersHelper.CreateTermFilter(term.Key, term.Values)));
 
             return result;
         }
@@ -90,9 +76,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
         {
             var result = new List<SortingField>();
 
-            var categoryId = criteria.Outline.AsCategoryId();
-            var priorityFieldName = StringsHelper.JoinNonEmptyStrings("_", "priority", criteria.CatalogId, categoryId).ToLowerInvariant();
-            var priorityFields = new[] { "priority", priorityFieldName }.Distinct().ToArray();
+            var priorityFields = criteria.GetPriorityFields();
 
             foreach (var sortInfo in criteria.SortInfos)
             {
