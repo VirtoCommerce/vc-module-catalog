@@ -187,6 +187,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                                 var filter = ConvertBrowseFilter(filterAndValues.Filter, term.Values, criteria);
                                 permanentFilters.Add(filter);
                             }
+                            else
+                            {
+                                // Unknown term values should produce empty result
+                                permanentFilters.Add(new IdsFilter { Values = new[] { string.Empty } });
+                            }
                         }
                     }
                     else if (browseFilter != null) // Predefined filter
@@ -234,13 +239,15 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
         protected virtual IFilter ConvertAttributeFilter(AttributeFilter attributeFilter, IList<string> valueIds)
         {
+            var knownValues = attributeFilter.Values
+                ?.Where(v => valueIds.Contains(v.Id, StringComparer.OrdinalIgnoreCase))
+                .Select(v => v.Value)
+                .ToArray();
+
             var result = new TermFilter
             {
                 FieldName = attributeFilter.Key,
-                Values = attributeFilter.Values
-                ?.Where(v => valueIds.Contains(v.Id, StringComparer.OrdinalIgnoreCase))
-                .Select(v => v.Value)
-                .ToArray() ?? valueIds,
+                Values = knownValues != null && knownValues.Any() ? knownValues : valueIds,
             };
 
             return result;
@@ -252,13 +259,24 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
             if (string.IsNullOrEmpty(criteria.Currency) || priceRangeFilter.Currency.EqualsInvariant(criteria.Currency))
             {
-                var filters = priceRangeFilter.Values
+                var knownValues = priceRangeFilter.Values
                     ?.Where(v => valueIds.Contains(v.Id, StringComparer.OrdinalIgnoreCase))
-                    .Select(v => FiltersHelper.CreatePriceRangeFilter(priceRangeFilter.Currency, criteria.Pricelists, v.Lower, v.Upper, v.IncludeLower, v.IncludeUpper))
-                    .Where(f => f != null)
-                    .ToList();
+                    .ToArray();
 
-                result = filters.Or();
+                if (knownValues != null && knownValues.Any())
+                {
+                    var filters = knownValues
+                        .Select(v => FiltersHelper.CreatePriceRangeFilter(priceRangeFilter.Currency, criteria.Pricelists, v.Lower, v.Upper, v.IncludeLower, v.IncludeUpper))
+                        .Where(f => f != null)
+                        .ToList();
+
+                    result = filters.Or();
+                }
+                else
+                {
+                    // Unknown term values should produce empty result
+                    result = new IdsFilter { Values = new[] { string.Empty } };
+                }
             }
 
             return result;
@@ -266,14 +284,25 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
         protected virtual IFilter ConvertRangeFilter(BrowseFilters.RangeFilter rangeFilter, IList<string> valueIds)
         {
-            var result = new RangeFilter
+            IFilter result;
+
+            var knownValues = rangeFilter.Values
+                ?.Where(v => valueIds.Contains(v.Id, StringComparer.OrdinalIgnoreCase))
+                .ToArray();
+
+            if (knownValues != null && knownValues.Any())
             {
-                FieldName = rangeFilter.Key,
-                Values = rangeFilter.Values
-                    ?.Where(v => valueIds.Contains(v.Id, StringComparer.OrdinalIgnoreCase))
-                    .Select(ConvertRangeFilterValue)
-                    .ToArray(),
-            };
+                result = new RangeFilter
+                {
+                    FieldName = rangeFilter.Key,
+                    Values = knownValues.Select(ConvertRangeFilterValue).ToArray(),
+                };
+            }
+            else
+            {
+                // Unknown term values should produce empty result
+                result = new IdsFilter { Values = new[] { string.Empty } };
+            }
 
             return result;
         }
@@ -369,7 +398,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
         {
             var valueFilter = FiltersHelper.CreateRangeFilter(fieldName, value.Lower, value.Upper, value.IncludeLower, value.IncludeUpper);
 
-            var result = new RangeAggregationRequest
+            var result = new TermAggregationRequest
             {
                 Id = $"{fieldName}-{value.Id}",
                 Filter = existingFilters.And(valueFilter)
