@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Search;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Settings;
 
 namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
@@ -23,7 +24,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             foreach (var propValue in propertyValues.Where(x => x.Value != null))
             {
                 var propertyName = (propValue.PropertyName ?? "").ToLowerInvariant();
-                var property = properties.FirstOrDefault(x => string.Equals(x.Name, propValue.PropertyName, StringComparison.InvariantCultureIgnoreCase) && x.ValueType == propValue.ValueType);
+                var property = properties.FirstOrDefault(p => p.Name.EqualsInvariant(propValue.PropertyName) && p.ValueType == propValue.ValueType);
                 var isCollection = property?.Multivalue == true;
 
                 switch (propValue.ValueType)
