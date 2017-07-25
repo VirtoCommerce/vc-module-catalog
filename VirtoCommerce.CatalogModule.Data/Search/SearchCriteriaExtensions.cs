@@ -14,7 +14,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 .Select(outline => StringsHelper.JoinNonEmptyStrings("_", "priority", criteria.CatalogId, outline.Split('/').LastOrDefault()).ToLowerInvariant())
                 .ToList();
 
-            allNames.Insert(0, "priority");
+            allNames.Add("priority");
 
             var result = allNames.Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
             return result;
