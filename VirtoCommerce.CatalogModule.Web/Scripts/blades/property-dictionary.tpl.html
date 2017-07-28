@@ -22,6 +22,11 @@
                     <legend ng-show="selectedItem">{{ 'catalog.blades.property-dictionary.labels.language-edit' | translate }}</legend>
                     <legend ng-hide="selectedItem">{{ 'catalog.blades.property-dictionary.labels.language-add' | translate }}</legend>
                     <div class="form-group">
+                        <div class="form-input __langs" ng-if="exposeAlias == true">
+                            <ng-form name="valuesForm">
+                                <input ng-disabled="selectedItem" ng-model="newValue.alias" class="form-control" ng-required="$first" ui-validate=" 'dictValueValidator($value, newValue)' " name="mValue" placeholder="{{ 'catalog.blades.property-dictionary.placeholders.alias' | translate }}" />
+                            </ng-form>
+                        </div>
                         <div class="form-input __langs" ng-repeat="data in newValue.values">
                             <ng-form name="valuesForm">
                                 <span class="flag flag-{{data.languageCode.substr(3).toLowerCase()}}"></span>
@@ -51,6 +56,7 @@
                                         <span class="check"></span>
                                     </label>
                                 </th>
+                                <th ng-if="exposeAlias == true" class="table-col">{{ 'catalog.blades.property-dictionary.labels.alias' | translate }}</th>
                                 <th class="table-col">{{ 'catalog.blades.property-dictionary.labels.value' | translate }}</th>
                             </tr>
                         </thead>
@@ -81,6 +87,11 @@
                                     <label class="form-control __checkbox">
                                         <input type="checkbox" ng-model="group.selected">
                                         <span class="check"></span>
+                                    </label>
+                                </td>
+                                <td ng-if="exposeAlias == true" class="table-col">
+                                    <label class="form-control">
+                                        {{group.alias}}
                                     </label>
                                 </td>
                                 <td class="table-col">

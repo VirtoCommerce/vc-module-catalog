@@ -77,6 +77,15 @@
                 </arrayValues>
             </setting>
         </group>
+        <group name="Catalog|Dictionaries">
+            <setting>
+                <name>Catalog.ExposeAliasInDictionary</name>
+                <valueType>boolean</valueType>
+                <defaultValue>false</defaultValue>
+                <title>Expose Alias In Dictionary</title>
+                <description>Enable or disable exposing the Alias for dictionary values</description>
+            </setting>
+        </group>
         <group name="Search|Catalog">
             <setting>
                 <name>Catalog.Search.UseCatalogIndexedSearchInManager</name>
