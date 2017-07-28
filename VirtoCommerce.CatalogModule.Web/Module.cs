@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Web.Http;
 using FluentValidation;
 using Microsoft.Practices.Unity;
+using VirtoCommerce.CatalogModule.Data.Infrastructure.Interceptors;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Data.Search;
@@ -45,7 +48,7 @@ namespace VirtoCommerce.CatalogModule.Web
         {
             base.SetupDatabase();
 
-            using (var db = new CatalogRepositoryImpl(_connectionStringName, _container.Resolve<AuditableInterceptor>()))
+            using (var db = new CatalogRepositoryImpl(null, _connectionStringName, _container.Resolve<AuditableInterceptor>()))
             {
                 var initializer = new SetupDatabaseInitializer<CatalogRepositoryImpl, Data.Migrations.Configuration>();
 
@@ -59,9 +62,16 @@ namespace VirtoCommerce.CatalogModule.Web
 
             #region Catalog dependencies
 
-            Func<ICatalogRepository> catalogRepFactory = () =>
-                new CatalogRepositoryImpl(_connectionStringName, new EntityPrimaryKeyGeneratorInterceptor(), _container.Resolve<AuditableInterceptor>(),
-                    new ChangeLogInterceptor(_container.Resolve<Func<IPlatformRepository>>(), ChangeLogPolicy.Cumulative, new[] { nameof(ItemEntity), nameof(CategoryEntity) }, _container.Resolve<IUserNameResolver>()));
+            var interceptors = new List<IInterceptor>
+            {
+                new EntityPrimaryKeyGeneratorInterceptor(),
+                _container.Resolve<AuditableInterceptor>(),
+                new ChangeLogInterceptor(_container.Resolve<Func<IPlatformRepository>>(), ChangeLogPolicy.Cumulative,
+                    new[] {nameof(ItemEntity), nameof(CategoryEntity)}, _container.Resolve<IUserNameResolver>()),
+                new NearRealtimeIndexer(TryResolve<ISearchProvider>, _container.Resolve<ISettingsManager>(), TryResolve<IIndexingManager>)
+            };
+
+            Func<ICatalogRepository> catalogRepFactory = () => new CatalogRepositoryImpl(TryResolve<ISearchProvider>, _connectionStringName, interceptors.ToArray());
 
             _container.RegisterInstance(catalogRepFactory);
 
@@ -179,5 +189,18 @@ namespace VirtoCommerce.CatalogModule.Web
         }
 
         #endregion
+
+        private T TryResolve<T>()
+            where T : class
+        {
+            try
+            {
+                return _container.Resolve<T>();
+            }
+            catch (Exception)
+            {
+                return (T)null;
+            }
+        }
     }
 }

@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Linq;
 using System.Text;
+using VirtoCommerce.Domain.Search;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Data.Infrastructure;
 using VirtoCommerce.Platform.Data.Infrastructure.Interceptors;
@@ -14,13 +15,18 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 {
     public class CatalogRepositoryImpl : EFRepositoryBase, ICatalogRepository
     {
+        private readonly Func<ISearchProvider> _searchProviderFactory;
+        private ISearchProvider _searchProvider;
+        private ISearchProvider SearchProvider => _searchProvider ?? (_searchProvider = _searchProviderFactory());
+
         public CatalogRepositoryImpl()
         {
         }
 
-        public CatalogRepositoryImpl(string nameOrConnectionString, params IInterceptor[] interceptors)
+        public CatalogRepositoryImpl(Func<ISearchProvider> searchProviderFactory, string nameOrConnectionString, params IInterceptor[] interceptors)
             : base(nameOrConnectionString, null, interceptors)
         {
+            _searchProviderFactory = searchProviderFactory;
             Database.SetInitializer<CatalogRepositoryImpl>(null);
         }
 
@@ -458,6 +464,9 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             var query = string.Format(queryPattern, string.Join(", ", itemIds.Select(x => string.Format("'{0}'", x))));
 
             ObjectContext.ExecuteStoreCommand(query);
+
+            // Remove from index directly because we bypass the repository's changeTracker by executing delete statements manually.
+            RemoveFromIndex(KnownDocumentTypes.Product, itemIds);
         }
 
         public void RemoveCategories(string[] ids)
@@ -496,6 +505,9 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             queryBuilder.AppendLine(string.Format("DELETE FROM Category WHERE Id IN ({0})", string.Join(", ", allCategoriesIds.Select(x => string.Format("'{0}'", x)))));
 
             ObjectContext.ExecuteStoreCommand(queryBuilder.ToString());
+
+            // Remove from index directly because we bypass the repository's changeTracker by executing delete statements manually.
+            RemoveFromIndex(KnownDocumentTypes.Category, ids);
         }
 
         public void RemoveCatalogs(string[] ids)
@@ -520,5 +532,9 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         }
         #endregion
 
+        protected virtual void RemoveFromIndex(string documentType, string[] ids)
+        {
+            SearchProvider?.RemoveAsync(documentType, ids.Select(x => new IndexDocument(x)).ToList());
+        }
     }
 }

@@ -93,6 +93,8 @@
     </Compile>
     <Compile Include="CatalogConstants.cs" />
     <Compile Include="Extensions\RepositoryExtension.cs" />
+    <Compile Include="Infrastructure\Interceptors\IIndexingInterceptor.cs" />
+    <Compile Include="Infrastructure\Interceptors\NearRealtimeIndexer.cs" />
     <Compile Include="Migrations\201504301302574_Initial.cs" />
     <Compile Include="Migrations\201504301302574_Initial.Designer.cs">
       <DependentUpon>201504301302574_Initial.cs</DependentUpon>
