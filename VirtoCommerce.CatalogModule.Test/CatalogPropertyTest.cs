@@ -75,7 +75,7 @@ namespace VirtoCommerce.CatalogModule.Test
 
         private static ICatalogRepository GetCatalogRepository()
         {
-            var retVal = new CatalogRepositoryImpl("VirtoCommerce", new EntityPrimaryKeyGeneratorInterceptor(), new AuditableInterceptor(null));
+            var retVal = new CatalogRepositoryImpl(null, "VirtoCommerce", new EntityPrimaryKeyGeneratorInterceptor(), new AuditableInterceptor(null));
             return retVal;
         }
 

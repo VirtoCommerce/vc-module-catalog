@@ -102,6 +102,15 @@
                 <description>Store serialized catalog objects in the index and return them in search results</description>
             </setting>
         </group>
+        <group name="Search|General">
+          <setting>
+            <name>VirtoCommerce.Search.AutoIndexing.Enable</name>
+            <valueType>boolean</valueType>
+            <defaultValue>true</defaultValue>
+            <title>Automatically update search index (requires restart)</title>
+            <description>Enable or disable automatic search index updates.</description>
+          </setting>
+        </group>
     </settings>
 
     <permissions>
