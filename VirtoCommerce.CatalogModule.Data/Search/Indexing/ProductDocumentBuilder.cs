@@ -38,7 +38,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         protected virtual IList<CatalogProduct> GetProducts(IList<string> productIds)
         {
-            return _itemService.GetByIds(productIds.ToArray(), ItemResponseGroup.ItemProperties | ItemResponseGroup.Variations | ItemResponseGroup.Outlines | ItemResponseGroup.Seo | ItemResponseGroup.Links);
+            return _itemService.GetByIds(productIds.ToArray(), ItemResponseGroup.ItemLarge);
         }
 
         protected virtual IndexDocument CreateDocument(CatalogProduct product)

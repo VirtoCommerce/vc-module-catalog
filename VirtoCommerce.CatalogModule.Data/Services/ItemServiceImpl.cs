@@ -99,6 +99,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 {
                     product.Reviews = null;
                 }
+                if (!respGroup.HasFlag(ItemResponseGroup.Inventory))
+                {
+                    product.Inventories = null;
+                }
                 if (!respGroup.HasFlag(ItemResponseGroup.ItemProperties))
                 {
                     product.Properties = null;
