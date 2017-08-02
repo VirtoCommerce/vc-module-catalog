@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using CacheManager.Core;
 using FluentValidation;
 using VirtoCommerce.CatalogModule.Data.Extensions;
 using VirtoCommerce.CatalogModule.Data.Model;
@@ -25,8 +24,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private readonly Func<ICatalogRepository> _repositoryFactory;
         private readonly AbstractValidator<IHasProperties> _hasPropertyValidator;
 
-        public ItemServiceImpl(Func<ICatalogRepository> catalogRepositoryFactory, ICommerceService commerceService, IOutlineService outlineService, ICatalogService catalogService, ICategoryService categoryService, ICacheManager<object> cacheManager,
-            AbstractValidator<IHasProperties> hasPropertyValidator)
+        public ItemServiceImpl(Func<ICatalogRepository> catalogRepositoryFactory, ICommerceService commerceService, IOutlineService outlineService, ICatalogService catalogService, ICategoryService categoryService, AbstractValidator<IHasProperties> hasPropertyValidator)
         {
             _catalogService = catalogService;
             _categoryService = categoryService;
@@ -40,7 +38,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public CatalogProduct GetById(string itemId, ItemResponseGroup respGroup, string catalogId = null)
         {
-            var results = this.GetByIds(new[] { itemId }, respGroup, catalogId);
+            var results = GetByIds(new[] { itemId }, respGroup, catalogId);
             return results.Any() ? results.First() : null;
         }
 
@@ -146,13 +144,14 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public void Delete(string[] itemIds)
         {
-            var items = GetByIds(itemIds, ItemResponseGroup.Seo | ItemResponseGroup.Variations);
+            //var items = GetByIds(itemIds, ItemResponseGroup.Seo | ItemResponseGroup.Variations);
             using (var repository = _repositoryFactory())
             {
                 repository.RemoveItems(itemIds);
                 CommitChanges(repository);
             }
         }
+
         #endregion
 
         protected virtual void SaveChanges(CatalogProduct[] products, bool disableValidation = false)
@@ -167,11 +166,12 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 //Optimize performance and CPU usage
                 repository.DisableChangesTracking();
 
-                var dbExistProducts = repository.GetItemByIds(products.Where(x => !x.IsTransient()).Select(x => x.Id).ToArray(), Domain.Catalog.Model.ItemResponseGroup.ItemLarge);
+                var dbExistProducts = repository.GetItemByIds(products.Where(x => !x.IsTransient()).Select(x => x.Id).ToArray(), ItemResponseGroup.ItemLarge);
                 foreach (var product in products)
                 {
                     var modifiedEntity = AbstractTypeFactory<ItemEntity>.TryCreateInstance().FromModel(product, pkMap);
                     var originalEntity = dbExistProducts.FirstOrDefault(x => x.Id == product.Id);
+
                     if (originalEntity != null)
                     {
                         changeTracker.Attach(originalEntity);
@@ -191,7 +191,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
 
             //Update SEO 
-            var productsWithVariations = products.Concat(products.Where(x => x.Variations != null).SelectMany(x => x.Variations)).ToArray();
+            var productsWithVariations = products.Concat(products.Where(x => x.Variations != null).SelectMany(x => x.Variations)).OfType<ISeoSupport>().ToArray();
             _commerceService.UpsertSeoForObjects(productsWithVariations);
         }
 
@@ -335,6 +335,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                         }
                     }
                 }
+
                 //Measurement inheritance 
                 if (product.MainProduct != null)
                 {
