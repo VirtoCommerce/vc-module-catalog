@@ -6,14 +6,13 @@ using FluentValidation;
 using VirtoCommerce.CatalogModule.Data.Extensions;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
+using VirtoCommerce.CatalogModule.Data.Services.Validation;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Commerce.Model;
 using VirtoCommerce.Domain.Commerce.Services;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Data.Infrastructure;
-using VirtoCommerce.CatalogModule.Data.Services.Validation;
-using VirtoCommerce.Platform.Core.Exceptions;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
@@ -207,7 +206,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             {
                 product.Catalog = catalogsMap.GetValueOrThrow(product.CatalogId, $"catalog with key {product.CatalogId} not exist");
                 if (product.CategoryId != null)
-                {             
+                {
                     product.Category = categoriesMap.GetValueOrThrow(product.CategoryId, $"category with key {product.CategoryId} not exist");
                 }
 
@@ -216,7 +215,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     foreach (var link in product.Links)
                     {
                         link.Catalog = catalogsMap.GetValueOrThrow(link.CatalogId, $"link catalog with key {link.CatalogId} not exist");
-                        link.Category = _categoryService.GetById(link.CategoryId, CategoryResponseGroup.WithProperties);
+                        link.Category = _categoryService.GetById(link.CategoryId, CategoryResponseGroup.WithProperties | CategoryResponseGroup.WithParents);
                     }
                 }
 
