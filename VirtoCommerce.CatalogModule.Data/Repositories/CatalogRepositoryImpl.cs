@@ -403,7 +403,17 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     DELETE  FROM Item  WHERE Id IN ({0})
                 ";
 
-                ExecuteStoreCommand(commandTemplate, itemIds);
+                const int batchSize = 500;
+                var skip = 0;
+
+                do
+                {
+                    var batchItemIds = itemIds.Skip(skip).Take(batchSize).ToArray();
+                    ExecuteStoreCommand(commandTemplate, batchItemIds);
+
+                    skip += batchSize;
+                }
+                while (skip < itemIds.Length);
             }
         }
 
@@ -411,22 +421,10 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         {
             if (!ids.IsNullOrEmpty())
             {
-                var allCategoriesIds = GetAllChildrenCategoriesIds(ids).Concat(ids);
-                var allItemIds = Items.Where(i => allCategoriesIds.Contains(i.CategoryId)).Select(i => i.Id).ToArray();
+                var categoryIds = GetAllChildrenCategoriesIds(ids).Concat(ids).ToArray();
 
-                var skip = 0;
-                const int take = 500;
-
-                do
-                {
-                    var itemIds = allItemIds.Skip(skip).Take(take).ToArray();
-                    if (!itemIds.IsNullOrEmpty())
-                    {
-                        RemoveItems(itemIds);
-                    }
-                    skip += take;
-                }
-                while (skip <= allItemIds.Length);
+                var itemIds = Items.Where(i => categoryIds.Contains(i.CategoryId)).Select(i => i.Id).ToArray();
+                RemoveItems(itemIds);
 
                 const string commandTemplate = @"
                     DELETE FROM SeoUrlKeyword WHERE ObjectType = 'Category' AND ObjectId IN ({0})
@@ -439,7 +437,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     DELETE FROM Category WHERE Id IN ({0})
                 ";
 
-                ExecuteStoreCommand(commandTemplate, allCategoriesIds);
+                ExecuteStoreCommand(commandTemplate, categoryIds);
             }
         }
 
@@ -447,11 +445,11 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         {
             if (!ids.IsNullOrEmpty())
             {
-                var catalogCategoriesIds = Categories.Where(x => ids.Contains(x.CatalogId)).Select(x => x.Id).ToArray();
-                var catalogItemsIds = Items.Where(x => x.CategoryId == null && ids.Contains(x.CatalogId)).Select(x => x.Id).ToArray();
+                var itemIds = Items.Where(i => i.CategoryId == null && ids.Contains(i.CatalogId)).Select(i => i.Id).ToArray();
+                RemoveItems(itemIds);
 
-                RemoveItems(catalogItemsIds);
-                RemoveCategories(catalogCategoriesIds);
+                var categoryIds = Categories.Where(c => ids.Contains(c.CatalogId)).Select(c => c.Id).ToArray();
+                RemoveCategories(categoryIds);
 
                 const string commandTemplate = @"
                     DELETE CL FROM CatalogLanguage CL INNER JOIN Catalog C ON C.Id = CL.CatalogId WHERE C.Id IN ({0})
