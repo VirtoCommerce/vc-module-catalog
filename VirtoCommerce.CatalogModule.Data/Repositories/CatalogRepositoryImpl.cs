@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Core.Objects;
 using System.Data.Entity.ModelConfiguration.Conventions;
+using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Data.Infrastructure;
 using VirtoCommerce.Platform.Data.Infrastructure.Interceptors;
@@ -24,10 +25,9 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             Database.SetInitializer<CatalogRepositoryImpl>(null);
         }
 
-        protected override void OnModelCreating(System.Data.Entity.DbModelBuilder modelBuilder)
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
-
 
             #region Catalog
             modelBuilder.Entity<dataModel.CatalogEntity>().ToTable("Catalog").HasKey(x => x.Id).Property(x => x.Id);
@@ -67,7 +67,6 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             modelBuilder.Entity<dataModel.PropertyDisplayNameEntity>().ToTable("PropertyDisplayName").HasKey(x => x.Id).Property(x => x.Id);
             modelBuilder.Entity<dataModel.PropertyDisplayNameEntity>().HasRequired(m => m.Property).WithMany(x => x.DisplayNames).HasForeignKey(x => x.PropertyId).WillCascadeOnDelete(true);
             #endregion
-
 
             #region PropertyValue
             modelBuilder.Entity<dataModel.PropertyValueEntity>().ToTable("PropertyValue").HasKey(x => x.Id).Property(x => x.Id);
@@ -110,8 +109,6 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             modelBuilder.Entity<dataModel.CatalogLanguageEntity>().HasRequired(m => m.Catalog).WithMany(x => x.CatalogLanguages).HasForeignKey(x => x.CatalogId).WillCascadeOnDelete(true);
             #endregion
 
-
-
             #region CategoryItemRelation
             modelBuilder.Entity<dataModel.CategoryItemRelationEntity>().ToTable("CategoryItemRelation").HasKey(x => x.Id).Property(x => x.Id);
 
@@ -119,7 +116,6 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             modelBuilder.Entity<dataModel.CategoryItemRelationEntity>().HasRequired(p => p.CatalogItem).WithMany(x => x.CategoryLinks).HasForeignKey(x => x.ItemId).WillCascadeOnDelete(false);
             modelBuilder.Entity<dataModel.CategoryItemRelationEntity>().HasRequired(p => p.Catalog).WithMany().HasForeignKey(x => x.CatalogId).WillCascadeOnDelete(false);
             #endregion
-
 
             #region CategoryRelation
             modelBuilder.Entity<dataModel.CategoryRelationEntity>().ToTable("CategoryRelation").HasKey(x => x.Id).Property(x => x.Id);
@@ -136,82 +132,27 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                                        .WithMany(x => x.IncommingLinks)
                                        .HasForeignKey(x => x.TargetCatalogId).WillCascadeOnDelete(false);
             #endregion
+
             base.OnModelCreating(modelBuilder);
         }
 
         #region ICatalogRepository Members
-        public IQueryable<dataModel.CategoryEntity> Categories
-        {
-            get { return GetAsQueryable<dataModel.CategoryEntity>(); }
-        }
 
-        public IQueryable<dataModel.CatalogEntity> Catalogs
-        {
-            get { return GetAsQueryable<dataModel.CatalogEntity>(); }
-        }
-
-        public IQueryable<dataModel.PropertyValueEntity> PropertyValues
-        {
-            get { return GetAsQueryable<dataModel.PropertyValueEntity>(); }
-        }
-
-        public IQueryable<dataModel.ImageEntity> Images
-        {
-            get { return GetAsQueryable<dataModel.ImageEntity>(); }
-        }
-        public IQueryable<dataModel.AssetEntity> Assets
-        {
-            get { return GetAsQueryable<dataModel.AssetEntity>(); }
-        }
-
-        public IQueryable<dataModel.ItemEntity> Items
-        {
-            get { return GetAsQueryable<dataModel.ItemEntity>(); }
-        }
-
-        public IQueryable<dataModel.EditorialReviewEntity> EditorialReviews
-        {
-            get { return GetAsQueryable<dataModel.EditorialReviewEntity>(); }
-        }
-
-        public IQueryable<dataModel.PropertyEntity> Properties
-        {
-            get { return GetAsQueryable<dataModel.PropertyEntity>(); }
-        }
-
-        public IQueryable<dataModel.PropertyDictionaryValueEntity> PropertyDictionaryValues
-        {
-            get { return GetAsQueryable<dataModel.PropertyDictionaryValueEntity>(); }
-        }
-
-        public IQueryable<dataModel.PropertyDisplayNameEntity> PropertyDisplayNames
-        {
-            get { return GetAsQueryable<dataModel.PropertyDisplayNameEntity>(); }
-        }
-        public IQueryable<dataModel.PropertyAttributeEntity> PropertyAttributes
-        {
-            get { return GetAsQueryable<dataModel.PropertyAttributeEntity>(); }
-        }
-
-        public IQueryable<dataModel.CategoryItemRelationEntity> CategoryItemRelations
-        {
-            get { return GetAsQueryable<dataModel.CategoryItemRelationEntity>(); }
-        }
-
-        public IQueryable<dataModel.AssociationEntity> Associations
-        {
-            get { return GetAsQueryable<dataModel.AssociationEntity>(); }
-        }
-
-        public IQueryable<dataModel.CategoryRelationEntity> CategoryLinks
-        {
-            get { return GetAsQueryable<dataModel.CategoryRelationEntity>(); }
-        }
-
-        public IQueryable<dataModel.PropertyValidationRuleEntity> PropertyValidationRules
-        {
-            get { return GetAsQueryable<dataModel.PropertyValidationRuleEntity>(); }
-        }
+        public IQueryable<dataModel.CategoryEntity> Categories => GetAsQueryable<dataModel.CategoryEntity>();
+        public IQueryable<dataModel.CatalogEntity> Catalogs => GetAsQueryable<dataModel.CatalogEntity>();
+        public IQueryable<dataModel.PropertyValueEntity> PropertyValues => GetAsQueryable<dataModel.PropertyValueEntity>();
+        public IQueryable<dataModel.ImageEntity> Images => GetAsQueryable<dataModel.ImageEntity>();
+        public IQueryable<dataModel.AssetEntity> Assets => GetAsQueryable<dataModel.AssetEntity>();
+        public IQueryable<dataModel.ItemEntity> Items => GetAsQueryable<dataModel.ItemEntity>();
+        public IQueryable<dataModel.EditorialReviewEntity> EditorialReviews => GetAsQueryable<dataModel.EditorialReviewEntity>();
+        public IQueryable<dataModel.PropertyEntity> Properties => GetAsQueryable<dataModel.PropertyEntity>();
+        public IQueryable<dataModel.PropertyDictionaryValueEntity> PropertyDictionaryValues => GetAsQueryable<dataModel.PropertyDictionaryValueEntity>();
+        public IQueryable<dataModel.PropertyDisplayNameEntity> PropertyDisplayNames => GetAsQueryable<dataModel.PropertyDisplayNameEntity>();
+        public IQueryable<dataModel.PropertyAttributeEntity> PropertyAttributes => GetAsQueryable<dataModel.PropertyAttributeEntity>();
+        public IQueryable<dataModel.CategoryItemRelationEntity> CategoryItemRelations => GetAsQueryable<dataModel.CategoryItemRelationEntity>();
+        public IQueryable<dataModel.AssociationEntity> Associations => GetAsQueryable<dataModel.AssociationEntity>();
+        public IQueryable<dataModel.CategoryRelationEntity> CategoryLinks => GetAsQueryable<dataModel.CategoryRelationEntity>();
+        public IQueryable<dataModel.PropertyValidationRuleEntity> PropertyValidationRules => GetAsQueryable<dataModel.PropertyValidationRuleEntity>();
 
         public dataModel.CatalogEntity[] GetCatalogsByIds(string[] catalogIds)
         {
@@ -225,34 +166,15 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                                                  .Select(x => x.Id)
                                                  .ToArray();
             var catalogProperties = GetPropertiesByIds(catalogPropertiesIds);
-       
+
             return retVal;
-        }
-
-
-
-        public string[] GetAllChildrenCategoriesIds(string[] categoryIds)
-        {
-            var retVal = new List<string>();
-            if (!categoryIds.IsNullOrEmpty())
-            {
-                const string queryPattern =
-                    @"WITH cte AS  ( SELECT a.Id FROM Category a  WHERE Id IN ({0})
-                  UNION ALL
-                  SELECT a.Id FROM Category a JOIN cte c ON a.ParentCategoryId = c.Id)
-                  SELECT Id FROM cte WHERE Id NOT IN ({0})";
-
-                var query = string.Format(queryPattern, string.Join(", ", categoryIds.Select(x => string.Format("'{0}'", x))));
-                retVal = ObjectContext.ExecuteStoreQuery<string>(query).ToList();
-            }
-            return retVal.ToArray();
         }
 
         public dataModel.CategoryEntity[] GetCategoriesByIds(string[] categoriesIds, coreModel.CategoryResponseGroup respGroup)
         {
             if (categoriesIds == null)
             {
-                throw new ArgumentNullException("categoriesIds");
+                throw new ArgumentNullException(nameof(categoriesIds));
             }
 
             if (!categoriesIds.Any())
@@ -284,8 +206,8 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             //Load all properties meta information and information for inheritance
             if (respGroup.HasFlag(coreModel.CategoryResponseGroup.WithProperties))
             {
-                var categoryPropertiesIds = Properties.Where(x => categoriesIds.Contains(x.CategoryId)).Select(x=>x.Id).ToArray();
-                var categoryProperties = GetPropertiesByIds(categoryPropertiesIds);             
+                var categoryPropertiesIds = Properties.Where(x => categoriesIds.Contains(x.CategoryId)).Select(x => x.Id).ToArray();
+                var categoryProperties = GetPropertiesByIds(categoryPropertiesIds);
             }
 
             return result;
@@ -295,7 +217,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         {
             if (itemIds == null)
             {
-                throw new ArgumentNullException("itemIds");
+                throw new ArgumentNullException(nameof(itemIds));
             }
 
             if (!itemIds.Any())
@@ -305,6 +227,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
             // Use breaking query EF performance concept https://msdn.microsoft.com/en-us/data/hh949853.aspx#8
             var retVal = Items.Include(x => x.Images).Where(x => itemIds.Contains(x.Id)).ToArray();
+
             var propertyValues = PropertyValues.Where(x => itemIds.Contains(x.ItemId)).ToArray();
 
             if (respGroup.HasFlag(coreModel.ItemResponseGroup.Outlines))
@@ -315,7 +238,6 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             if (respGroup.HasFlag(coreModel.ItemResponseGroup.Links))
             {
                 var relations = CategoryItemRelations.Where(x => itemIds.Contains(x.ItemId)).ToArray();
-
             }
 
             if (respGroup.HasFlag(coreModel.ItemResponseGroup.ItemAssets))
@@ -361,6 +283,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             // Load parents
             var parentIds = retVal.Where(x => x.Parent == null && x.ParentId != null).Select(x => x.ParentId).ToArray();
             var parents = GetItemByIds(parentIds, respGroup);
+
             return retVal;
         }
 
@@ -368,6 +291,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         {
             //Used breaking query EF performance concept https://msdn.microsoft.com/en-us/data/hh949853.aspx#8
             var retVal = Properties.Where(x => propIds.Contains(x.Id)).ToArray();
+
             var propAttributes = PropertyAttributes.Where(x => propIds.Contains(x.PropertyId)).ToArray();
             var propDisplayNames = PropertyDisplayNames.Where(x => propIds.Contains(x.PropertyId)).ToArray();
             var propValidationRules = PropertyValidationRules.Where(x => propIds.Contains(x.PropertyId)).ToArray();
@@ -378,6 +302,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             {
                 var dictValues = PropertyDictionaryValues.Where(x => dictPropertiesIds.Contains(x.PropertyId)).ToArray();
             }
+
             return retVal;
         }
 
@@ -390,10 +315,12 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         public dataModel.PropertyEntity[] GetAllCatalogProperties(string catalogId)
         {
             var retVal = new List<dataModel.PropertyEntity>();
+
             var catalog = Catalogs.FirstOrDefault(x => x.Id == catalogId);
             if (catalog != null)
             {
                 var propertyIds = Properties.Where(x => x.CatalogId == catalogId).Select(x => x.Id).ToArray();
+
                 if (catalog.Virtual)
                 {
                     //get all category relations
@@ -414,111 +341,161 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     var linkedCatalogIds = Categories.Where(x => expandedFlatLinkedCategoryIds.Contains(x.Id)).Select(x => x.CatalogId).Distinct().ToArray();
                     propertyIds = propertyIds.Concat(Properties.Where(x => linkedCatalogIds.Contains(x.CatalogId) && x.CategoryId == null).Select(x => x.Id)).Distinct().ToArray();
                 }
+
                 retVal.AddRange(GetPropertiesByIds(propertyIds));
             }
-            return retVal.ToArray();
 
+            return retVal.ToArray();
+        }
+
+        public string[] GetAllChildrenCategoriesIds(string[] categoryIds)
+        {
+            string[] result = null;
+
+            if (!categoryIds.IsNullOrEmpty())
+            {
+                const string commandTemplate = @"
+                    WITH cte AS (
+                        SELECT a.Id FROM Category a  WHERE Id IN ({0})
+                        UNION ALL
+                        SELECT a.Id FROM Category a JOIN cte c ON a.ParentCategoryId = c.Id
+                    )
+                    SELECT Id FROM cte WHERE Id NOT IN ({0})
+                ";
+
+                result = ExecuteStoreQuery<string>(commandTemplate, categoryIds).ToArray();
+            }
+
+            return result ?? new string[0];
         }
 
         public void RemoveItems(string[] itemIds)
         {
-            if (itemIds == null || !itemIds.Any())
-                return;
+            if (!itemIds.IsNullOrEmpty())
+            {
+                const string commandTemplate = @"
+                    DELETE SEO FROM SeoUrlKeyword SEO INNER JOIN Item I ON I.Id = SEO.ObjectId AND SEO.ObjectType = 'CatalogProduct'
+                    WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
 
-            const string queryPattern =
-            @"
-            DELETE SEO FROM SeoUrlKeyword SEO INNER JOIN Item I ON I.Id = SEO.ObjectId AND SEO.ObjectType = 'CatalogProduct'
-            WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
-
-            DELETE CR FROM CategoryItemRelation  CR INNER JOIN Item I ON I.Id = CR.ItemId
-            WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
+                    DELETE CR FROM CategoryItemRelation  CR INNER JOIN Item I ON I.Id = CR.ItemId
+                    WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
         
-            DELETE CI FROM CatalogImage CI INNER JOIN Item I ON I.Id = CI.ItemId
-            WHERE I.Id IN ({0})  OR I.ParentId IN ({0})
+                    DELETE CI FROM CatalogImage CI INNER JOIN Item I ON I.Id = CI.ItemId
+                    WHERE I.Id IN ({0})  OR I.ParentId IN ({0})
 
-            DELETE CA FROM CatalogAsset CA INNER JOIN Item I ON I.Id = CA.ItemId
-            WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
+                    DELETE CA FROM CatalogAsset CA INNER JOIN Item I ON I.Id = CA.ItemId
+                    WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
 
-            DELETE PV FROM PropertyValue PV INNER JOIN Item I ON I.Id = PV.ItemId
-            WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
+                    DELETE PV FROM PropertyValue PV INNER JOIN Item I ON I.Id = PV.ItemId
+                    WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
 
-            DELETE ER FROM EditorialReview ER INNER JOIN Item I ON I.Id = ER.ItemId
-            WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
+                    DELETE ER FROM EditorialReview ER INNER JOIN Item I ON I.Id = ER.ItemId
+                    WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
 
-            DELETE A FROM Association A INNER JOIN Item I ON I.Id = A.ItemId
-            WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
+                    DELETE A FROM Association A INNER JOIN Item I ON I.Id = A.ItemId
+                    WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
 
-            DELETE A FROM Association A INNER JOIN Item I ON I.Id = A.AssociatedItemId
-            WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
+                    DELETE A FROM Association A INNER JOIN Item I ON I.Id = A.AssociatedItemId
+                    WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
 
-            DELETE  FROM Item  WHERE ParentId IN ({0})
+                    DELETE  FROM Item  WHERE ParentId IN ({0})
 
-            DELETE  FROM Item  WHERE Id IN ({0})";
+                    DELETE  FROM Item  WHERE Id IN ({0})
+                ";
 
-            var query = string.Format(queryPattern, string.Join(", ", itemIds.Select(x => string.Format("'{0}'", x))));
-
-            ObjectContext.ExecuteStoreCommand(query);
+                ExecuteStoreCommand(commandTemplate, itemIds);
+            }
         }
 
         public void RemoveCategories(string[] ids)
         {
-            if (ids == null || !ids.Any())
-                return;
-
-            var allCategoriesIds = GetAllChildrenCategoriesIds(ids).Concat(ids);
-            const string queryPattern =
-            @"DELETE FROM SeoUrlKeyword WHERE ObjectType = 'Category' AND ObjectId IN ({0})
-            DELETE CI FROM CatalogImage CI INNER JOIN Category C ON C.Id = CI.CategoryId WHERE C.Id IN ({0}) 
-            DELETE PV FROM PropertyValue PV INNER JOIN Category C ON C.Id = PV.CategoryId WHERE C.Id IN ({0}) 
-            DELETE CR FROM CategoryRelation CR INNER JOIN Category C ON C.Id = CR.SourceCategoryId OR C.Id = CR.TargetCategoryId  WHERE C.Id IN ({0}) 
-            DELETE CIR FROM CategoryItemRelation CIR INNER JOIN Category C ON C.Id = CIR.CategoryId WHERE C.Id IN ({0}) 
-            DELETE A FROM Association A INNER JOIN Category C ON C.Id = A.AssociatedCategoryId WHERE C.Id IN ({0})
-            DELETE P FROM Property P INNER JOIN Category C ON C.Id = P.CategoryId  WHERE C.Id IN ({0})";
-
-
-            var itemsIds = Items.Where(x => allCategoriesIds.Contains(x.CategoryId)).Select(x => x.Id).ToArray();
-            int skip = 0;
-            var take = 500;
-            do
+            if (!ids.IsNullOrEmpty())
             {
-                var itemIdsPart = itemsIds.Skip(skip).Take(take).ToArray();
-                if (!itemIdsPart.IsNullOrEmpty())
+                var allCategoriesIds = GetAllChildrenCategoriesIds(ids).Concat(ids);
+                var allItemIds = Items.Where(i => allCategoriesIds.Contains(i.CategoryId)).Select(i => i.Id).ToArray();
+
+                var skip = 0;
+                const int take = 500;
+
+                do
                 {
-                    RemoveItems(itemIdsPart);
+                    var itemIds = allItemIds.Skip(skip).Take(take).ToArray();
+                    if (!itemIds.IsNullOrEmpty())
+                    {
+                        RemoveItems(itemIds);
+                    }
+                    skip += take;
                 }
-                skip += take;
-            } while (skip <= itemsIds.Count());
+                while (skip <= allItemIds.Length);
 
+                const string commandTemplate = @"
+                    DELETE FROM SeoUrlKeyword WHERE ObjectType = 'Category' AND ObjectId IN ({0})
+                    DELETE CI FROM CatalogImage CI INNER JOIN Category C ON C.Id = CI.CategoryId WHERE C.Id IN ({0}) 
+                    DELETE PV FROM PropertyValue PV INNER JOIN Category C ON C.Id = PV.CategoryId WHERE C.Id IN ({0}) 
+                    DELETE CR FROM CategoryRelation CR INNER JOIN Category C ON C.Id = CR.SourceCategoryId OR C.Id = CR.TargetCategoryId  WHERE C.Id IN ({0}) 
+                    DELETE CIR FROM CategoryItemRelation CIR INNER JOIN Category C ON C.Id = CIR.CategoryId WHERE C.Id IN ({0}) 
+                    DELETE A FROM Association A INNER JOIN Category C ON C.Id = A.AssociatedCategoryId WHERE C.Id IN ({0})
+                    DELETE P FROM Property P INNER JOIN Category C ON C.Id = P.CategoryId  WHERE C.Id IN ({0})
+                    DELETE FROM Category WHERE Id IN ({0})
+                ";
 
-            var query = string.Format(queryPattern, string.Join(", ", allCategoriesIds.Select(x => string.Format("'{0}'", x))));
-            var queryBuilder = new StringBuilder(query);
-            //Need remove categories in prior hierarchy order from  child to parent
-            queryBuilder.AppendLine(string.Format("DELETE FROM Category WHERE Id IN ({0})", string.Join(", ", allCategoriesIds.Select(x => string.Format("'{0}'", x)))));
-
-            ObjectContext.ExecuteStoreCommand(queryBuilder.ToString());
+                ExecuteStoreCommand(commandTemplate, allCategoriesIds);
+            }
         }
 
         public void RemoveCatalogs(string[] ids)
         {
-            if (ids == null || !ids.Any())
-                return;
+            if (!ids.IsNullOrEmpty())
+            {
+                var catalogCategoriesIds = Categories.Where(x => ids.Contains(x.CatalogId)).Select(x => x.Id).ToArray();
+                var catalogItemsIds = Items.Where(x => x.CategoryId == null && ids.Contains(x.CatalogId)).Select(x => x.Id).ToArray();
 
-            var catalogCategoriesIds = Categories.Where(x => ids.Contains(x.CatalogId)).Select(x => x.Id).ToArray();
-            var catalogItemsIds = Items.Where(x => x.CategoryId == null && ids.Contains(x.CatalogId)).Select(x => x.Id).ToArray();
+                RemoveItems(catalogItemsIds);
+                RemoveCategories(catalogCategoriesIds);
 
-            RemoveItems(catalogItemsIds);
-            RemoveCategories(catalogCategoriesIds);
+                const string commandTemplate = @"
+                    DELETE CL FROM CatalogLanguage CL INNER JOIN Catalog C ON C.Id = CL.CatalogId WHERE C.Id IN ({0})
+                    DELETE CR FROM CategoryRelation CR INNER JOIN Catalog C ON C.Id = CR.TargetCatalogId WHERE C.Id IN ({0}) 
+                    DELETE PV FROM PropertyValue PV INNER JOIN Catalog C ON C.Id = PV.CatalogId WHERE C.Id IN ({0}) 
+                    DELETE P FROM Property P INNER JOIN Catalog C ON C.Id = P.CatalogId  WHERE C.Id IN ({0})
+                    DELETE FROM Catalog WHERE Id IN ({0})
+                ";
 
-            const string queryPattern =
-            @"DELETE CL FROM CatalogLanguage CL INNER JOIN Catalog C ON C.Id = CL.CatalogId WHERE C.Id IN ({0})
-            DELETE CR FROM CategoryRelation CR INNER JOIN Catalog C ON C.Id = CR.TargetCatalogId WHERE C.Id IN ({0}) 
-            DELETE PV FROM PropertyValue PV INNER JOIN Catalog C ON C.Id = PV.CatalogId WHERE C.Id IN ({0}) 
-            DELETE P FROM Property P INNER JOIN Catalog C ON C.Id = P.CatalogId  WHERE C.Id IN ({0})
-            DELETE FROM Catalog WHERE Id IN ({0})";
-            var query = string.Format(queryPattern, string.Join(", ", ids.Select(x => string.Format("'{0}'", x))));
-            ObjectContext.ExecuteStoreCommand(query);
+                ExecuteStoreCommand(commandTemplate, ids);
+            }
         }
+
         #endregion
 
+
+        protected virtual ObjectResult<TElement> ExecuteStoreQuery<TElement>(string commandTemplate, IEnumerable<string> parameterValues)
+        {
+            var command = CreateCommand(commandTemplate, parameterValues);
+            return ObjectContext.ExecuteStoreQuery<TElement>(command.Text, command.Parameters);
+        }
+
+        protected virtual void ExecuteStoreCommand(string commandTemplate, IEnumerable<string> parameterValues)
+        {
+            var command = CreateCommand(commandTemplate, parameterValues);
+            ObjectContext.ExecuteStoreCommand(command.Text, command.Parameters);
+        }
+
+        protected virtual Command CreateCommand(string commandTemplate, IEnumerable<string> parameterValues)
+        {
+            var parameters = parameterValues.Select((v, i) => new SqlParameter($"@p{i}", v)).ToArray();
+            var parameterNames = string.Join(",", parameters.Select(p => p.ParameterName));
+
+            return new Command
+            {
+                Text = string.Format(commandTemplate, parameterNames),
+                Parameters = parameters.OfType<object>().ToArray(),
+            };
+        }
+
+        protected class Command
+        {
+            public string Text { get; set; }
+            public object[] Parameters { get; set; }
+        }
     }
 }
