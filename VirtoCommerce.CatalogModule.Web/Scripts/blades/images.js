@@ -178,7 +178,7 @@
                     data.gridApi.cellNav.scrollToFocus(data.rowEntity, data.colDef);
                 }
             }
-
+            blade.selectedImages = [];
             $scope.setGridOptions = function (gridOptions) {
                 gridOptions.enableCellEditOnFocus = false;
                 uiGridHelper.initialize($scope, gridOptions,
@@ -192,6 +192,13 @@
                                 gridApi: gridApi
                             };
                             $timeout(priorityChanged, 100, true, data);
+                        });
+                        gridApi.selection.on.rowSelectionChanged($scope, function (rowEntity, colDef) {
+                            if (rowEntity.isSelected)
+                                blade.selectedImages.push(rowEntity.entity);
+                            else if (!rowEntity.isSelected) {
+                                blade.selectedImages = _.without(blade.selectedImages, _.findWhere(blade.selectedImages, rowEntity.entity ));
+                            }
                         });
                     });
             };

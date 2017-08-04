@@ -52,7 +52,7 @@
 <script type="text/ng-template" id="asset-list-icon.cell.html">
     <div class="ui-grid-cell-contents">
         <div class="product-img">
-            <div class="image" style="background-image: url('{{COL_FIELD}}')"></div>
+            <img ng-attr-id="{{row.entity.id}}" class="image" ng-src="{{COL_FIELD}}"/>
         </div>
     </div>
 </script>
