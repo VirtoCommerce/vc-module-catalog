@@ -414,6 +414,8 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     skip += batchSize;
                 }
                 while (skip < itemIds.Length);
+
+                AddBatchDeletedEntities<dataModel.ItemEntity>(itemIds);
             }
         }
 
@@ -438,6 +440,8 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 ";
 
                 ExecuteStoreCommand(commandTemplate, categoryIds);
+
+                AddBatchDeletedEntities<dataModel.CategoryEntity>(ids);
             }
         }
 
@@ -460,11 +464,20 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 ";
 
                 ExecuteStoreCommand(commandTemplate, ids);
+
+                AddBatchDeletedEntities<dataModel.CatalogEntity>(ids);
             }
         }
 
         #endregion
 
+
+        protected virtual void AddBatchDeletedEntities<T>(IList<string> ids)
+            where T : Entity, new()
+        {
+            var entities = ids.Select(id => new T { Id = id }).ToArray<Entity>();
+            AddBatchDeletedEntities(entities);
+        }
 
         protected virtual ObjectResult<TElement> ExecuteStoreQuery<TElement>(string commandTemplate, IEnumerable<string> parameterValues)
         {
