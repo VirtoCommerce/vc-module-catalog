@@ -18,6 +18,7 @@ using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Commerce.Services;
 using VirtoCommerce.Domain.Search;
 using VirtoCommerce.Domain.Store.Model;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.DynamicProperties;
 using VirtoCommerce.Platform.Core.ExportImport;
 using VirtoCommerce.Platform.Core.Modularity;
@@ -31,7 +32,7 @@ namespace VirtoCommerce.CatalogModule.Web
 {
     public class Module : ModuleBase, ISupportExportImportModule
     {
-        private const string _connectionStringName = "VirtoCommerce";
+        private static readonly string _connectionString = ConnectionStringHelper.GetConnectionString("VirtoCommerce");
         private readonly IUnityContainer _container;
 
         public Module(IUnityContainer container)
@@ -45,7 +46,7 @@ namespace VirtoCommerce.CatalogModule.Web
         {
             base.SetupDatabase();
 
-            using (var db = new CatalogRepositoryImpl(_connectionStringName, _container.Resolve<AuditableInterceptor>()))
+            using (var db = new CatalogRepositoryImpl(_connectionString, _container.Resolve<AuditableInterceptor>()))
             {
                 var initializer = new SetupDatabaseInitializer<CatalogRepositoryImpl, Data.Migrations.Configuration>();
 
@@ -60,7 +61,7 @@ namespace VirtoCommerce.CatalogModule.Web
             #region Catalog dependencies
 
             Func<ICatalogRepository> catalogRepFactory = () =>
-                new CatalogRepositoryImpl(_connectionStringName, new EntityPrimaryKeyGeneratorInterceptor(), _container.Resolve<AuditableInterceptor>(),
+                new CatalogRepositoryImpl(_connectionString, new EntityPrimaryKeyGeneratorInterceptor(), _container.Resolve<AuditableInterceptor>(),
                     new ChangeLogInterceptor(_container.Resolve<Func<IPlatformRepository>>(), ChangeLogPolicy.Cumulative, new[] { nameof(ItemEntity), nameof(CategoryEntity) }));
 
             _container.RegisterInstance(catalogRepFactory);

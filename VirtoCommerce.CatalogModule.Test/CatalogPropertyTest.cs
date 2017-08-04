@@ -1,17 +1,15 @@
 ﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using CacheManager.Core;
 using FluentValidation;
 using Moq;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Data.Services;
-using VirtoCommerce.CatalogModule.Data.Services.Validation;
 using VirtoCommerce.CoreModule.Data.Repositories;
 using VirtoCommerce.CoreModule.Data.Services;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Commerce.Services;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Data.Infrastructure.Interceptors;
 using Xunit;
 
@@ -28,7 +26,7 @@ namespace VirtoCommerce.CatalogModule.Test
             var newProperty = new Property
             {
                 //Electronics
-                CatalogId = "4974648a41df4e6ea67ef2ad76d7bbd4",                
+                CatalogId = "4974648a41df4e6ea67ef2ad76d7bbd4",
                 Dictionary = true,
                 Name = "color2",
                 Type = PropertyType.Product,
@@ -50,8 +48,8 @@ namespace VirtoCommerce.CatalogModule.Test
             productService.Update(new[] { product });
 
         }
-       
-        
+
+
         private static ICatalogService GetCatalogService()
         {
             return new CatalogServiceImpl(GetCatalogRepository, GetCommerceService(), new Mock<ICacheManager<object>>().Object, new Mock<AbstractValidator<IHasProperties>>().Object);
@@ -60,7 +58,7 @@ namespace VirtoCommerce.CatalogModule.Test
         private static IItemService GetItemService()
         {
             return null;
-           // return new ItemServiceImpl(GetCatalogRepository, GetCommerceService(), new Mock<IOutlineService>().Object, new Mock<ICacheManager<object>>().Object);
+            // return new ItemServiceImpl(GetCatalogRepository, GetCommerceService(), new Mock<IOutlineService>().Object, new Mock<ICacheManager<object>>().Object);
         }
 
         private static IPropertyService GetPropertyService()
@@ -70,14 +68,18 @@ namespace VirtoCommerce.CatalogModule.Test
 
         private static ICommerceService GetCommerceService()
         {
-            return new CommerceServiceImpl(() => new CommerceRepositoryImpl("VirtoCommerce", new EntityPrimaryKeyGeneratorInterceptor(), new AuditableInterceptor(null)));
+            return new CommerceServiceImpl(() => new CommerceRepositoryImpl(GetConnectionString(), new EntityPrimaryKeyGeneratorInterceptor(), new AuditableInterceptor(null)));
         }
 
         private static ICatalogRepository GetCatalogRepository()
         {
-            var retVal = new CatalogRepositoryImpl("VirtoCommerce", new EntityPrimaryKeyGeneratorInterceptor(), new AuditableInterceptor(null));
+            var retVal = new CatalogRepositoryImpl(GetConnectionString(), new EntityPrimaryKeyGeneratorInterceptor(), new AuditableInterceptor(null));
             return retVal;
         }
 
+        private static string GetConnectionString()
+        {
+            return ConnectionStringHelper.GetConnectionString("VirtoCommerce");
+        }
     }
 }
