@@ -72,6 +72,16 @@
                 });
             };
 
+            $scope.edit = function(entity) {
+                var newBlade = {
+                    id: 'imageDetailChild',
+                    origEntity: entity,
+                    controller: 'virtoCommerce.catalogModule.imageDetailsController',
+                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/image-detail.tpl.html'
+                };
+                bladeNavigationService.showBlade(newBlade, blade);
+            };
+
             blade.toolbarCommands = [
                 {
                     name: 'platform.commands.remove',
@@ -141,6 +151,9 @@
                         max++;
                         var image = angular.copy(asset);
                         image.sortOrder = max;
+                        if (!image.group)
+                            image.group = "images";
+
                         blade.currentEntities.push(image);
                     }
                 }, max);

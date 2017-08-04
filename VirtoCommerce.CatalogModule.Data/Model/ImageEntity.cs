@@ -77,6 +77,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         {
             target.LanguageCode = this.LanguageCode;
             target.Name = this.Name;
+            target.Group = this.Group;
             target.SortOrder = this.SortOrder;
             target.Url = this.Url;
         }

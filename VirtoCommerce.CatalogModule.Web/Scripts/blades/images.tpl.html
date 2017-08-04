@@ -14,7 +14,7 @@
                         },
                         { name: 'name', displayName: 'platform.blades.asset-list.labels.name', width: 170, enableCellEdit: false  },
                         { name: 'group', displayName: 'platform.blades.asset-list.labels.group', cellTooltip: true, enableCellEdit: false  },
-                        { name: 'languageCode', displayName: 'platform.blades.asset-list.labels.language', width: 75 },
+                        { name: 'languageCode', displayName: 'platform.blades.asset-list.labels.language', width: 75, enableCellEdit: false },
                         { name: 'sortOrder', displayName: 'Priority', enableCellEdit: true, editableCellTemplate: 'priority-edit.cell.html', cellTemplate: 'priority.cell.html', sort: { direction: uiGridConstants.ASC }, validators: {required: true, minPriorityValidator: true}}
                 ],
                 enableCellEditOnFocus: false,
@@ -28,6 +28,9 @@
                     </li>
                     <li class="menu-item" ng-click="copyUrl(contextMenuEntity)">
                         <i class="menu-ico fa fa-link"></i> {{'platform.commands.copy-link' | translate}}
+                    </li>
+                    <li class="menu-item" ng-click='edit(contextMenuEntity)' va-permission="platform:asset:edit">
+                        <i class="menu-ico fa fa-pencil"></i> {{'platform.commands.edit' | translate}}
                     </li>
                     <li class="menu-item" ng-click='removeItem(contextMenuEntity)' va-permission="platform:asset:delete">
                         <i class="menu-ico fa fa-trash-o"></i> {{'platform.commands.delete' | translate}}
