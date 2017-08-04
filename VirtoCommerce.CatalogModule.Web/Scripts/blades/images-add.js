@@ -45,6 +45,7 @@
                         angular.forEach(images, function (image) {
                             //ADD uploaded image
                             image.isImage = true;
+                            image.group = blade.imageType;
                             blade.currentEntities.push(image);
                             var request = { imageUrl: image.url, isRegenerateAll: true };
 
@@ -72,6 +73,7 @@
                     assets.uploadFromUrl({ folderUrl: getImageUrl(blade.item.code, blade.imageType).folderUrl, url: blade.newExternalImageUrl }, function (data) {
                         _.each(data, function (x) {
                             x.isImage = true;
+                            x.group = blade.imageType;
                             blade.currentEntities.push(x);
                         });
                         blade.newExternalImageUrl = undefined;
