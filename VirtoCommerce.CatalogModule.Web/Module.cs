@@ -9,9 +9,11 @@ using VirtoCommerce.CatalogModule.Data.Search;
 using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
 using VirtoCommerce.CatalogModule.Data.Search.Indexing;
 using VirtoCommerce.CatalogModule.Data.Services;
+using VirtoCommerce.CatalogModule.Data.Services.Validation;
 using VirtoCommerce.CatalogModule.Web.ExportImport;
 using VirtoCommerce.CatalogModule.Web.JsonConverters;
 using VirtoCommerce.CatalogModule.Web.Security;
+using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Commerce.Services;
 using VirtoCommerce.Domain.Search;
@@ -24,8 +26,6 @@ using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.Platform.Data.Infrastructure;
 using VirtoCommerce.Platform.Data.Infrastructure.Interceptors;
 using VirtoCommerce.Platform.Data.Repositories;
-using VirtoCommerce.CatalogModule.Data.Services.Validation;
-using VirtoCommerce.Domain.Catalog.Model;
 
 namespace VirtoCommerce.CatalogModule.Web
 {
@@ -61,7 +61,7 @@ namespace VirtoCommerce.CatalogModule.Web
 
             Func<ICatalogRepository> catalogRepFactory = () =>
                 new CatalogRepositoryImpl(_connectionStringName, new EntityPrimaryKeyGeneratorInterceptor(), _container.Resolve<AuditableInterceptor>(),
-                    new ChangeLogInterceptor(_container.Resolve<Func<IPlatformRepository>>(), ChangeLogPolicy.Cumulative, new[] { nameof(ItemEntity), nameof(CategoryEntity) }, _container.Resolve<IUserNameResolver>()));
+                    new ChangeLogInterceptor(_container.Resolve<Func<IPlatformRepository>>(), ChangeLogPolicy.Cumulative, new[] { nameof(ItemEntity), nameof(CategoryEntity) }));
 
             _container.RegisterInstance(catalogRepFactory);
 
@@ -97,7 +97,7 @@ namespace VirtoCommerce.CatalogModule.Web
             _container.RegisterInstance(propertyValueValidatorFactory);
 
             _container.RegisterType<AbstractValidator<IHasProperties>, HasPropertiesValidator>();
-            
+
             #endregion
         }
 
