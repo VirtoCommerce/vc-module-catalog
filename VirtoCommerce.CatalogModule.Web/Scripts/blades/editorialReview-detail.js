@@ -96,6 +96,11 @@
         ];
 
         function saveChanges() {
+            var existReview = _.find(blade.item.reviews, function (x) { return x === blade.origEntity; });
+            if (!existReview) {
+                blade.item.reviews.push(blade.origEntity);
+            };
+
             angular.copy(blade.currentEntity, blade.origEntity);
         }
 
