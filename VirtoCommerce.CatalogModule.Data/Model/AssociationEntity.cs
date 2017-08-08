@@ -49,7 +49,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             association.AssociatedObjectId = this.AssociatedItemId ?? this.AssociatedCategoryId;
             association.Quantity = this.Quantity;
 
-            if (this.AssociatedCategoryId != null)
+            if (this.AssociatedCategory != null)
             {
                 association.AssociatedObject = this.AssociatedCategory.ToModel(AbstractTypeFactory<Category>.TryCreateInstance());
                 association.AssociatedObjectType = "category";

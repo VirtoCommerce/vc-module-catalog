@@ -359,7 +359,7 @@
           "placeholders": {
             "image-url": "Paste image URL here",
             "image-category": "Select...",
-            "language": "Select language" 
+            "language": "Select language"
           }
         },
         "item-asset-detail": {
@@ -385,6 +385,19 @@
             "priority": "Priority",
             "group": "Group",
             "quantity": "Quantity"
+          }
+        },
+        "item-association-detail": {
+          "subtitle": "Association details",
+          "labels": {
+            "group": "Group",
+            "quantity": "Quantity",
+            "tags": "Tags" 
+          },
+          "placeholders": {
+            "group": "Select...",
+            "quantity": "Enter quantity...",
+            "tags": "Enter tags..."
           }
         },
         "advanced-search-results": {
@@ -436,7 +449,7 @@
         },
         "asset-upload": {
           "title": "Add assets"
-        }, 
+        },
         "image-upload": {
           "title": "Upload images"
         }
@@ -683,7 +696,8 @@
             "clear-all": "Clear all",
             "add-property": "Add property",
             "gallery": "Gallery",
-            "map": "Map"
+            "map": "Map",
+            "open-item": "Open item" 
         },
         "permissions": {
             "catalog-scope": {

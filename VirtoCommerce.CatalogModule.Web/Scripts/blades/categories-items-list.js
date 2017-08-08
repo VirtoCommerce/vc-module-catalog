@@ -537,6 +537,9 @@
                 return _.values(groupEntity)[0];
             };
 
+            blade.getSelectedRows = function() {
+                return $scope.gridApi.selection.getSelectedRows();
+            }
 
             //No need to call this because page 'pageSettings.currentPage' is watched!!! It would trigger subsequent duplicated req...
             //blade.refresh();

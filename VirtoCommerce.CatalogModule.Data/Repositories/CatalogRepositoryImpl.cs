@@ -278,6 +278,9 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                                                        .Select(x => x.AssociatedItemId).Distinct().ToArray();
 
                 var assosiatedItems = GetItemByIds(assosiatedProductIds, coreModel.ItemResponseGroup.ItemInfo | coreModel.ItemResponseGroup.ItemAssets);
+
+                var assosiatedCategoryIdsIds = assosiations.Where(x => x.AssociatedCategoryId != null).Select(x => x.AssociatedCategoryId).Distinct().ToArray();
+                var associatedCategories = GetCategoriesByIds(assosiatedCategoryIdsIds, coreModel.CategoryResponseGroup.Info);
             }
 
             // Load parents

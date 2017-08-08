@@ -39,6 +39,19 @@
     	});
     }
 
+    $scope.edit = function(listItem) {
+        var newBlade = {
+            id: 'associationEditDetail',
+            title: listItem.associatedObjectName,
+            subtitle: 'catalog.blades.item-association-detail.subtitle',
+            origEntity: listItem,
+            catalog: blade.catalog,
+            controller: 'virtoCommerce.catalogModule.itemAssociationDetailController',
+            template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/item-association-detail.tpl.html'
+        };
+        bladeNavigationService.showBlade(newBlade, blade);
+    }
+
     function openAddEntityWizard() {
         var newBlade = {
             id: "associationWizard",
