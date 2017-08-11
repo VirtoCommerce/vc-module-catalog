@@ -70,7 +70,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr class="table-item" ng-repeat="data in pb.currentEntity.dictionaryValues" ng-class="{'__selected': data === selectedItem}" context-menu data-target="pd_menu_{{$index}}" ng-click='selectItem(data)' ng-if="!pb.currentEntity.multilanguage">
+                        <tr class="table-item" ng-repeat="data in pb.currentEntity.dictionaryValues | orderBy:'alias'" ng-class="{'__selected': data === selectedItem}" context-menu data-target="pd_menu_{{$index}}" ng-click='selectItem(data)' ng-if="!pb.currentEntity.multilanguage">
                             <td class="table-col">
                                 <label class="form-control __checkbox">
                                     <input type="checkbox" ng-model="data.selected">
@@ -96,7 +96,7 @@
                                 </ul>
                             </td>
                         </tr>
-                        <tr class="table-item" ng-repeat="group in groupedValues" ng-class="{'__selected': group === selectedItem}" context-menu data-target="pd_multi_{{$index}}" ng-click='selectItem(group)' ng-if="pb.currentEntity.multilanguage">
+                        <tr class="table-item" ng-repeat="group in groupedValues | orderBy:'alias'" ng-class="{'__selected': group === selectedItem}" context-menu data-target="pd_multi_{{$index}}" ng-click='selectItem(group)' ng-if="pb.currentEntity.multilanguage">
                             <td class="table-col">
                                 <label class="form-control __checkbox">
                                     <input type="checkbox" ng-model="group.selected">
