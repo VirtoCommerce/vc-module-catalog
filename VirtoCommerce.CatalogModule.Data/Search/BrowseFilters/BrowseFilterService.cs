@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Xml.Serialization;
+using Newtonsoft.Json;
 using VirtoCommerce.Domain.Store.Model;
 using VirtoCommerce.Domain.Store.Services;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.DynamicProperties;
 
 namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
@@ -20,7 +21,15 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
             _storeService = storeService;
         }
 
-        private static readonly XmlSerializer _serializer = new XmlSerializer(typeof(FilteredBrowsing));
+        private static readonly XmlSerializer _xmlSerializer = new XmlSerializer(typeof(FilteredBrowsing));
+        private static readonly JsonSerializer _jsonSerializer = new JsonSerializer
+        {
+            DefaultValueHandling = DefaultValueHandling.Include,
+            NullValueHandling = NullValueHandling.Ignore,
+            Formatting = Formatting.Indented,
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+            TypeNameHandling = TypeNameHandling.None,
+        };
 
         public virtual IList<IBrowseFilter> GetAllFilters(string storeId)
         {
@@ -87,8 +96,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
 
             if (!string.IsNullOrEmpty(filterSettingValue))
             {
-                var reader = new StringReader(filterSettingValue);
-                result = _serializer.Deserialize(reader) as FilteredBrowsing;
+                result = Deserialize(filterSettingValue);
             }
 
             return result;
@@ -96,10 +104,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
 
         protected virtual void SetFilteredBrowsing(Store store, FilteredBrowsing browsing)
         {
-            var builder = new StringBuilder();
-            var writer = new StringWriter(builder);
-            _serializer.Serialize(writer, browsing);
-            var value = builder.ToString();
+            var value = Serialize(browsing);
 
             var property = store.DynamicProperties.FirstOrDefault(p => p.Name == FilteredBrowsingPropertyName);
             if (property == null)
@@ -109,6 +114,50 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
             }
 
             property.Values = new List<DynamicPropertyObjectValue>(new[] { new DynamicPropertyObjectValue { Value = value } });
+        }
+
+
+        // Support JSON for serialization
+        private static string Serialize(FilteredBrowsing browsing)
+        {
+            string result;
+
+            using (var memStream = new MemoryStream())
+            {
+                browsing.SerializeJson(memStream, _jsonSerializer);
+                memStream.Seek(0, SeekOrigin.Begin);
+
+                result = memStream.ReadToString();
+            }
+
+            return result;
+        }
+
+        // Support both JSON and XML for deserialization
+        private static FilteredBrowsing Deserialize(string value)
+        {
+            FilteredBrowsing result = null;
+
+            if (value != null)
+            {
+                if (value.StartsWith("<"))
+                {
+                    // XML
+                    var reader = new StringReader(value);
+                    result = _xmlSerializer.Deserialize(reader) as FilteredBrowsing;
+                }
+                else
+                {
+                    // JSON
+                    using (var stringReader = new StringReader(value))
+                    using (var jsonTextReader = new JsonTextReader(stringReader))
+                    {
+                        result = _jsonSerializer.Deserialize<FilteredBrowsing>(jsonTextReader);
+                    }
+                }
+            }
+
+            return result;
         }
     }
 }

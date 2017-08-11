@@ -1,4 +1,5 @@
 ﻿using System.Xml.Serialization;
+using Newtonsoft.Json;
 
 namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
 {
@@ -7,14 +8,13 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
         [XmlIgnore]
         public string Key { get; } = "price";
 
-        [XmlElement("range")]
-        public RangeFilterValue[] Values { get; set; }
-
-        /// <remarks/>
         [XmlAttribute("currency")]
         public string Currency { get; set; }
 
-        /// <remarks/>
+        [XmlElement("range")]
+        public RangeFilterValue[] Values { get; set; }
+
+        [JsonIgnore]
         [XmlAttribute("localized")]
         public bool IsLocalized { get; set; }
     }
