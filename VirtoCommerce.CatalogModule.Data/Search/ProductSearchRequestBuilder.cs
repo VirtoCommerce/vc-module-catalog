@@ -165,7 +165,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             var terms = criteria.GetTerms();
             if (terms.Any())
             {
-                var browseFilters = GetBrowseFilters(criteria);
+                var browseFilters = _browseFilterService.GetBrowseFilters(criteria);
 
                 var filtersAndValues = browseFilters
                     ?.Select(x => new { Filter = x, Values = x.GetValues() })
@@ -324,7 +324,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
         {
             var result = new List<AggregationRequest>();
 
-            var browseFilters = GetBrowseFilters(criteria);
+            var browseFilters = _browseFilterService.GetBrowseFilters(criteria);
             if (browseFilters != null)
             {
                 foreach (var filter in browseFilters)
@@ -366,6 +366,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return result;
         }
 
+        [Obsolete("Use BrowseFilterServiceExtensions.GetBrowseFilters()")]
         protected virtual IList<IBrowseFilter> GetBrowseFilters(ProductSearchCriteria criteria)
         {
             var browseFilters = _browseFilterService.GetAllFilters(criteria.StoreId);

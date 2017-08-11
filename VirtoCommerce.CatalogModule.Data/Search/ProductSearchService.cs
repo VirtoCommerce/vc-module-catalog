@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
 using VirtoCommerce.CatalogModule.Web.Converters;
@@ -110,7 +111,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
         {
             var result = new List<Aggregation>();
 
-            var browseFilters = GetBrowseFilters(criteria);
+            var browseFilters = _browseFilterService.GetBrowseFilters(criteria);
             if (browseFilters != null && aggregationResponses?.Any() == true)
             {
                 foreach (var filter in browseFilters)
@@ -144,6 +145,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return result.ToArray();
         }
 
+        [Obsolete("Use BrowseFilterServiceExtensions.GetBrowseFilters()")]
         protected virtual IList<IBrowseFilter> GetBrowseFilters(ProductSearchCriteria criteria)
         {
             var allFilters = _browseFilterService.GetAllFilters(criteria.StoreId);
