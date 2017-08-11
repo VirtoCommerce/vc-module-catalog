@@ -242,8 +242,18 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                     if (aggregationResponse?.Values?.Any() == true)
                     {
                         var value = aggregationResponse.Values.First();
+                        var rangeValue = group.First();
                         var valueLabels = group.GetValueLabels();
-                        var aggregationItem = new AggregationItem { Value = valueId, Count = (int)value.Count, Labels = valueLabels };
+
+                        var aggregationItem = new AggregationItem
+                        {
+                            Value = valueId,
+                            Count = (int)value.Count,
+                            Labels = valueLabels,
+                            RequestedLowerBound = rangeValue.Lower,
+                            RequestedUpperBound = rangeValue.Upper,
+                        };
+
                         result.Add(aggregationItem);
                     }
                 }

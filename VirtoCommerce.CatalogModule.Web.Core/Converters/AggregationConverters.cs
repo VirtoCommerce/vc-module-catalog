@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using Omu.ValueInjecter;
 using coreModel = VirtoCommerce.Domain.Catalog.Model;
 using webModel = VirtoCommerce.CatalogModule.Web.Model;
 
@@ -9,9 +8,11 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
     {
         public static webModel.Aggregation ToWebModel(this coreModel.Aggregation aggregation)
         {
-            var result = new webModel.Aggregation();
-            result.AggregationType = aggregation.AggregationType;
-            result.Field = aggregation.Field;          
+            var result = new webModel.Aggregation
+            {
+                AggregationType = aggregation.AggregationType,
+                Field = aggregation.Field,
+            };
 
             if (aggregation.Items != null)
             {
@@ -28,10 +29,14 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
 
         public static webModel.AggregationItem ToWebModel(this coreModel.AggregationItem item)
         {
-            var result = new webModel.AggregationItem();
-            result.Count = item.Count;
-            result.IsApplied = item.IsApplied;
-            result.Value = item.Value;
+            var result = new webModel.AggregationItem
+            {
+                Value = item.Value,
+                Count = item.Count,
+                IsApplied = item.IsApplied,
+                RequestedLowerBound = item.RequestedLowerBound,
+                RequestedUpperBound = item.RequestedUpperBound,
+            };
 
             if (item.Labels != null)
             {

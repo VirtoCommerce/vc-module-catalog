@@ -23,5 +23,15 @@ namespace VirtoCommerce.CatalogModule.Web.Model
         /// Gets or sets the collection of aggregation item labels
         /// </summary>
         public IList<AggregationLabel> Labels { get; set; }
+
+        /// <summary>
+        /// Gets or sets the request lower bound for range aggregation value
+        /// </summary>
+        public string RequestedLowerBound { get; set; }
+
+        /// <summary>
+        /// Gets or sets the request lower bound for range aggregation value
+        /// </summary>
+        public string RequestedUpperBound { get; set; }
     }
 }
