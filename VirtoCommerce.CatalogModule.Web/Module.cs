@@ -81,6 +81,7 @@ namespace VirtoCommerce.CatalogModule.Web
             #region Search
 
             _container.RegisterType<IBrowseFilterService, BrowseFilterService>();
+            _container.RegisterType<IAggregationLabelService, AggregationLabelService>();
 
             _container.RegisterType<ISearchRequestBuilder, ProductSearchRequestBuilder>(nameof(ProductSearchRequestBuilder));
             _container.RegisterType<ISearchRequestBuilder, CategorySearchRequestBuilder>(nameof(CategorySearchRequestBuilder));

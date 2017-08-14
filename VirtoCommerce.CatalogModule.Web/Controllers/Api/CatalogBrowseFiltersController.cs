@@ -91,26 +91,18 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var selectedPropertyNames = browseFilterProperties
                 .Where(p => p.IsSelected)
                 .Select(p => p.Name)
-                .Distinct()
+                .Distinct(StringComparer.OrdinalIgnoreCase)
                 .ToArray();
 
-            // Keep the selected properties order
-            var selectedProperties = selectedPropertyNames
+            // Keep the selected properties order.
+            // There can be many properties with the same name.
+            var attributeFilters = selectedPropertyNames
                 .SelectMany(n => allProperties.Where(p => string.Equals(p.Name, n, StringComparison.OrdinalIgnoreCase)))
+                .GroupBy(p => p.Name, StringComparer.OrdinalIgnoreCase)
+                .Select(g => ConvertToAttributeFilter(g.Key, g))
                 .ToArray();
 
-            var attributes = selectedProperties
-                .Select(ConvertToAttributeFilter)
-                .GroupBy(a => a.Key)
-                .Select(g => new AttributeFilter
-                {
-                    Key = g.Key,
-                    IsLocalized = g.Any(a => a.IsLocalized),
-                    DisplayNames = GetDistinctNames(g.SelectMany(a => a.DisplayNames)),
-                })
-                .ToArray();
-
-            _browseFilterService.SetAttributeFilters(store, attributes);
+            _browseFilterService.SetAttributeFilters(store, attributeFilters);
             _storeService.Update(new[] { store });
 
             return StatusCode(HttpStatusCode.NoContent);
@@ -130,7 +122,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return result.ToArray();
         }
 
-        private Property[] GetAllCatalogProperties(string catalogId)
+        private IList<Property> GetAllCatalogProperties(string catalogId)
         {
             var properties = _propertyService.GetAllCatalogProperties(catalogId);
 
@@ -152,53 +144,24 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             };
         }
 
-        private AttributeFilter ConvertToAttributeFilter(Property property)
+        private static AttributeFilter ConvertToAttributeFilter(string propertyName, IEnumerable<Property> properties)
         {
-            var values = _propertyService.SearchDictionaryValues(property.Id, null);
+            // TODO: Add visual editor for values
+            //var values = properties
+            //    .Where(p => p.Dictionary && p.DictionaryValues != null && p.DictionaryValues.Any())
+            //    .SelectMany(p => p.DictionaryValues.Select(v => v.Alias))
+            //    .Distinct(StringComparer.OrdinalIgnoreCase)
+            //    .OrderBy(v => v)
+            //    .Select(v => new AttributeFilterValue { Id = v })
+            //    .ToArray();
 
             var result = new AttributeFilter
             {
-                Key = property.Name,
-                Values = values.Select(ConvertToAttributeFilterValue).ToArray(),
-                IsLocalized = property.Multilanguage,
-                DisplayNames = property.DisplayNames.Select(ConvertToFilterDisplayName).ToArray(),
+                Key = propertyName,
+                //Values = values.Any() ? values : null,
             };
 
             return result;
-        }
-
-        private static FilterDisplayName ConvertToFilterDisplayName(PropertyDisplayName displayName)
-        {
-            var result = new FilterDisplayName
-            {
-                Language = displayName.LanguageCode,
-                Name = displayName.Name,
-            };
-
-            return result;
-        }
-
-        private static AttributeFilterValue ConvertToAttributeFilterValue(PropertyDictionaryValue dictionaryValue)
-        {
-            var result = new AttributeFilterValue
-            {
-                Id = dictionaryValue.Alias,
-                Value = dictionaryValue.Value,
-                Language = dictionaryValue.LanguageCode,
-            };
-
-            return result;
-        }
-
-        private static FilterDisplayName[] GetDistinctNames(IEnumerable<FilterDisplayName> names)
-        {
-            return names
-                .Where(n => !string.IsNullOrEmpty(n.Language) && !string.IsNullOrEmpty(n.Name))
-                .GroupBy(n => n.Language, StringComparer.OrdinalIgnoreCase)
-                .Select(g => g.FirstOrDefault())
-                .OrderBy(n => n?.Language)
-                .ThenBy(n => n.Name)
-                .ToArray();
         }
     }
 }

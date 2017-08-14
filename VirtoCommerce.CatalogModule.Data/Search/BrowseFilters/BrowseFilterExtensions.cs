@@ -8,6 +8,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
 {
     public static class BrowseFilterExtensions
     {
+        [Obsolete]
         public static IList<AggregationLabel> GetValueLabels(this IEnumerable<IBrowseFilterValue> values)
         {
             var result = values
@@ -24,6 +25,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
             return result.Any() ? result : null;
         }
 
+        [Obsolete]
         public static IList<AggregationLabel> GetValueLabels(this IBrowseFilterValue value)
         {
             var result = new List<AggregationLabel>();
@@ -124,6 +126,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
             return result;
         }
 
+        [Obsolete]
         public static AttributeFilterValue[] CreateAttributeFilterValues(this IEnumerable<string> values)
         {
             return values.Select(v => new AttributeFilterValue { Id = v, Value = v }).ToArray();

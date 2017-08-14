@@ -241,7 +241,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
         {
             var knownValues = attributeFilter.Values
                 ?.Where(v => valueIds.Contains(v.Id, StringComparer.OrdinalIgnoreCase))
-                .Select(v => v.Value)
+                .Select(v => v.Id)
                 .ToArray();
 
             var result = new TermFilter
