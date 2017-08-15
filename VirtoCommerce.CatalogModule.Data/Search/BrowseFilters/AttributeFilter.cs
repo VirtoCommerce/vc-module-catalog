@@ -9,6 +9,9 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
         [XmlAttribute("key")]
         public string Key { get; set; }
 
+        [XmlElement("facetSize")]
+        public int? FacetSize { get; set; }
+
         [XmlElement("simple")]
         public AttributeFilterValue[] Values { get; set; }
 
@@ -21,8 +24,5 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
         [JsonIgnore]
         [XmlElement("display")]
         public FilterDisplayName[] DisplayNames { get; set; }
-
-        [XmlElement("facetSize")]
-        public int? FacetSize { get; set; }
     }
 }

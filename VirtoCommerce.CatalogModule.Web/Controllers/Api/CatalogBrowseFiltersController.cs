@@ -146,19 +146,18 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
         private static AttributeFilter ConvertToAttributeFilter(string propertyName, IEnumerable<Property> properties)
         {
-            // TODO: Add visual editor for values
-            //var values = properties
-            //    .Where(p => p.Dictionary && p.DictionaryValues != null && p.DictionaryValues.Any())
-            //    .SelectMany(p => p.DictionaryValues.Select(v => v.Alias))
-            //    .Distinct(StringComparer.OrdinalIgnoreCase)
-            //    .OrderBy(v => v)
-            //    .Select(v => new AttributeFilterValue { Id = v })
-            //    .ToArray();
+            var values = properties
+                .Where(p => p.Dictionary && p.DictionaryValues != null && p.DictionaryValues.Any())
+                .SelectMany(p => p.DictionaryValues.Select(v => v.Alias))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(v => v)
+                .Select(v => new AttributeFilterValue { Id = v })
+                .ToArray();
 
             var result = new AttributeFilter
             {
                 Key = propertyName,
-                //Values = values.Any() ? values : null,
+                Values = values.Any() ? values : null,
             };
 
             return result;

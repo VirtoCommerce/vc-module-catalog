@@ -25,7 +25,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
         private static readonly JsonSerializer _jsonSerializer = new JsonSerializer
         {
             DefaultValueHandling = DefaultValueHandling.Include,
-            NullValueHandling = NullValueHandling.Ignore,
+            NullValueHandling = NullValueHandling.Include,
             Formatting = Formatting.Indented,
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
             TypeNameHandling = TypeNameHandling.None,
@@ -70,11 +70,29 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
             if (store != null)
             {
                 var browsing = GetFilteredBrowsing(store) ?? new FilteredBrowsing();
-                browsing.Attributes = filters?.ToArray();
+                browsing.Attributes = CopyValuesFromExistingFilters(filters, browsing.Attributes);
                 SetFilteredBrowsing(store, browsing);
             }
         }
 
+
+        protected virtual AttributeFilter[] CopyValuesFromExistingFilters(IList<AttributeFilter> newFilters, IList<AttributeFilter> oldFilters)
+        {
+            if (newFilters?.Any() == true && oldFilters?.Any() == true)
+            {
+                foreach (var newFilter in newFilters)
+                {
+                    var oldFilter = oldFilters.FirstOrDefault(f => f.Key.EqualsInvariant(newFilter.Key));
+                    if (oldFilter != null)
+                    {
+                        newFilter.Values = oldFilter.Values;
+                        newFilter.FacetSize = oldFilter.FacetSize;
+                    }
+                }
+            }
+
+            return newFilters?.ToArray();
+        }
 
         protected virtual object GetObjectValue(IDictionary<string, object> context, string key)
         {
