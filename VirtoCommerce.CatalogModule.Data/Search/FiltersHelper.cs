@@ -74,7 +74,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
         public static IFilter CreatePriceRangeFilter(string currency, IList<string> pricelists, string lower, string upper, bool includeLower, bool includeUpper)
         {
-            var commonFieldName = $"price_{currency}".ToLowerInvariant();
+            var commonFieldName = StringsHelper.JoinNonEmptyStrings("_", "price", currency).ToLowerInvariant();
             var result = GetPriceRangeFilterRecursive(0, commonFieldName, pricelists, lower, upper, includeLower, includeUpper);
             return result;
         }
@@ -94,12 +94,12 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 IFilter previousPricelistQuery = null;
                 if (pricelistNumber > 0)
                 {
-                    var previousFieldName = $"{commonFieldName}_{pricelists[pricelistNumber - 1]}".ToLowerInvariant();
+                    var previousFieldName = StringsHelper.JoinNonEmptyStrings("_", commonFieldName, pricelists[pricelistNumber - 1]).ToLowerInvariant();
                     previousPricelistQuery = CreateRangeFilter(previousFieldName, "0", null, false, false);
                 }
 
                 // Create positive query for current pricelist
-                var currentFieldName = $"{commonFieldName}_{pricelists[pricelistNumber]}".ToLowerInvariant();
+                var currentFieldName = StringsHelper.JoinNonEmptyStrings("_", commonFieldName, pricelists[pricelistNumber]).ToLowerInvariant();
                 var currentPricelistQuery = CreateRangeFilter(currentFieldName, lower, upper, includeLower, includeUpper);
 
                 // Get query for next pricelist
