@@ -206,13 +206,6 @@
                             };
                             $timeout(priorityChanged, 100, true, data);
                         });
-                        gridApi.selection.on.rowSelectionChanged($scope, function (rowEntity, colDef) {
-                            if (rowEntity.isSelected)
-                                blade.selectedImages.push(rowEntity.entity);
-                            else if (!rowEntity.isSelected) {
-                                blade.selectedImages = _.without(blade.selectedImages, _.findWhere(blade.selectedImages, rowEntity.entity ));
-                            }
-                        });
                     });
             };
 
