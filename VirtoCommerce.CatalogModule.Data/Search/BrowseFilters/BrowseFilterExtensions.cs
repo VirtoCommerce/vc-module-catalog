@@ -77,6 +77,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
             return result;
         }
 
+        [Obsolete]
         public static IBrowseFilter Copy(this IBrowseFilter filter, IList<string> keys)
         {
             IBrowseFilter result = null;

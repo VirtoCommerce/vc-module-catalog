@@ -205,6 +205,8 @@
     <Compile Include="Repositories\CatalogRepositoryImpl.cs" />
     <Compile Include="Repositories\ICatalogRepository.cs" />
     <Compile Include="Search\AggregationLabelService.cs" />
+    <Compile Include="Search\AggregationRequestBuilder.cs" />
+    <Compile Include="Search\AggregationResponseBuilder.cs" />
     <Compile Include="Search\BrowseFilters\AttributeFilter.cs" />
     <Compile Include="Search\BrowseFilters\AttributeFilterValue.cs" />
     <Compile Include="Search\BrowseFilters\BrowseFilterExtensions.cs" />
@@ -230,6 +232,8 @@
     <Compile Include="Search\FiltersContainer.cs" />
     <Compile Include="Search\FiltersHelper.cs" />
     <Compile Include="Search\IAggregationLabelService.cs" />
+    <Compile Include="Search\IAggregationRequestBuilder.cs" />
+    <Compile Include="Search\IAggregationResponseBuilder.cs" />
     <Compile Include="Search\ICategorySearchService.cs" />
     <Compile Include="Search\IndexDocumentHelper.cs" />
     <Compile Include="Search\Indexing\CatalogDocumentBuilder.cs" />
@@ -238,11 +242,13 @@
     <Compile Include="Search\Indexing\ProductDocumentBuilder.cs" />
     <Compile Include="Search\Indexing\ProductDocumentChangesProvider.cs" />
     <Compile Include="Search\IProductSearchService.cs" />
+    <Compile Include="Search\ITermFilterBuilder.cs" />
     <Compile Include="Search\ProductSearchRequestBuilder.cs" />
     <Compile Include="Search\ProductSearchResult.cs" />
     <Compile Include="Search\ProductSearchService.cs" />
     <Compile Include="Search\SearchCriteriaExtensions.cs" />
     <Compile Include="Search\StringsHelper.cs" />
+    <Compile Include="Search\TermFilterBuilder.cs" />
     <Compile Include="Services\AssociationServiceImpl.cs" />
     <Compile Include="Services\CatalogSearchServiceDecorator.cs" />
     <Compile Include="Services\CatalogSearchServiceImpl.cs" />

@@ -14,8 +14,20 @@ namespace VirtoCommerce.CatalogModule.Data.Search
     public class ProductSearchRequestBuilder : ISearchRequestBuilder
     {
         private readonly ISearchPhraseParser _searchPhraseParser;
+        private readonly ITermFilterBuilder _termFilterBuilder;
+        private readonly IAggregationRequestBuilder _aggregationRequestBuilder;
+
+        [Obsolete]
         private readonly IBrowseFilterService _browseFilterService;
 
+        public ProductSearchRequestBuilder(ISearchPhraseParser searchPhraseParser, ITermFilterBuilder termFilterBuilder, IAggregationRequestBuilder aggregationRequestBuilder)
+        {
+            _searchPhraseParser = searchPhraseParser;
+            _termFilterBuilder = termFilterBuilder;
+            _aggregationRequestBuilder = aggregationRequestBuilder;
+        }
+
+        [Obsolete]
         public ProductSearchRequestBuilder(ISearchPhraseParser searchPhraseParser, IBrowseFilterService browseFilterService)
         {
             _searchPhraseParser = searchPhraseParser;
@@ -42,7 +54,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                     Sorting = GetSorting(productSearchCriteria),
                     Skip = criteria.Skip,
                     Take = criteria.Take,
-                    Aggregations = GetAggregationRequests(productSearchCriteria, allFilters),
+                    Aggregations = _aggregationRequestBuilder?.GetAggregationRequests(productSearchCriteria, allFilters),
                 };
             }
 
@@ -100,13 +112,15 @@ namespace VirtoCommerce.CatalogModule.Data.Search
         protected virtual FiltersContainer GetAllFilters(ProductSearchCriteria criteria)
         {
             var permanentFilters = GetPermanentFilters(criteria);
-            var removableFilters = GetRemovableFilters(criteria, permanentFilters);
+            var termFilters = _termFilterBuilder.GetTermFilters(criteria);
 
-            return new FiltersContainer
+            var result = new FiltersContainer
             {
-                PermanentFilters = permanentFilters,
-                RemovableFilters = removableFilters,
+                PermanentFilters = permanentFilters.Concat(termFilters.PermanentFilters).ToList(),
+                RemovableFilters = termFilters.RemovableFilters,
             };
+
+            return result;
         }
 
         protected virtual IList<IFilter> GetPermanentFilters(ProductSearchCriteria criteria)
@@ -158,6 +172,9 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return result;
         }
 
+        #region Obsolete
+
+        [Obsolete("Use ITermFilterBuilder.GetTermFilters()")]
         protected virtual IList<KeyValuePair<string, IFilter>> GetRemovableFilters(ProductSearchCriteria criteria, IList<IFilter> permanentFilters)
         {
             var result = new List<KeyValuePair<string, IFilter>>();
@@ -210,6 +227,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return result;
         }
 
+        [Obsolete]
         protected virtual IFilter ConvertBrowseFilter(IBrowseFilter filter, IList<string> valueIds, ProductSearchCriteria criteria)
         {
             IFilter result = null;
@@ -237,6 +255,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return result;
         }
 
+        [Obsolete]
         protected virtual IFilter ConvertAttributeFilter(AttributeFilter attributeFilter, IList<string> valueIds)
         {
             var knownValues = attributeFilter.Values
@@ -253,6 +272,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return result;
         }
 
+        [Obsolete]
         protected virtual IFilter ConvertPriceRangeFilter(PriceRangeFilter priceRangeFilter, IList<string> valueIds, ProductSearchCriteria criteria)
         {
             IFilter result = null;
@@ -282,6 +302,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return result;
         }
 
+        [Obsolete]
         protected virtual IFilter ConvertRangeFilter(BrowseFilters.RangeFilter rangeFilter, IList<string> valueIds)
         {
             IFilter result;
@@ -307,6 +328,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return result;
         }
 
+        [Obsolete]
         protected virtual RangeFilterValue ConvertRangeFilterValue(BrowseFilters.RangeFilterValue rangeFilterValue)
         {
             return new RangeFilterValue
@@ -320,6 +342,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
         #region Aggregations
 
+        [Obsolete("Use IAggregationRequestBuilder.GetAggregationRequests()")]
         protected virtual IList<AggregationRequest> GetAggregationRequests(ProductSearchCriteria criteria, FiltersContainer allFilters)
         {
             var result = new List<AggregationRequest>();
@@ -378,6 +401,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return result;
         }
 
+        [Obsolete]
         protected virtual AggregationRequest GetAttributeFilterAggregationRequest(AttributeFilter attributeFilter, IEnumerable<IFilter> existingFilters)
         {
             return new TermAggregationRequest
@@ -389,12 +413,14 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             };
         }
 
+        [Obsolete]
         protected virtual IList<AggregationRequest> GetRangeFilterAggregationRequests(BrowseFilters.RangeFilter rangeFilter, IList<IFilter> existingFilters)
         {
             var result = rangeFilter.Values.Select(v => GetRangeFilterValueAggregationRequest(rangeFilter.Key, v, existingFilters)).ToList();
             return result;
         }
 
+        [Obsolete]
         protected virtual AggregationRequest GetRangeFilterValueAggregationRequest(string fieldName, BrowseFilters.RangeFilterValue value, IEnumerable<IFilter> existingFilters)
         {
             var valueFilter = FiltersHelper.CreateRangeFilter(fieldName, value.Lower, value.Upper, value.IncludeLower, value.IncludeUpper);
@@ -408,12 +434,14 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return result;
         }
 
+        [Obsolete]
         protected virtual IList<AggregationRequest> GetPriceRangeFilterAggregationRequests(PriceRangeFilter priceRangeFilter, ProductSearchCriteria criteria, IList<IFilter> existingFilters)
         {
             var result = priceRangeFilter.Values.Select(v => GetPriceRangeFilterValueAggregationRequest(priceRangeFilter, v, existingFilters, criteria.Pricelists)).ToList();
             return result;
         }
 
+        [Obsolete]
         protected virtual AggregationRequest GetPriceRangeFilterValueAggregationRequest(PriceRangeFilter priceRangeFilter, BrowseFilters.RangeFilterValue value, IEnumerable<IFilter> existingFilters, IList<string> pricelists)
         {
             var valueFilter = FiltersHelper.CreatePriceRangeFilter(priceRangeFilter.Currency, pricelists, value.Lower, value.Upper, value.IncludeLower, value.IncludeUpper);
@@ -426,6 +454,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
             return result;
         }
+
+        #endregion
 
         #endregion
     }

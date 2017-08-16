@@ -128,10 +128,14 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AggregationRequestBuilderTests.cs" />
+    <Compile Include="BrowseFiltersTestBase.cs" />
     <Compile Include="CatalogPropertyTest.cs" />
+    <Compile Include="FiltersHelperTests.cs" />
+    <Compile Include="ImportExportTest.cs" />
     <Compile Include="OutlineTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ImportExportTest.cs" />
+    <Compile Include="TermFilterBuilderTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\VirtoCommerce.CatalogModule.Data\VirtoCommerce.CatalogModule.Data.csproj">
