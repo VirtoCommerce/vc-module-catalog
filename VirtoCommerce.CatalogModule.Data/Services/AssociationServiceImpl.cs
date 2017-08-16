@@ -15,7 +15,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
     public class AssociationServiceImpl : ServiceBase, IAssociationService
     {
         private readonly Func<ICatalogRepository> _repositoryFactory;
-        public AssociationServiceImpl(Func<ICatalogRepository> repositoryFactory)            
+        public AssociationServiceImpl(Func<ICatalogRepository> repositoryFactory)
         {
             _repositoryFactory = repositoryFactory;
         }
@@ -27,7 +27,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 //Optimize performance and CPU usage
                 repository.DisableChangesTracking();
 
-                var productEntities = repository.GetItemByIds(owners.Select(x => x.Id).ToArray(), ItemResponseGroup.ItemAssociations);        
+                var productEntities = repository.GetItemByIds(owners.Select(x => x.Id).ToArray(), ItemResponseGroup.ItemAssociations);
                 foreach (var productEntity in productEntities)
                 {
                     var owner = owners.FirstOrDefault(x => x.Id == productEntity.Id);
@@ -40,6 +40,32 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                         owner.Associations.Clear();
                         owner.Associations.AddRange(productEntity.Associations.Select(x => x.ToModel(AbstractTypeFactory<ProductAssociation>.TryCreateInstance())));
                     }
+                }
+            }
+        }
+
+        public void LoadReferencedAssociations(IHasReferencedAssociations[] owners)
+        {
+            using (var repository = _repositoryFactory())
+            {
+                //Optimize performance and CPU usage
+                repository.DisableChangesTracking();
+
+                var productIds = owners.Select(o => o.Id);
+                var referencedAssociationEntities = repository.Associations.Where(a => productIds.Contains(a.AssociatedItemId));
+                var referencedEntityIds = referencedAssociationEntities.Select(a => a.ItemId).Distinct().ToArray();
+                foreach (var owner in owners)
+                {
+                    var referencedItems = repository.GetItemByIds(referencedEntityIds, ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemAssets);
+                    var ownerReferencedAssociationEntities = referencedAssociationEntities.Where(a => a.AssociatedItemId == owner.Id).ToList();
+
+                    if (owner.ReferencedAssociations == null)
+                    {
+                        owner.ReferencedAssociations = new List<ProductAssociation>();
+                    }
+
+                    owner.ReferencedAssociations.Clear();
+                    owner.ReferencedAssociations.AddRange(ownerReferencedAssociationEntities.Select(a => a.ToModel(AbstractTypeFactory<ProductAssociation>.TryCreateInstance())));
                 }
             }
         }
