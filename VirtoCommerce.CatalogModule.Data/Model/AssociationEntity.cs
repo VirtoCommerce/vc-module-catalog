@@ -46,13 +46,6 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             association.Priority = this.Priority;
             association.AssociatedObjectId = this.AssociatedItemId ?? this.AssociatedCategoryId;
             association.Quantity = this.Quantity;
-            association.ItemObjectId = this.ItemId;
-
-            if (this.Item != null)
-            {
-                association.ItemObject = this.Item.ToModel(AbstractTypeFactory<CatalogProduct>.TryCreateInstance(), false, false);
-                association.ItemObjectType = "product";
-            }
 
             if (this.AssociatedCategory != null)
             {

@@ -95,7 +95,7 @@
       <HintPath>..\packages\VirtoCommerce.CoreModule.Data.2.24.6\lib\net461\VirtoCommerce.CoreModule.Data.dll</HintPath>
     </Reference>
     <Reference Include="VirtoCommerce.Domain, Version=2.24.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VirtoCommerce.Domain.2.24.8-rc1\lib\net461\VirtoCommerce.Domain.dll</HintPath>
+      <HintPath>..\packages\VirtoCommerce.Domain.2.24.8-rc2\lib\net461\VirtoCommerce.Domain.dll</HintPath>
     </Reference>
     <Reference Include="VirtoCommerce.Platform.Core, Version=2.13.14.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\VirtoCommerce.Platform.Core.2.13.14\lib\net461\VirtoCommerce.Platform.Core.dll</HintPath>

@@ -65,7 +65,16 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     }
 
                     owner.ReferencedAssociations.Clear();
-                    owner.ReferencedAssociations.AddRange(ownerReferencedAssociationEntities.Select(a => a.ToModel(AbstractTypeFactory<ProductAssociation>.TryCreateInstance())));
+                    foreach (var ownerReferencedAssociationEntity in ownerReferencedAssociationEntities)
+                    {
+                        var referencedAssociation = ownerReferencedAssociationEntity.ToModel(AbstractTypeFactory<ProductAssociation>.TryCreateInstance());
+                        var associatedObjectEntity = repository.Items.FirstOrDefault(i => i.Id == ownerReferencedAssociationEntity.ItemId);
+                        referencedAssociation.AssociatedObject = associatedObjectEntity;
+                        referencedAssociation.AssociatedObjectId = associatedObjectEntity?.Id;
+                        referencedAssociation.AssociatedObjectType = "product";
+
+                        owner.ReferencedAssociations.Add(referencedAssociation);
+                    }
                 }
             }
         }

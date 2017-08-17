@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Moq;
 using VirtoCommerce.CatalogModule.Data.Model;
@@ -17,8 +18,14 @@ namespace VirtoCommerce.CatalogModule.Test
         public ReferencedAssociationsTest()
         {
             var associations = GetTestAssociationEntities();
+            var products = GetTestProductEntities();
 
             var catalogRepository = new Mock<ICatalogRepository>();
+            catalogRepository.Setup(r => r.Items).Returns(products);
+            catalogRepository.Setup(r => r.GetItemByIds(It.IsAny<string[]>(), It.IsAny<ItemResponseGroup>())).Returns((string[] ids, ItemResponseGroup responseGroup) =>
+            {
+                return products.Where(p => ids.Contains(p.Id)).ToArray();
+            });
             catalogRepository.Setup(r => r.Associations).Returns(associations);
 
             _associationService = new AssociationServiceImpl(() => catalogRepository.Object);
@@ -27,17 +34,55 @@ namespace VirtoCommerce.CatalogModule.Test
         [Fact]
         public void GetCatalogItems_ByIds_WithReferencedAssociations_Test()
         {
-            var owners = new CatalogProduct[]
+            // Each of association source items has an association with 'target1' item
+            var associationSourceItems = new[]
             {
-                new CatalogProduct { Id = "e7eee66223da43109502891b54bc33d3" }
+                new CatalogProduct { Id = "source1" },
+                new CatalogProduct { Id = "source2" }
             };
 
-            _associationService.LoadReferencedAssociations(owners);
+            _associationService.LoadAssociations(associationSourceItems);
 
-            var referencedAssociations = owners[0].ReferencedAssociations;
+            var associationTargetItems = new[]
+            {
+                new CatalogProduct { Id = "target1" }
+            };
 
-            Assert.NotNull(referencedAssociations);
-            Assert.True(referencedAssociations.Count == 2);
+            _associationService.LoadReferencedAssociations(associationTargetItems);
+
+            Assert.True(associationTargetItems[0].ReferencedAssociations.Count == 2);
+        }
+
+        private IQueryable<ItemEntity> GetTestProductEntities()
+        {
+            var products = new List<ItemEntity>
+            {
+                new ItemEntity
+                {
+                    Id = "source1",
+                    Name = "3DR Solo Quadcopter (No Gimbal)",
+                    Associations = new ObservableCollection<AssociationEntity>(new List<AssociationEntity>
+                    {
+                        new AssociationEntity { ItemId = "source1", AssociatedItemId = "target1" },
+                        new AssociationEntity { ItemId = "source1", AssociatedItemId = "target2" }
+                    })
+                },
+                new ItemEntity
+                {
+                    Id = "source2",
+                    Name = "Parrot Jumping Sumo MiniDrone",
+                    Associations = new ObservableCollection<AssociationEntity>(new List<AssociationEntity> {
+                        new AssociationEntity { ItemId = "source2", AssociatedItemId = "target1" }
+                    })
+                },
+                new ItemEntity
+                {
+                    Id = "target1",
+                    Name = "3DR X8-M Octocopter for Visual-Spectrum Aerial Maps (915 MHz)"
+                }
+            };
+
+            return products.AsQueryable();
         }
 
         private IQueryable<AssociationEntity> GetTestAssociationEntities()
@@ -46,21 +91,21 @@ namespace VirtoCommerce.CatalogModule.Test
             {
                 new AssociationEntity
                 {
-                    ItemId = "9cbd8f316e254a679ba34a900fccb076",
-                    AssociatedItemId = "bd8e58948c3648e8b08e1fb4ed4e01bb",
+                    ItemId = "source1",
+                    AssociatedItemId = "target1",
                     AssociationType = "Related Items",
                 },
                 new AssociationEntity
                 {
-                    ItemId = "b7fbcb4e4efb4b1bbe79482a20e80a3d",
-                    AssociatedItemId = "e7eee66223da43109502891b54bc33d3",
+                    ItemId = "source1",
+                    AssociatedItemId = "target2",
                     AssociationType = "Related Items",
                     Quantity = 1
                 },
                 new AssociationEntity
                 {
-                    ItemId = "9cbd8f316e254a679ba34a900fccb076",
-                    AssociatedItemId = "e7eee66223da43109502891b54bc33d3",
+                    ItemId = "source2",
+                    AssociatedItemId = "target1",
                     AssociationType = "Related Items",
                     Tags = "test1;test2"
                 }
