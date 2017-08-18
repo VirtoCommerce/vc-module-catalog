@@ -99,9 +99,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 if (!respGroup.HasFlag(ItemResponseGroup.ItemAssociations))
                 {
                     product.Associations = null;
-                }
-                if (!respGroup.HasFlag(ItemResponseGroup.ReferencedAssociations))
-                {
                     product.ReferencedAssociations = null;
                 }
                 if (!respGroup.HasFlag(ItemResponseGroup.ItemEditorialReviews))

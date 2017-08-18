@@ -1,11 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using Moq;
 using VirtoCommerce.CatalogModule.Data.Services;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
-using VirtoCommerce.Domain.Commerce.Services;
 using Xunit;
 
 
@@ -21,7 +18,7 @@ namespace VirtoCommerce.CatalogModule.Test
             var c0 = GetTestData().OfType<Category>().FirstOrDefault(x => x.Id == "c0");
             service.FillOutlinesForObjects(new[] { c0 }, null);
 
-        
+
             Assert.NotNull(c0.Outlines);
             Assert.Equal(1, c0.Outlines.Count);
 
@@ -63,7 +60,7 @@ namespace VirtoCommerce.CatalogModule.Test
             var service = GetOutlineService();
             var c3 = GetTestData().OfType<Category>().FirstOrDefault(x => x.Id == "c3");
             service.FillOutlinesForObjects(new[] { c3 }, "v");
-      
+
             Assert.NotNull(c3.Outlines);
             Assert.Equal(4, c3.Outlines.Count);
 
@@ -84,7 +81,7 @@ namespace VirtoCommerce.CatalogModule.Test
             var c3 = GetTestData().OfType<Category>().FirstOrDefault(x => x.Id == "c3");
             service.FillOutlinesForObjects(new[] { c3 }, null);
 
-        
+
             Assert.NotNull(c3.Outlines);
             Assert.Equal(5, c3.Outlines.Count);
 
@@ -105,7 +102,7 @@ namespace VirtoCommerce.CatalogModule.Test
             var service = GetOutlineService();
             var p0 = GetTestData().OfType<CatalogProduct>().FirstOrDefault(x => x.Id == "p0");
             service.FillOutlinesForObjects(new[] { p0 }, null);
-        
+
             Assert.NotNull(p0.Outlines);
             Assert.Equal(1, p0.Outlines.Count);
 
@@ -126,8 +123,8 @@ namespace VirtoCommerce.CatalogModule.Test
             var service = GetOutlineService();
             var p1 = GetTestData().OfType<CatalogProduct>().FirstOrDefault(x => x.Id == "p1");
             service.FillOutlinesForObjects(new[] { p1 }, "c");
-      
-           
+
+
             Assert.NotNull(p1.Outlines);
             Assert.Equal(1, p1.Outlines.Count);
 
@@ -171,7 +168,7 @@ namespace VirtoCommerce.CatalogModule.Test
             var p1 = GetTestData().OfType<CatalogProduct>().FirstOrDefault(x => x.Id == "p1");
             service.FillOutlinesForObjects(new[] { p1 }, null);
 
-        
+
             Assert.NotNull(p1.Outlines);
             Assert.Equal(7, p1.Outlines.Count);
 
@@ -217,9 +214,9 @@ namespace VirtoCommerce.CatalogModule.Test
                                  new CategoryLink { CatalogId = v.Id, Catalog = v, CategoryId = v2.Id, Category = v2 },
             };
 
-            return new IHasOutlines [] { c0, c1, c2, c3, v1, v2, p0, p1 };    
+            return new IHasOutlines[] { c0, c1, c2, c3, v1, v2, p0, p1 };
         }
 
-      
+
     }
 }

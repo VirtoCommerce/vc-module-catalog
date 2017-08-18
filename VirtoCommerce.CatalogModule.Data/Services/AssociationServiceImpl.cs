@@ -44,36 +44,34 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
         }
 
-        public void LoadReferencedAssociations(IHasReferencedAssociations[] owners)
+        public void LoadReferencedAssociations(IHasAssociations[] owners)
         {
             using (var repository = _repositoryFactory())
             {
                 //Optimize performance and CPU usage
                 repository.DisableChangesTracking();
 
-                var productIds = owners.Select(o => o.Id);
-                var referencedAssociationEntities = repository.Associations.Where(a => productIds.Contains(a.AssociatedItemId));
-                var referencedEntityIds = referencedAssociationEntities.Select(a => a.ItemId).Distinct().ToArray();
                 foreach (var owner in owners)
                 {
-                    var referencedItems = repository.GetItemByIds(referencedEntityIds, ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemAssets);
-                    var ownerReferencedAssociationEntities = referencedAssociationEntities.Where(a => a.AssociatedItemId == owner.Id).ToList();
-
                     if (owner.ReferencedAssociations == null)
                     {
                         owner.ReferencedAssociations = new List<ProductAssociation>();
                     }
-
                     owner.ReferencedAssociations.Clear();
-                    foreach (var ownerReferencedAssociationEntity in ownerReferencedAssociationEntities)
+                    var referencedAssociationEntities = repository.Associations.Where(a => a.AssociatedItemId == owner.Id).ToList();
+                    var referencedItemEntityIds = referencedAssociationEntities.Select(i => i.ItemId).ToArray();
+                    var referencedItemEntities = repository.GetItemByIds(referencedItemEntityIds, ItemResponseGroup.ItemInfo);
+                    foreach (var referencedAssociationEntity in referencedAssociationEntities)
                     {
-                        var referencedAssociation = ownerReferencedAssociationEntity.ToModel(AbstractTypeFactory<ProductAssociation>.TryCreateInstance());
-                        var associatedObjectEntity = repository.Items.FirstOrDefault(i => i.Id == ownerReferencedAssociationEntity.ItemId);
-                        referencedAssociation.AssociatedObject = associatedObjectEntity;
-                        referencedAssociation.AssociatedObjectId = associatedObjectEntity?.Id;
-                        referencedAssociation.AssociatedObjectType = "product";
-
-                        owner.ReferencedAssociations.Add(referencedAssociation);
+                        var referencedItemEntity = referencedItemEntities.FirstOrDefault(i => i.Id == referencedAssociationEntity.ItemId);
+                        if (referencedItemEntity != null)
+                        {
+                            var referencedAssociation = referencedAssociationEntity.ToModel(AbstractTypeFactory<ProductAssociation>.TryCreateInstance());
+                            referencedAssociation.AssociatedObject = referencedItemEntity.ToModel(AbstractTypeFactory<CatalogProduct>.TryCreateInstance());
+                            referencedAssociation.AssociatedObjectId = referencedItemEntity.Id;
+                            referencedAssociation.AssociatedObjectType = "product";
+                            owner.ReferencedAssociations.Add(referencedAssociation);
+                        }
                     }
                 }
             }

@@ -291,7 +291,7 @@ namespace VirtoCommerce.CatalogModule.Web.Model
         /// <value>
         /// The list of referenced products
         /// </value>
-        public ICollection<Product> ReferencedAssociations { get; set; }
+        public ICollection<ProductAssociation> ReferencedAssociations { get; set; }
 
         public string[] SecurityScopes { get; set; }
 
