@@ -21,15 +21,17 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private readonly ICatalogService _catalogService;
         private readonly ICommerceService _commerceService;
         private readonly IOutlineService _outlineService;
+        private readonly IAssociationService _associationService;
         private readonly Func<ICatalogRepository> _repositoryFactory;
         private readonly AbstractValidator<IHasProperties> _hasPropertyValidator;
 
-        public ItemServiceImpl(Func<ICatalogRepository> catalogRepositoryFactory, ICommerceService commerceService, IOutlineService outlineService, ICatalogService catalogService, ICategoryService categoryService, AbstractValidator<IHasProperties> hasPropertyValidator)
+        public ItemServiceImpl(Func<ICatalogRepository> catalogRepositoryFactory, ICommerceService commerceService, IOutlineService outlineService, IAssociationService associationService, ICatalogService catalogService, ICategoryService categoryService, AbstractValidator<IHasProperties> hasPropertyValidator)
         {
             _catalogService = catalogService;
             _categoryService = categoryService;
             _commerceService = commerceService;
             _outlineService = outlineService;
+            _associationService = associationService;
             _repositoryFactory = catalogRepositoryFactory;
             _hasPropertyValidator = hasPropertyValidator;
         }
@@ -58,6 +60,12 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
             LoadDependencies(result);
             ApplyInheritanceRules(result);
+
+            // Fill referenced associations
+            if (respGroup.HasFlag(ItemResponseGroup.ReferencedAssociations))
+            {
+                _associationService.LoadReferencedAssociations(result);
+            }
 
             // Fill outlines for products
             if (respGroup.HasFlag(ItemResponseGroup.Outlines))
@@ -91,6 +99,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 if (!respGroup.HasFlag(ItemResponseGroup.ItemAssociations))
                 {
                     product.Associations = null;
+                    product.ReferencedAssociations = null;
                 }
                 if (!respGroup.HasFlag(ItemResponseGroup.ItemEditorialReviews))
                 {

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using VirtoCommerce.Domain.Catalog.Model;
-using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.Model
@@ -18,7 +16,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         [StringLength(128)]
         [Required]
         public string AssociationType { get; set; }
- 
+
         public int Priority { get; set; }
 
         public int? Quantity { get; set; }
@@ -65,8 +63,8 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             {
                 association.Tags = this.Tags.Split(';');
             }
-            return association;
 
+            return association;
         }
 
         public virtual AssociationEntity FromModel(ProductAssociation association)
@@ -76,7 +74,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
             this.Priority = association.Priority;
             this.AssociationType = association.Type;
-            this.Quantity = association.Quantity;            
+            this.Quantity = association.Quantity;
 
             if (association.AssociatedObjectType.EqualsInvariant("product"))
             {

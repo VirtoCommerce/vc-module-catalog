@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Omu.ValueInjecter;
-using VirtoCommerce.Domain.Commerce.Model;
 using VirtoCommerce.Platform.Core.Assets;
 using VirtoCommerce.Platform.Core.Common;
 using moduleModel = VirtoCommerce.Domain.Catalog.Model;
@@ -46,7 +45,7 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             retVal.Vendor = product.Vendor;
             retVal.Weight = product.Weight;
             retVal.WeightUnit = product.WeightUnit;
-            retVal.Width = product.Width;            
+            retVal.Width = product.Width;
 
             retVal.SeoInfos = product.SeoInfos;
 
@@ -55,7 +54,7 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
                 //Minimize outline size
                 retVal.Outlines = product.Outlines.Select(x => x.ToWebModel()).ToList();
             }
-            
+
             if (product.Images != null)
             {
                 retVal.Images = product.Images.Select(x => x.ToWebModel(blobUrlResolver)).ToList();
@@ -70,7 +69,7 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             {
                 retVal.Variations = product.Variations.Select(x => x.ToWebModel(blobUrlResolver)).ToList();
                 //For nested variations leave only variation properties to decrease resulting JSON
-                foreach(var variation in retVal.Variations)
+                foreach (var variation in retVal.Variations)
                 {
                     if (variation.Properties != null)
                     {
@@ -93,10 +92,15 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             {
                 retVal.Associations = product.Associations.Select(x => x.ToWebModel(blobUrlResolver)).ToList();
             }
+
+            if (product.ReferencedAssociations != null)
+            {
+                retVal.ReferencedAssociations = product.ReferencedAssociations.Select(a => a.ToWebModel(blobUrlResolver)).ToList();
+            }
             //Init outline and path
             if (product.Category != null)
             {
-                 var parents = new List<moduleModel.Category>();
+                var parents = new List<moduleModel.Category>();
                 if (product.Category.Parents != null)
                 {
                     parents.AddRange(product.Category.Parents);
@@ -204,7 +208,7 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
                 foreach (var association in retVal.Associations)
                 {
                     association.Priority = index++;
-                }               
+                }
             }
             retVal.MainProductId = product.TitularItemId;
 

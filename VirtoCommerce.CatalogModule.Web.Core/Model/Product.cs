@@ -285,6 +285,14 @@ namespace VirtoCommerce.CatalogModule.Web.Model
         /// </value>
 		public ICollection<ProductAssociation> Associations { get; set; }
 
+        /// <summary>
+        /// Get or sets the list of products which have reference to current product
+        /// </summary>
+        /// <value>
+        /// The list of referenced products
+        /// </value>
+        public ICollection<ProductAssociation> ReferencedAssociations { get; set; }
+
         public string[] SecurityScopes { get; set; }
 
         #region ISeoSupport Members 
