@@ -43,7 +43,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                     }
                     else if (rangeFilter != null)
                     {
-                        aggregation = GetRangeAggregation(rangeFilter, aggregationResponses);
+                        aggregation = GetRangeAggregation(rangeFilter, aggregationResponses, criteria);
                     }
                     else if (priceRangeFilter != null)
                     {
@@ -101,13 +101,14 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return result;
         }
 
-        protected virtual Aggregation GetRangeAggregation(RangeFilter rangeFilter, IList<AggregationResponse> aggregationResponses)
+        protected virtual Aggregation GetRangeAggregation(RangeFilter rangeFilter, IList<AggregationResponse> aggregationResponses, ProductSearchCriteria criteria)
         {
             var result = new Aggregation
             {
                 AggregationType = "range",
                 Field = rangeFilter.Key,
                 Items = GetRangeAggregationItems(rangeFilter.Key, rangeFilter.Values, aggregationResponses),
+                Labels = _aggregationLabelService.GetPropertyLabels(criteria.CatalogId, rangeFilter.Key),
             };
 
             return result;
@@ -164,8 +165,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                         {
                             Value = valueId,
                             Count = (int)value.Count,
-                            RequestedLowerBound = rangeValue.Lower,
-                            RequestedUpperBound = rangeValue.Upper,
+                            RequestedLowerBound = !string.IsNullOrEmpty(rangeValue.Lower) ? rangeValue.Lower : null,
+                            RequestedUpperBound = !string.IsNullOrEmpty(rangeValue.Upper) ? rangeValue.Upper : null,
                         };
 
                         result.Add(aggregationItem);
