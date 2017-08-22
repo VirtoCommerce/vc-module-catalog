@@ -61,12 +61,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             LoadDependencies(result);
             ApplyInheritanceRules(result);
 
-            // Fill referenced associations
-            if (respGroup.HasFlag(ItemResponseGroup.ReferencedAssociations))
-            {
-                _associationService.LoadReferencedAssociations(result);
-            }
-
             // Fill outlines for products
             if (respGroup.HasFlag(ItemResponseGroup.Outlines))
             {
@@ -99,6 +93,9 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 if (!respGroup.HasFlag(ItemResponseGroup.ItemAssociations))
                 {
                     product.Associations = null;
+                }
+                if (!respGroup.HasFlag(ItemResponseGroup.ReferencedAssociations))
+                {
                     product.ReferencedAssociations = null;
                 }
                 if (!respGroup.HasFlag(ItemResponseGroup.ItemEditorialReviews))
