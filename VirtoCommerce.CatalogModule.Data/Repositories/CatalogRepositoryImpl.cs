@@ -16,7 +16,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
     public class CatalogRepositoryImpl : EFRepositoryBase, ICatalogRepository
     {
         public CatalogRepositoryImpl()
-            : base("Data Source=(local);Initial Catalog=VirtoCommerce2;User ID=virto;Password=virto")
+            : base()
         {
         }
 
