@@ -36,6 +36,29 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         public CategoryEntity AssociatedCategory { get; set; }
         #endregion
 
+        public virtual ProductAssociation ToReferencedAssociationModel(ProductAssociation association)
+        {
+            if (association == null)
+                throw new ArgumentNullException(nameof(association));
+
+            association.Type = this.AssociationType;
+            association.Priority = this.Priority;
+            association.AssociatedObjectId = this.ItemId;
+            association.Quantity = this.Quantity;
+
+            if (this.Item != null)
+            {
+                association.AssociatedObject = this.Item.ToModel(AbstractTypeFactory<CatalogProduct>.TryCreateInstance(), false, false);
+                association.AssociatedObjectType = "product";
+            }
+
+            if (!this.Tags.IsNullOrEmpty())
+            {
+                association.Tags = this.Tags.Split(';');
+            }
+
+            return association;
+        }
 
         public virtual ProductAssociation ToModel(ProductAssociation association)
         {

@@ -173,6 +173,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             {
                 // Associations
                 product.Associations = this.Associations.Select(x => x.ToModel(AbstractTypeFactory<ProductAssociation>.TryCreateInstance())).OrderBy(x => x.Priority).ToList();
+                product.ReferencedAssociations = this.ReferencedAssociations.Select(x => x.ToReferencedAssociationModel(AbstractTypeFactory<ProductAssociation>.TryCreateInstance())).OrderBy(x => x.Priority).ToList();
             }
 
             //Self item property values
