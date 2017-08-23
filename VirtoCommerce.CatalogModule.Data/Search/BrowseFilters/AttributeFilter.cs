@@ -12,6 +12,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
         [XmlElement("facetSize")]
         public int? FacetSize { get; set; }
 
+        public int Order { get; set; }
+
         [XmlElement("simple")]
         public AttributeFilterValue[] Values { get; set; }
 

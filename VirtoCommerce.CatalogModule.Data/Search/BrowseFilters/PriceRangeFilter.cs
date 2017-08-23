@@ -11,6 +11,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
         [XmlAttribute("currency")]
         public string Currency { get; set; }
 
+        public int Order { get; set; }
+
         [XmlElement("range")]
         public RangeFilterValue[] Values { get; set; }
 

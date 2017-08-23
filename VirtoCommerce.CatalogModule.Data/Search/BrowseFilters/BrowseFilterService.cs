@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
@@ -56,15 +57,32 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
                 }
             }
 
-            return filters;
+            return filters.OrderBy(f => f.Order).ToArray();
         }
 
+        public virtual void SetAllFilters(Store store, IList<IBrowseFilter> filters)
+        {
+            if (store != null)
+            {
+                var browsing = new FilteredBrowsing
+                {
+                    Attributes = filters.OfType<AttributeFilter>().ToArray(),
+                    AttributeRanges = filters.OfType<RangeFilter>().ToArray(),
+                    Prices = filters.OfType<PriceRangeFilter>().ToArray(),
+                };
+
+                SetFilteredBrowsing(store, browsing);
+            }
+        }
+
+        [Obsolete]
         public virtual IList<AttributeFilter> GetAttributeFilters(Store store)
         {
             var browsing = GetFilteredBrowsing(store);
             return browsing?.Attributes;
         }
 
+        [Obsolete]
         public virtual void SetAttributeFilters(Store store, IList<AttributeFilter> filters)
         {
             if (store != null)

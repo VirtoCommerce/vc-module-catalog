@@ -17,6 +17,18 @@
         });
     }
 
+    blade.edit = function (node) {
+        var newBlade = {
+            id: "aggregationPropertyDetails",
+            controller: 'virtoCommerce.catalogModule.aggregationPropertyDetailsController',
+            template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/aggregation-properties-details.tpl.html',
+            title: node.name,
+            subtitle: 'Aggregation property',
+            property: node
+        };
+        bladeNavigationService.showBlade(newBlade, blade);
+    }
+
     blade.select = function (node) {
         node.isSelected = true;
         blade.selectedEntities.push(node);

@@ -1,5 +1,8 @@
-﻿namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
+﻿using System;
+
+namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
 {
+    [Obsolete]
     public class CategoryFilterValue : IBrowseFilterValue
     {
         public string Id { get; set; }

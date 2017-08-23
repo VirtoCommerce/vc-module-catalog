@@ -3,5 +3,6 @@
     public interface IBrowseFilter
     {
         string Key { get; }
+        int Order { get; }
     }
 }

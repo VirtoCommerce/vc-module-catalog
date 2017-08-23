@@ -19,7 +19,17 @@
                         <div class="table-wrapper">
                             <ul class="list __items __reverse" ui-sortable="sortableOptions" ng-model="blade.selectedEntities">
                                 <li class="list-item" ng-repeat="data in blade.selectedEntities" ng-click='blade.unselect(data)'>
-                                    <span class="list-name">{{data.name}}</span>
+                                    <div class="list-t">
+                                        <span>{{data.name}}</span>
+                                        <a href="" ng-click="blade.edit(data); $event.stopPropagation();" class="form-edit">
+                                            <i class="form-ico fa fa-pencil"></i>
+                                        </a>
+                                    </div>
+                                    <div class="list-descr">
+                                        <span>{{data.type}}</span>
+                                        <span ng-if="data.values">, values: {{data.valuesCount}}</span>
+                                        <span ng-if="data.size">, size: {{data.size}}</span>
+                                    </div>
                                 </li>
                             </ul>
                         </div>

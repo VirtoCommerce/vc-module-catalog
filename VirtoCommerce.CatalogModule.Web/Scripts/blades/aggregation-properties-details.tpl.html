@@ -1,0 +1,54 @@
+﻿<div class="blade-content">
+    <div class="blade-inner">
+        <div class="inner-block">
+            <form class="form" name="rules">
+
+                <div class="form-group">
+                    <label class="form-label">Property name</label>
+                    <div class="form-input">
+                        <input ng-model="blade.property.name" ng-disabled="true" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Aggregation type</label>
+                    <div class="form-input">
+                        <ui-select ng-model="blade.property.type" ng-disabled="!blade.canChangeType()">
+                            <ui-select-match>{{$select.selected}}</ui-select-match>
+                            <ui-select-choices repeat="selectedType in blade.propertyTypes | filter: $select.search">
+                                <span>{{selectedType}}</span>
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+                </div>
+
+                <div class="form-group" ng-if="blade.canChangeSize()">
+                    <label class="form-label">Aggregation size</label>
+                    <div class="form-input">
+                        <input ng-model="blade.property.size" placeholder="Enter aggregation size" />
+                    </div>
+                    <div class="table-descr">Maximum number of aggregation values in search results. 0 = unlimited</div>
+                </div>
+
+                <div class="form-group" ng-if="!blade.isRange()">
+                    <label class="form-label">Allowed values</label>
+                    <div class="form-input">
+                        <input ng-model="blade.property.values" placeholder="Enter allowed values" />
+                    </div>
+                    <div class="table-descr">Enter aggregation values allowed in search results. Leave empty to allow any value.</div>
+                </div>
+
+                <div class="form-group" ng-if="blade.isRange()">
+                    <label class="form-label">Range bounds</label>
+                    <div class="form-input">
+                        <input ng-model="blade.property.values" placeholder="Enter range bounds" />
+                    </div>
+                    <div class="table-descr">Under [bound 1]<br/>[bound 1] to [bound 2]<br/>...<br/>Over [bound N]</div>
+                </div>
+
+                <div class="blade-static __bottom" ng-include="'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/common/templates/ok-cancel.tpl.html'">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

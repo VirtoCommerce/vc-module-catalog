@@ -55,7 +55,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
             var attributeFilter = filter as AttributeFilter;
             var rangeFilter = filter as RangeFilter;
             var priceRangeFilter = filter as PriceRangeFilter;
-            var categoryFilter = filter as CategoryFilter;
+            //var categoryFilter = filter as CategoryFilter;
 
             if (attributeFilter != null)
             {
@@ -69,10 +69,10 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
             {
                 result = priceRangeFilter.Values?.OfType<IBrowseFilterValue>().ToArray();
             }
-            else if (categoryFilter != null)
-            {
-                result = categoryFilter.Values?.OfType<IBrowseFilterValue>().ToArray();
-            }
+            //else if (categoryFilter != null)
+            //{
+            //    result = categoryFilter.Values?.OfType<IBrowseFilterValue>().ToArray();
+            //}
 
             return result;
         }

@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Web.Http;
 using System.Web.Http.Description;
 using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
 using VirtoCommerce.CatalogModule.Web.Security;
-using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Store.Model;
 using VirtoCommerce.Domain.Store.Services;
@@ -18,6 +18,10 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
     [ApiExplorerSettings(IgnoreApi = true)]
     public class CatalogBrowseFiltersController : CatalogBaseController
     {
+        private const string _attributeType = "Attribute";
+        private const string _rangeType = "Range";
+        private const string _priceRangeType = "PriceRange";
+
         private readonly IStoreService _storeService;
         private readonly IPropertyService _propertyService;
         private readonly IBrowseFilterService _browseFilterService;
@@ -50,19 +54,13 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.ReadBrowseFilters, store);
 
-            var allProperties = GetAllCatalogProperties(store.Catalog);
-            var selectedPropertyNames = GetSelectedBrowseFilterProperties(store);
+            var allProperties = GetAllProperties(store);
+            var selectedProperties = GetSelectedProperties(store.Id);
 
-            var browseFilterProperties = allProperties
+            // Remove duplicates and keep selected properties order
+            var result = selectedProperties.Concat(allProperties)
                 .GroupBy(p => p.Name, StringComparer.OrdinalIgnoreCase)
-                .Select(g => ConvertToBrowseFilterProperty(g.FirstOrDefault(), selectedPropertyNames))
-                .OrderBy(p => p.Name)
-                .ToArray();
-
-            // Keep the selected properties order
-            var result = selectedPropertyNames
-                .SelectMany(n => browseFilterProperties.Where(p => string.Equals(p.Name, n, StringComparison.OrdinalIgnoreCase)))
-                .Union(browseFilterProperties.Where(p => !selectedPropertyNames.Contains(p.Name, StringComparer.OrdinalIgnoreCase)))
+                .Select(g => g.First())
                 .ToArray();
 
             return Ok(result);
@@ -86,81 +84,171 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.UpdateBrowseFilters, store);
 
-            var allProperties = GetAllCatalogProperties(store.Catalog);
-
-            var selectedPropertyNames = browseFilterProperties
-                .Where(p => p.IsSelected)
-                .Select(p => p.Name)
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .ToArray();
-
+            // Filter names must be unique
             // Keep the selected properties order.
-            // There can be many properties with the same name.
-            var attributeFilters = selectedPropertyNames
-                .SelectMany(n => allProperties.Where(p => string.Equals(p.Name, n, StringComparison.OrdinalIgnoreCase)))
+            var filters = browseFilterProperties
+                .Where(p => p.IsSelected)
                 .GroupBy(p => p.Name, StringComparer.OrdinalIgnoreCase)
-                .Select(g => ConvertToAttributeFilter(g.Key, g))
+                .Select((g, i) => ConvertToFilter(g.First(), i))
+                .Where(f => f != null)
                 .ToArray();
 
-            _browseFilterService.SetAttributeFilters(store, attributeFilters);
+            _browseFilterService.SetAllFilters(store, filters);
             _storeService.Update(new[] { store });
 
             return StatusCode(HttpStatusCode.NoContent);
         }
 
 
-        private string[] GetSelectedBrowseFilterProperties(Store store)
+        private IList<BrowseFilterProperty> GetAllProperties(Store store)
         {
-            var result = new List<string>();
+            var result = _propertyService.GetAllCatalogProperties(store.Catalog)
+                .OrderBy(p => p?.Name, StringComparer.OrdinalIgnoreCase)
+                .GroupBy(p => p.Id, StringComparer.OrdinalIgnoreCase)
+                .Select(g => g.First())
+                .Select(p => new BrowseFilterProperty { Type = _attributeType, Name = p.Name })
+                .ToList();
 
-            var attributeFilters = _browseFilterService.GetAttributeFilters(store);
-            if (attributeFilters != null)
+            result.AddRange(store.Currencies.Select(c => new BrowseFilterProperty { Type = _priceRangeType, Name = $"Price {c}", Currency = c }));
+
+            return result;
+        }
+
+        private IList<BrowseFilterProperty> GetSelectedProperties(string storeId)
+        {
+            var result = new List<BrowseFilterProperty>();
+
+            var allFilters = _browseFilterService.GetAllFilters(storeId);
+
+            BrowseFilterProperty property = null;
+
+            foreach (var filter in allFilters)
             {
-                result.AddRange(attributeFilters.Select(a => a.Key));
+                var attributeFilter = filter as AttributeFilter;
+                var rangeFilter = filter as RangeFilter;
+                var priceRangeFilter = filter as PriceRangeFilter;
+
+                if (attributeFilter != null)
+                {
+                    property = new BrowseFilterProperty
+                    {
+                        IsSelected = true,
+                        Type = _attributeType,
+                        Name = attributeFilter.Key,
+                        Values = attributeFilter.Values?.Select(v => v.Id).ToArray(),
+                        Size = attributeFilter.FacetSize,
+                    };
+                }
+                else if (rangeFilter != null)
+                {
+                    property = new BrowseFilterProperty
+                    {
+                        IsSelected = true,
+                        Type = _rangeType,
+                        Name = rangeFilter.Key,
+                        Values = GetRangeBounds(rangeFilter.Values),
+                    };
+                }
+                else if (priceRangeFilter != null)
+                {
+                    property = new BrowseFilterProperty
+                    {
+                        IsSelected = true,
+                        Type = _priceRangeType,
+                        Name = $"Price {priceRangeFilter.Currency}",
+                        Values = GetRangeBounds(priceRangeFilter.Values),
+                        Currency = priceRangeFilter.Currency,
+                    };
+                }
+
+                if (property != null)
+                {
+                    result.Add(property);
+                }
             }
 
-            return result.ToArray();
+            return result;
         }
 
-        private IList<Property> GetAllCatalogProperties(string catalogId)
+        private static IList<string> GetRangeBounds(IEnumerable<RangeFilterValue> values)
         {
-            var properties = _propertyService.GetAllCatalogProperties(catalogId);
+            return SortStringsAsNumbers(values.SelectMany(v => new[] { v.Lower, v.Upper })).ToArray();
+        }
 
-            var result = properties
-                .GroupBy(p => p.Id)
-                .Select(g => g.FirstOrDefault())
-                .OrderBy(p => p?.Name)
-                .ToArray();
+        private static IBrowseFilter ConvertToFilter(BrowseFilterProperty property, int order)
+        {
+            IBrowseFilter result = null;
+
+            switch (property.Type)
+            {
+                case _attributeType:
+                    result = new AttributeFilter
+                    {
+                        Order = order,
+                        Key = property.Name,
+                        FacetSize = property.Size,
+                        Values = property.Values?.Select(v => new AttributeFilterValue { Id = v }).ToArray(),
+                    };
+                    break;
+                case _rangeType:
+                    result = new RangeFilter
+                    {
+                        Order = order,
+                        Key = property.Name,
+                        Values = GetRangeFilterValues(property.Values),
+                    };
+                    break;
+                case _priceRangeType:
+                    result = new PriceRangeFilter
+                    {
+                        Order = order,
+                        Currency = property.Currency,
+                        Values = GetRangeFilterValues(property.Values),
+                    };
+                    break;
+            }
 
             return result;
         }
 
-        private static BrowseFilterProperty ConvertToBrowseFilterProperty(Property property, IEnumerable<string> selectedPropertyNames)
+        private static RangeFilterValue[] GetRangeFilterValues(IList<string> bounds)
         {
-            return new BrowseFilterProperty
+            var result = new List<RangeFilterValue>();
+
+            if (bounds != null)
             {
-                Name = property.Name,
-                IsSelected = selectedPropertyNames.Contains(property.Name, StringComparer.OrdinalIgnoreCase),
-            };
+                var sortedBounds = SortStringsAsNumbers(bounds).ToList();
+                sortedBounds.Add(null);
+
+                string previousBound = null;
+
+                foreach (var bound in sortedBounds)
+                {
+                    var value = new RangeFilterValue
+                    {
+                        Id = previousBound == null ? $"under-{bound}" : bound == null ? $"over-{previousBound}" : $"{previousBound}-{bound}",
+                        Lower = previousBound,
+                        Upper = bound,
+                        IncludeLower = true,
+                        IncludeUpper = false,
+                    };
+
+                    result.Add(value);
+                    previousBound = bound;
+                }
+            }
+
+            return result.Any() ? result.ToArray() : null;
         }
 
-        private static AttributeFilter ConvertToAttributeFilter(string propertyName, IEnumerable<Property> properties)
+        private static IEnumerable<string> SortStringsAsNumbers(IEnumerable<string> strings)
         {
-            var values = properties
-                .Where(p => p.Dictionary && p.DictionaryValues != null && p.DictionaryValues.Any())
-                .SelectMany(p => p.DictionaryValues.Select(v => v.Alias))
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .OrderBy(v => v)
-                .Select(v => new AttributeFilterValue { Id = v })
-                .ToArray();
-
-            var result = new AttributeFilter
-            {
-                Key = propertyName,
-                Values = values.Any() ? values : null,
-            };
-
-            return result;
+            return strings
+                .Where(b => !string.IsNullOrEmpty(b))
+                .Select(b => decimal.Parse(b, NumberStyles.Float, CultureInfo.InvariantCulture))
+                .OrderBy(b => b)
+                .Distinct()
+                .Select(b => b.ToString(CultureInfo.InvariantCulture));
         }
     }
 }
