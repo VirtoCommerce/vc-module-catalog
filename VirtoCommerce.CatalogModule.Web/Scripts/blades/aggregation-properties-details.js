@@ -39,11 +39,22 @@
     };
 
     blade.getValues = function (search) {
-        var newValues = blade.values.slice();
-        if (search && newValues.indexOf(search) === -1) {
-            newValues.unshift(search);
+        var result;
+
+        if (blade.isRange()) {
+            result = [];
+            if (search && !isNaN(search) && angular.isNumber(+search)) {
+                result.unshift(search);
+            }
+        } else {
+            result = blade.values;
+            if (search && result.indexOf(search) === -1) {
+                result = blade.values.slice();
+                result.unshift(search);
+            }
         }
-        return newValues;
+
+        return result;
     };
 
     function isDirty() {

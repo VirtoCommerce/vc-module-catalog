@@ -46,12 +46,12 @@
                 <div class="form-group" ng-if="blade.isRange()">
                     <label class="form-label">Range bounds</label>
                     <div class="form-input">
-                        <tags-input ng-model="blade.property.values"
-                                    tags-number num-type="float"
-                                    min-length="1"
-                                    add-on-blur="false"
-                                    placeholder="Add number">
-                        </tags-input>
+                        <ui-select multiple ng-model="blade.property.values">
+                            <ui-select-match placeholder="Add number">{{$item}}</ui-select-match>
+                            <ui-select-choices repeat="x in blade.getValues($select.search) | filter: $select.search">
+                                <span ng-bind-html="x | highlight: $select.search"></span>
+                            </ui-select-choices>
+                        </ui-select>
                     </div>
                     <div class="table-descr">Under [bound 1]<br/>[bound 1] to [bound 2]<br/>...<br/>Over [bound N]</div>
                 </div>
