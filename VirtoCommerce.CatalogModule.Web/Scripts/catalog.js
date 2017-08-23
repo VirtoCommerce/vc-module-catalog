@@ -331,10 +331,10 @@ angular.module(catalogsModuleName, [
 	    widgetToRegister = angular.extend({}, indexWidget, { documentType: 'Category' })
 	    widgetService.registerWidget(widgetToRegister, 'categoryDetail');
 		    
-	    // browse filters in STORE details
+	    // Aggregation properties in store details
 	    widgetService.registerWidget({
-	        controller: 'virtoCommerce.catalogModule.browseFiltersWidgetController',
-	        template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/browseFiltersWidget.tpl.html'
+            controller: 'virtoCommerce.catalogModule.aggregationPropertiesWidgetController',
+            template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/aggregationPropertiesWidget.tpl.html'
 	    }, 'storeDetail');
 
 	    // predefine search filters for catalog search

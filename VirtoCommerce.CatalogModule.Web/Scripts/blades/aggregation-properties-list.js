@@ -1,10 +1,10 @@
 ﻿angular.module('virtoCommerce.catalogModule')
-.controller('virtoCommerce.catalogModule.browseFiltersController', ['$scope', 'platformWebApp.dialogService', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.browsefilters', function ($scope, dialogService, bladeNavigationService, browseFilters) {
+    .controller('virtoCommerce.catalogModule.aggregationPropertiesController', ['$scope', 'platformWebApp.dialogService', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.aggregationProperties', function ($scope, dialogService, bladeNavigationService, aggregationProperties) {
     var blade = $scope.blade;
     blade.updatePermission = 'store:update';
 
     function initializeBlade() {
-        browseFilters.queryFilterProperties({ storeId: blade.storeId }, function (results) {
+        aggregationProperties.getProperties({ storeId: blade.storeId }, function (results) {
             blade.currentEntities = angular.copy(results);
             blade.origEntity = results;
 
@@ -51,7 +51,7 @@
     $scope.saveChanges = function () {
         blade.isLoading = true;
 
-        browseFilters.saveFilterProperties({ storeId: blade.storeId }, blade.selectedEntities, function (data) {
+        aggregationProperties.setProperties({ storeId: blade.storeId }, blade.selectedEntities, function (data) {
             angular.copy(blade.currentEntities, blade.origEntity);
             angular.copy(blade.selectedEntities, blade.origSelected);
             // $scope.bladeClose();

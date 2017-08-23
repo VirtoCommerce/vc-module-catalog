@@ -16,7 +16,7 @@ using VirtoCommerce.Platform.Core.Security;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
-    [RoutePrefix("api/catalog/browsefilters")]
+    [RoutePrefix("api/catalog/aggregationproperties")]
     [ApiExplorerSettings(IgnoreApi = true)]
     public class CatalogBrowseFiltersController : CatalogBaseController
     {
@@ -46,7 +46,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [HttpGet]
         [Route("{storeId}/properties")]
         [ResponseType(typeof(BrowseFilterProperty[]))]
-        public IHttpActionResult GetBrowseFilterProperties(string storeId)
+        public IHttpActionResult GetAggregationProperties(string storeId)
         {
             var store = _storeService.GetById(storeId);
             if (store == null)
@@ -76,7 +76,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [HttpPut]
         [Route("{storeId}/properties")]
         [ResponseType(typeof(void))]
-        public IHttpActionResult SetBrowseFilterProperties(string storeId, BrowseFilterProperty[] browseFilterProperties)
+        public IHttpActionResult SetAggregationProperties(string storeId, BrowseFilterProperty[] browseFilterProperties)
         {
             var store = _storeService.GetById(storeId);
             if (store == null)

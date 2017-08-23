@@ -188,7 +188,7 @@
     <Content Include="Scripts\blades\item-association-detail.tpl.html" />
     <Content Include="Scripts\directives\propertyMessages.js" />
     <Content Include="Scripts\directives\propertyMessages.tpl.html" />
-    <Content Include="Scripts\resources\browseFilters.js" />
+    <Content Include="Scripts\resources\aggregationProperties.js" />
     <Content Include="Content\css\catalog.css" />
     <Content Include="Content\logo.png" />
     <Content Include="Scripts\blades\common\templates\ok-cancel.tpl.html" />
@@ -211,8 +211,8 @@
     <Content Include="Scripts\blades\item-property-detail.js" />
     <Content Include="Scripts\blades\property-list.js" />
     <Content Include="Scripts\blades\property-list.tpl.html" />
-    <Content Include="Scripts\blades\browse-filters.js" />
-    <Content Include="Scripts\blades\browse-filters.tpl.html" />
+    <Content Include="Scripts\blades\aggregation-properties-list.js" />
+    <Content Include="Scripts\blades\aggregation-properties-list.tpl.html" />
     <Content Include="Scripts\dialogs\deleteCategoryItem-dialog.tpl.html" />
     <Content Include="Scripts\dialogs\deleteCatalog-dialog.tpl.html" />
     <Content Include="Scripts\directives\itemSearch.js" />
@@ -305,8 +305,8 @@
     <Content Include="Scripts\widgets\itemPropertyWidget.tpl.html" />
     <Content Include="Scripts\widgets\itemVariationWidget.js" />
     <Content Include="Scripts\widgets\itemVariationWidget.tpl.html" />
-    <Content Include="Scripts\widgets\browseFiltersWidget.js" />
-    <Content Include="Scripts\widgets\browseFiltersWidget.tpl.html" />
+    <Content Include="Scripts\widgets\aggregationPropertiesWidget.js" />
+    <Content Include="Scripts\widgets\aggregationPropertiesWidget.tpl.html" />
     <Content Include="Scripts\wizards\newAssociation\association-wizard.js" />
     <Content Include="Scripts\wizards\newAssociation\association-wizard.tpl.html" />
     <Content Include="Scripts\wizards\newCategory\category-wizard-actions.tpl.html" />

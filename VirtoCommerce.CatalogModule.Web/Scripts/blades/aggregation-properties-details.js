@@ -1,5 +1,5 @@
 ﻿angular.module('virtoCommerce.catalogModule')
-.controller('virtoCommerce.catalogModule.aggregationPropertyDetailsController', ['$scope', 'platformWebApp.dialogService', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.browsefilters', function ($scope, dialogService, bladeNavigationService, browseFilters) {
+    .controller('virtoCommerce.catalogModule.aggregationPropertyDetailsController', ['$scope', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.aggregationProperties', function ($scope, bladeNavigationService, aggregationProperties) {
     var blade = $scope.blade;
     blade.updatePermission = 'store:update';
     blade.headIcon = 'fa-gear';
@@ -16,7 +16,7 @@
 
         blade.values = [];
 
-        browseFilters.getPropertyValues({ storeId: blade.storeId, propertyName: blade.originalProperty.name }, function (results) {
+        aggregationProperties.getValues({ storeId: blade.storeId, propertyName: blade.originalProperty.name }, function (results) {
             blade.values = results;
             blade.isLoading = false;
         }, function (error) {
