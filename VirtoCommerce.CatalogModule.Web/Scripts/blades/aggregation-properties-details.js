@@ -35,7 +35,7 @@
     };
 
     blade.canChangeSize = function () {
-        return !isRange();
+        return !blade.isRange();
     };
 
     blade.getValues = function (search) {
