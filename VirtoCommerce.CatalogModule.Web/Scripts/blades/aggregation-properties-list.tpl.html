@@ -8,7 +8,8 @@
                         <p class="note">Available properties.<br><i>Click to select.<br><br></i></p>
                         <ul class="list __items">
                             <li class="list-item" ng-click='blade.select(data)' ng-repeat="data in blade.currentEntities | filter: {isSelected: false} | orderBy: 'name'">
-                                <span class="list-name">{{data.name}}</span>
+                                <div class="list-t">{{data.name}}</div>
+                                <div class="list-descr">{{data.type}}</div>
                             </li>
                         </ul>
                     </div>
