@@ -4,14 +4,14 @@
             <form class="form" name="rules">
 
                 <div class="form-group">
-                    <label class="form-label">Property name</label>
+                    <label class="form-label">{{'catalog.blades.aggregation-properties-details.name.label' | translate}}</label>
                     <div class="form-input">
                         <input ng-model="blade.property.name" ng-disabled="true" />
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Aggregation type</label>
+                    <label class="form-label">{{'catalog.blades.aggregation-properties-details.type.label' | translate}}</label>
                     <div class="form-input">
                         <ui-select ng-model="blade.property.type" ng-disabled="!blade.canChangeType()">
                             <ui-select-match>{{$select.selected}}</ui-select-match>
@@ -23,37 +23,37 @@
                 </div>
 
                 <div class="form-group" ng-if="blade.canChangeSize()">
-                    <label class="form-label">Aggregation size</label>
+                    <label class="form-label">{{'catalog.blades.aggregation-properties-details.size.label' | translate}}</label>
                     <div class="form-input">
-                        <input ng-model="blade.property.size" placeholder="Enter aggregation size" />
+                        <input ng-model="blade.property.size" placeholder="{{'catalog.blades.aggregation-properties-details.size.placeholder' | translate}}" />
                     </div>
-                    <div class="table-descr">Maximum number of aggregation values in search results. 0 = unlimited</div>
+                    <div class="table-descr">{{'catalog.blades.aggregation-properties-details.size.description' | translate}}</div>
                 </div>
 
                 <div class="form-group" ng-if="!blade.isRange()">
-                    <label class="form-label">Allowed values</label>
+                    <label class="form-label">{{'catalog.blades.aggregation-properties-details.attribute-values.label' | translate}}</label>
                     <div class="form-input">
                         <ui-select multiple ng-model="blade.property.values">
-                            <ui-select-match placeholder="Enter allowed values">{{$item}}</ui-select-match>
+                            <ui-select-match placeholder="{{'catalog.blades.aggregation-properties-details.attribute-values.placeholder' | translate}}">{{$item}}</ui-select-match>
                             <ui-select-choices repeat="x in blade.getValues($select.search) | filter: $select.search">
                                 <span ng-bind-html="x | highlight: $select.search"></span>
                             </ui-select-choices>
                         </ui-select>
                     </div>
-                    <div class="table-descr">Enter aggregation values allowed in search results. Leave empty to allow any value.</div>
+                    <div class="table-descr">{{'catalog.blades.aggregation-properties-details.attribute-values.description' | translate}}</div>
                 </div>
 
                 <div class="form-group" ng-if="blade.isRange()">
-                    <label class="form-label">Range bounds</label>
+                    <label class="form-label">{{'catalog.blades.aggregation-properties-details.range-values.label' | translate}}</label>
                     <div class="form-input">
                         <ui-select multiple ng-model="blade.property.values">
-                            <ui-select-match placeholder="Add number">{{$item}}</ui-select-match>
+                            <ui-select-match placeholder="{{'catalog.blades.aggregation-properties-details.range-values.placeholder' | translate}}">{{$item}}</ui-select-match>
                             <ui-select-choices repeat="x in blade.getValues($select.search) | filter: $select.search">
                                 <span ng-bind-html="x | highlight: $select.search"></span>
                             </ui-select-choices>
                         </ui-select>
                     </div>
-                    <div class="table-descr">Under [bound 1]<br/>[bound 1] to [bound 2]<br/>...<br/>Over [bound N]</div>
+                    <div class="table-descr">{{'catalog.blades.aggregation-properties-details.range-values.description' | translate}}</div>
                 </div>
 
                 <div class="blade-static __bottom" ng-include="'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/common/templates/ok-cancel.tpl.html'">
