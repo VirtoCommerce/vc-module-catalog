@@ -7,9 +7,11 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
 using VirtoCommerce.CatalogModule.Web.Security;
+using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Store.Model;
 using VirtoCommerce.Domain.Store.Services;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Security;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
@@ -42,7 +44,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// </remarks>
         /// <param name="storeId">Store ID</param>
         [HttpGet]
-        [Route("properties/{storeId}")]
+        [Route("{storeId}/properties")]
         [ResponseType(typeof(BrowseFilterProperty[]))]
         public IHttpActionResult GetBrowseFilterProperties(string storeId)
         {
@@ -72,7 +74,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <param name="storeId">Store ID</param>
         /// <param name="browseFilterProperties"></param>
         [HttpPut]
-        [Route("properties/{storeId}")]
+        [Route("{storeId}/properties")]
         [ResponseType(typeof(void))]
         public IHttpActionResult SetBrowseFilterProperties(string storeId, BrowseFilterProperty[] browseFilterProperties)
         {
@@ -99,19 +101,47 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return StatusCode(HttpStatusCode.NoContent);
         }
 
+        [HttpGet]
+        [Route("{storeId}/properties/{propertyName}/values")]
+        [ResponseType(typeof(string[]))]
+        public IHttpActionResult GetPropertyValues(string storeId, string propertyName)
+        {
+            var store = _storeService.GetById(storeId);
+            if (store == null)
+            {
+                return StatusCode(HttpStatusCode.NoContent);
+            }
+
+            CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.ReadBrowseFilters, store);
+
+            var result = GetAllCatalogProperties(store.Catalog)
+                .Where(p => p.Name.EqualsInvariant(propertyName) && p.Dictionary && p.DictionaryValues != null)
+                .SelectMany(p => p.DictionaryValues.Select(v => v.Alias))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(v => v, StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+
+            return Ok(result);
+        }
+
 
         private IList<BrowseFilterProperty> GetAllProperties(Store store)
         {
-            var result = _propertyService.GetAllCatalogProperties(store.Catalog)
-                .OrderBy(p => p?.Name, StringComparer.OrdinalIgnoreCase)
-                .GroupBy(p => p.Id, StringComparer.OrdinalIgnoreCase)
-                .Select(g => g.First())
+            var result = GetAllCatalogProperties(store.Catalog)
                 .Select(p => new BrowseFilterProperty { Type = _attributeType, Name = p.Name })
                 .ToList();
 
             result.AddRange(store.Currencies.Select(c => new BrowseFilterProperty { Type = _priceRangeType, Name = $"Price {c}", Currency = c }));
 
             return result;
+        }
+
+        private IEnumerable<Property> GetAllCatalogProperties(string catalogId)
+        {
+            return _propertyService.GetAllCatalogProperties(catalogId)
+                .OrderBy(p => p?.Name, StringComparer.OrdinalIgnoreCase)
+                .GroupBy(p => p.Id, StringComparer.OrdinalIgnoreCase)
+                .Select(g => g.First());
         }
 
         private IList<BrowseFilterProperty> GetSelectedProperties(string storeId)

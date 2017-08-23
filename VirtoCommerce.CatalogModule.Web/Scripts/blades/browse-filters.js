@@ -4,7 +4,7 @@
     blade.updatePermission = 'store:update';
 
     function initializeBlade() {
-        browseFilters.queryFilterProperties({ id: blade.storeId }, function (results) {
+        browseFilters.queryFilterProperties({ storeId: blade.storeId }, function (results) {
             blade.currentEntities = angular.copy(results);
             blade.origEntity = results;
 
@@ -24,6 +24,7 @@
             template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/aggregation-properties-details.tpl.html',
             title: node.name,
             subtitle: 'Aggregation property',
+            storeId: blade.storeId,
             property: node
         };
         bladeNavigationService.showBlade(newBlade, blade);
@@ -50,7 +51,7 @@
     $scope.saveChanges = function () {
         blade.isLoading = true;
 
-        browseFilters.saveFilterProperties({ id: blade.storeId }, blade.selectedEntities, function (data) {
+        browseFilters.saveFilterProperties({ storeId: blade.storeId }, blade.selectedEntities, function (data) {
             angular.copy(blade.currentEntities, blade.origEntity);
             angular.copy(blade.selectedEntities, blade.origSelected);
             // $scope.bladeClose();

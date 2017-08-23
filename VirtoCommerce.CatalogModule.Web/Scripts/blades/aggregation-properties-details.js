@@ -13,6 +13,16 @@
         $scope.isValid = true;
         blade.originalProperty = blade.property;
         blade.property = angular.copy(blade.property);
+
+        blade.values = [];
+
+        browseFilters.getPropertyValues({ storeId: blade.storeId, propertyName: blade.originalProperty.name }, function (results) {
+            blade.values = results;
+            blade.isLoading = false;
+        }, function (error) {
+            bladeNavigationService.setError('Error: ' + error.status, blade);
+        });
+
         blade.isLoading = false;
     }
 
@@ -28,6 +38,14 @@
         return blade.property.type !== attributeType;
     };
 
+    blade.getValues = function (search) {
+        var newValues = blade.values.slice();
+        if (search && newValues.indexOf(search) === -1) {
+            newValues.unshift(search);
+        }
+        return newValues;
+    };
+
     function isDirty() {
         return !angular.equals(blade.property, blade.originalProperty) && blade.hasUpdatePermission();
     }
@@ -37,7 +55,7 @@
     };
 
     $scope.saveChanges = function () {
-        // TODO: Visual editor should not change string array to a string
+        // TODO: Visual editor should not convert string array to a string
         if (blade.property.values && blade.property.values.split) {
             blade.property.values = blade.property.values.split(',');
         }
