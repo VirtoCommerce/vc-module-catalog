@@ -165,7 +165,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                         IsSelected = true,
                         Type = _attributeType,
                         Name = attributeFilter.Key,
-                        Values = attributeFilter.Values?.Select(v => v.Id).ToArray(),
+                        Values = attributeFilter.Values?.Select(v => v.Id).OrderBy(v => v, StringComparer.OrdinalIgnoreCase).ToArray(),
                         Size = attributeFilter.FacetSize,
                     };
                 }
@@ -217,7 +217,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                         Order = order,
                         Key = property.Name,
                         FacetSize = property.Size,
-                        Values = property.Values?.Select(v => new AttributeFilterValue { Id = v }).ToArray(),
+                        Values = property.Values?.OrderBy(v => v, StringComparer.OrdinalIgnoreCase).Select(v => new AttributeFilterValue { Id = v }).ToArray(),
                     };
                     break;
                 case _rangeType:
