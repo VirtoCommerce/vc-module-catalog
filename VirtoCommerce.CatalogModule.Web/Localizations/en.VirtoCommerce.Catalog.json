@@ -465,15 +465,20 @@
                     "placeholder": "Enter aggregation size",
                     "description": "Maximum number of aggregation values in search results. 0 = unlimited"
                 },
-                "attribute-values": {
+                "values-Attribute": {
                     "label": "Allowed values",
                     "placeholder": "Enter allowed values",
                     "description": "Enter aggregation values allowed in search results. Leave empty to allow any value."
                 },
-                "range-values": {
+                "values-Range": {
                     "label": "Range bounds",
                     "placeholder": "Add number",
                     "description": "Ranges are constructed as follows: Under [bound 1], [bound 1] to [bound 2], ... , Over [bound N]"
+                },
+                "values-PriceRange": {
+                    "label": "Price range bounds",
+                    "placeholder": "Add number",
+                    "description": "Price ranges are constructed as follows: Under [bound 1], [bound 1] to [bound 2], ... , Over [bound N]"
                 }
             }
         },

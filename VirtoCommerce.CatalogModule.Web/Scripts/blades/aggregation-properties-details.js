@@ -26,16 +26,16 @@
         blade.isLoading = false;
     }
 
+    blade.isRange = function () {
+        return blade.property.type !== attributeType;
+    };
+
     blade.canChangeType = function () {
         return blade.property.type !== priceRangeType;
     };
 
     blade.canChangeSize = function () {
-        return blade.property.type === attributeType;
-    };
-
-    blade.isRange = function () {
-        return blade.property.type !== attributeType;
+        return !isRange();
     };
 
     blade.getValues = function (search) {

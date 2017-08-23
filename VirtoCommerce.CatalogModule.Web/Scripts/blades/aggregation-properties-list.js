@@ -23,7 +23,6 @@
             controller: 'virtoCommerce.catalogModule.aggregationPropertyDetailsController',
             template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/aggregation-properties-details.tpl.html',
             title: node.name,
-            subtitle: 'Aggregation property',
             storeId: blade.storeId,
             property: node
         };
