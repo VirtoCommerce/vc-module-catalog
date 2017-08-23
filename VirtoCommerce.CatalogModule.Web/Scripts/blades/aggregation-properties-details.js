@@ -66,11 +66,6 @@
     };
 
     $scope.saveChanges = function () {
-        // TODO: Visual editor should not convert string array to a string
-        if (blade.property.values && blade.property.values.split) {
-            blade.property.values = blade.property.values.split(',');
-        }
-
         angular.copy(blade.property, blade.originalProperty);
         $scope.bladeClose();
     };
