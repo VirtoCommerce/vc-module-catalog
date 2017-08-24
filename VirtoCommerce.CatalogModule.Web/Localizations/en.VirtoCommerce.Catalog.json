@@ -473,12 +473,12 @@
                 "values-Range": {
                     "label": "Range bounds",
                     "placeholder": "Add number",
-                    "description": "Ranges are constructed as follows: Under [bound 1], [bound 1] to [bound 2], ... , Over [bound N]"
+                    "description": "Bounds will be sorted automatically before saving. Ranges are constructed as follows: Under [bound 1], [bound 1] to [bound 2], ... , Over [bound N]"
                 },
                 "values-PriceRange": {
                     "label": "Price range bounds",
                     "placeholder": "Add number",
-                    "description": "Price ranges are constructed as follows: Under [bound 1], [bound 1] to [bound 2], ... , Over [bound N]"
+                    "description": "Bounds will be sorted automatically before saving. Price ranges are constructed as follows: Under [bound 1], [bound 1] to [bound 2], ... , Over [bound N]"
                 }
             }
         },
