@@ -1,10 +1,8 @@
-﻿using System;
-using FluentValidation;
+﻿using FluentValidation;
 using VirtoCommerce.Domain.Catalog.Model;
 
 namespace VirtoCommerce.CatalogModule.Data.Services.Validation
 {
-    [CLSCompliant(false)]
     public class ProductValidator : AbstractValidator<CatalogProduct>
     {
         private static readonly char[] _illegalCodeChars = { '$', '+', ';', '=', '%', '{', '}', '[', ']', '|', '\\', '/', '@', '~', '!', '^', '*', '&', '(', ')', ':', '<', '>' };
