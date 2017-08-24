@@ -29,7 +29,7 @@
                                     <div class="list-descr">
                                         <span>{{data.type}}</span>
                                         <span ng-if="data.values">, values: {{data.valuesCount}}</span>
-                                        <span ng-if="data.size">, size: {{data.size}}</span>
+                                        <span ng-if="data.size !== undefined && data.size !== null">, size: {{data.size}}</span>
                                     </div>
                                 </li>
                             </ul>
