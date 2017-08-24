@@ -79,7 +79,7 @@ namespace VirtoCommerce.CatalogModule.Test
 
         private static string GetConnectionString()
         {
-            return ConnectionStringHelper.GetConnectionString("VirtoCommerce");
+            return ConfigurationHelper.GetNonEmptyConnectionStringValue("VirtoCommerce");
         }
     }
 }

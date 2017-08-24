@@ -33,7 +33,7 @@ namespace VirtoCommerce.CatalogModule.Web
 {
     public class Module : ModuleBase, ISupportExportImportModule
     {
-        private static readonly string _connectionString = ConnectionStringHelper.GetConnectionString("VirtoCommerce");
+        private static readonly string _connectionString = ConfigurationHelper.GetNonEmptyConnectionStringValue("VirtoCommerce");
         private readonly IUnityContainer _container;
 
         public Module(IUnityContainer container)
