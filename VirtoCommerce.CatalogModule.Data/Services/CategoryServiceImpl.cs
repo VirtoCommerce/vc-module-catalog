@@ -1,8 +1,8 @@
-﻿using CacheManager.Core;
-using FluentValidation;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CacheManager.Core;
+using FluentValidation;
 using VirtoCommerce.CatalogModule.Data.Extensions;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
@@ -27,8 +27,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private readonly ICatalogService _catalogService;
 
 
-        public CategoryServiceImpl(Func<ICatalogRepository> catalogRepositoryFactory, ICommerceService commerceService, IOutlineService outlineService, ICatalogService catalogService, ICacheManager<object> cacheManager,
-            AbstractValidator<IHasProperties> hasPropertyValidator)
+        [CLSCompliant(false)]
+        public CategoryServiceImpl(Func<ICatalogRepository> catalogRepositoryFactory, ICommerceService commerceService, IOutlineService outlineService, ICatalogService catalogService, ICacheManager<object> cacheManager, AbstractValidator<IHasProperties> hasPropertyValidator)
         {
             _repositoryFactory = catalogRepositoryFactory;
             _cacheManager = cacheManager;

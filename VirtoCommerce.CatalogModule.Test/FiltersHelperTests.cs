@@ -1,4 +1,5 @@
-﻿using VirtoCommerce.CatalogModule.Data.Search;
+﻿using System;
+using VirtoCommerce.CatalogModule.Data.Search;
 using Xunit;
 
 namespace VirtoCommerce.CatalogModule.Test
@@ -6,6 +7,7 @@ namespace VirtoCommerce.CatalogModule.Test
     [Trait("Category", "CI")]
     public class FiltersHelperTests
     {
+        [CLSCompliant(false)]
         [Theory]
         [InlineData(null, null, "price:[TO 100)")]
         [InlineData("", null, "price:[TO 100)")]

@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using CacheManager.Core;
 using FluentValidation;
-using Omu.ValueInjecter;
 using VirtoCommerce.CatalogModule.Data.Extensions;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
-using VirtoCommerce.CatalogModule.Data.Services.Validation;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Commerce.Services;
@@ -24,8 +22,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private readonly AbstractValidator<IHasProperties> _hasPropertyValidator;
         private readonly Func<ICatalogRepository> _repositoryFactory;
 
-        public CatalogServiceImpl(Func<ICatalogRepository> catalogRepositoryFactory, ICommerceService commerceService, ICacheManager<object> cacheManager,
-            AbstractValidator<IHasProperties> hasPropertyValidator)
+        [CLSCompliant(false)]
+        public CatalogServiceImpl(Func<ICatalogRepository> catalogRepositoryFactory, ICommerceService commerceService, ICacheManager<object> cacheManager, AbstractValidator<IHasProperties> hasPropertyValidator)
         {
             _commerceService = commerceService;
             _repositoryFactory = catalogRepositoryFactory;
@@ -38,11 +36,11 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         public Catalog GetById(string catalogId)
         {
             Catalog result;
-            if(PreloadCatalogs().TryGetValue(catalogId, out result))
+            if (PreloadCatalogs().TryGetValue(catalogId, out result))
             {
                 //Clone required because client code may change resulting objects
                 result = MemberwiseCloneCatalog(result);
-            }      
+            }
             return result;
         }
 
@@ -129,7 +127,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
             return _cacheManager.Get("AllCatalogs", CatalogConstants.CacheRegion, () =>
             {
-                CatalogEntity[] entities = null;
+                CatalogEntity[] entities;
                 using (var repository = _repositoryFactory())
                 {
                     //Optimize performance and CPU usage
@@ -137,7 +135,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
                     entities = repository.GetCatalogsByIds(repository.Catalogs.Select(x => x.Id).ToArray());
                 }
-             
+
                 var result = entities.Select(x => x.ToModel(AbstractTypeFactory<Catalog>.TryCreateInstance())).ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase);
 
                 LoadDependencies(result.Values, result);
@@ -195,4 +193,3 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         }
     }
 }
-

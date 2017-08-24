@@ -1,16 +1,13 @@
-﻿using FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
+using FluentValidation;
 using VirtoCommerce.Domain.Catalog.Model;
 
 namespace VirtoCommerce.CatalogModule.Data.Services.Validation
 {
+    [CLSCompliant(false)]
     public class ProductValidator : AbstractValidator<CatalogProduct>
     {
-        private static char[] _illegalCodeChars = new[] { '$', '+', ';', '=', '%', '{', '}', '[', ']', '|', '\\', '/', '@', '~', '!', '^', '*', '&', '(', ')', ':', '<', '>' };
+        private static readonly char[] _illegalCodeChars = { '$', '+', ';', '=', '%', '{', '}', '[', ']', '|', '\\', '/', '@', '~', '!', '^', '*', '&', '(', ')', ':', '<', '>' };
         public ProductValidator()
         {
 

@@ -25,4 +25,4 @@ using System.Runtime.InteropServices;
 #endif
 
 [assembly: ComVisible(false)]
-[assembly: CLSCompliant(false)]
+[assembly: CLSCompliant(true)]

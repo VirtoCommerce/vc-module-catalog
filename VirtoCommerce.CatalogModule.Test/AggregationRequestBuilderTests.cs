@@ -1,4 +1,5 @@
-﻿using VirtoCommerce.CatalogModule.Data.Search;
+﻿using System;
+using VirtoCommerce.CatalogModule.Data.Search;
 using VirtoCommerce.Domain.Catalog.Model.Search;
 using VirtoCommerce.Domain.Search;
 using Xunit;
@@ -8,6 +9,7 @@ namespace VirtoCommerce.CatalogModule.Test
     [Trait("Category", "CI")]
     public class AggregationRequestBuilderTests : BrowseFiltersTestBase
     {
+        [CLSCompliant(false)]
         [Theory]
         [InlineData("", null, null, "Size:[TO 10)", "Size:[10 TO)")]
         [InlineData("Unknown:10", "Unknown:10", "Unknown:10", "(Unknown:10 AND Size:[TO 10))", "(Unknown:10 AND Size:[10 TO))")]

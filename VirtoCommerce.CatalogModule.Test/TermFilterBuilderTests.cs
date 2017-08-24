@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using VirtoCommerce.Domain.Catalog.Model.Search;
 using Xunit;
 
@@ -7,6 +8,7 @@ namespace VirtoCommerce.CatalogModule.Test
     [Trait("Category", "CI")]
     public class TermFilterBuilderTests : BrowseFiltersTestBase
     {
+        [CLSCompliant(false)]
         [Theory]
         [InlineData(null, "", "")]
         [InlineData("", "", "")]
@@ -34,6 +36,7 @@ namespace VirtoCommerce.CatalogModule.Test
             Assert.Equal(expectedRemovableFilters, removableFilters);
         }
 
+        [CLSCompliant(false)]
         [Theory]
         [InlineData("price:price1", null, null, "price:price1", "")] // Empty currency produces permanent attribute filter
         [InlineData("price:price1", "", null, "price:price1", "")] // Empty currency produces permanent attribute filter
@@ -65,6 +68,7 @@ namespace VirtoCommerce.CatalogModule.Test
         }
 
         // Tags term produces permanent filters
+        [CLSCompliant(false)]
         [Theory]
         [InlineData("tags:unknown", null, null, "ID:", "")] // Unknown value produces a filter which will not return any document
         [InlineData("tags:Red", null, null, "Color:Red", "")]
