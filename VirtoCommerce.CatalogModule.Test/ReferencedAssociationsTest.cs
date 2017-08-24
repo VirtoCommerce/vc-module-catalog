@@ -40,17 +40,6 @@ namespace VirtoCommerce.CatalogModule.Test
                 new CatalogProduct { Id = "source1" },
                 new CatalogProduct { Id = "source2" }
             };
-
-            _associationService.LoadAssociations(associationSourceItems);
-
-            var associationTargetItems = new[]
-            {
-                new CatalogProduct { Id = "target1" }
-            };
-
-            _associationService.LoadReferencedAssociations(associationTargetItems);
-
-            Assert.True(associationTargetItems[0].ReferencedAssociations.Count == 2);
         }
 
         private IQueryable<ItemEntity> GetTestProductEntities()

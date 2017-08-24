@@ -44,39 +44,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
         }
 
-        public void LoadReferencedAssociations(IHasAssociations[] owners)
-        {
-            using (var repository = _repositoryFactory())
-            {
-                //Optimize performance and CPU usage
-                repository.DisableChangesTracking();
-
-                foreach (var owner in owners)
-                {
-                    if (owner.ReferencedAssociations == null)
-                    {
-                        owner.ReferencedAssociations = new List<ProductAssociation>();
-                    }
-                    owner.ReferencedAssociations.Clear();
-                    var referencedAssociationEntities = repository.Associations.Where(a => a.AssociatedItemId == owner.Id).ToList();
-                    var referencedItemEntityIds = referencedAssociationEntities.Select(i => i.ItemId).ToArray();
-                    var referencedItemEntities = repository.GetItemByIds(referencedItemEntityIds, ItemResponseGroup.ItemInfo);
-                    foreach (var referencedAssociationEntity in referencedAssociationEntities)
-                    {
-                        var referencedItemEntity = referencedItemEntities.FirstOrDefault(i => i.Id == referencedAssociationEntity.ItemId);
-                        if (referencedItemEntity != null)
-                        {
-                            var referencedAssociation = referencedAssociationEntity.ToModel(AbstractTypeFactory<ProductAssociation>.TryCreateInstance());
-                            referencedAssociation.AssociatedObject = referencedItemEntity.ToModel(AbstractTypeFactory<CatalogProduct>.TryCreateInstance());
-                            referencedAssociation.AssociatedObjectId = referencedItemEntity.Id;
-                            referencedAssociation.AssociatedObjectType = "product";
-                            owner.ReferencedAssociations.Add(referencedAssociation);
-                        }
-                    }
-                }
-            }
-        }
-
         public void SaveChanges(IHasAssociations[] owners)
         {
             var changedEntities = new List<AssociationEntity>();

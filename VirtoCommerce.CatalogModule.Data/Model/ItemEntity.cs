@@ -20,6 +20,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             ItemPropertyValues = new NullCollection<PropertyValueEntity>();
             Childrens = new NullCollection<ItemEntity>();
             Associations = new NullCollection<AssociationEntity>();
+            ReferencedAssociations = new NullCollection<AssociationEntity>();
         }
 
         [StringLength(1024)]
@@ -48,7 +49,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
         [StringLength(64)]
         [Required]
-        [Index(IsUnique = true)]      
+        [Index(IsUnique = true)]
         public string Code { get; set; }
 
         [StringLength(128)]
@@ -94,6 +95,8 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
         public virtual ObservableCollection<AssociationEntity> Associations { get; set; }
 
+        public virtual ObservableCollection<AssociationEntity> ReferencedAssociations { get; set; }
+
         public virtual ObservableCollection<EditorialReviewEntity> EditorialReviews { get; set; }
 
         public virtual ObservableCollection<PropertyValueEntity> ItemPropertyValues { get; set; }
@@ -110,8 +113,8 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         public virtual ItemEntity Parent { get; set; }
 
         public virtual ObservableCollection<ItemEntity> Childrens { get; set; }
-        #endregion        
-       
+        #endregion
+
 
         public virtual CatalogProduct ToModel(CatalogProduct product, bool convertChildrens = true, bool convertAssociations = true)
         {
@@ -156,7 +159,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             product.Weight = this.Weight;
             product.WeightUnit = this.WeightUnit;
             product.Width = this.Width;
-                     
+
             //Links
             product.Links = this.CategoryLinks.Select(x => x.ToModel(AbstractTypeFactory<CategoryLink>.TryCreateInstance())).ToList();
             //Images
@@ -170,12 +173,13 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             {
                 // Associations
                 product.Associations = this.Associations.Select(x => x.ToModel(AbstractTypeFactory<ProductAssociation>.TryCreateInstance())).OrderBy(x => x.Priority).ToList();
+                product.ReferencedAssociations = this.ReferencedAssociations.Select(x => x.ToReferencedAssociationModel(AbstractTypeFactory<ProductAssociation>.TryCreateInstance())).OrderBy(x => x.Priority).ToList();
             }
 
             //Self item property values
-            product.PropertyValues = this.ItemPropertyValues.OrderBy(x => x.Name).Select(x =>x.ToModel(AbstractTypeFactory<PropertyValue>.TryCreateInstance())).ToList();
+            product.PropertyValues = this.ItemPropertyValues.OrderBy(x => x.Name).Select(x => x.ToModel(AbstractTypeFactory<PropertyValue>.TryCreateInstance())).ToList();
 
-            if(this.Parent != null)
+            if (this.Parent != null)
             {
                 product.MainProduct = this.Parent.ToModel(AbstractTypeFactory<CatalogProduct>.TryCreateInstance(), false, convertAssociations);
             }
@@ -200,7 +204,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             if (product == null)
                 throw new ArgumentNullException(nameof(product));
 
-            pkMap.AddPair(product, this);          
+            pkMap.AddPair(product, this);
 
             this.Id = product.Id;
             this.CreatedDate = product.CreatedDate;
@@ -244,7 +248,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             //Constant fields
             //Only for main product
             this.AvailabilityRule = (int)VirtoCommerce.Domain.Catalog.Model.AvailabilityRule.Always;
-            
+
             this.CatalogId = product.CatalogId;
             this.CategoryId = string.IsNullOrEmpty(product.CategoryId) ? null : product.CategoryId;
 

@@ -16,6 +16,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
     public class CatalogRepositoryImpl : EFRepositoryBase, ICatalogRepository
     {
         public CatalogRepositoryImpl()
+            : base()
         {
         }
 
@@ -95,8 +96,8 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             #region Association
             modelBuilder.Entity<dataModel.AssociationEntity>().ToTable("Association").HasKey(x => x.Id).Property(x => x.Id);
             modelBuilder.Entity<dataModel.AssociationEntity>().HasRequired(m => m.Item).WithMany(x => x.Associations).HasForeignKey(x => x.ItemId).WillCascadeOnDelete(false);
-            modelBuilder.Entity<dataModel.AssociationEntity>().HasOptional(m => m.AssociatedItem).WithMany().HasForeignKey(x => x.AssociatedItemId).WillCascadeOnDelete(false);
-            modelBuilder.Entity<dataModel.AssociationEntity>().HasOptional(m => m.AssociatedCategory).WithMany().HasForeignKey(x => x.AssociatedCategoryId).WillCascadeOnDelete(false);
+            modelBuilder.Entity<dataModel.AssociationEntity>().HasOptional(a => a.AssociatedItem).WithMany(i => i.ReferencedAssociations).HasForeignKey(a => a.AssociatedItemId).WillCascadeOnDelete(false);
+            modelBuilder.Entity<dataModel.AssociationEntity>().HasOptional(a => a.AssociatedCategory).WithMany().HasForeignKey(a => a.AssociatedCategoryId).WillCascadeOnDelete(false);
             #endregion
 
             #region Asset
@@ -281,6 +282,13 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
                 var assosiatedCategoryIdsIds = assosiations.Where(x => x.AssociatedCategoryId != null).Select(x => x.AssociatedCategoryId).Distinct().ToArray();
                 var associatedCategories = GetCategoriesByIds(assosiatedCategoryIdsIds, coreModel.CategoryResponseGroup.Info);
+            }
+
+            if (respGroup.HasFlag(coreModel.ItemResponseGroup.ReferencedAssociations))
+            {
+                var referencedAssociations = Associations.Where(x => itemIds.Contains(x.AssociatedItemId)).ToArray();
+                var referencedProductIds = referencedAssociations.Select(x => x.ItemId).Distinct().ToArray();
+                var referencedProducts = GetItemByIds(referencedProductIds, coreModel.ItemResponseGroup.ItemInfo);
             }
 
             // Load parents
