@@ -18,7 +18,6 @@ using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Commerce.Services;
 using VirtoCommerce.Domain.Search;
 using VirtoCommerce.Domain.Store.Model;
-using VirtoCommerce.Platform.Core.Assets;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.DynamicProperties;
 using VirtoCommerce.Platform.Core.ExportImport;
@@ -90,7 +89,7 @@ namespace VirtoCommerce.CatalogModule.Web
             _container.RegisterType<ISearchRequestBuilder, ProductSearchRequestBuilder>(nameof(ProductSearchRequestBuilder));
             _container.RegisterType<ISearchRequestBuilder, CategorySearchRequestBuilder>(nameof(CategorySearchRequestBuilder));
 
-            _container.RegisterType<IProductSearchService, ProductSearchService>(new InjectionConstructor(typeof(ISearchRequestBuilder[]), typeof(ISearchProvider), typeof(ISettingsManager), typeof(IItemService), typeof(IBlobUrlResolver), typeof(IAggregationResponseBuilder)));
+            _container.RegisterType<IProductSearchService, ProductSearchService>();
             _container.RegisterType<ICategorySearchService, CategorySearchService>();
 
             #endregion
