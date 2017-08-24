@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
@@ -75,61 +74,12 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
             }
         }
 
-        [Obsolete]
-        public virtual IList<AttributeFilter> GetAttributeFilters(Store store)
-        {
-            var browsing = GetFilteredBrowsing(store);
-            return browsing?.Attributes;
-        }
-
-        [Obsolete]
-        public virtual void SetAttributeFilters(Store store, IList<AttributeFilter> filters)
-        {
-            if (store != null)
-            {
-                var browsing = GetFilteredBrowsing(store) ?? new FilteredBrowsing();
-                browsing.Attributes = CopyValuesFromExistingFilters(filters, browsing.Attributes);
-                SetFilteredBrowsing(store, browsing);
-            }
-        }
-
-
-        protected virtual AttributeFilter[] CopyValuesFromExistingFilters(IList<AttributeFilter> newFilters, IList<AttributeFilter> oldFilters)
-        {
-            if (newFilters?.Any() == true && oldFilters?.Any() == true)
-            {
-                foreach (var newFilter in newFilters)
-                {
-                    var oldFilter = oldFilters.FirstOrDefault(f => f.Key.EqualsInvariant(newFilter.Key));
-                    if (oldFilter != null)
-                    {
-                        newFilter.Values = oldFilter.Values;
-                        newFilter.FacetSize = oldFilter.FacetSize;
-                    }
-                }
-            }
-
-            return newFilters?.ToArray();
-        }
-
-        protected virtual object GetObjectValue(IDictionary<string, object> context, string key)
-        {
-            object result = null;
-
-            if (context.ContainsKey(key))
-            {
-                result = context[key];
-            }
-
-            return result;
-        }
 
         protected virtual FilteredBrowsing GetFilteredBrowsing(Store store)
         {
             FilteredBrowsing result = null;
 
             var filterSettingValue = store?.GetDynamicPropertyValue(FilteredBrowsingPropertyName, string.Empty);
-
             if (!string.IsNullOrEmpty(filterSettingValue))
             {
                 result = Deserialize(filterSettingValue);

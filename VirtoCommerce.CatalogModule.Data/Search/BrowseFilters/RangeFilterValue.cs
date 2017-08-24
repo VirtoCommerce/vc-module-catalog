@@ -1,5 +1,4 @@
 ﻿using System.Xml.Serialization;
-using Newtonsoft.Json;
 
 namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
 {
@@ -19,9 +18,5 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
 
         [XmlAttribute("includeUpper")]
         public bool IncludeUpper { get; set; }
-
-        [JsonIgnore]
-        [XmlElement("display")]
-        public FilterValueDisplay[] Displays { get; set; }
     }
 }
