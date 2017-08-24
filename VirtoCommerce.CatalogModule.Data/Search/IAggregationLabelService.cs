@@ -5,7 +5,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 {
     public interface IAggregationLabelService
     {
-        IList<AggregationLabel> GetPropertyLabels(string catalogId, string propertyName);
-        IDictionary<string, IList<AggregationLabel>> GetPropertyValueLabels(string catalogId, string propertyName);
+        void AddLabels(IList<Aggregation> aggregations, string catalogId);
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Platform.Core.Common;
+using Aggregation = VirtoCommerce.CatalogModule.Web.Model.Aggregation;
 using AggregationLabel = VirtoCommerce.CatalogModule.Web.Model.AggregationLabel;
 
 namespace VirtoCommerce.CatalogModule.Data.Search
@@ -17,41 +18,37 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             _propertyService = propertyService;
         }
 
-        public IList<AggregationLabel> GetPropertyLabels(string catalogId, string propertyName)
+        public void AddLabels(IList<Aggregation> aggregations, string catalogId)
         {
             var allProperties = GetAllCatalogProperties(catalogId);
 
-            // There can be many properties with the same name
-            var properties = allProperties
-                .Where(p => p.Name.EqualsInvariant(propertyName))
-                .ToArray();
+            foreach (var aggregation in aggregations)
+            {
+                // There can be many properties with the same name
+                var properties = allProperties
+                    .Where(p => p.Name.EqualsInvariant(aggregation.Field))
+                    .ToArray();
 
-            var allLabels = properties
-                .SelectMany(p => p.DisplayNames)
-                .Select(n => new AggregationLabel { Language = n.LanguageCode, Label = n.Name })
-                .ToArray();
+                var allPropertyLabels = properties
+                    .SelectMany(p => p.DisplayNames)
+                    .Select(n => new AggregationLabel { Language = n.LanguageCode, Label = n.Name })
+                    .ToArray();
 
-            var result = GetDistinctLabels(allLabels);
-            return result;
-        }
+                aggregation.Labels = GetDistinctLabels(allPropertyLabels);
 
-        public IDictionary<string, IList<AggregationLabel>> GetPropertyValueLabels(string catalogId, string propertyName)
-        {
-            var allProperties = GetAllCatalogProperties(catalogId);
+                // Get distinct labels for each dictionary value alias
+                var allValueLabels = properties
+                    .Where(p => p.Dictionary && p.DictionaryValues != null && p.DictionaryValues.Any())
+                    .SelectMany(p => p.DictionaryValues)
+                    .GroupBy(v => v.Alias, StringComparer.OrdinalIgnoreCase)
+                    .ToDictionary(g => g.Key, g => GetDistinctLabels(g.Select(v => new AggregationLabel { Language = v.LanguageCode, Label = v.Value })), StringComparer.OrdinalIgnoreCase);
 
-            // There can be many properties with the same name
-            var properties = allProperties
-                .Where(p => p.Name.EqualsInvariant(propertyName))
-                .ToArray();
-
-            // Get distinct labels for each alias
-            var result = properties
-                .Where(p => p.Dictionary && p.DictionaryValues != null && p.DictionaryValues.Any())
-                .SelectMany(p => p.DictionaryValues)
-                .GroupBy(v => v.Alias, StringComparer.OrdinalIgnoreCase)
-                .ToDictionary(g => g.Key, g => GetDistinctLabels(g.Select(v => new AggregationLabel { Language = v.LanguageCode, Label = v.Value })), StringComparer.OrdinalIgnoreCase);
-
-            return result.Any() ? result : null;
+                foreach (var aggregationItem in aggregation.Items)
+                {
+                    var valueId = aggregationItem.Value.ToString();
+                    aggregationItem.Labels = allValueLabels.ContainsKey(valueId) ? allValueLabels[valueId] : null;
+                }
+            }
         }
 
 

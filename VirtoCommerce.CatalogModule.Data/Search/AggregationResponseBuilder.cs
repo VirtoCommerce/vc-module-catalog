@@ -39,11 +39,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
                     if (attributeFilter != null)
                     {
-                        aggregation = GetAttributeAggregation(attributeFilter, aggregationResponses, criteria);
+                        aggregation = GetAttributeAggregation(attributeFilter, aggregationResponses);
                     }
                     else if (rangeFilter != null)
                     {
-                        aggregation = GetRangeAggregation(rangeFilter, aggregationResponses, criteria);
+                        aggregation = GetRangeAggregation(rangeFilter, aggregationResponses);
                     }
                     else if (priceRangeFilter != null)
                     {
@@ -57,10 +57,16 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 }
             }
 
+            // Add localized labels for names and values
+            if (result.Any())
+            {
+                _aggregationLabelService.AddLabels(result, criteria.CatalogId);
+            }
+
             return result.ToArray();
         }
 
-        protected virtual Aggregation GetAttributeAggregation(AttributeFilter attributeFilter, IList<AggregationResponse> aggregationResponses, ProductSearchCriteria criteria)
+        protected virtual Aggregation GetAttributeAggregation(AttributeFilter attributeFilter, IList<AggregationResponse> aggregationResponses)
         {
             Aggregation result = null;
 
@@ -92,8 +98,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                     {
                         AggregationType = "attr",
                         Field = fieldName,
-                        Items = GetAttributeAggregationItems(criteria.CatalogId, fieldName, aggregationResponseValues),
-                        Labels = _aggregationLabelService.GetPropertyLabels(criteria.CatalogId, fieldName),
+                        Items = GetAttributeAggregationItems(aggregationResponseValues),
                     };
                 }
             }
@@ -101,14 +106,13 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return result;
         }
 
-        protected virtual Aggregation GetRangeAggregation(RangeFilter rangeFilter, IList<AggregationResponse> aggregationResponses, ProductSearchCriteria criteria)
+        protected virtual Aggregation GetRangeAggregation(RangeFilter rangeFilter, IList<AggregationResponse> aggregationResponses)
         {
             var result = new Aggregation
             {
                 AggregationType = "range",
                 Field = rangeFilter.Key,
                 Items = GetRangeAggregationItems(rangeFilter.Key, rangeFilter.Values, aggregationResponses),
-                Labels = _aggregationLabelService.GetPropertyLabels(criteria.CatalogId, rangeFilter.Key),
             };
 
             return result;
@@ -127,17 +131,14 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return result;
         }
 
-        protected virtual IList<AggregationItem> GetAttributeAggregationItems(string catalogId, string fieldName, IList<AggregationResponseValue> aggregationResponseValues)
+        protected virtual IList<AggregationItem> GetAttributeAggregationItems(IList<AggregationResponseValue> aggregationResponseValues)
         {
-            var allValueLabels = _aggregationLabelService.GetPropertyValueLabels(catalogId, fieldName);
-
             var result = aggregationResponseValues
                 .Select(v =>
                     new AggregationItem
                     {
                         Value = v.Id,
                         Count = (int)v.Count,
-                        Labels = allValueLabels?.ContainsKey(v.Id) == true ? allValueLabels[v.Id] : null,
                     })
                 .ToList();
 
