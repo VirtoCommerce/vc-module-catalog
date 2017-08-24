@@ -29,24 +29,27 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                     .Where(p => p.Name.EqualsInvariant(aggregation.Field))
                     .ToArray();
 
-                var allPropertyLabels = properties
-                    .SelectMany(p => p.DisplayNames)
-                    .Select(n => new AggregationLabel { Language = n.LanguageCode, Label = n.Name })
-                    .ToArray();
-
-                aggregation.Labels = GetDistinctLabels(allPropertyLabels);
-
-                // Get distinct labels for each dictionary value alias
-                var allValueLabels = properties
-                    .Where(p => p.Dictionary && p.DictionaryValues != null && p.DictionaryValues.Any())
-                    .SelectMany(p => p.DictionaryValues)
-                    .GroupBy(v => v.Alias, StringComparer.OrdinalIgnoreCase)
-                    .ToDictionary(g => g.Key, g => GetDistinctLabels(g.Select(v => new AggregationLabel { Language = v.LanguageCode, Label = v.Value })), StringComparer.OrdinalIgnoreCase);
-
-                foreach (var aggregationItem in aggregation.Items)
+                if (properties.Any())
                 {
-                    var valueId = aggregationItem.Value.ToString();
-                    aggregationItem.Labels = allValueLabels.ContainsKey(valueId) ? allValueLabels[valueId] : null;
+                    var allPropertyLabels = properties
+                        .SelectMany(p => p.DisplayNames)
+                        .Select(n => new AggregationLabel { Language = n.LanguageCode, Label = n.Name })
+                        .ToArray();
+
+                    aggregation.Labels = GetDistinctLabels(allPropertyLabels);
+
+                    // Get distinct labels for each dictionary value alias
+                    var allValueLabels = properties
+                        .Where(p => p.Dictionary && p.DictionaryValues != null && p.DictionaryValues.Any())
+                        .SelectMany(p => p.DictionaryValues)
+                        .GroupBy(v => v.Alias, StringComparer.OrdinalIgnoreCase)
+                        .ToDictionary(g => g.Key, g => GetDistinctLabels(g.Select(v => new AggregationLabel { Language = v.LanguageCode, Label = v.Value })), StringComparer.OrdinalIgnoreCase);
+
+                    foreach (var aggregationItem in aggregation.Items)
+                    {
+                        var valueId = aggregationItem.Value.ToString();
+                        aggregationItem.Labels = allValueLabels.ContainsKey(valueId) ? allValueLabels[valueId] : null;
+                    }
                 }
             }
         }
