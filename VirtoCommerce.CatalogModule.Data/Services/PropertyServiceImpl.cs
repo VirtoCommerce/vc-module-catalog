@@ -237,8 +237,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             result.ValueType = property.ValueType;
             result.IsInherited = property.IsInherited;
 
-            // Set all reference properties from preloaded category
-            // TODO: clone?
+            // TODO: clone reference objects
             result.Catalog = property.Catalog;
             result.Category = property.Category;
             result.Attributes = property.Attributes;

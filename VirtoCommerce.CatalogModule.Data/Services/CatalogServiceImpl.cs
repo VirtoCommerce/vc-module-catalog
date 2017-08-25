@@ -117,12 +117,16 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         protected virtual Catalog MemberwiseCloneCatalog(Catalog catalog)
         {
             var retVal = AbstractTypeFactory<Catalog>.TryCreateInstance();
+
             retVal.Id = catalog.Id;
             retVal.IsVirtual = catalog.IsVirtual;
             retVal.Name = catalog.Name;
-            retVal.Properties = catalog.Properties;
+
+            // TODO: clone reference objects
             retVal.Languages = catalog.Languages;
+            retVal.Properties = catalog.Properties;
             retVal.PropertyValues = catalog.PropertyValues;
+
             return retVal;
         }
 

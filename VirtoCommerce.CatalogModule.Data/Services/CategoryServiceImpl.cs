@@ -174,17 +174,21 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
             var retVal = AbstractTypeFactory<Category>.TryCreateInstance();
 
+            // Entity
             retVal.Id = category.Id;
-            retVal.CatalogId = category.CatalogId;
-            retVal.Children = category.Children;
-            retVal.Code = category.Code;
-            retVal.CreatedBy = category.CreatedBy;
+
+            // AuditableEntity
             retVal.CreatedDate = category.CreatedDate;
+            retVal.ModifiedDate = category.ModifiedDate;
+            retVal.CreatedBy = category.CreatedBy;
+            retVal.ModifiedBy = category.ModifiedBy;
+
+            // Category
+            retVal.CatalogId = category.CatalogId;
+            retVal.Code = category.Code;
             retVal.IsActive = category.IsActive;
             retVal.IsVirtual = category.IsVirtual;
             retVal.Level = category.Level;
-            retVal.ModifiedBy = category.ModifiedBy;
-            retVal.ModifiedDate = category.ModifiedDate;
             retVal.Name = category.Name;
             retVal.PackageType = category.PackageType;
             retVal.ParentId = category.ParentId;
@@ -192,7 +196,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             retVal.Priority = category.Priority;
             retVal.TaxType = category.TaxType;
 
-            //Set all reference properties from preloaded category
+            // TODO: clone reference objects
+            retVal.Children = category.Children;
             retVal.Outlines = category.Outlines;
             retVal.PropertyValues = category.PropertyValues;
             retVal.SeoInfos = category.SeoInfos;
@@ -201,7 +206,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             retVal.Parents = category.Parents;
             retVal.Links = category.Links;
             retVal.Images = category.Images;
-            retVal.Children = category.Children;
+
             return retVal;
         }
 
