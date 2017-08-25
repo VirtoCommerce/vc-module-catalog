@@ -6,9 +6,9 @@ using System.Net;
 using System.Web.Http;
 using System.Web.Http.Description;
 using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
+using VirtoCommerce.CatalogModule.Web.Model;
 using VirtoCommerce.CatalogModule.Web.Security;
 using VirtoCommerce.Domain.Catalog.Services;
-using VirtoCommerce.Domain.Store.Model;
 using VirtoCommerce.Domain.Store.Services;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Security;
@@ -36,15 +36,15 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         }
 
         /// <summary>
-        /// Get browse filter properties for store
+        /// Get aggregation properties for store
         /// </summary>
         /// <remarks>
-        /// Returns all store catalog properties: selected properties are ordered manually, unselected properties are ordered by name.
+        /// Returns all store aggregation properties: selected properties are ordered manually, unselected properties are ordered by name.
         /// </remarks>
         /// <param name="storeId">Store ID</param>
         [HttpGet]
         [Route("{storeId}/properties")]
-        [ResponseType(typeof(BrowseFilterProperty[]))]
+        [ResponseType(typeof(AggregationProperty[]))]
         public IHttpActionResult GetAggregationProperties(string storeId)
         {
             var store = _storeService.GetById(storeId);
@@ -55,8 +55,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.ReadBrowseFilters, store);
 
-            var allProperties = GetAllProperties(store);
-            var selectedProperties = GetSelectedProperties(store.Id);
+            var allProperties = GetAllProperties(store.Catalog, store.Currencies);
+            var selectedProperties = GetSelectedProperties(storeId);
 
             // Remove duplicates and keep selected properties order
             var result = selectedProperties.Concat(allProperties)
@@ -68,14 +68,14 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         }
 
         /// <summary>
-        /// Set browse filter properties for store
+        /// Set aggregation properties for store
         /// </summary>
         /// <param name="storeId">Store ID</param>
         /// <param name="browseFilterProperties"></param>
         [HttpPut]
         [Route("{storeId}/properties")]
         [ResponseType(typeof(void))]
-        public IHttpActionResult SetAggregationProperties(string storeId, BrowseFilterProperty[] browseFilterProperties)
+        public IHttpActionResult SetAggregationProperties(string storeId, AggregationProperty[] browseFilterProperties)
         {
             var store = _storeService.GetById(storeId);
             if (store == null)
@@ -94,8 +94,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 .Where(f => f != null)
                 .ToArray();
 
-            _browseFilterService.SetAllFilters(store, filters);
-            _storeService.Update(new[] { store });
+            _browseFilterService.SaveFilters(storeId, filters);
 
             return StatusCode(HttpStatusCode.NoContent);
         }
@@ -124,24 +123,24 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         }
 
 
-        private IList<BrowseFilterProperty> GetAllProperties(Store store)
+        private IList<AggregationProperty> GetAllProperties(string catalogId, IEnumerable<string> currencies)
         {
-            var result = _propertyService.GetAllCatalogProperties(store.Catalog)
-                .Select(p => new BrowseFilterProperty { Type = _attributeType, Name = p.Name })
+            var result = _propertyService.GetAllCatalogProperties(catalogId)
+                .Select(p => new AggregationProperty { Type = _attributeType, Name = p.Name })
                 .ToList();
 
-            result.AddRange(store.Currencies.Select(c => new BrowseFilterProperty { Type = _priceRangeType, Name = $"Price {c}", Currency = c }));
+            result.AddRange(currencies.Select(c => new AggregationProperty { Type = _priceRangeType, Name = $"Price {c}", Currency = c }));
 
             return result;
         }
 
-        private IList<BrowseFilterProperty> GetSelectedProperties(string storeId)
+        private IList<AggregationProperty> GetSelectedProperties(string storeId)
         {
-            var result = new List<BrowseFilterProperty>();
+            var result = new List<AggregationProperty>();
 
             var allFilters = _browseFilterService.GetAllFilters(storeId);
 
-            BrowseFilterProperty property = null;
+            AggregationProperty property = null;
 
             foreach (var filter in allFilters)
             {
@@ -151,7 +150,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
                 if (attributeFilter != null)
                 {
-                    property = new BrowseFilterProperty
+                    property = new AggregationProperty
                     {
                         IsSelected = true,
                         Type = _attributeType,
@@ -162,7 +161,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 }
                 else if (rangeFilter != null)
                 {
-                    property = new BrowseFilterProperty
+                    property = new AggregationProperty
                     {
                         IsSelected = true,
                         Type = _rangeType,
@@ -172,7 +171,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 }
                 else if (priceRangeFilter != null)
                 {
-                    property = new BrowseFilterProperty
+                    property = new AggregationProperty
                     {
                         IsSelected = true,
                         Type = _priceRangeType,
@@ -196,7 +195,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return SortStringsAsNumbers(values.SelectMany(v => new[] { v.Lower, v.Upper })).ToArray();
         }
 
-        private static IBrowseFilter ConvertToFilter(BrowseFilterProperty property, int order)
+        private static IBrowseFilter ConvertToFilter(AggregationProperty property, int order)
         {
             IBrowseFilter result = null;
 

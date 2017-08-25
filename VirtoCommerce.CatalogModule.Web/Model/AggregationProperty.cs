@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
+namespace VirtoCommerce.CatalogModule.Web.Model
 {
-    public class BrowseFilterProperty
+    public class AggregationProperty
     {
         public string Name { get; set; }
         public bool IsSelected { get; set; }

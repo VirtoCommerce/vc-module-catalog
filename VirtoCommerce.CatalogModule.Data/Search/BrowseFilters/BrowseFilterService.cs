@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
 using Newtonsoft.Json;
-using VirtoCommerce.Domain.Store.Model;
 using VirtoCommerce.Domain.Store.Services;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.DynamicProperties;
@@ -35,8 +34,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
         {
             var filters = new List<IBrowseFilter>();
 
-            var store = _storeService.GetById(storeId);
-            var browsing = GetFilteredBrowsing(store);
+            var serializedValue = GetSerializedValue(storeId);
+            var browsing = Deserialize(serializedValue);
 
             if (browsing != null)
             {
@@ -59,47 +58,43 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
             return filters.OrderBy(f => f.Order).ToArray();
         }
 
-        public virtual void SetAllFilters(Store store, IList<IBrowseFilter> filters)
+        public virtual void SaveFilters(string storeId, IList<IBrowseFilter> filters)
         {
-            if (store != null)
+            var browsing = new FilteredBrowsing
             {
-                var browsing = new FilteredBrowsing
-                {
-                    Attributes = filters.OfType<AttributeFilter>().ToArray(),
-                    AttributeRanges = filters.OfType<RangeFilter>().ToArray(),
-                    Prices = filters.OfType<PriceRangeFilter>().ToArray(),
-                };
+                Attributes = filters.OfType<AttributeFilter>().ToArray(),
+                AttributeRanges = filters.OfType<RangeFilter>().ToArray(),
+                Prices = filters.OfType<PriceRangeFilter>().ToArray(),
+            };
 
-                SetFilteredBrowsing(store, browsing);
-            }
+            var serializedValue = Serialize(browsing);
+            SaveSerializedValue(storeId, serializedValue);
         }
 
 
-        protected virtual FilteredBrowsing GetFilteredBrowsing(Store store)
+        protected virtual string GetSerializedValue(string storeId)
         {
-            FilteredBrowsing result = null;
-
-            var filterSettingValue = store?.GetDynamicPropertyValue(FilteredBrowsingPropertyName, string.Empty);
-            if (!string.IsNullOrEmpty(filterSettingValue))
-            {
-                result = Deserialize(filterSettingValue);
-            }
-
+            var store = _storeService.GetById(storeId);
+            var result = store?.GetDynamicPropertyValue(FilteredBrowsingPropertyName, string.Empty);
             return result;
         }
 
-        protected virtual void SetFilteredBrowsing(Store store, FilteredBrowsing browsing)
+        protected virtual void SaveSerializedValue(string storeId, string serializedValue)
         {
-            var value = Serialize(browsing);
-
-            var property = store.DynamicProperties.FirstOrDefault(p => p.Name == FilteredBrowsingPropertyName);
-            if (property == null)
+            var store = _storeService.GetById(storeId);
+            if (store != null)
             {
-                property = new DynamicObjectProperty { Name = FilteredBrowsingPropertyName };
-                store.DynamicProperties.Add(property);
-            }
+                var property = store.DynamicProperties.FirstOrDefault(p => p.Name == FilteredBrowsingPropertyName);
+                if (property == null)
+                {
+                    property = new DynamicObjectProperty { Name = FilteredBrowsingPropertyName };
+                    store.DynamicProperties.Add(property);
+                }
 
-            property.Values = new List<DynamicPropertyObjectValue>(new[] { new DynamicPropertyObjectValue { Value = value } });
+                property.Values = new List<DynamicPropertyObjectValue>(new[] { new DynamicPropertyObjectValue { Value = serializedValue } });
+
+                _storeService.Update(new[] { store });
+            }
         }
 
 

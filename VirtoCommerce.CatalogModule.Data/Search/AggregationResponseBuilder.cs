@@ -4,6 +4,7 @@ using System.Linq;
 using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
 using VirtoCommerce.CatalogModule.Web.Model;
 using VirtoCommerce.Domain.Catalog.Model.Search;
+using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Search;
 using VirtoCommerce.Platform.Core.Common;
 using RangeFilter = VirtoCommerce.CatalogModule.Data.Search.BrowseFilters.RangeFilter;
@@ -14,12 +15,12 @@ namespace VirtoCommerce.CatalogModule.Data.Search
     public class AggregationResponseBuilder : IAggregationResponseBuilder
     {
         private readonly IBrowseFilterService _browseFilterService;
-        private readonly IAggregationLabelService _aggregationLabelService;
+        private readonly IPropertyService _propertyService;
 
-        public AggregationResponseBuilder(IBrowseFilterService browseFilterService, IAggregationLabelService aggregationLabelService)
+        public AggregationResponseBuilder(IBrowseFilterService browseFilterService, IPropertyService propertyService)
         {
             _browseFilterService = browseFilterService;
-            _aggregationLabelService = aggregationLabelService;
+            _propertyService = propertyService;
         }
 
         public virtual Aggregation[] ConvertAggregations(IList<AggregationResponse> aggregationResponses, ProductSearchCriteria criteria)
@@ -60,7 +61,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             // Add localized labels for names and values
             if (result.Any())
             {
-                _aggregationLabelService.AddLabels(result, criteria.CatalogId);
+                AddLabels(result, criteria.CatalogId);
             }
 
             return result.ToArray();
@@ -176,6 +177,57 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             }
 
             return result;
+        }
+
+        protected virtual void AddLabels(IList<Aggregation> aggregations, string catalogId)
+        {
+            var allProperties = _propertyService.GetAllCatalogProperties(catalogId);
+
+            foreach (var aggregation in aggregations)
+            {
+                // There can be many properties with the same name
+                var properties = allProperties
+                    .Where(p => p.Name.EqualsInvariant(aggregation.Field))
+                    .ToArray();
+
+                if (properties.Any())
+                {
+                    var allPropertyLabels = properties
+                        .SelectMany(p => p.DisplayNames)
+                        .Select(n => new AggregationLabel { Language = n.LanguageCode, Label = n.Name })
+                        .ToArray();
+
+                    aggregation.Labels = GetFirstLabelForEachLanguage(allPropertyLabels);
+
+                    // Get distinct labels for each dictionary value alias
+                    var allValueLabels = properties
+                        .Where(p => p.Dictionary && p.DictionaryValues != null && p.DictionaryValues.Any())
+                        .SelectMany(p => p.DictionaryValues)
+                        .Where(v => !string.IsNullOrEmpty(v.Alias)) // Workaround for incorrect data
+                        .GroupBy(v => v.Alias, StringComparer.OrdinalIgnoreCase)
+                        .ToDictionary(g => g.Key, g => GetFirstLabelForEachLanguage(g.Select(v => new AggregationLabel { Language = v.LanguageCode, Label = v.Value })), StringComparer.OrdinalIgnoreCase);
+
+                    foreach (var aggregationItem in aggregation.Items)
+                    {
+                        var valueId = aggregationItem.Value.ToString();
+                        aggregationItem.Labels = allValueLabels.ContainsKey(valueId) ? allValueLabels[valueId] : null;
+                    }
+                }
+            }
+        }
+
+
+        private static IList<AggregationLabel> GetFirstLabelForEachLanguage(IEnumerable<AggregationLabel> labels)
+        {
+            var result = labels
+                .Where(x => !string.IsNullOrEmpty(x.Language) && !string.IsNullOrEmpty(x.Label))
+                .GroupBy(x => x.Language, StringComparer.OrdinalIgnoreCase)
+                .Select(g => g.FirstOrDefault())
+                .OrderBy(x => x?.Language)
+                .ThenBy(x => x.Label)
+                .ToArray();
+
+            return result.Any() ? result : null;
         }
     }
 }
