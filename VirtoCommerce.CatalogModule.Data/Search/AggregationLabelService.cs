@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Platform.Core.Common;
 using Aggregation = VirtoCommerce.CatalogModule.Web.Model.Aggregation;
@@ -20,7 +19,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
         public void AddLabels(IList<Aggregation> aggregations, string catalogId)
         {
-            var allProperties = GetAllCatalogProperties(catalogId);
+            var allProperties = _propertyService.GetAllCatalogProperties(catalogId);
 
             foreach (var aggregation in aggregations)
             {
@@ -71,19 +70,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 .ToArray();
 
             return result.Any() ? result : null;
-        }
-
-        private IList<Property> GetAllCatalogProperties(string catalogId)
-        {
-            var properties = _propertyService.GetAllCatalogProperties(catalogId);
-
-            var result = properties
-                .GroupBy(p => p.Id, StringComparer.OrdinalIgnoreCase)
-                .Select(g => g.FirstOrDefault())
-                .OrderBy(p => p?.Name)
-                .ToArray();
-
-            return result;
         }
     }
 }

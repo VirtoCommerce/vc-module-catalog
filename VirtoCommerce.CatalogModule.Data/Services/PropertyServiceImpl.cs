@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CacheManager.Core;
 using VirtoCommerce.CatalogModule.Data.Extensions;
@@ -7,6 +8,7 @@ using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Data.Common;
 using VirtoCommerce.Platform.Data.Infrastructure;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
@@ -33,41 +35,30 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public Property[] GetByIds(string[] propertyIds)
         {
-            using (var repository = _repositoryFactory())
-            {
-                //Optimize performance and CPU usage
-                repository.DisableChangesTracking();
+            var preloadedProperties = PreloadAllProperties();
 
-                var entities = repository.GetPropertiesByIds(propertyIds);
-                var result = entities.Select(x => x.ToModel(AbstractTypeFactory<Property>.TryCreateInstance())).ToArray();
+            var result = propertyIds
+                .Where(propertyId => preloadedProperties.ContainsKey(propertyId))
+                .Select(propertyId => preloadedProperties[propertyId])
+                .Select(MemberwiseCloneProperty)
+                .ToArray();
 
-                LoadDependencies(result);
-                ApplyInheritanceRules(result);
-
-                return result;
-            }
+            return result;
         }
 
         public Property[] GetAllCatalogProperties(string catalogId)
         {
-            using (var repository = _repositoryFactory())
-            {
-                //Optimize performance and CPU usage
-                repository.DisableChangesTracking();
-
-                var entities = repository.GetAllCatalogProperties(catalogId);
-                var result = entities.Select(x => x.ToModel(AbstractTypeFactory<Property>.TryCreateInstance())).ToArray();
-                return result;
-            }
+            var preloadedProperties = PreloadAllCatalogProperties(catalogId);
+            var result = preloadedProperties.Select(MemberwiseCloneProperty).ToArray();
+            return result;
         }
 
 
         public Property[] GetAllProperties()
         {
-            using (var repository = _repositoryFactory())
-            {
-                return GetByIds(repository.Properties.Select(x => x.Id).ToArray());
-            }
+            var preloadedProperties = PreloadAllProperties();
+            var result = preloadedProperties.Values.Select(MemberwiseCloneProperty).ToArray();
+            return result;
         }
 
 
@@ -176,6 +167,86 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         protected virtual void ResetCache()
         {
             _cacheManager.ClearRegion(CatalogConstants.CacheRegion);
+        }
+
+        protected virtual IDictionary<string, Property> PreloadAllProperties()
+        {
+            return _cacheManager.Get("AllProperties", CatalogConstants.CacheRegion, () =>
+            {
+                using (var repository = _repositoryFactory())
+                {
+                    repository.DisableChangesTracking();
+
+                    var propertyIds = repository.Properties.Select(p => p.Id).ToArray();
+                    var entities = repository.GetPropertiesByIds(propertyIds);
+                    var properties = entities.Select(p => p.ToModel(AbstractTypeFactory<Property>.TryCreateInstance())).ToArray();
+
+                    LoadDependencies(properties);
+                    ApplyInheritanceRules(properties);
+
+                    var result = properties.ToDictionary(p => p.Id, StringComparer.OrdinalIgnoreCase);
+
+                    return result;
+                }
+            });
+        }
+
+        protected virtual IList<Property> PreloadAllCatalogProperties(string catalogId)
+        {
+            return _cacheManager.Get($"AllCatalogProperties-{catalogId}", CatalogConstants.CacheRegion, () =>
+            {
+                using (var repository = _repositoryFactory())
+                {
+                    repository.DisableChangesTracking();
+
+                    var result = repository.GetAllCatalogProperties(catalogId)
+                        .GroupBy(p => p.Id, StringComparer.OrdinalIgnoreCase) // Remove duplicates
+                        .Select(g => g.First())
+                        .OrderBy(p => p.Name, StringComparer.OrdinalIgnoreCase)
+                        .Select(p => p.ToModel(AbstractTypeFactory<Property>.TryCreateInstance()))
+                        .ToArray();
+
+                    return result;
+                }
+            });
+        }
+
+        // TODO: Move to domain
+        protected virtual Property MemberwiseCloneProperty(Property property)
+        {
+            var result = AbstractTypeFactory<Property>.TryCreateInstance();
+
+            // Entity
+            result.Id = property.Id;
+
+            // AuditableEntity
+            result.CreatedDate = property.CreatedDate;
+            result.ModifiedDate = property.ModifiedDate;
+            result.CreatedBy = property.CreatedBy;
+            result.ModifiedBy = property.ModifiedBy;
+
+            // Property
+            result.CatalogId = property.CatalogId;
+            result.CategoryId = property.CategoryId;
+            result.Name = property.Name;
+            result.Required = property.Required;
+            result.Dictionary = property.Dictionary;
+            result.Multivalue = property.Multivalue;
+            result.Multilanguage = property.Multilanguage;
+            result.Type = property.Type;
+            result.ValueType = property.ValueType;
+            result.IsInherited = property.IsInherited;
+
+            // Set all reference properties from preloaded category
+            // TODO: clone?
+            result.Catalog = property.Catalog;
+            result.Category = property.Category;
+            result.Attributes = property.Attributes;
+            result.DictionaryValues = property.DictionaryValues;
+            result.DisplayNames = property.DisplayNames;
+            result.ValidationRules = property.ValidationRules;
+
+            return result;
         }
     }
 }

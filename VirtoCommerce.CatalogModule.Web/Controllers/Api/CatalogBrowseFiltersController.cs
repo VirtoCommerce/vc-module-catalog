@@ -7,7 +7,6 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
 using VirtoCommerce.CatalogModule.Web.Security;
-using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Store.Model;
 using VirtoCommerce.Domain.Store.Services;
@@ -114,7 +113,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.ReadBrowseFilters, store);
 
-            var result = GetAllCatalogProperties(store.Catalog)
+            var result = _propertyService.GetAllCatalogProperties(store.Catalog)
                 .Where(p => p.Name.EqualsInvariant(propertyName) && p.Dictionary && p.DictionaryValues != null)
                 .SelectMany(p => p.DictionaryValues.Select(v => v.Alias))
                 .Distinct(StringComparer.OrdinalIgnoreCase)
@@ -127,21 +126,13 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
         private IList<BrowseFilterProperty> GetAllProperties(Store store)
         {
-            var result = GetAllCatalogProperties(store.Catalog)
+            var result = _propertyService.GetAllCatalogProperties(store.Catalog)
                 .Select(p => new BrowseFilterProperty { Type = _attributeType, Name = p.Name })
                 .ToList();
 
             result.AddRange(store.Currencies.Select(c => new BrowseFilterProperty { Type = _priceRangeType, Name = $"Price {c}", Currency = c }));
 
             return result;
-        }
-
-        private IEnumerable<Property> GetAllCatalogProperties(string catalogId)
-        {
-            return _propertyService.GetAllCatalogProperties(catalogId)
-                .OrderBy(p => p?.Name, StringComparer.OrdinalIgnoreCase)
-                .GroupBy(p => p.Id, StringComparer.OrdinalIgnoreCase)
-                .Select(g => g.First());
         }
 
         private IList<BrowseFilterProperty> GetSelectedProperties(string storeId)
