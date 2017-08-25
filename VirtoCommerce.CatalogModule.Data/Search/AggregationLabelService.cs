@@ -41,6 +41,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                     var allValueLabels = properties
                         .Where(p => p.Dictionary && p.DictionaryValues != null && p.DictionaryValues.Any())
                         .SelectMany(p => p.DictionaryValues)
+                        .Where(v => !string.IsNullOrEmpty(v.Alias)) // Workaround for incorrect data
                         .GroupBy(v => v.Alias, StringComparer.OrdinalIgnoreCase)
                         .ToDictionary(g => g.Key, g => GetDistinctLabels(g.Select(v => new AggregationLabel { Language = v.LanguageCode, Label = v.Value })), StringComparer.OrdinalIgnoreCase);
 
