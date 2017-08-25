@@ -32,42 +32,14 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
 
         public virtual IList<IBrowseFilter> GetAllFilters(string storeId)
         {
-            var filters = new List<IBrowseFilter>();
-
             var serializedValue = GetSerializedValue(storeId);
-            var browsing = Deserialize(serializedValue);
-
-            if (browsing != null)
-            {
-                if (browsing.Attributes != null)
-                {
-                    filters.AddRange(browsing.Attributes);
-                }
-
-                if (browsing.AttributeRanges != null)
-                {
-                    filters.AddRange(browsing.AttributeRanges);
-                }
-
-                if (browsing.Prices != null)
-                {
-                    filters.AddRange(browsing.Prices);
-                }
-            }
-
-            return filters.OrderBy(f => f.Order).ToArray();
+            var result = Deserialize(serializedValue);
+            return result;
         }
 
         public virtual void SaveFilters(string storeId, IList<IBrowseFilter> filters)
         {
-            var browsing = new FilteredBrowsing
-            {
-                Attributes = filters.OfType<AttributeFilter>().ToArray(),
-                AttributeRanges = filters.OfType<RangeFilter>().ToArray(),
-                Prices = filters.OfType<PriceRangeFilter>().ToArray(),
-            };
-
-            var serializedValue = Serialize(browsing);
+            var serializedValue = Serialize(filters);
             SaveSerializedValue(storeId, serializedValue);
         }
 
@@ -99,33 +71,47 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
 
 
         // Support JSON for serialization
-        private static string Serialize(FilteredBrowsing browsing)
+        private static string Serialize(IList<IBrowseFilter> filters)
         {
-            string result;
+            string result = null;
 
-            using (var memStream = new MemoryStream())
+            if (filters != null)
             {
-                browsing.SerializeJson(memStream, _jsonSerializer);
-                memStream.Seek(0, SeekOrigin.Begin);
+                // Group by type
+                var browsing = new FilteredBrowsing
+                {
+                    Attributes = filters.OfType<AttributeFilter>().ToArray(),
+                    AttributeRanges = filters.OfType<RangeFilter>().ToArray(),
+                    Prices = filters.OfType<PriceRangeFilter>().ToArray(),
+                };
 
-                result = memStream.ReadToString();
+                // Serialize to JSON
+                using (var memStream = new MemoryStream())
+                {
+                    browsing.SerializeJson(memStream, _jsonSerializer);
+                    memStream.Seek(0, SeekOrigin.Begin);
+
+                    result = memStream.ReadToString();
+                }
             }
 
             return result;
         }
 
         // Support both JSON and XML for deserialization
-        private static FilteredBrowsing Deserialize(string value)
+        private static IList<IBrowseFilter> Deserialize(string value)
         {
-            FilteredBrowsing result = null;
+            IList<IBrowseFilter> result = null;
 
-            if (value != null)
+            if (!string.IsNullOrEmpty(value))
             {
+                FilteredBrowsing browsing;
+
                 if (value.StartsWith("<"))
                 {
                     // XML
                     var reader = new StringReader(value);
-                    result = _xmlSerializer.Deserialize(reader) as FilteredBrowsing;
+                    browsing = _xmlSerializer.Deserialize(reader) as FilteredBrowsing;
                 }
                 else
                 {
@@ -133,12 +119,34 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
                     using (var stringReader = new StringReader(value))
                     using (var jsonTextReader = new JsonTextReader(stringReader))
                     {
-                        result = _jsonSerializer.Deserialize<FilteredBrowsing>(jsonTextReader);
+                        browsing = _jsonSerializer.Deserialize<FilteredBrowsing>(jsonTextReader);
                     }
                 }
+
+                // Flatten groups
+                if (browsing != null)
+                {
+                    result = new List<IBrowseFilter>();
+
+                    if (browsing.Attributes != null)
+                    {
+                        result.AddRange(browsing.Attributes);
+                    }
+
+                    if (browsing.AttributeRanges != null)
+                    {
+                        result.AddRange(browsing.AttributeRanges);
+                    }
+
+                    if (browsing.Prices != null)
+                    {
+                        result.AddRange(browsing.Prices);
+                    }
+                }
+
             }
 
-            return result;
+            return result?.OrderBy(f => f.Order).ToArray();
         }
     }
 }

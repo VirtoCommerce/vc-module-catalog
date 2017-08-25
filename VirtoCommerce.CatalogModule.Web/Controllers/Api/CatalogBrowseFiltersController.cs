@@ -139,51 +139,53 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var result = new List<AggregationProperty>();
 
             var allFilters = _browseFilterService.GetAllFilters(storeId);
-
-            AggregationProperty property = null;
-
-            foreach (var filter in allFilters)
+            if (allFilters != null)
             {
-                var attributeFilter = filter as AttributeFilter;
-                var rangeFilter = filter as RangeFilter;
-                var priceRangeFilter = filter as PriceRangeFilter;
+                AggregationProperty property = null;
 
-                if (attributeFilter != null)
+                foreach (var filter in allFilters)
                 {
-                    property = new AggregationProperty
-                    {
-                        IsSelected = true,
-                        Type = _attributeType,
-                        Name = attributeFilter.Key,
-                        Values = attributeFilter.Values?.Select(v => v.Id).OrderBy(v => v, StringComparer.OrdinalIgnoreCase).ToArray(),
-                        Size = attributeFilter.FacetSize,
-                    };
-                }
-                else if (rangeFilter != null)
-                {
-                    property = new AggregationProperty
-                    {
-                        IsSelected = true,
-                        Type = _rangeType,
-                        Name = rangeFilter.Key,
-                        Values = GetRangeBounds(rangeFilter.Values),
-                    };
-                }
-                else if (priceRangeFilter != null)
-                {
-                    property = new AggregationProperty
-                    {
-                        IsSelected = true,
-                        Type = _priceRangeType,
-                        Name = $"Price {priceRangeFilter.Currency}",
-                        Values = GetRangeBounds(priceRangeFilter.Values),
-                        Currency = priceRangeFilter.Currency,
-                    };
-                }
+                    var attributeFilter = filter as AttributeFilter;
+                    var rangeFilter = filter as RangeFilter;
+                    var priceRangeFilter = filter as PriceRangeFilter;
 
-                if (property != null)
-                {
-                    result.Add(property);
+                    if (attributeFilter != null)
+                    {
+                        property = new AggregationProperty
+                        {
+                            IsSelected = true,
+                            Type = _attributeType,
+                            Name = attributeFilter.Key,
+                            Values = attributeFilter.Values?.Select(v => v.Id).OrderBy(v => v, StringComparer.OrdinalIgnoreCase).ToArray(),
+                            Size = attributeFilter.FacetSize,
+                        };
+                    }
+                    else if (rangeFilter != null)
+                    {
+                        property = new AggregationProperty
+                        {
+                            IsSelected = true,
+                            Type = _rangeType,
+                            Name = rangeFilter.Key,
+                            Values = GetRangeBounds(rangeFilter.Values),
+                        };
+                    }
+                    else if (priceRangeFilter != null)
+                    {
+                        property = new AggregationProperty
+                        {
+                            IsSelected = true,
+                            Type = _priceRangeType,
+                            Name = $"Price {priceRangeFilter.Currency}",
+                            Values = GetRangeBounds(priceRangeFilter.Values),
+                            Currency = priceRangeFilter.Currency,
+                        };
+                    }
+
+                    if (property != null)
+                    {
+                        result.Add(property);
+                    }
                 }
             }
 
