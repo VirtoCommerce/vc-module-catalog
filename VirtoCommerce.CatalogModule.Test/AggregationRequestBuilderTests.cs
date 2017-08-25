@@ -64,9 +64,9 @@ namespace VirtoCommerce.CatalogModule.Test
         }
 
 
-        private static IAggregationRequestBuilder GetAggregationRequestBuilder()
+        private static IAggregationConverter GetAggregationRequestBuilder()
         {
-            return new AggregationRequestBuilder(GetBrowseFilterService());
+            return new AggregationConverter(GetBrowseFilterService(), null);
         }
     }
 }

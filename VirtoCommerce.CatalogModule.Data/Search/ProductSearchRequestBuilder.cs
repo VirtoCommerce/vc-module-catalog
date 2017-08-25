@@ -11,13 +11,13 @@ namespace VirtoCommerce.CatalogModule.Data.Search
     {
         private readonly ISearchPhraseParser _searchPhraseParser;
         private readonly ITermFilterBuilder _termFilterBuilder;
-        private readonly IAggregationRequestBuilder _aggregationRequestBuilder;
+        private readonly IAggregationConverter _aggregationConverter;
 
-        public ProductSearchRequestBuilder(ISearchPhraseParser searchPhraseParser, ITermFilterBuilder termFilterBuilder, IAggregationRequestBuilder aggregationRequestBuilder)
+        public ProductSearchRequestBuilder(ISearchPhraseParser searchPhraseParser, ITermFilterBuilder termFilterBuilder, IAggregationConverter aggregationConverter)
         {
             _searchPhraseParser = searchPhraseParser;
             _termFilterBuilder = termFilterBuilder;
-            _aggregationRequestBuilder = aggregationRequestBuilder;
+            _aggregationConverter = aggregationConverter;
         }
 
         public virtual string DocumentType { get; } = KnownDocumentTypes.Product;
@@ -40,7 +40,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                     Sorting = GetSorting(productSearchCriteria),
                     Skip = criteria.Skip,
                     Take = criteria.Take,
-                    Aggregations = _aggregationRequestBuilder?.GetAggregationRequests(productSearchCriteria, allFilters),
+                    Aggregations = _aggregationConverter?.GetAggregationRequests(productSearchCriteria, allFilters),
                 };
             }
 

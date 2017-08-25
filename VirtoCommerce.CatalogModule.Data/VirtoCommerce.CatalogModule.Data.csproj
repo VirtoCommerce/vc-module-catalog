@@ -203,8 +203,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\CatalogRepositoryImpl.cs" />
     <Compile Include="Repositories\ICatalogRepository.cs" />
-    <Compile Include="Search\AggregationRequestBuilder.cs" />
-    <Compile Include="Search\AggregationResponseBuilder.cs" />
+    <Compile Include="Search\AggregationConverter.cs" />
     <Compile Include="Search\BrowseFilters\BrowseFilterService.cs" />
     <Compile Include="Search\BrowseFilters\BrowseFilterServiceExtensions.cs" />
     <Compile Include="Search\BrowseFilters\IBrowseFilter.cs" />
@@ -218,9 +217,7 @@
     <Compile Include="Search\CategorySearchService.cs" />
     <Compile Include="Search\FiltersContainer.cs" />
     <Compile Include="Search\FiltersHelper.cs" />
-    <Compile Include="Search\IAggregationLabelService.cs" />
-    <Compile Include="Search\IAggregationRequestBuilder.cs" />
-    <Compile Include="Search\IAggregationResponseBuilder.cs" />
+    <Compile Include="Search\IAggregationConverter.cs" />
     <Compile Include="Search\ICategorySearchService.cs" />
     <Compile Include="Search\IndexDocumentHelper.cs" />
     <Compile Include="Search\Indexing\CatalogDocumentBuilder.cs" />

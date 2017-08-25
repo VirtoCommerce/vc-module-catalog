@@ -82,8 +82,7 @@ namespace VirtoCommerce.CatalogModule.Web
 
             _container.RegisterType<IBrowseFilterService, BrowseFilterService>();
             _container.RegisterType<ITermFilterBuilder, TermFilterBuilder>();
-            _container.RegisterType<IAggregationRequestBuilder, AggregationRequestBuilder>();
-            _container.RegisterType<IAggregationResponseBuilder, AggregationResponseBuilder>();
+            _container.RegisterType<IAggregationConverter, AggregationConverter>();
 
             _container.RegisterType<ISearchRequestBuilder, ProductSearchRequestBuilder>(nameof(ProductSearchRequestBuilder));
             _container.RegisterType<ISearchRequestBuilder, CategorySearchRequestBuilder>(nameof(CategorySearchRequestBuilder));

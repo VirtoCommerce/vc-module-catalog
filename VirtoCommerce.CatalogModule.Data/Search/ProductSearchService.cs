@@ -17,14 +17,14 @@ namespace VirtoCommerce.CatalogModule.Data.Search
     {
         private readonly IItemService _itemService;
         private readonly IBlobUrlResolver _blobUrlResolver;
-        private readonly IAggregationResponseBuilder _aggregationResponseBuilder;
+        private readonly IAggregationConverter _aggregationConverter;
 
-        public ProductSearchService(ISearchRequestBuilder[] searchRequestBuilders, ISearchProvider searchProvider, ISettingsManager settingsManager, IItemService itemService, IBlobUrlResolver blobUrlResolver, IAggregationResponseBuilder aggregationResponseBuilder)
+        public ProductSearchService(ISearchRequestBuilder[] searchRequestBuilders, ISearchProvider searchProvider, ISettingsManager settingsManager, IItemService itemService, IBlobUrlResolver blobUrlResolver, IAggregationConverter aggregationConverter)
             : base(searchRequestBuilders, searchProvider, settingsManager)
         {
             _itemService = itemService;
             _blobUrlResolver = blobUrlResolver;
-            _aggregationResponseBuilder = aggregationResponseBuilder;
+            _aggregationConverter = aggregationConverter;
         }
 
 
@@ -101,7 +101,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
         protected override Aggregation[] ConvertAggregations(IList<AggregationResponse> aggregationResponses, ProductSearchCriteria criteria)
         {
-            return _aggregationResponseBuilder?.ConvertAggregations(aggregationResponses, criteria);
+            return _aggregationConverter?.ConvertAggregations(aggregationResponses, criteria);
         }
     }
 }
