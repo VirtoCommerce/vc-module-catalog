@@ -16,6 +16,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private readonly Func<ICatalogRepository> _repositoryFactory;
         private readonly ICacheManager<object> _cacheManager;
         private readonly ICatalogService _catalogService;
+
         public PropertyServiceImpl(Func<ICatalogRepository> repositoryFactory, ICacheManager<object> cacheManager, ICatalogService catalogService)
         {
             _repositoryFactory = repositoryFactory;
@@ -110,7 +111,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
             var property = GetById(propertyId);
             var result = property.DictionaryValues.ToArray();
-            if (!String.IsNullOrEmpty(keyword))
+            if (!string.IsNullOrEmpty(keyword))
             {
                 result = result.Where(x => x.Value.Contains(keyword)).ToArray();
             }
@@ -120,7 +121,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         protected virtual void LoadDependencies(Property[] properties)
         {
-            var catalogsMap = _catalogService.GetCatalogsList().ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase);         
+            var catalogsMap = _catalogService.GetCatalogsList().ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase);
             foreach (var property in properties)
             {
                 property.Catalog = catalogsMap.GetValueOrThrow(property.CatalogId, $"property catalog with key {property.CatalogId} not exist");
@@ -133,9 +134,11 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             foreach (var property in properties)
             {
                 var displayNamesComparer = AnonymousComparer.Create((PropertyDisplayName x) => $"{x.LanguageCode}");
-                var displayNamesForCatalogLanguages = property.Catalog.Languages.Select(x => new PropertyDisplayName { LanguageCode = x.LanguageCode });
+                var displayNamesForCatalogLanguages = property.Catalog.Languages.Select(x => new PropertyDisplayName { LanguageCode = x.LanguageCode }).ToList();
+
                 //Leave display names only with catalog languages
                 property.DisplayNames = property.DisplayNames.Intersect(displayNamesForCatalogLanguages, displayNamesComparer).ToList();
+
                 //Add missed
                 property.DisplayNames.AddRange(displayNamesForCatalogLanguages.Except(property.DisplayNames, displayNamesComparer));
             }

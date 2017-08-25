@@ -52,7 +52,7 @@ namespace VirtoCommerce.CatalogModule.Test
 
         private static ICatalogService GetCatalogService()
         {
-            return new CatalogServiceImpl(GetCatalogRepository, GetCommerceService(), new Mock<ICacheManager<object>>().Object, new Mock<AbstractValidator<IHasProperties>>().Object);
+            return new CatalogServiceImpl(GetCatalogRepository, new Mock<ICacheManager<object>>().Object, new Mock<AbstractValidator<IHasProperties>>().Object);
         }
 
         private static IItemService GetItemService()

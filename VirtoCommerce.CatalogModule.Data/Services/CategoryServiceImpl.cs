@@ -91,7 +91,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         public virtual void Create(Category[] categories)
         {
             if (categories == null)
-                throw new ArgumentNullException("categories");
+                throw new ArgumentNullException(nameof(categories));
 
             SaveChanges(categories);
         }
@@ -100,10 +100,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         public virtual Category Create(Category category)
         {
             if (category == null)
-                throw new ArgumentNullException("category");
+                throw new ArgumentNullException(nameof(category));
 
             Create(new[] { category });
-            return GetById(category.Id, Domain.Catalog.Model.CategoryResponseGroup.Info);
+            return GetById(category.Id, CategoryResponseGroup.Info);
         }
 
         public virtual void Update(Category[] categories)
@@ -113,7 +113,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public virtual void Delete(string[] categoryIds)
         {
-            var categories = GetByIds(categoryIds, CategoryResponseGroup.WithSeo);
             using (var repository = _repositoryFactory())
             {
                 repository.RemoveCategories(categoryIds);
@@ -137,7 +136,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 //Optimize performance and CPU usage
                 repository.DisableChangesTracking();
 
-                var dbExistCategories = repository.GetCategoriesByIds(categories.Where(x => !x.IsTransient()).Select(x => x.Id).ToArray(), Domain.Catalog.Model.CategoryResponseGroup.Full);
+                var dbExistCategories = repository.GetCategoriesByIds(categories.Where(x => !x.IsTransient()).Select(x => x.Id).ToArray(), CategoryResponseGroup.Full);
                 foreach (var category in categories)
                 {
                     var originalEntity = dbExistCategories.FirstOrDefault(x => x.Id == category.Id);
@@ -162,7 +161,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 ResetCache();
             }
             //Need add seo separately
-            _commerceService.UpsertSeoForObjects(categories);
+            _commerceService.UpsertSeoForObjects(categories.OfType<ISeoSupport>().ToArray());
         }
 
         protected virtual void ResetCache()
@@ -170,7 +169,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _cacheManager.ClearRegion(CatalogConstants.CacheRegion);
         }
 
-        //TODO: need to move in domain
+        // TODO: Move to domain
         protected virtual Category MemberwiseCloneCategory(Category category)
         {
             var retVal = AbstractTypeFactory<Category>.TryCreateInstance();
@@ -210,12 +209,12 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
             return _cacheManager.Get($"AllCategories-{catalogId}", CatalogConstants.CacheRegion, () =>
             {
-                CategoryEntity[] entities = null;
+                CategoryEntity[] entities;
                 using (var repository = _repositoryFactory())
                 {
                     repository.DisableChangesTracking();
 
-                    entities = repository.GetCategoriesByIds(repository.Categories.Select(x => x.Id).ToArray(), Domain.Catalog.Model.CategoryResponseGroup.Full);
+                    entities = repository.GetCategoriesByIds(repository.Categories.Select(x => x.Id).ToArray(), CategoryResponseGroup.Full);
                 }
                 var result = entities.Select(x => x.ToModel(AbstractTypeFactory<Category>.TryCreateInstance())).ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase);
 
@@ -249,7 +248,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                                                     .Reverse()
                                                     .ToArray();
                 }
-                category.Level = category.Parents.Count();
+                category.Level = category.Parents.Length;
 
                 if (!category.Links.IsNullOrEmpty())
                 {
@@ -291,7 +290,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 //Try to inherit taxType from parent category
                 if (category.TaxType == null && !category.Parents.IsNullOrEmpty())
                 {
-                    category.TaxType = category.Parents.Select(x => x.TaxType).Where(x => x != null).FirstOrDefault();
+                    category.TaxType = category.Parents.Select(x => x.TaxType).FirstOrDefault(x => x != null);
                 }
                 //Inherit properties
                 var properties = category.Catalog.Properties.ToList();

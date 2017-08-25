@@ -17,17 +17,21 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 {
     public class CatalogServiceImpl : ServiceBase, ICatalogService
     {
-        private readonly ICommerceService _commerceService;
         private readonly ICacheManager<object> _cacheManager;
         private readonly AbstractValidator<IHasProperties> _hasPropertyValidator;
         private readonly Func<ICatalogRepository> _repositoryFactory;
 
-        public CatalogServiceImpl(Func<ICatalogRepository> catalogRepositoryFactory, ICommerceService commerceService, ICacheManager<object> cacheManager, AbstractValidator<IHasProperties> hasPropertyValidator)
+        public CatalogServiceImpl(Func<ICatalogRepository> catalogRepositoryFactory, ICacheManager<object> cacheManager, AbstractValidator<IHasProperties> hasPropertyValidator)
         {
-            _commerceService = commerceService;
             _repositoryFactory = catalogRepositoryFactory;
             _cacheManager = cacheManager;
             _hasPropertyValidator = hasPropertyValidator;
+        }
+
+        [Obsolete("Don't pass ICommerceService")]
+        public CatalogServiceImpl(Func<ICatalogRepository> catalogRepositoryFactory, ICommerceService commerceService, ICacheManager<object> cacheManager, AbstractValidator<IHasProperties> hasPropertyValidator)
+            : this(catalogRepositoryFactory, cacheManager, hasPropertyValidator)
+        {
         }
 
         #region ICatalogService Members
@@ -69,7 +73,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         public IEnumerable<Catalog> GetCatalogsList()
         {
             //Clone required because client code may change resulting objects
-            return PreloadCatalogs().Values.Select(x => MemberwiseCloneCatalog(x)).OrderBy(x => x.Name);
+            return PreloadCatalogs().Values.Select(MemberwiseCloneCatalog).OrderBy(x => x.Name);
         }
 
         #endregion

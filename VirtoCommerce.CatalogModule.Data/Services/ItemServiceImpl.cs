@@ -21,19 +21,23 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private readonly ICatalogService _catalogService;
         private readonly ICommerceService _commerceService;
         private readonly IOutlineService _outlineService;
-        private readonly IAssociationService _associationService;
         private readonly Func<ICatalogRepository> _repositoryFactory;
         private readonly AbstractValidator<IHasProperties> _hasPropertyValidator;
 
-        public ItemServiceImpl(Func<ICatalogRepository> catalogRepositoryFactory, ICommerceService commerceService, IOutlineService outlineService, IAssociationService associationService, ICatalogService catalogService, ICategoryService categoryService, AbstractValidator<IHasProperties> hasPropertyValidator)
+        public ItemServiceImpl(Func<ICatalogRepository> catalogRepositoryFactory, ICommerceService commerceService, IOutlineService outlineService, ICatalogService catalogService, ICategoryService categoryService, AbstractValidator<IHasProperties> hasPropertyValidator)
         {
             _catalogService = catalogService;
             _categoryService = categoryService;
             _commerceService = commerceService;
             _outlineService = outlineService;
-            _associationService = associationService;
             _repositoryFactory = catalogRepositoryFactory;
             _hasPropertyValidator = hasPropertyValidator;
+        }
+
+        [Obsolete("Don't pass IAssociationService")]
+        public ItemServiceImpl(Func<ICatalogRepository> catalogRepositoryFactory, ICommerceService commerceService, IOutlineService outlineService, IAssociationService associationService, ICatalogService catalogService, ICategoryService categoryService, AbstractValidator<IHasProperties> hasPropertyValidator)
+            : this(catalogRepositoryFactory, commerceService, outlineService, catalogService, categoryService, hasPropertyValidator)
+        {
         }
 
         #region IItemService Members
