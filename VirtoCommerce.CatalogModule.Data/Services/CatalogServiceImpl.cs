@@ -8,7 +8,6 @@ using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
-using VirtoCommerce.Domain.Commerce.Services;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Data.Common;
 using VirtoCommerce.Platform.Data.Infrastructure;
@@ -26,12 +25,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _repositoryFactory = catalogRepositoryFactory;
             _cacheManager = cacheManager;
             _hasPropertyValidator = hasPropertyValidator;
-        }
-
-        [Obsolete("Don't pass ICommerceService")]
-        public CatalogServiceImpl(Func<ICatalogRepository> catalogRepositoryFactory, ICommerceService commerceService, ICacheManager<object> cacheManager, AbstractValidator<IHasProperties> hasPropertyValidator)
-            : this(catalogRepositoryFactory, cacheManager, hasPropertyValidator)
-        {
         }
 
         #region ICatalogService Members

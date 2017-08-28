@@ -34,12 +34,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _hasPropertyValidator = hasPropertyValidator;
         }
 
-        [Obsolete("Don't pass IAssociationService")]
-        public ItemServiceImpl(Func<ICatalogRepository> catalogRepositoryFactory, ICommerceService commerceService, IOutlineService outlineService, IAssociationService associationService, ICatalogService catalogService, ICategoryService categoryService, AbstractValidator<IHasProperties> hasPropertyValidator)
-            : this(catalogRepositoryFactory, commerceService, outlineService, catalogService, categoryService, hasPropertyValidator)
-        {
-        }
-
         #region IItemService Members
 
         public CatalogProduct GetById(string itemId, ItemResponseGroup respGroup, string catalogId = null)
