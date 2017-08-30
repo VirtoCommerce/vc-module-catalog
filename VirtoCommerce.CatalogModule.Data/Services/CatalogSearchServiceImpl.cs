@@ -228,12 +228,12 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
                 if (!searchCategoryIds.IsNullOrEmpty())
                 {
-                    query = query.Where(x => searchCategoryIds.Contains(x.CategoryId) || x.CategoryLinks.Any(c => searchCategoryIds.Contains(c.CategoryId)));
+                    query = query.Where(x => searchCategoryIds.Contains(x.CategoryId) || x.CategoryLinks.Any(link => searchCategoryIds.Contains(link.CategoryId)));
                 }
                 else if (!criteria.CatalogIds.IsNullOrEmpty())
                 {
                     query = query.Where(x => criteria.CatalogIds.Contains(x.CatalogId) && (criteria.SearchInChildren || x.CategoryId == null)
-                        || x.CategoryLinks.Any(r => criteria.CatalogIds.Contains(r.CatalogId) && (criteria.SearchInChildren || r.CategoryId == null)));
+                        || x.CategoryLinks.Any(link => criteria.CatalogIds.Contains(link.CatalogId) && (criteria.SearchInChildren || link.CategoryId == null)));
                 }
 
                 if (!string.IsNullOrEmpty(criteria.Code))
