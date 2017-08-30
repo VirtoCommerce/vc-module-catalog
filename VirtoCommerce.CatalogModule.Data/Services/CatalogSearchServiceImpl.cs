@@ -232,7 +232,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 }
                 else if (!criteria.CatalogIds.IsNullOrEmpty())
                 {
-                    query = query.Where(x => criteria.CatalogIds.Contains(x.CatalogId) && (criteria.SearchInChildren || x.CategoryId == null));
+                    query = query.Where(x => criteria.CatalogIds.Contains(x.CatalogId) && (criteria.SearchInChildren || x.CategoryId == null)
+                        || x.CategoryLinks.Any(r => criteria.CatalogIds.Contains(r.CatalogId) && (criteria.SearchInChildren || r.CategoryId == null)));
                 }
 
                 if (!string.IsNullOrEmpty(criteria.Code))
