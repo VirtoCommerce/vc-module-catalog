@@ -194,7 +194,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
         private static IList<string> GetRangeBounds(IEnumerable<RangeFilterValue> values)
         {
-            return SortStringsAsNumbers(values.SelectMany(v => new[] { v.Lower, v.Upper })).ToArray();
+            return SortStringsAsNumbers(values?.SelectMany(v => new[] { v.Lower, v.Upper }))?.ToArray();
         }
 
         private static IBrowseFilter ConvertToFilter(AggregationProperty property, int order)
@@ -237,7 +237,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         {
             var result = new List<RangeFilterValue>();
 
-            if (bounds != null)
+            if (bounds?.Any() == true)
             {
                 var sortedBounds = SortStringsAsNumbers(bounds).ToList();
                 sortedBounds.Add(null);
@@ -266,7 +266,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private static IEnumerable<string> SortStringsAsNumbers(IEnumerable<string> strings)
         {
             return strings
-                .Where(b => !string.IsNullOrEmpty(b))
+                ?.Where(b => !string.IsNullOrEmpty(b))
                 .Select(b => decimal.Parse(b, NumberStyles.Float, CultureInfo.InvariantCulture))
                 .OrderBy(b => b)
                 .Distinct()
