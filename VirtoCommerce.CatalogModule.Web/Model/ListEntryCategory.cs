@@ -7,7 +7,7 @@ namespace VirtoCommerce.CatalogModule.Web.Model
     /// </summary>
     public class ListEntryCategory : ListEntry
     {
-        public static string TypeName = "category";
+        public const string TypeName = "category";
 
         public ListEntryCategory(Category category)
             : base(TypeName)
