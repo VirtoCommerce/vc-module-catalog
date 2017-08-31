@@ -68,7 +68,7 @@
                                 }
                             });
                         }
-                        initializeDictionaryValues(dictionaryValues);
+                        initializeDictionaryValues();
                     } else {
                         $scope.newValue.alias = $scope.newValue.alias ? $scope.newValue.alias : $scope.newValue.value;
                         dictionaryValues.push($scope.newValue);
@@ -95,7 +95,7 @@
                 _.forEach(selectedValues, function (value) {
                     dictionaryValues.splice(dictionaryValues.indexOf(value), 1);
                 });
-                initializeDictionaryValues(dictionaryValues);
+                initializeDictionaryValues();
                 $scope.selectedItem = undefined;
             };
 
