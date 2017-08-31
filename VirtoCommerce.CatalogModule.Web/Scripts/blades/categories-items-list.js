@@ -182,7 +182,7 @@
 
             function mapChecked() {
                 bladeNavigationService.closeChildrenBlades(blade);
-                
+
                 var selection = $scope.gridApi.selection.getSelectedRows();
                 var listEntryLinks = [];
                 angular.forEach(selection, function (listItem) {
@@ -199,7 +199,7 @@
                     blade.refresh();
                     blade.parentBlade.refresh();
                 },
-                function (error) { bladeNavigationService.setError('Error ' + error.status, blade); });
+                    function (error) { bladeNavigationService.setError('Error ' + error.status, blade); });
             }
 
             blade.setSelectedItem = function (listItem) {
@@ -254,30 +254,32 @@
             };
 
             $scope.selectGroupByItem = function (listEntry, $id) {
-                $scope.selectedNodeId = $id;
-                var listItem = {
-                    id: listEntry.outline.slice(-1)[0],
-                    name: listEntry.path.slice(-1)[0]
-                };
+                if (listEntry.outline) {
+                    $scope.selectedNodeId = $id;
+                    var listItem = {
+                        id: listEntry.outline.slice(-1)[0],
+                        name: listEntry.path.slice(-1)[0]
+                    };
 
-                newBlade = {
-                    id: 'itemsList' + (blade.level + 1),
-                    level: blade.level + 1,
-                    mode: blade.mode,
-                    // isBrowsingLinkedCategory: blade.isBrowsingLinkedCategory || $scope.hasLinks(listItem),
-                    title: 'catalog.blades.categories-items-list.title',
-                    // subtitle: 'catalog.blades.categories-items-list.subtitle',
-                    // subtitleValues: listItem.name ? { name: listItem.name } : '',
-                    catalogId: blade.catalogId,
-                    catalog: blade.catalog,
-                    categoryId: listItem.id,
-                    category: listItem,
-                    controller: 'virtoCommerce.catalogModule.categoriesItemsListController',
-                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/categories-items-list.tpl.html'
-                };
+                    newBlade = {
+                        id: 'itemsList' + (blade.level + 1),
+                        level: blade.level + 1,
+                        mode: blade.mode,
+                        // isBrowsingLinkedCategory: blade.isBrowsingLinkedCategory || $scope.hasLinks(listItem),
+                        title: 'catalog.blades.categories-items-list.title',
+                        // subtitle: 'catalog.blades.categories-items-list.subtitle',
+                        // subtitleValues: listItem.name ? { name: listItem.name } : '',
+                        catalogId: blade.catalogId,
+                        catalog: blade.catalog,
+                        categoryId: listItem.id,
+                        category: listItem,
+                        controller: 'virtoCommerce.catalogModule.categoriesItemsListController',
+                        template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/categories-items-list.tpl.html'
+                    };
 
-                newBlade.breadcrumbs = generateBreadcrumbs(newBlade, listEntry, listEntry.outline.length);
-                bladeNavigationService.showBlade(newBlade, blade);
+                    newBlade.breadcrumbs = generateBreadcrumbs(newBlade, listEntry, listEntry.outline.length);
+                    bladeNavigationService.showBlade(newBlade, blade);
+                }
             };
 
             function generateBreadcrumbs(newBlade, listEntry, count) {
@@ -321,9 +323,9 @@
 
             $scope.hasLinks = function (listEntry) {
                 return blade.catalog && blade.catalog.isVirtual &&
-                            _.any(listEntry.links, function (l) {
-                                return l.catalogId === blade.catalogId && (!blade.categoryId || l.categoryId === blade.categoryId);
-                            });
+                    _.any(listEntry.links, function (l) {
+                        return l.catalogId === blade.catalogId && (!blade.categoryId || l.categoryId === blade.categoryId);
+                    });
             }
 
             blade.toolbarCommands = [
@@ -378,36 +380,36 @@
                     canExecuteMethod: function () { return blade.catalogId; },
                     permission: 'catalog:export'
                 },
-            {
-                name: "platform.commands.cut",
-                icon: 'fa fa-cut',
-                executeMethod: function () {
-                    cutList($scope.gridApi.selection.getSelectedRows());
+                {
+                    name: "platform.commands.cut",
+                    icon: 'fa fa-cut',
+                    executeMethod: function () {
+                        cutList($scope.gridApi.selection.getSelectedRows());
+                    },
+                    canExecuteMethod: isItemsChecked,
+                    permission: 'catalog:create'
                 },
-                canExecuteMethod: isItemsChecked,
-                permission: 'catalog:create'
-            },
-            {
-                name: "platform.commands.paste",
-                icon: 'fa fa-clipboard',
-                executeMethod: function () {
-                    blade.isLoading = true;
-                    listEntries.move({
-                        catalog: blade.catalogId,
-                        category: blade.categoryId,
-                        listEntries: $sessionStorage.catalogClipboardContent
-                    }, function () {
-                        delete $sessionStorage.catalogClipboardContent;
-                        blade.refresh();
-                    }, function (error) {
-                        bladeNavigationService.setError('Error ' + error.status, blade);
-                    });
-                },
-                canExecuteMethod: function () {
-                    return $sessionStorage.catalogClipboardContent && blade.catalog && !blade.catalog.isVirtual;
-                },
-                permission: 'catalog:create'
-            }
+                {
+                    name: "platform.commands.paste",
+                    icon: 'fa fa-clipboard',
+                    executeMethod: function () {
+                        blade.isLoading = true;
+                        listEntries.move({
+                            catalog: blade.catalogId,
+                            category: blade.categoryId,
+                            listEntries: $sessionStorage.catalogClipboardContent
+                        }, function () {
+                            delete $sessionStorage.catalogClipboardContent;
+                            blade.refresh();
+                        }, function (error) {
+                            bladeNavigationService.setError('Error ' + error.status, blade);
+                        });
+                    },
+                    canExecuteMethod: function () {
+                        return $sessionStorage.catalogClipboardContent && blade.catalog && !blade.catalog.isVirtual;
+                    },
+                    permission: 'catalog:create'
+                }
 
                 //{
                 //    name: "Advanced search", icon: 'fa fa-search',
@@ -500,6 +502,10 @@
                         x.$path = _.any(x.path) ? x.path.join(" \\ ") : '\\';
                     });
 
+                    if (filter.keyword) { // sorting: categories first, then root products, then all other products in categories
+                        data.sort(function (a, b) { return a.type !== b.type ? a.type > b.type : a.$path === '\\' ? false : b.$path === '\\' ? true : a.$path > b.$path; })
+                    }
+
                     if ($scope.gridApi) {
                         if (filter.keyword) {
                             if (!_.any($scope.gridApi.grouping.getGrouping().grouping)) {
@@ -537,7 +543,7 @@
                 return _.values(groupEntity)[0];
             };
 
-            blade.getSelectedRows = function() {
+            blade.getSelectedRows = function () {
                 return $scope.gridApi.selection.getSelectedRows();
             }
 
