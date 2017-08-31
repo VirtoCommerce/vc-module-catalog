@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using CsvHelper;
 using Omu.ValueInjecter;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
-using VirtoCommerce.Domain.Commerce.Model;
 using VirtoCommerce.Domain.Commerce.Services;
 using VirtoCommerce.Domain.Inventory.Services;
 using VirtoCommerce.Domain.Pricing.Services;
@@ -126,9 +124,9 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                         {
                             code = Guid.NewGuid().ToString("N");
                         }
-                        category = _categoryService.Create(new Category() { Name = categoryName, Code = code, CatalogId = catalog.Id, ParentId = parentCategoryId });
+                        category = _categoryService.Create(new Category { Name = categoryName, Code = code, CatalogId = catalog.Id, ParentId = parentCategoryId });
                         //Raise notification each notifyCategorySizeLimit category
-                        progressInfo.Description = string.Format("Creating categories: {0} created", ++progressInfo.ProcessedCount);
+                        progressInfo.Description = $"Creating categories: {++progressInfo.ProcessedCount} created";
                         progressCallback(progressInfo);
                     }
                     csvProduct.CategoryId = category.Id;
@@ -144,41 +142,40 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
             progressInfo.ProcessedCount = 0;
             progressInfo.TotalCount = csvProducts.Count;
 
-            var defaultFulfilmentCenter = _commerceService.GetAllFulfillmentCenters().FirstOrDefault();
+            var defaultFulfilmentCenterId = _commerceService.GetAllFulfillmentCenters().FirstOrDefault()?.Id;
 
             ICollection<Property> modifiedProperties;
             LoadProductDependencies(csvProducts, catalog, out modifiedProperties);
             MergeFromAlreadyExistProducts(csvProducts, catalog);
 
-            var defaultLanguge = catalog.DefaultLanguage != null ? catalog.DefaultLanguage.LanguageCode : "en-US";           
             foreach (var csvProduct in csvProducts)
             {
                 //Try to detect and split single property value in to multiple values for multivalue properties 
                 csvProduct.PropertyValues = TryToSplitMultivaluePropertyValues(csvProduct);
             }
 
-            progressInfo.Description = string.Format("Saving property dictionary values...");
+            progressInfo.Description = "Saving property dictionary values...";
             progressCallback(progressInfo);
             _propertyService.Update(modifiedProperties.ToArray());
 
-            var totalProductsCount = csvProducts.Count();
+            var totalProductsCount = csvProducts.Count;
             //Order to save main products first then variations
             csvProducts = csvProducts.OrderBy(x => x.MainProductId != null).ToList();
-            for (int i = 0; i < totalProductsCount; i += 10)
+            for (var i = 0; i < totalProductsCount; i += 10)
             {
-                var products = csvProducts.Skip(i).Take(10);
+                var products = csvProducts.Skip(i).Take(10).ToArray();
                 try
                 {
                     //Save main products first and then variations
-                    _productService.Update(products.ToArray());
+                    _productService.Update(products.OfType<CatalogProduct>().ToArray());
 
                     //Set productId for dependent objects
                     foreach (var product in products)
                     {
-                        if (defaultFulfilmentCenter != null || product.Inventory.FulfillmentCenterId != null)
+                        if (product.Inventory.FulfillmentCenterId != null || defaultFulfilmentCenterId != null)
                         {
                             product.Inventory.ProductId = product.Id;
-                            product.Inventory.FulfillmentCenterId = product.Inventory.FulfillmentCenterId ?? defaultFulfilmentCenter.Id;
+                            product.Inventory.FulfillmentCenterId = product.Inventory.FulfillmentCenterId ?? defaultFulfilmentCenterId;
                             product.Price.ProductId = product.Id;
                         }
                         else
@@ -187,7 +184,7 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                         }
                     }
                     var productIds = products.Select(x => x.Id).ToArray();
-                    var existInventories = _inventoryService.GetProductsInventoryInfos(productIds);
+                    var existInventories = _inventoryService.GetProductsInventoryInfos(productIds).ToList();
                     var inventories = products.Where(x => x.Inventory != null).Select(x => x.Inventory).ToArray();
                     foreach (var inventory in inventories)
                     {
@@ -225,15 +222,15 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                     lock (_lockObject)
                     {
                         //Raise notification
-                        progressInfo.ProcessedCount += products.Count();
-                        progressInfo.Description = string.Format("Saving products: {0} of {1} created", progressInfo.ProcessedCount, progressInfo.TotalCount);
+                        progressInfo.ProcessedCount += products.Length;
+                        progressInfo.Description = $"Saving products: {progressInfo.ProcessedCount} of {progressInfo.TotalCount} created";
                         progressCallback(progressInfo);
                     }
                 }
             }
         }
 
-        private List<PropertyValue> TryToSplitMultivaluePropertyValues(CsvProduct csvProduct)
+        private static List<PropertyValue> TryToSplitMultivaluePropertyValues(CsvProduct csvProduct)
         {
             var result = new List<PropertyValue>();
             //Try to split multivalues
@@ -244,7 +241,7 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                     var values = propValue.Value.ToString().Split(',', ';');
                     foreach (var value in values)
                     {
-                        var multiPropValue = propValue.Clone() as PropertyValue;
+                        var multiPropValue = (PropertyValue)propValue.Clone();
                         multiPropValue.Value = value;
                         result.Add(multiPropValue);
                     }
@@ -255,9 +252,9 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                 }
             }
             return result;
-        }    
+        }
 
-        private void LoadProductDependencies(IEnumerable<CsvProduct> csvProducts, Catalog catalog, out ICollection<Property> modifiedProperties)
+        private void LoadProductDependencies(IList<CsvProduct> csvProducts, Catalog catalog, out ICollection<Property> modifiedProperties)
         {
             modifiedProperties = new List<Property>();
             var allCategoriesIds = csvProducts.Select(x => x.CategoryId).Distinct().ToArray();
@@ -293,7 +290,7 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                 {
                     //Try to find property meta information
                     propertyValue.Property = csvProduct.Properties.FirstOrDefault(x => x.Name.EqualsInvariant(propertyValue.PropertyName));
-                    if(propertyValue.Property != null)
+                    if (propertyValue.Property != null)
                     {
                         propertyValue.ValueType = propertyValue.Property.ValueType;
                         if (propertyValue.Property.Dictionary)
@@ -320,37 +317,39 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
             }
         }
 
-        //Merge importing products with already exist to prevent erasing already exist data, import should only update or create data
-        private void MergeFromAlreadyExistProducts(IEnumerable<CsvProduct> csvProducts, Catalog catalog)
+        // Merge importing products with already exist to prevent erasing existing data, import should only update or create data
+        private void MergeFromAlreadyExistProducts(IList<CsvProduct> csvProducts, Catalog catalog)
         {
             var transientProducts = csvProducts.Where(x => x.IsTransient()).ToArray();
             var nonTransientProducts = csvProducts.Where(x => !x.IsTransient()).ToArray();
 
+            // Load existing products
             var alreadyExistProducts = new List<CatalogProduct>();
-            //Load exist products
-            for (int i = 0; i < nonTransientProducts.Count(); i += 50)
+            for (var i = 0; i < nonTransientProducts.Length; i += 50)
             {
                 alreadyExistProducts.AddRange(_productService.GetByIds(nonTransientProducts.Skip(i).Take(50).Select(x => x.Id).ToArray(), ItemResponseGroup.ItemLarge));
             }
-            //Detect already exist product by Code
+
+            // Detect existing product by Code
             var transientProductsCodes = transientProducts.Select(x => x.Code).Where(x => x != null).Distinct().ToArray();
+
             using (var repository = _catalogRepositoryFactory())
             {
-                var foundProducts = repository.Items.Where(x => x.CatalogId == catalog.Id && transientProductsCodes.Contains(x.Code)).Select(x => new { Id = x.Id, Code = x.Code }).ToArray();
-                for (int i = 0; i < foundProducts.Count(); i += 50)
+                var foundProducts = repository.Items.Where(x => x.CatalogId == catalog.Id && transientProductsCodes.Contains(x.Code)).Select(x => new { x.Id, x.Code }).ToArray();
+                for (var i = 0; i < foundProducts.Length; i += 50)
                 {
                     alreadyExistProducts.AddRange(_productService.GetByIds(foundProducts.Skip(i).Take(50).Select(x => x.Id).ToArray(), ItemResponseGroup.ItemLarge));
                 }
             }
-            foreach(var csvProduct in csvProducts)
+
+            foreach (var csvProduct in csvProducts)
             {
-                var existProduct = csvProduct.IsTransient() ? alreadyExistProducts.FirstOrDefault(x => x.Code.EqualsInvariant(csvProduct.Code)) : alreadyExistProducts.FirstOrDefault(x=> x.Id == csvProduct.Id);
-                if(existProduct != null)
+                var existProduct = csvProduct.IsTransient() ? alreadyExistProducts.FirstOrDefault(x => x.Code.EqualsInvariant(csvProduct.Code)) : alreadyExistProducts.FirstOrDefault(x => x.Id == csvProduct.Id);
+                if (existProduct != null)
                 {
                     csvProduct.MergeFrom(existProduct);
                 }
-            }           
-
+            }
         }
     }
 }
