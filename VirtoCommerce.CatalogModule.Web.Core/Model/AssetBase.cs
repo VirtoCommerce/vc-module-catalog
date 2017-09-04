@@ -1,11 +1,12 @@
-﻿namespace VirtoCommerce.CatalogModule.Web.Model
+﻿using VirtoCommerce.Platform.Core.Common;
+
+namespace VirtoCommerce.CatalogModule.Web.Model
 {
     /// <summary>
     /// Base class for assets.
     /// </summary>
-    public class AssetBase
+    public class AssetBase : Entity
     {
-        public string Id { get; set; }
         public string RelativeUrl { get; set; }
         public string Url { get; set; }
 

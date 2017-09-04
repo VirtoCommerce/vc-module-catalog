@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Web.Model
 {
     /// <summary>
     /// Merchandising Catalog.
     /// </summary>
-    public class Catalog
+    public class Catalog : Entity
     {
-        public string Id { get; set; }
         /// <summary>
         /// Gets or sets the name.
         /// </summary>

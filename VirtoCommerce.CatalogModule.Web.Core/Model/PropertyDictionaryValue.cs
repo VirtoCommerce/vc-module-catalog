@@ -1,11 +1,12 @@
-﻿namespace VirtoCommerce.CatalogModule.Web.Model
+﻿using VirtoCommerce.Platform.Core.Common;
+
+namespace VirtoCommerce.CatalogModule.Web.Model
 {
     /// <summary>
     /// Individual dictionary value record for dictionary supporting property.
     /// </summary>
-    public class PropertyDictionaryValue
+    public class PropertyDictionaryValue : Entity
     {
-        public string Id { get; set; }
         /// <summary>
         /// Gets or sets the property id that this dictionary value belongs to.
         /// </summary>

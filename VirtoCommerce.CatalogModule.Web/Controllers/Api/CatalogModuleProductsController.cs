@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net;
 using System.Web.Http;
 using System.Web.Http.Description;
-using System.Web.Http.ModelBinding;
 using VirtoCommerce.CatalogModule.Web.Converters;
 using VirtoCommerce.CatalogModule.Web.Security;
 using VirtoCommerce.Domain.Catalog.Services;
@@ -218,31 +217,36 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [ResponseType(typeof(webModel.Product))]
         public IHttpActionResult CloneProduct(string productId)
         {
-
             var product = _itemsService.GetById(productId, coreModel.ItemResponseGroup.ItemLarge);
             if (product == null)
             {
                 return NotFound();
             }
-            //Need reset all Id instead properties because its gets by inheritance
-            var allEntities = product.GetFlatObjectsListWithInterface<IEntity>();
-            foreach (var entity in allEntities)
-            {
-                var property = entity as coreModel.Property;
-                if (property == null)
-                {
-                    entity.Id = null;
-                }
-            }
+
+            // Generate new SKUs and remove SEO records for product and its variations
             product.Code = _skuGenerator.GenerateSku(product);
             product.SeoInfos.Clear();
+
             foreach (var variation in product.Variations)
             {
                 variation.Code = _skuGenerator.GenerateSku(variation);
                 variation.SeoInfos.Clear();
             }
 
-            return Ok(product.ToWebModel(_blobUrlResolver));
+            var result = product.ToWebModel(_blobUrlResolver);
+
+            // Clear ID for all related entities except properties
+            var allEntities = result.GetFlatObjectsListWithInterface<IEntity>();
+            foreach (var entity in allEntities)
+            {
+                var property = entity as webModel.Property;
+                if (property == null)
+                {
+                    entity.Id = null;
+                }
+            }
+
+            return Ok(result);
         }
 
         /// <summary>
@@ -255,7 +259,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         public IHttpActionResult SaveProduct(webModel.Product product)
         {
             var result = InnerSaveProducts(new[] { product }).FirstOrDefault();
-            if(result != null)
+            if (result != null)
             {
                 return Ok(result.ToWebModel(_blobUrlResolver));
             }
@@ -271,7 +275,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [ResponseType(typeof(void))]
         public IHttpActionResult SaveProducts(webModel.Product[] products)
         {
-            InnerSaveProducts(products);          
+            InnerSaveProducts(products);
             return Ok();
         }
 
@@ -324,11 +328,11 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 else
                 {
                     CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Update, moduleProduct);
-                    toUpdateList.Add(moduleProduct);                  
+                    toUpdateList.Add(moduleProduct);
                 }
             }
 
-            if(!toCreateList.IsNullOrEmpty())
+            if (!toCreateList.IsNullOrEmpty())
             {
                 _itemsService.Create(toCreateList.ToArray());
             }

@@ -2,13 +2,14 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using VirtoCommerce.Domain.Catalog.Model;
+using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Web.Model
 {
     /// <summary>
     /// Property is metainformation record about what additional information merchandising item can be characterized. It's unheritable and can be defined in catalog, category, product or variation level.
     /// </summary>
-    public class Property
+    public class Property : Entity
     {
         public Property()
         {
@@ -58,8 +59,6 @@ namespace VirtoCommerce.CatalogModule.Web.Model
         /// </value>
         public bool IsNew { get; set; }
 
-        public string Id { get; set; }
-
         /// <summary>
         /// Gets or sets the catalog id that this product belongs to.
         /// </summary>
@@ -74,7 +73,7 @@ namespace VirtoCommerce.CatalogModule.Web.Model
         /// <value>
         /// The category identifier.
         /// </value>
-        public string CategoryId { get; set; }       
+        public string CategoryId { get; set; }
 
         /// <summary>
         /// Gets or sets the name.

@@ -1,13 +1,12 @@
-﻿
+﻿using VirtoCommerce.Platform.Core.Common;
+
 namespace VirtoCommerce.CatalogModule.Web.Model
 {
     /// <summary>
     /// Editorial review for an item.
     /// </summary>
-    public class EditorialReview
+    public class EditorialReview : Entity
     {
-        public string Id { get; set; }
-
         /// <summary>
         /// Gets or sets the review content.
         /// </summary>
