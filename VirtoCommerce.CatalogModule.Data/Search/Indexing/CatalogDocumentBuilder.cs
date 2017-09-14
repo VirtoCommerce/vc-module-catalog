@@ -19,7 +19,13 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         protected virtual bool StoreObjectsInIndex => _settingsManager.GetValue("Catalog.Search.UseFullObjectIndexStoring", true);
 
+        [Obsolete("Use overload with contentPropertyTypes")]
         protected virtual void IndexCustomProperties(IndexDocument document, ICollection<Property> properties, ICollection<PropertyValue> propertyValues)
+        {
+            IndexCustomProperties(document, properties, propertyValues, null);
+        }
+
+        protected virtual void IndexCustomProperties(IndexDocument document, ICollection<Property> properties, ICollection<PropertyValue> propertyValues, ICollection<PropertyType> contentPropertyTypes)
         {
             foreach (var propValue in propertyValues.Where(x => x.Value != null))
             {
@@ -50,21 +56,24 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                     }
                 }
 
-                // Add value to the searchable content field
-                var contentField = string.Concat("__content", property != null && property.Multilanguage && !string.IsNullOrWhiteSpace(propValue.LanguageCode) ? "_" + propValue.LanguageCode.ToLowerInvariant() : string.Empty);
-
-                switch (propValue.ValueType)
+                // Add value to the searchable content field if property type is uknown or if it is present in the provided list
+                if (property == null || contentPropertyTypes == null || contentPropertyTypes.Contains(property.Type))
                 {
-                    case PropertyValueType.LongText:
-                    case PropertyValueType.ShortText:
-                        var stringValue = propValue.Value.ToString();
+                    var contentField = string.Concat("__content", property != null && property.Multilanguage && !string.IsNullOrWhiteSpace(propValue.LanguageCode) ? "_" + propValue.LanguageCode.ToLowerInvariant() : string.Empty);
 
-                        if (!string.IsNullOrWhiteSpace(stringValue)) // don't index empty values
-                        {
-                            document.Add(new IndexDocumentField(contentField, stringValue.ToLower()) { IsRetrievable = true, IsSearchable = true, IsCollection = true });
-                        }
+                    switch (propValue.ValueType)
+                    {
+                        case PropertyValueType.LongText:
+                        case PropertyValueType.ShortText:
+                            var stringValue = propValue.Value.ToString();
 
-                        break;
+                            if (!string.IsNullOrWhiteSpace(stringValue)) // don't index empty values
+                            {
+                                document.Add(new IndexDocumentField(contentField, stringValue.ToLower()) { IsRetrievable = true, IsSearchable = true, IsCollection = true });
+                            }
+
+                            break;
+                    }
                 }
             }
         }

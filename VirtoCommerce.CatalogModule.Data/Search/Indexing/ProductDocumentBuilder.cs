@@ -68,7 +68,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             {
                 foreach (var link in product.Links)
                 {
-                    document.Add(new IndexDocumentField($"priority_{link.CatalogId}_{link.CategoryId}", link.Priority) {IsRetrievable = true, IsFilterable = true});
+                    document.Add(new IndexDocumentField($"priority_{link.CatalogId}_{link.CategoryId}", link.Priority) { IsRetrievable = true, IsFilterable = true });
                 }
             }
 
@@ -90,19 +90,23 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 document.Add(new IndexDocumentField("__outline", outline.ToLowerInvariant()) { IsRetrievable = true, IsFilterable = true, IsCollection = true });
             }
 
+            // Types of properties which values should be added to the searchable __content field
+            var contentPropertyTypes = new[] { PropertyType.Product, PropertyType.Variation };
+
             // Index custom product properties
-            IndexCustomProperties(document, product.Properties, product.PropertyValues);
+            IndexCustomProperties(document, product.Properties, product.PropertyValues, contentPropertyTypes);
+
             //Index product category properties
             if (product.Category != null)
             {
-                IndexCustomProperties(document, product.Category.Properties, product.Category.PropertyValues);
+                IndexCustomProperties(document, product.Category.Properties, product.Category.PropertyValues, contentPropertyTypes);
             }
+
             //Index catalog properties
             if (product.Catalog != null)
             {
-                IndexCustomProperties(document, product.Catalog.Properties, product.Catalog.PropertyValues);
+                IndexCustomProperties(document, product.Catalog.Properties, product.Catalog.PropertyValues, contentPropertyTypes);
             }
-
 
             if (product.Variations != null)
             {
@@ -120,7 +124,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
                 foreach (var variation in product.Variations)
                 {
-                    IndexCustomProperties(document, variation.Properties, variation.PropertyValues);
+                    IndexCustomProperties(document, variation.Properties, variation.PropertyValues, contentPropertyTypes);
                 }
             }
 
