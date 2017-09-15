@@ -36,13 +36,13 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         #region IItemService Members
 
-        public CatalogProduct GetById(string itemId, ItemResponseGroup respGroup, string catalogId = null)
+        public virtual CatalogProduct GetById(string itemId, ItemResponseGroup respGroup, string catalogId = null)
         {
             var results = GetByIds(new[] { itemId }, respGroup, catalogId);
             return results.Any() ? results.First() : null;
         }
 
-        public CatalogProduct[] GetByIds(string[] itemIds, ItemResponseGroup respGroup, string catalogId = null)
+        public virtual CatalogProduct[] GetByIds(string[] itemIds, ItemResponseGroup respGroup, string catalogId = null)
         {
             CatalogProduct[] result;
 
@@ -129,24 +129,24 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return result;
         }
 
-        public void Create(CatalogProduct[] items)
+        public virtual void Create(CatalogProduct[] items)
         {
             SaveChanges(items);
         }
 
-        public CatalogProduct Create(CatalogProduct item)
+        public virtual CatalogProduct Create(CatalogProduct item)
         {
             Create(new[] { item });
             var retVal = GetById(item.Id, ItemResponseGroup.ItemLarge);
             return retVal;
         }
 
-        public void Update(CatalogProduct[] items)
+        public virtual void Update(CatalogProduct[] items)
         {
             SaveChanges(items);
         }
 
-        public void Delete(string[] itemIds)
+        public virtual void Delete(string[] itemIds)
         {
             //var items = GetByIds(itemIds, ItemResponseGroup.Seo | ItemResponseGroup.Variations);
             using (var repository = _repositoryFactory())
@@ -359,7 +359,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
         }
 
-        private void ValidateProducts(CatalogProduct[] products)
+        protected virtual void ValidateProducts(CatalogProduct[] products)
         {
             if (products == null)
             {
