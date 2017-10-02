@@ -138,7 +138,7 @@
         <div class="form-input">
             <ui-select ng-model="context.currentPropValues[0]" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
                 <ui-select-match placeholder="Select value">{{$select.selected.value}}</ui-select-match>
-                <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search}">
+                <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search} | orderBy: 'value'">
                     <span ng-bind-html="propValue.value | highlight: $select.search"></span>
                 </ui-select-choices>
             </ui-select>
@@ -148,7 +148,7 @@
         <div class="form-input">
             <ui-select ng-model="context.currentPropValues[0]" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
                 <ui-select-match placeholder="Select value">{{$select.selected.value}}</ui-select-match>
-                <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search}">
+                <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search} | orderBy: 'value'">
                     <span ng-bind-html="propValue.value | highlight: $select.search"></span>
                 </ui-select-choices>
             </ui-select>
@@ -160,7 +160,7 @@
         <div class="form-input">
             <ui-select multiple ng-model="context.currentPropValues" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
                 <ui-select-match placeholder="Select value">{{$item.value}}</ui-select-match>
-                <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search}">
+                <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search} | orderBy: 'value'">
                     <span ng-bind-html="propValue.value | highlight: $select.search"></span>
                 </ui-select-choices>
             </ui-select>
@@ -170,7 +170,7 @@
         <div class="form-input">
             <ui-select multiple ng-model="context.currentPropValues[0]" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
                 <ui-select-match placeholder="Select value">{{$item.value}}</ui-select-match>
-                <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search}">
+                <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search} | orderBy: 'value'">
                     <span ng-bind-html="propValue.value | highlight: $select.search"></span>
                 </ui-select-choices>
             </ui-select>

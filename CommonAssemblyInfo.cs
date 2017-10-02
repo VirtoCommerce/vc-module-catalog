@@ -15,8 +15,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyProduct("Virto Commerce Catalog Module")]
 [assembly: AssemblyCopyright("Copyright © VirtoCommerce 2011-2017")]
 
-[assembly: AssemblyFileVersion("2.19.3.0")]
-[assembly: AssemblyVersion("2.19.3.0")]
+[assembly: AssemblyFileVersion("2.19.4.0")]
+[assembly: AssemblyVersion("2.19.4.0")]
 
 #if DEBUG
 [assembly: AssemblyConfiguration("Debug")]
