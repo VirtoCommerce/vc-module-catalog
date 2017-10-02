@@ -133,9 +133,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             using (var repository = _repositoryFactory())
             using (var changeTracker = GetChangeTracker(repository))
             {
-                //Optimize performance and CPU usage
-                repository.DisableChangesTracking();
-
                 var dbExistCategories = repository.GetCategoriesByIds(categories.Where(x => !x.IsTransient()).Select(x => x.Id).ToArray(), CategoryResponseGroup.Full);
                 foreach (var category in categories)
                 {
@@ -154,7 +151,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     }
                 }
 
-                ((System.Data.Entity.DbContext)repository).ChangeTracker.DetectChanges();
                 CommitChanges(repository);
                 pkMap.ResolvePrimaryKeys();
                 //Reset cached categories and catalogs
