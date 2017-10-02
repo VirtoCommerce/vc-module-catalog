@@ -4,6 +4,119 @@
     blade.updatePermission = 'catalog:update';
     blade.currentEntityId = blade.itemId;
 
+    blade.metaFields = getMetafields();
+
+    function getMetafields() {
+        return [
+            {
+                name: "code",
+                templateUrl: "detailFormCode.html",
+                priority: 1
+            },
+            {
+                name: "_priority",
+                title: "catalog.blades.item-detail.labels.priority",
+                valueType: "Integer",
+                priority: 2
+            },
+            {
+                name: "name",
+                title: "catalog.blades.item-detail.labels.name",
+                valueType: "LongText",
+                isRequired: true,
+                priority: 3
+            },
+            {
+                name: "gtin",
+                templateUrl: "detailFormGtin.html",
+                priority: 4
+            },
+            {
+                name: "isBuyable",
+                title: "catalog.blades.item-detail.labels.can-be-purchased",
+                valueType: "Boolean",
+                priority: 5
+            },
+            {
+                name: "isActive",
+                title: "catalog.blades.item-detail.labels.store-visible",
+                valueType: "Boolean",
+                priority: 6
+            },
+            {
+                name: "trackInventory",
+                title: "catalog.blades.item-detail.labels.track-inventory",
+                valueType: "Boolean",
+                isVisibleFn: isCurrentEntityPhysical,
+                priority: 7
+            },
+            {
+                name: "hasUserAgreement",
+                title: "catalog.blades.item-detail.labels.has-user-agreement",
+                valueType: "Boolean",
+                isVisibleFn: isCurrentEntityDigital,
+                priority: 8
+            },
+
+            {
+                name: "minQuantity",
+                title: "catalog.blades.item-detail.labels.min-quantity",
+                valueType: "Integer",
+                isVisibleFn: isCurrentEntityPhysical,
+                priority: 9
+            },
+            {
+                name: "maxQuantity",
+                title: "catalog.blades.item-detail.labels.max-quantity",
+                valueType: "Integer",
+                isVisibleFn: isCurrentEntityPhysical,
+                priority: 10
+            },
+
+            {
+                name: "downloadType",
+                templateUrl: "detailFormDownloadType.html",
+                isVisibleFn: isCurrentEntityDigital,
+                priority: 11
+            },
+            {
+                name: "maxNumberOfDownload",
+                title: "catalog.blades.item-detail.labels.max-downloads",
+                valueType: "Integer",
+                isVisibleFn: isCurrentEntityDigital,
+                priority: 12
+            },
+            {
+                name: "downloadExpiration",
+                title: "catalog.blades.item-detail.labels.expiration-date",
+                valueType: "DateTime",
+                isVisibleFn: isCurrentEntityDigital,
+                priority: 13
+            },
+
+            {
+                name: "vendor",
+                templateUrl: "detailFormVendor.html",
+                isVisibleFn: isCurrentEntityPhysical,
+                priority: 14
+            },
+            {
+                name: "taxType",
+                templateUrl: "detailFormTaxType.html",
+                isVisibleFn: isCurrentEntityPhysical,
+                priority: 15
+            }
+        ];
+    }
+
+    function isCurrentEntityPhysical() {
+        return blade.currentEntity ? blade.currentEntity.productType === 'Physical' : false;
+    }
+
+    function isCurrentEntityDigital() {
+        return blade.currentEntity ? blade.currentEntity.productType === 'Digital' : false;
+    }
+
     blade.refresh = function (parentRefresh) {
         blade.isLoading = true;
 
@@ -43,7 +156,7 @@
     }
 
 
-    $scope.codeValidator = function (value) {
+    blade.codeValidator = function (value) {
         var pattern = /[$+;=%{}[\]|\\\/@ ~!^*&()?:'<>,]/;
         return !pattern.test(value);
     };
@@ -53,9 +166,9 @@
     };
 
     function canSave() {
-        return isDirty() && formScope && formScope.$valid;
+        return isDirty() && blade.formScope && blade.formScope.$valid;
     }
-    
+
     function saveChanges() {
         blade.isLoading = true;
 
@@ -78,7 +191,7 @@
     function getLinkWithPriority(data) {
         var retVal;
         if (bladeNavigationService.catalogsSelectedCatalog && bladeNavigationService.catalogsSelectedCatalog.isVirtual) {
-            retVal = _.find(data.links, function(l) {
+            retVal = _.find(data.links, function (l) {
                 return l.catalogId == bladeNavigationService.catalogsSelectedCatalog.id &&
                         (!bladeNavigationService.catalogsSelectedCategoryId || l.categoryId === bladeNavigationService.catalogsSelectedCategoryId);
             });
@@ -86,8 +199,8 @@
         return retVal;
     }
 
-    var formScope;
-    $scope.setForm = function (form) { formScope = form; }
+    blade.formScope = null;
+    $scope.setForm = function (form) { blade.formScope = form; }
 
     blade.headIcon = blade.productType === 'Digital' ? 'fa-file-zip-o' : 'fa-dropbox';
 
@@ -139,14 +252,14 @@
     };
 
     function initVendors() {
-        $scope.vendors = members.search({
+        blade.vendors = members.search({
             memberType: 'Vendor',
             sort: 'name:asc',
             take: 1000
         });
     }
 
-    $scope.openVendorsManagement = function () {
+    blade.openVendorsManagement = function () {
         var newBlade = {
             memberType: 'Vendor',
             parentRefresh: initVendors,
@@ -158,7 +271,7 @@
         bladeNavigationService.showBlade(newBlade, blade);
     };
 
-    $scope.openDictionarySettingManagement = function (setting) {
+    blade.openDictionarySettingManagement = function (setting) {
         var newBlade = {
             id: 'settingDetailChild',
             isApiSave: true,
@@ -169,7 +282,7 @@
             case 'TaxTypes':
                 _.extend(newBlade, {
                     currentEntityId: 'VirtoCommerce.Core.General.TaxTypes',
-                    parentRefresh: function (data) { $scope.taxTypes = data; }
+                    parentRefresh: function (data) { blade.taxTypes = data; }
                 });
                 break;
         }
@@ -184,7 +297,7 @@
     });
 
     initVendors();
-    $scope.taxTypes = settings.getValues({ id: 'VirtoCommerce.Core.General.TaxTypes' });
-   
+    blade.taxTypes = settings.getValues({ id: 'VirtoCommerce.Core.General.TaxTypes' });
+
     blade.refresh(false);
 }]);

@@ -3,6 +3,35 @@
     var blade = $scope.blade;
     blade.updatePermission = 'catalog:update';
 
+        blade.metaFields = getMetaform();
+    function getMetaform() {
+        return [
+            {
+                name: "isActive",
+                title: "catalog.blades.category-detail.labels.is-active",
+                valueType: "Boolean",
+                priority: 1
+            },
+            {
+                name: "name",
+                title: "catalog.blades.category-detail.labels.name",
+                valueType: "ShortText",
+                isRequired: true,
+                priority: 2
+            },
+            {
+                name: "code",
+                templateUrl: "categoryFormCode.html",
+                priority: 3
+            },
+            {
+                name: "taxType",
+                templateUrl: "categoryFormTaxType.html",
+                priority: 4
+            }
+        ];
+    }
+
     blade.refresh = function (parentRefresh) {
         return categories.get({ id: blade.currentEntityId }, function (data) {
 
@@ -34,7 +63,7 @@
         blade.securityScopes = data.securityScopes;
     };
 
-    $scope.codeValidator = function (value) {
+    blade.codeValidator = function (value) {
         var pattern = /[$+;=%{}[\]|\\\/@ ~!^*&()?:'<>,]/;
         return !pattern.test(value);
     };
@@ -44,7 +73,7 @@
     };
 
     function canSave() {
-        return isDirty() && formScope && formScope.$valid;
+        return isDirty() && blade.formScope && blade.formScope.$valid;
     }
 
     function saveChanges() {
@@ -59,8 +88,8 @@
         bladeNavigationService.showConfirmationIfNeeded(isDirty(), canSave(), blade, saveChanges, closeCallback, "catalog.dialogs.category-save.title", "catalog.dialogs.category-save.message");
     };
 
-    var formScope;
-    $scope.setForm = function (form) { formScope = form; }
+    blade.formScope = null;
+    $scope.setForm = function (form) { blade.formScope = form; }
 
     blade.toolbarCommands = [
 		{
@@ -79,12 +108,12 @@
         }
     ];
 
-    $scope.openDictionarySettingManagement = function () {
+    blade.openDictionarySettingManagement = function () {
         var newBlade = {
             id: 'settingDetailChild',
             isApiSave: true,
             currentEntityId: 'VirtoCommerce.Core.General.TaxTypes',
-            parentRefresh: function (data) { $scope.taxTypes = data; },
+            parentRefresh: function (data) { blade.taxTypes = data; },
             controller: 'platformWebApp.settingDictionaryController',
             template: '$(Platform)/Scripts/app/settings/blades/setting-dictionary.tpl.html'
         };
@@ -92,5 +121,5 @@
     };
 
     blade.refresh();
-    $scope.taxTypes = settings.getValues({ id: 'VirtoCommerce.Core.General.TaxTypes' });
+    blade.taxTypes = settings.getValues({ id: 'VirtoCommerce.Core.General.TaxTypes' });
 }]);
