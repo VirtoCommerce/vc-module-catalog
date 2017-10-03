@@ -1,21 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Web.Model
 {
     /// <summary>
     /// Base class for all entries used in catalog categories browsing.
     /// </summary>
-	public class ListEntry
-	{
-		public ListEntry(string typeName)
-		{
-			Type = typeName;
-		}
-		public string Id { get; set; }
+	public class ListEntry : AuditableEntity
+    {
+        public ListEntry(string typeName, AuditableEntity auditableEntity)
+        {
+            Type = typeName;
+
+            // Entity
+            Id = auditableEntity.Id;
+
+            // AuditableEntity
+            CreatedDate = auditableEntity.CreatedDate;
+            ModifiedDate = auditableEntity.ModifiedDate;
+            CreatedBy = auditableEntity.CreatedBy;
+            ModifiedBy = auditableEntity.ModifiedBy;
+        }
+
         /// <summary>
         /// Gets or sets the type. E.g. "product", "category"
         /// </summary>
@@ -23,10 +28,12 @@ namespace VirtoCommerce.CatalogModule.Web.Model
         /// The type.
         /// </value>
 		public string Type { get; set; }
+
         /// <summary>
         /// Gets or sets a value indicating whether this entry is active.
         /// </summary>
 		public bool? IsActive { get; set; }
+
         /// <summary>
         /// Gets or sets the image URL.
         /// </summary>
@@ -50,6 +57,7 @@ namespace VirtoCommerce.CatalogModule.Web.Model
         /// The name.
         /// </value>
 		public string Name { get; set; }
+
         /// <summary>
         /// Gets or sets the links.
         /// </summary>
@@ -62,6 +70,7 @@ namespace VirtoCommerce.CatalogModule.Web.Model
         /// All entry parents ids
         /// </summary>
         public string[] Outline { get; set; }
+
         /// <summary>
         /// All entry parents names
         /// </summary>
