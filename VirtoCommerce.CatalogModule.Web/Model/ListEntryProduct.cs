@@ -11,23 +11,25 @@ namespace VirtoCommerce.CatalogModule.Web.Model
         public string ProductType { get; set; }
 
         public ListEntryProduct(Product product)
-            : base(TypeName)
+            : base(TypeName, product)
         {
-            Id = product.Id;
+            ProductType = product.ProductType;
+
             ImageUrl = product.ImgSrc;
             Code = product.Code;
             Name = product.Name;
-            ProductType = product.ProductType;
             IsActive = product.IsActive ?? true;
 
             if (!string.IsNullOrEmpty(product.Outline))
             {
                 Outline = product.Outline.Split('/').Select(x => x).ToArray();
             }
+
             if (!string.IsNullOrEmpty(product.Path))
             {
                 Path = product.Path.Split('/').Select(x => x).ToArray();
             }
+
             if (product.Links != null)
             {
                 Links = product.Links.Select(x => new ListEntryLink(x)).ToArray();
