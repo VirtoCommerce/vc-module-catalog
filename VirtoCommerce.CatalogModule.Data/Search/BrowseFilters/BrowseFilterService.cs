@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
 using Newtonsoft.Json;
+using VirtoCommerce.Domain.Catalog.Model.Search;
 using VirtoCommerce.Domain.Store.Services;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.DynamicProperties;
@@ -30,19 +32,53 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
             TypeNameHandling = TypeNameHandling.None,
         };
 
-        public virtual IList<IBrowseFilter> GetAllFilters(string storeId)
+        public IList<IBrowseFilter> GetBrowseFilters(ProductSearchCriteria criteria)
+        {
+            if (criteria == null)
+                throw new ArgumentNullException(nameof(criteria));
+
+            var aggregations = GetAllAggregations(criteria)?.AsQueryable();
+
+            // Check allowed aggregations
+            if (criteria.IncludeAggregations != null)
+            {
+                aggregations = aggregations?.Where(f => criteria.IncludeAggregations.Contains(f.Key, StringComparer.OrdinalIgnoreCase));
+            }
+
+            // Check forbidden aggregations
+            if (criteria.ExcludeAggregations != null)
+            {
+                aggregations = aggregations?.Where(f => !criteria.ExcludeAggregations.Contains(f.Key, StringComparer.OrdinalIgnoreCase));
+            }
+
+            var result = aggregations
+                ?.Where(f => !(f is PriceRangeFilter) || ((PriceRangeFilter)f).Currency.EqualsInvariant(criteria.Currency))
+                .ToList();
+
+            return result;
+        }
+
+        public virtual IList<IBrowseFilter> GetStoreAggregations(string storeId)
         {
             var serializedValue = GetSerializedValue(storeId);
             var result = Deserialize(serializedValue);
             return result;
         }
 
-        public virtual void SaveFilters(string storeId, IList<IBrowseFilter> filters)
+        public virtual void SaveStoreAggregations(string storeId, IList<IBrowseFilter> filters)
         {
             var serializedValue = Serialize(filters);
             SaveSerializedValue(storeId, serializedValue);
         }
 
+
+        protected virtual IList<IBrowseFilter> GetAllAggregations(ProductSearchCriteria criteria)
+        {
+            if (criteria == null)
+                throw new ArgumentNullException(nameof(criteria));
+
+            return GetStoreAggregations(criteria.StoreId);
+        }
 
         protected virtual string GetSerializedValue(string storeId)
         {

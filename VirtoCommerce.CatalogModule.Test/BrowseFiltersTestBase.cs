@@ -91,16 +91,16 @@ namespace VirtoCommerce.CatalogModule.Test
 
         protected static IBrowseFilterService GetBrowseFilterService()
         {
-            var mock = new Mock<IBrowseFilterService>();
+            var mock = new Mock<BrowseFilterService>(null) { CallBase = true };
 
             mock
-                .Setup(x => x.GetAllFilters(It.IsAny<string>()))
-                .Returns<string>(GetBrowseFilters);
+                .Setup(x => x.GetStoreAggregations(It.IsAny<string>()))
+                .Returns<string>(GetStoreAggregations);
 
             return mock.Object;
         }
 
-        protected static IList<IBrowseFilter> GetBrowseFilters(string storeId)
+        protected static IList<IBrowseFilter> GetStoreAggregations(string storeId)
         {
             return BrowseFilters;
         }

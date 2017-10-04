@@ -205,7 +205,6 @@
     <Compile Include="Repositories\ICatalogRepository.cs" />
     <Compile Include="Search\AggregationConverter.cs" />
     <Compile Include="Search\BrowseFilters\BrowseFilterService.cs" />
-    <Compile Include="Search\BrowseFilters\BrowseFilterServiceExtensions.cs" />
     <Compile Include="Search\BrowseFilters\IBrowseFilter.cs" />
     <Compile Include="Search\BrowseFilters\IBrowseFilterService.cs" />
     <Compile Include="Search\BrowseFilters\IBrowseFilterValue.cs" />
