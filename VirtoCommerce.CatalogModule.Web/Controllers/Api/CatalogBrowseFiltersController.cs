@@ -94,7 +94,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 .Where(f => f != null)
                 .ToArray();
 
-            _browseFilterService.SaveFilters(storeId, filters);
+            _browseFilterService.SaveStoreAggregations(storeId, filters);
 
             return StatusCode(HttpStatusCode.NoContent);
         }
@@ -138,7 +138,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         {
             var result = new List<AggregationProperty>();
 
-            var allFilters = _browseFilterService.GetAllFilters(storeId);
+            var allFilters = _browseFilterService.GetStoreAggregations(storeId);
             if (allFilters != null)
             {
                 AggregationProperty property = null;

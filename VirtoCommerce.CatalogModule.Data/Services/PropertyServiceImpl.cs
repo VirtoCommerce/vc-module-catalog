@@ -151,6 +151,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     {
                         changeTracker.Attach(originalEntity);
                         modifiedEntity.Patch(originalEntity);
+                        //Force set ModifiedDate property to mark a property changed. Special for  partial update cases when property table not have changes
+                        originalEntity.ModifiedDate = DateTime.UtcNow;
                     }
                     else
                     {

@@ -10,9 +10,8 @@ namespace VirtoCommerce.CatalogModule.Web.Model
         public const string TypeName = "category";
 
         public ListEntryCategory(Category category)
-            : base(TypeName)
+            : base(TypeName, category)
         {
-            Id = category.Id;
             ImageUrl = category.ImgSrc;
             Code = category.Code;
             Name = category.Name;
@@ -22,10 +21,12 @@ namespace VirtoCommerce.CatalogModule.Web.Model
             {
                 Outline = category.Outline.Split('/').Select(x => x).ToArray();
             }
+
             if (!string.IsNullOrEmpty(category.Path))
             {
                 Path = category.Path.Split('/').Select(x => x).ToArray();
             }
+
             if (category.Links != null)
             {
                 Links = category.Links.Select(x => new ListEntryLink(x)).ToArray();
