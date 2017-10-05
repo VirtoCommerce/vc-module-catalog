@@ -1,36 +1,9 @@
 ﻿angular.module('virtoCommerce.catalogModule')
-.controller('virtoCommerce.catalogModule.categoryDetailController', ['$rootScope', '$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.settings', 'virtoCommerce.catalogModule.categories', 'virtoCommerce.catalogModule.catalogs', function ($rootScope, $scope, bladeNavigationService, settings, categories, catalogs) {
+.controller('virtoCommerce.catalogModule.categoryDetailController', ['$rootScope', '$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.settings', 'virtoCommerce.catalogModule.categories', 'virtoCommerce.catalogModule.catalogs', 'platformWebApp.metaFormsService', function ($rootScope, $scope, bladeNavigationService, settings, categories, catalogs, metaFormsService) {
     var blade = $scope.blade;
     blade.updatePermission = 'catalog:update';
 
-        blade.metaFields = getMetaform();
-    function getMetaform() {
-        return [
-            {
-                name: "isActive",
-                title: "catalog.blades.category-detail.labels.is-active",
-                valueType: "Boolean",
-                priority: 1
-            },
-            {
-                name: "name",
-                title: "catalog.blades.category-detail.labels.name",
-                valueType: "ShortText",
-                isRequired: true,
-                priority: 2
-            },
-            {
-                name: "code",
-                templateUrl: "categoryFormCode.html",
-                priority: 3
-            },
-            {
-                name: "taxType",
-                templateUrl: "categoryFormTaxType.html",
-                priority: 4
-            }
-        ];
-    }
+    blade.metaFields = metaFormsService.getMetaFields("categoryDetail");
 
     blade.refresh = function (parentRefresh) {
         return categories.get({ id: blade.currentEntityId }, function (data) {
@@ -38,15 +11,15 @@
             if (!blade.catalog) {
                 blade.catalog = catalogs.get({ id: data.catalogId });
             }
-        	initializeBlade(data);
+            initializeBlade(data);
 
-        	if (blade.childrenBlades) {
-        		_.each(blade.childrenBlades, function (x) {
-        			if (x.refresh) {
-        				x.refresh(blade.currentEntity);
-        			}
-        		});
-        	}
+            if (blade.childrenBlades) {
+                _.each(blade.childrenBlades, function (x) {
+                    if (x.refresh) {
+                        x.refresh(blade.currentEntity);
+                    }
+                });
+            }
 
             if (parentRefresh) {
                 blade.parentBlade.refresh();
