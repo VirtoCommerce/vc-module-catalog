@@ -502,8 +502,17 @@
                         x.$path = _.any(x.path) ? x.path.join(" \\ ") : '\\';
                     });
 
-                    if (filter.keyword) { // sorting: categories first, then root products, then all other products in categories
-                        data.sort(function (a, b) { return a.type !== b.type ? a.type > b.type : a.$path === '\\' ? false : b.$path === '\\' ? true : a.$path > b.$path; })
+                    if (filter.keyword) {
+                        // sorting by: 1. type (category/product); 2. path (root items first); 3. name.
+                        data.sort(function (a, b) {
+                            if (a.type < b.type) return -1;
+                            if (a.type > b.type) return 1;
+                            if (a.$path < b.$path) return b.$path === '\\' ? 1 : -1;
+                            if (a.$path > b.$path) return a.$path === '\\' ? -1 : 1;
+                            if (a.name < b.name) return -1;
+                            if (a.name > b.name) return 1;
+                            return 0;
+                        })
                     }
 
                     if ($scope.gridApi) {
