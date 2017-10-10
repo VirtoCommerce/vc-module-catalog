@@ -1,8 +1,10 @@
 ﻿angular.module('virtoCommerce.catalogModule')
-.controller('virtoCommerce.catalogModule.itemDetailController', ['$rootScope', '$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.settings', 'virtoCommerce.catalogModule.items', 'virtoCommerce.customerModule.members', 'virtoCommerce.catalogModule.catalogs', function ($rootScope, $scope, bladeNavigationService, settings, items, members, catalogs) {
+.controller('virtoCommerce.catalogModule.itemDetailController', ['$rootScope', '$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.settings', 'virtoCommerce.catalogModule.items', 'virtoCommerce.customerModule.members', 'virtoCommerce.catalogModule.catalogs', 'platformWebApp.metaFormsService', function ($rootScope, $scope, bladeNavigationService, settings, items, members, catalogs, metaFormsService) {
     var blade = $scope.blade;
     blade.updatePermission = 'catalog:update';
     blade.currentEntityId = blade.itemId;
+
+    blade.metaFields = metaFormsService.getMetaFields("productDetail");
 
     blade.refresh = function (parentRefresh) {
         blade.isLoading = true;
@@ -43,7 +45,7 @@
     }
 
 
-    $scope.codeValidator = function (value) {
+    blade.codeValidator = function (value) {
         var pattern = /[$+;=%{}[\]|\\\/@ ~!^*&()?:'<>,]/;
         return !pattern.test(value);
     };
@@ -53,9 +55,9 @@
     };
 
     function canSave() {
-        return isDirty() && formScope && formScope.$valid;
+        return isDirty() && blade.formScope && blade.formScope.$valid;
     }
-    
+
     function saveChanges() {
         blade.isLoading = true;
 
@@ -78,7 +80,7 @@
     function getLinkWithPriority(data) {
         var retVal;
         if (bladeNavigationService.catalogsSelectedCatalog && bladeNavigationService.catalogsSelectedCatalog.isVirtual) {
-            retVal = _.find(data.links, function(l) {
+            retVal = _.find(data.links, function (l) {
                 return l.catalogId == bladeNavigationService.catalogsSelectedCatalog.id &&
                         (!bladeNavigationService.catalogsSelectedCategoryId || l.categoryId === bladeNavigationService.catalogsSelectedCategoryId);
             });
@@ -86,8 +88,8 @@
         return retVal;
     }
 
-    var formScope;
-    $scope.setForm = function (form) { formScope = form; }
+    blade.formScope = null;
+    $scope.setForm = function (form) { blade.formScope = form; }
 
     blade.headIcon = blade.productType === 'Digital' ? 'fa-file-zip-o' : 'fa-dropbox';
 
@@ -139,14 +141,14 @@
     };
 
     function initVendors() {
-        $scope.vendors = members.search({
+        blade.vendors = members.search({
             memberType: 'Vendor',
             sort: 'name:asc',
             take: 1000
         });
     }
 
-    $scope.openVendorsManagement = function () {
+    blade.openVendorsManagement = function () {
         var newBlade = {
             memberType: 'Vendor',
             parentRefresh: initVendors,
@@ -158,7 +160,7 @@
         bladeNavigationService.showBlade(newBlade, blade);
     };
 
-    $scope.openDictionarySettingManagement = function (setting) {
+    blade.openDictionarySettingManagement = function (setting) {
         var newBlade = {
             id: 'settingDetailChild',
             isApiSave: true,
@@ -169,7 +171,7 @@
             case 'TaxTypes':
                 _.extend(newBlade, {
                     currentEntityId: 'VirtoCommerce.Core.General.TaxTypes',
-                    parentRefresh: function (data) { $scope.taxTypes = data; }
+                    parentRefresh: function (data) { blade.taxTypes = data; }
                 });
                 break;
         }
@@ -184,7 +186,7 @@
     });
 
     initVendors();
-    $scope.taxTypes = settings.getValues({ id: 'VirtoCommerce.Core.General.TaxTypes' });
-   
+    blade.taxTypes = settings.getValues({ id: 'VirtoCommerce.Core.General.TaxTypes' });
+
     blade.refresh(false);
 }]);

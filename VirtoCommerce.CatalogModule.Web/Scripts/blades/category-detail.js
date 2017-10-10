@@ -1,7 +1,9 @@
 ﻿angular.module('virtoCommerce.catalogModule')
-.controller('virtoCommerce.catalogModule.categoryDetailController', ['$rootScope', '$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.settings', 'virtoCommerce.catalogModule.categories', 'virtoCommerce.catalogModule.catalogs', function ($rootScope, $scope, bladeNavigationService, settings, categories, catalogs) {
+.controller('virtoCommerce.catalogModule.categoryDetailController', ['$rootScope', '$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.settings', 'virtoCommerce.catalogModule.categories', 'virtoCommerce.catalogModule.catalogs', 'platformWebApp.metaFormsService', function ($rootScope, $scope, bladeNavigationService, settings, categories, catalogs, metaFormsService) {
     var blade = $scope.blade;
     blade.updatePermission = 'catalog:update';
+
+    blade.metaFields = metaFormsService.getMetaFields("categoryDetail");
 
     blade.refresh = function (parentRefresh) {
         return categories.get({ id: blade.currentEntityId }, function (data) {
@@ -9,15 +11,15 @@
             if (!blade.catalog) {
                 blade.catalog = catalogs.get({ id: data.catalogId });
             }
-        	initializeBlade(data);
+            initializeBlade(data);
 
-        	if (blade.childrenBlades) {
-        		_.each(blade.childrenBlades, function (x) {
-        			if (x.refresh) {
-        				x.refresh(blade.currentEntity);
-        			}
-        		});
-        	}
+            if (blade.childrenBlades) {
+                _.each(blade.childrenBlades, function (x) {
+                    if (x.refresh) {
+                        x.refresh(blade.currentEntity);
+                    }
+                });
+            }
 
             if (parentRefresh) {
                 blade.parentBlade.refresh();
@@ -34,7 +36,7 @@
         blade.securityScopes = data.securityScopes;
     };
 
-    $scope.codeValidator = function (value) {
+    blade.codeValidator = function (value) {
         var pattern = /[$+;=%{}[\]|\\\/@ ~!^*&()?:'<>,]/;
         return !pattern.test(value);
     };
@@ -44,7 +46,7 @@
     };
 
     function canSave() {
-        return isDirty() && formScope && formScope.$valid;
+        return isDirty() && blade.formScope && blade.formScope.$valid;
     }
 
     function saveChanges() {
@@ -59,8 +61,8 @@
         bladeNavigationService.showConfirmationIfNeeded(isDirty(), canSave(), blade, saveChanges, closeCallback, "catalog.dialogs.category-save.title", "catalog.dialogs.category-save.message");
     };
 
-    var formScope;
-    $scope.setForm = function (form) { formScope = form; }
+    blade.formScope = null;
+    $scope.setForm = function (form) { blade.formScope = form; }
 
     blade.toolbarCommands = [
 		{
@@ -79,12 +81,12 @@
         }
     ];
 
-    $scope.openDictionarySettingManagement = function () {
+    blade.openDictionarySettingManagement = function () {
         var newBlade = {
             id: 'settingDetailChild',
             isApiSave: true,
             currentEntityId: 'VirtoCommerce.Core.General.TaxTypes',
-            parentRefresh: function (data) { $scope.taxTypes = data; },
+            parentRefresh: function (data) { blade.taxTypes = data; },
             controller: 'platformWebApp.settingDictionaryController',
             template: '$(Platform)/Scripts/app/settings/blades/setting-dictionary.tpl.html'
         };
@@ -92,5 +94,5 @@
     };
 
     blade.refresh();
-    $scope.taxTypes = settings.getValues({ id: 'VirtoCommerce.Core.General.TaxTypes' });
+    blade.taxTypes = settings.getValues({ id: 'VirtoCommerce.Core.General.TaxTypes' });
 }]);
