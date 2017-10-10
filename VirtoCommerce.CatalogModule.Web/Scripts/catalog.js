@@ -347,5 +347,4 @@ angular.module(catalogsModuleName, [
 	    ]);
 
 	    metaFormsService.registerMetaFields("categoryDetail", metafieldsDefinitions.categoryMetafields);
-	    metaFormsService.registerMetaFields("productDetail", metafieldsDefinitions.productMetafields);
 	}]);
