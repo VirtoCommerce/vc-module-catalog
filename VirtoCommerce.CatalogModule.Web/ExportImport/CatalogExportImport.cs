@@ -347,6 +347,7 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                 product.Properties = null;
                 product.MainProduct = null;
                 product.Outlines = null;
+                product.ReferencedAssociations = null;
                 if (product.PropertyValues != null)
                 {
                     foreach (var propvalue in product.PropertyValues)
