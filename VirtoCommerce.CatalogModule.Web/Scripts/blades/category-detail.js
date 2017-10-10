@@ -3,7 +3,7 @@
     var blade = $scope.blade;
     blade.updatePermission = 'catalog:update';
 
-    blade.metaFields = getMetafields("categoryDetail");
+    blade.metaFields = metaFormsService.getMetaFields("categoryDetail");
 
     blade.refresh = function (parentRefresh) {
         return categories.get({ id: blade.currentEntityId }, function (data) {
@@ -95,48 +95,4 @@
 
     blade.refresh();
     blade.taxTypes = settings.getValues({ id: 'VirtoCommerce.Core.General.TaxTypes' });
-
-    function getOriginalMetafields() {
-        return [{
-            name: "isActive",
-            title: "catalog.blades.category-detail.labels.is-active",
-            valueType: "Boolean",
-            priority: 1
-        },
-        {
-            name: "name",
-            title: "catalog.blades.category-detail.labels.name",
-            valueType: "ShortText",
-            isRequired: true,
-            priority: 2
-        },
-        {
-            name: "code",
-            templateUrl: "categoryFormCode.html",
-            priority: 3
-        },
-        {
-            name: "taxType",
-            templateUrl: "categoryFormTaxType.html",
-            priority: 4
-        }];
-    }
-
-    //registering category details metafields
-    function getMetafields(metafieldName) {
-        var result = [];
-        var registered = metaFormsService.getMetaFields(metafieldName);
-
-        _.each(getOriginalMetafields(), function (origMetafield) {
-            if (!_.findWhere(registered, { name: origMetafield.name })) {
-                result.push(origMetafield);
-            }
-        });
-
-        if (result.length) {
-            metaFormsService.registerMetaFields(metafieldName, result);
-        }
-
-        return metaFormsService.getMetaFields(metafieldName);
-    }
 }]);
