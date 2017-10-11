@@ -5,8 +5,7 @@ if (AppDependencies != undefined) {
     AppDependencies.push(catalogsModuleName);
 }
 
-angular.module(catalogsModuleName, [
-])
+angular.module(catalogsModuleName, ['ui.grid.validate'])
 .config(
   ['$stateProvider', function ($stateProvider) {
       $stateProvider
