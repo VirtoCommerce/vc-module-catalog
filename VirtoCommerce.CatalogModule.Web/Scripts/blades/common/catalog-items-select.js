@@ -114,6 +114,7 @@
             controller: 'virtoCommerce.catalogModule.catalogItemSelectController',
             template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/common/catalog-items-select.tpl.html',
             options: $scope.options,
+            responseGroup: blade.responseGroup,
             toolbarCommands: blade.toolbarCommands
         };
 

@@ -221,7 +221,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
                 var query = repository.Items.Where(x => criteria.WithHidden || x.IsActive);
 
-                if (!criteria.SearchInVariations)
+                if (!criteria.SearchInVariations && !criteria.ResponseGroup.HasFlag(SearchResponseGroup.WithVariations))
                 {
                     query = query.Where(x => x.ParentId == null);
                 }

@@ -71,6 +71,7 @@
             controller: 'virtoCommerce.catalogModule.catalogItemSelectController',
             template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/common/catalog-items-select.tpl.html',
             options: options,
+            responseGroup: 'withCategories, withProducts, withVariations',
             breadcrumbs: [],
             toolbarCommands: [
               {
