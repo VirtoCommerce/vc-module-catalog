@@ -27,6 +27,7 @@
                     categoryId: blade.categoryId,
                     keyword: filter.keyword,
                     responseGroup: blade.responseGroup || 'withCategories, withProducts',
+                    searchInVariations: true,
                     sort: uiGridHelper.getSortExpression($scope),
                     skip: ($scope.pageSettings.currentPage - 1) * $scope.pageSettings.itemsPerPageCount,
                     take: $scope.pageSettings.itemsPerPageCount
