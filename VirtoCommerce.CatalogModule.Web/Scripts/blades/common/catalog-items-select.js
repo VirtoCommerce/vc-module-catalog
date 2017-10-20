@@ -22,16 +22,16 @@
 
         if (!$scope.isCatalogSelectMode()) {
             listEntries.listitemssearch(
-                {
+                angular.extend({
                     catalogId: blade.catalogId,
                     categoryId: blade.categoryId,
                     keyword: filter.keyword,
-                    responseGroup: blade.responseGroup || 'withCategories, withProducts',
+                    responseGroup: 'withCategories, withProducts',
                     searchInVariations: true,
                     sort: uiGridHelper.getSortExpression($scope),
                     skip: ($scope.pageSettings.currentPage - 1) * $scope.pageSettings.itemsPerPageCount,
                     take: $scope.pageSettings.itemsPerPageCount
-                },
+                }, blade.searchCriteria),
             function (data, headers) {
                 blade.isLoading = false;
                 $scope.pageSettings.totalItems = data.totalCount;
@@ -115,7 +115,7 @@
             controller: 'virtoCommerce.catalogModule.catalogItemSelectController',
             template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/common/catalog-items-select.tpl.html',
             options: $scope.options,
-            responseGroup: blade.responseGroup,
+            searchCriteria: blade.searchCriteria,
             toolbarCommands: blade.toolbarCommands
         };
 
