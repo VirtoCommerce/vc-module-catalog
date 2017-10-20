@@ -56,8 +56,8 @@ angular.module(catalogsModuleName, ['ui.grid.validate'])
     };
 }])
 .run(
-  ['platformWebApp.authService', 'platformWebApp.mainMenuService', 'platformWebApp.widgetService', '$state', 'platformWebApp.pushNotificationTemplateResolver', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.catalogImportService', 'virtoCommerce.catalogModule.catalogExportService', 'platformWebApp.permissionScopeResolver', 'virtoCommerce.catalogModule.catalogs', 'virtoCommerce.catalogModule.predefinedSearchFilters', 'platformWebApp.metaFormsService', 
-	function (authService, mainMenuService, widgetService, $state, pushNotificationTemplateResolver, bladeNavigationService, catalogImportService, catalogExportService, scopeResolver, catalogs, predefinedSearchFilters, metaFormsService) {
+    ['platformWebApp.authService', 'platformWebApp.mainMenuService', 'platformWebApp.widgetService', '$state', 'platformWebApp.pushNotificationTemplateResolver', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.catalogImportService', 'virtoCommerce.catalogModule.catalogExportService', 'platformWebApp.permissionScopeResolver', 'virtoCommerce.catalogModule.catalogs', 'virtoCommerce.catalogModule.predefinedSearchFilters', 'platformWebApp.metaFormsService', '$http', '$compile', 
+    function (authService, mainMenuService, widgetService, $state, pushNotificationTemplateResolver, bladeNavigationService, catalogImportService, catalogExportService, scopeResolver, catalogs, predefinedSearchFilters, metaFormsService, $http, $compile) {
 
 	    //Register module in main menu
 	    var menuItem = {
@@ -350,4 +350,9 @@ angular.module(catalogsModuleName, ['ui.grid.validate'])
         //TODO: need to improve meta-form to support more flexible layout management
         //metaFormsService.registerMetaFields("productDetail", metafieldsDefinitions.productMetafields);
         //metaFormsService.registerMetaFields("categoryDetail", metafieldsDefinitions.categoryMetafields);
+
+        $http.get('Modules/$(VirtoCommerce.Catalog)/Scripts/directives/itemSearch.tpl.html').then(function (response) {
+            // compile the response, which will put stuff into the cache
+            $compile(response.data);
+        });
 	}]);
