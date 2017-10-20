@@ -25,8 +25,6 @@
                 listEntries.listitemssearch(
                     searchCriteria,
                     function (data) {
-                        transformByFilters(data.listEntries);
-
                         blade.isLoading = false;
                         $scope.pageSettings.totalItems = data.totalCount;
                         $scope.items = data.listEntries;
