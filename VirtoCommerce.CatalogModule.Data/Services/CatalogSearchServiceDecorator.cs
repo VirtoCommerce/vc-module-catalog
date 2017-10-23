@@ -59,6 +59,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 serviceCriteria.Skip = criteria.Skip;
                 serviceCriteria.Take = criteria.Take;
                 serviceCriteria.ResponseGroup = responseGroup.ToString();
+                serviceCriteria.Sort = criteria.Sort;
 
                 SearchItems(result, serviceCriteria, responseGroup);
             }
