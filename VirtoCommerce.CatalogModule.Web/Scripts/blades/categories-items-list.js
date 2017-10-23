@@ -25,6 +25,8 @@
                 listEntries.listitemssearch(
                     searchCriteria,
                     function (data) {
+                        transformByFilters(data.listEntries);
+
                         blade.isLoading = false;
                         $scope.pageSettings.totalItems = data.totalCount;
                         $scope.items = data.listEntries;
@@ -251,54 +253,6 @@
                 }
             };
 
-            var grouping_none = 'none';
-            $localStorage.catalogSearchResultGroups = $localStorage.catalogSearchResultGroups || [grouping_none, '$path'];
-            $localStorage.catalogSearchResultGroupBy = $localStorage.catalogSearchResultGroupBy || _.first($localStorage.catalogSearchResultGroups);
-            $scope.$localStorage = $localStorage;
-
-            blade.setGrouping = function (groupBy) {
-                $localStorage.catalogSearchResultGroupBy = groupBy;
-
-                if (!filter.keyword || groupBy === grouping_none) {
-                    $scope.gridApi.grouping.clearGrouping();
-                } else {
-                    if (!_.any($scope.gridApi.grouping.getGrouping().grouping)) {
-                        $scope.gridApi.grouping.groupColumn(groupBy);
-                    }
-
-                    $timeout($scope.gridApi.treeBase.expandAllRows);
-                }
-            };
-
-            $scope.selectGroupByItem = function (listEntry, $id) {
-                if (listEntry.outline) {
-                    $scope.selectedNodeId = $id;
-                    var listItem = {
-                        id: listEntry.outline.slice(-1)[0],
-                        name: listEntry.path.slice(-1)[0]
-                    };
-
-                    newBlade = {
-                        id: 'itemsList' + (blade.level + 1),
-                        level: blade.level + 1,
-                        mode: blade.mode,
-                        // isBrowsingLinkedCategory: blade.isBrowsingLinkedCategory || $scope.hasLinks(listItem),
-                        title: 'catalog.blades.categories-items-list.title',
-                        // subtitle: 'catalog.blades.categories-items-list.subtitle',
-                        // subtitleValues: listItem.name ? { name: listItem.name } : '',
-                        catalogId: blade.catalogId,
-                        catalog: blade.catalog,
-                        categoryId: listItem.id,
-                        category: listItem,
-                        controller: 'virtoCommerce.catalogModule.categoriesItemsListController',
-                        template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/categories-items-list.tpl.html'
-                    };
-
-                    newBlade.breadcrumbs = generateBreadcrumbs(newBlade, listEntry, listEntry.outline.length);
-                    bladeNavigationService.showBlade(newBlade, blade);
-                }
-            };
-
             function generateBreadcrumbs(newBlade, listEntry, count) {
                 var newBreadcrumbs = [];
                 if (blade.catalog)
@@ -514,53 +468,19 @@
             };
 
             function transformByFilters(data) {
-                if (_.any(data)) {
-                    _.each(data, function (x) {
-                        x.$path = _.any(x.path) ? x.path.join(" \\ ") : '\\';
-                    });
-
-                    if (filter.keyword && $localStorage.catalogSearchResultGroupBy !== grouping_none) {
-                        // sorting by: 1. type (category/product); 2. path (root items first); 3. name.
-                        data.sort(function (a, b) {
-                            if (a.type < b.type) return -1;
-                            if (a.type > b.type) return 1;
-                            if (a.$path < b.$path) return b.$path === '\\' ? 1 : -1;
-                            if (a.$path > b.$path) return a.$path === '\\' ? -1 : 1;
-                            if (a.name < b.name) return -1;
-                            if (a.name > b.name) return 1;
-                            return 0;
-                        })
-                    }
-
-                    if ($scope.gridApi) {
-                        blade.setGrouping($localStorage.catalogSearchResultGroupBy);
-                    }
-                } else
-                    $scope.gridApi = undefined;
+                _.each(data, function (x) {
+                    x.$path = _.any(x.path) ? x.path.join(" \\ ") : '\\';
+                });
             }
-
 
             // ui-grid
             $scope.setGridOptions = function (gridOptions) {
                 uiGridHelper.initialize($scope, gridOptions, function (gridApi) {
-                    $timeout(function () {
-                        blade.setGrouping($localStorage.catalogSearchResultGroupBy);
-                    });
-
-                    $timeout(function () {
-                        uiGridHelper.bindRefreshOnSortChanged($scope);
-                    }, 200);
+                    uiGridHelper.bindRefreshOnSortChanged($scope);
                 });
                 bladeUtils.initializePagination($scope);
             };
 
-            $scope.getGroupInfo = function (groupEntity) {
-                return _.values(groupEntity)[0];
-            };
-
-            blade.getSelectedRows = function () {
-                return $scope.gridApi.selection.getSelectedRows();
-            }
 
             //No need to call this because page 'pageSettings.currentPage' is watched!!! It would trigger subsequent duplicated req...
             //blade.refresh();
