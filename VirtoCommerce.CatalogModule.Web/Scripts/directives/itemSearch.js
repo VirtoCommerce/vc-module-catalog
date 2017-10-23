@@ -2,7 +2,9 @@
 .directive('vcItemSearch', ['$localStorage', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.predefinedSearchFilters', function ($localStorage, bladeNavigationService, predefinedSearchFilters) {
     return {
         restrict: 'E',
-        templateUrl: 'Modules/$(VirtoCommerce.Catalog)/Scripts/directives/itemSearch.tpl.html',
+        templateUrl: function (elem, attrs) {
+            return attrs.templateUrl || 'catalog-itemSearch-default.html'
+        },
         scope: {
             blade: '='
         },

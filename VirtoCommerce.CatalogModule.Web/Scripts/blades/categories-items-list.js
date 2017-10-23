@@ -251,6 +251,25 @@
                 }
             };
 
+            var grouping_none = 'none';
+            $localStorage.catalogSearchResultGroups = $localStorage.catalogSearchResultGroups || [grouping_none, '$path'];
+            $localStorage.catalogSearchResultGroupBy = $localStorage.catalogSearchResultGroupBy || _.first($localStorage.catalogSearchResultGroups);
+            $scope.$localStorage = $localStorage;
+
+            blade.setGrouping = function (groupBy) {
+                $localStorage.catalogSearchResultGroupBy = groupBy;
+
+                if (!filter.keyword || groupBy === grouping_none) {
+                    $scope.gridApi.grouping.clearGrouping();
+                } else {
+                    if (!_.any($scope.gridApi.grouping.getGrouping().grouping)) {
+                        $scope.gridApi.grouping.groupColumn(groupBy);
+                    }
+
+                    $timeout($scope.gridApi.treeBase.expandAllRows);
+                }
+            };
+
             $scope.selectGroupByItem = function (listEntry, $id) {
                 if (listEntry.outline) {
                     $scope.selectedNodeId = $id;
@@ -494,11 +513,43 @@
                 }
             };
 
+            function transformByFilters(data) {
+                if (_.any(data)) {
+                    _.each(data, function (x) {
+                        x.$path = _.any(x.path) ? x.path.join(" \\ ") : '\\';
+                    });
+
+                    if (filter.keyword && $localStorage.catalogSearchResultGroupBy !== grouping_none) {
+                        // sorting by: 1. type (category/product); 2. path (root items first); 3. name.
+                        data.sort(function (a, b) {
+                            if (a.type < b.type) return -1;
+                            if (a.type > b.type) return 1;
+                            if (a.$path < b.$path) return b.$path === '\\' ? 1 : -1;
+                            if (a.$path > b.$path) return a.$path === '\\' ? -1 : 1;
+                            if (a.name < b.name) return -1;
+                            if (a.name > b.name) return 1;
+                            return 0;
+                        })
+                    }
+
+                    if ($scope.gridApi) {
+                        blade.setGrouping($localStorage.catalogSearchResultGroupBy);
+                    }
+                } else
+                    $scope.gridApi = undefined;
+            }
+
 
             // ui-grid
             $scope.setGridOptions = function (gridOptions) {
                 uiGridHelper.initialize($scope, gridOptions, function (gridApi) {
-                    uiGridHelper.bindRefreshOnSortChanged($scope);
+                    $timeout(function () {
+                        blade.setGrouping($localStorage.catalogSearchResultGroupBy);
+                    });
+
+                    $timeout(function () {
+                        uiGridHelper.bindRefreshOnSortChanged($scope);
+                    }, 200);
                 });
                 bladeUtils.initializePagination($scope);
             };
