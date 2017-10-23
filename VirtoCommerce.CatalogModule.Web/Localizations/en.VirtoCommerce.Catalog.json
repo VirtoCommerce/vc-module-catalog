@@ -405,45 +405,11 @@
             },
             "advanced-search-results": {
                 "title": "Search results"
-            },
-            "catalog-CSV-export": {
-                "title": "Catalog {{name}} to csv export",
-                "labels": {
-                    "select-fulfillment": "Select fulfillment center for exported inventory",
-                    "select-pricelist": "Select price list for exported prices",
-                    "start": "Start",
-                    "end": "End",
-                    "total": "Total count",
-                    "processed": "Processed count",
-                    "errors-count": "Error count",
-                    "errors": "Errors",
-                    "download-url": "Download Url",
-                    "note": "All catalog products information should be exported to csv file, download url will be available after export will be finished.",
-                    "caution": "Caution:",
-                    "caution-description": "Sorting your CSV file in a spreadsheet program can cause product variants or image URLs to become disassociated. Importing a CSV file that has been sorted may overwrite your existing products with bad data, which cannot be recovered."
-                },
-                "placeholders": {
-                    "select-fulfillment": "Select fulfillment or leave empty for default...",
-                    "select-pricelist": "Select price list or leave empty for default..."
-                }
-            },
+            },          
             "item-dimensions": {
                 "title": "Item dimensions",
                 "subtitle": "change product size & weight here"
-            },
-            "catalog-CSV-import": {
-                "title": "Importing from csv",
-                "labels": {
-                    "select-fulfillment": "Select fulfillment center for exported inventory",
-                    "select-pricelist": "Select price list for exported prices",
-                    "start": "Start",
-                    "end": "End",
-                    "total": "Total count",
-                    "processed": "Processed count",
-                    "errors-count": "Error count",
-                    "errors": "Errors"
-                }
-            },
+            },          
             "asset-select": {
                 "title": "Link images"
             },

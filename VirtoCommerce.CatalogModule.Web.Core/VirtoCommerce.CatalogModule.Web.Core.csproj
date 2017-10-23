@@ -78,11 +78,6 @@
     <Compile Include="Converters\PropertyConverter.cs" />
     <Compile Include="Converters\PropertyDictionaryValueConverter.cs" />
     <Compile Include="Converters\PropertyValueConverter.cs" />
-    <Compile Include="ExportImport\CsvExportInfo.cs" />
-    <Compile Include="ExportImport\CsvImportInfo.cs" />
-    <Compile Include="ExportImport\CsvProduct.cs" />
-    <Compile Include="ExportImport\CsvProductMappingConfiguration.cs" />
-    <Compile Include="ExportImport\CsvProductPropertyMap.cs" />
     <Compile Include="Model\Aggregation.cs" />
     <Compile Include="Model\AggregationItem.cs" />
     <Compile Include="Model\AggregationLabel.cs" />
