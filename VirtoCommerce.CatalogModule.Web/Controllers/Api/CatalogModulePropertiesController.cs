@@ -174,15 +174,21 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// Deletes property by id.
         /// </summary>
         /// <param name="id">The property id.</param>
+        /// <param name="doDeleteValues">Flag indicating to remove property values from objects as well</param>
         /// <returns></returns>
         [HttpDelete]
         [Route("")]
         [ResponseType(typeof(void))]
-        public IHttpActionResult Delete(string id)
+        public IHttpActionResult Delete(string id, bool doDeleteValues = false)
         {
             var property = _propertyService.GetById(id);
 
             CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Delete, property);
+            
+            // TODO: delete values
+            if (doDeleteValues) {
+
+            }
 
             _propertyService.Delete(new[] { id });
             return StatusCode(HttpStatusCode.NoContent);
