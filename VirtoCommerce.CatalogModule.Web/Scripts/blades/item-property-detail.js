@@ -33,8 +33,8 @@
     function removeProperty(prop) {
         var dialog = {
             id: "confirmDelete",
-            title: "catalog.dialogs.property-delete.title",
-            message: 'catalog.dialogs.property-delete.message',
+            title: "platform.dialogs.delete.title",
+            message: 'catalog.dialogs.item-property-delete.message',
             messageValues: { name: prop.name },
             callback: function (remove) {
                 if (remove) {

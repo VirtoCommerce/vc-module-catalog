@@ -305,8 +305,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
                 //property override - need leave only property has a min distance to target category 
                 //Algorithm based on index property in resulting list (property with min index will more closed to category)
-                category.Properties = properties.Select((x, index) => new { PropertyName = x.Name.ToLowerInvariant(), Property = x, Index = index })
-                                           .GroupBy(x => x.PropertyName)
+                category.Properties = properties.Select((x, index) => new { Property = x, Index = index })
+                                           .GroupBy(x => $"{x.Property.Name.ToLowerInvariant()}:{x.Property.Type}")
                                            .Select(x => x.OrderBy(y => y.Index).First().Property)
                                            .OrderBy(x => x.Name)
                                            .ToList();

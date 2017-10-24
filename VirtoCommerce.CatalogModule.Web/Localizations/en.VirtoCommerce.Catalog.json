@@ -552,6 +552,15 @@
                 "linked-item": "{{count}} Linked Item(s)",
                 "linked-category": "{{count}} Linked Category(ies)"
             },
+            "property-delete": {
+                "message": "Are you sure you want to delete Property {{name}}?",
+                "warning": "WARNING: this change is permanent and can't be undone afterwards. It can lead to data loss.",
+                "msg1": "Choose what to delete. Options:",
+                "msg2": "remove only Property metadata and preserve values in related objects;",
+                "msg3": "delete completely, with all related values.",
+                "shallow": "Metadata",
+                "full": "Completely"
+            },
             "virtual-catalog-save": {
                 "title": "Save changes",
                 "message": "The virtual catalog has been modified. Do you want to save changes?"
@@ -572,8 +581,7 @@
                 "title": "Save changes",
                 "message": "The property has been modified. Do you want to save changes?"
             },
-            "property-delete": {
-                "title": "Delete confirmation",
+            "item-property-delete": {
                 "message": "Are you sure you want to delete Property {{name}}?"
             },
             "dictionary-values-delete": {

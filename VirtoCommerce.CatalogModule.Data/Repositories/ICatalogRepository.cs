@@ -30,8 +30,6 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         void RemoveItems(string[] ids);
         void RemoveCategories(string[] ids);
         void RemoveCatalogs(string[] ids);
-
-
-
+        void RemoveAllPropertyValues(string propertyId);
     }
 }
