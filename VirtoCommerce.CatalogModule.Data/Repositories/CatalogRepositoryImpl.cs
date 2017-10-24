@@ -5,6 +5,7 @@ using System.Data.Entity.Core.Objects;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Data.SqlClient;
 using System.Linq;
+using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Data.Infrastructure;
 using VirtoCommerce.Platform.Data.Infrastructure.Interceptors;
@@ -480,6 +481,36 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             }
         }
 
+        /// <summary>
+        /// Delete all exist property values belong to given property.
+        /// Because PropertyValue table doesn't have a foreign key to Property table by design,
+        /// we use columns Name and TargetType to find values that reference to the deleting property.  
+        /// </summary>
+        /// <param name="propertyId"></param>
+        public void RemoveAllPropertyValues(string propertyId)
+        {
+            var properties = GetPropertiesByIds(new[] { propertyId });          
+            var catalogProperty = properties.FirstOrDefault(x => x.TargetType.EqualsInvariant(PropertyType.Catalog.ToString()));
+            var categoryProperty = properties.FirstOrDefault(x => x.TargetType.EqualsInvariant(PropertyType.Category.ToString()));
+            var itemProperty = properties.FirstOrDefault(x => x.TargetType.EqualsInvariant(PropertyType.Product.ToString()) || x.TargetType.EqualsInvariant(PropertyType.Variation.ToString()));
+
+            string commandTemplate;
+            if (catalogProperty != null)
+            {
+                commandTemplate = $"DELETE PV FROM PropertyValue PV INNER JOIN Catalog C ON C.Id = PV.CatalogId AND C.Id = '{catalogProperty.CatalogId}' WHERE PV.Name = '{catalogProperty.Name}'";
+                ObjectContext.ExecuteStoreCommand(commandTemplate);
+            }          
+            if (categoryProperty != null)
+            {
+                commandTemplate = $"DELETE PV FROM PropertyValue PV INNER JOIN Category C ON C.Id = PV.CategoryId AND C.CatalogId = '{categoryProperty.CatalogId}' WHERE PV.Name = '{categoryProperty.Name}'";
+                ObjectContext.ExecuteStoreCommand(commandTemplate);
+            }
+            if (itemProperty != null)
+            {
+                commandTemplate = $"DELETE PV FROM PropertyValue PV INNER JOIN Item I ON I.Id = PV.ItemId AND I.CatalogId = '{itemProperty.CatalogId}' WHERE PV.Name = '{itemProperty.Name}'";
+                ObjectContext.ExecuteStoreCommand(commandTemplate);
+            }
+        }
         #endregion
 
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Web.Http;
 using System.Web.Http.Description;
+using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Web.Converters;
 using VirtoCommerce.CatalogModule.Web.Security;
 using VirtoCommerce.Domain.Catalog.Services;
@@ -19,14 +20,16 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly IPropertyService _propertyService;
         private readonly ICategoryService _categoryService;
         private readonly ICatalogService _catalogService;
-
+        //Workaround: Bad design to use repository in the controller layer, need to extend in the future IPropertyService.Delete with new parameter DeleteAllValues
+        private readonly Func<ICatalogRepository> _repositoryFactory;
         public CatalogModulePropertiesController(IPropertyService propertyService, ICategoryService categoryService, ICatalogService catalogService,
-                                                 ISecurityService securityService, IPermissionScopeService permissionScopeService)
+                                                 ISecurityService securityService, IPermissionScopeService permissionScopeService, Func<ICatalogRepository> repositoryFactory)
             : base(securityService, permissionScopeService)
         {
             _propertyService = propertyService;
             _categoryService = categoryService;
             _catalogService = catalogService;
+            _repositoryFactory = repositoryFactory;
 
         }
 
@@ -184,10 +187,15 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var property = _propertyService.GetById(id);
 
             CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Delete, property);
-            
-            // TODO: delete values
-            if (doDeleteValues) {
 
+            if (doDeleteValues)
+            {
+                //TODO: Move this logic in the IPropertyService
+                using (var repository = _repositoryFactory())
+                {
+                    repository.RemoveAllPropertyValues(id);
+                    repository.UnitOfWork.Commit();
+                }
             }
 
             _propertyService.Delete(new[] { id });

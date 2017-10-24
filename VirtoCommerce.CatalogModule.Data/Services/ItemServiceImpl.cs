@@ -317,7 +317,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     }
                 }
 
-                //inherit not overriden property values from main product
+                //inherit not overridden property values from main product
                 if (product.MainProduct != null && !product.MainProduct.PropertyValues.IsNullOrEmpty())
                 {
                     var mainProductPopValuesGroups = product.MainProduct.PropertyValues.GroupBy(x => x.PropertyName);
