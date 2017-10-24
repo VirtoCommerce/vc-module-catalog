@@ -59,6 +59,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             document.Add(new IndexDocumentField("name", category.Name) { IsRetrievable = true, IsFilterable = true });
             document.Add(new IndexDocumentField("createddate", category.CreatedDate) { IsRetrievable = true, IsFilterable = true });
             document.Add(new IndexDocumentField("lastmodifieddate", category.ModifiedDate ?? DateTime.MaxValue) { IsRetrievable = true, IsFilterable = true });
+            document.Add(new IndexDocumentField("modifieddate", category.ModifiedDate ?? DateTime.MaxValue) { IsRetrievable = true, IsFilterable = true });
             document.Add(new IndexDocumentField("priority", category.Priority) { IsRetrievable = true, IsFilterable = true });
 
             // Add priority in virtual categories to search index

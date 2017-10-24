@@ -60,6 +60,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             document.Add(new IndexDocumentField("enddate", product.EndDate ?? DateTime.MaxValue) { IsRetrievable = true, IsFilterable = true });
             document.Add(new IndexDocumentField("createddate", product.CreatedDate) { IsRetrievable = true, IsFilterable = true });
             document.Add(new IndexDocumentField("lastmodifieddate", product.ModifiedDate ?? DateTime.MaxValue) { IsRetrievable = true, IsFilterable = true });
+            document.Add(new IndexDocumentField("modifieddate", product.ModifiedDate ?? DateTime.MaxValue) { IsRetrievable = true, IsFilterable = true });
             document.Add(new IndexDocumentField("priority", product.Priority) { IsRetrievable = true, IsFilterable = true });
             document.Add(new IndexDocumentField("vendor", product.Vendor ?? "") { IsRetrievable = true, IsFilterable = true });
 
