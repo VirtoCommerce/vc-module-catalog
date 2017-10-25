@@ -7,18 +7,25 @@ namespace VirtoCommerce.CatalogModule.Web.Model
     /// </summary>
 	public class ListEntry : AuditableEntity
     {
+        //Default deserialization ctor
+        public ListEntry()
+        {
+        }
+
         public ListEntry(string typeName, AuditableEntity auditableEntity)
         {
             Type = typeName;
+            if (auditableEntity != null)
+            {
+                // Entity
+                Id = auditableEntity.Id;
 
-            // Entity
-            Id = auditableEntity.Id;
-
-            // AuditableEntity
-            CreatedDate = auditableEntity.CreatedDate;
-            ModifiedDate = auditableEntity.ModifiedDate;
-            CreatedBy = auditableEntity.CreatedBy;
-            ModifiedBy = auditableEntity.ModifiedBy;
+                // AuditableEntity
+                CreatedDate = auditableEntity.CreatedDate;
+                ModifiedDate = auditableEntity.ModifiedDate;
+                CreatedBy = auditableEntity.CreatedBy;
+                ModifiedBy = auditableEntity.ModifiedBy;
+            }
         }
 
         /// <summary>
