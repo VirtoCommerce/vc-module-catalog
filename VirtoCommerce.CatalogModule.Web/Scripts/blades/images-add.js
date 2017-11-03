@@ -130,7 +130,6 @@
             function getImageUrl(code, imageType, category) {
 
                 var categoryCode = '';
-                debugger;
                 if (category && category.code) {
                     categoryCode = category.code + '/';
                 }
