@@ -1,5 +1,5 @@
 ﻿angular.module('virtoCommerce.catalogModule')
-.controller('virtoCommerce.catalogModule.itemDetailController', ['$rootScope', '$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.settings', 'virtoCommerce.catalogModule.items', 'virtoCommerce.customerModule.members', 'virtoCommerce.catalogModule.catalogs', 'platformWebApp.metaFormsService', function ($rootScope, $scope, bladeNavigationService, settings, items, members, catalogs, metaFormsService) {
+    .controller('virtoCommerce.catalogModule.itemDetailController', ['$rootScope', '$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.settings', 'virtoCommerce.catalogModule.items', 'virtoCommerce.customerModule.members', 'virtoCommerce.catalogModule.catalogs', 'platformWebApp.metaFormsService', 'virtoCommerce.catalogModule.categories', function ($rootScope, $scope, bladeNavigationService, settings, items, members, catalogs, metaFormsService, categories) {
     var blade = $scope.blade;
     blade.updatePermission = 'catalog:update';
     blade.currentEntityId = blade.itemId;
@@ -10,9 +10,11 @@
         blade.isLoading = true;
 
         return items.get({ id: blade.itemId }, function (data) {
-
             if (!blade.catalog) {
                 blade.catalog = catalogs.get({ id: data.catalogId });
+                }
+            if (data.categoryId) {
+                blade.category = categories.get({ id: data.categoryId });
             }
 
             blade.itemId = data.id;
@@ -27,6 +29,7 @@
             data._priority = (linkWithPriority ? linkWithPriority.priority : data.priority) || 0;
 
             blade.item = angular.copy(data);
+            blade.item.category = blade.category;
             blade.currentEntity = blade.item;
             blade.origItem = data;
             blade.isLoading = false;
