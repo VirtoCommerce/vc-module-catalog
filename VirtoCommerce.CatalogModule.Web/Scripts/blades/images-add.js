@@ -27,7 +27,6 @@
                 });
 
                 blade.item = item;
-                blade.categoryPath = item.category ? item.category.code : '';
                 blade.title = 'catalog.blades.image-upload.title';
                 $scope.imageTypes = settings.getValues({ id: 'Catalog.ImageCategories' });
 
@@ -41,7 +40,7 @@
                         removeAfterUpload: true
                     });
 
-                    uploader.url = getImageUrl(item.code, blade.imageType, blade.categoryPath).relative;
+                    uploader.url = getImageUrl(blade.item.productPath, blade.imageType).relative;
 
                     uploader.onSuccessItem = function (fileItem, images, status, headers) {
                         angular.forEach(images, function (image) {
@@ -72,7 +71,7 @@
 
             $scope.addImageFromUrl = function () {
                 if (blade.newExternalImageUrl) {
-                    assets.uploadFromUrl({ folderUrl: getImageUrl(blade.item.code, blade.imageType, blade.categoryPath).folderUrl, url: blade.newExternalImageUrl }, function (data) {
+                    assets.uploadFromUrl({ folderUrl: getImageUrl(blade.item.productPath, blade.imageType).folderUrl, url: blade.newExternalImageUrl }, function (data) {
                         _.each(data, function (x) {
                             x.isImage = true;
                             x.group = blade.imageType;
@@ -125,15 +124,13 @@
             };
 
             $scope.changeImageCategory = function ($item, $model) {
-                $scope.uploader.url = getImageUrl(blade.item.code, blade.imageType, blade.categoryPath).relative;
+                $scope.uploader.url = getImageUrl(blade.item.productPath, blade.imageType).relative;
             };
 
-            function getImageUrl(code, imageType, categoryPath) {
-                if (categoryPath) {
-                    categoryPath += '/';
-                }
+            function getImageUrl(path, imageType) {
 
-                var folderUrl = 'catalog/' + categoryPath + (code + (imageType ? '/' + imageType : ''));
+                var folderUrl = 'catalog/' + (path + (imageType ? '/' + imageType : ''));
+
                 return { folderUrl: '/' + folderUrl, relative: 'api/platform/assets?folderUrl=' + folderUrl };
             };
 

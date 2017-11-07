@@ -12,9 +12,6 @@
         return items.get({ id: blade.itemId }, function (data) {
             if (!blade.catalog) {
                 blade.catalog = catalogs.get({ id: data.catalogId });
-                }
-            if (data.categoryId) {
-                blade.category = categories.get({ id: data.categoryId });
             }
 
             blade.itemId = data.id;
@@ -29,10 +26,21 @@
             data._priority = (linkWithPriority ? linkWithPriority.priority : data.priority) || 0;
 
             blade.item = angular.copy(data);
-            blade.item.category = blade.category;
             blade.currentEntity = blade.item;
             blade.origItem = data;
             blade.isLoading = false;
+
+            //set category and productPath
+            if (data.categoryId) {
+                categories.get({ id: data.categoryId },
+                    function (category) {
+                        blade.item.category = category;
+                        blade.item.productPath = (category ? (category.code + '/') : '') + data.code;
+                    });
+            } else {
+                blade.item.productPath = data.code;
+            }
+
             if (parentRefresh && blade.parentBlade.refresh) {
                 blade.parentBlade.refresh();
             }
