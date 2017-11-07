@@ -46,6 +46,8 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             retVal.Weight = product.Weight;
             retVal.WeightUnit = product.WeightUnit;
             retVal.Width = product.Width;
+            retVal.StartDate = product.StartDate;
+            retVal.EndDate = product.EndDate;
 
             retVal.SeoInfos = product.SeoInfos;
 

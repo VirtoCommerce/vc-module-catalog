@@ -344,6 +344,8 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             target.ShippingType = this.ShippingType;
             target.Priority = this.Priority;
             target.ParentId = this.ParentId;
+            target.StartDate = this.StartDate;
+            target.EndDate = this.EndDate;
 
             #region Assets
             if (!this.Assets.IsNullCollection())
