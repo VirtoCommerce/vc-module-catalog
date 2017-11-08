@@ -40,7 +40,7 @@
                         removeAfterUpload: true
                     });
 
-                    uploader.url = getImageUrl(blade.item.productPath, blade.imageType).relative;
+                    uploader.url = getImageUrl(blade.folderPath, blade.imageType).relative;
 
                     uploader.onSuccessItem = function (fileItem, images, status, headers) {
                         angular.forEach(images, function (image) {
@@ -71,7 +71,7 @@
 
             $scope.addImageFromUrl = function () {
                 if (blade.newExternalImageUrl) {
-                    assets.uploadFromUrl({ folderUrl: getImageUrl(blade.item.productPath, blade.imageType).folderUrl, url: blade.newExternalImageUrl }, function (data) {
+                    assets.uploadFromUrl({ folderUrl: getImageUrl(blade.folderPath, blade.imageType).folderUrl, url: blade.newExternalImageUrl }, function (data) {
                         _.each(data, function (x) {
                             x.isImage = true;
                             x.group = blade.imageType;
@@ -124,7 +124,7 @@
             };
 
             $scope.changeImageCategory = function ($item, $model) {
-                $scope.uploader.url = getImageUrl(blade.item.productPath, blade.imageType).relative;
+                $scope.uploader.url = getImageUrl(blade.folderPath, blade.imageType).relative;
             };
 
             function getImageUrl(path, imageType) {

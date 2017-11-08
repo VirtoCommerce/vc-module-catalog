@@ -35,10 +35,10 @@
                 categories.get({ id: data.categoryId },
                     function (category) {
                         blade.item.category = category;
-                        blade.item.productPath = (category ? (category.code + '/') : '') + data.code;
+                        blade.item.folderPath = (category ? (category.code + '/') : '') + data.code;
                     });
             } else {
-                blade.item.productPath = data.code;
+                blade.item.folderPath = data.code;
             }
 
             if (parentRefresh && blade.parentBlade.refresh) {
