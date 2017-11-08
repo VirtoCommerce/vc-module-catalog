@@ -113,8 +113,7 @@ namespace VirtoCommerce.CatalogModule.Web
             securityScopeService.RegisterSope(() => new CatalogSelectedCategoryScope(_container.Resolve<ICategoryService>()));
 
             var httpConfiguration = _container.Resolve<HttpConfiguration>();
-            httpConfiguration.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new ProductSearchCriteriaJsonConverter());
-            httpConfiguration.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new CategorySearchCriteriaJsonConverter());
+            httpConfiguration.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new SearchCriteriaJsonConverter());
 
             // Register dynamic property for storing browsing filters
             var filteredBrowsingProperty = new DynamicProperty
