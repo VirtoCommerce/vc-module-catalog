@@ -278,7 +278,9 @@
                     "max-downloads": "Max. number of downloads",
                     "expiration-date": "Download expiration date",
                     "download-type": "Download type",
-                    "gtin": "GTIN"
+                    "gtin": "GTIN",
+                    "start-date": "Sale start date",
+                    "end-date": "Sale expiration date"
                 },
                 "validations": {
                     "sku": "SKU can't contain $+;=%{}[]|/@ ~!^*&()?:'<>, characters"
@@ -293,7 +295,13 @@
                     "weight": "Enter weight",
                     "expiration-date": "Choose date",
                     "download-type": "Select...",
-                    "gtin": "Enter GTIN here"
+                    "gtin": "Enter GTIN here",
+                    "start-date": "Please choose date...",
+                    "end-date": "Please choose date..."
+              },
+                "descr": {
+                    "start-date": "If you do not specify a start date, the product is will active immediately after saving.",
+                    "end-date": "If you do not specify an end date, the product is active until you deactivate it."
                 }
             },
             "catalog-items-select": {

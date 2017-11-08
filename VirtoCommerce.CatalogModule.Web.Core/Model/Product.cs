@@ -211,6 +211,14 @@ namespace VirtoCommerce.CatalogModule.Web.Model
         /// Product order position physical catalog
         /// </summary>
         public int Priority { get; set; }
+        /// <summary>
+        /// Sale start date
+        /// </summary>
+        public DateTime StartDate { get; set; }
+        /// <summary>
+        /// Sale expiration date
+        /// </summary>
+        public DateTime? EndDate { get; set; }
 
         private string _imgSrc;
         /// <summary>
