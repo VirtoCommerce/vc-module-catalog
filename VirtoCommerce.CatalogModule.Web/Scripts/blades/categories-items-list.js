@@ -3,15 +3,18 @@
         '$sessionStorage', '$localStorage', '$timeout', '$scope', 'virtoCommerce.catalogModule.categories', 'virtoCommerce.catalogModule.items', 'virtoCommerce.catalogModule.listEntries', 'platformWebApp.bladeUtils', 'platformWebApp.dialogService', 'platformWebApp.authService', 'platformWebApp.uiGridHelper', 'virtoCommerce.catalogModule.catalogs',
         function ($sessionStorage, $localStorage, $timeout, $scope, categories, items, listEntries, bladeUtils, dialogService, authService, uiGridHelper, catalogs) {
             $scope.uiGridConstants = uiGridHelper.uiGridConstants;
-
+            $scope.items = [];
             var blade = $scope.blade;
             var bladeNavigationService = bladeUtils.bladeNavigationService;
             // blade.catalog = bladeNavigationService.catalogsSelectedCatalog;
             if (blade.catalogId)
                 blade.catalog = catalogs.get({ id: blade.catalogId });
 
+            blade.infinityScroll = false;
+
             blade.refresh = function () {
                 blade.isLoading = true;
+
                 var searchCriteria = {
                     catalogId: blade.catalogId,
                     categoryId: blade.categoryId,
@@ -26,10 +29,17 @@
                     searchCriteria,
                     function (data) {
                         transformByFilters(data.listEntries);
-
                         blade.isLoading = false;
                         $scope.pageSettings.totalItems = data.totalCount;
-                        $scope.items = data.listEntries;
+                        if (blade.infinityScroll) {
+                                //debugger;
+                            $scope.items = $scope.items.concat(data.listEntries);
+                                var test = $scope.items;
+
+                        } else {
+                            //debugger;
+                            $scope.items = data.listEntries;
+                        }
 
                         //Set navigation breadcrumbs
                         setBreadcrumbs();
@@ -473,13 +483,29 @@
                 });
             }
 
+            // infinite scrolll
+            $scope.getDataDown = function () {
+                //debugger;
+                $scope.gridApi.infiniteScroll.saveScrollPercentage();
+                console.log('Загрузка данных при прокрутке вниз');
+
+                blade.infinityScroll = true;
+                ++$scope.pageSettings.currentPage;
+                $scope.gridApi.infiniteScroll.dataLoaded();
+            };
+
             // ui-grid
             $scope.setGridOptions = function (gridOptions) {
                 uiGridHelper.initialize($scope, gridOptions, function (gridApi) {
                     uiGridHelper.bindRefreshOnSortChanged($scope);
+                    //debugger;
+                    //infinite scroll
+                    gridApi.infiniteScroll.on.needLoadMoreData($scope, $scope.getDataDown);
+                    $scope.gridApi = gridApi;
                 });
                 bladeUtils.initializePagination($scope);
             };
+
 
 
             //No need to call this because page 'pageSettings.currentPage' is watched!!! It would trigger subsequent duplicated req...
