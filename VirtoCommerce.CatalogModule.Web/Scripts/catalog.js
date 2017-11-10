@@ -134,7 +134,7 @@ angular.module(catalogsModuleName, ['ui.grid.validate'])
 	        controller: 'virtoCommerce.catalogModule.itemImageWidgetController',
 	        size: [2, 2],
 	        template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/itemImageWidget.tpl.html'
-	    };
+        };
 	    widgetService.registerWidget(itemImageWidget, 'itemDetail');
 	    //Register item property widget
 	    var itemPropertyWidget = {
@@ -192,8 +192,15 @@ angular.module(catalogsModuleName, ['ui.grid.validate'])
 	    };
 	    widgetService.registerWidget(itemAssetWidget, 'itemDetail');
 
+        //Register category image widget
+        var categoryImageWidget = {
+            controller: 'virtoCommerce.catalogModule.categoryImageWidgetController',
+            size: [2, 2],
+            template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/categoryImageWidget.tpl.html'
+        };
+
 	    //Register widgets to categoryDetail
-	    widgetService.registerWidget(itemImageWidget, 'categoryDetail');
+        widgetService.registerWidget(categoryImageWidget, 'categoryDetail');
 
 	    var categoryPropertyWidget = {
 	        controller: 'virtoCommerce.catalogModule.categoryPropertyWidgetController',

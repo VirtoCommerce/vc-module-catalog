@@ -289,6 +289,8 @@
     <Content Include="Scripts\widgets\catalogLanguagesWidget.js" />
     <Content Include="Scripts\widgets\catalogPropertyWidget.js" />
     <Content Include="Scripts\widgets\catalogPropertyWidget.tpl.html" />
+    <Content Include="Scripts\widgets\categoryImageWidget.js" />
+    <Content Include="Scripts\widgets\categoryImageWidget.tpl.html" />
     <Content Include="Scripts\widgets\editorialReviewWidget.js" />
     <Content Include="Scripts\widgets\editorialReviewWidget.tpl.html" />
     <Content Include="Scripts\widgets\itemAssociationsWidget.js" />

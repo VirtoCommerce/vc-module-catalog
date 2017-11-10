@@ -30,16 +30,8 @@
             blade.origItem = data;
             blade.isLoading = false;
 
-            //set category and productPath
-            if (data.categoryId) {
-                categories.get({ id: data.categoryId },
-                    function (category) {
-                        blade.item.category = category;
-                        blade.item.folderPath = (category ? (category.code + '/') : '') + data.code;
-                    });
-            } else {
-                blade.item.folderPath = data.code;
-            }
+            //set folderPath
+            blade.item.folderPath = (data.catalogId ? (getShortCatalogId(data.catalogId)+ '/') : '') + data.code;
 
             if (parentRefresh && blade.parentBlade.refresh) {
                 blade.parentBlade.refresh();
@@ -60,6 +52,10 @@
         var pattern = /[$+;=%{}[\]|\\\/@ ~!^*&()?:'<>,]/;
         return !pattern.test(value);
     };
+
+    function getShortCatalogId(catalogId) {
+        return catalogId.length > 5 ? catalogId.substring(0, 5) : catalogId;
+    }
 
     function isDirty() {
         return !angular.equals(blade.item, blade.origItem) && blade.hasUpdatePermission();
