@@ -65,6 +65,13 @@
                     <value>FullReview</value>
                 </arrayValues>
             </setting>
+            <setting>
+                <name>Catalog.UseInfinityScroll</name>
+                <valueType>boolean</valueType>
+                <defaultValue>false</defaultValue>
+                <title>Pagination template</title>
+                <description>Enable or disable page-by-page navigation or infinite scrolling</description>
+            </setting>
         </group>
         <group name="Catalog|Images">
             <setting>

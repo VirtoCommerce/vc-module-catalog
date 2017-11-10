@@ -10,7 +10,7 @@
             if (blade.catalogId)
                 blade.catalog = catalogs.get({ id: blade.catalogId });
 
-            blade.infinityScroll = false;
+            blade.isFirstLoad = false;
 
             blade.refresh = function () {
                 blade.isLoading = true;
@@ -31,14 +31,14 @@
                         transformByFilters(data.listEntries);
                         blade.isLoading = false;
                         $scope.pageSettings.totalItems = data.totalCount;
-                        if (blade.infinityScroll) {
-                                //debugger;
-                            $scope.items = $scope.items.concat(data.listEntries);
-                                var test = $scope.items;
 
+                        if ($scope.infitityScroll && blade.isFirstLoad) {
+                            $scope.items = $scope.items.concat(data.listEntries);
+
+                            $scope.gridApi.infiniteScroll.dataLoaded();
                         } else {
-                            //debugger;
                             $scope.items = data.listEntries;
+                            blade.isFirstLoad = true;
                         }
 
                         //Set navigation breadcrumbs
@@ -192,7 +192,7 @@
 
             function mapChecked() {
                 bladeNavigationService.closeChildrenBlades(blade);
-
+                debugger;
                 var selection = $scope.gridApi.selection.getSelectedRows();
                 var listEntryLinks = [];
                 angular.forEach(selection, function (listItem) {
@@ -313,7 +313,9 @@
                 {
                     name: "platform.commands.refresh",
                     icon: 'fa fa-refresh',
-                    executeMethod: blade.refresh,
+                    executeMethod: function () {
+                        $scope.pageSettings.currentPage = 1;
+                    },
                     canExecuteMethod: function () {
                         return true;
                     }
@@ -485,22 +487,22 @@
 
             // infinite scrolll
             $scope.getDataDown = function () {
-                //debugger;
-                $scope.gridApi.infiniteScroll.saveScrollPercentage();
-                console.log('Загрузка данных при прокрутке вниз');
+                var temp = $scope.infinityScroll;
+                debugger;
+                var currentItemCount = $scope.pageSettings.itemsPerPageCount * $scope.pageSettings.currentPage;
 
-                blade.infinityScroll = true;
-                ++$scope.pageSettings.currentPage;
-                $scope.gridApi.infiniteScroll.dataLoaded();
+                if (currentItemCount < $scope.pageSettings.totalItems) {
+                    $scope.gridApi.infiniteScroll.saveScrollPercentage();
+                    ++$scope.pageSettings.currentPage;
+                    $scope.gridApi.infiniteScroll.dataLoaded();
+                }
             };
 
             // ui-grid
             $scope.setGridOptions = function (gridOptions) {
                 uiGridHelper.initialize($scope, gridOptions, function (gridApi) {
                     uiGridHelper.bindRefreshOnSortChanged($scope);
-                    //debugger;
-                    //infinite scroll
-                    gridApi.infiniteScroll.on.needLoadMoreData($scope, $scope.getDataDown);
+                    uiGridHelper.bindInfinityScroll($scope);
                     $scope.gridApi = gridApi;
                 });
                 bladeUtils.initializePagination($scope);
