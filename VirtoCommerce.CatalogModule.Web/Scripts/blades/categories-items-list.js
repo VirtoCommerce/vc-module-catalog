@@ -16,7 +16,7 @@
                 blade.catalog = catalogs.get({ id: blade.catalogId });
 
             blade.refresh = function () {
-
+                debugger;
                 blade.isLoading = true;
                 if ($scope.infinityScroll) {
                     $scope.isFirstLoad = true;
@@ -44,12 +44,13 @@
 
                         //Set navigation breadcrumbs
                         setBreadcrumbs();
-                        $scope.gridApi.infiniteScroll.resetScroll(true, true);
-                    }).then(function () {
+                    });
+
+                    if (!$scope.isFirstLoad) {
                         $scope.gridApi.infiniteScroll.setScrollDirections(false, false);
                         $scope.gridApi.infiniteScroll.resetScroll(true, true);
                         $scope.gridApi.infiniteScroll.dataLoaded();
-                    });
+                    }
             }
 
             $scope.showMore = function showMore() {
@@ -530,15 +531,14 @@
             $scope.setGridOptions = function (gridOptions) {
                 //Get Settings because it works earlier than the initialization blade
                 getSettings();
-
                 uiGridHelper.initialize($scope, gridOptions, function (gridApi) {
+
                     uiGridHelper.bindRefreshOnSortChanged($scope);
                     if ($scope.infinityScroll) {
                         uiGridHelper.bindInfinityScroll($scope);
                     }
                     $scope.gridApi = gridApi;
                 });
-
 
                 bladeUtils.initializePagination($scope, $scope.infinityScroll);
 
