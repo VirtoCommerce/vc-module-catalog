@@ -6,7 +6,7 @@
     </div>
 </div>
 <div class="blade-static __bottom" ng-if="!infinityScroll && pageSettings.itemsPerPageCount < pageSettings.totalItems" ng-include="'pagerTemplate.html'"></div>
-<div class="blade-static __bottom" ng-if="infinityScroll && pageSettings.itemsPerPageCount < pageSettings.totalItems" ng-include="'show-more.tpl.html'"></div>
+<div class="blade-static __bottom" ng-if="infinityScroll && hasMore && isFirstLoad " ng-include="'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/common/templates/show-more.tpl.html'"></div>
 <div class="blade-content __medium-wide">
     <div class="blade-inner">
         <div class="inner-block" ng-init="setGridOptions({

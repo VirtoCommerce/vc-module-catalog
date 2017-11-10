@@ -4,16 +4,24 @@
         function ($sessionStorage, $localStorage, $timeout, $scope, categories, items, listEntries, bladeUtils, dialogService, authService, uiGridHelper, catalogs) {
             $scope.uiGridConstants = uiGridHelper.uiGridConstants;
             $scope.items = [];
+
+            $scope.infinityScroll = false;
+            $scope.hasMore = false;
+            $scope.isFirstLoad = true;
+
             var blade = $scope.blade;
             var bladeNavigationService = bladeUtils.bladeNavigationService;
             // blade.catalog = bladeNavigationService.catalogsSelectedCatalog;
             if (blade.catalogId)
                 blade.catalog = catalogs.get({ id: blade.catalogId });
 
-            blade.isFirstLoad = false;
-
             blade.refresh = function () {
+
                 blade.isLoading = true;
+                if ($scope.infinityScroll) {
+                    $scope.isFirstLoad = true;
+                    $scope.pageSettings.currentPage = 1;
+                }
 
                 var searchCriteria = {
                     catalogId: blade.catalogId,
@@ -31,19 +39,51 @@
                         transformByFilters(data.listEntries);
                         blade.isLoading = false;
                         $scope.pageSettings.totalItems = data.totalCount;
-
-                        if ($scope.infitityScroll && blade.isFirstLoad) {
-                            $scope.items = $scope.items.concat(data.listEntries);
-
-                            $scope.gridApi.infiniteScroll.dataLoaded();
-                        } else {
-                            $scope.items = data.listEntries;
-                            blade.isFirstLoad = true;
-                        }
+                        $scope.items = data.listEntries;
+                        $scope.hasMore = $scope.pageSettings.currentPage * $scope.pageSettings.itemsPerPageCount < $scope.pageSettings.totalItems;
 
                         //Set navigation breadcrumbs
                         setBreadcrumbs();
+                        $scope.gridApi.infiniteScroll.resetScroll(true, true);
+                    }).then(function () {
+                        $scope.gridApi.infiniteScroll.setScrollDirections(false, false);
+                        $scope.gridApi.infiniteScroll.resetScroll(true, true);
+                        $scope.gridApi.infiniteScroll.dataLoaded();
                     });
+            }
+
+            $scope.showMore = function showMore() {
+                $scope.isFirstLoad = false;
+                $scope.hasMore = $scope.pageSettings.currentPage * $scope.pageSettings.itemsPerPageCount < $scope.pageSettings.totalItems;
+                if ($scope.hasMore) {
+
+                    $scope.gridApi.infiniteScroll.saveScrollPercentage();
+                    ++$scope.pageSettings.currentPage;
+
+                    var searchCriteria = {
+                        catalogId: blade.catalogId,
+                        categoryId: blade.categoryId,
+                        keyword: filter.keyword ? filter.keyword : undefined,
+                        responseGroup: 'withCategories, withProducts',
+                        sort: uiGridHelper.getSortExpression($scope),
+                        skip: ($scope.pageSettings.currentPage - 1) * $scope.pageSettings.itemsPerPageCount,
+                        take: $scope.pageSettings.itemsPerPageCount
+                    };
+
+                    listEntries.listitemssearch(
+                        searchCriteria,
+                        function (data) {
+                            $scope.pageSettings.totalItems = data.totalCount;
+                            $scope.items = $scope.items.concat(data.listEntries);
+                            $scope.gridApi.infiniteScroll.dataLoaded();
+                        });
+                    
+                }
+            }
+
+            //settings
+            function getSettings() {
+                $scope.infinityScroll = blade.infinityScroll;
             }
 
             //Breadcrumbs
@@ -191,8 +231,8 @@
             }
 
             function mapChecked() {
-                bladeNavigationService.closeChildrenBlades(blade);
                 debugger;
+                bladeNavigationService.closeChildrenBlades(blade);
                 var selection = $scope.gridApi.selection.getSelectedRows();
                 var listEntryLinks = [];
                 angular.forEach(selection, function (listItem) {
@@ -227,6 +267,7 @@
                         mode: blade.mode,
                         isBrowsingLinkedCategory: blade.isBrowsingLinkedCategory || $scope.hasLinks(listItem),
                         breadcrumbs: blade.breadcrumbs,
+                        infinityScroll: $scope.infinityScroll,
                         title: 'catalog.blades.categories-items-list.title',
                         subtitle: 'catalog.blades.categories-items-list.subtitle',
                         subtitleValues: listItem.name != null ? { name: listItem.name } : '',
@@ -313,9 +354,7 @@
                 {
                     name: "platform.commands.refresh",
                     icon: 'fa fa-refresh',
-                    executeMethod: function () {
-                        $scope.pageSettings.currentPage = 1;
-                    },
+                    executeMethod: blade.refresh,
                     canExecuteMethod: function () {
                         return true;
                     }
@@ -437,6 +476,7 @@
                         var newBlade = {
                             id: 'listItemChild',
                             catalog: blade.catalog,
+                            infinityScroll: $scope.infinityScroll,
                             title: 'catalog.blades.categories-items-add.title',
                             subtitle: 'catalog.blades.categories-items-add.subtitle',
                             controller: 'virtoCommerce.catalogModule.categoriesItemsAddController',
@@ -453,6 +493,7 @@
                     id: 'itemsList' + (blade.level + 1),
                     level: blade.level + 1,
                     mode: 'mappingSource',
+                    infinityScroll: blade.infinityScroll,
                     breadcrumbs: [],
                     title: 'catalog.blades.categories-items-list.title-mapping',
                     subtitle: 'catalog.blades.categories-items-list.subtitle-mapping',
@@ -485,30 +526,27 @@
                 });
             }
 
-            // infinite scrolll
-            $scope.getDataDown = function () {
-                var temp = $scope.infinityScroll;
-                debugger;
-                var currentItemCount = $scope.pageSettings.itemsPerPageCount * $scope.pageSettings.currentPage;
-
-                if (currentItemCount < $scope.pageSettings.totalItems) {
-                    $scope.gridApi.infiniteScroll.saveScrollPercentage();
-                    ++$scope.pageSettings.currentPage;
-                    $scope.gridApi.infiniteScroll.dataLoaded();
-                }
-            };
-
             // ui-grid
             $scope.setGridOptions = function (gridOptions) {
+                //Get Settings because it works earlier than the initialization blade
+                getSettings();
+
                 uiGridHelper.initialize($scope, gridOptions, function (gridApi) {
                     uiGridHelper.bindRefreshOnSortChanged($scope);
-                    uiGridHelper.bindInfinityScroll($scope);
+                    if ($scope.infinityScroll) {
+                        uiGridHelper.bindInfinityScroll($scope);
+                    }
                     $scope.gridApi = gridApi;
                 });
-                bladeUtils.initializePagination($scope);
+
+
+                bladeUtils.initializePagination($scope, $scope.infinityScroll);
+
+                //disable watcher
+                if ($scope.infinityScroll) {
+                    blade.refresh();
+                }
             };
-
-
 
             //No need to call this because page 'pageSettings.currentPage' is watched!!! It would trigger subsequent duplicated req...
             //blade.refresh();
