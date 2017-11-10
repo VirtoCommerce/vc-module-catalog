@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Commerce.Model;
@@ -13,6 +9,16 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 {
     public sealed class OutlineService : IOutlineService
     {
+        /// <summary>
+        /// Whether to use category codes instead of their ids.
+        /// </summary>
+        public bool UseCategoryCodes { get; set; }
+
+        /// <summary>
+        /// Whether to use product codes instead of their ids.
+        /// </summary>
+        public bool UseProductCodes { get; set; }
+
         /// <summary>
         /// Constructs single physical and/or multiple virtual outlines for given objects.
         /// Outline is the path from the catalog to one of the child objects (product or category):
@@ -141,10 +147,24 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         private OutlineItem Entity2Outline(Entity entity)
         {
+            var outlineId = entity.Id;
+
+            // Use codes when configured.
+            Category category = null;
+            CatalogProduct product = null;
+            if (UseCategoryCodes && (category = entity as Category) != null)
+            {
+                outlineId = category.Code;
+            }
+            else if (UseProductCodes && (product = entity as CatalogProduct) != null)
+            {
+                outlineId = product.Code;
+            }
+
             var seoSupport = entity as ISeoSupport;
             var retVal = new OutlineItem
             {
-                Id = entity.Id,
+                Id = outlineId,
                 SeoObjectType = seoSupport != null ? seoSupport.SeoObjectType : "Catalog"
             };
             return retVal;

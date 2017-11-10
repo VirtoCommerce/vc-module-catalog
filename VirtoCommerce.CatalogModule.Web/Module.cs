@@ -73,8 +73,12 @@ namespace VirtoCommerce.CatalogModule.Web
             _container.RegisterType<ICatalogSearchService, CatalogSearchServiceDecorator>();
             _container.RegisterType<ISkuGenerator, DefaultSkuGenerator>();
             _container.RegisterType<ISeoDuplicatesDetector, CatalogSeoDublicatesDetector>(new ContainerControlledLifetimeManager());
-            _container.RegisterType<IOutlineService, OutlineService>();
             _container.RegisterType<IAssociationService, AssociationServiceImpl>();
+
+            var codesInOutline = _container.Resolve<ISettingsManager>().GetValue("Catalog.CodesInOutline", false);
+            _container.RegisterType<IOutlineService, OutlineService>(
+                new InjectionProperty("UseCategoryCodes", codesInOutline),
+                new InjectionProperty("UseProductCodes", codesInOutline));
 
             #endregion
 
