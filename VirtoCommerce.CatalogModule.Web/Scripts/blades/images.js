@@ -116,7 +116,7 @@
                         var newBlade = {
                             languages: languages,
                             item: blade.item,
-                            folderPath: blade.item.folderPath,
+                            folderPath: blade.folderPath,
                             onSelect: linkAssets,
                             controller: 'virtoCommerce.catalogModule.imagesAddController',
                             template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/images-add.tpl.html'

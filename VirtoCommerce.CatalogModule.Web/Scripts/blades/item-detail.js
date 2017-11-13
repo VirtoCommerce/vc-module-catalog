@@ -30,9 +30,6 @@
             blade.origItem = data;
             blade.isLoading = false;
 
-            //set folderPath
-            blade.item.folderPath = (data.catalogId ? (getShortCatalogId(data.catalogId)+ '/') : '') + data.code;
-
             if (parentRefresh && blade.parentBlade.refresh) {
                 blade.parentBlade.refresh();
             }
@@ -53,9 +50,6 @@
         return !pattern.test(value);
     };
 
-    function getShortCatalogId(catalogId) {
-        return catalogId.length > 5 ? catalogId.substring(0, 5) : catalogId;
-    }
 
     function isDirty() {
         return !angular.equals(blade.item, blade.origItem) && blade.hasUpdatePermission();

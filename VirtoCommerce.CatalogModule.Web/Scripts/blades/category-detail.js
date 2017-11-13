@@ -35,8 +35,6 @@
         blade.title = data.name;
         blade.isLoading = false;
         blade.securityScopes = data.securityScopes;
-        blade.currentEntity.folderPath = (data.catalogId ? (getShortCatalogId(data.catalogId) + '/') : '') + data.code;
-
     };
 
     blade.codeValidator = function (value) {
@@ -44,9 +42,6 @@
         return !pattern.test(value);
     };
 
-    function getShortCatalogId(catalogId) {
-        return catalogId.length > 5 ? catalogId.substring(0, 5) : catalogId;
-    }
     function isDirty() {
         return !angular.equals(blade.currentEntity, blade.origEntity) && blade.hasUpdatePermission();
     };

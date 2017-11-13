@@ -5,6 +5,7 @@
             var blade = {
                 id: "itemImage",
                 item: $scope.blade.currentEntity,
+                folderPath: getFolderPath(),
                 controller: 'virtoCommerce.catalogModule.imagesController',
                 template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/images.tpl.html'
             };
@@ -16,6 +17,16 @@
                 $scope.currentEntities = images;
             }
         }
+        function getFolderPath() {
+            var path = ($scope.blade.currentEntity.catalogId ? (getShortCatalogId($scope.blade.currentEntity.catalogId) + '/') : '') + $scope.blade.currentEntity.code;
+            return path;
+        }
+
+        function getShortCatalogId(catalogId) {
+            debugger;
+            return catalogId.length > 5 ? catalogId.substring(0, 5) : catalogId;
+        }
+
         $scope.$watch('blade.item.images', setCurrentEntities);
         $scope.$watch('blade.currentEntity.images', setCurrentEntities);
     }]);
