@@ -130,12 +130,13 @@ angular.module(catalogsModuleName, ['ui.grid.validate'])
 
 	
 	    //Register image widget
-	    var itemImageWidget = {
-	        controller: 'virtoCommerce.catalogModule.itemImageWidgetController',
+	    var entryImageWidget = {
+            controller: 'virtoCommerce.catalogModule.catalogEntryImageWidgetController',
 	        size: [2, 2],
-	        template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/itemImageWidget.tpl.html'
+            template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/catalogEntryImageWidget.tpl.html'
         };
-	    widgetService.registerWidget(itemImageWidget, 'itemDetail');
+        widgetService.registerWidget(entryImageWidget, 'itemDetail');
+
 	    //Register item property widget
 	    var itemPropertyWidget = {
 	        controller: 'virtoCommerce.catalogModule.itemPropertyWidgetController',
@@ -190,17 +191,10 @@ angular.module(catalogsModuleName, ['ui.grid.validate'])
 	        controller: 'virtoCommerce.catalogModule.itemAssetWidgetController',
 	        template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/itemAssetWidget.tpl.html'
 	    };
-	    widgetService.registerWidget(itemAssetWidget, 'itemDetail');
-
-        //Register category image widget
-        var categoryImageWidget = {
-            controller: 'virtoCommerce.catalogModule.categoryImageWidgetController',
-            size: [2, 2],
-            template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/categoryImageWidget.tpl.html'
-        };
+        widgetService.registerWidget(itemAssetWidget, 'itemDetail');
 
 	    //Register widgets to categoryDetail
-        widgetService.registerWidget(categoryImageWidget, 'categoryDetail');
+        widgetService.registerWidget(entryImageWidget, 'categoryDetail');
 
 	    var categoryPropertyWidget = {
 	        controller: 'virtoCommerce.catalogModule.categoryPropertyWidgetController',

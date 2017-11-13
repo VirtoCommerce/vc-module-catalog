@@ -289,8 +289,6 @@
     <Content Include="Scripts\widgets\catalogLanguagesWidget.js" />
     <Content Include="Scripts\widgets\catalogPropertyWidget.js" />
     <Content Include="Scripts\widgets\catalogPropertyWidget.tpl.html" />
-    <Content Include="Scripts\widgets\categoryImageWidget.js" />
-    <Content Include="Scripts\widgets\categoryImageWidget.tpl.html" />
     <Content Include="Scripts\widgets\editorialReviewWidget.js" />
     <Content Include="Scripts\widgets\editorialReviewWidget.tpl.html" />
     <Content Include="Scripts\widgets\itemAssociationsWidget.js" />
@@ -298,10 +296,10 @@
     <Content Include="Scripts\widgets\itemAssociationsWidget.tpl.html" />
     <Content Include="Scripts\widgets\itemAssetWidget.js" />
     <Content Include="Scripts\widgets\itemDimensionWidget.js" />
-    <Content Include="Scripts\widgets\itemImageWidget.js" />
+    <Content Include="Scripts\widgets\сatalogEntryImageWidget.js" />
     <Content Include="Scripts\widgets\itemAssetWidget.tpl.html" />
     <Content Include="Scripts\widgets\itemDimensionWidget.tpl.html" />
-    <Content Include="Scripts\widgets\itemImageWidget.tpl.html" />
+    <Content Include="Scripts\widgets\сatalogEntryImageWidget.tpl.html" />
     <Content Include="Scripts\widgets\categoryPropertyWidget.js" />
     <Content Include="Scripts\widgets\itemPropertyWidget.js" />
     <Content Include="Scripts\widgets\categoryPropertyWidget.tpl.html" />

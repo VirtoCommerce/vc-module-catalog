@@ -1,5 +1,5 @@
 ﻿angular.module('virtoCommerce.catalogModule')
-    .controller('virtoCommerce.catalogModule.itemImageWidgetController', ['$scope', 'virtoCommerce.catalogModule.items', 'virtoCommerce.catalogModule.categories', 'platformWebApp.bladeNavigationService', function ($scope, items, categories, bladeNavigationService) {
+    .controller('virtoCommerce.catalogModule.catalogEntryImageWidgetController', ['$scope', 'virtoCommerce.catalogModule.items', 'virtoCommerce.catalogModule.categories', 'platformWebApp.bladeNavigationService', function ($scope, items, categories, bladeNavigationService) {
 
     var item = $scope.blade.currentEntity;
 
