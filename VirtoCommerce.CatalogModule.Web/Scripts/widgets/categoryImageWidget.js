@@ -23,7 +23,6 @@
         }
 
         function getShortCatalogId(catalogId) {
-            debugger;
             return catalogId.length > 5 ? catalogId.substring(0, 5) : catalogId;
         }
 
