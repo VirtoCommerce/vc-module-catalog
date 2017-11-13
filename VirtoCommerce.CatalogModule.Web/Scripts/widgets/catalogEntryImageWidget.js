@@ -21,7 +21,6 @@
         function getFolderPath(catalogId, code) {
             var catalogShortName = catalogId.length > 5 ? catalogId.substring(0, 5) : catalogId;
             var path = catalogShortName + '/' + code;
-            debugger;
             return path;
         }
 
