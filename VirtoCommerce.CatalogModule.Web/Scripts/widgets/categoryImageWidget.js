@@ -1,11 +1,13 @@
 ﻿angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.categoryImageWidgetController', ['$scope', 'virtoCommerce.catalogModule.items', 'virtoCommerce.catalogModule.categories', 'platformWebApp.bladeNavigationService', function ($scope, items, categories, bladeNavigationService) {
 
+        var item = $scope.blade.currentEntity;
+
         $scope.openBlade = function () {
             var blade = {
                 id: "itemImage",
-                item: $scope.blade.currentEntity,
-                folderPath: getFolderPath(),
+                item: item,
+                folderPath: getFolderPath(item.catalogId, item.code),
                 controller: 'virtoCommerce.catalogModule.imagesController',
                 template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/images.tpl.html'
             };
@@ -17,13 +19,11 @@
                 $scope.currentEntities = images;
             }
         }
-        function getFolderPath() {
-            var path = ($scope.blade.currentEntity.catalogId ? (getShortCatalogId($scope.blade.currentEntity.catalogId) + '/') : '') + $scope.blade.currentEntity.code;
-            return path;
-        }
 
-        function getShortCatalogId(catalogId) {
-            return catalogId.length > 5 ? catalogId.substring(0, 5) : catalogId;
+        function getFolderPath(catalogId, code) {
+            var catalogShortName = catalogId.length > 5 ? catalogId.substring(0, 5) : catalogId;
+            var path = catalogShortName + '/' + code;
+            return path;
         }
 
         $scope.$watch('blade.item.images', setCurrentEntities);
