@@ -24,7 +24,6 @@
     };
 
     $scope.addLinkedCategory = function () {
-        debugger;
         $scope.bladeClose(function () {
             var newBlade = {
                 infinityScroll: infinityScroll,

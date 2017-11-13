@@ -18,7 +18,6 @@
 
                 $scope.exposeAlias = temp.toLowerCase() === 'true';
                 $scope.infinityScroll = tempInfinityScroll.toLowerCase() === 'true';
-                debugger;
             });
 
 

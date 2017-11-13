@@ -16,7 +16,6 @@
                 blade.catalog = catalogs.get({ id: blade.catalogId });
 
             blade.refresh = function () {
-                debugger;
                 blade.isLoading = true;
                 if ($scope.infinityScroll) {
                     $scope.isFirstLoad = true;
@@ -46,11 +45,11 @@
                         setBreadcrumbs();
                     });
 
-                    if (!$scope.isFirstLoad) {
-                        $scope.gridApi.infiniteScroll.setScrollDirections(false, false);
-                        $scope.gridApi.infiniteScroll.resetScroll(true, true);
+                if (!$scope.isFirstLoad) {
                         $scope.gridApi.infiniteScroll.dataLoaded();
-                    }
+                }
+
+                resetStateGrid();
             }
 
             $scope.showMore = function showMore() {
@@ -121,6 +120,13 @@
                             blade.refresh();
                         });
                 };
+            }
+
+            //reset state grid (header checkbox, scroll)
+            function resetStateGrid() {
+                $scope.gridApi.selection.clearSelectedRows();
+                $scope.gridApi.infiniteScroll.resetScroll(true, true);
+
             }
 
             $scope.edit = function (listItem) {
@@ -232,7 +238,6 @@
             }
 
             function mapChecked() {
-                debugger;
                 bladeNavigationService.closeChildrenBlades(blade);
                 var selection = $scope.gridApi.selection.getSelectedRows();
                 var listEntryLinks = [];
@@ -531,18 +536,20 @@
             $scope.setGridOptions = function (gridOptions) {
                 //Get Settings because it works earlier than the initialization blade
                 getSettings();
+
                 uiGridHelper.initialize($scope, gridOptions, function (gridApi) {
 
                     uiGridHelper.bindRefreshOnSortChanged($scope);
                     if ($scope.infinityScroll) {
                         uiGridHelper.bindInfinityScroll($scope);
                     }
+
                     $scope.gridApi = gridApi;
                 });
 
+                //disable watcher
                 bladeUtils.initializePagination($scope, $scope.infinityScroll);
 
-                //disable watcher
                 if ($scope.infinityScroll) {
                     blade.refresh();
                 }
