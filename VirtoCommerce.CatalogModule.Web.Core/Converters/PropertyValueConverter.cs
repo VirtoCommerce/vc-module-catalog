@@ -18,6 +18,7 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             retVal.PropertyName = propValue.PropertyName;
             retVal.ValueId = propValue.ValueId;
             retVal.ValueType = propValue.ValueType;
+            retVal.Alias = propValue.Alias;
 
             if (propValue.Property != null)
             {
