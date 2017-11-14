@@ -105,12 +105,6 @@
             return p && _.any(p.values) && p.values[0].value;
         });
     }
-    
-    function getFolderPath(catalogId, code) {
-        var catalogShortName = catalogId.length > 5 ? catalogId.substring(0, 5) : catalogId;
-        var path = catalogShortName + '/' + code;
-        return path;
-    }
 
     function initializeSEO(item, callback) {
         if (_.any(item.seoInfos)) {
