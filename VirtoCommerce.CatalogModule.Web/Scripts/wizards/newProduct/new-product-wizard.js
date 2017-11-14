@@ -1,5 +1,5 @@
 ﻿angular.module('virtoCommerce.catalogModule')
-.controller('virtoCommerce.catalogModule.newProductWizardController', ['$scope', 'platformWebApp.bladeNavigationService', '$http', 'virtoCommerce.storeModule.stores', function ($scope, bladeNavigationService, $http, stores) {
+    .controller('virtoCommerce.catalogModule.newProductWizardController', ['$scope', 'platformWebApp.bladeNavigationService', '$http', 'virtoCommerce.storeModule.stores', 'virtoCommerce.catalogModule.helperCatalogModule', function ($scope, bladeNavigationService, $http, stores, helper) {
     var blade = $scope.blade;
     blade.headIcon = blade.item.productType === 'Digital' ? 'fa fa-file-archive-o' : 'fa fa-truck';
 
@@ -50,6 +50,7 @@
                 newBlade = {
                     id: "newProductImages",
                     item: blade.item,
+                    folderPath: helper.folderPath($scope.blade.item.catalogId, $scope.blade.item.code),
                     catalog: blade.catalog,
                     controller: 'virtoCommerce.catalogModule.imagesController',
                     template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/images.tpl.html'
@@ -103,6 +104,12 @@
         return _.filter(blade.item.properties, function (p) {
             return p && _.any(p.values) && p.values[0].value;
         });
+    }
+    
+    function getFolderPath(catalogId, code) {
+        var catalogShortName = catalogId.length > 5 ? catalogId.substring(0, 5) : catalogId;
+        var path = catalogShortName + '/' + code;
+        return path;
     }
 
     function initializeSEO(item, callback) {

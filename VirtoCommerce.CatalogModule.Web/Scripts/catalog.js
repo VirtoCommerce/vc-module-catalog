@@ -54,7 +54,15 @@ angular.module(catalogsModuleName, ['ui.grid.validate'])
             $localStorage[currentFiltersStorageKey] = currentFiltersUpdateTime;
         }
     };
-}])
+    }])
+.factory('virtoCommerce.catalogModule.helperCatalogModule', [function() {
+        return {
+            folderPath: function(catalogId, code) {
+                var catalogShortName = catalogId.length > 5 ? catalogId.substring(0, 5) : catalogId;
+                return  catalogShortName + '/' + code;
+            }
+    };
+    }])
 .run(
     ['platformWebApp.authService', 'platformWebApp.mainMenuService', 'platformWebApp.widgetService', '$state', 'platformWebApp.pushNotificationTemplateResolver', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.catalogImportService', 'virtoCommerce.catalogModule.catalogExportService', 'platformWebApp.permissionScopeResolver', 'virtoCommerce.catalogModule.catalogs', 'virtoCommerce.catalogModule.predefinedSearchFilters', 'platformWebApp.metaFormsService', '$http', '$compile', 
     function (authService, mainMenuService, widgetService, $state, pushNotificationTemplateResolver, bladeNavigationService, catalogImportService, catalogExportService, scopeResolver, catalogs, predefinedSearchFilters, metaFormsService, $http, $compile) {
@@ -325,10 +333,10 @@ angular.module(catalogsModuleName, ['ui.grid.validate'])
 	    };
 
 	    // integration: index in product details
-	    var widgetToRegister = angular.extend({}, indexWidget, { documentType: 'Product' })
+        var widgetToRegister = angular.extend({}, indexWidget, { documentType: 'Product' });
 	    widgetService.registerWidget(widgetToRegister, 'itemDetail');
 	    // integration: index in CATEGORY details
-	    widgetToRegister = angular.extend({}, indexWidget, { documentType: 'Category' })
+	    widgetToRegister = angular.extend({}, indexWidget, { documentType: 'Category' });
 	    widgetService.registerWidget(widgetToRegister, 'categoryDetail');
 		    
 	    // Aggregation properties in store details
