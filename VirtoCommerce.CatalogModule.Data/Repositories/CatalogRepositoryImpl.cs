@@ -202,12 +202,12 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 var images = Images.Where(x => categoriesIds.Contains(x.CategoryId)).ToArray();
             }
 
-            //Load category property values by separate query
-            var propertyValues = PropertyValues.Where(x => categoriesIds.Contains(x.CategoryId)).ToArray();
-
             //Load all properties meta information and information for inheritance
             if (respGroup.HasFlag(coreModel.CategoryResponseGroup.WithProperties))
             {
+                //Load category property values by separate query
+                var propertyValues = PropertyValues.Where(x => categoriesIds.Contains(x.CategoryId)).ToArray();
+
                 var categoryPropertiesIds = Properties.Where(x => categoriesIds.Contains(x.CategoryId)).Select(x => x.Id).ToArray();
                 var categoryProperties = GetPropertiesByIds(categoryPropertiesIds);
             }
@@ -228,13 +228,16 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             }
 
             // Use breaking query EF performance concept https://msdn.microsoft.com/en-us/data/hh949853.aspx#8
-            var retVal = Items.Include(x => x.Images).Where(x => itemIds.Contains(x.Id)).ToArray();
-
-            var propertyValues = PropertyValues.Where(x => itemIds.Contains(x.ItemId)).ToArray();
+            var retVal = Items.Include(x => x.Images).Where(x => itemIds.Contains(x.Id)).ToArray();            
 
             if (respGroup.HasFlag(coreModel.ItemResponseGroup.Outlines))
             {
                 respGroup |= coreModel.ItemResponseGroup.Links;
+            }
+
+            if(respGroup.HasFlag(coreModel.ItemResponseGroup.ItemProperties))
+            {
+                var propertyValues = PropertyValues.Where(x => itemIds.Contains(x.ItemId)).ToArray();
             }
 
             if (respGroup.HasFlag(coreModel.ItemResponseGroup.Links))

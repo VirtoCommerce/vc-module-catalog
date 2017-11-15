@@ -160,8 +160,7 @@
     <Compile Include="ExportImport\CsvCatalogImporter.cs" />
     <Compile Include="ExportImport\ExpressionConverter.cs" />
     <Compile Include="ExportImport\CsvProductMap.cs" />
-    <Compile Include="JsonConverters\CategorySearchCriteriaJsonConverter.cs" />
-    <Compile Include="JsonConverters\ProductSearchCriteriaJsonConverter.cs" />
+    <Compile Include="JsonConverters\SearchCriteriaJsonConverter.cs" />
     <Compile Include="Model\AggregationProperty.cs" />
     <Compile Include="Model\PushNotifications\ExportNotification.cs" />
     <Compile Include="Model\PushNotifications\ImportNotification.cs" />
