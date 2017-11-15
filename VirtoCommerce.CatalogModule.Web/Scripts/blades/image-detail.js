@@ -17,7 +17,6 @@
                 promise.then(function(promiseData) {
                     $scope.languages = promiseData;
                 });
-
                 $scope.imageTypes = settings.getValues({ id: 'Catalog.ImageCategories' });
             };
 
