@@ -55,9 +55,9 @@ angular.module(catalogsModuleName, ['ui.grid.validate'])
         }
     };
     }])
-.factory('virtoCommerce.catalogModule.helperCatalogModule', [function() {
+.factory('virtoCommerce.catalogModule.catalogImagesFolderPathHelper', [function() {
         return {
-            folderPath: function(catalogId, code) {
+            getImagesFolderPath: function(catalogId, code) {
                 var catalogShortName = catalogId.length > 5 ? catalogId.substring(0, 5) : catalogId;
                 return  catalogShortName + '/' + code;
             }

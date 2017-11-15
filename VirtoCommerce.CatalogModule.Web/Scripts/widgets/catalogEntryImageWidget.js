@@ -1,13 +1,13 @@
 ﻿angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.catalogEntryImageWidgetController',
-    ['$scope', 'virtoCommerce.catalogModule.items', 'virtoCommerce.catalogModule.categories', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.helperCatalogModule',
-        function ($scope, items, categories, bladeNavigationService, helper) {
+    ['$scope', 'virtoCommerce.catalogModule.items', 'virtoCommerce.catalogModule.categories', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.catalogImagesFolderPathHelper',
+        function ($scope, items, categories, bladeNavigationService, catalogImgHelper) {
 
         $scope.openBlade = function () {
             var blade = {
                 id: "itemImage",
                 item: $scope.blade.currentEntity,
-                folderPath: helper.folderPath($scope.blade.currentEntity.catalogId, $scope.blade.currentEntity.code),
+                folderPath: catalogImgHelper.getImagesFolderPath($scope.blade.currentEntity.catalogId, $scope.blade.currentEntity.code),
                 controller: 'virtoCommerce.catalogModule.imagesController',
                 template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/images.tpl.html'
             };
