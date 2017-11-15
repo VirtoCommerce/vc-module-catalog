@@ -5,8 +5,6 @@
         <p class="form-count">{{'platform.list.count' | translate}}: <span class="count">{{pageSettings.totalItems | number:0}}</span></p>
     </div>
 </div>
-<div class="blade-static __bottom" ng-if="!infinityScroll && pageSettings.itemsPerPageCount < pageSettings.totalItems" ng-include="'pagerTemplate.html'"></div>
-<div class="blade-static __bottom" ng-if="infinityScroll && hasMore && isFirstLoad " ng-include="'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/common/templates/show-more.tpl.html'"></div>
 <div class="blade-content __medium-wide">
     <div class="blade-inner">
         <div class="inner-block" ng-init="setGridOptions({
@@ -15,6 +13,8 @@
                 data: 'items',
                 rowTemplate: 'item-list.row.html',
                 rowHeight: 60,
+                infiniteScrollRowsFromEnd: 10,
+                infiniteScrollDown: true,
                 columnDefs: [
                         { name: 'actions', displayName: '', enableColumnResizing: false, enableSorting: false, width: 30, cellTemplate: 'item-list-actions.cell.html', pinnedLeft:true },
                         {
