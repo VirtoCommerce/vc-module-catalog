@@ -527,17 +527,17 @@
             function afterInitializeGrid(gridApi, $scope) {
                 console.log("после инициализации");
             }
-
             // ui-grid
             $scope.setGridOptions = function (gridOptions) {
+                bladeUtils.initializePagination($scope, true);
 
                 uiGridHelper.initialize($scope, gridOptions, function (gridApi) {
+
                     uiGridHelper.bindRefreshOnSortChanged($scope);
                     uiGridHelper.bindInfinityScroll($scope);
                     afterInitializeGrid(gridApi, $scope);
                 });
-
-                bladeUtils.initializePagination($scope, true);
+                
                 blade.refresh();
             };
 
