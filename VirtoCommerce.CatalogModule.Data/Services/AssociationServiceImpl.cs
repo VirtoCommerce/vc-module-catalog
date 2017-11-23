@@ -67,7 +67,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 repository.DisableChangesTracking();
 
                 var itemIds = owners.Where(x => x.Id != null).Select(x => x.Id).ToArray();
-                var existEntities = repository.Associations.Where(x => itemIds.Contains(x.Id)).ToArray();
+                var existEntities = repository.Associations.Where(x => itemIds.Contains(x.ItemId)).ToArray();
 
                 var target = new { Associations = new ObservableCollection<AssociationEntity>(existEntities) };
                 var source = new { Associations = new ObservableCollection<AssociationEntity>(changedEntities) };
