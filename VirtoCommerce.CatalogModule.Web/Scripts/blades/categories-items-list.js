@@ -3,8 +3,8 @@
         '$sessionStorage', '$localStorage', '$timeout', '$interval', '$scope', 'virtoCommerce.catalogModule.categories', 'virtoCommerce.catalogModule.items', 'virtoCommerce.catalogModule.listEntries', 'platformWebApp.bladeUtils', 'platformWebApp.dialogService', 'platformWebApp.authService', 'platformWebApp.uiGridHelper', 'virtoCommerce.catalogModule.catalogs',
         function ($sessionStorage, $localStorage, $timeout, $interval, $scope, categories, items, listEntries, bladeUtils, dialogService, authService, uiGridHelper, catalogs) {
             $scope.uiGridConstants = uiGridHelper.uiGridConstants;
-            $scope.items = [];
             $scope.hasMore = true;
+            $scope.items = [];
 
             var blade = $scope.blade;
             var bladeNavigationService = bladeUtils.bladeNavigationService;
@@ -13,7 +13,7 @@
                 blade.catalog = catalogs.get({ id: blade.catalogId });
 
             blade.refresh = function () {
-
+  
                 blade.isLoading = true;
 
                 var searchCriteria = {
@@ -33,7 +33,7 @@
                         blade.isLoading = false;
                         $scope.pageSettings.totalItems = data.totalCount;
                         $scope.items = data.listEntries;
-
+                        $scope.hasMore = (Object.keys(data.listEntries).length === $scope.pageSettings.itemsPerPageCount) ? true : false;
                         //Set navigation breadcrumbs
                         setBreadcrumbs();
                     });
@@ -42,37 +42,63 @@
                 resetStateGrid();
             }
 
-            $scope.showMore = function showMore() {
+            $scope.getDataDown = function showMoreMoveDown() {
 
                 if ($scope.hasMore) {
+                    console.log("Добавить еще!");
+                    debugger;
                     $scope.gridApi.infiniteScroll.saveScrollPercentage();
-
-                    blade.isLoading = true;
                     //next page
+
                     ++$scope.pageSettings.currentPage;
+                    getData();
+                    $scope.gridApi.infiniteScroll.dataLoaded();
 
-                    var searchCriteria = {
-                        catalogId: blade.catalogId,
-                        categoryId: blade.categoryId,
-                        keyword: filter.keyword ? filter.keyword : undefined,
-                        responseGroup: 'withCategories, withProducts',
-                        sort: uiGridHelper.getSortExpression($scope),
-                        skip: ($scope.pageSettings.currentPage - 1) * $scope.pageSettings.itemsPerPageCount,
-                        take: $scope.pageSettings.itemsPerPageCount
-                    };
+                }
+            }
 
-                    listEntries.listitemssearch(
-                        searchCriteria,
-                        function (data) {
-                            transformByFilters(data.listEntries);
-                            blade.isLoading = false;
-                            $scope.pageSettings.totalItems = data.totalCount;
-                            $scope.items = $scope.items.concat(data.listEntries);
-                            $scope.hasMore = (Object.keys(data.listEntries).length === $scope.pageSettings.itemsPerPageCount) ? true : false;
-                        });
+            $scope.getDataUp = function showMoreMoveUp() {
 
+                if ($scope.hasMore) {
+                    console.log("Добавить еще!");
+                    $scope.gridApi.infiniteScroll.saveScrollPercentage();
+                    //next page
+
+                    ++$scope.pageSettings.currentPage;
+                    getData();
                     $scope.gridApi.infiniteScroll.dataLoaded();
                 }
+            }
+
+            function getData() {
+
+                blade.isLoading = true;
+                $scope.gridApi.infiniteScroll.saveScrollPercentage();
+
+                var searchCriteria = {
+                    catalogId: blade.catalogId,
+                    categoryId: blade.categoryId,
+                    keyword: filter.keyword ? filter.keyword : undefined,
+                    responseGroup: 'withCategories, withProducts',
+                    sort: uiGridHelper.getSortExpression($scope),
+                    skip: ($scope.pageSettings.currentPage - 1) * $scope.pageSettings.itemsPerPageCount,
+                    take: $scope.pageSettings.itemsPerPageCount
+                };
+
+                listEntries.listitemssearch(
+                    searchCriteria,
+                    function (data) {
+                        transformByFilters(data.listEntries);
+                        blade.isLoading = false;
+                        $scope.pageSettings.totalItems = data.totalCount;
+                        $scope.items = $scope.items.concat(data.listEntries);
+                        $scope.hasMore = (Object.keys(data.listEntries).length === $scope.pageSettings.itemsPerPageCount) ? true : false;
+                        $scope.gridApi.infiniteScroll.dataLoaded();
+                        if ($scope.gridApi.selection.getSelectAllState()) {
+                            debugger;
+                            $scope.gridApi.selection.selectAllRows();
+                        }
+                    });
             }
 
 
@@ -117,6 +143,7 @@
             function resetStateGrid() {
                 if ($scope.gridApi) {
                     $scope.items = [];
+                    debugger;
                     $scope.gridApi.selection.clearSelectedRows();
                     $scope.gridApi.infiniteScroll.resetScroll(true, true);
                     $scope.gridApi.infiniteScroll.dataLoaded();
@@ -524,22 +551,25 @@
                 });
             }
 
-            function afterInitializeGrid(gridApi, $scope) {
-                console.log("после инициализации");
-            }
             // ui-grid
             $scope.setGridOptions = function (gridOptions) {
+
+                //disable watched
                 bladeUtils.initializePagination($scope, true);
 
                 uiGridHelper.initialize($scope, gridOptions, function (gridApi) {
+                    //update gridApi for current grid
+                    $scope.gridApi = gridApi;
 
                     uiGridHelper.bindRefreshOnSortChanged($scope);
-                    uiGridHelper.bindInfinityScroll($scope);
-                    afterInitializeGrid(gridApi, $scope);
+                    gridApi.infiniteScroll.on.needLoadMoreData($scope, $scope.getDataDown);
+                    //gridApi.infiniteScroll.on.needLoadMoreDataTop($scope, $scope.getDataUp);
                 });
-                
-                blade.refresh();
+
+                    blade.refresh();
             };
+
+            //$scope.setGridOptions($scope.gridOptions);
 
             //No need to call this because page 'pageSettings.currentPage' is watched!!! It would trigger subsequent duplicated req...
             //blade.refresh();
