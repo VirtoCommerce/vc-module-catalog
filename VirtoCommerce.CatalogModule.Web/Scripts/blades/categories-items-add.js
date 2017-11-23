@@ -2,7 +2,6 @@
 .controller('virtoCommerce.catalogModule.categoriesItemsAddController', ['$scope', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.categories', 'virtoCommerce.catalogModule.items', function ($scope, bladeNavigationService, categories, items) {
     var blade = $scope.blade;
     var pb = blade.parentBlade;
-    var infinityScroll = pb.infinityScroll;
 
     $scope.addCategory = function () {
         categories.newCategory({ catalogId: pb.catalogId, parentCategoryId: pb.categoryId },
@@ -26,7 +25,6 @@
     $scope.addLinkedCategory = function () {
         $scope.bladeClose(function () {
             var newBlade = {
-                infinityScroll: infinityScroll,
                 id: 'selectCatalog',
                 title: 'catalog.blades.catalogs-select.title',
                 subtitle: 'catalog.blades.catalogs-select.subtitle',

@@ -6,14 +6,11 @@
             $scope.pb = pb;
 
             $scope.exposeAlias = false;
-
             var promise = settings.getSettings({
                 id: 'VirtoCommerce.Catalog'
             }).$promise;
-
             promise.then(function (promiseData) {
                 var temp = _.findWhere(promiseData, { name: 'Catalog.ExposeAliasInDictionary' }).value;
-
                 $scope.exposeAlias = temp.toLowerCase() === 'true';
             });
 
