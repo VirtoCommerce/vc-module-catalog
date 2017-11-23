@@ -1,23 +1,14 @@
 ﻿angular.module('virtoCommerce.catalogModule')
-    .controller('virtoCommerce.catalogModule.catalogsListController', ['$scope', 'virtoCommerce.catalogModule.catalogs', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'platformWebApp.authService', 'platformWebApp.uiGridHelper', 'platformWebApp.bladeUtils', 'platformWebApp.settings',
-        function ($scope, catalogs, bladeNavigationService, dialogService, authService, uiGridHelper, bladeUtils, settings) {
+    .controller('virtoCommerce.catalogModule.catalogsListController', ['$scope', 'virtoCommerce.catalogModule.catalogs', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'platformWebApp.authService', 'platformWebApp.uiGridHelper', 'platformWebApp.bladeUtils',
+        function ($scope, catalogs, bladeNavigationService, dialogService, authService, uiGridHelper, bladeUtils) {
 
     $scope.uiGridConstants = uiGridHelper.uiGridConstants;
-    $scope.infinityScroll = false;
 
     var blade = $scope.blade;
     var selectedNode = null;
 
     blade.refresh = function () {
         blade.isLoading = true;
-
-        settings.getSettings({
-            id: 'VirtoCommerce.Catalog'
-        }, function (catalogSettingsData) {
-            var tempInfinityScroll =
-                _.findWhere(catalogSettingsData, { name: 'Catalog.UseInfinityScroll' }).value;
-            $scope.infinityScroll = tempInfinityScroll.toLowerCase() === 'true';
-        });
 
         catalogs.getCatalogs({
             sort: uiGridHelper.getSortExpression($scope),
@@ -186,6 +177,9 @@
     // ui-grid
     $scope.setGridOptions = function (gridOptions) {
         uiGridHelper.initialize($scope, gridOptions, function (gridApi) {
+            //update gridApi for current grid
+            $scope.gridApi = gridApi;
+
             uiGridHelper.bindRefreshOnSortChanged($scope);
         });
         bladeUtils.initializePagination($scope);

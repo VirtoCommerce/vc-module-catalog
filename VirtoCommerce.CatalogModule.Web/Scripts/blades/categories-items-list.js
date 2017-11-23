@@ -16,6 +16,9 @@
   
                 blade.isLoading = true;
 
+                if ($scope.pageSettings.currentPage !== 1)
+                    $scope.pageSettings.currentPage = 1;
+
                 var searchCriteria = {
                     catalogId: blade.catalogId,
                     categoryId: blade.categoryId,
@@ -45,25 +48,7 @@
             $scope.getDataDown = function showMoreMoveDown() {
 
                 if ($scope.hasMore) {
-                    console.log("Добавить еще!");
-                    debugger;
                     $scope.gridApi.infiniteScroll.saveScrollPercentage();
-                    //next page
-
-                    ++$scope.pageSettings.currentPage;
-                    getData();
-                    $scope.gridApi.infiniteScroll.dataLoaded();
-
-                }
-            }
-
-            $scope.getDataUp = function showMoreMoveUp() {
-
-                if ($scope.hasMore) {
-                    console.log("Добавить еще!");
-                    $scope.gridApi.infiniteScroll.saveScrollPercentage();
-                    //next page
-
                     ++$scope.pageSettings.currentPage;
                     getData();
                     $scope.gridApi.infiniteScroll.dataLoaded();
@@ -94,14 +79,15 @@
                         $scope.items = $scope.items.concat(data.listEntries);
                         $scope.hasMore = (Object.keys(data.listEntries).length === $scope.pageSettings.itemsPerPageCount) ? true : false;
                         $scope.gridApi.infiniteScroll.dataLoaded();
-                        if ($scope.gridApi.selection.getSelectAllState()) {
-                            debugger;
-                            $scope.gridApi.selection.selectAllRows();
-                        }
+
+                        $timeout(function () {
+                            // wait for grid to ingest data changes
+                            if ($scope.gridApi.selection.getSelectAllState()) {
+                                $scope.gridApi.selection.selectAllRows();
+                            }
+                        });
                     });
             }
-
-
 
             //Breadcrumbs
             function setBreadcrumbs() {
@@ -143,7 +129,6 @@
             function resetStateGrid() {
                 if ($scope.gridApi) {
                     $scope.items = [];
-                    debugger;
                     $scope.gridApi.selection.clearSelectedRows();
                     $scope.gridApi.infiniteScroll.resetScroll(true, true);
                     $scope.gridApi.infiniteScroll.dataLoaded();
@@ -563,13 +548,10 @@
 
                     uiGridHelper.bindRefreshOnSortChanged($scope);
                     gridApi.infiniteScroll.on.needLoadMoreData($scope, $scope.getDataDown);
-                    //gridApi.infiniteScroll.on.needLoadMoreDataTop($scope, $scope.getDataUp);
                 });
 
                     blade.refresh();
             };
-
-            //$scope.setGridOptions($scope.gridOptions);
 
             //No need to call this because page 'pageSettings.currentPage' is watched!!! It would trigger subsequent duplicated req...
             //blade.refresh();
