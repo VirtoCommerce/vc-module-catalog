@@ -279,7 +279,6 @@
                         mode: blade.mode,
                         isBrowsingLinkedCategory: blade.isBrowsingLinkedCategory || $scope.hasLinks(listItem),
                         breadcrumbs: blade.breadcrumbs,
-                        infinityScroll: $scope.infinityScroll,
                         title: 'catalog.blades.categories-items-list.title',
                         subtitle: 'catalog.blades.categories-items-list.subtitle',
                         subtitleValues: listItem.name != null ? { name: listItem.name } : '',

@@ -177,7 +177,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="Scripts\blades\aggregation-properties-details.js" />
     <Content Include="Scripts\blades\aggregation-properties-details.tpl.html" />
-    <Content Include="Scripts\blades\common\templates\show-more.tpl.html" />
     <Content Include="Scripts\blades\image-detail.js" />
     <Content Include="Scripts\blades\image-detail.tpl.html" />
     <Content Include="Scripts\blades\images-add.js" />

@@ -6,7 +6,6 @@
             $scope.pb = pb;
 
             $scope.exposeAlias = false;
-            $scope.infinityScroll = false;
 
             var promise = settings.getSettings({
                 id: 'VirtoCommerce.Catalog'
@@ -14,12 +13,9 @@
 
             promise.then(function (promiseData) {
                 var temp = _.findWhere(promiseData, { name: 'Catalog.ExposeAliasInDictionary' }).value;
-                var tempInfinityScroll = _.findWhere(promiseData, { name: 'Catalog.ExposeAliasInDictionary' }).value;
 
                 $scope.exposeAlias = temp.toLowerCase() === 'true';
-                $scope.infinityScroll = tempInfinityScroll.toLowerCase() === 'true';
             });
-
 
             $scope.dictValueValidator = function (value, editEntity) {
                 if (pb.currentEntity.multilanguage) {

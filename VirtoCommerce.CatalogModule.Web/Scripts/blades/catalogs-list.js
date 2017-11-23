@@ -43,7 +43,6 @@
             id: 'itemsList1',
             level: 1,
             breadcrumbs: blade.breadcrumbs,
-            infinityScroll: $scope.infinityScroll,
             title: 'catalog.blades.categories-items-list.title',
             controller: 'virtoCommerce.catalogModule.categoriesItemsListController',
             template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/categories-items-list.tpl.html'
