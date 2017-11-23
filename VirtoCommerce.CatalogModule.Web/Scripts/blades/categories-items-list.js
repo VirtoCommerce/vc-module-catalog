@@ -51,7 +51,6 @@
                     $scope.gridApi.infiniteScroll.saveScrollPercentage();
                     ++$scope.pageSettings.currentPage;
                     getData();
-                    $scope.gridApi.infiniteScroll.dataLoaded();
                 }
             }
 
@@ -86,6 +85,7 @@
                                 $scope.gridApi.selection.selectAllRows();
                             }
                         });
+
                     });
             }
 
@@ -540,6 +540,7 @@
 
                 //disable watched
                 bladeUtils.initializePagination($scope, true);
+                $scope.pageSettings.itemsPerPageCount = 50;
 
                 uiGridHelper.initialize($scope, gridOptions, function (gridApi) {
                     //update gridApi for current grid
