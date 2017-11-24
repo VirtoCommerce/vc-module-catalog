@@ -4,6 +4,7 @@
 
     blade.refresh = function () {
         blade.isLoading = true;
+
         catalogs.getCatalogs({}, function (results) {
             if (blade.doShowAllCatalogs) {
                 $scope.objects = results;

@@ -19,15 +19,7 @@
                 if ($scope.pageSettings.currentPage !== 1)
                     $scope.pageSettings.currentPage = 1;
 
-                var searchCriteria = {
-                    catalogId: blade.catalogId,
-                    categoryId: blade.categoryId,
-                    keyword: filter.keyword ? filter.keyword : undefined,
-                    responseGroup: 'withCategories, withProducts',
-                    sort: uiGridHelper.getSortExpression($scope),
-                    skip: ($scope.pageSettings.currentPage - 1) * $scope.pageSettings.itemsPerPageCount,
-                    take: $scope.pageSettings.itemsPerPageCount
-                };
+                var searchCriteria = getSearchCriteria();
 
                 listEntries.listitemssearch(
                     searchCriteria,
@@ -46,7 +38,6 @@
             }
 
             $scope.getDataDown = function showMoreMoveDown() {
-
                 if ($scope.hasMore) {
                     $scope.gridApi.infiniteScroll.saveScrollPercentage();
                     ++$scope.pageSettings.currentPage;
@@ -54,20 +45,10 @@
                 }
             }
 
+            //uploading data
             function getData() {
-
                 blade.isLoading = true;
-                $scope.gridApi.infiniteScroll.saveScrollPercentage();
-
-                var searchCriteria = {
-                    catalogId: blade.catalogId,
-                    categoryId: blade.categoryId,
-                    keyword: filter.keyword ? filter.keyword : undefined,
-                    responseGroup: 'withCategories, withProducts',
-                    sort: uiGridHelper.getSortExpression($scope),
-                    skip: ($scope.pageSettings.currentPage - 1) * $scope.pageSettings.itemsPerPageCount,
-                    take: $scope.pageSettings.itemsPerPageCount
-                };
+                var searchCriteria = getSearchCriteria();
 
                 listEntries.listitemssearch(
                     searchCriteria,
@@ -87,6 +68,21 @@
                         });
 
                     });
+            }
+
+            // Search Criteria
+            function getSearchCriteria()
+            {
+                var searchCriteria = {
+                    catalogId: blade.catalogId,
+                    categoryId: blade.categoryId,
+                    keyword: filter.keyword ? filter.keyword : undefined,
+                    responseGroup: 'withCategories, withProducts',
+                    sort: uiGridHelper.getSortExpression($scope),
+                    skip: ($scope.pageSettings.currentPage - 1) * $scope.pageSettings.itemsPerPageCount,
+                    take: $scope.pageSettings.itemsPerPageCount
+                };
+                return searchCriteria;
             }
 
             //Breadcrumbs
@@ -540,6 +536,7 @@
 
                 //disable watched
                 bladeUtils.initializePagination($scope, true);
+                //сhoose the optimal amount that ensures the appearance of the scroll
                 $scope.pageSettings.itemsPerPageCount = 50;
 
                 uiGridHelper.initialize($scope, gridOptions, function (gridApi) {
@@ -550,7 +547,7 @@
                     gridApi.infiniteScroll.on.needLoadMoreData($scope, $scope.getDataDown);
                 });
 
-                    blade.refresh();
+                blade.refresh();
             };
 
             //No need to call this because page 'pageSettings.currentPage' is watched!!! It would trigger subsequent duplicated req...

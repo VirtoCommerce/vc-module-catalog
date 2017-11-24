@@ -1,9 +1,7 @@
 ﻿angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.catalogsListController', ['$scope', 'virtoCommerce.catalogModule.catalogs', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'platformWebApp.authService', 'platformWebApp.uiGridHelper', 'platformWebApp.bladeUtils',
         function ($scope, catalogs, bladeNavigationService, dialogService, authService, uiGridHelper, bladeUtils) {
-
     $scope.uiGridConstants = uiGridHelper.uiGridConstants;
-
     var blade = $scope.blade;
     var selectedNode = null;
 
