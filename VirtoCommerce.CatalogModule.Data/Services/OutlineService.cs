@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using VirtoCommerce.CatalogModule.Data.Services.OutlineParts;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Commerce.Model;
@@ -9,15 +10,12 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 {
     public sealed class OutlineService : IOutlineService
     {
-        /// <summary>
-        /// Whether to use category codes instead of their ids.
-        /// </summary>
-        public bool UseCategoryCodes { get; set; }
+        private readonly IOutlinePartResolver _outlinePartResolver;
 
-        /// <summary>
-        /// Whether to use product codes instead of their ids.
-        /// </summary>
-        public bool UseProductCodes { get; set; }
+        public OutlineService(IOutlinePartResolver outlinePartResolver = null)
+        {
+            _outlinePartResolver = outlinePartResolver ?? new IdOutlinePartResolver();
+        }
 
         /// <summary>
         /// Constructs single physical and/or multiple virtual outlines for given objects.
@@ -147,24 +145,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         private OutlineItem Entity2Outline(Entity entity)
         {
-            var outlineId = entity.Id;
-
-            // Use codes when configured.
-            Category category = null;
-            CatalogProduct product = null;
-            if (UseCategoryCodes && (category = entity as Category) != null)
-            {
-                outlineId = category.Code;
-            }
-            else if (UseProductCodes && (product = entity as CatalogProduct) != null)
-            {
-                outlineId = product.Code;
-            }
-
             var seoSupport = entity as ISeoSupport;
             var retVal = new OutlineItem
             {
-                Id = outlineId,
+                Id = _outlinePartResolver.ResolveOutlinePart(entity),
                 SeoObjectType = seoSupport != null ? seoSupport.SeoObjectType : "Catalog"
             };
             return retVal;
