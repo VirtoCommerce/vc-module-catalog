@@ -43,6 +43,10 @@ namespace VirtoCommerce.CatalogModule.Test
                     },
                 }
             },
+            new RangeFilter
+            {
+                Key = "Weight",
+            },
             new PriceRangeFilter
             {
                 Currency = "USD",
@@ -80,6 +84,10 @@ namespace VirtoCommerce.CatalogModule.Test
                         Upper = null,
                     },
                 }
+            },
+            new PriceRangeFilter
+            {
+                Currency = "RUR",
             },
         };
 
