@@ -1,5 +1,5 @@
 ﻿angular.module('virtoCommerce.catalogModule')
-.controller('virtoCommerce.catalogModule.newProductWizardController', ['$scope', 'platformWebApp.bladeNavigationService', '$http', 'virtoCommerce.storeModule.stores', function ($scope, bladeNavigationService, $http, stores) {
+    .controller('virtoCommerce.catalogModule.newProductWizardController', ['$scope', 'platformWebApp.bladeNavigationService', '$http', 'virtoCommerce.storeModule.stores', 'virtoCommerce.catalogModule.catalogImagesFolderPathHelper', function ($scope, bladeNavigationService, $http, stores, catalogImgHelper) {
     var blade = $scope.blade;
     blade.headIcon = blade.item.productType === 'Digital' ? 'fa fa-file-archive-o' : 'fa fa-truck';
 
@@ -50,6 +50,7 @@
                 newBlade = {
                     id: "newProductImages",
                     item: blade.item,
+                    folderPath: catalogImgHelper.getImagesFolderPath($scope.blade.item.catalogId, $scope.blade.item.code),
                     catalog: blade.catalog,
                     controller: 'virtoCommerce.catalogModule.imagesController',
                     template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/images.tpl.html'

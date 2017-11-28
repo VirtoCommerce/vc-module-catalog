@@ -11,6 +11,7 @@
             if (!blade.catalog) {
                 blade.catalog = catalogs.get({ id: data.catalogId });
             }
+
             initializeBlade(data);
 
             if (blade.childrenBlades) {

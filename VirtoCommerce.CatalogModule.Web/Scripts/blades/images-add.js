@@ -19,6 +19,7 @@
             }
 
             var promise = settings.getValues({ id: 'VirtoCommerce.Core.General.Languages' }).$promise;
+
             $scope.languages = [];
             function initialize(item) {
                 promise.then(function (promiseData) {
@@ -39,7 +40,7 @@
                         removeAfterUpload: true
                     });
 
-                    uploader.url = getImageUrl(item.code, blade.imageType).relative;
+                    uploader.url = getImageUrl(blade.folderPath, blade.imageType).relative;
 
                     uploader.onSuccessItem = function (fileItem, images, status, headers) {
                         angular.forEach(images, function (image) {
@@ -70,7 +71,7 @@
 
             $scope.addImageFromUrl = function () {
                 if (blade.newExternalImageUrl) {
-                    assets.uploadFromUrl({ folderUrl: getImageUrl(blade.item.code, blade.imageType).folderUrl, url: blade.newExternalImageUrl }, function (data) {
+                    assets.uploadFromUrl({ folderUrl: getImageUrl(blade.folderPath, blade.imageType).folderUrl, url: blade.newExternalImageUrl }, function (data) {
                         _.each(data, function (x) {
                             x.isImage = true;
                             x.group = blade.imageType;
@@ -123,14 +124,15 @@
             };
 
             $scope.changeImageCategory = function ($item, $model) {
-                $scope.uploader.url = getImageUrl(blade.item.code, blade.imageType).relative;
+                $scope.uploader.url = getImageUrl(blade.folderPath, blade.imageType).relative;
             };
 
-            function getImageUrl(code, imageType) {
-                var folderUrl = 'catalog/' + code + (imageType ? '/' + imageType : '');
+            function getImageUrl(path, imageType) {
+
+                var folderUrl = 'catalog/' + (path + (imageType ? '/' + imageType : ''));
+
                 return { folderUrl: '/' + folderUrl, relative: 'api/platform/assets?folderUrl=' + folderUrl };
             };
-
 
             initialize(blade.item);
 
