@@ -38,7 +38,8 @@
                         </div>
                         <div class="form-input __langs" ng-repeat="data in newValue.values">
                             <ng-form name="valuesForm">
-                                <span class="flag flag-{{data.languageCode.substr(3).toLowerCase()}}"></span>
+                                <span ng-if="data.languageCode.length>2" class="flag flag-{{data.languageCode.substr(3).toLowerCase()}}"></span>
+                                <span ng-if="data.languageCode.length<=2" class="langCode">{{data.languageCode.toUpperCase()}}</span>
                                 <input ng-model="data.value" class="form-control" ng-required="$first" ui-validate=" 'dictValueValidator($value, data)' " name="mValue" placeholder="{{ 'catalog.blades.property-dictionary.placeholders.value' | translate }}" />
                                 <div class="form-error" ng-if="valuesForm.mValue.$dirty && valuesForm.mValue.$invalid">
                                     <span ng-if="valuesForm.mValue.$error.required">{{ 'catalog.blades.property-dictionary.validations.required' | translate }}</span>
@@ -110,7 +111,8 @@
                             </td>
                             <td class="table-col">
                                 <div ng-repeat="data in group.values | orderBy:'languageCode'" style="margin:5px 0;">
-                                    <span class="flag flag-{{data.languageCode.substr(3, 2).toLowerCase()}}"></span>
+                                    <span ng-if="data.languageCode.length>2" class="flag flag-{{data.languageCode.substr(3, 2).toLowerCase()}}"></span>
+                                    <span ng-if="data.languageCode.length<=2" class="langCode">{{data.languageCode.toUpperCase()}}</span>
                                     {{data.value}}
                                 </div>
                                 <ul role="menu" class="menu __context" id="pd_multi_{{$index}}">
