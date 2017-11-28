@@ -10,16 +10,17 @@ namespace VirtoCommerce.CatalogModule.Data.Services.OutlineParts
     {
         public string ResolveOutlinePart(Entity entity)
         {
-            var category = entity as Category;
-            if (category != null)
-                return category.Code;
-
-            var product = entity as CatalogProduct;
-            if (product != null)
-                return product.Code;
-
-            // Fallback to id.
-            return entity.Id;
+            // Fall-back to id.
+            var result = entity.Id;
+            if (entity is Category category)
+            {
+                result = category.Code;
+            }
+            if (entity is CatalogProduct product)
+            {
+                result = product.Code;
+            }
+            return result;
         }
     }
 }
