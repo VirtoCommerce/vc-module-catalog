@@ -9,6 +9,7 @@ using VirtoCommerce.CatalogModule.Data.Search;
 using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
 using VirtoCommerce.CatalogModule.Data.Search.Indexing;
 using VirtoCommerce.CatalogModule.Data.Services;
+using VirtoCommerce.CatalogModule.Data.Services.OutlineParts;
 using VirtoCommerce.CatalogModule.Data.Services.Validation;
 using VirtoCommerce.CatalogModule.Web.ExportImport;
 using VirtoCommerce.CatalogModule.Web.JsonConverters;
@@ -73,8 +74,15 @@ namespace VirtoCommerce.CatalogModule.Web
             _container.RegisterType<ICatalogSearchService, CatalogSearchServiceDecorator>();
             _container.RegisterType<ISkuGenerator, DefaultSkuGenerator>();
             _container.RegisterType<ISeoDuplicatesDetector, CatalogSeoDublicatesDetector>(new ContainerControlledLifetimeManager());
-            _container.RegisterType<IOutlineService, OutlineService>();
             _container.RegisterType<IAssociationService, AssociationServiceImpl>();
+
+            // Detect strategy to use for outline rendering.
+            if (_container.Resolve<ISettingsManager>().GetValue("Catalog.CodesInOutline", false))
+                _container.RegisterType<IOutlinePartResolver, CodeOutlinePartResolver>();
+            else
+                _container.RegisterType<IOutlinePartResolver, IdOutlinePartResolver>();
+
+            _container.RegisterType<IOutlineService, OutlineService>();
 
             #endregion
 

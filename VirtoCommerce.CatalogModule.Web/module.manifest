@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <module>
     <id>VirtoCommerce.Catalog</id>
-    <version>2.20.4</version>
+    <version>2.20.6</version>
     <platformVersion>2.13.17</platformVersion>
     <dependencies>
         <dependency id="VirtoCommerce.Core" version="2.24.13" />
@@ -64,6 +64,13 @@
                     <value>QuickReview</value>
                     <value>FullReview</value>
                 </arrayValues>
+            </setting>
+            <setting>
+                <name>Catalog.CodesInOutline</name>
+                <valueType>boolean</valueType>
+                <defaultValue>false</defaultValue>
+                <title>Use catalog and product codes in outlines</title>
+                <description>Enable or disable using codes instead of ids in outlines</description>
             </setting>
         </group>
         <group name="Catalog|Images">

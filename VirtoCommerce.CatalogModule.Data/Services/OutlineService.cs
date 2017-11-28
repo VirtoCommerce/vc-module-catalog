@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VirtoCommerce.CatalogModule.Data.Repositories;
+using VirtoCommerce.CatalogModule.Data.Services.OutlineParts;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Commerce.Model;
@@ -13,6 +10,13 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 {
     public sealed class OutlineService : IOutlineService
     {
+        private readonly IOutlinePartResolver _outlinePartResolver;
+
+        public OutlineService(IOutlinePartResolver outlinePartResolver = null)
+        {
+            _outlinePartResolver = outlinePartResolver ?? new IdOutlinePartResolver();
+        }
+
         /// <summary>
         /// Constructs single physical and/or multiple virtual outlines for given objects.
         /// Outline is the path from the catalog to one of the child objects (product or category):
@@ -144,7 +148,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             var seoSupport = entity as ISeoSupport;
             var retVal = new OutlineItem
             {
-                Id = entity.Id,
+                Id = _outlinePartResolver.ResolveOutlinePart(entity),
                 SeoObjectType = seoSupport != null ? seoSupport.SeoObjectType : "Catalog"
             };
             return retVal;
