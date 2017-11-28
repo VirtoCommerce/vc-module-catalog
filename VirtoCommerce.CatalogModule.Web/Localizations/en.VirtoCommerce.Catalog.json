@@ -300,7 +300,7 @@
                     "end-date": "Please choose date..."
               },
                 "descr": {
-                    "start-date": "If you do not specify a start date, the product is will active immediately after saving.",
+                    "start-date": "If you do not specify a start date, the product is active immediately after saving.",
                     "end-date": "If you do not specify an end date, the product is active until you deactivate it."
                 }
             },
