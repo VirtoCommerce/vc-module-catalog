@@ -5,7 +5,7 @@ if (AppDependencies != undefined) {
     AppDependencies.push(catalogsModuleName);
 }
 
-angular.module(catalogsModuleName, ['ui.grid.validate'])
+angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'])
 .config(
   ['$stateProvider', function ($stateProvider) {
       $stateProvider

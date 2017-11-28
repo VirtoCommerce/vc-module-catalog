@@ -1,6 +1,6 @@
 ﻿angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.categoriesItemsListController', [
-        '$sessionStorage', '$localStorage', '$timeout', '$interval', '$scope', 'virtoCommerce.catalogModule.categories', 'virtoCommerce.catalogModule.items', 'virtoCommerce.catalogModule.listEntries', 'platformWebApp.bladeUtils', 'platformWebApp.dialogService', 'platformWebApp.authService', 'platformWebApp.uiGridHelper', 'virtoCommerce.catalogModule.catalogs',
+        '$sessionStorage', '$localStorage', '$timeout', '$scope', 'virtoCommerce.catalogModule.categories', 'virtoCommerce.catalogModule.items', 'virtoCommerce.catalogModule.listEntries', 'platformWebApp.bladeUtils', 'platformWebApp.dialogService', 'platformWebApp.authService', 'platformWebApp.uiGridHelper', 'virtoCommerce.catalogModule.catalogs',
         function ($sessionStorage, $localStorage, $timeout, $interval, $scope, categories, items, listEntries, bladeUtils, dialogService, authService, uiGridHelper, catalogs) {
             $scope.uiGridConstants = uiGridHelper.uiGridConstants;
             $scope.hasMore = true;
@@ -28,7 +28,7 @@
                         blade.isLoading = false;
                         $scope.pageSettings.totalItems = data.totalCount;
                         $scope.items = data.listEntries;
-                        $scope.hasMore = (Object.keys(data.listEntries).length === $scope.pageSettings.itemsPerPageCount) ? true : false;
+                        $scope.hasMore = data.listEntries.length === $scope.pageSettings.itemsPerPageCount;
                         //Set navigation breadcrumbs
                         setBreadcrumbs();
                     });
@@ -37,7 +37,7 @@
                 resetStateGrid();
             }
 
-            $scope.getDataDown = function showMoreMoveDown() {
+            function showMore() {
                 if ($scope.hasMore) {
                     $scope.gridApi.infiniteScroll.saveScrollPercentage();
                     ++$scope.pageSettings.currentPage;
@@ -544,7 +544,7 @@
                     $scope.gridApi = gridApi;
 
                     uiGridHelper.bindRefreshOnSortChanged($scope);
-                    $scope.gridApi.infiniteScroll.on.needLoadMoreData($scope, $scope.getDataDown);
+                    $scope.gridApi.infiniteScroll.on.needLoadMoreData($scope, showMore);
                 });
 
                 blade.refresh();
