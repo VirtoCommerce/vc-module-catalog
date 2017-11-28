@@ -544,7 +544,7 @@
                     $scope.gridApi = gridApi;
 
                     uiGridHelper.bindRefreshOnSortChanged($scope);
-                    gridApi.infiniteScroll.on.needLoadMoreData($scope, $scope.getDataDown);
+                    $scope.gridApi.infiniteScroll.on.needLoadMoreData($scope, $scope.getDataDown);
                 });
 
                 blade.refresh();
