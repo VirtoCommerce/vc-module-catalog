@@ -1,7 +1,7 @@
 ﻿angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.categoriesItemsListController', [
         '$sessionStorage', '$localStorage', '$timeout', '$scope', 'virtoCommerce.catalogModule.categories', 'virtoCommerce.catalogModule.items', 'virtoCommerce.catalogModule.listEntries', 'platformWebApp.bladeUtils', 'platformWebApp.dialogService', 'platformWebApp.authService', 'platformWebApp.uiGridHelper', 'virtoCommerce.catalogModule.catalogs',
-        function ($sessionStorage, $localStorage, $timeout, $interval, $scope, categories, items, listEntries, bladeUtils, dialogService, authService, uiGridHelper, catalogs) {
+        function ($sessionStorage, $localStorage, $timeout, $scope, categories, items, listEntries, bladeUtils, dialogService, authService, uiGridHelper, catalogs) {
             $scope.uiGridConstants = uiGridHelper.uiGridConstants;
             $scope.hasMore = true;
             $scope.items = [];
@@ -29,6 +29,7 @@
                         $scope.pageSettings.totalItems = data.totalCount;
                         $scope.items = data.listEntries;
                         $scope.hasMore = data.listEntries.length === $scope.pageSettings.itemsPerPageCount;
+
                         //Set navigation breadcrumbs
                         setBreadcrumbs();
                     });
@@ -37,37 +38,35 @@
                 resetStateGrid();
             }
 
+
             function showMore() {
                 if ($scope.hasMore) {
-                    $scope.gridApi.infiniteScroll.saveScrollPercentage();
+
                     ++$scope.pageSettings.currentPage;
-                    getData();
-                }
-            }
+                    $scope.gridApi.infiniteScroll.saveScrollPercentage();
+                    blade.isLoading = true;
 
-            //uploading data
-            function getData() {
-                blade.isLoading = true;
-                var searchCriteria = getSearchCriteria();
+                    var searchCriteria = getSearchCriteria();
 
-                listEntries.listitemssearch(
-                    searchCriteria,
-                    function (data) {
-                        transformByFilters(data.listEntries);
-                        blade.isLoading = false;
-                        $scope.pageSettings.totalItems = data.totalCount;
-                        $scope.items = $scope.items.concat(data.listEntries);
-                        $scope.hasMore = (Object.keys(data.listEntries).length === $scope.pageSettings.itemsPerPageCount) ? true : false;
-                        $scope.gridApi.infiniteScroll.dataLoaded();
+                    listEntries.listitemssearch(
+                        searchCriteria,
+                        function (data) {
+                            transformByFilters(data.listEntries);
+                            blade.isLoading = false;
+                            $scope.pageSettings.totalItems = data.totalCount;
+                            $scope.items = $scope.items.concat(data.listEntries);
+                            $scope.hasMore = data.listEntries.length === $scope.pageSettings.itemsPerPageCount;
+                            $scope.gridApi.infiniteScroll.dataLoaded();
 
-                        $timeout(function () {
-                            // wait for grid to ingest data changes
-                            if ($scope.gridApi.selection.getSelectAllState()) {
-                                $scope.gridApi.selection.selectAllRows();
-                            }
+                            $timeout(function () {
+                                // wait for grid to ingest data changes
+                                if ($scope.gridApi.selection.getSelectAllState()) {
+                                    $scope.gridApi.selection.selectAllRows();
+                                }
+                            });
+
                         });
-
-                    });
+                }
             }
 
             // Search Criteria
