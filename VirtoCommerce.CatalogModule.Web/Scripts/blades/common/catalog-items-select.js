@@ -170,7 +170,15 @@
     };
 
     if ($scope.isCatalogSelectMode()) {
-        blade.refresh();
+        // ui-grid
+        $scope.setGridOptions = function (gridId, gridOptions) {
+            uiGridHelper.initialize($scope, gridOptions, function (gridApi) {
+                //update gridApi for current grid
+                $scope.gridApi = gridApi;
+            });
+        };
+
+        bladeUtils.initializePagination($scope);
     } else {
         // ui-grid
         $scope.setGridOptions = function (gridId, gridOptions) {
@@ -185,6 +193,9 @@
         };
 
         function externalRegisterApiCallback(gridApi) {
+            //update gridApi for current grid
+            $scope.gridApi = gridApi;
+
             gridApi.grid.registerDataChangeCallback(function (grid) {
                 //check already selected rows
                 $timeout(function () {
