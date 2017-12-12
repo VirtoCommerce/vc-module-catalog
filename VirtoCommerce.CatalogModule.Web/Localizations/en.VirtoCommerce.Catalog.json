@@ -345,14 +345,6 @@
                     "language": "Select language"
                 }
             },
-            "importers-list": {
-                "title": "Catalog import",
-                "subtitle": "Choose data format & start import"
-            },
-            "exporter-list": {
-                "title": "Data export",
-                "subtitle": "Choose data format & start export"
-            },
             "images": {
                 "subtitle": "Manage images",
                 "labels": {
@@ -413,45 +405,11 @@
             },
             "advanced-search-results": {
                 "title": "Search results"
-            },
-            "catalog-CSV-export": {
-                "title": "Catalog {{name}} to csv export",
-                "labels": {
-                    "select-fulfillment": "Select fulfillment center for exported inventory",
-                    "select-pricelist": "Select price list for exported prices",
-                    "start": "Start",
-                    "end": "End",
-                    "total": "Total count",
-                    "processed": "Processed count",
-                    "errors-count": "Error count",
-                    "errors": "Errors",
-                    "download-url": "Download Url",
-                    "note": "All catalog products information should be exported to csv file, download url will be available after export will be finished.",
-                    "caution": "Caution:",
-                    "caution-description": "Sorting your CSV file in a spreadsheet program can cause product variants or image URLs to become disassociated. Importing a CSV file that has been sorted may overwrite your existing products with bad data, which cannot be recovered."
-                },
-                "placeholders": {
-                    "select-fulfillment": "Select fulfillment or leave empty for default...",
-                    "select-pricelist": "Select price list or leave empty for default..."
-                }
-            },
+            },          
             "item-dimensions": {
                 "title": "Item dimensions",
                 "subtitle": "change product size & weight here"
-            },
-            "catalog-CSV-import": {
-                "title": "Importing from csv",
-                "labels": {
-                    "select-fulfillment": "Select fulfillment center for exported inventory",
-                    "select-pricelist": "Select price list for exported prices",
-                    "start": "Start",
-                    "end": "End",
-                    "total": "Total count",
-                    "processed": "Processed count",
-                    "errors-count": "Error count",
-                    "errors": "Errors"
-                }
-            },
+            },          
             "asset-select": {
                 "title": "Link images"
             },
@@ -706,40 +664,9 @@
                     "group-name": "Select...",
                     "quantity": "Enter quantity..."
                 }
-            },
-            "catalog-CSV-import": {
-                "title": "Import catalog from csv",
-                "subtitle": "All products will be added to '{{name}}' catalog",
-                "labels": {
-                    "auto-mapping": "CSV fields automatically mapped to same product properties",
-                    "chose-map": "Chose map CSV columns with product fields",
-                    "product-property": "Product property",
-                    "csv-column": "CSV column",
-                    "custom-value": "Custom value",
-                    "delimiter": "Csv column delimiter",
-                    "upload": "Upload Csv file",
-                    "upload-progress": "Upload progress",
-                    "map-columns": "Map columns",
-                    "define-columns": "Define column mapping",
-                    "space": "Space",
-                    "comma": "Comma",
-                    "semicolon": "Semicolon",
-                    "tab": "Tab"
-                },
-                "placeholders": {
-                    "delimiter": "Select ...",
-                    "select-column-name": "Select ...",
-                    "select-custom-value": "Default value..."
-                }
-            },
-            "catalog-CSV-import-wizard-mapping-step": {
-                "title": "Column mapping",
-                "subtitle": "Manual map product properties to csv columns"
             }
         },
         "commands": {
-            "start-export": "Start export",
-            "start-import": "Start import",
             "clear-all": "Clear all",
             "add-property": "Add property",
             "gallery": "Gallery",
@@ -756,17 +683,6 @@
             "category-scope": {
                 "title": "Only for selected categories"
             }
-        },
-        "services": {
-            "catalog-csv-export": {
-                "name": "VirtoCommerce CSV export",
-                "description": "Native VirtoCommerce catalog data export to CSV"
-            },
-            "catalog-csv-import": {
-                "name": "VirtoCommerce CSV import",
-                "description": "Native VirtoCommerce catalog data import from CSV"
-            }
-
         }
     }
 }

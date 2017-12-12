@@ -60,9 +60,6 @@
       <HintPath>..\packages\Common.Logging.Core.3.3.1\lib\net40\Common.Logging.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="CsvHelper, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8c4959082be5c823, processorArchitecture=MSIL">
-      <HintPath>..\packages\CsvHelper.2.16.3.0\lib\net45\CsvHelper.dll</HintPath>
-    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
       <Private>True</Private>
@@ -148,7 +145,6 @@
     <Compile Include="Controllers\Api\CatalogBrowseFiltersController.cs" />
     <Compile Include="Controllers\Api\CatalogModuleCatalogsController.cs" />
     <Compile Include="Controllers\Api\CatalogModuleCategoriesController.cs" />
-    <Compile Include="Controllers\Api\CatalogModuleExportImportController.cs" />
     <Compile Include="Controllers\Api\CatalogModuleProductsController.cs" />
     <Compile Include="Controllers\Api\CatalogModuleListEntryController.cs" />
     <Compile Include="Controllers\Api\CatalogModuleSearchController.cs" />
@@ -156,14 +152,8 @@
     <Compile Include="Converters\ImportJobConverter.cs" />
     <Compile Include="Converters\ImportMappingItemConverter.cs" />
     <Compile Include="ExportImport\CatalogExportImport.cs" />
-    <Compile Include="ExportImport\CsvCatalogExporter.cs" />
-    <Compile Include="ExportImport\CsvCatalogImporter.cs" />
-    <Compile Include="ExportImport\ExpressionConverter.cs" />
-    <Compile Include="ExportImport\CsvProductMap.cs" />
     <Compile Include="JsonConverters\SearchCriteriaJsonConverter.cs" />
     <Compile Include="Model\AggregationProperty.cs" />
-    <Compile Include="Model\PushNotifications\ExportNotification.cs" />
-    <Compile Include="Model\PushNotifications\ImportNotification.cs" />
     <Compile Include="Model\PushNotifications\JobNotificationBase.cs" />
     <Compile Include="Model\PasteInfo.cs" />
     <Compile Include="Model\ListEntryCategory.cs" />
@@ -177,10 +167,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="Scripts\blades\aggregation-properties-details.js" />
     <Content Include="Scripts\blades\aggregation-properties-details.tpl.html" />
+    <Content Include="Scripts\blades\export\catalog-export.js" />
     <Content Include="Scripts\blades\image-detail.js" />
     <Content Include="Scripts\blades\image-detail.tpl.html" />
     <Content Include="Scripts\blades\images-add.js" />
     <Content Include="Scripts\blades\images-add.tpl.html" />
+    <Content Include="Scripts\blades\import\catalog-import.js" />
     <Content Include="Scripts\blades\item-asset-add.js" />
     <Content Include="Scripts\blades\item-asset-add.tpl.html" />
     <Content Include="Scripts\blades\item-association-detail.js" />
@@ -194,15 +186,6 @@
     <Content Include="Scripts\blades\common\templates\ok-cancel.tpl.html" />
     <Content Include="Scripts\blades\filter-detail.js" />
     <Content Include="Scripts\blades\filter-detail.tpl.html" />
-    <Content Include="Scripts\blades\import\catalog-CSV-import.js" />
-    <Content Include="Scripts\blades\import\catalog-CSV-import.tpl.html" />
-    <Content Include="Scripts\blades\import\notifications\historyImport.tpl.html" />
-    <Content Include="Scripts\blades\import\notifications\menuImport.tpl.html" />
-    <Content Include="Scripts\blades\import\wizard\catalog-CSV-import-wizard.js" />
-    <Content Include="Scripts\blades\import\catalog-import.js" />
-    <Content Include="Scripts\blades\import\wizard\catalog-CSV-import-wizard.tpl.html" />
-    <Content Include="Scripts\blades\import\wizard\catalog-CSV-import-wizard-mapping-step.js" />
-    <Content Include="Scripts\blades\import\wizard\catalog-CSV-import-wizard-mapping-step.tpl.html" />
     <Content Include="Scripts\blades\import\importers-list.js" />
     <Content Include="Scripts\blades\import\importers-list.tpl.html" />
     <Content Include="Scripts\blades\item-dimensions.js" />
@@ -218,7 +201,6 @@
     <Content Include="Scripts\directives\itemSearch.js" />
     <Content Include="Scripts\directives\itemSearch.tpl.html" />
     <Content Include="Scripts\resources\imageTools.js" />
-    <Content Include="Scripts\resources\export.js" />
   </ItemGroup>
   <ItemGroup>
     <!-- <Content Include="Content\css\catalog.css" /> -->
@@ -227,13 +209,8 @@
     <Content Include="Scripts\blades\advanced-search.tpl.html" />
     <Content Include="Scripts\blades\common\catalog-items-select.js" />
     <Content Include="Scripts\blades\common\catalog-items-select.tpl.html" />
-    <Content Include="Scripts\blades\export\catalog-export.js" />
-    <Content Include="Scripts\blades\export\catalog-CSV-export.js" />
     <Content Include="Scripts\blades\export\exporter-list.js" />
-    <Content Include="Scripts\blades\export\catalog-CSV-export.tpl.html" />
     <Content Include="Scripts\blades\export\exporter-list.tpl.html" />
-    <Content Include="Scripts\blades\export\notifications\historyExport.tpl.html" />
-    <Content Include="Scripts\blades\export\notifications\menuExport.tpl.html" />
     <Content Include="Scripts\blades\item-associations-list.js" />
     <Content Include="Scripts\blades\editorialReviews-list.js" />
     <Content Include="Scripts\blades\item-associations-list.tpl.html" />

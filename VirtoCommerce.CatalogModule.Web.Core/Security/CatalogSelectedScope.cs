@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using VirtoCommerce.CatalogModule.Web.ExportImport;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Platform.Core.Security;
 
@@ -26,8 +25,6 @@ namespace VirtoCommerce.CatalogModule.Web.Security
             var category = obj as Category;
             var product = obj as CatalogProduct;
             var link = obj as Model.ListEntryLink;
-            var exportInfo = obj as CsvExportInfo;
-            var importInfo = obj as CsvImportInfo;
             var property = obj as Property;
 
             string catalogId = null;
@@ -39,10 +36,6 @@ namespace VirtoCommerce.CatalogModule.Web.Security
                 catalogId = product.CatalogId;
             if (link != null)
                 catalogId = link.CatalogId;
-            if (exportInfo != null)
-                catalogId = exportInfo.CatalogId;
-            if (importInfo != null)
-                catalogId = importInfo.CatalogId;
             if (property != null)
                 catalogId = property.CatalogId;
 

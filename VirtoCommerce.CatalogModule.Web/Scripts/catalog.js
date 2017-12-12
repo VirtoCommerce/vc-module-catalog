@@ -78,65 +78,7 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
 	    };
 	    mainMenuService.addMenuItem(menuItem);
 
-	    //NOTIFICATIONS
-	    //Export
-	    var menuExportTemplate =
-            {
-                priority: 900,
-                satisfy: function (notify, place) { return place == 'menu' && notify.notifyType == 'CatalogCsvExport'; },
-                template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/export/notifications/menuExport.tpl.html',
-                action: function (notify) { $state.go('workspace.pushNotificationsHistory', notify) }
-            };
-	    pushNotificationTemplateResolver.register(menuExportTemplate);
-
-	    var historyExportTemplate =
-          {
-              priority: 900,
-              satisfy: function (notify, place) { return place == 'history' && notify.notifyType == 'CatalogCsvExport'; },
-              template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/export/notifications/historyExport.tpl.html',
-              action: function (notify) {
-                  var blade = {
-                      id: 'CatalogCsvExportDetail',
-                      title: 'catalog export detail',
-                      subtitle: 'detail',
-                      template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/export/catalog-CSV-export.tpl.html',
-                      controller: 'virtoCommerce.catalogModule.catalogCSVexportController',
-                      notification: notify
-                  };
-                  bladeNavigationService.showBlade(blade);
-              }
-          };
-	    pushNotificationTemplateResolver.register(historyExportTemplate);
-	    //Import
-	    var menuImportTemplate =
-          {
-              priority: 900,
-              satisfy: function (notify, place) { return place == 'menu' && notify.notifyType == 'CatalogCsvImport'; },
-              template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/import/notifications/menuImport.tpl.html',
-              action: function (notify) { $state.go('workspace.pushNotificationsHistory', notify) }
-          };
-	    pushNotificationTemplateResolver.register(menuImportTemplate);
-
-	    var historyImportTemplate =
-          {
-              priority: 900,
-              satisfy: function (notify, place) { return place == 'history' && notify.notifyType == 'CatalogCsvImport'; },
-              template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/import/notifications/historyImport.tpl.html',
-              action: function (notify) {
-                  var blade = {
-                      id: 'CatalogCsvImportDetail',
-                      title: 'catalog import detail',
-                      subtitle: 'detail',
-                      template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/import/catalog-CSV-import.tpl.html',
-                      controller: 'virtoCommerce.catalogModule.catalogCSVimportController',
-                      notification: notify
-                  };
-                  bladeNavigationService.showBlade(blade);
-              }
-          };
-	    pushNotificationTemplateResolver.register(historyImportTemplate);
-
-	
+	 	
 	    //Register image widget
 	    var entryImageWidget = {
             controller: 'virtoCommerce.catalogModule.catalogEntryImageWidgetController',
@@ -233,23 +175,7 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
 	        template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/catalogPropertyWidget.tpl.html'
 	    };
 	    widgetService.registerWidget(catalogPropertyWidget, 'catalogDetail');
-
-	    // IMPORT / EXPORT
-	    catalogImportService.register({
-	        name: 'VirtoCommerce CSV import',
-	        description: 'Native VirtoCommerce catalog data import from CSV',
-	        icon: 'fa fa-file-archive-o',
-	        controller: 'virtoCommerce.catalogModule.catalogCSVimportWizardController',
-	        template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/import/wizard/catalog-CSV-import-wizard.tpl.html'
-	    });
-	    catalogExportService.register({
-	        name: 'VirtoCommerce CSV export',
-	        description: 'Native VirtoCommerce catalog data export to CSV',
-	        icon: 'fa fa-file-archive-o',
-	        controller: 'virtoCommerce.catalogModule.catalogCSVexportController',
-	        template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/export/catalog-CSV-export.tpl.html'
-	    });
-
+	
 
 	    //Security scopes
 	    //Register permission scopes templates used for scope bounded definition in role management ui

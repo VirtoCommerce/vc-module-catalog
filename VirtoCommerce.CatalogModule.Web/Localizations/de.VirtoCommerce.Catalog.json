@@ -360,46 +360,11 @@
       },
       "advanced-search-results": {
         "title": "Suchergebnisse"
-      },
-      "catalog-CSV-export": {
-        "title": "Katalog {{name}} in eine csv-Datei exportieren",
-        "labels": {
-          "select-fulfillment": "Fulfillment Center wählen für exportierte Bestand",
-          "select-pricelist": "Preisliste auswählen für exportierte Preise",
-          "start": "Starten",
-          "end": "Ende",
-          "total": "- Zählung gesamt",
-          "processed": "Verarbeitet zählen",
-          "errors-count": "Anzahl der Fehler",
-          "errors": "Fehler",
-          "download-url": "Herunterladung-URL",
-          "note": "Alle Kataloge Produkte Informationen sollten in csv-Datei exportiert werden, Herunterladung-URL wird verfügbar sein, nachdem der Export abgeschlossen ist.",
-          "caution": "Vorsicht:",
-          "caution-description": "Die Sortierung Ihrer CSV-Datei in einem Tabellenkalkulationsprogramm kann dazu führen, dass Produktvarianten oder Bild-URLs disassoziiert werden. Das Importieren einer CSV-Datei, die sortiert wurde, kann Ihre vorhandenen Produkte mit schlechten Daten überschreiben, die nicht wiederhergestellt werden können."
-        },
-        "placeholders": {
-          "select-fulfillment": "Wählen Sie Erfüllung oder lassen Sie es leer für Standard...",
-          "select-pricelist": "Preisliste auswählen oder lassen Sie es leer für Standard..."
-        }
-      },
+      },     
       "item-dimensions": {
         "title": "Abmessungen",
         "subtitle": "Ändern der Größe & Gewicht hier"
-      },
-      "catalog-CSV-import": {
-        "title": "Aus CSV importieren",
-        "labels": {
-          "select-fulfillment": "Erfüllungszentrum wählen für exportierte Bestand",
-          "select-pricelist": "Preisliste auswählen für exportierte Preise",
-          "start": "Starten",
-          "end": "Ende",
-          "total": "- Zählung gesamt",
-          "processed": "Verarbeitet zählen",
-          "errors-count": "Anzahl der Fehler",
-          "errors": "Fehler"
-        }
-      }
-    },
+      },    
     "widgets": {
       "catalogLanguages": {
         "blade-subtitle": "Sprachen verwalten",
