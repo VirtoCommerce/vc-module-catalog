@@ -12,7 +12,7 @@
 
         blade.item.$update(null,
             function (dbItem) {
-                blade.parentBlade.setSelectedItem(dbItem)
+                blade.parentBlade.setSelectedItem(dbItem);
                 blade.parentBlade.refresh();
 
                 var newBlade = {

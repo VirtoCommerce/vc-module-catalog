@@ -3,6 +3,8 @@
         '$sessionStorage', '$localStorage', '$timeout', '$scope', 'virtoCommerce.catalogModule.categories', 'virtoCommerce.catalogModule.items', 'virtoCommerce.catalogModule.listEntries', 'platformWebApp.bladeUtils', 'platformWebApp.dialogService', 'platformWebApp.authService', 'platformWebApp.uiGridHelper', 'virtoCommerce.catalogModule.catalogs',
         function ($sessionStorage, $localStorage, $timeout, $scope, categories, items, listEntries, bladeUtils, dialogService, authService, uiGridHelper, catalogs) {
             $scope.uiGridConstants = uiGridHelper.uiGridConstants;
+            $scope.hasMore = true;
+            $scope.items = [];
 
             var blade = $scope.blade;
             var bladeNavigationService = bladeUtils.bladeNavigationService;
@@ -11,7 +13,65 @@
                 blade.catalog = catalogs.get({ id: blade.catalogId });
 
             blade.refresh = function () {
+  
                 blade.isLoading = true;
+
+                if ($scope.pageSettings.currentPage !== 1)
+                    $scope.pageSettings.currentPage = 1;
+
+                var searchCriteria = getSearchCriteria();
+
+                listEntries.listitemssearch(
+                    searchCriteria,
+                    function (data) {
+                        transformByFilters(data.listEntries);
+                        blade.isLoading = false;
+                        $scope.pageSettings.totalItems = data.totalCount;
+                        $scope.items = data.listEntries;
+                        $scope.hasMore = data.listEntries.length === $scope.pageSettings.itemsPerPageCount;
+
+                        //Set navigation breadcrumbs
+                        setBreadcrumbs();
+                    });
+
+                //reset state grid
+                resetStateGrid();
+            }
+
+
+            function showMore() {
+                if ($scope.hasMore) {
+
+                    ++$scope.pageSettings.currentPage;
+                    $scope.gridApi.infiniteScroll.saveScrollPercentage();
+                    blade.isLoading = true;
+
+                    var searchCriteria = getSearchCriteria();
+
+                    listEntries.listitemssearch(
+                        searchCriteria,
+                        function (data) {
+                            transformByFilters(data.listEntries);
+                            blade.isLoading = false;
+                            $scope.pageSettings.totalItems = data.totalCount;
+                            $scope.items = $scope.items.concat(data.listEntries);
+                            $scope.hasMore = data.listEntries.length === $scope.pageSettings.itemsPerPageCount;
+                            $scope.gridApi.infiniteScroll.dataLoaded();
+
+                            $timeout(function () {
+                                // wait for grid to ingest data changes
+                                if ($scope.gridApi.selection.getSelectAllState()) {
+                                    $scope.gridApi.selection.selectAllRows();
+                                }
+                            });
+
+                        });
+                }
+            }
+
+            // Search Criteria
+            function getSearchCriteria()
+            {
                 var searchCriteria = {
                     catalogId: blade.catalogId,
                     categoryId: blade.categoryId,
@@ -21,19 +81,7 @@
                     skip: ($scope.pageSettings.currentPage - 1) * $scope.pageSettings.itemsPerPageCount,
                     take: $scope.pageSettings.itemsPerPageCount
                 };
-
-                listEntries.listitemssearch(
-                    searchCriteria,
-                    function (data) {
-                        transformByFilters(data.listEntries);
-
-                        blade.isLoading = false;
-                        $scope.pageSettings.totalItems = data.totalCount;
-                        $scope.items = data.listEntries;
-
-                        //Set navigation breadcrumbs
-                        setBreadcrumbs();
-                    });
+                return searchCriteria;
             }
 
             //Breadcrumbs
@@ -70,6 +118,16 @@
                             blade.refresh();
                         });
                 };
+            }
+
+            //reset state grid (header checkbox, scroll)
+            function resetStateGrid() {
+                if ($scope.gridApi) {
+                    $scope.items = [];
+                    $scope.gridApi.selection.clearSelectedRows();
+                    $scope.gridApi.infiniteScroll.resetScroll(true, true);
+                    $scope.gridApi.infiniteScroll.dataLoaded();
+                }
             }
 
             $scope.edit = function (listItem) {
@@ -182,7 +240,6 @@
 
             function mapChecked() {
                 bladeNavigationService.closeChildrenBlades(blade);
-
                 var selection = $scope.gridApi.selection.getSelectedRows();
                 var listEntryLinks = [];
                 angular.forEach(selection, function (listItem) {
@@ -475,12 +532,22 @@
 
             // ui-grid
             $scope.setGridOptions = function (gridOptions) {
-                uiGridHelper.initialize($scope, gridOptions, function (gridApi) {
-                    uiGridHelper.bindRefreshOnSortChanged($scope);
-                });
-                bladeUtils.initializePagination($scope);
-            };
 
+                //disable watched
+                bladeUtils.initializePagination($scope, true);
+                //сhoose the optimal amount that ensures the appearance of the scroll
+                $scope.pageSettings.itemsPerPageCount = 50;
+
+                uiGridHelper.initialize($scope, gridOptions, function (gridApi) {
+                    //update gridApi for current grid
+                    $scope.gridApi = gridApi;
+
+                    uiGridHelper.bindRefreshOnSortChanged($scope);
+                    $scope.gridApi.infiniteScroll.on.needLoadMoreData($scope, showMore);
+                });
+
+                blade.refresh();
+            };
 
             //No need to call this because page 'pageSettings.currentPage' is watched!!! It would trigger subsequent duplicated req...
             //blade.refresh();
