@@ -178,6 +178,7 @@
     <Content Include="Scripts\blades\item-association-detail.js" />
     <Content Include="Scripts\blades\item-association-detail.tpl.html" />
     <Content Include="Scripts\dialogs\deleteProperty-dialog.tpl.html" />
+    <Content Include="Scripts\directives\customPropertyValidation.js" />
     <Content Include="Scripts\directives\propertyMessages.js" />
     <Content Include="Scripts\directives\propertyMessages.tpl.html" />
     <Content Include="Scripts\resources\aggregationProperties.js" />

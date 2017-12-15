@@ -151,6 +151,9 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 case PropertyValueType.Integer:
                     this.IntegerValue = Convert.ToInt32(value);
                     break;
+                case PropertyValueType.GeoPoint:
+                    this.ShortTextValue = Convert.ToString(value);
+                    break;
                 default:
                     throw new NotSupportedException();
             }
