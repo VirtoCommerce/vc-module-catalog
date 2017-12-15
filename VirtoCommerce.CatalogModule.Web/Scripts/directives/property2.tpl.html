@@ -346,7 +346,7 @@
     <!--GeoPoint-->
 <script type="text/ng-template" id="GeoPoint.html">
     <div class="form-input">
-        <input geo-point-validation ng-disabled="currentEntity.isReadOnly"
+        <input va-geo-point-validation ng-disabled="currentEntity.isReadOnly"
                ng-required="currentEntity.required && !currentEntity.isReadOnly"
                ng-model="context.currentPropValues[0].value"
                name="{{currentEntity.name}}"
