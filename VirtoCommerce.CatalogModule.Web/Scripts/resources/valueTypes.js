@@ -35,7 +35,7 @@
                     },
                     {
                         valueType: "GeoPoint",
-                        title: "platform.properties.geoPoint.title",
+                        title: "catalog.properties.geoPoint.title",
                         description: "platform.properties.geoPoint.description"
                     }
                 ];
