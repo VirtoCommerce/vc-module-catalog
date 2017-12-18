@@ -351,9 +351,8 @@
                ng-model="context.currentPropValues[0].value"
                name="{{currentEntity.name}}"
                ng-class="{'error': context.currentEntity.valueType.$error.pattern, 'error': propertiesForm.name.$valid }"
-               placeholder="Please enter geo point value"
-               type="text"
-               >
+               placeholder="Please enter geo point format 41.12,-71.34"
+               type="text">
     </div>
         <va-property-messages></va-property-messages>
     </script>
