@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Model.Search;
 using VirtoCommerce.Domain.Commerce.Model.Search;
 using VirtoCommerce.Domain.Search;
@@ -54,10 +55,19 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
             var priorityFields = criteria.GetPriorityFields();
 
-            foreach (var sortInfo in criteria.SortInfos)
+            foreach (SortInfo sortInfo in criteria.SortInfos)
             {
                 var fieldName = sortInfo.SortColumn.ToLowerInvariant();
                 var isDescending = sortInfo.SortDirection == SortDirection.Descending;
+
+                if (GeoDistance.HasGeoPoitnAtSortingString(fieldName))
+                {
+                    var location = GeoDistance.GeoLocation(fieldName);
+                    var propertyName = GeoDistance.GeoPropertyName(fieldName);
+
+                    result.Add( new GeoDistanceSortingField{ FieldName = propertyName, Location = GeoPoint.Parse(location), IsDescending = isDescending});
+                    continue;
+                }
 
                 switch (fieldName)
                 {
@@ -153,6 +163,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             {
                 var range = criteria.PriceRange;
                 result.Add(FiltersHelper.CreatePriceRangeFilter(criteria.Currency, null, range.Lower, range.Upper, range.IncludeLower, range.IncludeUpper));
+            }
+
+            if (criteria.GeoSearch != null)
+            {
+                result.Add(FiltersHelper.CreateGeoDistanceFilter(criteria.GeoSearch));
             }
 
             return result;

@@ -133,6 +133,18 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             document.Add(new IndexDocumentField("__content", product.Name) { IsRetrievable = true, IsSearchable = true, IsCollection = true });
             document.Add(new IndexDocumentField("__content", product.Code) { IsRetrievable = true, IsSearchable = true, IsCollection = true });
 
+            //Index geo point
+            if (product.PropertyValues.Any( p => p.ValueType == PropertyValueType.GeoPoint))
+            {
+                var geoPointsProduct = product.PropertyValues.Where(p => p.ValueType == PropertyValueType.GeoPoint);
+
+                foreach (var geoPoint in geoPointsProduct)
+                {
+                    document.Add(new IndexDocumentField(geoPoint.PropertyName, GeoPoint.Parse((string)geoPoint.Value)) { IsRetrievable = true, IsSearchable = true, IsCollection = true });
+                }
+
+            }
+
             if (StoreObjectsInIndex)
             {
                 // Index serialized product
