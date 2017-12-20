@@ -4,7 +4,7 @@
     <version>2.20.8</version>
     <platformVersion>2.13.17</platformVersion>
     <dependencies>
-        <dependency id="VirtoCommerce.Core" version="2.24.20" />
+        <dependency id="VirtoCommerce.Core" version="2.24.21" />
         <dependency id="VirtoCommerce.ImageTools" version="1.0.0" />
     </dependencies>
 

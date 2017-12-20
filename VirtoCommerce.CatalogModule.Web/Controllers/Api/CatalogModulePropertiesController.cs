@@ -8,6 +8,7 @@ using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Web.Converters;
 using VirtoCommerce.CatalogModule.Web.Security;
 using VirtoCommerce.Domain.Catalog.Services;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Security;
 using moduleModel = VirtoCommerce.Domain.Catalog.Model;
 using webModel = VirtoCommerce.CatalogModule.Web.Model;
@@ -156,6 +157,9 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         {
             var moduleProperty = property.ToCoreModel();
 
+            //Add custom validation rule for propery
+            AddCustomValidationRule(moduleProperty);
+
             if (property.IsNew)
             {
                 CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Create, moduleProperty);
@@ -200,6 +204,17 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             _propertyService.Delete(new[] { id });
             return StatusCode(HttpStatusCode.NoContent);
+        }
+
+        /// <summary>
+        /// Add custom validation rule for properties
+        /// </summary>
+        /// <param name="property"></param>
+        private void AddCustomValidationRule( moduleModel.Property property)
+        {
+            //If property is geo point
+            if (property.ValueType == moduleModel.PropertyValueType.GeoPoint)
+                property.ValidationRules.AddRange(moduleModel.GeoDistance.GeoPointPropertyValidationRules());
         }
     }
 }
