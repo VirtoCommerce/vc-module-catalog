@@ -214,7 +214,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         {
             //If property is geo point
             if (property.ValueType == moduleModel.PropertyValueType.GeoPoint)
-                property.ValidationRules.AddRange(moduleModel.GeoDistance.GeoPointPropertyValidationRules());
+                property.ValidationRules.AddRange(moduleModel.GeoDistanceCriterion.GeoPointPropertyValidationRules());
         }
     }
 }

@@ -112,9 +112,9 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return result;
         }
 
-        public static IFilter CreateGeoDistanceFilter(GeoDistance geoSearch)
+        public static IFilter CreateGeoDistanceFilter(GeoDistanceCriterion geoSearch)
         {
-            IFilter geoDistanceFilter = new GeoDistanceFilter{ FieldName = geoSearch.LocationPropertyName , Location = Domain.Search.GeoPoint.Parse(geoSearch.Location), Distance = geoSearch.Distance};
+            IFilter geoDistanceFilter = new GeoDistanceFilter{ FieldName = geoSearch.GeoPointPropertyName , Location = geoSearch.GeoPoint, Distance = geoSearch.Distance};
             return geoDistanceFilter;
         }
     }
