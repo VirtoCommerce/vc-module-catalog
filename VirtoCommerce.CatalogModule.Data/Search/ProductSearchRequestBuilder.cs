@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Model.Search;
 using VirtoCommerce.Domain.Commerce.Model.Search;
 using VirtoCommerce.Domain.Search;
@@ -57,44 +56,37 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
             foreach (SortInfo sortInfo in criteria.SortInfos)
             {
-                var fieldName = sortInfo.SortColumn.ToLowerInvariant();
-                var isDescending = sortInfo.SortDirection == SortDirection.Descending;
-
-                // if fild name contains geopoints
-                if (GeoDistanceCriterion.HasGeoPoitnAtSortingString(fieldName))
+                var sortingField = new SortingField();
+                if (sortInfo is GeoSortInfo geoSortInfo)
                 {
-                    result.Add(new GeoDistanceSortingField
+                    sortingField = new GeoDistanceSortingField
                     {
-                        FieldName = GeoDistanceCriterion.GeoPropertyName(fieldName),
-                        Location = GeoDistanceCriterion.GeoLocation(fieldName),
-                        IsDescending = isDescending
-                    });
+                        Location = geoSortInfo.GeoPoint
+                    };
                 }
-                else
+                sortingField.FieldName = sortInfo.SortColumn.ToLowerInvariant();
+                sortingField.IsDescending = sortInfo.SortDirection == SortDirection.Descending;
+
+                switch (sortingField.FieldName)
                 {
-                    switch (fieldName)
-                    {
-                        case "price":
-                            if (criteria.Pricelists != null)
-                            {
-                                result.AddRange(
-                                    criteria.Pricelists.Select(priceList => new SortingField($"price_{criteria.Currency}_{priceList}".ToLowerInvariant(), isDescending)));
-                            }
-                            break;
-                        case "priority":
-                            result.AddRange(priorityFields.Select(priorityField => new SortingField(priorityField, isDescending)));
-                            break;
-                        case "name":
-                        case "title":
-                            result.Add(new SortingField("name", isDescending));
-                            break;
-                        default:
-                            result.Add(new SortingField(fieldName, isDescending));
-                            break;
-                    }
-
+                    case "price":
+                        if (criteria.Pricelists != null)
+                        {
+                            result.AddRange(
+                                criteria.Pricelists.Select(priceList => new SortingField($"price_{criteria.Currency}_{priceList}".ToLowerInvariant(), sortingField.IsDescending)));
+                        }
+                        break;
+                    case "priority":
+                        result.AddRange(priorityFields.Select(priorityField => new SortingField(priorityField, sortingField.IsDescending)));
+                        break;
+                    case "name":
+                    case "title":
+                        result.Add(new SortingField("name", sortingField.IsDescending));
+                        break;
+                    default:
+                        result.Add(sortingField);
+                        break;
                 }
-
             }
 
             if (!result.Any())
@@ -171,9 +163,9 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 result.Add(FiltersHelper.CreatePriceRangeFilter(criteria.Currency, null, range.Lower, range.Upper, range.IncludeLower, range.IncludeUpper));
             }
 
-            if (criteria.GeoDistanceCriterion?.GeoPoint != null)
+            if (criteria.GeoDistanceFilter != null)
             {
-                result.Add(FiltersHelper.CreateGeoDistanceFilter(criteria.GeoDistanceCriterion));
+                result.Add(criteria.GeoDistanceFilter);
             }
 
             return result;

@@ -1,12 +1,13 @@
-﻿using System;
+﻿using CacheManager.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using CacheManager.Core;
 using VirtoCommerce.CatalogModule.Data.Extensions;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
+using VirtoCommerce.Domain.Search;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Data.Common;
 using VirtoCommerce.Platform.Data.Infrastructure;
@@ -135,6 +136,25 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
         }
 
+        protected virtual void TryAddPredefinedValidationRules(Property[] properties)
+        {
+            foreach (var property in properties)
+            { 
+                if(property.ValueType == PropertyValueType.GeoPoint)
+                {
+                    var geoPointValidationRule = property.ValidationRules.FirstOrDefault(x => x.RegExp.EqualsInvariant(GeoPoint.Regexp.ToString()));
+                    if(geoPointValidationRule == null)
+                    {
+                        if(property.ValidationRules == null)
+                        {
+                            property.ValidationRules = new List<PropertyValidationRule>();
+                        }
+                        property.ValidationRules.Add(new PropertyValidationRule { RegExp = GeoPoint.Regexp.ToString() });
+                    }
+                }
+            }
+        }
+
         protected virtual void SaveChanges(Property[] properties)
         {
             var pkMap = new PrimaryKeyResolvingMap();
@@ -142,6 +162,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             using (var repository = _repositoryFactory())
             using (var changeTracker = GetChangeTracker(repository))
             {
+                TryAddPredefinedValidationRules(properties);
+
                 var dbExistEntities = repository.GetPropertiesByIds(properties.Where(x => !x.IsTransient()).Select(x => x.Id).ToArray());
                 foreach (var property in properties)
                 {

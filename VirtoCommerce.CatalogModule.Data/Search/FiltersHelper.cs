@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Model.Search;
 using VirtoCommerce.Domain.Search;
 using VirtoCommerce.Platform.Core.Common;
@@ -110,12 +109,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             }
 
             return result;
-        }
-
-        public static IFilter CreateGeoDistanceFilter(GeoDistanceCriterion geoSearch)
-        {
-            IFilter geoDistanceFilter = new GeoDistanceFilter{ FieldName = geoSearch.GeoPointPropertyName , Location = geoSearch.GeoPoint, Distance = geoSearch.Distance};
-            return geoDistanceFilter;
-        }
+        }      
     }
 }
