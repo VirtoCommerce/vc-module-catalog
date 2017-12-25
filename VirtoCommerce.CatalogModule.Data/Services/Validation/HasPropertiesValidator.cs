@@ -4,6 +4,7 @@ using System.Linq;
 using FluentValidation;
 using FluentValidation.Results;
 using VirtoCommerce.Domain.Catalog.Model;
+using VirtoCommerce.Platform.Core.Common;
 using PropertyValidationRule = VirtoCommerce.Domain.Catalog.Model.PropertyValidationRule;
 
 namespace VirtoCommerce.CatalogModule.Data.Services.Validation
@@ -23,11 +24,13 @@ namespace VirtoCommerce.CatalogModule.Data.Services.Validation
         public override ValidationResult Validate(ValidationContext<IHasProperties> context)
         {
             var validationResults = new List<ValidationResult>();
-            var propertyValues = context.InstanceToValidate.PropertyValues;
+           var propertyValues = context.InstanceToValidate.PropertyValues;
             if (propertyValues != null)
             {
                 foreach (var propertyValue in propertyValues)
                 {
+                    AddCustomValidationRules(propertyValue);
+
                     var rules = propertyValue?.Property?.ValidationRules;
                     if (rules != null)
                     {
@@ -43,6 +46,21 @@ namespace VirtoCommerce.CatalogModule.Data.Services.Validation
 
             var errors = validationResults.SelectMany(x => x.Errors);
             return new ValidationResult(errors);
+        }
+
+        /// <summary>
+        /// Add custom validation rules for property
+        /// </summary>
+        /// <param name="property"></param>
+        private void AddCustomValidationRules(PropertyValue property)
+        {
+            if (property.ValueType == PropertyValueType.GeoPoint)
+            {
+                var geoRules = property?.Property;
+                if (geoRules != null)
+                    geoRules.ValidationRules = GeoDistanceCriterion.GeoPointPropertyValidationRules();
+            }
+
         }
     }
 }

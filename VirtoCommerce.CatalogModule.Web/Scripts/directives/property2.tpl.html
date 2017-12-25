@@ -344,15 +344,17 @@
         </div>
     </script>
     <!--GeoPoint-->
-<script type="text/ng-template" id="GeoPoint.html">
+    <script type="text/ng-template" id="GeoPoint.html">
     <div class="form-input">
         <input va-geo-point-validation ng-disabled="currentEntity.isReadOnly"
                ng-required="currentEntity.required && !currentEntity.isReadOnly"
                ng-model="context.currentPropValues[0].value"
                name="{{currentEntity.name}}"
                ng-class="{'error': context.currentEntity.valueType.$error.pattern, 'error': propertiesForm.name.$valid }"
-               placeholder="Please enter geo point format 41.12,-71.34"
+               placeholder="{{ 'catalog.properties.geoPoint.placeholder' | translate }}"
                type="text">
+        <div class="list-descr">{{ 'catalog.properties.geoPoint.description' | translate }}</div>
+
     </div>
         <va-property-messages></va-property-messages>
     </script>
@@ -390,7 +392,7 @@
                        ng-required="currentEntity.required && !currentEntity.isReadOnly"
                        ng-model="langValuesGroup.currentPropValues[0].value"
                        name="{{currentEntity.valueType}}"
-                       placeholder="Please enter geo point value"
+                       placeholder="{{ 'catalog.properties.geoPoint.placeholder' | translate }}"
                        type="text">
             </div>
         </div>
@@ -418,7 +420,6 @@
                             name="{{currentEntity.name}}"
                             display-property="value"
                             placeholder="Add value"
-                            ng-pattern="currentEntity.validationRule.regExp"
                             on-tag-added="tagsAdded($tag, currentEntity.name)"
                             on-tag-removed="tagsDeleted($tag, currentEntity.name, currentEntity.required)"
                             on-invalid-tag="addederror($tag, currentEntity.name, currentEntity.validationRule.charCountMin, currentEntity.validationRule.charCountMax, currentEntity.validationRule.regExp)">
