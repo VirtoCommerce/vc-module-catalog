@@ -4,6 +4,7 @@ using System.Linq;
 using FluentValidation;
 using FluentValidation.Results;
 using VirtoCommerce.Domain.Catalog.Model;
+using VirtoCommerce.Platform.Core.Common;
 using PropertyValidationRule = VirtoCommerce.Domain.Catalog.Model.PropertyValidationRule;
 
 namespace VirtoCommerce.CatalogModule.Data.Services.Validation

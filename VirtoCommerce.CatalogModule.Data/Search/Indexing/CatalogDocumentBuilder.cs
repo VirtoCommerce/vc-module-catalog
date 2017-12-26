@@ -53,6 +53,9 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                             var shortTextValue = !string.IsNullOrEmpty(alias) ? alias : propValue.Value.ToString();
                             document.Add(new IndexDocumentField(propertyName, shortTextValue) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection });
                             break;
+                        case PropertyValueType.GeoPoint:
+                            document.Add(new IndexDocumentField(propertyName, GeoPoint.TryParse((string)propValue.Value)) { IsRetrievable = true, IsSearchable = true, IsCollection = true });
+                            break;
                     }
                 }
 

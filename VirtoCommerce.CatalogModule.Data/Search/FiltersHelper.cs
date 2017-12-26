@@ -109,6 +109,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             }
 
             return result;
-        }
+        }      
     }
 }
