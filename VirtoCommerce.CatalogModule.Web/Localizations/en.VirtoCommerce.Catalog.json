@@ -8,9 +8,9 @@
         "variation": "Variation properties",
         "category": "Category properties",
         "geoPoint": {
-          "title": "Geo Point",
-          "placeholder": "Please enter geo point",
-          "description": "Enter Lat/Long Coordinates (one per line in format: lat,long - for example 34.05,-118.24 )"
+          "title": "Geo-point",
+          "placeholder": "Please enter Lat/Long Coordinates",
+          "description": "Enter Lat/Long Coordinates (one per line in format: lat,long [no spaces], e.g. 41.40338, 2.17403"
         }
       },
         "blades": {
