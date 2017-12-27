@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Omu.ValueInjecter;
 using VirtoCommerce.Platform.Core.Assets;
@@ -134,6 +135,7 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             //Populate property values
             if (product.PropertyValues != null)
             {
+                var sort = false;
                 foreach (var propValue in product.PropertyValues.Select(x => x.ToWebModel()))
                 {
                     var property = retVal.Properties.FirstOrDefault(x => x.Id == propValue.PropertyId);
@@ -146,8 +148,13 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
                         //Need add dummy property for each value without property
                         property = new webModel.Property(propValue, product.CatalogId, moduleModel.PropertyType.Product);
                         retVal.Properties.Add(property);
+                        sort = true;
                     }
                     property.Values.Add(propValue);
+                }
+                if (sort)
+                {
+                    retVal.Properties = retVal.Properties.OrderBy(x => x.Name).ToList();
                 }
             }
 
