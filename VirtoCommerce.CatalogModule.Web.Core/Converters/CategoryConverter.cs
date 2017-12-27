@@ -70,6 +70,7 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
                 //Populate property values
                 if (category.PropertyValues != null)
                 {
+                    var sort = false;
                     foreach (var propValue in category.PropertyValues.Select(x => x.ToWebModel()))
                     {
                         var property = retVal.Properties.FirstOrDefault(x => x.Id == propValue.PropertyId);
@@ -82,8 +83,13 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
                             //Need add dummy property for each value without property
                             property = new webModel.Property(propValue, category.CatalogId, moduleModel.PropertyType.Category);
                             retVal.Properties.Add(property);
+                            sort = true;
                         }
                         property.Values.Add(propValue);
+                    }
+                    if (sort)
+                    {
+                        retVal.Properties = retVal.Properties.OrderBy(x => x.Name).ToList();
                     }
                 }
             }
