@@ -163,6 +163,7 @@
     <Compile Include="Model\ListEntryProduct.cs" />
     <Compile Include="Model\ResponseGroup.cs" />
     <Compile Include="Model\ListEntrySearchCriteria.cs" />
+    <Compile Include="Model\SearchOptions.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="Scripts\blades\aggregation-properties-details.js" />

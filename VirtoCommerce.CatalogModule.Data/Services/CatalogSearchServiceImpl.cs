@@ -180,7 +180,30 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     }
                 });
 
-                result.Catalogs = catalogs.OrderBy(x => x.Name).ToList();
+                result.Catalogs = OrderItems(catalogs, criteria);
+            }
+        }
+
+        protected virtual ICollection<Catalog> OrderItems(IEnumerable<Catalog> catalogs, SearchCriteria criteria)
+        {
+            var sort = string.IsNullOrEmpty(criteria.Sort) ? "name:asc" : criteria.Sort;
+
+            switch (sort)
+            {
+                case "name:asc":
+                    return catalogs.OrderBy(x => x.Name).ToList();
+                case "name:desc":
+                    return catalogs.OrderByDescending(x => x.Name).ToList();
+                case "isVirtual:asc":
+                    return catalogs.OrderBy(x => x.IsVirtual).ToList();
+                case "isVirtual:desc":
+                    return catalogs.OrderByDescending(x => x.IsVirtual).ToList();
+                case "id:asc":
+                    return catalogs.OrderBy(x => x.Id).ToList();
+                case "id:desc":
+                    return catalogs.OrderByDescending(x => x.Id).ToList();
+                default:
+                    throw new InvalidProgramException("SearchCriteria.Sort has improper value");
             }
         }
 
