@@ -186,12 +186,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         protected virtual ICollection<Catalog> OrderItems(IEnumerable<Catalog> catalogs, SearchCriteria criteria)
         {
-            var sort = string.IsNullOrEmpty(criteria.Sort) ? "name:asc" : criteria.Sort;
-
-            switch (sort)
+            switch (criteria.Sort)
             {
-                case "name:asc":
-                    return catalogs.OrderBy(x => x.Name).ToList();
                 case "name:desc":
                     return catalogs.OrderByDescending(x => x.Name).ToList();
                 case "isVirtual:asc":
@@ -202,8 +198,9 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     return catalogs.OrderBy(x => x.Id).ToList();
                 case "id:desc":
                     return catalogs.OrderByDescending(x => x.Id).ToList();
+                case "name:asc":
                 default:
-                    throw new InvalidProgramException("SearchCriteria.Sort has improper value");
+                    return catalogs.OrderBy(x => x.Name).ToList();
             }
         }
 
