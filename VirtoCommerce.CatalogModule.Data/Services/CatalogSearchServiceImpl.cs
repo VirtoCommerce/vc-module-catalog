@@ -189,7 +189,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     }
                 }
 
-                result.Catalogs = catalogs.ToArray();
+                result.Catalogs = catalogs.ToList();
             }
         }
 
