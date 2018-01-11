@@ -177,7 +177,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     catalogIds = repository.Catalogs.OrderBySortInfos(sortInfos).Select(x => x.Id).ToArray();
                 }
 
-                var catalogs = new List<Catalog>();
+                result.Catalogs = new List<Catalog>();
 
                 foreach (var catalogId in catalogIds)
                 {
@@ -185,11 +185,9 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
                     if (catalog != null)
                     {
-                        catalogs.Add(catalog);
+                        result.Catalogs.Add(catalog);
                     }
                 }
-
-                result.Catalogs = catalogs.ToList();
             }
         }
 
