@@ -36,7 +36,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         {
             var criteria = new moduleModel.SearchCriteria
             {
-                ResponseGroup = moduleModel.SearchResponseGroup.WithCatalogs,
+                ResponseGroup = moduleModel.SearchResponseGroup.WithCatalogs
             };
 
             ApplyRestrictionsForCurrentUser(criteria);
