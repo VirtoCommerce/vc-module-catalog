@@ -160,27 +160,34 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 repository.DisableChangesTracking();
 
                 var catalogIds = criteria.CatalogIds;
+
+                var sortInfos = criteria.SortInfos.IsNullOrEmpty()
+                                    ? new[]
+                                          {
+                                              new SortInfo
+                                                  {
+                                                      SortColumn = "Name",
+                                                      SortDirection = SortDirection.Ascending
+                                                  }
+                                          }
+                                    : criteria.SortInfos;
+
                 if (catalogIds.IsNullOrEmpty())
                 {
-                    catalogIds = repository.Catalogs.Select(x => x.Id).ToArray();
+                    catalogIds = repository.Catalogs.OrderBySortInfos(sortInfos).Select(x => x.Id).ToArray();
                 }
 
-                var catalogs = new ConcurrentBag<Catalog>();
-                var parallelOptions = new ParallelOptions
-                {
-                    MaxDegreeOfParallelism = 10
-                };
+                result.Catalogs = new List<Catalog>();
 
-                Parallel.ForEach(catalogIds, parallelOptions, catalogId =>
+                foreach (var catalogId in catalogIds)
                 {
                     var catalog = _catalogService.GetById(catalogId);
+
                     if (catalog != null)
                     {
-                        catalogs.Add(catalog);
+                        result.Catalogs.Add(catalog);
                     }
-                });
-
-                result.Catalogs = catalogs.OrderBy(x => x.Name).ToList();
+                }
             }
         }
 
