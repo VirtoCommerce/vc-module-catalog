@@ -386,7 +386,7 @@
                         };
                         bladeNavigationService.showBlade(newBlade, blade);
                     },
-                    canExecuteMethod: function () { return false; },
+                    canExecuteMethod: function () { return blade.catalogId; },
                     permission: 'catalog:import'
                 },
                 {
@@ -405,7 +405,7 @@
                         };
                         bladeNavigationService.showBlade(newBlade, blade);
                     },
-                    canExecuteMethod: function () { return false; },
+                    canExecuteMethod: function () { return blade.catalogId; },
                     permission: 'catalog:export'
                 },
                 {
