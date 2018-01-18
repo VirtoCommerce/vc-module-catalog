@@ -68,6 +68,9 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             if ((coreModelCriteria.ResponseGroup & coreModel.SearchResponseGroup.WithCategories) == coreModel.SearchResponseGroup.WithCategories)
             {
                 coreModelCriteria.ResponseGroup = coreModelCriteria.ResponseGroup & ~coreModel.SearchResponseGroup.WithProducts;
+
+                coreModelCriteria.ResponseGroup = coreModelCriteria.ResponseGroup |= coreModel.SearchResponseGroup.WithOutlines;
+
                 var categoriesSearchResult = _searchService.Search(coreModelCriteria);
                 var categoriesTotalCount = categoriesSearchResult.Categories.Count();
 

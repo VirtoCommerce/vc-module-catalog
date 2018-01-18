@@ -72,9 +72,16 @@
             // Search Criteria
             function getSearchCriteria()
             {
+                // Get outline of current Category.
+                var outline = blade.categoryId;
+                if (blade.category != undefined) {
+                    outline = blade.category.outline.join('/');
+                }
+
                 var searchCriteria = {
                     catalogId: blade.catalogId,
                     categoryId: blade.categoryId,
+                    outline: outline,
                     keyword: filter.keyword ? filter.keyword : undefined,
                     responseGroup: 'withCategories, withProducts',
                     sort: uiGridHelper.getSortExpression($scope),
