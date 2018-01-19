@@ -1,4 +1,5 @@
 using FluentValidation;
+using System;
 using VirtoCommerce.Domain.Catalog.Model;
 
 namespace VirtoCommerce.CatalogModule.Data.Services.Validation
@@ -15,37 +16,28 @@ namespace VirtoCommerce.CatalogModule.Data.Services.Validation
 
         private void AttachValidators(PropertyValidationRule rule)
         {
+            bool notNullOrEmptyPredicate(PropertyValue x) => x.Value != null && !string.IsNullOrEmpty(x.Value.ToString());
+
             if (rule.CharCountMax.HasValue)
             {
-                AddLenghtMaxValidationRule(rule);
+                RuleFor(s => s.Value.ToString())
+                .MaximumLength(rule.CharCountMax.Value).WithName(rule.Property.Name)
+                .When(notNullOrEmptyPredicate);
             }
 
             if (rule.CharCountMin.HasValue)
             {
-                AddLenghtMinValidationRule(rule);
+                RuleFor(s => s.Value.ToString())
+                .MinimumLength(rule.CharCountMin.Value).WithName(rule.Property.Name)
+                .When(notNullOrEmptyPredicate);
             }
 
             if (!string.IsNullOrEmpty(rule.RegExp))
             {
-                AddRegexValidationRule(rule);
+                RuleFor(s => s.Value.ToString())
+                  .Matches(rule.RegExp).WithName(rule.Property.Name)
+                  .When(notNullOrEmptyPredicate);
             }
-        }
-
-        private void AddLenghtMaxValidationRule(PropertyValidationRule validationRule)
-        {
-            RuleFor(s => s.Value.ToString())
-                .MaximumLength(validationRule.CharCountMax.Value).WithName(validationRule.Property.Name);
-        }
-
-        private void AddLenghtMinValidationRule(PropertyValidationRule validationRule)
-        {
-            RuleFor(s => s.Value.ToString())
-                .MinimumLength(validationRule.CharCountMin.Value).WithName(validationRule.Property.Name);
-        }
-
-        private void AddRegexValidationRule(PropertyValidationRule validationRule)
-        {
-            RuleFor(s => s.Value.ToString()).Matches(validationRule.RegExp).WithName(validationRule.Property.Name);
-        }
+        }    
     }
 }

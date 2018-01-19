@@ -91,11 +91,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                     }
                 }
 
-                if (!responseGroup.HasFlag(ItemResponseGroup.ItemInfo))
-                {
-                    product.Properties = null;
-                }
-
                 if (!responseGroup.HasFlag(ItemResponseGroup.Links))
                 {
                     product.Links = null;

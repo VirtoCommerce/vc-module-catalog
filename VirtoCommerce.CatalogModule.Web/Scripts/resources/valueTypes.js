@@ -32,6 +32,11 @@
                         valueType: "Integer",
                         title: "platform.properties.integer.title",
                         description: "platform.properties.integer.description"
+                    },
+                    {
+                        valueType: "GeoPoint",
+                        title: "catalog.properties.geoPoint.title",
+                        description: "catalog.properties.geoPoint.description"
                     }
                 ];
             }

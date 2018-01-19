@@ -343,4 +343,35 @@
             </ui-select>
         </div>
     </script>
+    <!--GeoPoint-->
+    <script type="text/ng-template" id="GeoPoint.html">
+        <div class="form-input">
+            <input ng-disabled="currentEntity.isReadOnly"
+                   ng-required="currentEntity.required && !currentEntity.isReadOnly"
+                   ng-model="context.currentPropValues[0].value"
+                   name="{{currentEntity.name}}"
+                   ng-class="{'error': context.currentEntity.valueType.$error.pattern, 'error': propertiesForm.name.$valid }"
+                   placeholder="{{ 'catalog.properties.geoPoint.placeholder' | translate }}"
+                   ng-pattern="currentEntity.validationRule.regExp"
+                   type="text">
+            <div class="list-descr">{{ 'catalog.properties.geoPoint.description' | translate }}</div>
+        </div>
+        <va-property-messages></va-property-messages>
+    </script>
+
+    <script type="text/ng-template" id="GeoPoint-multivalue.html">
+        <tags-input ng-model="context.currentPropValues"
+                    ng-disabled="currentEntity.isReadOnly"
+                    ng-required="currentEntity.required && !currentEntity.isReadOnly"
+                    name="{{currentEntity.name}}"
+                    display-property="value"
+                    placeholder="Add geo point"
+                    allowed-tags-pattern="{{currentEntity.validationRule.regExp}}"
+                    on-tag-added="tagsAdded($tag, currentEntity.name)"
+                    on-tag-removed="tagsDeleted($tag, currentEntity.name, currentEntity.required)"
+                    on-invalid-tag="addederror($tag, currentEntity.name, currentEntity.validationRule.charCountMin, currentEntity.validationRule.charCountMax, currentEntity.validationRule.regExp)">
+        </tags-input>
+        <va-property-messages></va-property-messages>
+    </script>
+
 </div>

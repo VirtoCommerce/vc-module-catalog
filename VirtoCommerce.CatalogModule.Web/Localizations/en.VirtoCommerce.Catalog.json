@@ -2,12 +2,17 @@
     "catalog": {
         "main-menu-title": "Catalog",
         "main-blade-title": "Catalog",
-        "properties": {
-            "catalog": "Catalog properties",
-            "product": "Product properties",
-            "variation": "Variation properties",
-            "category": "Category properties"
-        },
+      "properties": {
+        "catalog": "Catalog properties",
+        "product": "Product properties",
+        "variation": "Variation properties",
+        "category": "Category properties",
+        "geoPoint": {
+          "title": "Geo-point",
+          "placeholder": "Please enter Lat/Long Coordinates",
+          "description": "Enter Lat/Long Coordinates (one per line in format: lat,long [no spaces], e.g. 41.40338, 2.17403"
+        }
+      },
         "blades": {
             "catalogs-list": {
                 "title": "Catalog",

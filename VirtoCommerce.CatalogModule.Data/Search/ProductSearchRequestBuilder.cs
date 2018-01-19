@@ -54,29 +54,37 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
             var priorityFields = criteria.GetPriorityFields();
 
-            foreach (var sortInfo in criteria.SortInfos)
+            foreach (SortInfo sortInfo in criteria.SortInfos)
             {
-                var fieldName = sortInfo.SortColumn.ToLowerInvariant();
-                var isDescending = sortInfo.SortDirection == SortDirection.Descending;
+                var sortingField = new SortingField();
+                if (sortInfo is GeoSortInfo geoSortInfo)
+                {
+                    sortingField = new GeoDistanceSortingField
+                    {
+                        Location = geoSortInfo.GeoPoint
+                    };
+                }
+                sortingField.FieldName = sortInfo.SortColumn.ToLowerInvariant();
+                sortingField.IsDescending = sortInfo.SortDirection == SortDirection.Descending;
 
-                switch (fieldName)
+                switch (sortingField.FieldName)
                 {
                     case "price":
                         if (criteria.Pricelists != null)
                         {
                             result.AddRange(
-                                criteria.Pricelists.Select(priceList => new SortingField($"price_{criteria.Currency}_{priceList}".ToLowerInvariant(), isDescending)));
+                                criteria.Pricelists.Select(priceList => new SortingField($"price_{criteria.Currency}_{priceList}".ToLowerInvariant(), sortingField.IsDescending)));
                         }
                         break;
                     case "priority":
-                        result.AddRange(priorityFields.Select(priorityField => new SortingField(priorityField, isDescending)));
+                        result.AddRange(priorityFields.Select(priorityField => new SortingField(priorityField, sortingField.IsDescending)));
                         break;
                     case "name":
                     case "title":
-                        result.Add(new SortingField("name", isDescending));
+                        result.Add(new SortingField("name", sortingField.IsDescending));
                         break;
                     default:
-                        result.Add(new SortingField(fieldName, isDescending));
+                        result.Add(sortingField);
                         break;
                 }
             }
@@ -153,6 +161,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             {
                 var range = criteria.PriceRange;
                 result.Add(FiltersHelper.CreatePriceRangeFilter(criteria.Currency, null, range.Lower, range.Upper, range.IncludeLower, range.IncludeUpper));
+            }
+
+            if (criteria.GeoDistanceFilter != null)
+            {
+                result.Add(criteria.GeoDistanceFilter);
             }
 
             return result;
