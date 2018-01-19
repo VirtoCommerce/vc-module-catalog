@@ -10,8 +10,8 @@
 
         catalogs.getCatalogs({
             sort: uiGridHelper.getSortExpression($scope),
-            start: ($scope.pageSettings.currentPage - 1) * $scope.pageSettings.itemsPerPageCount,
-            count: $scope.pageSettings.itemsPerPageCount
+            skip: ($scope.pageSettings.currentPage - 1) * $scope.pageSettings.itemsPerPageCount,
+            take: $scope.pageSettings.itemsPerPageCount
         }, function (results) {
             blade.isLoading = false;
             $scope.pageSettings.totalItems = results.length;
