@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Data.Entity;
 using System.Data.Entity.Core.Objects;
 using System.Data.Entity.ModelConfiguration.Conventions;
@@ -25,6 +26,11 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             : base(nameOrConnectionString, null, interceptors)
         {
             Database.SetInitializer<CatalogRepositoryImpl>(null);
+        }
+
+        public CatalogRepositoryImpl(DbConnection existingConnection, IUnitOfWork unitOfWork = null,
+            IInterceptor[] interceptors = null) : base(existingConnection, unitOfWork, interceptors)
+        {
         }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
