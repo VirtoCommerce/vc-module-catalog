@@ -39,7 +39,8 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             var parents = new List<moduleModel.Category>();
             if (category.Parents != null)
             {
-                retVal.Outline = category.Outlines.FirstOrDefault().ToString();
+                retVal.Outline = OutlineHelper.EnsurePhysicalOutline(category.Outlines, category.CatalogId)
+                    .FirstOrDefault(); //category.Outlines.FirstOrDefault().ToString();
                 retVal.Path = string.Join("/", category.Parents.Select(x => x.Name));
             }
 

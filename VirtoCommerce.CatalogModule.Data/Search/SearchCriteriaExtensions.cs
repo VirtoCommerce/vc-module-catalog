@@ -22,26 +22,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
         public static IList<string> GetOutlines(this CatalogSearchCriteriaBase criteria)
         {
-            
-            var rawOutlines = criteria.GetRawOutlines();
-            var result = new List<string>(rawOutlines.Count);
-            foreach (var rawOutline in rawOutlines)
-            {
-                var outlineParts = rawOutline.Split('/').ToList();
-                // Add the catalog to the outline if it is not present.
-                if (!outlineParts.First().Equals(criteria.CatalogId))
-                {
-                    outlineParts.Insert(0, criteria.CatalogId);
-                }
-
-                var outline = StringsHelper.JoinNonEmptyStrings("/", outlineParts.ToArray()).ToLowerInvariant();
-                if (!result.Contains(outline))
-                {
-                    result.Add(outline);
-                }
-            }
-
-            return result;
+            return Web.Converters.OutlineHelper
+                .EnsurePhysicalOutline(criteria.GetRawOutlines(), criteria.CatalogId);
         }
 
         public static IList<string> GetRawOutlines(this CatalogSearchCriteriaBase criteria)

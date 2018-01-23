@@ -54,7 +54,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 serviceCriteria.ObjectType = KnownDocumentTypes.Product;
                 serviceCriteria.SearchPhrase = criteria.Keyword;
                 serviceCriteria.CatalogId = criteria.CatalogId;
-                serviceCriteria.Outline = criteria.Outline;
+                serviceCriteria.Outline = criteria.Outline ?? criteria.CategoryId;
                 serviceCriteria.WithHidden = criteria.WithHidden;
                 serviceCriteria.Skip = criteria.Skip;
                 serviceCriteria.Take = criteria.Take;

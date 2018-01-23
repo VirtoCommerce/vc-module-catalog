@@ -63,6 +63,7 @@
     </Compile>
     <Compile Include="Converters\AggregationConverters.cs" />
     <Compile Include="Converters\OutlineConverter.cs" />
+    <Compile Include="Converters\OutlineHelper.cs" />
     <Compile Include="Converters\PropertyValidationRuleConverter.cs" />
     <Compile Include="Converters\SearchCriteriaConverter.cs" />
     <Compile Include="Converters\AssetConverter.cs" />
