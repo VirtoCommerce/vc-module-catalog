@@ -28,7 +28,7 @@
                     return pattern.test(str);
                 },
                 isBoolean: function (str) {
-                    return str.toLowerCase() == "true" || str.toLowerCase() == "false";
+                    return str.toLowerCase() === "true" || str.toLowerCase() === "false";
                 }
             }; 
 
@@ -50,11 +50,7 @@
                             || (pb.currentEntity.valueType === "Boolean" && !validation.isBoolean(value));
                     }
 
-                    var result = !$scope.valueError && !$scope.duplicateError;
-
-                    console.log(result, $scope.duplicateError, $scope.valueError, pb.currentEntity.valueType);
-
-                    return result;
+                    return !($scope.valueError || $scope.duplicateError);
                 }
             }
 
