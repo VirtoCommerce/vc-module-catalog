@@ -254,10 +254,11 @@
                     "language-edit": "Edit values",
                     "language-add": "New values"
                 },
-                "validations": {
-                    "required": "Required",
-                    "duplicate": "Duplicate name found"
-                },
+              "validations": {
+                "required": "Required",
+                "duplicate": "Duplicate name found",
+                "value-invalid": "Value has invalid type"
+              },
                 "placeholders": {
                     "value": "Enter value",
                     "alias": "Enter an alias"

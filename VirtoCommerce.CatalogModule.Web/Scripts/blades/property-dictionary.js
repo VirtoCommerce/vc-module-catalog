@@ -14,6 +14,24 @@
                 $scope.exposeAlias = temp.toLowerCase() === 'true';
             });
 
+            var validation = {
+                isInteger: function (str) {
+                    var pattern = /^\d+$/;
+                    return pattern.test(str);
+                },
+                isDecimalNumber: function (str) {
+                    var pattern = /^(\d+\.?\d{0,9}|\.\d{1,9})$/;
+                    return pattern.test(str);
+                },
+                isDateTime: function (str) {
+                    var pattern = /^[0-3]?[0-9].[0-3]?[0-9].(?:[0-9]{2})?[0-9]{2}$/;
+                    return pattern.test(str);
+                },
+                isBoolean: function (str) {
+                    return str.toLowerCase() == "true" || str.toLowerCase() == "false";
+                }
+            }; 
+
             $scope.dictValueValidator = function (value, editEntity) {
                 if (pb.currentEntity.multilanguage) {
                     var testEntity = angular.copy(editEntity);
@@ -24,7 +42,19 @@
                         }));
                     });
                 } else {
-                    return _.all(dictionaryValues, function (item) { return item.value !== value; });
+                    $scope.duplicateError = !_.all(dictionaryValues, function (item) { return item.value !== value; });
+                    if (value != null && value != "") {
+                        $scope.valueError = pb.currentEntity.valueType === "Integer" && !validation.isInteger(value)
+                            || (pb.currentEntity.valueType === "Number" && !validation.isDecimalNumber(value))
+                            || (pb.currentEntity.valueType === "DateTime" && !validation.isDateTime(value))
+                            || (pb.currentEntity.valueType === "Boolean" && !validation.isBoolean(value));
+                    }
+
+                    var result = !$scope.valueError && !$scope.duplicateError;
+
+                    console.log(result, $scope.duplicateError, $scope.valueError, pb.currentEntity.valueType);
+
+                    return result;
                 }
             }
 
