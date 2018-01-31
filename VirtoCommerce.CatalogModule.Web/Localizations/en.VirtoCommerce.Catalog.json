@@ -257,7 +257,7 @@
               "validations": {
                 "required": "Required",
                 "duplicate": "Duplicate name found",
-                "value-invalid": "Value has invalid type"
+                "value-invalid": "Value has an invalid type"
               },
                 "placeholders": {
                     "value": "Enter value",
