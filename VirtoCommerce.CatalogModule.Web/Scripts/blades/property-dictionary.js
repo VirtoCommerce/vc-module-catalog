@@ -6,7 +6,7 @@
         $scope.pb = pb;
         $scope.duplicate = false;
 
-        var newPropertyValueAttrs = { dictionary: false, isNew: true, isReadOnly: false, required: true, values: [] };
+        var newPropertyValueAttrs = { dictionary: false, isNew: true, isReadOnly: false, required: true, multivalue: false, values: [{ value: null }] };
 
         $scope.exposeAlias = false;
         var promise = settings.getSettings({
@@ -37,9 +37,6 @@
         }
 
         $scope.add = function (form) {
-            if ($scope.newValue.values.length > 0)
-                $scope.duplicate = !$scope.dictValueValidator($scope.newValue.values[0].value, pb.currentEntity);
-
             if (form.$valid && !$scope.duplicate) {
                 if ($scope.newValue.values) {
                     if ($scope.selectedItem) { // editing existing values
@@ -199,8 +196,14 @@
             resetNewValue(pb.defaultLanguage);
         }
 
+        function validateSingleLanguageDictionary() {
+            if ($scope.newValue.values.length > 0)
+                $scope.duplicate = !$scope.dictValueValidator($scope.newValue.values[0].value, pb.currentEntity);
+        }
+
         $scope.$watch('blade.parentBlade.currentEntity.dictionaryValues', initializeDictionaryValues);
         $scope.$watch('blade.parentBlade.currentEntity.multilanguage', initializeDictionaryValues);
+        $scope.$watch('newValue.values[0].value', validateSingleLanguageDictionary);
 
         // on load
         $scope.blade.isLoading = false;
