@@ -216,7 +216,8 @@
         },
         "validations": {
           "required": "Erforderlich",
-          "duplicate": "Doppelte Namen gefunden"
+          "duplicate": "Doppelte Namen gefunden",
+          "value-invalid": "Der Wert hat einen ungültigen Typ"
         },
         "placeholders": {
           "value": "Wert eingeben"
