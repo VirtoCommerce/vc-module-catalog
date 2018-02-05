@@ -15,15 +15,14 @@
 
                     <div class="form-group">
                         <div class="form-input">
-                            <input ng-class="{'error' : pdForm.dictValue.$invalid && !pdForm.dictValue.$pristine}" required ng-model="newValue.value" ui-validate=" 'dictValueValidator($value)' " name="dictValue" focus-on="" placeholder="{{ 'catalog.blades.property-dictionary.placeholders.value' | translate }}" />
+                            <va-property2 ng-model="newValue" ng-if="!newValue.isReadOnly" languages="blade.languages" default-language="blade.defaultLanguage"></va-property2>
                         </div>
-                        <div class="form-error" ng-if="pdForm.dictValue.$dirty && pdForm.dictValue.$invalid">
-                            <span ng-if="pdForm.dictValue.$error.required">{{ 'catalog.blades.property-dictionary.validations.required' | translate }}</span>
-                            <span ng-if="pdForm.dictValue.$error.validator">{{ 'catalog.blades.property-dictionary.validations.duplicate' | translate }}</span>
+                        <div class="form-error" ng-if="duplicate">
+                            <span ng-if="duplicate">{{ 'catalog.blades.property-dictionary.validations.duplicate' | translate }}</span>
                         </div>
                     </div>
                     <div class="form-group">
-                        <button class="btn" ng-disabled="pdForm.$invalid" type="submit">{{ 'platform.commands.add' | translate }}</button>
+                        <button class="btn" ng-disabled="pdForm.$invalid || duplicate" type="submit">{{ 'platform.commands.add' | translate }}</button>
                     </div>
                 </fieldset>
 
