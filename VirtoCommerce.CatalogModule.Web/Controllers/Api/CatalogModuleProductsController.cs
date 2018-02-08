@@ -6,6 +6,7 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using VirtoCommerce.CatalogModule.Web.Converters;
 using VirtoCommerce.CatalogModule.Web.Security;
+using VirtoCommerce.Domain.Catalog.Model.Search;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Commerce.Model;
 using VirtoCommerce.Platform.Core.Assets;
@@ -24,9 +25,10 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly ICatalogService _catalogService;
         private readonly ICategoryService _categoryService;
         private readonly ISkuGenerator _skuGenerator;
+        private readonly IProductAssociationSearchService _productAssociationSearchService;
 
         public CatalogModuleProductsController(IItemService itemsService, IBlobUrlResolver blobUrlResolver, ICatalogService catalogService, ICategoryService categoryService,
-                                               ISkuGenerator skuGenerator, ISecurityService securityService, IPermissionScopeService permissionScopeService)
+                                               ISkuGenerator skuGenerator, ISecurityService securityService, IPermissionScopeService permissionScopeService, IProductAssociationSearchService productAssociationSearchService)
             : base(securityService, permissionScopeService)
         {
             _itemsService = itemsService;
@@ -34,6 +36,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             _blobUrlResolver = blobUrlResolver;
             _catalogService = catalogService;
             _skuGenerator = skuGenerator;
+            _productAssociationSearchService = productAssociationSearchService;
         }
 
 
@@ -296,7 +299,19 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-
+        /// <summary>
+        /// Return product and product's associations products
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("{productId}/associations/search")]
+        [ResponseType(typeof(webModel.Product[]))]
+        public IHttpActionResult SearchProductAssociations(ProductAssociationSearchCriteria criteria)
+        {
+          var result = _productAssociationSearchService.SearchProductAssociations(criteria);
+          return Ok(result);
+        }
+       
         private coreModel.CatalogProduct[] InnerSaveProducts(webModel.Product[] products)
         {
             var toUpdateList = new List<coreModel.CatalogProduct>();
