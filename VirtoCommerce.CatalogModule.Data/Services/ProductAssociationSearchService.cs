@@ -33,16 +33,13 @@ namespace VirtoCommerce.CatalogModule.Data.Services
       {
         sortInfos = new[] { new SortInfo { SortColumn = "Priority", SortDirection = SortDirection.Descending }, new SortInfo { SortColumn = "Name", SortDirection = SortDirection.Ascending } };
       }
-   
-      var productResponseGroup = ItemResponseGroup.ItemAssociations;
-   
-      var objectTypes = criteria.ObjectTypes.ToList();
+
       var objectIds = criteria.ObjectIds;
       var searchCategoryIds = new string[] { };
       var categoryIds = new string[] { };
    
-      var products = _itemService.GetByIds(objectIds.ToArray(), productResponseGroup).ToList();   
-    
+      var products = _itemService.GetByIds(objectIds.ToArray(), ItemResponseGroup.ItemAssociations).ToList();
+
       using (var repository = _catalogRepositoryFactory())
       {
         //Optimize performance and CPU usage
@@ -50,13 +47,9 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         //Get all products category associations.
         var categoryAssociations = products.SelectMany(x => x.Associations.Where(a => a.AssociatedObjectType == "category")).ToArray();
-        for( var i = 0; i < categoryAssociations.Length; i++)
-        {
-          categoryIds[i] = categoryAssociations[i].AssociatedObjectId;
-        }
-
         var query = repository.Items.Where(x => x.IsBuyable || x.IsActive);        
      
+        var productResponseGroup = ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemAssets | ItemResponseGroup.Links | ItemResponseGroup.Seo;
         if (!categoryIds.IsNullOrEmpty())
         {
           categoryIds = categoryIds.Concat(repository.GetAllChildrenCategoriesIds(categoryIds)).ToArray();
