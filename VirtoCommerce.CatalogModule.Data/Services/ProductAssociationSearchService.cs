@@ -30,14 +30,9 @@ namespace VirtoCommerce.CatalogModule.Data.Services
       var categoryIds = new string[] { };
 
       var products = _itemService.GetByIds(criteria.ObjectIds.ToArray(), ItemResponseGroup.ItemAssociations).ToList();
-      //Get all products category associations.
-      var categoryAssociations = products.SelectMany(x => x.Associations.Where(a => a.AssociatedObjectType == "category")).ToArray();
-      //var categoryIds = categoryAssociations.SelectMany(x => x.AssociatedObjectId).ToArray();
-      if (!categoryAssociations.IsNullOrEmpty())
-        for (var i = 0; i < categoryAssociations.Length; i++)
-        {
-          categoryIds[i] = categoryAssociations[i].AssociatedObjectId;
-        }
+      //Get all Ids of products category associations.
+      var categoryAssociationIds = products.SelectMany(x => x.Associations.Where(a => a.AssociatedObjectType == "category")).Select(x => x.AssociatedObjectId).ToArray();
+      categoryIds = categoryAssociationIds;
 
       using (var repository = _catalogRepositoryFactory())
       {
