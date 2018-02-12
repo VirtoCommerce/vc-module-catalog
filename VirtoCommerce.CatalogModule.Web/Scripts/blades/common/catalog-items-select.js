@@ -177,6 +177,7 @@
         gridOptions.columnDefs = gridOptions.columnDefs.concat($scope.options.gridColumns);
         gridOptionExtension.tryExtendGridOptions(gridId, gridOptions);
         uiGridHelper.initialize($scope, gridOptions, externalRegisterApiCallback);
+        bladeUtils.initializePagination($scope);
     };
 
     function externalRegisterApiCallback(gridApi) {
@@ -210,6 +211,4 @@
 
         uiGridHelper.bindRefreshOnSortChanged($scope);
     }
-
-    bladeUtils.initializePagination($scope);
 }]);
