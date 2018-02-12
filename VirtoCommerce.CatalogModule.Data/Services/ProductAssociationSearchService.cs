@@ -27,12 +27,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
     public GenericSearchResult<CatalogProduct> SearchProductAssociations(ProductAssociationSearchCriteria criteria)
     {
       var retVal = new GenericSearchResult<CatalogProduct>();
-      var categoryIds = new string[] { };
 
       var products = _itemService.GetByIds(criteria.ObjectIds.ToArray(), ItemResponseGroup.ItemAssociations).ToList();
       //Get all Ids of products category associations.
-      var categoryAssociationIds = products.SelectMany(x => x.Associations.Where(a => a.AssociatedObjectType == "category")).Select(x => x.AssociatedObjectId).ToArray();
-      categoryIds = categoryAssociationIds;
+      var categoryIds = products.SelectMany(x => x.Associations.Where(a => a.AssociatedObjectType == "category")).Select(x => x.AssociatedObjectId).ToArray();
 
       using (var repository = _catalogRepositoryFactory())
       {
@@ -51,19 +49,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
           query = query.Where(x => categoryIds.Contains(x.CategoryId) || x.CategoryLinks.Any(link => categoryIds.Contains(link.CategoryId)));
         }
 
-        var productResponseGroup = ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemAssets | ItemResponseGroup.Links | ItemResponseGroup.Seo;
-        if (criteria.ResponseGroup == SearchResponseGroup.WithProperties.ToString())
-        {
-          productResponseGroup |= ItemResponseGroup.ItemProperties;
-        }
-        if (criteria.ResponseGroup == SearchResponseGroup.WithVariations.ToString())
-        {
-          productResponseGroup |= ItemResponseGroup.Variations;
-        }
-        if (criteria.ResponseGroup == SearchResponseGroup.WithOutlines.ToString())
-        {
-          productResponseGroup |= ItemResponseGroup.Outlines;
-        }
+        ItemResponseGroup productResponseGroup;
+        Enum.TryParse<ItemResponseGroup>(criteria.ResponseGroup, out productResponseGroup);
 
         var sortInfos = criteria.SortInfos;
         if (sortInfos.IsNullOrEmpty())
