@@ -86,10 +86,10 @@
                         function () {
                             if (breadcrumb.id == "All") {
                                 blade.catalogId = null;
+                                blade.filter.keyword = null;
                             }
                             bladeNavigationService.showBlade($scope.blade, blade.parentBlade);
-                            blade.refresh();
-                        });
+                         });
         };
     }
 
@@ -169,60 +169,47 @@
         }
     };
 
-    if ($scope.isCatalogSelectMode()) {
-        // ui-grid
-        $scope.setGridOptions = function (gridId, gridOptions) {
-            uiGridHelper.initialize($scope, gridOptions, function (gridApi) {
-                //update gridApi for current grid
-                $scope.gridApi = gridApi;
-            });
+    $scope.setGridOptions = function (gridId, gridOptions) {
+        gridOptions.isRowSelectable = function (row) {
+            return ($scope.options.allowCheckingItem && row.entity.type !== 'category') || ($scope.options.allowCheckingCategory && row.entity.type === 'category');
         };
 
-        bladeUtils.initializePagination($scope);
-    } else {
-        // ui-grid
-        $scope.setGridOptions = function (gridId, gridOptions) {
-            gridOptions.isRowSelectable = function (row) {
-                return ($scope.options.allowCheckingItem && row.entity.type !== 'category') || ($scope.options.allowCheckingCategory && row.entity.type === 'category');
-            };
+        gridOptions.columnDefs = gridOptions.columnDefs.concat($scope.options.gridColumns);
+        gridOptionExtension.tryExtendGridOptions(gridId, gridOptions);
+        uiGridHelper.initialize($scope, gridOptions, externalRegisterApiCallback);
+    };
 
-            gridOptions.columnDefs = gridOptions.columnDefs.concat($scope.options.gridColumns);
-            gridOptionExtension.tryExtendGridOptions(gridId, gridOptions);
-            uiGridHelper.initialize($scope, gridOptions, externalRegisterApiCallback);
-            bladeUtils.initializePagination($scope);
-        };
+    function externalRegisterApiCallback(gridApi) {
+        //update gridApi for current grid
+        $scope.gridApi = gridApi;
 
-        function externalRegisterApiCallback(gridApi) {
-            //update gridApi for current grid
-            $scope.gridApi = gridApi;
-
-            gridApi.grid.registerDataChangeCallback(function (grid) {
-                //check already selected rows
-                $timeout(function () {
-                    _.each($scope.items, function (x) {
-                        if (_.some($scope.options.selectedItemIds, function (y) { return y == x.id; })) {
-                            gridApi.selection.selectRow(x);
-                        }
-                    });
-                });
-            }, [uiGridConstants.dataChange.ROW]);
-
-            gridApi.selection.on.rowSelectionChanged($scope, function (row) {
-                if ($scope.options.checkItemFn) {
-                    $scope.options.checkItemFn(row.entity, row.isSelected);
-                };
-                if (row.isSelected) {
-                    if (!_.contains($scope.options.selectedItemIds, row.entity.id)) {
-                        $scope.options.selectedItemIds.push(row.entity.id);
+        gridApi.grid.registerDataChangeCallback(function (grid) {
+            //check already selected rows
+            $timeout(function () {
+                _.each($scope.items, function (x) {
+                    if (_.some($scope.options.selectedItemIds, function (y) { return y == x.id; })) {
+                        gridApi.selection.selectRow(x);
                     }
-                }
-                else {
-                    $scope.options.selectedItemIds = _.without($scope.options.selectedItemIds, row.entity.id);
-                }
+                });
             });
+        }, [uiGridConstants.dataChange.ROW]);
 
-            uiGridHelper.bindRefreshOnSortChanged($scope);
-        }
+        gridApi.selection.on.rowSelectionChanged($scope, function (row) {
+            if ($scope.options.checkItemFn) {
+                $scope.options.checkItemFn(row.entity, row.isSelected);
+            };
+            if (row.isSelected) {
+                if (!_.contains($scope.options.selectedItemIds, row.entity.id)) {
+                    $scope.options.selectedItemIds.push(row.entity.id);
+                }
+            }
+            else {
+                $scope.options.selectedItemIds = _.without($scope.options.selectedItemIds, row.entity.id);
+            }
+        });
+
+        uiGridHelper.bindRefreshOnSortChanged($scope);
     }
 
+    bladeUtils.initializePagination($scope);
 }]);
