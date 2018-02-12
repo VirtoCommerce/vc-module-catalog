@@ -16,29 +16,29 @@
         populateProductCatalogs(blade.item.associations);
     };
    
-    function populateProductCatalogs() {
-        if (!blade.item.associations.length) {
+    function populateProductCatalogs(associations) {
+        if (!associations || !associations.length) {
             return;
         }
 
         blade.isLoading = true;
 
         allCatalogIds = [];
-        processProductsAssociations()
-            .then(processCategoryAssociations)
+        processProductsAssociations(associations)
+            .then(processCategoryAssociations(associations))
             .then(findCatalogs);
     }
 
-    function processProductsAssociations() {
-        var productAssociations = _.filter(blade.item.associations, function (association) { return association.associatedObjectType === 'product' });
+    function processProductsAssociations(associations) {
+        var productAssociations = _.filter(associations, function (association) { return association.associatedObjectType === 'product' });
         var itemIds = _.pluck(productAssociations, 'associatedObjectId');
         return items.plenty({ respGroup: 'ItemSmall' }, itemIds, function (data) {
             addAssociationCatalogId(productAssociations, data);
         }).$promise;
     }
 
-    function processCategoryAssociations() {
-        var categoryAssociations = _.filter(blade.item.associations, function (association) { return association.associatedObjectType !== 'product' });
+    function processCategoryAssociations(associations) {
+        var categoryAssociations = _.filter(associations, function (association) { return association.associatedObjectType !== 'product' });
         var categoryIds = _.pluck(categoryAssociations, 'associatedObjectId');
         return categories.plenty({ respGroup: 'Info' }, categoryIds, function (data) {
             addAssociationCatalogId(categoryAssociations, data);
