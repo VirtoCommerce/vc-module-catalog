@@ -10,7 +10,7 @@
         <p class="form-count">{{'platform.list.count' | translate}}: <span class="count">{{pageSettings.totalItems}}</span></p>
     </div>
 </div>
-<div class="blade-content __medium-wide" ng-if="!isCatalogSelectMode()">
+<div class="blade-content __medium-wide" ng-show="!isCatalogSelectMode()">
     <div class="blade-inner">
         <div class="inner-block" ng-init="setGridOptions('catalog-item-select-grid', {
                 data: 'items',
@@ -34,7 +34,7 @@
     <div class="blade-static __bottom" ng-if="pageSettings.itemsPerPageCount < pageSettings.totalItems" ng-include="'pagerTemplate.html'"></div>
 </div>
 
-<div class="blade-content" ng-if="isCatalogSelectMode()">
+<div class="blade-content" ng-show="isCatalogSelectMode()">
     <div class="blade-inner">
         <div class="inner-block clearfix">
             <ul class="list __items">
