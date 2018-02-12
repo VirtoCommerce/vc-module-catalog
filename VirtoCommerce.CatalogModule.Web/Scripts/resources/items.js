@@ -6,7 +6,7 @@
         newItemInCategory: { method: 'GET', url: 'api/catalog/:catalogId/categories/:categoryId/products/getnew' },
         newVariation: { method: 'GET', url: 'api/catalog/products/:itemId/getnewvariation' },
         cloneItem: { method: 'GET', url: 'api/catalog/products/:itemId/clone' },
-        update: { method: 'POST' }
+        update: { method: 'POST' },
+        plenty: { method: 'POST', url: 'api/catalog/products/plenty', isArray: true }
     });
 }]);
-
