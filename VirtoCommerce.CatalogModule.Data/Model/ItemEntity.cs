@@ -37,10 +37,8 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
         public int AvailabilityRule { get; set; }
 
-        [Range(0, Int32.MaxValue)]
         public decimal MinQuantity { get; set; }
-       
-        [Range(0, Int32.MaxValue)]
+
         public decimal MaxQuantity { get; set; }
 
         public bool TrackInventory { get; set; }
@@ -67,7 +65,6 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         public decimal? Weight { get; set; }
         [StringLength(32)]
         public string MeasureUnit { get; set; }
-        [Range(0, Int32.MaxValue)]
         public decimal? Height { get; set; }
         public decimal? Length { get; set; }
         public decimal? Width { get; set; }
