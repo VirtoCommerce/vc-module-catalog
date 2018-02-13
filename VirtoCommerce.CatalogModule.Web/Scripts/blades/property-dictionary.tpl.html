@@ -61,12 +61,6 @@
                                         <div class="form-error" ng-if="newValue.duplicate">
                                             <span ng-if="data.duplicate">{{ 'catalog.blades.property-dictionary.validations.duplicate' | translate }}</span>
                                         </div>
-                                        <!--<div class="form-input" ng-if="pb.currentEntity.valueType !== 'Number'">
-                                    <input required ng-model="data.value" type="text" />
-                                </div>
-                                <div class="form-input __number" ng-if="pb.currentEntity.valueType === 'Number'">
-                                    <input smart-float num-type="float" required ng-model="data.value">
-                                </div>-->
                                         <ul role="menu" class="menu __context" id="pd_menu_{{$index}}">
                                             <li class="menu-item" ng-click='delete($index)'>
                                                 <i class="menu-ico fa fa-trash-o"></i> {{ 'platform.commands.delete' | translate }}

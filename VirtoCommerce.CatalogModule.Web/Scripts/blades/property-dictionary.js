@@ -24,8 +24,13 @@
             $scope.exposeAlias = temp.toLowerCase() === 'true';
         });
 
-        listValueValidator = function () {
-            $scope.pb.currentEntity.isValid = !formScope || formScope.$valid;
+        listValueValidator = function (newValues) {
+            if (newValues) {
+                $scope.pb.currentEntity.$isValid = !formScope || formScope.$valid;
+
+                if ($scope.pb.currentEntity.$isValid)
+                    dictionaryValues[newValues.index] = newValues.values[0];
+            }
         }
 
         valueValidator = function () {
@@ -33,7 +38,6 @@
                 $scope.newValue.duplicate = !_.all($scope.newValue.values, function (value) {
                     return dictValueValidator(value.value, value);
                 });
-                $scope.pb.currentEntity.isValid = !$scope.newValue.duplicate;
                 return !$scope.newValue.duplicate;
             } else {
                 var value = $scope.newValue.values[0].value;
@@ -113,6 +117,8 @@
         $scope.delete = function (index) {
             dictionaryValues.splice(index, 1);
             $scope.selectedItem = undefined;
+
+            initializeDictionaryValues();
         };
         $scope.deleteMultilanguage = function (key) {
             var selectedValues = _.where(dictionaryValues, { alias: key });
@@ -144,7 +150,7 @@
         };
 
         function getValuesList() {
-            return pb.currentEntity.multilanguage ? $scope.groupedValues : dictionaryValues;
+            return pb.currentEntity.multilanguage ? $scope.groupedValues : $scope.dictionaryForProperty;
         }
 
         function resetNewValue(locale) {
@@ -217,11 +223,14 @@
             // the dictionary for a list of items
             $scope.dictionaryForProperty = [];
 
-            _.each(dictionaryValues, function (item) {
+            _.each(dictionaryValues, function (item, index) {
                 var propValue = Object.assign({}, pb.currentEntity, newSingleValueAttrs);
                 propValue.values = [ item ];
-                propValue.values[0].firstValue = item.value;
+                propValue.index = index;
+
                 $scope.dictionaryForProperty.push(propValue);
+
+                $scope.$watch('dictionaryForProperty[' + index + ']', listValueValidator, true);
             });
 
             resetNewValue(pb.defaultLanguage);
@@ -231,7 +240,6 @@
         $scope.$watch('blade.parentBlade.currentEntity.multilanguage', initializeDictionaryValues);
         $scope.$watch('newValue.values', valueValidator, true);
         $scope.$watch('selectedItem.values', valueValidator, true);
-        $scope.$watch('dictionaryForProperty', listValueValidator, true);
 
         $scope.blade.isLoading = false;
     }]);

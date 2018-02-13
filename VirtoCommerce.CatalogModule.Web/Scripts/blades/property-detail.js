@@ -71,7 +71,7 @@
             }
 
             blade.currentEntity = angular.copy(data);
-            blade.currentEntity.isValid = true;
+            blade.currentEntity.$isValid = true;
             blade.origEntity = data;
             blade.isLoading = false;
         };
@@ -81,7 +81,7 @@
         }
 
         function canSave() {
-            return (blade.origEntity.isNew || isDirty()) && formScope && formScope.$valid && (!blade.currentEntity || blade.currentEntity.isValid);
+            return (blade.origEntity.isNew || isDirty()) && formScope && formScope.$valid && (!blade.currentEntity || blade.currentEntity.$isValid);
         }
 
         function saveChanges() {
