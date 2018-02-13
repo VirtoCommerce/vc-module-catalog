@@ -8,7 +8,7 @@ using Xunit;
 
 namespace VirtoCommerce.CatalogModule.Test
 {
-  class ProductAssociationSearchTest
+  public class ProductAssociationSearchTest
   {
     [Fact]
     public void GetProducts_Test()
@@ -49,28 +49,12 @@ namespace VirtoCommerce.CatalogModule.Test
     }
 
     [Fact]
-    public void GetProducts_CategoryAssociations_Test()
-    {
-      var productAssociations = GetTestProductAssociationEntities();
-      var catalogRepository = new Mock<ICatalogRepository>();
-      catalogRepository.Setup(r => r.Associations).Returns(productAssociations);
-
-      var associationEntities = new ObservableCollection<AssociationEntity>(new List<AssociationEntity>
-                      {
-                          new AssociationEntity { ItemId = "source1", AssociatedCategoryId = "target3" },
-                          new AssociationEntity { ItemId = "source1", AssociatedCategoryId = "target4" }
-                      });
-      Assert.Equal(associationEntities, productAssociations);
-    }
-
-    [Fact]
     public void GetProduct_AssociationCategories_Ids_Test()
     {
-      var catalogRepository = new Mock<ICatalogRepository>();
+      var products = GetTestProductEntities();
       var associations = GetTestAssociationCategoriesIds();
-      catalogRepository.Setup(r => r.Associations.Select(x => x.AssociatedCategoryId)).Returns(associations);
 
-      var associationCategoriesIds = new string [] { "target3", "target4" };
+      var associationCategoriesIds = products.SelectMany(x => x.Associations.Where(a => a.AssociationType == "category")).Select(x => x.AssociatedCategoryId).AsQueryable();
 
       Assert.Equal(associationCategoriesIds, associations);
     }
@@ -78,7 +62,7 @@ namespace VirtoCommerce.CatalogModule.Test
     private IQueryable<AssociationEntity> GetTestProductAssociationEntities()
     {
       var products = GetTestProductEntities();
-      return products.SelectMany(x => x.Associations.Where(a => a.AssociationType == "category"));
+      return products.SelectMany(x => x.Associations.Where(a => a.AssociationType == "category")).AsQueryable();
     }
 
     private IQueryable<ItemEntity> GetTestProductEntities()
@@ -93,8 +77,8 @@ namespace VirtoCommerce.CatalogModule.Test
                       {
                           new AssociationEntity { ItemId = "source1", AssociatedItemId = "target1" },
                           new AssociationEntity { ItemId = "source1", AssociatedItemId = "target2" },
-                          new AssociationEntity { ItemId = "source1", AssociatedCategoryId = "target3" },
-                          new AssociationEntity { ItemId = "source1", AssociatedCategoryId = "target4" }
+                          new AssociationEntity { ItemId = "source1", AssociatedCategoryId = "target3", AssociationType = "category" },
+                          new AssociationEntity { ItemId = "source1", AssociatedCategoryId = "target4", AssociationType = "category" }
                       })
                   },
                   new ItemEntity
