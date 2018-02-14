@@ -60,17 +60,18 @@
         "title-mapping": "Kategorien & Produkte für die Zuordnung auswählen",
         "subtitle-mapping": "Erstellen einer Verknüpfung innerhalb virtueller Katalog",
         "labels": {
-            "filter-withPrice": "Hat Preis definiert",
-            "filter-priceRange": "Preis zwischen",
-            "filter-lowStock": "Wenig auf Lager",
-            "filter-notActive": "Nicht aktiv",
-            "filter-priceless": "Ohne Preis",
-            "filter-new": "<strong>Neuen Filter hinzufügen</strong>",
-            "unnamed-filter": "Unbenannter Filter",
-            "inactive": "Inaktiv",
-            "picture": "Bild",
-            "name": "Name",
-            "sku": "Art.-Nr."
+          "filter-withPrice": "Hat Preis definiert",
+          "filter-priceRange": "Preis zwischen",
+          "filter-lowStock": "Wenig auf Lager",
+          "filter-notActive": "Nicht aktiv",
+          "filter-priceless": "Ohne Preis",
+          "filter-new": "<strong>Neuen Filter hinzufügen</strong>",
+          "filter-display-variations": "Produktvarianten anzeigen",
+          "unnamed-filter": "Unbenannter Filter",
+          "inactive": "Inaktiv",
+          "picture": "Bild",
+          "name": "Name",
+          "sku": "Art.-Nr."
         },
         "placeholders": {
           "select-filter": "Filter wählen."
@@ -131,7 +132,8 @@
         "new-subtitle": "Neuen Filter erstellen",
         "labels": {
           "criteria": "Suchkriterien",
-          "name": "Name des Filters"
+          "name": "Name des Filters",
+          "searchInVariations": "Produktvarianten anzeigen"
         },
         "placeholders": {
           "criteria": "Geben Sie die Suchkriterien ein",
@@ -249,22 +251,22 @@
           "sku": "Art.-Nr. kann nicht enthalten $ +"
         },
         "placeholders": {
-            "sku": "Art.-Nr. eingeben",
-            "priority": "Nummer eingeben",
-            "name": "Name eingeben",
-            "vendor": "Wählen Sie aus...",
-            "tax-type": "Wählen Sie aus...",
-            "weight-unit": "Wählen Sie aus...",
-            "weight": "Gewicht eingeben",
-            "expiration-date": "Datum auswählen",
-            "download-type": "Wählen Sie aus...",
-            "gtin": "GTIN eingeben",
-            "start-date": "Bitte geben sie die das datum...",
-            "end-date": "Bitte geben sie die das datum..."
+          "sku": "Art.-Nr. eingeben",
+          "priority": "Nummer eingeben",
+          "name": "Name eingeben",
+          "vendor": "Wählen Sie aus...",
+          "tax-type": "Wählen Sie aus...",
+          "weight-unit": "Wählen Sie aus...",
+          "weight": "Gewicht eingeben",
+          "expiration-date": "Datum auswählen",
+          "download-type": "Wählen Sie aus...",
+          "gtin": "GTIN eingeben",
+          "start-date": "Bitte geben sie die das datum...",
+          "end-date": "Bitte geben sie die das datum..."
         },
         "descr": {
-            "start-date": "Wenn Sie kein startdatum angeben, wird das Produkt sofort nach dem Speichern aktiviert.",
-            "end-date": "Wenn Sie kein Enddatum angeben, ist das Produkt aktiv, bis Sie es deaktivieren."
+          "start-date": "Wenn Sie kein startdatum angeben, wird das Produkt sofort nach dem Speichern aktiviert.",
+          "end-date": "Wenn Sie kein Enddatum angeben, ist das Produkt aktiv, bis Sie es deaktivieren."
         }
 
       },
@@ -360,275 +362,275 @@
       },
       "advanced-search-results": {
         "title": "Suchergebnisse"
-      },     
+      },
       "item-dimensions": {
         "title": "Abmessungen",
         "subtitle": "Ändern der Größe & Gewicht hier"
-      },    
-    "widgets": {
-      "catalogLanguages": {
-        "blade-subtitle": "Sprachen verwalten",
-        "title": "Sprachen",
-        "default-language": "Standardsprache"
       },
-      "catalogProperty": {
-        "blade-subtitle": "Katalog Eigenschaften",
-        "title": "Eigenschaften"
-      },
-      "categoryProperty": {
-        "blade-subtitle": "Eigenschaften/Kategorie",
-        "title": "Eigenschaften"
-      },
-      "editorialReview": {
-        "blade-subtitle": "Artikelbeschreibungen",
-        "title": "Beschreibungen"
-      },
-      "itemAsset": {
-        "blade-subtitle": "Aktivposten",
-        "title": "Vermögenswerte"
-      },
-      "itemAssociations": {
-        "blade-subtitle": "Verbände",
-        "title": "Verbände"
-      },
-      "itemImage": {
-        "blade-subtitle": "Bilder verwalten",
-        "no-images": "Keine Bilder"
-      },
-      "itemProperty": {
-        "blade-subtitle": "Punkt Eigenschaften.",
-        "title": "Eigenschaften"
-      },
-      "itemVariation": {
-        "blade-subtitle": "Artikelvariationen",
-        "title": "Variationen"
-      },
-      "itemDimensions": {
-        "title": "Gewicht und Größe",
-        "weight": "Gewicht",
-        "length": "Länge",
-        "width": "Breite",
-        "height": "Höhe"
-      }
-    },
-    "dialogs": {
-      "catalog-save": {
-        "title": "Änderungen speichern",
-        "message": "Der Katalog wurde geändert. Möchten Sie die Änderungen speichern?"
-      },
-      "catalog-delete": {
-        "title": "Bestätigung löschen",
-        "warning": "Warnung Diese Änderung ist endgültig und kann nicht rückgängig gemacht werden. Es kann zu Datenverlust führen.",
-        "message": "Sind Sie sicher, dass Sie Katalog löschen",
-        "instruction": "Geben Sie 'Ja' ein zu löschen."
-      },
-      "catalog-items-delete": {
-        "title": "Bestätigung löschen",
-        "warning": "Warnung Diese Änderung ist endgültig und kann nicht rückgängig gemacht werden. Es kann zu Datenverlust führen.",
-        "message": "Die folgenden werden gelöscht:",
-        "instruction": "Geben Sie 'Ja', um den Löschvorgang zu aktivieren:",
-        "item": "{{count}} Artikel",
-        "category": "{{count}} Kategorie(n) und alle Inhalte innerhalb es",
-        "linked-item": "{{count}} verknüpfte Artikel",
-        "linked-category": "{{count}} verknüpfte Kategorie(n)"
-      },
-      "virtual-catalog-save": {
-        "title": "Änderungen speichern",
-        "message": "Die Startseite wurde geändert. Möchten Sie die Änderungen speichern?"
-      },
-      "category-save": {
-        "title": "Änderungen speichern",
-        "message": "Die Kategorie wurde geändert. Möchten Sie die Änderungen speichern?"
-      },
-      "item-save": {
-        "title": "Änderungen speichern",
-        "message": "Das Element wurde geändert. Möchten Sie die Änderungen speichern?"
-      },
-      "variation-delete": {
-        "title": "Bestätigung löschen",
-        "message": "Möchten Sie die ausgewählten Varianten löschen?"
-      },
-      "property-save": {
-        "title": "Änderungen speichern",
-        "message": "Das Anwesen wurde geändert. Möchten Sie die Änderungen speichern?"
-      },
-      "property-delete": {
-        "title": "Bestätigung löschen",
-        "message": "Sind Sie sicher, dass sie die Eigentum {{name}} löschen?"
-      },
-      "dictionary-values-delete": {
-        "title": "Bestätigung löschen",
-        "message": "Möchten Sie die ausgewählte Wörterbuch Werte löschen?"
-      },
-      "review-save": {
-        "title": "Änderungen speichern",
-        "message": "Die Beschreibung wurde geändert. Möchten Sie die Änderungen speichern?"
-      },
-      "review-delete": {
-        "title": "Bestätigung löschen",
-        "message": "Sind Sie sicher, dass Sie diese Beschreibung zu löschen?"
-      },
-      "association-delete": {
-        "title": "Bestätigung löschen",
-        "message": "Möchten Sie die ausgewählten Verbände zu löschen?"
-      },
-      "attribut-delete": {
-        "title": "Bestätigung löschen",
-        "message": "Sind Sie sicher, dass Sie die ausgewählten Attribute löschen?"
-      },
-      "image-save": {
-        "title": "Bestätigung löschen",
-        "message": "Die Bilder wurde geändert. Möchten Sie die Änderungen speichern?"
-      },
-      "asset-save": {
-        "title": "Änderungen speichern",
-        "message": "Das Vermögen wurde geändert. Möchten Sie die Änderungen speichern?"
-      },
-      "language-save": {
-        "title": "Änderungen speichern",
-        "message": "Die Sprache wurde geändert. Möchten Sie die Änderungen speichern?"
-      }
-    },
-    "wizards": {
-      "category": {
-        "title": "Neue Kategorie",
-        "subtitle": "Füllen Kategorie Informationen",
-        "labels": {
-          "name": "Name",
-          "code": "Code"
+      "widgets": {
+        "catalogLanguages": {
+          "blade-subtitle": "Sprachen verwalten",
+          "title": "Sprachen",
+          "default-language": "Standardsprache"
         },
-        "validations": {
-          "code": "Code kann die $ +"
+        "catalogProperty": {
+          "blade-subtitle": "Katalog Eigenschaften",
+          "title": "Eigenschaften"
         },
-        "placeholders": {
-          "name": "Kategorienamen eingeben",
-          "code": "Kategorie Code eingeben"
+        "categoryProperty": {
+          "blade-subtitle": "Eigenschaften/Kategorie",
+          "title": "Eigenschaften"
+        },
+        "editorialReview": {
+          "blade-subtitle": "Artikelbeschreibungen",
+          "title": "Beschreibungen"
+        },
+        "itemAsset": {
+          "blade-subtitle": "Aktivposten",
+          "title": "Vermögenswerte"
+        },
+        "itemAssociations": {
+          "blade-subtitle": "Verbände",
+          "title": "Verbände"
+        },
+        "itemImage": {
+          "blade-subtitle": "Bilder verwalten",
+          "no-images": "Keine Bilder"
+        },
+        "itemProperty": {
+          "blade-subtitle": "Punkt Eigenschaften.",
+          "title": "Eigenschaften"
+        },
+        "itemVariation": {
+          "blade-subtitle": "Artikelvariationen",
+          "title": "Variationen"
+        },
+        "itemDimensions": {
+          "title": "Gewicht und Größe",
+          "weight": "Gewicht",
+          "length": "Länge",
+          "width": "Breite",
+          "height": "Höhe"
         }
       },
-      "new-product": {
-        "title": "Neues Produkt",
-        "subtitle": "Alle Produktinformationen füllen",
-        "labels": {
-          "sku": "Art.-Nr.",
-          "name": "Name",
-          "fill-properties": "Füllen Eigenschaften",
-          "fill-properties-summary": "{{count}} von {{total}} Eigenschaften gefüllt",
-          "upload-images": "Bilder hochladen",
-          "upload-images-summary": "{{count}} Bild(er) hochgeladen",
-          "add-review": "Beschreibung hinzufügen",
-          "add-review-summary": "{{count}} Beschreibung(e) hinzugefügt",
-          "seo-information": "Definieren seo Informationen",
-          "seo-information-summary-defined": "Seo Informationen definiert",
-          "seo-information-summary-undefined": "Seo Informationen undefiniert"
+      "dialogs": {
+        "catalog-save": {
+          "title": "Änderungen speichern",
+          "message": "Der Katalog wurde geändert. Möchten Sie die Änderungen speichern?"
         },
-        "validations": {
-          "sku": "SKU kann nicht enthalten $ + :=%{}[]|/@~!^*&()?: '<>, Zeichen",
-          "sku-required": "Erforderlich",
-          "name-required": "Erforderlich"
+        "catalog-delete": {
+          "title": "Bestätigung löschen",
+          "warning": "Warnung Diese Änderung ist endgültig und kann nicht rückgängig gemacht werden. Es kann zu Datenverlust führen.",
+          "message": "Sind Sie sicher, dass Sie Katalog löschen",
+          "instruction": "Geben Sie 'Ja' ein zu löschen."
         },
-        "placeholders": {
-          "name": "Name eingeben",
-          "sku": "Los Art.-Nr. eingeben"
+        "catalog-items-delete": {
+          "title": "Bestätigung löschen",
+          "warning": "Warnung Diese Änderung ist endgültig und kann nicht rückgängig gemacht werden. Es kann zu Datenverlust führen.",
+          "message": "Die folgenden werden gelöscht:",
+          "instruction": "Geben Sie 'Ja', um den Löschvorgang zu aktivieren:",
+          "item": "{{count}} Artikel",
+          "category": "{{count}} Kategorie(n) und alle Inhalte innerhalb es",
+          "linked-item": "{{count}} verknüpfte Artikel",
+          "linked-category": "{{count}} verknüpfte Kategorie(n)"
+        },
+        "virtual-catalog-save": {
+          "title": "Änderungen speichern",
+          "message": "Die Startseite wurde geändert. Möchten Sie die Änderungen speichern?"
+        },
+        "category-save": {
+          "title": "Änderungen speichern",
+          "message": "Die Kategorie wurde geändert. Möchten Sie die Änderungen speichern?"
+        },
+        "item-save": {
+          "title": "Änderungen speichern",
+          "message": "Das Element wurde geändert. Möchten Sie die Änderungen speichern?"
+        },
+        "variation-delete": {
+          "title": "Bestätigung löschen",
+          "message": "Möchten Sie die ausgewählten Varianten löschen?"
+        },
+        "property-save": {
+          "title": "Änderungen speichern",
+          "message": "Das Anwesen wurde geändert. Möchten Sie die Änderungen speichern?"
+        },
+        "property-delete": {
+          "title": "Bestätigung löschen",
+          "message": "Sind Sie sicher, dass sie die Eigentum {{name}} löschen?"
+        },
+        "dictionary-values-delete": {
+          "title": "Bestätigung löschen",
+          "message": "Möchten Sie die ausgewählte Wörterbuch Werte löschen?"
+        },
+        "review-save": {
+          "title": "Änderungen speichern",
+          "message": "Die Beschreibung wurde geändert. Möchten Sie die Änderungen speichern?"
+        },
+        "review-delete": {
+          "title": "Bestätigung löschen",
+          "message": "Sind Sie sicher, dass Sie diese Beschreibung zu löschen?"
+        },
+        "association-delete": {
+          "title": "Bestätigung löschen",
+          "message": "Möchten Sie die ausgewählten Verbände zu löschen?"
+        },
+        "attribut-delete": {
+          "title": "Bestätigung löschen",
+          "message": "Sind Sie sicher, dass Sie die ausgewählten Attribute löschen?"
+        },
+        "image-save": {
+          "title": "Bestätigung löschen",
+          "message": "Die Bilder wurde geändert. Möchten Sie die Änderungen speichern?"
+        },
+        "asset-save": {
+          "title": "Änderungen speichern",
+          "message": "Das Vermögen wurde geändert. Möchten Sie die Änderungen speichern?"
+        },
+        "language-save": {
+          "title": "Änderungen speichern",
+          "message": "Die Sprache wurde geändert. Möchten Sie die Änderungen speichern?"
         }
       },
-      "new-variation": {
-        "title": "Neue Variation",
-        "subtitle": "Fill-variation Informationen",
-        "labels": {
-          "sku": "Art.-Nr.",
-          "name": "Name",
-          "fill-properties": "Füllen Eigenschaften",
-          "fill-properties-summary": "{{count}} von {{total}} Eigenschaften gefüllt",
-          "upload-images": "Bilder hochladen",
-          "upload-images-summary": "{{count}} Bild(er) hochgeladen"
+      "wizards": {
+        "category": {
+          "title": "Neue Kategorie",
+          "subtitle": "Füllen Kategorie Informationen",
+          "labels": {
+            "name": "Name",
+            "code": "Code"
+          },
+          "validations": {
+            "code": "Code kann die $ +"
+          },
+          "placeholders": {
+            "name": "Kategorienamen eingeben",
+            "code": "Kategorie Code eingeben"
+          }
         },
-        "validations": {
-          "sku": "Der Art.-Nr. kann die $ + :=%{}[]|/@~!^*&()?: '<>, Zeichen nicht enthalten",
-          "sku-required": "Erforderlich",
-          "name-required": "Erforderlich"
+        "new-product": {
+          "title": "Neues Produkt",
+          "subtitle": "Alle Produktinformationen füllen",
+          "labels": {
+            "sku": "Art.-Nr.",
+            "name": "Name",
+            "fill-properties": "Füllen Eigenschaften",
+            "fill-properties-summary": "{{count}} von {{total}} Eigenschaften gefüllt",
+            "upload-images": "Bilder hochladen",
+            "upload-images-summary": "{{count}} Bild(er) hochgeladen",
+            "add-review": "Beschreibung hinzufügen",
+            "add-review-summary": "{{count}} Beschreibung(e) hinzugefügt",
+            "seo-information": "Definieren seo Informationen",
+            "seo-information-summary-defined": "Seo Informationen definiert",
+            "seo-information-summary-undefined": "Seo Informationen undefiniert"
+          },
+          "validations": {
+            "sku": "SKU kann nicht enthalten $ + :=%{}[]|/@~!^*&()?: '<>, Zeichen",
+            "sku-required": "Erforderlich",
+            "name-required": "Erforderlich"
+          },
+          "placeholders": {
+            "name": "Name eingeben",
+            "sku": "Los Art.-Nr. eingeben"
+          }
         },
-        "placeholders": {
-          "name": "Name eingeben",
-          "sku": "Los Art.-Nr. eingeben"
+        "new-variation": {
+          "title": "Neue Variation",
+          "subtitle": "Fill-variation Informationen",
+          "labels": {
+            "sku": "Art.-Nr.",
+            "name": "Name",
+            "fill-properties": "Füllen Eigenschaften",
+            "fill-properties-summary": "{{count}} von {{total}} Eigenschaften gefüllt",
+            "upload-images": "Bilder hochladen",
+            "upload-images-summary": "{{count}} Bild(er) hochgeladen"
+          },
+          "validations": {
+            "sku": "Der Art.-Nr. kann die $ + :=%{}[]|/@~!^*&()?: '<>, Zeichen nicht enthalten",
+            "sku-required": "Erforderlich",
+            "name-required": "Erforderlich"
+          },
+          "placeholders": {
+            "name": "Name eingeben",
+            "sku": "Los Art.-Nr. eingeben"
+          }
+        },
+        "item-images": {
+          "subtitle": "Los Bilder"
+        },
+        "association": {
+          "title": "Neue Verbindung",
+          "labels": {
+            "group-name": "Name der Gruppe",
+            "tags": "Tags",
+            "tags-placeholder": "Tags eingeben...",
+            "quantity": "Menge",
+            "items": "Reihen",
+            "products-selected": "Ausgewählte Produkte",
+            "categories-selected": "Kategorien ausgewählt"
+          },
+          "placeholders": {
+            "group-name": "Wählen Sie aus...",
+            "quantity": "Menge eingeben..."
+          }
+        },
+        "catalog-CSV-import": {
+          "title": "Katalog importieren von csv",
+          "subtitle": "Alle Produkte werden in '{{name}}' Katalog hinzugefügt werden.",
+          "labels": {
+            "auto-mapping": "CSV-Felder automatisch zugeordnet zu gleichen Produkteigenschaften",
+            "chose-map": "Wählen Karte CSV-Spalten mit Produkt Felder",
+            "product-property": "Produkteigenschaft",
+            "csv-column": "CSV-Spalte",
+            "custom-value": "Benutzerdefinierter Wert",
+            "delimiter": "Csv-Spalte Trennzeichen",
+            "upload": "Hochladen von CSV-Datei",
+            "upload-progress": "Hochladen Fortschritte",
+            "map-columns": "Karte Spalten",
+            "define-columns": "Spaltenzuordnung definieren",
+            "space": "Raum",
+            "comma": "Komma",
+            "semicolon": "Semikolon",
+            "tab": "Registerkarte"
+          },
+          "placeholders": {
+            "delimiter": "Wählen Sie aus...",
+            "select-column-name": "Wählen Sie aus...",
+            "select-custom-value": "Standardwert..."
+          }
+        },
+        "catalog-CSV-import-wizard-mapping-step": {
+          "title": "Spaltenzuordnung",
+          "subtitle": "Manuelle Karte Produkt Eigenschaften zu CSV-Spalten"
         }
       },
-      "item-images": {
-        "subtitle": "Los Bilder"
+      "commands": {
+        "start-export": "Export starten",
+        "start-import": "Import starten",
+        "clear-all": "Alle löschen",
+        "add-property": "Eigenschaft hinzufügen",
+        "gallery": "Galerie",
+        "map": "Karte"
       },
-      "association": {
-        "title": "Neue Verbindung",
-        "labels": {
-          "group-name": "Name der Gruppe",
-          "tags": "Tags",
-          "tags-placeholder": "Tags eingeben...",
-          "quantity": "Menge",
-          "items": "Reihen",
-          "products-selected": "Ausgewählte Produkte",
-          "categories-selected": "Kategorien ausgewählt"
+      "permissions": {
+        "catalog-scope": {
+          "title": "Nur für ausgewählte Kataloge",
+          "blade": {
+            "subtitle": "Wählen Sie Kataloge"
+          }
         },
-        "placeholders": {
-          "group-name": "Wählen Sie aus...",
-          "quantity": "Menge eingeben..."
+        "category-scope": {
+          "title": "Nur für ausgewählte Kategorien"
         }
       },
-      "catalog-CSV-import": {
-        "title": "Katalog importieren von csv",
-        "subtitle": "Alle Produkte werden in '{{name}}' Katalog hinzugefügt werden.",
-        "labels": {
-          "auto-mapping": "CSV-Felder automatisch zugeordnet zu gleichen Produkteigenschaften",
-          "chose-map": "Wählen Karte CSV-Spalten mit Produkt Felder",
-          "product-property": "Produkteigenschaft",
-          "csv-column": "CSV-Spalte",
-          "custom-value": "Benutzerdefinierter Wert",
-          "delimiter": "Csv-Spalte Trennzeichen",
-          "upload": "Hochladen von CSV-Datei",
-          "upload-progress": "Hochladen Fortschritte",
-          "map-columns": "Karte Spalten",
-          "define-columns": "Spaltenzuordnung definieren",
-          "space": "Raum",
-          "comma": "Komma",
-          "semicolon": "Semikolon",
-          "tab": "Registerkarte"
+      "services": {
+        "catalog-csv-export": {
+          "name": "VirtoCommerce CSV-Export",
+          "description": "Native VirtoCommerce Katalog Datenexport in CSV"
         },
-        "placeholders": {
-          "delimiter": "Wählen Sie aus...",
-          "select-column-name": "Wählen Sie aus...",
-          "select-custom-value": "Standardwert..."
+        "catalog-csv-import": {
+          "name": "VirtoCommerce CSV-Import",
+          "description": "Native VirtoCommerce Katalog Datenimport aus CSV"
         }
-      },
-      "catalog-CSV-import-wizard-mapping-step": {
-        "title": "Spaltenzuordnung",
-        "subtitle": "Manuelle Karte Produkt Eigenschaften zu CSV-Spalten"
-      }
-    },
-    "commands": {
-      "start-export": "Export starten",
-      "start-import": "Import starten",
-      "clear-all": "Alle löschen",
-      "add-property": "Eigenschaft hinzufügen",
-      "gallery": "Galerie",
-      "map": "Karte"
-    },
-    "permissions": {
-      "catalog-scope": {
-        "title": "Nur für ausgewählte Kataloge",
-        "blade": {
-          "subtitle": "Wählen Sie Kataloge"
-        }
-      },
-      "category-scope": {
-        "title": "Nur für ausgewählte Kategorien"
-      }
-    },
-    "services": {
-      "catalog-csv-export": {
-        "name": "VirtoCommerce CSV-Export",
-        "description": "Native VirtoCommerce Katalog Datenexport in CSV"
-      },
-      "catalog-csv-import": {
-        "name": "VirtoCommerce CSV-Import",
-        "description": "Native VirtoCommerce Katalog Datenimport aus CSV"
       }
     }
   }
-}

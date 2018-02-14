@@ -272,12 +272,13 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
 	    }, 'storeDetail');
 
 	    // predefine search filters for catalog search
-	    predefinedSearchFilters.register(1477584000000, 'catalogSearchFiltersDate', [
-          { name: 'catalog.blades.categories-items-list.labels.filter-new' },
-          { keyword: 'is:hidden', id: 4, name: 'catalog.blades.categories-items-list.labels.filter-notActive' },
-          { keyword: 'price_usd:[100 TO 200]', id: 3, name: 'catalog.blades.categories-items-list.labels.filter-priceRange' },
-          { keyword: 'is:priced', id: 2, name: 'catalog.blades.categories-items-list.labels.filter-withPrice' },
-          { keyword: 'is:unpriced', id: 1, name: 'catalog.blades.categories-items-list.labels.filter-priceless' }
+        predefinedSearchFilters.register(1477584000000, 'catalogSearchFiltersDate', [
+            { name: 'catalog.blades.categories-items-list.labels.filter-new' },
+            { keyword: '', searchInVariations: true, id: 5, name: 'catalog.blades.categories-items-list.labels.filter-display-variations' },
+            { keyword: 'is:hidden', id: 4, name: 'catalog.blades.categories-items-list.labels.filter-notActive' },
+            { keyword: 'price_usd:[100 TO 200]', id: 3, name: 'catalog.blades.categories-items-list.labels.filter-priceRange' },
+            { keyword: 'is:priced', id: 2, name: 'catalog.blades.categories-items-list.labels.filter-withPrice' },
+            { keyword: 'is:unpriced', id: 1, name: 'catalog.blades.categories-items-list.labels.filter-priceless' }
         ]);
 
         //meta-form used only for external extensions 
