@@ -21,8 +21,12 @@
                             <span ng-if="newValue.duplicate">{{ 'catalog.blades.property-dictionary.validations.duplicate' | translate }}</span>
                         </div>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" ng-if="!selectedItem || !pb.currentEntity.multilanguage">
                         <button class="btn" ng-disabled="pdForm.$invalid || newValue.duplicate" type="submit">{{ 'platform.commands.add' | translate }}</button>
+                    </div>
+                    <div class="form-group" ng-if="selectedItem && pb.currentEntity.multilanguage">
+                        <button class="btn" ng-if="selectedItem" ng-click="cancel()">{{ 'platform.commands.cancel' | translate }}</button>
+                        <button class="btn" ng-disabled="pdForm.$invalid" type="submit">{{selectedItem ? 'Ok' : 'Add'}}</button>
                     </div>
                 </fieldset>
             </form>
