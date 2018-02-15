@@ -76,6 +76,7 @@
                     catalogId: blade.catalogId,
                     categoryId: blade.categoryId,
                     keyword: filter.keyword ? filter.keyword : undefined,
+                    searchInVariations: filter.searchInVariations ? filter.searchInVariations : false,
                     responseGroup: 'withCategories, withProducts',
                     sort: uiGridHelper.getSortExpression($scope),
                     skip: ($scope.pageSettings.currentPage - 1) * $scope.pageSettings.itemsPerPageCount,
@@ -115,7 +116,7 @@
                         function () {
                             blade.disableOpenAnimation = true;
                             bladeNavigationService.showBlade(blade, blade.parentBlade);
-                            blade.refresh();
+                           // blade.refresh();
                         });
                 };
             }
@@ -545,8 +546,6 @@
                     uiGridHelper.bindRefreshOnSortChanged($scope);
                     $scope.gridApi.infiniteScroll.on.needLoadMoreData($scope, showMore);
                 });
-
-                blade.refresh();
             };
 
             //No need to call this because page 'pageSettings.currentPage' is watched!!! It would trigger subsequent duplicated req...

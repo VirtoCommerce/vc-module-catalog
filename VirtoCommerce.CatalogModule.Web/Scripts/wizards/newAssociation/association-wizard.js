@@ -44,6 +44,9 @@
             }
             return retVal;
         });
+        if (angular.isFunction(blade.onSaveChanges)) {
+            blade.onSaveChanges();                
+        }
         $scope.bladeClose();
     };
 

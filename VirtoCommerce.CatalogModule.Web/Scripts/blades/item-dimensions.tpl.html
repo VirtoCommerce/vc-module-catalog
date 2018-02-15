@@ -56,7 +56,7 @@
                             <div class="form-group">
                                 <label class="form-label">{{'catalog.widgets.itemDimensions.height' | translate}}</label>
                                 <div class="form-input __number">
-                                    <input smart-float num-type="float" ng-model="blade.currentEntity.height" placeholder="N/A" />
+                                  <input num-type="float" min="0.0" smart-float ng-model="blade.currentEntity.height" placeholder="N/A" />
                                 </div>
                             </div>
                         </div>
