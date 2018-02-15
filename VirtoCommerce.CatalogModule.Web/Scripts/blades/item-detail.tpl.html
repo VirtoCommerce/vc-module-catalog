@@ -118,7 +118,7 @@
                           <div class="form-group">
                             <label class="form-label">{{ 'catalog.blades.item-detail.labels.min-quantity' | translate }}</label>
                             <div class="form-input __number">
-                              <input num-type="integer" min="0" smart-float ng-model="blade.item.minQuantity">
+                              <input num-type="integer" min="0" ng-pattern="/^\d+$/" smart-float ng-model="blade.item.minQuantity">
                             </div>
                           </div>
                         </div>
@@ -126,7 +126,7 @@
                           <div class="form-group">
                             <label class="form-label">{{ 'catalog.blades.item-detail.labels.max-quantity' | translate }}</label>
                             <div class="form-input __number">
-                              <input num-type="integer" min="0" smart-float ng-model="blade.item.maxQuantity">
+                              <input num-type="integer" min="0" ng-pattern="/^\d+$/" smart-float ng-model="blade.item.maxQuantity">
                             </div>
                           </div>
                         </div>
