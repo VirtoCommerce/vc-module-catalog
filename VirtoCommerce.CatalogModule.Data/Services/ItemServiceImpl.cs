@@ -322,7 +322,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                         //Inherit all values if not overriden
                         if (!product.PropertyValues.Any(x => x.PropertyName.EqualsInvariant(group.Key)))
                         {
-                            foreach (var inheritedpropValue in group)
+                            foreach (var inheritedpropValue in group.Select(x => x.Clone()).OfType<PropertyValue>())
                             {
                                 inheritedpropValue.Id = null;
                                 inheritedpropValue.IsInherited = true;
