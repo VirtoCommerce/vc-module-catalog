@@ -26,8 +26,8 @@
                     catalogId: blade.catalogId,
                     categoryId: blade.categoryId,
                     keyword: filter.keyword,
-                    responseGroup: 'withCategories, withProducts',
-                    searchInVariations: true,
+                    searchInVariations : filter.searchInVariations ? filter.searchInVariations : false,
+                    responseGroup: 'withCategories, withProducts',                    
                     sort: uiGridHelper.getSortExpression($scope),
                     skip: ($scope.pageSettings.currentPage - 1) * $scope.pageSettings.itemsPerPageCount,
                     take: $scope.pageSettings.itemsPerPageCount
@@ -159,7 +159,7 @@
 
     // simple and advanced filtering
 
-    var filter = blade.filter = blade.filter || { keyword: null };
+    var filter = blade.filter = blade.filter || { keyword: '' };
 
     filter.criteriaChanged = function () {
         if ($scope.pageSettings.currentPage > 1) {
