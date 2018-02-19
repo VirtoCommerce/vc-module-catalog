@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Web.Http;
 using System.Web.Http.Description;
+using VirtoCommerce.CatalogModule.Data.Search;
 using VirtoCommerce.CatalogModule.Web.Converters;
 using VirtoCommerce.CatalogModule.Web.Security;
 using VirtoCommerce.Domain.Catalog.Model.Search;
@@ -304,14 +305,19 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        [Route("{productId}/associations/search")]
-        [ResponseType(typeof(webModel.Product[]))]
+        [Route("associations/search")]
+        [ResponseType(typeof(webModel.ProductAssociationSearchResult))]
         public IHttpActionResult SearchProductAssociations(ProductAssociationSearchCriteria criteria)
         {
-          var result = _productAssociationSearchService.SearchProductAssociations(criteria);
-          return Ok(result);
+            var searchResult = _productAssociationSearchService.SearchProductAssociations(criteria);
+            var result = new webModel.ProductAssociationSearchResult
+            {
+                Results = searchResult.Results.Select(x => x.ToWebModel(_blobUrlResolver)).ToList(),
+                TotalCount = searchResult.TotalCount
+            };
+            return Ok(result);
         }
-       
+
         private coreModel.CatalogProduct[] InnerSaveProducts(webModel.Product[] products)
         {
             var toUpdateList = new List<coreModel.CatalogProduct>();

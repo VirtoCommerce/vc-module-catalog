@@ -1,75 +1,73 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Model.Search;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Commerce.Model.Search;
-using VirtoCommerce.Domain.Search;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.Exceptions;
 using VirtoCommerce.Platform.Data.Infrastructure;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
-  public class ProductAssociationSearchService : IProductAssociationSearchService
-  {
-    private readonly Func<ICatalogRepository> _catalogRepositoryFactory;
-    private readonly IItemService _itemService;
-
-    public ProductAssociationSearchService(Func<ICatalogRepository> catalogRepositoryFactory, IItemService itemService)
+    public class ProductAssociationSearchService : IProductAssociationSearchService
     {
-      _catalogRepositoryFactory = catalogRepositoryFactory;
-      _itemService = itemService;
-    }
-
-    public GenericSearchResult<CatalogProduct> SearchProductAssociations(ProductAssociationSearchCriteria criteria)
-    {
-      var retVal = new GenericSearchResult<CatalogProduct>();
-
-      var products = _itemService.GetByIds(criteria.ObjectIds.ToArray(), ItemResponseGroup.ItemAssociations).ToList();
-      //Get all Ids of products category associations.
-      var categoryIds = products.SelectMany(x => x.Associations.Where(a => a.AssociatedObjectType == "category")).Select(x => x.AssociatedObjectId).ToArray();
-
-      using (var repository = _catalogRepositoryFactory())
-      {
-        //Optimize performance and CPU usage
-        repository.DisableChangesTracking();
-
-        var query = repository.Items.Where(x => x.IsBuyable || x.IsActive);
-
-        if (!categoryIds.IsNullOrEmpty())
+        private readonly Func<ICatalogRepository> _catalogRepositoryFactory;
+        private readonly IItemService _itemService;
+         public ProductAssociationSearchService(Func<ICatalogRepository> catalogRepositoryFactory, IItemService itemService)
         {
-          categoryIds = categoryIds.Concat(repository.GetAllChildrenCategoriesIds(categoryIds)).ToArray();
-          //linked categories
-          var allLinkedCategories = repository.CategoryLinks.Where(x => categoryIds.Contains(x.TargetCategoryId)).Select(x => x.SourceCategoryId).ToArray();
-          categoryIds = categoryIds.Concat(allLinkedCategories).Distinct().ToArray();
-     
-          query = query.Where(x => categoryIds.Contains(x.CategoryId) || x.CategoryLinks.Any(link => categoryIds.Contains(link.CategoryId)));
+            _catalogRepositoryFactory = catalogRepositoryFactory;
+            _itemService = itemService;
         }
 
-        ItemResponseGroup productResponseGroup;
-        Enum.TryParse<ItemResponseGroup>(criteria.ResponseGroup, out productResponseGroup);
-
-        var sortInfos = criteria.SortInfos;
-        if (sortInfos.IsNullOrEmpty())
+        public GenericSearchResult<CatalogProduct> SearchProductAssociations(ProductAssociationSearchCriteria criteria)
         {
-          sortInfos = new[] { new SortInfo { SortColumn = "Priority", SortDirection = SortDirection.Descending }, new SortInfo { SortColumn = "Name", SortDirection = SortDirection.Ascending } };
-        }
+            if (criteria.ObjectIds.IsNullOrEmpty())
+            {
+                throw new ArgumentNullException($"{ nameof(criteria.ObjectIds) } must be set");
+            }
+            var retVal = new GenericSearchResult<CatalogProduct>();
+            using (var repository = _catalogRepositoryFactory())
+            {
+                //Optimize performance and CPU usage
+                repository.DisableChangesTracking();
 
-        query = query.OrderBySortInfos(sortInfos);
-     
-        var itemIds = query.Skip(criteria.Skip)
-                           .Take(criteria.Take)
-                           .Select(x => x.Id)
-                           .ToList();
-     
-        retVal.TotalCount = query.Count();
-        retVal.Results = _itemService.GetByIds(itemIds.ToArray(), productResponseGroup)
-                                        .OrderBy(x => itemIds.IndexOf(x.Id)).ToList();     
-      }
-      return retVal;
+                var query = repository.Associations.Where(x => criteria.ObjectIds.Contains(x.ItemId));
+                if (!string.IsNullOrEmpty(criteria.Group))
+                {
+                    query = query.Where(x => x.AssociationType == criteria.Group);
+                }
+                
+                var associationCategoriesIds = query.Where(x => x.AssociatedCategoryId != null)
+                                                    .Select(x => x.AssociatedCategoryId)
+                                                    .ToArray();
+                //Need to return all products from the associated categories (recursive)
+                associationCategoriesIds = repository.GetAllChildrenCategoriesIds(associationCategoriesIds).Concat(associationCategoriesIds)
+                                                    .Distinct()
+                                                    .ToArray();                
+                var itemsQuery = repository.Items.Join(query, item => item.Id, association => association.AssociatedItemId, (item, association) => item)                                           
+                                           .Union(repository.Items.Where(x => associationCategoriesIds.Contains(x.CategoryId)));
+
+                var sortInfos = criteria.SortInfos;
+                if (sortInfos.IsNullOrEmpty())
+                {
+                    sortInfos = new[] { new SortInfo { SortColumn = "CreatedDate", SortDirection = SortDirection.Descending } };
+                }
+                //TODO: Sort by association priority
+                itemsQuery = itemsQuery.OrderBySortInfos(sortInfos);
+
+                retVal.TotalCount = itemsQuery.Count();
+                var itemIds = itemsQuery
+                              .Skip(criteria.Skip)
+                              .Take(criteria.Take)
+                              .Select(x => x.Id).ToList();
+
+                retVal.Results = _itemService.GetByIds(itemIds.ToArray(), EnumUtility.SafeParse(criteria.ResponseGroup, ItemResponseGroup.ItemInfo))
+                                             .OrderBy(x => itemIds.IndexOf(x.Id))
+                                             .ToList();
+            }
+            return retVal;
+        }
     }
-  }
 }

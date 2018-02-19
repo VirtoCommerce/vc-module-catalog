@@ -75,6 +75,7 @@ namespace VirtoCommerce.CatalogModule.Web
             _container.RegisterType<ISkuGenerator, DefaultSkuGenerator>();
             _container.RegisterType<ISeoDuplicatesDetector, CatalogSeoDublicatesDetector>(new ContainerControlledLifetimeManager());
             _container.RegisterType<IAssociationService, AssociationServiceImpl>();
+            _container.RegisterType<IProductAssociationSearchService, ProductAssociationSearchService>();
 
             // Detect strategy to use for outline rendering.
             if (_container.Resolve<ISettingsManager>().GetValue("Catalog.CodesInOutline", false))
