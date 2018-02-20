@@ -132,6 +132,7 @@
                 name: "platform.commands.reset", icon: 'fa fa-undo',
                 executeMethod: function () {
                     angular.copy(blade.origEntity, blade.currentEntity);
+                    //blade.currentEntity.initializeDictionaryValues();
                 },
                 canExecuteMethod: isDirty
             },
