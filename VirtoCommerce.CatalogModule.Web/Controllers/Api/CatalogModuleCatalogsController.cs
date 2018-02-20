@@ -3,6 +3,7 @@ using System.Net;
 using System.Web.Http;
 using System.Web.Http.Description;
 using VirtoCommerce.CatalogModule.Web.Converters;
+using VirtoCommerce.CatalogModule.Web.Model;
 using VirtoCommerce.CatalogModule.Web.Security;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Platform.Core.Security;
@@ -32,19 +33,18 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 		[HttpGet]
         [Route("")]
         [ResponseType(typeof(webModel.Catalog[]))]
-        public IHttpActionResult GetCatalogs([FromUri]moduleModel.SearchCriteria criteria)
+        public IHttpActionResult GetCatalogs([FromUri]SearchCriteria criteria)
         {
             if (criteria == null)
             {
-                criteria = new moduleModel.SearchCriteria();
+                criteria = new SearchCriteria();
             }
             criteria.ResponseGroup = moduleModel.SearchResponseGroup.WithCatalogs;
+            var modelSearchCriteria = criteria.ToCoreModel();
+            ApplyRestrictionsForCurrentUser(modelSearchCriteria);
 
-            ApplyRestrictionsForCurrentUser(criteria);
-
-            var serviceResult = _searchService.Search(criteria);
+            var serviceResult = _searchService.Search(modelSearchCriteria);
             var retVal = new List<webModel.Catalog>();
-
             foreach (var catalog in serviceResult.Catalogs)
             {
                 var webCatalog = catalog.ToWebModel();
