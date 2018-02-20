@@ -26,7 +26,8 @@
 
         listValueValidator = function (newValues) {
             if (newValues) {
-                $scope.pb.currentEntity.$isValid = !formScope || formScope.$valid;
+                // Summary form validation to make button 'Save' enabled or disabled
+                $scope.pb.currentEntity.$isValid = (!formScope || formScope.$valid) && !_.findWhere($scope.dictionaryForProperty, { duplicate : true });
 
                 if ($scope.pb.currentEntity.$isValid)
                     dictionaryValues[newValues.index] = newValues.values[0];
@@ -44,6 +45,16 @@
                 $scope.newValue.duplicate = !_.all(dictionaryValues, function (item) { return item.value !== value; });
                 return !$scope.newValue.duplicate;
             }
+        }
+
+        selectedValueValidator = function () {
+            if ($scope.selectedItem) {
+                var editValue = $scope.selectedItem.values[0];
+                $scope.selectedItem.duplicate = _.any($scope.dictionaryForProperty, function (item) { return editValue != item.values[0] && item.values[0].value === editValue.value; });
+                return !$scope.selectedItem.duplicate;
+            }
+            else
+                return true;
         }
 
         dictValueValidator = function (value, editEntity) {
@@ -120,6 +131,7 @@
 
             initializeDictionaryValues();
         };
+
         $scope.deleteMultilanguage = function (key) {
             var selectedValues = _.where(dictionaryValues, { alias: key });
             _.forEach(selectedValues, function (value) {
@@ -127,6 +139,7 @@
             });
             initializeDictionaryValues();
             $scope.selectedItem = undefined;
+            resetNewValue(pb.defaultLanguage);
         };
 
         $scope.blade.headIcon = 'fa-book';
@@ -198,7 +211,8 @@
                             if (pb.currentEntity.multilanguage) {
                                 $scope.deleteMultilanguage(listItem.alias);
                             } else {
-                                $scope.delete(getValuesList().indexOf(listItem));
+                                var index = $scope.dictionaryForProperty.indexOf(listItem);
+                                $scope.delete(index);
                             }
                         });
                     }
@@ -225,7 +239,8 @@
 
             _.each(dictionaryValues, function (item, index) {
                 var propValue = Object.assign({}, pb.currentEntity, newSingleValueAttrs);
-                propValue.values = [ item ];
+                propValue.values = [item];
+                propValue.alias = item.value;
                 propValue.index = index;
 
                 $scope.dictionaryForProperty.push(propValue);
@@ -239,7 +254,7 @@
         $scope.$watch('blade.parentBlade.currentEntity.dictionaryValues', initializeDictionaryValues);
         $scope.$watch('blade.parentBlade.currentEntity.multilanguage', initializeDictionaryValues);
         $scope.$watch('newValue.values', valueValidator, true);
-        $scope.$watch('selectedItem.values', valueValidator, true);
+        $scope.$watch('selectedItem.values', selectedValueValidator, true);
 
         $scope.blade.isLoading = false;
     }]);

@@ -62,7 +62,7 @@
                                     </td>
                                     <td class="table-col">
                                         <va-property2 ng-model="data" ng-if="!newValue.isReadOnly" languages="pb.languages" default-language="pb.defaultLanguage"></va-property2>
-                                        <div class="form-error" ng-if="newValue.duplicate">
+                                        <div class="form-error" ng-if="data.duplicate">
                                             <span ng-if="data.duplicate">{{ 'catalog.blades.property-dictionary.validations.duplicate' | translate }}</span>
                                         </div>
                                         <ul role="menu" class="menu __context" id="pd_menu_{{$index}}">
