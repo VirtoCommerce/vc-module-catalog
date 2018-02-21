@@ -3,7 +3,6 @@ using System.Net;
 using System.Web.Http;
 using System.Web.Http.Description;
 using VirtoCommerce.CatalogModule.Web.Converters;
-using VirtoCommerce.CatalogModule.Web.Model;
 using VirtoCommerce.CatalogModule.Web.Security;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Platform.Core.Security;
@@ -33,14 +32,14 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 		[HttpGet]
         [Route("")]
         [ResponseType(typeof(webModel.Catalog[]))]
-        public IHttpActionResult GetCatalogs(int? skip, int? take, string sort)
+        public IHttpActionResult GetCatalogs(string sort, int? skip, int? take)
         {
             var criteria = new moduleModel.SearchCriteria
             {
                 ResponseGroup = moduleModel.SearchResponseGroup.WithCatalogs,
-                Skip = skip ?? 20,
+                Sort = sort,
+                Skip = skip ?? 0,
                 Take = take ?? 20,
-                Sort = sort
             };
 
             ApplyRestrictionsForCurrentUser(criteria);
