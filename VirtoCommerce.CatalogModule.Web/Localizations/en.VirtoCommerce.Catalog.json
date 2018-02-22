@@ -266,27 +266,27 @@
 
             "item-detail": {
                 "subtitle-variation": "Variation details",
-                "labels": {
-                    "sku": "SKU",
-                    "priority": "Priority",
-                    "name": "Name",
-                    "can-be-purchased": "Can be purchased",
-                    "store-visible": "Store visible",
-                    "track-inventory": "Track inventory",
-                    "has-user-agreement": "Has user agreement",
-                    "min-quantity": "Min. quantity",
-                    "max-quantity": "Max. quantity",
-                    "vendor": "Vendor",
-                    "tax-type": "Tax type",
-                    "weight-unit": "Weight unit",
-                    "weight": "Weight",
-                    "max-downloads": "Max. number of downloads",
-                    "expiration-date": "Download expiration date",
-                    "download-type": "Download type",
-                    "gtin": "GTIN",
-                    "start-date": "Sale start date",
-                    "end-date": "Sale expiration date"
-                },
+              "labels": {
+                "sku": "SKU",
+                "priority": "Priority",
+                "name": "Name",
+                "can-be-purchased": "Can be purchased",
+                "store-visible": "Store visible",
+                "track-inventory": "Track inventory",
+                "has-user-agreement": "Has user agreement",
+                "min-quantity": "Min. quantity",
+                "max-quantity": "Max. quantity",
+                "vendor": "Vendor",
+                "tax-type": "Tax type",
+                "weight-unit": "Weight unit",
+                "weight": "Weight",
+                "max-downloads": "Max. number of downloads",
+                "expiration-date": "Download expiration date",
+                "download-type": "Download type",
+                "gtin": "GTIN",
+                "start-date": "First listed",
+                "end-date": "Listing expires on"
+              },
                 "validations": {
                     "sku": "SKU can't contain $+;=%{}[]|/@ ~!^*&()?:'<>, characters"
                 },

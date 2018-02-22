@@ -249,18 +249,18 @@
           "sku": "Art.-Nr. kann nicht enthalten $ +"
         },
         "placeholders": {
-            "sku": "Art.-Nr. eingeben",
-            "priority": "Nummer eingeben",
-            "name": "Name eingeben",
-            "vendor": "Wählen Sie aus...",
-            "tax-type": "Wählen Sie aus...",
-            "weight-unit": "Wählen Sie aus...",
-            "weight": "Gewicht eingeben",
-            "expiration-date": "Datum auswählen",
-            "download-type": "Wählen Sie aus...",
-            "gtin": "GTIN eingeben",
-            "start-date": "Bitte geben sie die das datum...",
-            "end-date": "Bitte geben sie die das datum..."
+          "sku": "Art.-Nr. eingeben",
+          "priority": "Nummer eingeben",
+          "name": "Name eingeben",
+          "vendor": "Wählen Sie aus...",
+          "tax-type": "Wählen Sie aus...",
+          "weight-unit": "Wählen Sie aus...",
+          "weight": "Gewicht eingeben",
+          "expiration-date": "Datum auswählen",
+          "download-type": "Wählen Sie aus...",
+          "gtin": "GTIN eingeben",
+          "start-date": "Zuerst aufgeführt...",
+          "end-date": "Listing läuft ab am..."
         },
         "descr": {
             "start-date": "Wenn Sie kein startdatum angeben, wird das Produkt sofort nach dem Speichern aktiviert.",
