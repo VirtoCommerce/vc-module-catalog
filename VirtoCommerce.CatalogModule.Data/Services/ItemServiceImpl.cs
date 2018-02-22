@@ -59,30 +59,26 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             LoadDependencies(result);
             ApplyInheritanceRules(result);
 
-            // Fill outlines for products
+            var productsWithVariationsList = result.Concat(result.Where(p => p.Variations != null)
+                                       .SelectMany(p => p.Variations));
+            // Fill outlines for products and variations
             if (respGroup.HasFlag(ItemResponseGroup.Outlines))
             {
-                _outlineService.FillOutlinesForObjects(result, catalogId);
+                _outlineService.FillOutlinesForObjects(productsWithVariationsList, catalogId);
             }
-
             // Fill SEO info for products, variations and outline items
             if ((respGroup & ItemResponseGroup.Seo) == ItemResponseGroup.Seo)
             {
-                var objectsWithSeo = new List<ISeoSupport>(result);
-
-                var variations = result.Where(p => p.Variations != null)
-                                       .SelectMany(p => p.Variations);
-                objectsWithSeo.AddRange(variations);
-
-                var outlineItems = result.Where(p => p.Outlines != null)
+                var objectsWithSeo = productsWithVariationsList.OfType<ISeoSupport>().ToList();
+                //Load SEO information for all Outline.Items
+                var outlineItems = productsWithVariationsList.Where(p => p.Outlines != null)
                                          .SelectMany(p => p.Outlines.SelectMany(o => o.Items));
                 objectsWithSeo.AddRange(outlineItems);
-
                 _commerceService.LoadSeoForObjects(objectsWithSeo.ToArray());
             }
 
             //Reduce details according to response group
-            foreach (var product in result)
+            foreach (var product in productsWithVariationsList)
             {
                 if (!respGroup.HasFlag(ItemResponseGroup.ItemAssets))
                 {
@@ -257,7 +253,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 }
 
                 //inherit editorial reviews from main product and do not inherit if variation loaded within product
-                if (product.Reviews.IsNullOrEmpty() && product.MainProduct != null && product.MainProduct.Reviews != null)
+                if (processVariations && product.Reviews.IsNullOrEmpty() && product.MainProduct != null && product.MainProduct.Reviews != null)
                 {
                     product.Reviews = product.MainProduct.Reviews.Select(x => x.Clone()).OfType<EditorialReview>().ToList();
                     foreach (var review in product.Reviews)
@@ -326,7 +322,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                         //Inherit all values if not overriden
                         if (!product.PropertyValues.Any(x => x.PropertyName.EqualsInvariant(group.Key)))
                         {
-                            foreach (var inheritedpropValue in group)
+                            foreach (var inheritedpropValue in group.Select(x => x.Clone()).OfType<PropertyValue>())
                             {
                                 inheritedpropValue.Id = null;
                                 inheritedpropValue.IsInherited = true;
@@ -350,7 +346,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
                 if (processVariations && !product.Variations.IsNullOrEmpty())
                 {
-                    ApplyInheritanceRules(product.Variations.ToArray());
+                    ApplyInheritanceRules(product.Variations.ToArray(), processVariations: false);
                 }
             }
         }

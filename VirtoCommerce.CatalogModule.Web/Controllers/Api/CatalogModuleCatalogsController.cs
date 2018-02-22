@@ -32,13 +32,15 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 		[HttpGet]
         [Route("")]
         [ResponseType(typeof(webModel.Catalog[]))]
-        public IHttpActionResult GetCatalogs([FromUri]moduleModel.SearchCriteria criteria)
+        public IHttpActionResult GetCatalogs(string sort = null, int skip = 0, int take = 20)
         {
-            if (criteria == null)
+            var criteria = new moduleModel.SearchCriteria
             {
-                criteria = new moduleModel.SearchCriteria();
-            }
-            criteria.ResponseGroup = moduleModel.SearchResponseGroup.WithCatalogs;
+                ResponseGroup = moduleModel.SearchResponseGroup.WithCatalogs,
+                Sort = sort,
+                Skip = skip,
+                Take = take,
+            };
 
             ApplyRestrictionsForCurrentUser(criteria);
 

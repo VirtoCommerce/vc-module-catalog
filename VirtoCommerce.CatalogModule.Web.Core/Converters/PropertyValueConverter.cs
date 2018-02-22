@@ -19,6 +19,7 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             retVal.ValueId = propValue.ValueId;
             retVal.ValueType = propValue.ValueType;
             retVal.Alias = propValue.Alias;
+            retVal.IsInherited = propValue.IsInherited;
 
             if (propValue.Property != null)
             {
