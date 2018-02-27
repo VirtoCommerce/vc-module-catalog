@@ -1,6 +1,4 @@
-﻿using CacheManager.Core;
-using FluentValidation;
-using Moq;
+﻿using Moq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,10 +9,7 @@ using VirtoCommerce.CatalogModule.Data.Services;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Model.Search;
 using VirtoCommerce.Domain.Catalog.Services;
-using VirtoCommerce.Domain.Commerce.Model.Search;
-using VirtoCommerce.Domain.Commerce.Services;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Data.Infrastructure.Interceptors;
 using Xunit;
 
 namespace VirtoCommerce.CatalogModule.Test
@@ -189,21 +184,25 @@ namespace VirtoCommerce.CatalogModule.Test
                   {
                     Id = "c1",
                     CatalogId = "c", 
-                    OutgoingLinks = new ObservableCollection<CategoryRelationEntity> { new CategoryRelationEntity { TargetCatalogId = "v", TargetCategoryId = "v2" } }
+                    OutgoingLinks = new ObservableCollection<CategoryRelationEntity> {
+                      new CategoryRelationEntity { TargetCatalogId = "v", TargetCategoryId = "v2" } }
                   },
                   new CategoryEntity
                   {
                     Id = "c2",
                     CatalogId = "c", 
                     ParentCategoryId = "c1",
-                    OutgoingLinks = new ObservableCollection<CategoryRelationEntity> { new CategoryRelationEntity { TargetCatalogId = "v", TargetCategoryId = "v2" } }
+                    OutgoingLinks = new ObservableCollection<CategoryRelationEntity> {
+                      new CategoryRelationEntity { TargetCatalogId = "v", TargetCategoryId = "v2" } }
                   },
                   new CategoryEntity
                   {
                     Id = "c3",
                     CatalogId = "c",
                     ParentCategoryId = "c1",
-                    OutgoingLinks = new ObservableCollection<CategoryRelationEntity> { new CategoryRelationEntity { TargetCatalogId = "v" }, new CategoryRelationEntity { TargetCatalogId = "v", TargetCategoryId = "v2" } }
+                    OutgoingLinks = new ObservableCollection<CategoryRelationEntity> {
+                      new CategoryRelationEntity { TargetCatalogId = "v" },
+                      new CategoryRelationEntity { TargetCatalogId = "v", TargetCategoryId = "v2" } }
                   },
                   new CategoryEntity
                   {
@@ -269,11 +268,7 @@ namespace VirtoCommerce.CatalogModule.Test
                       IsActive = true,
                       IsBuyable = true,
                       CatalogId = "c",
-                      CategoryId = "c3",
-                      CategoryLinks = new ObservableCollection<CategoryItemRelationEntity>(new[] {
-                          new CategoryItemRelationEntity { CatalogId = "v", ItemId = "p11" },
-                          new CategoryItemRelationEntity { CatalogId = "c", CategoryId = "c1", ItemId = "p11" },
-                      })
+                      CategoryId = "c3"
                   },
                   new ItemEntity
                   {
