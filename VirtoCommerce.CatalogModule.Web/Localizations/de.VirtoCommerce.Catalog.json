@@ -268,7 +268,6 @@
           "start-date": "Wenn Sie kein startdatum angeben, wird das Produkt sofort nach dem Speichern aktiviert.",
           "end-date": "Wenn Sie kein Enddatum angeben, ist das Produkt aktiv, bis Sie es deaktivieren."
         }
-
       },
       "catalog-items-select": {
         "title": "Kategorien auswählen",

@@ -1,4 +1,4 @@
-﻿{
+{
   "catalog": {
     "main-menu-title": "Catalog",
     "main-blade-title": "Catalog",
@@ -288,27 +288,27 @@
           "start-date": "First listed",
           "end-date": "Listing expires on"
         },
-          "validations": {
-              "sku": "SKU can't contain $+;=%{}[]|/@ ~!^*&()?:'<>, characters"
-          },
-          "placeholders": {
-              "sku": "Enter item SKU",
-              "priority": "Enter number",
-              "name": "Enter item name",
-              "vendor": "Select...",
-              "tax-type": "Select...",
-              "weight-unit": "Select...",
-              "weight": "Enter weight",
-              "expiration-date": "Choose date",
-              "download-type": "Select...",
-              "gtin": "Enter GTIN here",
-              "start-date": "Please choose date...",
-              "end-date": "Please choose date..."
+        "validations": {
+          "sku": "SKU can't contain $+;=%{}[]|/@ ~!^*&()?:'<>, characters"
         },
-          "descr": {
-              "start-date": "If you do not specify a start date, the product is active immediately after saving.",
-              "end-date": "If you do not specify an end date, the product is active until you deactivate it."
-          }
+        "placeholders": {
+          "sku": "Enter item SKU",
+          "priority": "Enter number",
+          "name": "Enter item name",
+          "vendor": "Select...",
+          "tax-type": "Select...",
+          "weight-unit": "Select...",
+          "weight": "Enter weight",
+          "expiration-date": "Choose date",
+          "download-type": "Select...",
+          "gtin": "Enter GTIN here",
+          "start-date": "Please choose date...",
+          "end-date": "Please choose date..."
+        },
+        "descr": {
+          "start-date": "If you do not specify a start date, the product is active immediately after saving.",
+          "end-date": "If you do not specify an end date, the product is active until you deactivate it."
+        }
       },
       "catalog-items-select": {
           "title": "Select categories",
