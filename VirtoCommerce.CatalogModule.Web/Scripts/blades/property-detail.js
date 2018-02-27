@@ -71,6 +71,7 @@
             }
 
             blade.currentEntity = angular.copy(data);
+            blade.currentEntity.$isValid = true;
             blade.origEntity = data;
             blade.isLoading = false;
         };
@@ -80,7 +81,7 @@
         }
 
         function canSave() {
-            return (blade.origEntity.isNew || isDirty()) && formScope && formScope.$valid;
+            return (blade.origEntity.isNew || isDirty()) && formScope && formScope.$valid && (!blade.currentEntity || blade.currentEntity.$isValid);
         }
 
         function saveChanges() {
@@ -131,6 +132,7 @@
                 name: "platform.commands.reset", icon: 'fa fa-undo',
                 executeMethod: function () {
                     angular.copy(blade.origEntity, blade.currentEntity);
+                    //blade.currentEntity.initializeDictionaryValues();
                 },
                 canExecuteMethod: isDirty
             },
