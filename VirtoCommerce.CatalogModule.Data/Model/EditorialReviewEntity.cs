@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Platform.Core.Common;
@@ -19,6 +19,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
         public string Comments { get; set; }
 
+        [Required]
         [StringLength(64)]
         public string Locale { get; set; }
 
