@@ -71,7 +71,6 @@
             }
 
             blade.currentEntity = angular.copy(data);
-            blade.currentEntity.$isValid = true;
             blade.origEntity = data;
             blade.isLoading = false;
         };
