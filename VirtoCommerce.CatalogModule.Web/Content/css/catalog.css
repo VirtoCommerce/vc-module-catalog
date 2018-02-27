@@ -251,3 +251,47 @@
 .capitalizeText {
     text-transform: capitalize;
 }
+
+
+
+.vc-catalog .property-dictionary-new {
+    height: auto !important;
+}
+.vc-catalog .property-dictionary-new .__checkbox {
+    margin: 0 0 0 !important;
+}
+.vc-catalog .property-dictionary-new .form-input {
+    margin: 15px 0 0 !important;
+    padding: 0 !important;
+}
+.vc-catalog .property-dictionary-new .form-group {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+.vc-catalog .property-dictionary-new fieldset>.form-group {
+    margin: 15px 0 0 !important;
+    padding: 0 !important;
+}
+.vc-catalog .property-dictionary-new .table .table-col:first-child {
+    width: 12px;
+}
+
+
+.vc-catalog .property-dictionary-list .form .table-wrapper {
+    margin: 0 -20px 0;
+}
+.vc-catalog .property-dictionary-list .table .table-col:first-child {
+    width: 12px;
+}
+.vc-catalog .property-dictionary-list .form{
+    padding: 0 !important;
+}
+.vc-catalog .property-dictionary-list .form .table .table-col {
+    padding-top: 0 !important;
+}
+.vc-catalog .property-dictionary-list .form .form-input {
+    margin: 10px 0 0 !important;
+}
+.vc-catalog .property-dictionary-list .form .form-group {
+    margin: 0 !important;
+}

@@ -1,201 +1,283 @@
 ﻿angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.propertyDictionaryController',
-        ['$scope', '$filter', 'platformWebApp.dialogService', 'platformWebApp.settings', function ($scope, $filter, dialogService, settings) {
-            var dictionaryValues;
-            var pb = $scope.blade.parentBlade;
-            $scope.pb = pb;
+    ['$scope', 'platformWebApp.bladeNavigationService', '$filter', 'platformWebApp.dialogService', 'platformWebApp.settings', function ($scope, bladeNavigationService, $filter, dialogService, settings) {
+        $scope.newValue = null;
+        $scope.selectedItem = null;
+        $scope.dictionaryPropertyValues = [];
+        $scope.pb = $scope.blade.parentBlade;
+        $scope.isValid = false;
+        $scope.modified = false;
 
-            $scope.exposeAlias = false;
-            var promise = settings.getSettings({
-                id: 'VirtoCommerce.Catalog'
-            }).$promise;
-            promise.then(function (promiseData) {
-                var temp = _.findWhere(promiseData, { name: 'Catalog.ExposeAliasInDictionary' }).value;
-                $scope.exposeAlias = temp.toLowerCase() === 'true';
+        var propertyValueAttrs = { dictionary: false, isReadOnly: false, required: true, multivalue: false, duplicate: false };
+
+        var formScope;
+        $scope.setForm = function (form) {
+            formScope = form;
+
+            // catchs an event when a new-panel is resized
+
+            $scope.newElem = property_dictionary_new;
+            $scope.window = window;
+
+            $scope.$watch('newElem.offsetHeight', updateListHeight, true);
+            $scope.$watch('window.innerHeight', updateListHeight, true);            
+        }
+
+        function updateListHeight() {
+            if (property_dictionary) {
+                var bladeElem = $(property_dictionary).closest('.blade-container')[0],
+                    newElem = property_dictionary.children[0],
+                    listElem = property_dictionary.children[1],
+                    bottomElem = property_dictionary.children[2];
+
+                var height = bladeElem.offsetHeight - newElem.offsetHeight - bottomElem.offsetHeight;
+
+                $(listElem).css('height', height + 'px');
+            }
+        }
+
+        $scope.selectItem = function (item) {
+            $scope.selectedItem = item;
+        }
+
+        var dictionaryValues = angular.copy($scope.pb.currentEntity.dictionaryValues);
+
+        // INITIALIZATION
+
+        function initialize() {
+            $scope.dictionaryPropertyValues = [];
+
+            if ($scope.pb.currentEntity.multilanguage) {
+                initializeDictionaryValuesForMultilanguage();
+            }
+            else {
+                initializeDictionaryValuesForSingle();
+            }
+
+            resetNewValue();
+        }
+
+        function initializeDictionaryValuesForSingle() {
+            _.each(dictionaryValues, function (item, index) {
+                insertValueToDictionary({ values: [item], alias: item.value });
+            });
+        }
+
+        function initializeDictionaryValuesForMultilanguage() {
+            var groupedValues = _.map(_.groupBy(dictionaryValues, 'alias'), function (values, key) {
+                return { alias: key, values: values };
             });
 
-            $scope.dictValueValidator = function (value, editEntity) {
-                if (pb.currentEntity.multilanguage) {
-                    var testEntity = angular.copy(editEntity);
-                    testEntity.value = value;
-                    return _.all(dictionaryValues, function (item) {
-                        return item.value !== value || item.languageCode !== testEntity.languageCode || ($scope.selectedItem && _.some($scope.selectedItem.values, function (x) {
-                            return angular.equals(x, testEntity);
-                        }));
-                    });
-                } else {
-                    return _.all(dictionaryValues, function (item) { return item.value !== value; });
-                }
-            }
-
-            $scope.cancel = function () {
-                $scope.selectedItem = undefined;
-                resetNewValue();
-            }
-
-            $scope.add = function (form) {
-                if (form.$valid) {
-                    if ($scope.newValue.values) {
-                        if ($scope.selectedItem) { // editing existing values
-                            _.each($scope.newValue.values, function (value) {
-                                var existingValue = _.findWhere(dictionaryValues, { alias: $scope.exposeAlias ? $scope.newValue.alias : value.alias, languageCode: value.languageCode });
-                                if (value.value) {
-                                    if (existingValue) {
-                                        existingValue.alias = $scope.exposeAlias ? $scope.newValue.alias : $scope.newValue.values[0].value;
-                                        existingValue.value = value.value;
-                                    } else {
-                                        dictionaryValues.push({
-                                            alias: $scope.exposeAlias ? $scope.newValue.alias : $scope.newValue.values[0].value,
-                                            languageCode: value.languageCode,
-                                            propertyId: pb.currentEntity.id,
-                                            value: value.value
-                                        });
-                                    }
-                                } else if (existingValue) {
-                                    $scope.delete(dictionaryValues.indexOf(existingValue));
-                                }
-                            });
-                            $scope.selectedItem = undefined;
-                        } else { // adding new values
-                            _.each($scope.newValue.values, function (value) {
-                                if (value.value) {
-                                    dictionaryValues.push({
-                                        alias: $scope.exposeAlias ? $scope.newValue.alias : $scope.newValue.values[0].value,
-                                        languageCode: value.languageCode,
-                                        propertyId: pb.currentEntity.id,
-                                        value: value.value
-                                    });
-                                }
-                            });
-                        }
-                        initializeDictionaryValues();
-                    } else {
-                        $scope.newValue.alias = $scope.newValue.alias ? $scope.newValue.alias : $scope.newValue.value;
-                        dictionaryValues.push($scope.newValue);
+            _.each(groupedValues, function (item, index) {
+                // Appending values with all languages
+                _.each($scope.pb.languages, function (lang) {
+                    if (!_.findWhere(item.values, { languageCode: lang })) {
+                        item.values.push({ alias: item.alias, languageCode: lang, value: null });
                     }
-                    resetNewValue($scope.newValue.languageCode);
-                    form.$setPristine();
-                }
-            };
-
-            $scope.selectItem = function (listItem) {
-                $scope.selectedItem = listItem;
-
-                if (pb.currentEntity.multilanguage) {
-                    resetNewValue();
-                }
-            };
-
-            $scope.delete = function (index) {
-                dictionaryValues.splice(index, 1);
-                $scope.selectedItem = undefined;
-            };
-            $scope.deleteMultilanguage = function (key) {
-                var selectedValues = _.where(dictionaryValues, { alias: key });
-                _.forEach(selectedValues, function (value) {
-                    dictionaryValues.splice(dictionaryValues.indexOf(value), 1);
                 });
-                initializeDictionaryValues();
-                $scope.selectedItem = undefined;
-            };
 
-            $scope.blade.headIcon = 'fa-book';
+                insertValueToDictionary(item);
+            });
+        }
 
-            $scope.blade.toolbarCommands = [
-                {
-                    name: "platform.commands.delete", icon: 'fa fa-trash-o',
-                    executeMethod: function () {
-                        deleteChecked();
-                    },
-                    canExecuteMethod: function () {
-                        return isItemsChecked();
-                    }
-                }
-            ];
+        function insertValueToDictionary(item) {
+            var propValue = Object.assign(
+                {},
+                $scope.pb.currentEntity,
+                propertyValueAttrs,
+                item
+            );
 
-            $scope.checkAll = function (selected) {
-                angular.forEach(getValuesList(), function (item) {
-                    item.selected = selected;
-                });
-            };
+            _.each(propValue.values, function (v, i) {
+                // Storing an original value to catch a change
+                v.originalValue = v.value;
 
-            function getValuesList() {
-                return pb.currentEntity.multilanguage ? $scope.groupedValues : dictionaryValues;
+                // Catching changes
+                $scope.$watch('dictionaryPropertyValues[' + $scope.dictionaryPropertyValues.length + '].values[' + i + ']', listValueValidator, true);
+            });
+
+            $scope.dictionaryPropertyValues.push(propValue);
+        }
+
+        // RESET A NEW VALUE
+
+        function resetNewValue() {
+            var values;
+
+            if ($scope.pb.currentEntity.multilanguage) {
+                values = resetNewValueForMultilanguage();
+            }
+            else {
+                values = [{ value: null }];
             }
 
-            function resetNewValue(locale) {
-                if (pb.currentEntity.multilanguage) {
-                    // generate input fields for ALL languages
-                    var defaultLanguageCode = pb.defaultLanguage;
-                    var values = [{ languageCode: defaultLanguageCode }];
-                    _.each(pb.languages, function (lang) {
-                        if (lang !== defaultLanguageCode) {
-                            values.push({ languageCode: lang });
-                        }
-                    });
-                    var alias = "";
+            $scope.newValue = Object.assign(
+                { isNew: true },
+                $scope.pb.currentEntity,
+                propertyValueAttrs,
+                { values: values }
+            );
+        }
 
-                    // add current values
-                    if ($scope.selectedItem) {
-                        _.each($scope.selectedItem.values, function (value) {
-                            var foundValue = _.findWhere(values, { languageCode: value.languageCode });
-                            if (foundValue) {
-                                angular.extend(foundValue, value);
-                            }
+        function resetNewValueForMultilanguage() {
+            var defaultLanguageCode = $scope.pb.defaultLanguage;
+            var values = [{ languageCode: defaultLanguageCode, value: null }];
+
+            _.each($scope.pb.languages, function (lang) {
+                if (lang !== defaultLanguageCode) {
+                    values.push({ languageCode: lang, value: null });
+                }
+            });
+
+            return values;
+        }
+
+        // ADDING
+
+        $scope.add = function () {
+            $scope.newValue.alias = $scope.newValue.values[0].value;
+            _.forEach($scope.newValue.values, function (value) {
+                value.alias = $scope.newValue.alias;
+            });
+
+            $scope.dictionaryPropertyValues.push($scope.newValue);
+
+            $scope.modify(true);
+
+            resetNewValue();
+        }
+
+        // VALIDATIONS
+
+        $scope.modify = function (modified) {
+            $scope.modified = $scope.modified || modified;
+            $scope.isValid = $scope.modified && !$scope.duplicate && !(formScope && formScope.$invalid);
+
+            return $scope.isValid;
+        }
+
+        newValueValidator = function () {
+            $scope.newValue.duplicate = duplicateValidator($scope.newValue);
+        }
+
+        listValueValidator = function (newValues) {
+            $scope.duplicate = false;
+            _.forEach($scope.dictionaryPropertyValues, function (item) {
+                item.duplicate = duplicateValidator(item);
+                $scope.duplicate = $scope.duplicate || item.duplicate;
+            });
+
+            $scope.modify(newValues && ((!newValues.originalValue && newValues.value) || (newValues.originalValue && newValues.value !== newValues.originalValue)));
+        }
+
+        function duplicateValidator(propertyValue) {
+            return _.any($scope.dictionaryPropertyValues, function (itemValue) {
+                return itemValue != propertyValue && propertyValueIsDuplicated(propertyValue, itemValue);
+            });
+        }
+
+        function propertyValueIsDuplicated(propertyValue, itemValue) {
+            return _.any(propertyValue.values, function (targetValue) {
+                return _.any(itemValue.values, function (dictionaryValue) {
+                    return targetValue.value === dictionaryValue.value && (!$scope.pb.currentEntity.multilanguage || targetValue.languageCode === dictionaryValue.languageCode);
+                });
+            });
+        }
+
+        // DELETION
+
+        $scope.delete = function (value) {
+            $scope.dictionaryPropertyValues.splice($scope.dictionaryPropertyValues.indexOf(value), 1);
+            $scope.modify(true);
+        };
+
+        function deleteChecked() {
+            var dialog = {
+                id: "confirmDeleteItem",
+                title: "catalog.dialogs.dictionary-values-delete.title",
+                message: "catalog.dialogs.dictionary-values-delete.message",
+                callback: function (remove) {
+                    if (remove) {
+                        var selection = $filter('filter')($scope.dictionaryPropertyValues, { selected: true }, true);
+
+                        angular.forEach(selection, function (item) {
+                            $scope.delete(item);
                         });
-                        alias = $scope.exposeAlias ? $scope.selectedItem.alias : "";
-                    }
-
-                    $scope.newValue = { values: values, alias: alias };
-                } else {
-                    $scope.newValue = { languageCode: locale, value: null, propertyId: pb.currentEntity.id };
-                }
-            }
-
-            function isItemsChecked() {
-                return _.any(getValuesList(), function (x) { return x.selected; });
-            }
-
-            function deleteChecked() {
-                var dialog = {
-                    id: "confirmDeleteItem",
-                    title: "catalog.dialogs.dictionary-values-delete.title",
-                    message: "catalog.dialogs.dictionary-values-delete.message",
-                    callback: function (remove) {
-                        if (remove) {
-                            var selection = $filter('filter')(getValuesList(), { selected: true }, true);
-                            angular.forEach(selection, function (listItem) {
-                                if (pb.currentEntity.multilanguage) {
-                                    $scope.deleteMultilanguage(listItem.alias);
-                                } else {
-                                    $scope.delete(getValuesList().indexOf(listItem));
-                                }
-                            });
-                        }
                     }
                 }
-                dialogService.showConfirmationDialog(dialog);
             }
 
-            function initializeDictionaryValues() {
-                dictionaryValues = pb.currentEntity.dictionaryValues;
-                _.each(dictionaryValues, function (x) {
-                    if (!x.alias) {
-                        x.alias = x.value;
-                    }
-                });
+            dialogService.showConfirmationDialog(dialog);
+        }
 
-                $scope.dictionaryValues = dictionaryValues;
-                $scope.groupedValues = _.map(_.groupBy(dictionaryValues, 'alias'), function (values, key) {
-                    return { alias: key, values: values };
-                });
+        // SETTINGS
 
-                resetNewValue(pb.defaultLanguage);
+        $scope.blade.headIcon = 'fa-book';
+
+        $scope.blade.toolbarCommands = [
+            {
+                name: "platform.commands.delete", icon: 'fa fa-trash-o',
+                executeMethod: function () {
+                    deleteChecked();
+                },
+                canExecuteMethod: function () {
+                    return isItemsChecked();
+                }
             }
+        ];
 
-            $scope.$watch('blade.parentBlade.currentEntity.dictionaryValues', initializeDictionaryValues);
-            $scope.$watch('blade.parentBlade.currentEntity.multilanguage', initializeDictionaryValues);
+        function isItemsChecked() {
+            return _.any($scope.dictionaryPropertyValues, function (x) { return x.selected; });
+        }
 
-            // on load
-            $scope.blade.isLoading = false;
-        }]);
+        $scope.checkAll = function (selected) {
+            angular.forEach($scope.dictionaryPropertyValues, function (item) {
+                item.selected = selected;
+            });
+        };
+
+        // SAVING CHANGES
+
+        function save() {
+            var dictionary = [];
+
+            _.forEach($scope.dictionaryPropertyValues, function (item) {
+                _.forEach(item.values, function (value) {
+                    dictionary.push(value);
+                });
+            });
+
+            $scope.pb.currentEntity.dictionaryValues = dictionary;
+            $scope.pb.currentEntity.$modified = true;
+
+            $scope.modified = false;
+        }
+
+        // FORM ACTIONS
+
+        $scope.blade.onClose = function (closeCallback) {
+            bladeNavigationService.showConfirmationIfNeeded(
+                $scope.modified,
+                true,
+                $scope.blade,
+                $scope.saveChanges,
+                closeCallback,
+                "Save changes", "The property dictionary have been modified. Do you want to save changes?"
+            );
+        };
+
+        $scope.saveChanges = function () {
+            //angular.copy(blade.property, blade.originalProperty);
+            save();
+            $scope.bladeClose();
+        };
+
+        // WATCHERS
+
+        $scope.$watch('blade.parentBlade.currentEntity.multilanguage', initialize);
+        //$scope.$watch('dictionaryPropertyValues', listValueValidator);
+        $scope.$watch('newValue.values', newValueValidator, true);
+
+        $scope.blade.isLoading = false;
+
+    }]);
