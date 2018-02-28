@@ -1,4 +1,4 @@
-﻿{
+{
   "catalog": {
     "main-menu-title": "Catalog",
     "main-blade-title": "Catalog",
@@ -265,9 +265,8 @@
           "alias": "Enter an alias"
         }
       },
-
       "item-detail": {
-        "subtitle-variation": "Variation details",
+          "subtitle-variation": "Variation details",
         "labels": {
           "sku": "SKU",
           "priority": "Priority",
@@ -286,8 +285,8 @@
           "expiration-date": "Download expiration date",
           "download-type": "Download type",
           "gtin": "GTIN",
-          "start-date": "Sale start date",
-          "end-date": "Sale expiration date"
+          "start-date": "First listed",
+          "end-date": "Listing expires on"
         },
         "validations": {
           "sku": "SKU can't contain $+;=%{}[]|/@ ~!^*&()?:'<>, characters"
@@ -312,26 +311,25 @@
         }
       },
       "catalog-items-select": {
-        "title": "Select categories",
-        "title-association": "Select items to associate",
-        "subtitle-association": "Adding Associations to product",
-        "labels": {
-          "picture": "Pic",
-          "name": "Name",
-          "sku": "SKU",
-          "virtual": "{{name}} (virtual)"
-        }
+          "title": "Select categories",
+          "title-association": "Select items to associate",
+          "subtitle-association": "Adding Associations to product",
+          "labels": {
+              "picture": "Pic",
+              "name": "Name",
+              "sku": "SKU",
+              "virtual": "{{name}} (virtual)"
+          }
       },
       "item-variation-list": {
-        "subtitle": "Item variations",
-        "labels": {
-          "no-items": "No Variations yet",
-          "picture": "Pic",
-          "name": "Name",
-          "sku": "SKU"
-        }
+          "subtitle": "Item variations",
+          "labels": {
+              "no-items": "No Variations yet",
+              "picture": "Pic",
+              "name": "Name",
+              "sku": "SKU"
+          }
       },
-
       "editorialReviews-list": {
         "subtitle": "Item descriptions",
         "labels": {
