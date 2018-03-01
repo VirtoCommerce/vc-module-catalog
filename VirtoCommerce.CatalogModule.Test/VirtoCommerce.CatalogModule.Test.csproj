@@ -130,7 +130,7 @@
     <Compile Include="CatalogPropertyTest.cs" />
     <Compile Include="FiltersHelperTests.cs" />
     <Compile Include="OutlineTests.cs" />
-    <Compile Include="ProductAssociationSearchTest.cs" />
+    <Compile Include="ProductAssociationSearchServiceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReferencedAssociationsTest.cs" />
     <Compile Include="TermFilterBuilderTests.cs" />
