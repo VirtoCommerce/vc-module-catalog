@@ -1,4 +1,4 @@
-﻿using Moq;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,6 +39,29 @@ namespace VirtoCommerce.CatalogModule.Test
             // Assert
             Assert.True(result.TotalCount == 4);
             Assert.Equal(result.Results, verifySet);
+        }
+
+        [Fact]
+        public void GetCriteria_InvalidArguments_ThrowsArgumentNullException()
+        {
+            var verifySet = new[] { "prod-1", "prod-2", "prod-3", "prod-4" }.Select(x => new domainModel.CatalogProduct { Id = x }).ToArray();
+            var criteria = new ProductAssociationSearchCriteria()
+            {
+                ObjectIds = new string[] { }.ToList(),
+                ResponseGroup = "ItemInfo",
+                Skip = 0,
+                Take = 10
+            };
+            var catalogRepository = new Mock<ICatalogRepository>();
+            catalogRepository.Setup(x => x.Associations).Returns(TestAssociationEntities.AsQueryable());
+            catalogRepository.Setup(x => x.Items).Returns(TestItemEntities.AsQueryable());
+            catalogRepository.Setup(x => x.GetAllChildrenCategoriesIds(It.Is<string[]>(ids => ids.SequenceEqual(new[] { "cat-1" })))).Returns(TestChildCategories);
+
+            var itemService = new Mock<IItemService>();
+            itemService.Setup(x => x.GetByIds(It.Is<string[]>(ids => ids.SequenceEqual(verifySet.Select(p => p.Id))), It.IsIn(domainModel.ItemResponseGroup.ItemInfo), It.IsAny<string>()))
+                       .Returns(verifySet);
+            var sut = new ProductAssociationSearchService(() => catalogRepository.Object, itemService.Object);
+            Assert.Throws<ArgumentNullException>(() => sut.SearchProductAssociations(criteria));
         }
 
         private static string[] TestChildCategories
