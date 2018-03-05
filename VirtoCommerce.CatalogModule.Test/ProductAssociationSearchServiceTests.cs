@@ -12,6 +12,7 @@ using domainModel = VirtoCommerce.Domain.Catalog.Model;
 
 namespace VirtoCommerce.CatalogModule.Test
 {
+    [Trait("Category", "CI")]
     public class ProductAssociationSearchServiceTests
     {
         [Fact]
