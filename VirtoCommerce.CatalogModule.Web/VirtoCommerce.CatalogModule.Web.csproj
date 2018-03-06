@@ -201,7 +201,6 @@
     <Content Include="Scripts\dialogs\deleteCatalog-dialog.tpl.html" />
     <Content Include="Scripts\directives\itemSearch.js" />
     <Content Include="Scripts\directives\itemSearch.tpl.html" />
-    <Content Include="Scripts\resources\imageTools.js" />
   </ItemGroup>
   <ItemGroup>
     <!-- <Content Include="Content\css\catalog.css" /> -->
