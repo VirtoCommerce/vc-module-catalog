@@ -1,16 +1,17 @@
-﻿using System;
+using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using VirtoCommerce.Domain.Catalog.Model.Search;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.CatalogModule.Data.Search;
 using System.Linq;
+using VirtoCommerce.CatalogModule.Web.Model;
 
 namespace VirtoCommerce.CatalogModule.Web.JsonConverters
 {
     public class SearchCriteriaJsonConverter : JsonConverter
     {        
-        private readonly Type[] _knowTypes = new [] { typeof(ProductSearchCriteria), typeof(CategorySearchCriteria) };
+        private readonly Type[] _knowTypes = new [] { typeof(Product), typeof(ProductSearchCriteria), typeof(CategorySearchCriteria) };
 
         public override bool CanWrite => false;
         public override bool CanRead => true;
@@ -23,14 +24,10 @@ namespace VirtoCommerce.CatalogModule.Web.JsonConverters
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             object result = null;
-            if (typeof(CategorySearchCriteria).IsAssignableFrom(objectType))
-            {
-                result = AbstractTypeFactory<CategorySearchCriteria>.TryCreateInstance();
-            }
-            if (typeof(ProductSearchCriteria).IsAssignableFrom(objectType))
-            {
-                result = AbstractTypeFactory<ProductSearchCriteria>.TryCreateInstance();
-            }
+
+            var tryCreateInstance = typeof(AbstractTypeFactory<>).MakeGenericType(objectType).GetMethods().FirstOrDefault(x => x.Name.EqualsInvariant("TryCreateInstance") && x.GetParameters().Length == 0);
+            result = tryCreateInstance?.Invoke(null, null);
+
             var obj = JObject.Load(reader);
             serializer.Populate(obj.CreateReader(), result);
 
