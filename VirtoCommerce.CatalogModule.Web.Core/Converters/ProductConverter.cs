@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Omu.ValueInjecter;
@@ -13,7 +13,7 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
     {
         public static webModel.Product ToWebModel(this moduleModel.CatalogProduct product, IBlobUrlResolver blobUrlResolver)
         {
-            var retVal = new webModel.Product();
+            var retVal = AbstractTypeFactory<webModel.Product>.TryCreateInstance().FromModel(product);
             retVal.Id = product.Id;
             retVal.CatalogId = product.CatalogId;
             retVal.CategoryId = product.CategoryId;
@@ -163,7 +163,7 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
 
         public static moduleModel.CatalogProduct ToModuleModel(this webModel.Product product, IBlobUrlResolver blobUrlResolver)
         {
-            var retVal = new moduleModel.CatalogProduct();
+            var retVal = product.ToModel(AbstractTypeFactory<moduleModel.CatalogProduct>.TryCreateInstance());
             retVal.InjectFrom(product);
             retVal.SeoInfos = product.SeoInfos;
 
@@ -220,7 +220,6 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
                 }
             }
             retVal.MainProductId = product.TitularItemId;
-
             return retVal;
         }
     }

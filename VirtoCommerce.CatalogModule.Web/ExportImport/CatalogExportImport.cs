@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -124,7 +124,8 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                                 //Import products
                                 while (reader.TokenType != JsonToken.EndArray)
                                 {
-                                    var product = _serializer.Deserialize<CatalogProduct>(reader);
+                                    var product = AbstractTypeFactory<CatalogProduct>.TryCreateInstance();
+                                    product = _serializer.Deserialize(reader, product.GetType()) as CatalogProduct;
                                     //Do not save associations withing product to prevent dependency conflicts in db
                                     //we will save separateley after product import
                                     if (!product.Associations.IsNullOrEmpty())
@@ -164,11 +165,9 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                                     var fakeProducts = new List<CatalogProduct>();
                                     foreach (var pair in associationBackupMap.Skip(i).Take(_batchSize))
                                     {
-                                        var fakeProduct = new CatalogProduct
-                                        {
-                                            Id = pair.Key,
-                                            Associations = pair.Value
-                                        };
+                                        var fakeProduct = AbstractTypeFactory<CatalogProduct>.TryCreateInstance();
+                                        fakeProduct.Id = pair.Key;
+                                        fakeProduct.Associations = pair.Value;                                        
                                         fakeProducts.Add(fakeProduct);
                                     }
                                     _associationService.SaveChanges(fakeProducts.ToArray());

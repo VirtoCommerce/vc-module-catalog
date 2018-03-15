@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.Domain.Catalog.Model;
@@ -319,5 +319,15 @@ namespace VirtoCommerce.CatalogModule.Web.Model
         public ICollection<Outline> Outlines { get; set; }
 
         #endregion
+
+        public virtual Product FromModel(CatalogProduct product)
+        {
+            return this;
+        }
+
+        public virtual CatalogProduct ToModel(CatalogProduct product)
+        {
+            return product;
+        }
     }
 }
