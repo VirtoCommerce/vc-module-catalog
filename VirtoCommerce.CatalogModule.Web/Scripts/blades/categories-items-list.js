@@ -1,4 +1,4 @@
-﻿angular.module('virtoCommerce.catalogModule')
+angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.categoriesItemsListController', [
         '$sessionStorage', '$localStorage', '$timeout', '$scope', 'virtoCommerce.catalogModule.categories', 'virtoCommerce.catalogModule.items', 'virtoCommerce.catalogModule.listEntries', 'platformWebApp.bladeUtils', 'platformWebApp.dialogService', 'platformWebApp.authService', 'platformWebApp.uiGridHelper', 'virtoCommerce.catalogModule.catalogs',
         function ($sessionStorage, $localStorage, $timeout, $scope, categories, items, listEntries, bladeUtils, dialogService, authService, uiGridHelper, catalogs) {
@@ -29,6 +29,11 @@
                         $scope.pageSettings.totalItems = data.totalCount;
                         $scope.items = data.listEntries;
                         $scope.hasMore = data.listEntries.length === $scope.pageSettings.itemsPerPageCount;
+
+                        angular.forEach(data.listEntries, function (listItem) {
+                            listItem.imageDefault = listItem.imageUrl;
+                            listItem.imageUrl = listItem.imageUrl.split('.')[0].indexOf('_64x64') + 1 != 0 ? listItem.imageUrl : listItem.imageUrl.split('.')[0] + '_64x64.' + listItem.imageUrl.split('.')[1];
+                        });
 
                         //Set navigation breadcrumbs
                         setBreadcrumbs();
