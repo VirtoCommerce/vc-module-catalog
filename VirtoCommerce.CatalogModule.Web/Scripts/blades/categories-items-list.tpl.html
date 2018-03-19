@@ -55,7 +55,7 @@
 <script type="text/ng-template" id="item-list-icon.cell.html">
     <div class="ui-grid-cell-contents">
         <div class="product-img">
-            <img class="image" fallback-src="{{row.entity.imageDefault}}" ng-src="{{row.entity.imageUrl}}" ng-if="row.entity.type !== 'category' && COL_FIELD">
+            <img class="image" fallback-src="{{ COL_FIELD }}" ng-src="{{ COL_FIELD | thumbnail_64x64 }}" ng-if="row.entity.type !== 'category' && COL_FIELD">
             <i class="table-ico fa" ng-class="row.entity.type == 'category' ? 'fa-folder' : 'fa-image'" ng-if="row.entity.type ==='category' || !COL_FIELD"></i>
         </div>
     </div>

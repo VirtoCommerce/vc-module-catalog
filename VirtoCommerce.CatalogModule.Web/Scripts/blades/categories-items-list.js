@@ -1,7 +1,14 @@
 angular.module('virtoCommerce.catalogModule')
+    .filter('thumbnail_64x64', function () {
+        return function (imageUrl) {
+            var parts = imageUrl.split(".");
+            var thumbnailUrl = parts[0].indexOf('_64x64') + 1 != 0 ? imageUrl : parts[0] + "_64x64." + parts[1];
+            return thumbnailUrl;            
+        };
+    })
     .controller('virtoCommerce.catalogModule.categoriesItemsListController', [
-        '$sessionStorage', '$localStorage', '$timeout', '$scope', 'virtoCommerce.catalogModule.categories', 'virtoCommerce.catalogModule.items', 'virtoCommerce.catalogModule.listEntries', 'platformWebApp.bladeUtils', 'platformWebApp.dialogService', 'platformWebApp.authService', 'platformWebApp.uiGridHelper', 'virtoCommerce.catalogModule.catalogs',
-        function ($sessionStorage, $localStorage, $timeout, $scope, categories, items, listEntries, bladeUtils, dialogService, authService, uiGridHelper, catalogs) {
+        '$sessionStorage', '$localStorage', '$timeout', '$scope', '$filter', 'virtoCommerce.catalogModule.categories', 'virtoCommerce.catalogModule.items', 'virtoCommerce.catalogModule.listEntries', 'platformWebApp.bladeUtils', 'platformWebApp.dialogService', 'platformWebApp.authService', 'platformWebApp.uiGridHelper', 'virtoCommerce.catalogModule.catalogs',
+        function ($sessionStorage, $localStorage, $timeout, $scope, $filter, categories, items, listEntries, bladeUtils, dialogService, authService, uiGridHelper, catalogs) {
             $scope.uiGridConstants = uiGridHelper.uiGridConstants;
             $scope.hasMore = true;
             $scope.items = [];
@@ -30,10 +37,10 @@ angular.module('virtoCommerce.catalogModule')
                         $scope.items = data.listEntries;
                         $scope.hasMore = data.listEntries.length === $scope.pageSettings.itemsPerPageCount;
 
-                        angular.forEach(data.listEntries, function (listItem) {
-                            listItem.imageDefault = listItem.imageUrl;
-                            listItem.imageUrl = listItem.imageUrl.split('.')[0].indexOf('_64x64') + 1 != 0 ? listItem.imageUrl : listItem.imageUrl.split('.')[0] + '_64x64.' + listItem.imageUrl.split('.')[1];
-                        });
+                        //angular.forEach(data.listEntries, function (listItem) {
+                        //    listItem.imageDefault = listItem.imageUrl;
+                        //    //listItem.imageUrl = listItem.imageUrl.split('.')[0].indexOf('_64x64') + 1 != 0 ? listItem.imageUrl : listItem.imageUrl.split('.')[0] + '_64x64.' + listItem.imageUrl.split('.')[1];
+                        //});
 
                         //Set navigation breadcrumbs
                         setBreadcrumbs();
