@@ -1,11 +1,4 @@
 angular.module('virtoCommerce.catalogModule')
-    .filter('thumbnail_64x64', function () {
-        return function (imageUrl) {
-            var parts = imageUrl.split(".");
-            var thumbnailUrl = parts[0].indexOf('_64x64') + 1 != 0 ? imageUrl : parts[0] + "_64x64." + parts[1];
-            return thumbnailUrl;            
-        };
-    })
     .controller('virtoCommerce.catalogModule.categoriesItemsListController', [
         '$sessionStorage', '$localStorage', '$timeout', '$scope', '$filter', 'virtoCommerce.catalogModule.categories', 'virtoCommerce.catalogModule.items', 'virtoCommerce.catalogModule.listEntries', 'platformWebApp.bladeUtils', 'platformWebApp.dialogService', 'platformWebApp.authService', 'platformWebApp.uiGridHelper', 'virtoCommerce.catalogModule.catalogs',
         function ($sessionStorage, $localStorage, $timeout, $scope, $filter, categories, items, listEntries, bladeUtils, dialogService, authService, uiGridHelper, catalogs) {
@@ -15,7 +8,6 @@ angular.module('virtoCommerce.catalogModule')
 
             var blade = $scope.blade;
             var bladeNavigationService = bladeUtils.bladeNavigationService;
-            // blade.catalog = bladeNavigationService.catalogsSelectedCatalog;
             if (blade.catalogId)
                 blade.catalog = catalogs.get({ id: blade.catalogId });
 
@@ -36,11 +28,6 @@ angular.module('virtoCommerce.catalogModule')
                         $scope.pageSettings.totalItems = data.totalCount;
                         $scope.items = data.listEntries;
                         $scope.hasMore = data.listEntries.length === $scope.pageSettings.itemsPerPageCount;
-
-                        //angular.forEach(data.listEntries, function (listItem) {
-                        //    listItem.imageDefault = listItem.imageUrl;
-                        //    //listItem.imageUrl = listItem.imageUrl.split('.')[0].indexOf('_64x64') + 1 != 0 ? listItem.imageUrl : listItem.imageUrl.split('.')[0] + '_64x64.' + listItem.imageUrl.split('.')[1];
-                        //});
 
                         //Set navigation breadcrumbs
                         setBreadcrumbs();
@@ -451,23 +438,6 @@ angular.module('virtoCommerce.catalogModule')
                     },
                     permission: 'catalog:create'
                 }
-
-                //{
-                //    name: "Advanced search", icon: 'fa fa-search',
-                //    executeMethod: function () {
-                //        var newBlade = {
-                //            id: 'listItemChild',
-                //            title: 'Advanced search',
-                //            subtitle: 'Searching within...',
-                //            controller: 'virtoCommerce.catalogModule.advancedSearchController',
-                //            template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/advanced-search.tpl.html'
-                //        };
-                //        bladeNavigationService.showBlade(newBlade, blade.parentBlade);
-                //    },
-                //    canExecuteMethod: function () {
-                //        return true;
-                //    }
-                //}
             ];
 
             if (blade.isBrowsingLinkedCategory) {
