@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -133,13 +133,11 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [ResponseType(typeof(webModel.Product))]
         public IHttpActionResult GetNewProductByCatalogAndCategory(string catalogId, string categoryId)
         {
-            var retVal = new webModel.Product
-            {
-                CategoryId = categoryId,
-                CatalogId = catalogId,
-                IsActive = true,
-                SeoInfos = new SeoInfo[0]
-            };
+            var retVal = AbstractTypeFactory<webModel.Product>.TryCreateInstance();
+            retVal.CategoryId = categoryId;
+            retVal.CatalogId = catalogId;
+            retVal.IsActive = true;
+            retVal.SeoInfos = Array.Empty<SeoInfo>();            
 
             CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Create, retVal.ToModuleModel(_blobUrlResolver));
 
@@ -189,15 +187,14 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             var mainWebProduct = product.ToWebModel(_blobUrlResolver);
 
-            var newVariation = new webModel.Product
-            {
-                Name = product.Name,
-                CategoryId = product.CategoryId,
-                CatalogId = product.CatalogId,
-                TitularItemId = product.MainProductId ?? productId,
-                Properties = mainWebProduct.Properties.Where(x => x.Type == coreModel.PropertyType.Variation).ToList(),
-            };
+            var newVariation = AbstractTypeFactory<webModel.Product>.TryCreateInstance();
 
+            newVariation.Name = product.Name;
+            newVariation.CategoryId = product.CategoryId;
+            newVariation.CatalogId = product.CatalogId;
+            newVariation.TitularItemId = product.MainProductId ?? productId;
+            newVariation.Properties = mainWebProduct.Properties.Where(x => x.Type == coreModel.PropertyType.Variation).ToList();
+ 
             foreach (var property in newVariation.Properties)
             {
                 // Mark variation property as required
@@ -367,8 +364,10 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
         private string GenerateProductDefaultSlugUrl(webModel.Product product)
         {
-            var retVal = new List<string>();
-            retVal.Add(product.Name);
+            var retVal = new List<string>
+            {
+                product.Name
+            };
             if (product.Properties != null)
             {
                 foreach (var property in product.Properties.Where(x => x.Type == coreModel.PropertyType.Variation && x.Values != null))
@@ -376,7 +375,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                     retVal.AddRange(property.Values.Select(x => x.PropertyName + "-" + x.Value));
                 }
             }
-            return String.Join(" ", retVal).GenerateSlug();
+            return string.Join(" ", retVal).GenerateSlug();
         }
     }
 }
