@@ -1,6 +1,6 @@
-﻿angular.module('virtoCommerce.catalogModule')
+angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.categoriesItemsListController', [
-        '$sessionStorage', '$localStorage', '$timeout', '$scope', 'virtoCommerce.catalogModule.categories', 'virtoCommerce.catalogModule.items', 'virtoCommerce.catalogModule.listEntries', 'platformWebApp.bladeUtils', 'platformWebApp.dialogService', 'platformWebApp.authService', 'platformWebApp.uiGridHelper', 'virtoCommerce.catalogModule.catalogs',
+        '$sessionStorage', '$localStorage', '$timeout', '$scope',  'virtoCommerce.catalogModule.categories', 'virtoCommerce.catalogModule.items', 'virtoCommerce.catalogModule.listEntries', 'platformWebApp.bladeUtils', 'platformWebApp.dialogService', 'platformWebApp.authService', 'platformWebApp.uiGridHelper', 'virtoCommerce.catalogModule.catalogs',
         function ($sessionStorage, $localStorage, $timeout, $scope, categories, items, listEntries, bladeUtils, dialogService, authService, uiGridHelper, catalogs) {
             $scope.uiGridConstants = uiGridHelper.uiGridConstants;
             $scope.hasMore = true;
@@ -8,7 +8,6 @@
 
             var blade = $scope.blade;
             var bladeNavigationService = bladeUtils.bladeNavigationService;
-            // blade.catalog = bladeNavigationService.catalogsSelectedCatalog;
             if (blade.catalogId)
                 blade.catalog = catalogs.get({ id: blade.catalogId });
 
@@ -439,23 +438,6 @@
                     },
                     permission: 'catalog:create'
                 }
-
-                //{
-                //    name: "Advanced search", icon: 'fa fa-search',
-                //    executeMethod: function () {
-                //        var newBlade = {
-                //            id: 'listItemChild',
-                //            title: 'Advanced search',
-                //            subtitle: 'Searching within...',
-                //            controller: 'virtoCommerce.catalogModule.advancedSearchController',
-                //            template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/advanced-search.tpl.html'
-                //        };
-                //        bladeNavigationService.showBlade(newBlade, blade.parentBlade);
-                //    },
-                //    canExecuteMethod: function () {
-                //        return true;
-                //    }
-                //}
             ];
 
             if (blade.isBrowsingLinkedCategory) {
