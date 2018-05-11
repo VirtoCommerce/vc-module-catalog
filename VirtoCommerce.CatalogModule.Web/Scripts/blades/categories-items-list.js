@@ -240,23 +240,29 @@ angular.module('virtoCommerce.catalogModule')
 
             function mapChecked() {
                 bladeNavigationService.closeChildrenBlades(blade);
-                var selection = $scope.gridApi.selection.getSelectedRows();
-                var listEntryLinks = [];
-                angular.forEach(selection, function (listItem) {
-                    listEntryLinks.push({
-                        listEntryId: listItem.id,
-                        listEntryType: listItem.type,
-                        catalogId: blade.parentBlade.catalogId,
-                        categoryId: blade.parentBlade.categoryId,
-                    });
-                });
 
-                blade.isLoading = true;
-                listEntries.createlinks(listEntryLinks, function () {
-                    blade.refresh();
-                    blade.parentBlade.refresh();
-                },
-                    function (error) { bladeNavigationService.setError('Error ' + error.status, blade); });
+                if ($scope.gridApi !== undefined && $scope.gridApi.selection.getSelectAllState() === true) {
+                    var searchCriteria = getSearchCriteria();
+                    listEntries.bulkcreatelinks(searchCriteria);
+                } else {
+                    var selection = $scope.gridApi.selection.getSelectedRows();
+                    var listEntryLinks = [];
+                    angular.forEach(selection, function (listItem) {
+                        listEntryLinks.push({
+                            listEntryId: listItem.id,
+                            listEntryType: listItem.type,
+                            catalogId: blade.parentBlade.catalogId,
+                            categoryId: blade.parentBlade.categoryId,
+                        });
+                    });
+
+                    blade.isLoading = true;
+                    listEntries.createlinks(listEntryLinks, function () {
+                            blade.refresh();
+                            blade.parentBlade.refresh();
+                        },
+                        function (error) { bladeNavigationService.setError('Error ' + error.status, blade); });
+                }
             }
 
             blade.setSelectedItem = function (listItem) {
