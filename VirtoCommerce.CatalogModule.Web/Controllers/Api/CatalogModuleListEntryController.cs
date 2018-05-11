@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -116,6 +116,51 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return StatusCode(HttpStatusCode.NoContent);
         }
 
+        [HttpPost]
+        [Route("links/bulkcreate")]
+        [ResponseType(typeof(void))]
+        public IHttpActionResult BulkCreationLinks(webModel.SearchCriteria searchCriteria)
+        {
+            var coreModelCriteria = searchCriteria.ToCoreModel();
+
+            coreModelCriteria.WithHidden = true;
+
+            if (coreModelCriteria.ResponseGroup.HasFlag(coreModel.SearchResponseGroup.WithProducts))
+            {
+                coreModelCriteria.ResponseGroup = coreModelCriteria.ResponseGroup & ~coreModel.SearchResponseGroup.WithCategories;
+
+                bool needToContinue;
+                var links = new List<webModel.ListEntryLink>();
+                do
+                {
+                    var tmpLinks = _searchService
+                        .Search(coreModelCriteria)
+                        .Products
+                        .Select(x => new webModel.ListEntryLink
+                            {
+                                CatalogId = x.CatalogId,
+                                ListEntryType = webModel.ListEntryProduct.TypeName,
+                                ListEntryId = x.Id,
+                                CategoryId = x.CategoryId
+                            })
+                        .ToList();
+
+                    links.AddRange(tmpLinks);
+
+                    needToContinue = tmpLinks.Any();
+
+                    coreModelCriteria.Skip += coreModelCriteria.Take;
+                    
+                } while (needToContinue);
+
+                CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Create, links);
+
+                InnerUpdateLinks(links.ToArray(), (x, y) => x.Links.Add(y));
+
+            }
+            
+            return StatusCode(HttpStatusCode.NoContent);
+        }
 
         [ApiExplorerSettings(IgnoreApi = true)]
         [HttpGet]
