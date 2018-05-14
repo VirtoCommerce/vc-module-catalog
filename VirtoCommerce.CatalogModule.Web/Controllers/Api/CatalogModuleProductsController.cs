@@ -23,6 +23,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly IItemService _itemsService;
         private readonly IBlobUrlResolver _blobUrlResolver;
         private readonly ICatalogService _catalogService;
+        private readonly ICatalogSearchService _searchService;
         private readonly ICategoryService _categoryService;
         private readonly ISkuGenerator _skuGenerator;
         private readonly IProductAssociationSearchService _productAssociationSearchService;
@@ -35,7 +36,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             ISkuGenerator skuGenerator,
             ISecurityService securityService,
             IPermissionScopeService permissionScopeService,
-            IProductAssociationSearchService productAssociationSearchService
+            IProductAssociationSearchService productAssociationSearchService,
+            ICatalogSearchService searchService
             )
             : base(securityService, permissionScopeService)
         {
@@ -45,6 +47,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             _catalogService = catalogService;
             _skuGenerator = skuGenerator;
             _productAssociationSearchService = productAssociationSearchService;
+            _searchService = searchService;
         }
 
         /// <summary>
@@ -295,6 +298,38 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Delete, products);
 
             _itemsService.Delete(ids);
+            return StatusCode(HttpStatusCode.NoContent);
+        }
+
+        [HttpPost]
+        [Route("bulkremove")]
+        [ResponseType(typeof(void))]
+        public IHttpActionResult BulkRemove(webModel.SearchCriteria searchCriteria)
+        {
+            var coreModelCriteria = searchCriteria.ToCoreModel();
+
+            if (coreModelCriteria.ResponseGroup.HasFlag(coreModel.SearchResponseGroup.WithProducts))
+            {
+                coreModelCriteria.ResponseGroup = coreModelCriteria.ResponseGroup & ~coreModel.SearchResponseGroup.WithCategories;
+
+                bool haveProducts;
+
+                do
+                {
+                    var products = _searchService.Search(coreModelCriteria).Products;
+
+                    haveProducts = products.Any();
+
+                    coreModelCriteria.Skip += coreModelCriteria.Take;
+
+                    CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Delete, products.ToArray());
+
+                    var itemIds = products.Select(p => p.Id).ToArray();
+                    _itemsService.Delete(itemIds);
+
+                } while (haveProducts);
+            }
+
             return StatusCode(HttpStatusCode.NoContent);
         }
 
