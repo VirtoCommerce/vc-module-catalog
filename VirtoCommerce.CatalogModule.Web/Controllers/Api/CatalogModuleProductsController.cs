@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net;
 using System.Web.Http;
 using System.Web.Http.Description;
-using VirtoCommerce.CatalogModule.Data.Search;
 using VirtoCommerce.CatalogModule.Web.Converters;
 using VirtoCommerce.CatalogModule.Web.Security;
 using VirtoCommerce.Domain.Catalog.Model.Search;
@@ -28,8 +27,16 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly ISkuGenerator _skuGenerator;
         private readonly IProductAssociationSearchService _productAssociationSearchService;
 
-        public CatalogModuleProductsController(IItemService itemsService, IBlobUrlResolver blobUrlResolver, ICatalogService catalogService, ICategoryService categoryService,
-                                               ISkuGenerator skuGenerator, ISecurityService securityService, IPermissionScopeService permissionScopeService, IProductAssociationSearchService productAssociationSearchService)
+        public CatalogModuleProductsController(
+            IItemService itemsService,
+            IBlobUrlResolver blobUrlResolver,
+            ICatalogService catalogService,
+            ICategoryService categoryService,
+            ISkuGenerator skuGenerator,
+            ISecurityService securityService,
+            IPermissionScopeService permissionScopeService,
+            IProductAssociationSearchService productAssociationSearchService
+            )
             : base(securityService, permissionScopeService)
         {
             _itemsService = itemsService;
@@ -39,7 +46,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             _skuGenerator = skuGenerator;
             _productAssociationSearchService = productAssociationSearchService;
         }
-
 
         /// <summary>
         /// Gets product by id.
@@ -105,7 +111,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return GetProductByIds(ids, respGroup);
         }
 
-
         /// <summary>
         /// Gets the template for a new product (outside of category).
         /// </summary>
@@ -120,7 +125,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             return GetNewProductByCatalogAndCategory(catalogId, null);
         }
-
 
         /// <summary>
         /// Gets the template for a new product (inside category).
@@ -167,7 +171,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return Ok(retVal);
         }
 
-
         /// <summary>
         /// Gets the template for a new variation.
         /// </summary>
@@ -211,7 +214,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             newVariation.Code = _skuGenerator.GenerateSku(newVariation.ToModuleModel(null));
             return Ok(newVariation);
         }
-
 
         [HttpGet]
         [Route("{productId}/clone")]
@@ -279,7 +281,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             InnerSaveProducts(products);
             return Ok();
         }
-
 
         /// <summary>
         /// Deletes the specified items by id.
