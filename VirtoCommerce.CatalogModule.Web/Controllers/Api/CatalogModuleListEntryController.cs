@@ -24,9 +24,15 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly IItemService _itemService;
         private readonly IBlobUrlResolver _blobUrlResolver;
 
-        public CatalogModuleListEntryController(ICatalogSearchService searchService,
-                                   ICategoryService categoryService,
-                                   IItemService itemService, IBlobUrlResolver blobUrlResolver, ISecurityService securityService, IPermissionScopeService permissionScopeService, ICatalogService catalogService)
+        public CatalogModuleListEntryController(
+            ICatalogSearchService searchService,
+            ICategoryService categoryService,
+            IItemService itemService,
+            IBlobUrlResolver blobUrlResolver,
+            ISecurityService securityService,
+            IPermissionScopeService permissionScopeService,
+            ICatalogService catalogService
+            )
             : base(securityService, permissionScopeService)
         {
             _searchService = searchService;
@@ -35,7 +41,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             _blobUrlResolver = blobUrlResolver;
             _catalogService = catalogService;
         }
-
 
         /// <summary>
         /// Searches for the items by complex criteria.
@@ -98,7 +103,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             return Ok(retVal);
         }
-
 
         /// <summary>
         /// Creates links for categories or items to parent categories and catalogs.
@@ -175,7 +179,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return Ok(text.GenerateSlug());
         }
 
-
         /// <summary>
         /// Unlinks the linked categories or items from parent categories and catalogs.
         /// </summary>
@@ -191,7 +194,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             InnerUpdateLinks(links, (x, y) => x.Links = x.Links.Where(l => string.Join(":", l.CatalogId, l.CategoryId) != string.Join(":", y.CatalogId, y.CategoryId)).ToList());
             return StatusCode(HttpStatusCode.NoContent);
         }
-
 
         /// <summary>
         /// Move categories or products to another location.
