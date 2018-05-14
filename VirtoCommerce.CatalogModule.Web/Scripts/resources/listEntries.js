@@ -4,7 +4,7 @@ angular.module('virtoCommerce.catalogModule')
     {
         listitemssearch: { method: 'POST', url: 'api/catalog/listentries' },
         createlinks: { method: 'POST', url: 'api/catalog/listentrylinks' },
-        bulkcreatelinks: { method: 'POST', url: 'api/catalog/listentries/links/bulkcreate' },
+        bulkcreatelinks: { method: 'POST', url: 'api/catalog/listentrylinks/bulkcreate' },
         deletelinks: { method: 'POST', url: 'api/catalog/listentrylinks/delete' },
         move: { method: 'POST', url: 'api/catalog/listentries/move' }
     });

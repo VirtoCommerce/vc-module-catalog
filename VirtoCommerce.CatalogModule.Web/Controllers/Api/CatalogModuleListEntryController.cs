@@ -117,7 +117,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         }
 
         [HttpPost]
-        [Route("links/bulkcreate")]
+        [Route("~/api/catalog/listentrylinks/bulkcreate")]
         [ResponseType(typeof(void))]
         public IHttpActionResult BulkCreationLinks(webModel.SearchCriteria searchCriteria)
         {
