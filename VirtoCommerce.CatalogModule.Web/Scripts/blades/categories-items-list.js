@@ -214,29 +214,31 @@ angular.module('virtoCommerce.catalogModule')
                                     blade.refresh();
                                     if (blade.mode === 'mappingSource')
                                         blade.parentBlade.refresh();
-                                }, function (error) {
-                                    bladeNavigationService.setError('Error ' + error.status, blade);
-                                });
+                                }, removeErrorCallback);
                             }
                             if (categoryIds.length > 0) {
-                                categories.remove({ ids: categoryIds }, function (data, headers) {
-                                    blade.refresh();
-                                }, function (error) {
-                                    bladeNavigationService.setError('Error ' + error.status, blade);
-                                });
+                                categories.remove({ ids: categoryIds }, removeSuccessCallback, removeErrorCallback);
                             }
                             if (itemIds.length > 0) {
-                                items.remove({ ids: itemIds }, function (data, headers) {
-                                    blade.refresh();
-                                }, function (error) {
-                                    bladeNavigationService.setError('Error ' + error.status, blade);
-                                });
+                                if ($scope.gridApi && $scope.gridApi.selection.getSelectAllState()) {
+                                    items.bulkRemove(getSearchCriteria(), removeSuccessCallback, removeErrorCallback);
+                                } else {
+                                    items.remove({ ids: itemIds }, removeSuccessCallback, removeErrorCallback);
+                                }
                             }
                         }
                     }
                 }
                 dialogService.showDialog(dialog, 'Modules/$(VirtoCommerce.Catalog)/Scripts/dialogs/deleteCategoryItem-dialog.tpl.html', 'platformWebApp.confirmDialogController');
             }
+
+            function removeSuccessCallback() {
+                blade.refresh();
+            };
+
+            function removeErrorCallback(error) {
+                bladeNavigationService.setError('Error ' + error.status, blade);
+            };
 
             function mapChecked() {
                 bladeNavigationService.closeChildrenBlades(blade);
