@@ -241,9 +241,8 @@ angular.module('virtoCommerce.catalogModule')
             function mapChecked() {
                 bladeNavigationService.closeChildrenBlades(blade);
 
-                if ($scope.gridApi !== undefined && $scope.gridApi.selection.getSelectAllState() === true) {
-                    var searchCriteria = getSearchCriteria();
-                    listEntries.bulkcreatelinks(searchCriteria);
+                if ($scope.gridApi && $scope.gridApi.selection.getSelectAllState()) {
+                    listEntries.bulkcreatelinks(getSearchCriteria());
                 } else {
                     var selection = $scope.gridApi.selection.getSelectedRows();
                     var listEntryLinks = [];
