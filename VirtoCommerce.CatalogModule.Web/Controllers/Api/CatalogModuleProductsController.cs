@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net;
 using System.Web.Http;
 using System.Web.Http.Description;
-using VirtoCommerce.CatalogModule.Data.Search;
 using VirtoCommerce.CatalogModule.Web.Converters;
 using VirtoCommerce.CatalogModule.Web.Security;
 using VirtoCommerce.Domain.Catalog.Model.Search;
@@ -24,12 +23,22 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly IItemService _itemsService;
         private readonly IBlobUrlResolver _blobUrlResolver;
         private readonly ICatalogService _catalogService;
+        private readonly ICatalogSearchService _searchService;
         private readonly ICategoryService _categoryService;
         private readonly ISkuGenerator _skuGenerator;
         private readonly IProductAssociationSearchService _productAssociationSearchService;
 
-        public CatalogModuleProductsController(IItemService itemsService, IBlobUrlResolver blobUrlResolver, ICatalogService catalogService, ICategoryService categoryService,
-                                               ISkuGenerator skuGenerator, ISecurityService securityService, IPermissionScopeService permissionScopeService, IProductAssociationSearchService productAssociationSearchService)
+        public CatalogModuleProductsController(
+            IItemService itemsService,
+            IBlobUrlResolver blobUrlResolver,
+            ICatalogService catalogService,
+            ICategoryService categoryService,
+            ISkuGenerator skuGenerator,
+            ISecurityService securityService,
+            IPermissionScopeService permissionScopeService,
+            IProductAssociationSearchService productAssociationSearchService,
+            ICatalogSearchService searchService
+            )
             : base(securityService, permissionScopeService)
         {
             _itemsService = itemsService;
@@ -38,8 +47,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             _catalogService = catalogService;
             _skuGenerator = skuGenerator;
             _productAssociationSearchService = productAssociationSearchService;
+            _searchService = searchService;
         }
-
 
         /// <summary>
         /// Gets product by id.
@@ -105,7 +114,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return GetProductByIds(ids, respGroup);
         }
 
-
         /// <summary>
         /// Gets the template for a new product (outside of category).
         /// </summary>
@@ -120,7 +128,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             return GetNewProductByCatalogAndCategory(catalogId, null);
         }
-
 
         /// <summary>
         /// Gets the template for a new product (inside category).
@@ -167,7 +174,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return Ok(retVal);
         }
 
-
         /// <summary>
         /// Gets the template for a new variation.
         /// </summary>
@@ -211,7 +217,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             newVariation.Code = _skuGenerator.GenerateSku(newVariation.ToModuleModel(null));
             return Ok(newVariation);
         }
-
 
         [HttpGet]
         [Route("{productId}/clone")]
@@ -280,7 +285,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return Ok();
         }
 
-
         /// <summary>
         /// Deletes the specified items by id.
         /// </summary>
@@ -294,6 +298,38 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Delete, products);
 
             _itemsService.Delete(ids);
+            return StatusCode(HttpStatusCode.NoContent);
+        }
+
+        [HttpPost]
+        [Route("bulkremove")]
+        [ResponseType(typeof(void))]
+        public IHttpActionResult BulkRemove(webModel.SearchCriteria searchCriteria)
+        {
+            var coreModelCriteria = searchCriteria.ToCoreModel();
+
+            if (coreModelCriteria.ResponseGroup.HasFlag(coreModel.SearchResponseGroup.WithProducts))
+            {
+                coreModelCriteria.ResponseGroup = coreModelCriteria.ResponseGroup & ~coreModel.SearchResponseGroup.WithCategories;
+
+                bool haveProducts;
+
+                do
+                {
+                    var products = _searchService.Search(coreModelCriteria).Products;
+
+                    haveProducts = products.Any();
+
+                    coreModelCriteria.Skip += coreModelCriteria.Take;
+
+                    CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Delete, products.ToArray());
+
+                    var itemIds = products.Select(p => p.Id).ToArray();
+                    _itemsService.Delete(itemIds);
+
+                } while (haveProducts);
+            }
+
             return StatusCode(HttpStatusCode.NoContent);
         }
 

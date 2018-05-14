@@ -1,7 +1,8 @@
-﻿angular.module('virtoCommerce.catalogModule')
+angular.module('virtoCommerce.catalogModule')
 .factory('virtoCommerce.catalogModule.items', ['$resource', function ($resource) {
     return $resource('api/catalog/products/:id', null, {
         remove: { method: 'DELETE', url: 'api/catalog/products' },
+        bulkRemove: { method: 'POST', url: 'api/catalog/products/bulkremove' }, // AngularJS does not support body for DELETE method
         newItemInCatalog: { method: 'GET', url: 'api/catalog/:catalogId/products/getnew' },
         newItemInCategory: { method: 'GET', url: 'api/catalog/:catalogId/categories/:categoryId/products/getnew' },
         newVariation: { method: 'GET', url: 'api/catalog/products/:itemId/getnewvariation' },
