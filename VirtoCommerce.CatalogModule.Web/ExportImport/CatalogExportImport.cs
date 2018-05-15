@@ -4,13 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Platform.Core.Assets;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.ExportImport;
-using VirtoCommerce.Platform.Data.Common;
 
 namespace VirtoCommerce.CatalogModule.Web.ExportImport
 {
@@ -23,13 +21,18 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
         private readonly IPropertyService _propertyService;
         private readonly IBlobStorageProvider _blobStorageProvider;
         private readonly IAssociationService _associationService;
-        private const int _batchSize = 50;
+        private int _batchSize = 50;
         private readonly JsonSerializer _serializer;
 
-
-        public CatalogExportImport(ICatalogSearchService catalogSearchService,
-            ICatalogService catalogService, ICategoryService categoryService, IItemService itemService,
-            IPropertyService propertyService, IBlobStorageProvider blobStorageProvider, IAssociationService associationService)
+        public CatalogExportImport(
+            ICatalogSearchService catalogSearchService,
+            ICatalogService catalogService,
+            ICategoryService categoryService,
+            IItemService itemService,
+            IPropertyService propertyService,
+            IBlobStorageProvider blobStorageProvider,
+            IAssociationService associationService
+            )
         {
             _blobStorageProvider = blobStorageProvider;
             _catalogSearchService = catalogSearchService;
@@ -65,7 +68,6 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                 writer.Flush();
             }
         }
-
 
         public void DoImport(Stream stream, PlatformExportManifest manifest, Action<ExportImportProgressInfo> progressCallback)
         {
