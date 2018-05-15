@@ -241,8 +241,23 @@ angular.module('virtoCommerce.catalogModule')
             function mapChecked() {
                 bladeNavigationService.closeChildrenBlades(blade);
 
+                blade.isLoading = true;
+
                 if ($scope.gridApi && $scope.gridApi.selection.getSelectAllState()) {
-                    listEntries.bulkcreatelinks(getSearchCriteria());
+                    listEntries.bulkcreatelinks(
+                        {
+                            SearchCriteria: getSearchCriteria(),
+                            CatalogId: blade.parentBlade.catalogId,
+                            CategoryId: blade.parentBlade.categoryId
+                        },
+                        function () {
+                            blade.refresh();
+                            blade.parentBlade.refresh();
+                        },
+                        function (error) {
+                            bladeNavigationService.setError('Error ' + error.status, blade);
+                        }
+                    );
                 } else {
                     var selection = $scope.gridApi.selection.getSelectedRows();
                     var listEntryLinks = [];
@@ -254,8 +269,7 @@ angular.module('virtoCommerce.catalogModule')
                             categoryId: blade.parentBlade.categoryId,
                         });
                     });
-
-                    blade.isLoading = true;
+                    
                     listEntries.createlinks(listEntryLinks, function () {
                             blade.refresh();
                             blade.parentBlade.refresh();
