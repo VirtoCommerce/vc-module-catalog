@@ -71,6 +71,13 @@
                 <title>Use catalog and product codes in outlines</title>
                 <description>Enable or disable using codes instead of ids in outlines</description>
             </setting>
+            <setting>
+                <name>Catalog.ExportImport.PageSize</name>
+                <valueType>integer</valueType>
+                <defaultValue>50</defaultValue>
+                <title>The page size being used for Export / Import</title>
+                <description>High value may will cause slow performance</description>
+            </setting>
         </group>
         <group name="Catalog|Images">
             <setting>

@@ -9,6 +9,7 @@ using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Platform.Core.Assets;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.ExportImport;
+using VirtoCommerce.Platform.Core.Settings;
 
 namespace VirtoCommerce.CatalogModule.Web.ExportImport
 {
@@ -21,8 +22,10 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
         private readonly IPropertyService _propertyService;
         private readonly IBlobStorageProvider _blobStorageProvider;
         private readonly IAssociationService _associationService;
-        private int _batchSize = 50;
+        private readonly ISettingsManager _settingsManager;
         private readonly JsonSerializer _serializer;
+
+        private int? _batchSize;
 
         public CatalogExportImport(
             ICatalogSearchService catalogSearchService,
@@ -31,7 +34,8 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
             IItemService itemService,
             IPropertyService propertyService,
             IBlobStorageProvider blobStorageProvider,
-            IAssociationService associationService
+            IAssociationService associationService,
+            ISettingsManager settingsManager
             )
         {
             _blobStorageProvider = blobStorageProvider;
@@ -41,11 +45,25 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
             _itemService = itemService;
             _propertyService = propertyService;
             _associationService = associationService;
+            _settingsManager = settingsManager;
 
             _serializer = new JsonSerializer();
             _serializer.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             _serializer.Formatting = Formatting.Indented;
             _serializer.NullValueHandling = NullValueHandling.Ignore;
+        }
+
+        private int BatchSize
+        {
+            get
+            {
+                if (_batchSize == null)
+                {
+                    _batchSize = _settingsManager.GetValue("Catalog.ExportImport.PageSize", 50);
+                }
+
+                return (int)_batchSize;
+            }
         }
 
         #region Export/Import methods
@@ -138,7 +156,7 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                                     products.Add(product);
                                     productsCount++;
                                     reader.Read();
-                                    if (productsCount % _batchSize == 0 || reader.TokenType == JsonToken.EndArray)
+                                    if (productsCount % BatchSize == 0 || reader.TokenType == JsonToken.EndArray)
                                     {
                                         _itemService.Update(products.ToArray());
                                         if (manifest.HandleBinaryData)
@@ -162,10 +180,10 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                                 var totalProductsWithAssociationsCount = associationBackupMap.Count();
                                 progressInfo.Description = $"{ totalProductsWithAssociationsCount } products associations importing...";
                                 progressCallback(progressInfo);
-                                for (int i = 0; i < totalProductsWithAssociationsCount; i += _batchSize)
+                                for (int i = 0; i < totalProductsWithAssociationsCount; i += BatchSize)
                                 {
                                     var fakeProducts = new List<CatalogProduct>();
-                                    foreach (var pair in associationBackupMap.Skip(i).Take(_batchSize))
+                                    foreach (var pair in associationBackupMap.Skip(i).Take(BatchSize))
                                     {
                                         var fakeProduct = AbstractTypeFactory<CatalogProduct>.TryCreateInstance();
                                         fakeProduct.Id = pair.Key;
@@ -173,7 +191,7 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                                         fakeProducts.Add(fakeProduct);
                                     }
                                     _associationService.SaveChanges(fakeProducts.ToArray());
-                                    progressInfo.Description = $"{ Math.Min(totalProductsWithAssociationsCount, i + _batchSize) } of { totalProductsWithAssociationsCount } products associations imported";
+                                    progressInfo.Description = $"{ Math.Min(totalProductsWithAssociationsCount, i + BatchSize) } of { totalProductsWithAssociationsCount } products associations imported";
                                     progressCallback(progressInfo);
                                 }
                             }
@@ -269,9 +287,9 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
 
             writer.WritePropertyName("Products");
             writer.WriteStartArray();
-            for (int i = 0; i < totalProductCount; i += _batchSize)
+            for (int i = 0; i < totalProductCount; i += BatchSize)
             {
-                var searchResponse = _catalogSearchService.Search(new SearchCriteria { WithHidden = true, Take = _batchSize, Skip = i, ResponseGroup = SearchResponseGroup.WithProducts });
+                var searchResponse = _catalogSearchService.Search(new SearchCriteria { WithHidden = true, Take = BatchSize, Skip = i, ResponseGroup = SearchResponseGroup.WithProducts });
 
                 var products = _itemService.GetByIds(searchResponse.Products.Select(x => x.Id).ToArray(), ItemResponseGroup.ItemLarge);
                 if (manifest.HandleBinaryData)
@@ -284,7 +302,7 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                     serializer.Serialize(writer, product);
                 }
                 writer.Flush();
-                progressInfo.Description = $"{ Math.Min(totalProductCount, i + _batchSize) } of { totalProductCount } products exported";
+                progressInfo.Description = $"{ Math.Min(totalProductCount, i + BatchSize) } of { totalProductCount } products exported";
                 progressCallback(progressInfo);
             }
             writer.WriteEndArray();
