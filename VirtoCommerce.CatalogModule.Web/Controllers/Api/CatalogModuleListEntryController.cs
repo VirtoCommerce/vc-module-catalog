@@ -120,49 +120,64 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return StatusCode(HttpStatusCode.NoContent);
         }
 
+        /// <summary>
+        /// Bulk create links to categories and items
+        /// </summary>
+        /// <param name="createLinksModel"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("~/api/catalog/listentrylinks/bulkcreate")]
         [ResponseType(typeof(void))]
-        public IHttpActionResult BulkCreationLinks(webModel.SearchCriteria searchCriteria)
+        public IHttpActionResult BulkCreationLinks(webModel.BulkCreateLinkParameters createLinksModel)
         {
-            var coreModelCriteria = searchCriteria.ToCoreModel();
+            var coreModelCriteria = createLinksModel.SearchCriteria.ToCoreModel();
 
-            coreModelCriteria.WithHidden = true;
+            bool haveProductsOrCategories;
 
-            if (coreModelCriteria.ResponseGroup.HasFlag(coreModel.SearchResponseGroup.WithProducts))
+            do
             {
-                coreModelCriteria.ResponseGroup = coreModelCriteria.ResponseGroup & ~coreModel.SearchResponseGroup.WithCategories;
-
-                bool needToContinue;
                 var links = new List<webModel.ListEntryLink>();
-                do
-                {
-                    var tmpLinks = _searchService
-                        .Search(coreModelCriteria)
-                        .Products
-                        .Select(x => new webModel.ListEntryLink
-                            {
-                                CatalogId = x.CatalogId,
-                                ListEntryType = webModel.ListEntryProduct.TypeName,
-                                ListEntryId = x.Id,
-                                CategoryId = x.CategoryId
-                            })
-                        .ToList();
 
-                    links.AddRange(tmpLinks);
+                var searchResult = _searchService.Search(coreModelCriteria);
 
-                    needToContinue = tmpLinks.Any();
+                var productLinks = searchResult
+                    .Products
+                    .Select(x => new webModel.ListEntryLink
+                    {
+                        CatalogId = createLinksModel.CatalogId,
+                        ListEntryType = webModel.ListEntryProduct.TypeName,
+                        ListEntryId = x.Id,
+                        CategoryId = createLinksModel.CategoryId
+                    })
+                    .ToList();
 
-                    coreModelCriteria.Skip += coreModelCriteria.Take;
-                    
-                } while (needToContinue);
+                links.AddRange(productLinks);
 
-                CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Create, links);
+                var categoryLinks = searchResult
+                    .Categories
+                    .Skip(coreModelCriteria.Skip)
+                    .Take(coreModelCriteria.Take)
+                    .Select(x => new webModel.ListEntryLink
+                    {
+                        CatalogId = createLinksModel.CatalogId,
+                        CategoryId = createLinksModel.CategoryId,
+                        ListEntryType = webModel.ListEntryCategory.TypeName,
+                        ListEntryId = x.Id
+                    })
+                    .ToList();
+
+                links.AddRange(categoryLinks);
+
+                haveProductsOrCategories = productLinks.Any() || categoryLinks.Any();
+
+                coreModelCriteria.Skip += coreModelCriteria.Take;
+
+                CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Create, links.ToArray());
 
                 InnerUpdateLinks(links.ToArray(), (x, y) => x.Links.Add(y));
 
-            }
-            
+            } while (haveProductsOrCategories);
+
             return StatusCode(HttpStatusCode.NoContent);
         }
 
