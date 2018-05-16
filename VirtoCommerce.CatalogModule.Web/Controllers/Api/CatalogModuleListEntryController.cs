@@ -123,14 +123,22 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <summary>
         /// Bulk create links to categories and items
         /// </summary>
-        /// <param name="createLinksModel"></param>
+        /// <param name="creationRequest"></param>
         /// <returns></returns>
         [HttpPost]
         [Route("~/api/catalog/listentrylinks/bulkcreate")]
         [ResponseType(typeof(void))]
-        public IHttpActionResult BulkCreationLinks(webModel.BulkCreateLinkParameters createLinksModel)
+        public IHttpActionResult BulkCreationLinks(webModel.BulkLinkCreationRequest creationRequest)
         {
-            var coreModelCriteria = createLinksModel.SearchCriteria.ToCoreModel();
+
+            if (creationRequest.CatalogId.IsNullOrEmpty() || creationRequest.CategoryId.IsNullOrEmpty())
+            {
+                throw new ArgumentException("Target catalog and category identifiers should be specified.");
+            }
+
+            var coreModelCriteria = creationRequest.SearchCriteria.ToCoreModel();
+
+            AddCategoryLinks(coreModelCriteria, creationRequest.CatalogId, creationRequest.CategoryId);
 
             bool haveProductsOrCategories;
 
@@ -144,31 +152,16 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                     .Products
                     .Select(x => new webModel.ListEntryLink
                     {
-                        CatalogId = createLinksModel.CatalogId,
+                        CatalogId = creationRequest.CatalogId,
                         ListEntryType = webModel.ListEntryProduct.TypeName,
                         ListEntryId = x.Id,
-                        CategoryId = createLinksModel.CategoryId
+                        CategoryId = creationRequest.CategoryId
                     })
                     .ToList();
 
                 links.AddRange(productLinks);
 
-                var categoryLinks = searchResult
-                    .Categories
-                    .Skip(coreModelCriteria.Skip)
-                    .Take(coreModelCriteria.Take)
-                    .Select(x => new webModel.ListEntryLink
-                    {
-                        CatalogId = createLinksModel.CatalogId,
-                        CategoryId = createLinksModel.CategoryId,
-                        ListEntryType = webModel.ListEntryCategory.TypeName,
-                        ListEntryId = x.Id
-                    })
-                    .ToList();
-
-                links.AddRange(categoryLinks);
-
-                haveProductsOrCategories = productLinks.Any() || categoryLinks.Any();
+                haveProductsOrCategories = productLinks.Any();
 
                 coreModelCriteria.Skip += coreModelCriteria.Take;
 
@@ -179,6 +172,25 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             } while (haveProductsOrCategories);
 
             return StatusCode(HttpStatusCode.NoContent);
+        }
+
+        private void AddCategoryLinks(coreModel.SearchCriteria criteria, string targetCatalogId, string targetCategoryId)
+        {
+            var categoryLinks = _searchService
+                .Search(criteria)
+                .Categories
+                .Select(c => new webModel.ListEntryLink
+                {
+                    CatalogId = targetCatalogId,
+                    CategoryId = targetCategoryId,
+                    ListEntryType = webModel.ListEntryCategory.TypeName,
+                    ListEntryId = c.Id
+                })
+                .ToArray();
+
+            CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Create, categoryLinks);
+
+            InnerUpdateLinks(categoryLinks, (x, y) => x.Links.Add(y));
         }
 
         [ApiExplorerSettings(IgnoreApi = true)]
