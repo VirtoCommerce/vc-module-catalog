@@ -1,4 +1,4 @@
-﻿<div>
+<div>
 
     <div id='valuePlaceHolder'></div>
 
@@ -136,7 +136,7 @@
     <script type="text/ng-template" id="ShortText-dictionary.html">
         <div class="form-input">
             <ui-select ng-model="context.currentPropValues[0]" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
-                <ui-select-match placeholder="Select value">{{$select.selected.value}}</ui-select-match>
+                <ui-select-match allow-clear="true" placeholder="Select value">{{$select.selected.value}}</ui-select-match>
                 <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search} | orderBy: 'value'">
                     <span ng-bind-html="propValue.value | highlight: $select.search"></span>
                 </ui-select-choices>
@@ -146,7 +146,7 @@
     <script type="text/ng-template" id="Number-dictionary.html">
         <div class="form-input">
             <ui-select ng-model="context.currentPropValues[0]" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
-                <ui-select-match placeholder="Select value">{{$select.selected.value}}</ui-select-match>
+                <ui-select-match allow-clear="true" placeholder="Select value">{{$select.selected.value}}</ui-select-match>
                 <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search} | orderBy: 'value'">
                     <span ng-bind-html="propValue.value | highlight: $select.search"></span>
                 </ui-select-choices>
@@ -303,7 +303,7 @@
     <script type="text/ng-template" id="ShortText-dictionary-multilang.html">
         <div class="form-input" data-role="input-control">
             <ui-select ng-model="context.langValuesMap[defaultLanguage].currentPropValues[0]" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
-                <ui-select-match placeholder="Select value">{{$select.selected.value}}</ui-select-match>
+                <ui-select-match allow-clear="true" placeholder="Select value">{{$select.selected.value}}</ui-select-match>
                 <ui-select-choices repeat="propValue in context.langValuesMap[defaultLanguage].allValues | filter: {value: $select.search}">
                     <span ng-bind-html="propValue.value | highlight: $select.search"></span>
                 </ui-select-choices>
@@ -314,7 +314,7 @@
     <script type="text/ng-template" id="Number-dictionary-multilang.html">
         <div class="form-input" data-role="input-control">
             <ui-select ng-model="context.langValuesMap[defaultLanguage].currentPropValues[0]" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
-                <ui-select-match placeholder="Select value">{{$select.selected.value}}</ui-select-match>
+                <ui-select-match allow-clear="true" placeholder="Select value">{{$select.selected.value}}</ui-select-match>
                 <ui-select-choices repeat="propValue in context.langValuesMap[defaultLanguage].allValues | filter: {value: $select.search}">
                     <span ng-bind-html="propValue.value | highlight: $select.search"></span>
                 </ui-select-choices>
