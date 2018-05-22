@@ -1,4 +1,4 @@
-﻿angular.module('virtoCommerce.catalogModule')
+angular.module('virtoCommerce.catalogModule')
 .directive('vaProperty2', ['$compile', '$filter', '$parse', '$templateCache', '$http', function ($compile, $filter, $parse, $templateCache, $http) {
 
     return {
@@ -48,10 +48,16 @@
                             scope.currentEntity.values = _.where(scope.context.allDictionaryValues, { alias: newValues[0].alias });
                         }
                     } else {
-                        scope.currentEntity.values = newValues;
+                        if (newValues[0] === undefined) {
+                            scope.currentEntity.values = null;
+                        } else {
+                            scope.currentEntity.values = newValues;
+                        }
+                        
                     }
-                    	//reset inherited status to force property value override
-                        _.each(scope.currentEntity.values, function (x) { x.isInherited = false; });
+
+                	//reset inherited status to force property value override
+                    _.each(scope.currentEntity.values, function (x) { x.isInherited = false; });
 
                     ngModelController.$setViewValue(scope.currentEntity);
                 }
@@ -77,9 +83,9 @@
 
             function isValuesDifferent(newValues, currentValues) {
                 var elementCountIsDifferent = newValues.length != currentValues.length;
-                var elementsNotEqual = _.any(newValues, function (x) {
-                    return _.all(currentValues, function (y) {
-                        return !(y.value === x.value && y.languageCode == x.languageCode);
+                var elementsNotEqual = _.any(newValues, function (newValue) {
+                    return _.all(currentValues, function (currentValue) {
+                        return !(newValue && currentValue.value === newValue.value && currentValue.languageCode == newValue.languageCode);
                     });
                 });
 
