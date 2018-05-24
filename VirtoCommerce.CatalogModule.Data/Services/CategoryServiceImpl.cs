@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using CacheManager.Core;
@@ -7,11 +7,14 @@ using VirtoCommerce.CatalogModule.Data.Extensions;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Data.Services.Validation;
+using VirtoCommerce.Domain.Catalog.Events;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Commerce.Model;
 using VirtoCommerce.Domain.Commerce.Services;
+using VirtoCommerce.Domain.Common.Events;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.Events;
 using VirtoCommerce.Platform.Data.Common;
 using VirtoCommerce.Platform.Data.Infrastructure;
 
@@ -25,9 +28,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private readonly AbstractValidator<IHasProperties> _hasPropertyValidator;
         private readonly Func<ICatalogRepository> _repositoryFactory;
         private readonly ICatalogService _catalogService;
+        private readonly IEventPublisher _eventPublisher;
 
-
-        public CategoryServiceImpl(Func<ICatalogRepository> catalogRepositoryFactory, ICommerceService commerceService, IOutlineService outlineService, ICatalogService catalogService, ICacheManager<object> cacheManager, AbstractValidator<IHasProperties> hasPropertyValidator)
+        public CategoryServiceImpl(Func<ICatalogRepository> catalogRepositoryFactory, ICommerceService commerceService, IOutlineService outlineService, ICatalogService catalogService, ICacheManager<object> cacheManager, AbstractValidator<IHasProperties> hasPropertyValidator,
+                                   IEventPublisher eventPublisher)
         {
             _repositoryFactory = catalogRepositoryFactory;
             _cacheManager = cacheManager;
@@ -35,6 +39,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _commerceService = commerceService;
             _outlineService = outlineService;
             _catalogService = catalogService;
+            _eventPublisher = eventPublisher;
         }
 
         #region ICategoryService Members
@@ -113,12 +118,21 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public virtual void Delete(string[] categoryIds)
         {
+            var categories = GetByIds(categoryIds, CategoryResponseGroup.Info);
+            var changedEntries = categories
+                .Select(c => new GenericChangedEntry<Category>(c, EntryState.Deleted))
+                .ToList();
+
             using (var repository = _repositoryFactory())
             {
+                _eventPublisher.Publish(new CategoryChangingEvent(changedEntries));
+
                 repository.RemoveCategories(categoryIds);
                 CommitChanges(repository);
                 //Reset cached categories and catalogs
                 ResetCache();
+
+                _eventPublisher.Publish(new CategoryChangedEvent(changedEntries));
             }
         }
 
