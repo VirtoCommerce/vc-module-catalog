@@ -150,11 +150,19 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public virtual void Delete(string[] itemIds)
         {
-            //var items = GetByIds(itemIds, ItemResponseGroup.Seo | ItemResponseGroup.Variations);
+            var items = GetByIds(itemIds, ItemResponseGroup.ItemInfo);
+            var changedEntries = items
+                .Select(i => new GenericChangedEntry<CatalogProduct>(i, EntryState.Deleted))
+                .ToList();
+
             using (var repository = _repositoryFactory())
             {
+                _eventPublisher.Publish(new ProductChangingEvent(changedEntries));
+
                 repository.RemoveItems(itemIds);
                 CommitChanges(repository);
+
+                _eventPublisher.Publish(new ProductChangedEvent(changedEntries));
             }
         }
 
