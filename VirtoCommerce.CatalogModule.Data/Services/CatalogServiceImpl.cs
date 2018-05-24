@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using CacheManager.Core;
@@ -6,9 +6,12 @@ using FluentValidation;
 using VirtoCommerce.CatalogModule.Data.Extensions;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
+using VirtoCommerce.Domain.Catalog.Events;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
+using VirtoCommerce.Domain.Common.Events;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.Events;
 using VirtoCommerce.Platform.Data.Common;
 using VirtoCommerce.Platform.Data.Infrastructure;
 
@@ -19,12 +22,15 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private readonly ICacheManager<object> _cacheManager;
         private readonly AbstractValidator<IHasProperties> _hasPropertyValidator;
         private readonly Func<ICatalogRepository> _repositoryFactory;
+        private readonly IEventPublisher _eventPublisher;
 
-        public CatalogServiceImpl(Func<ICatalogRepository> catalogRepositoryFactory, ICacheManager<object> cacheManager, AbstractValidator<IHasProperties> hasPropertyValidator)
+        public CatalogServiceImpl(Func<ICatalogRepository> catalogRepositoryFactory, ICacheManager<object> cacheManager, AbstractValidator<IHasProperties> hasPropertyValidator, 
+                                  IEventPublisher eventPublisher)
         {
             _repositoryFactory = catalogRepositoryFactory;
             _cacheManager = cacheManager;
             _hasPropertyValidator = hasPropertyValidator;
+            _eventPublisher = eventPublisher;
         }
 
         #region ICatalogService Members
@@ -74,6 +80,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         protected virtual void SaveChanges(Catalog[] catalogs)
         {
             var pkMap = new PrimaryKeyResolvingMap();
+            var changedEntries = new List<GenericChangedEntry<Catalog>>();
 
             using (var repository = _repositoryFactory())
             using (var changeTracker = GetChangeTracker(repository))
@@ -87,17 +94,27 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     if (originalEntity != null)
                     {
                         changeTracker.Attach(originalEntity);
+
+                        changedEntries.Add(new GenericChangedEntry<Catalog>(catalog, originalEntity.ToModel(AbstractTypeFactory<Catalog>.TryCreateInstance()), EntryState.Modified));
+
                         modifiedEntity.Patch(originalEntity);
                     }
                     else
                     {
                         repository.Add(modifiedEntity);
+
+                        changedEntries.Add(new GenericChangedEntry<Catalog>(catalog, EntryState.Added));
                     }
                 }
+
+                _eventPublisher.Publish(new CatalogChangingEvent(changedEntries));
+
                 CommitChanges(repository);
                 pkMap.ResolvePrimaryKeys();
                 //Reset cached catalogs and catalogs
                 ResetCache();
+
+                _eventPublisher.Publish(new CatalogChangedEvent(changedEntries));
             }
         }
 
