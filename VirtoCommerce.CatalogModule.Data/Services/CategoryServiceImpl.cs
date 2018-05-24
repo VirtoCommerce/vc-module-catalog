@@ -141,6 +141,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         protected virtual void SaveChanges(Category[] categories)
         {
             var pkMap = new PrimaryKeyResolvingMap();
+            var changedEntries = new List<GenericChangedEntry<Category>>();
 
             ValidateCategoryProperties(categories);
 
@@ -155,6 +156,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     if (originalEntity != null)
                     {
                         changeTracker.Attach(originalEntity);
+                        changedEntries.Add(new GenericChangedEntry<Category>(category, originalEntity.ToModel(AbstractTypeFactory<Category>.TryCreateInstance()), EntryState.Modified));
                         modifiedEntity.Patch(originalEntity);
                         //Force set ModifiedDate property to mark a product changed. Special for  partial update cases when product table not have changes
                         originalEntity.ModifiedDate = DateTime.UtcNow;
@@ -162,13 +164,17 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     else
                     {
                         repository.Add(modifiedEntity);
+                        changedEntries.Add(new GenericChangedEntry<Category>(category, EntryState.Added));
                     }
                 }
+                _eventPublisher.Publish(new CategoryChangingEvent(changedEntries));
 
                 CommitChanges(repository);
                 pkMap.ResolvePrimaryKeys();
                 //Reset cached categories and catalogs
                 ResetCache();
+
+                _eventPublisher.Publish(new CategoryChangedEvent(changedEntries));
             }
             //Need add seo separately
             _commerceService.UpsertSeoForObjects(categories.OfType<ISeoSupport>().ToArray());
