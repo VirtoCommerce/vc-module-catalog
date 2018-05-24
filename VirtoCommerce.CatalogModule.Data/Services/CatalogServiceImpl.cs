@@ -59,7 +59,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public void Delete(string[] catalogIds)
         {
-            var changedEntries = GetCategoriesbyIds(catalogIds)
+            var changedEntries = GetByIds(catalogIds)
                 .Select(c => new GenericChangedEntry<Catalog>(c, EntryState.Deleted))
                 .ToList();
 
@@ -76,13 +76,13 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
         }
 
-        protected virtual IReadOnlyCollection<Catalog> GetCategoriesbyIds(string[] catalogIds)
+        protected virtual Catalog[] GetByIds(string[] catalogIds)
         {
             return PreloadCatalogs()
                 .Values
                 .Where(c => catalogIds.Contains(c.Id))
                 .Select(MemberwiseCloneCatalog)
-                .ToList();
+                .ToArray();
         }
 
         public IEnumerable<Catalog> GetCatalogsList()
