@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using FluentValidation;
@@ -6,11 +6,14 @@ using VirtoCommerce.CatalogModule.Data.Extensions;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Data.Services.Validation;
+using VirtoCommerce.Domain.Catalog.Events;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Commerce.Model;
 using VirtoCommerce.Domain.Commerce.Services;
+using VirtoCommerce.Domain.Common.Events;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.Events;
 using VirtoCommerce.Platform.Data.Infrastructure;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
@@ -23,8 +26,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private readonly IOutlineService _outlineService;
         private readonly Func<ICatalogRepository> _repositoryFactory;
         private readonly AbstractValidator<IHasProperties> _hasPropertyValidator;
+        private readonly IEventPublisher _eventPublisher;
 
-        public ItemServiceImpl(Func<ICatalogRepository> catalogRepositoryFactory, ICommerceService commerceService, IOutlineService outlineService, ICatalogService catalogService, ICategoryService categoryService, AbstractValidator<IHasProperties> hasPropertyValidator)
+        public ItemServiceImpl(Func<ICatalogRepository> catalogRepositoryFactory, ICommerceService commerceService, IOutlineService outlineService, ICatalogService catalogService, ICategoryService categoryService, AbstractValidator<IHasProperties> hasPropertyValidator,
+                               IEventPublisher eventPublisher)
         {
             _catalogService = catalogService;
             _categoryService = categoryService;
@@ -32,6 +37,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _outlineService = outlineService;
             _repositoryFactory = catalogRepositoryFactory;
             _hasPropertyValidator = hasPropertyValidator;
+            _eventPublisher = eventPublisher;
         }
 
         #region IItemService Members
@@ -157,6 +163,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         protected virtual void SaveChanges(CatalogProduct[] products, bool disableValidation = false)
         {
             var pkMap = new PrimaryKeyResolvingMap();
+            var changedEntries = new List<GenericChangedEntry<CatalogProduct>>();
 
             ValidateProducts(products);
 
@@ -172,6 +179,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     if (originalEntity != null)
                     {
                         changeTracker.Attach(originalEntity);
+                        changedEntries.Add(new GenericChangedEntry<CatalogProduct>(product, originalEntity.ToModel(AbstractTypeFactory<CatalogProduct>.TryCreateInstance()), EntryState.Modified));
                         modifiedEntity.Patch(originalEntity);
                         //Force set ModifiedDate property to mark a product changed. Special for  partial update cases when product table not have changes
                         originalEntity.ModifiedDate = DateTime.UtcNow;
@@ -179,11 +187,16 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     else
                     {
                         repository.Add(modifiedEntity);
+                        changedEntries.Add(new GenericChangedEntry<CatalogProduct>(product, EntryState.Added));
                     }
                 }
 
+                _eventPublisher.Publish(new ProductChangingEvent(changedEntries));
+
                 CommitChanges(repository);
                 pkMap.ResolvePrimaryKeys();
+
+                _eventPublisher.Publish(new ProductChangedEvent(changedEntries));
             }
 
             //Update SEO 
