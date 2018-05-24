@@ -60,13 +60,30 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public void Delete(string[] catalogIds)
         {
+            var changedEntries = GetCategoriesbyIds(catalogIds)
+                .Select(c => new GenericChangedEntry<Catalog>(c, EntryState.Deleted))
+                .ToList();
+
             using (var repository = _repositoryFactory())
             {
+                _eventPublisher.Publish(new CatalogChangingEvent(changedEntries));
+
                 repository.RemoveCatalogs(catalogIds);
                 CommitChanges(repository);
                 //Reset cached catalogs and catalogs
                 ResetCache();
+
+                _eventPublisher.Publish(new CatalogChangedEvent(changedEntries));
             }
+        }
+
+        protected virtual IReadOnlyCollection<Catalog> GetCategoriesbyIds(string[] catalogIds)
+        {
+            return PreloadCatalogs()
+                .Values
+                .Where(c => catalogIds.Contains(c.Id))
+                .Select(MemberwiseCloneCatalog)
+                .ToList();
         }
 
         public IEnumerable<Catalog> GetCatalogsList()
