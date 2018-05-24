@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using CacheManager.Core;
 using FluentValidation;
-using VirtoCommerce.CatalogModule.Data.Extensions;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Domain.Catalog.Events;
