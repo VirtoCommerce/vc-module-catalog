@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using CacheManager.Core;
 using FluentValidation;
 using Moq;
@@ -10,15 +10,17 @@ using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Commerce.Services;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.Events;
 using VirtoCommerce.Platform.Data.Infrastructure.Interceptors;
 using Xunit;
 
 
 namespace VirtoCommerce.CatalogModule.Test
 {
+    [Trait("Category", "CI")]
     public class CatalogPropertyTest
     {
-        [Fact]
+        [Fact(Skip = "Test using production database and seem to be using sample entities exists in this db. This is wrong. Need to create dedicated batabase for tests.")]
         public void AddNewPropertiesProgrammably()
         {
             var propertyService = GetPropertyService();
@@ -52,18 +54,25 @@ namespace VirtoCommerce.CatalogModule.Test
 
         private static ICatalogService GetCatalogService()
         {
-            return new CatalogServiceImpl(GetCatalogRepository, new Mock<ICacheManager<object>>().Object, new Mock<AbstractValidator<IHasProperties>>().Object);
+            return new CatalogServiceImpl(GetCatalogRepository, new Mock<ICacheManager<object>>().Object, new Mock<AbstractValidator<IHasProperties>>().Object, GetEventPublisher().Object);
         }
 
         private static IItemService GetItemService()
         {
-            return null;
-            // return new ItemServiceImpl(GetCatalogRepository, GetCommerceService(), new Mock<IOutlineService>().Object, new Mock<ICacheManager<object>>().Object);
+
+            return new ItemServiceImpl(
+                GetCatalogRepository,
+                GetCommerceService(),
+                new Mock<IOutlineService>().Object,
+                GetCatalogService(),
+                new Mock<ICategoryService>().Object,
+                new Mock<AbstractValidator<IHasProperties>>().Object,
+                GetEventPublisher().Object);
         }
 
         private static IPropertyService GetPropertyService()
         {
-            return new PropertyServiceImpl(GetCatalogRepository, new Mock<ICacheManager<object>>().Object, null);
+            return new PropertyServiceImpl(GetCatalogRepository, new Mock<ICacheManager<object>>().Object, GetCatalogService(), GetEventPublisher().Object);
         }
 
         private static ICommerceService GetCommerceService()
@@ -75,6 +84,11 @@ namespace VirtoCommerce.CatalogModule.Test
         {
             var retVal = new CatalogRepositoryImpl(GetConnectionString(), new EntityPrimaryKeyGeneratorInterceptor(), new AuditableInterceptor(null));
             return retVal;
+        }
+
+        private static Mock<IEventPublisher> GetEventPublisher()
+        {
+            return new Mock<IEventPublisher>();
         }
 
         private static string GetConnectionString()
