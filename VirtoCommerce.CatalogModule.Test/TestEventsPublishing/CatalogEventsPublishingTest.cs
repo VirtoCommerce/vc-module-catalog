@@ -43,7 +43,7 @@ namespace VirtoCommerce.CatalogModule.Test.TestEventsPublishing
             var validator = GetMockedAbstractValidator();
             validator.Setup(v => v.Validate(It.IsAny<ValidationContext<IHasProperties>>())).Returns(validationResult.Object);
 
-            List<GenericChangedEntry<Catalog>> changedEntries = new List<GenericChangedEntry<Catalog>>();
+            var changedEntries = new List<GenericChangedEntry<Catalog>>();
 
             var eventPublisher = GetMockedEventPublisher();
             eventPublisher
