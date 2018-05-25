@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -6,7 +5,6 @@ using CacheManager.Core;
 using FluentValidation;
 using FluentValidation.Results;
 using Moq;
-using Omu.ValueInjecter;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Data.Services;
 using VirtoCommerce.Domain.Catalog.Events;
@@ -43,22 +41,34 @@ namespace VirtoCommerce.CatalogModule.Test.TestEventsPublishing
             var validator = GetMockedAbstractValidator();
             validator.Setup(v => v.Validate(It.IsAny<ValidationContext<IHasProperties>>())).Returns(validationResult.Object);
 
-            var changedEntries = new List<GenericChangedEntry<Catalog>>();
+            var changingEventChangedEntries = new List<GenericChangedEntry<Catalog>>();
 
             var eventPublisher = GetMockedEventPublisher();
             eventPublisher
                 .Setup(e => e.Publish(It.IsAny<CatalogChangingEvent>(), It.IsAny<CancellationToken>()))
                 .Callback<CatalogChangingEvent, CancellationToken>((changingEvent, token) =>
                 {
-                    changedEntries = changingEvent.ChangedEntries.ToList();
+                    changingEventChangedEntries = changingEvent.ChangedEntries.ToList();
+                });
+
+            var changedEventChangedEntries = new List<GenericChangedEntry<Catalog>>();
+
+            eventPublisher
+                .Setup(e => e.Publish(It.IsAny<CatalogChangedEvent>(), It.IsAny<CancellationToken>()))
+                .Callback<CatalogChangedEvent, CancellationToken>((changedEvent, token) =>
+                {
+                    changedEventChangedEntries = changedEvent.ChangedEntries.ToList();
                 });
 
             var catalogService = GetCatalogService(validator.Object, eventPublisher.Object);
 
             catalogService.Create(catalog);
 
-            Assert.Equal(EntryState.Added, changedEntries.Single().EntryState);
-            Assert.IsType<Catalog>(changedEntries.Single().NewEntry);
+            Assert.Equal(EntryState.Added, changingEventChangedEntries.Single().EntryState);
+            Assert.IsType<Catalog>(changingEventChangedEntries.Single().NewEntry);
+
+            Assert.Equal(EntryState.Added, changedEventChangedEntries.Single().EntryState);
+            Assert.IsType<Catalog>(changedEventChangedEntries.Single().NewEntry);
         }
 
         [Fact]
