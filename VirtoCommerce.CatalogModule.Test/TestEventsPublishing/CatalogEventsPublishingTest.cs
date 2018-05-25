@@ -23,17 +23,7 @@ namespace VirtoCommerce.CatalogModule.Test.TestEventsPublishing
         [Fact]
         public void TestCreateCatalogEntityEvent()
         {
-            var catalog = new Catalog
-            {
-                Id = "testCatalogId",
-                Languages = new List<CatalogLanguage>
-                {
-                    new CatalogLanguage
-                    {
-                        IsDefault = true
-                    }
-                }
-            };
+            var catalog = GetCatalog();
 
             var validationResult = GetMockedValidationResult();
             validationResult.Setup(r => r.IsValid).Returns(true);
@@ -64,8 +54,12 @@ namespace VirtoCommerce.CatalogModule.Test.TestEventsPublishing
 
             catalogService.Create(catalog);
 
+            eventPublisher.Verify(e => e.Publish(It.IsAny<CatalogChangingEvent>(), It.IsAny<CancellationToken>()), Times.Once());
+
             Assert.Equal(EntryState.Added, changingEventChangedEntries.Single().EntryState);
             Assert.IsType<Catalog>(changingEventChangedEntries.Single().NewEntry);
+
+            eventPublisher.Verify(e => e.Publish(It.IsAny<CatalogChangedEvent>(), It.IsAny<CancellationToken>()), Times.Once());
 
             Assert.Equal(EntryState.Added, changedEventChangedEntries.Single().EntryState);
             Assert.IsType<Catalog>(changedEventChangedEntries.Single().NewEntry);
@@ -75,6 +69,21 @@ namespace VirtoCommerce.CatalogModule.Test.TestEventsPublishing
         public void TestUpdateCatalogEntityEvent()
         {
 
+        }
+
+        private Catalog GetCatalog()
+        {
+            return new Catalog
+            {
+                Id = "testCatalogId",
+                Languages = new List<CatalogLanguage>
+                {
+                    new CatalogLanguage
+                    {
+                        IsDefault = true
+                    }
+                }
+            };
         }
 
         private Mock<ValidationResult> GetMockedValidationResult()
