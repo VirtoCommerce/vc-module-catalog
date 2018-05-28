@@ -44,9 +44,9 @@ namespace VirtoCommerce.CatalogModule.Test.TestEventsPublishing
             return new Mock<ValidationResult>();
         }
 
-        protected virtual Mock<T> GetMockedRepository<T>() where T : class, IRepository
+        protected virtual Mock<ICatalogRepository> GetMockedCatalogRepository()
         {
-            var mockedRepo = new Mock<T>();
+            var mockedRepo = new Mock<ICatalogRepository>();
             mockedRepo.Setup(r => r.UnitOfWork).Returns(GetUnitOfWork);
 
             return mockedRepo;

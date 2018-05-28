@@ -4,6 +4,7 @@ using System.Threading;
 using CacheManager.Core;
 using FluentValidation;
 using Moq;
+using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Data.Services;
 using VirtoCommerce.Domain.Catalog.Events;
@@ -45,7 +46,8 @@ namespace VirtoCommerce.CatalogModule.Test.TestEventsPublishing
             var catalogService = GetMockedCatalogService();
             catalogService.Setup(c => c.GetCatalogsList()).Returns(new[] { GetCatalog() });
 
-            var categoryService = GetCategoryService(eventPublisher.Object, cacheManager.Object, catalogService.Object, GetValidator(), GetMockedRepository<ICatalogRepository>().Object);
+            var categoryService = GetCategoryService(eventPublisher.Object, cacheManager.Object, catalogService.Object,
+                GetValidator(), GetMockedCatalogRepository().Object);
 
             categoryService.Create(new[] {category});
 
@@ -64,7 +66,44 @@ namespace VirtoCommerce.CatalogModule.Test.TestEventsPublishing
         [Fact]
         public void TestUpdateCategoryEntityEvent()
         {
+            var category = GetCategory();
 
+            var eventPublisher = GetMockedEventPublisher();
+
+            var changingEventChangedEntries = new List<GenericChangedEntry<Category>>();
+            AssignChangedEntriesToLicalVariable<CategoryChangingEvent, Category>(
+                eventPublisher,
+                (changedEntry, token) => { changingEventChangedEntries = changedEntry.ChangedEntries.ToList(); });
+
+            var changedEventChangedEntries = new List<GenericChangedEntry<Category>>();
+            AssignChangedEntriesToLicalVariable<CategoryChangedEvent, Category>(
+                eventPublisher,
+                (changedEntry, token) => { changedEventChangedEntries = changedEntry.ChangedEntries.ToList(); });
+
+            var cacheManager = GetMockedCacheManager();
+
+            var catalogService = GetMockedCatalogService();
+            catalogService.Setup(c => c.GetCatalogsList()).Returns(new[] { GetCatalog() });
+
+            var catalogRepository = GetMockedCatalogRepository();
+            catalogRepository
+                .Setup(c => c.GetCategoriesByIds(It.IsAny<string[]>(), It.IsAny<CategoryResponseGroup>()))
+                .Returns(new[] {GetCategoryEntity()});
+
+            var categoryService = GetCategoryService(eventPublisher.Object, cacheManager.Object, catalogService.Object,
+                GetValidator(), catalogRepository.Object);
+
+            categoryService.Update(new [] {category});
+
+            eventPublisher.Verify(e => e.Publish(It.IsAny<CategoryChangingEvent>(), It.IsAny<CancellationToken>()), Times.Once);
+
+            Assert.Equal(EntryState.Modified, changingEventChangedEntries.Single().EntryState);
+            Assert.IsType<Category>(changingEventChangedEntries.Single().NewEntry);
+
+            eventPublisher.Verify(e => e.Publish(It.IsAny<CategoryChangedEvent>(), It.IsAny<CancellationToken>()), Times.Once);
+
+            Assert.Equal(EntryState.Modified, changedEventChangedEntries.Single().EntryState);
+            Assert.IsType<Category>(changedEventChangedEntries.Single().NewEntry);
         }
 
         [Fact]
@@ -132,6 +171,15 @@ namespace VirtoCommerce.CatalogModule.Test.TestEventsPublishing
                         Type = PropertyType.Category
                     }
                 }
+            };
+        }
+
+        private CategoryEntity GetCategoryEntity()
+        {
+            return new CategoryEntity
+            {
+                Id = "testCategoryId",
+                CatalogId = "testCatalogId"
             };
         }
     }
