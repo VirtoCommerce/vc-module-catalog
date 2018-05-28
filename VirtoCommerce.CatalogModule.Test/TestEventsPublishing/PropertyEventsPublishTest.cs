@@ -88,18 +88,59 @@ namespace VirtoCommerce.CatalogModule.Test.TestEventsPublishing
                 Times.Once);
 
             Assert.Equal(EntryState.Modified, changingEventChangedEntries.Single().EntryState);
-            Assert.IsType<Property>(changingEventChangedEntries.Single().NewEntry);
+            Assert.IsType<Property>(changingEventChangedEntries.Single().OldEntry);
 
             eventPublisher.Verify(e => e.Publish(It.IsAny<PropertyChangedEvent>(), It.IsAny<CancellationToken>()),
                 Times.Once());
 
             Assert.Equal(EntryState.Modified, changedEventChangedEntries.Single().EntryState);
-            Assert.IsType<Property>(changedEventChangedEntries.Single().NewEntry);
+            Assert.IsType<Property>(changedEventChangedEntries.Single().OldEntry);
         }
 
         [Fact]
         public void TestDeletePropertyEvent()
         {
+            var property = GetProperty();
+
+            var catalogRepo = GetMockedCatalogRepository();
+
+            var cacheManager = GetMockedCacheManager();
+            cacheManager
+                .Setup(c => c.Get(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(
+                    new Dictionary<string, Property>
+                    {
+                        {"testProperty", property}
+                    });
+
+            var catalogService = GetMockedCatalogService();
+
+            var eventPublisher = GetMockedEventPublisher();
+
+            var changingEventChangedEntries = new List<GenericChangedEntry<Property>>();
+            AssignChangedEntriesToLicalVariable<PropertyChangingEvent, Property>(eventPublisher,
+                (changedEntry, token) => { changingEventChangedEntries = changedEntry.ChangedEntries.ToList(); });
+
+            var changedEventChangedEntries = new List<GenericChangedEntry<Property>>();
+            AssignChangedEntriesToLicalVariable<PropertyChangedEvent, Property>(eventPublisher,
+                (changedEntry, token) => { changedEventChangedEntries = changedEntry.ChangedEntries.ToList(); });
+
+            var propertyService = GetPropertyService(catalogRepo.Object, cacheManager.Object, catalogService.Object,
+                eventPublisher.Object);
+
+            propertyService.Delete(new[] {"testProperty"});
+
+            eventPublisher.Verify(e => e.Publish(It.IsAny<PropertyChangingEvent>(), It.IsAny<CancellationToken>()),
+                Times.Once);
+
+            Assert.Equal(EntryState.Deleted, changingEventChangedEntries.Single().EntryState);
+            Assert.IsType<Property>(changingEventChangedEntries.Single().OldEntry);
+
+            eventPublisher.Verify(e => e.Publish(It.IsAny<PropertyChangedEvent>(), It.IsAny<CancellationToken>()),
+                Times.Once());
+
+            Assert.Equal(EntryState.Deleted, changedEventChangedEntries.Single().EntryState);
+            Assert.IsType<Property>(changedEventChangedEntries.Single().OldEntry);
         }
 
         private IPropertyService GetPropertyService(ICatalogRepository catalogRepository,
