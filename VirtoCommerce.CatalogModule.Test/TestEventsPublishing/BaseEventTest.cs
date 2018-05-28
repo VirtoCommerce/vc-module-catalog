@@ -1,10 +1,12 @@
 using System;
 using System.Threading;
+using CacheManager.Core;
 using FluentValidation;
 using FluentValidation.Results;
 using Moq;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Domain.Catalog.Model;
+using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Common.Events;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Events;
@@ -52,9 +54,19 @@ namespace VirtoCommerce.CatalogModule.Test.TestEventsPublishing
             return mockedRepo;
         }
 
-        protected virtual IUnitOfWork GetUnitOfWork()
+        private IUnitOfWork GetUnitOfWork()
         {
             return new Mock<IUnitOfWork>().Object;
+        }
+
+        protected virtual Mock<ICacheManager<object>> GetMockedCacheManager()
+        {
+            return new Mock<ICacheManager<object>>();
+        }
+
+        protected virtual Mock<ICatalogService> GetMockedCatalogService()
+        {
+            return new Mock<ICatalogService>();
         }
     }
 }

@@ -164,16 +164,6 @@ namespace VirtoCommerce.CatalogModule.Test.TestEventsPublishing
                 );
         }
 
-        private Mock<ICacheManager<object>> GetMockedCacheManager()
-        {
-            return new Mock<ICacheManager<object>>();
-        }
-
-        private Mock<ICatalogService> GetMockedCatalogService()
-        {
-            return new Mock<ICatalogService>();
-        }
-
         private Category GetCategory()
         {
             return new Category

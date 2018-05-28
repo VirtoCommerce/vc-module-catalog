@@ -137,11 +137,6 @@ namespace VirtoCommerce.CatalogModule.Test.TestEventsPublishing
             Assert.IsType<Catalog>(changedEventChangedEntries.Single().OldEntry);
         }
 
-        private Mock<ICacheManager<object>> GetMockedCacheManager()
-        {
-            return new Mock<ICacheManager<object>>();
-        }
-
         private Catalog GetCatalog()
         {
             return new Catalog
