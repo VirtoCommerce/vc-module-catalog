@@ -31,13 +31,13 @@ namespace VirtoCommerce.CatalogModule.Test.TestEventsPublishing
             var eventPublisher = GetMockedEventPublisher();
 
             var changingEventChangedEntries = new List<GenericChangedEntry<Catalog>>();
-            GetChangedEntires<CatalogChangingEvent, Catalog>(eventPublisher, (changedEntry, token) =>
+            AssignChangedEntriesToLicalVariable<CatalogChangingEvent, Catalog>(eventPublisher, (changedEntry, token) =>
                 {
                     changingEventChangedEntries = changedEntry.ChangedEntries.ToList();
                 });
 
             var changedEventChangedEntries = new List<GenericChangedEntry<Catalog>>();
-            GetChangedEntires<CatalogChangedEvent, Catalog>(eventPublisher, (changedEntry, token) =>
+            AssignChangedEntriesToLicalVariable<CatalogChangedEvent, Catalog>(eventPublisher, (changedEntry, token) =>
                 {
                     changedEventChangedEntries = changedEntry.ChangedEntries.ToList();
                 });
@@ -70,13 +70,13 @@ namespace VirtoCommerce.CatalogModule.Test.TestEventsPublishing
             var eventPublisher = GetMockedEventPublisher();
 
             var changingEventChangedEntries = new List<GenericChangedEntry<Catalog>>();
-            GetChangedEntires<CatalogChangingEvent, Catalog>(eventPublisher, (changedEntry, token) =>
+            AssignChangedEntriesToLicalVariable<CatalogChangingEvent, Catalog>(eventPublisher, (changedEntry, token) =>
                 {
                     changingEventChangedEntries = changedEntry.ChangedEntries.ToList();
                 });
 
             var changedEventChangedEntries = new List<GenericChangedEntry<Catalog>>();
-            GetChangedEntires<CatalogChangedEvent, Catalog>(eventPublisher, (changedEntry, token) =>
+            AssignChangedEntriesToLicalVariable<CatalogChangedEvent, Catalog>(eventPublisher, (changedEntry, token) =>
                 {
                     changedEventChangedEntries = changedEntry.ChangedEntries.ToList();
                 });
@@ -107,13 +107,13 @@ namespace VirtoCommerce.CatalogModule.Test.TestEventsPublishing
             var eventPublisher = GetMockedEventPublisher();
 
             var changingEventChangedEntries = new List<GenericChangedEntry<Catalog>>();
-            GetChangedEntires<CatalogChangingEvent, Catalog>(eventPublisher, (changedEntry, token) =>
+            AssignChangedEntriesToLicalVariable<CatalogChangingEvent, Catalog>(eventPublisher, (changedEntry, token) =>
                 {
                     changingEventChangedEntries = changedEntry.ChangedEntries.ToList();
                 });
 
             var changedEventChangedEntries = new List<GenericChangedEntry<Catalog>>();
-            GetChangedEntires<CatalogChangedEvent, Catalog>(eventPublisher, (changedEntry, token) =>
+            AssignChangedEntriesToLicalVariable<CatalogChangedEvent, Catalog>(eventPublisher, (changedEntry, token) =>
                 {
                     changedEventChangedEntries = changedEntry.ChangedEntries.ToList();
                 });

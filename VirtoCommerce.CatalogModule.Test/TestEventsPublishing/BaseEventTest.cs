@@ -22,7 +22,7 @@ namespace VirtoCommerce.CatalogModule.Test.TestEventsPublishing
             return new Mock<IUnitOfWork>().Object;
         }
 
-        protected virtual void GetChangedEntires<TEvent, TEntity>(Mock<IEventPublisher> mockedEventPublisher, Action<TEvent, CancellationToken> callback) where TEvent : GenericChangedEntryEvent<TEntity>
+        protected virtual void AssignChangedEntriesToLicalVariable<TEvent, TEntity>(Mock<IEventPublisher> mockedEventPublisher, Action<TEvent, CancellationToken> callback) where TEvent : GenericChangedEntryEvent<TEntity>
         {
             mockedEventPublisher
                 .Setup(e => e.Publish(It.IsAny<TEvent>(), It.IsAny<CancellationToken>()))
