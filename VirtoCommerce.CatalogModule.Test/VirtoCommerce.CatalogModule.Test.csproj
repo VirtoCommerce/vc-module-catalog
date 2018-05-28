@@ -144,6 +144,7 @@
     <Compile Include="TermFilterBuilderTests.cs" />
     <Compile Include="TestEventsPublishing\BaseEventTest.cs" />
     <Compile Include="TestEventsPublishing\CatalogEventsPublishingTest.cs" />
+    <Compile Include="TestEventsPublishing\CategoryEventsPublishTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\VirtoCommerce.CatalogModule.Data\VirtoCommerce.CatalogModule.Data.csproj">
