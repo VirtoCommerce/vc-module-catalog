@@ -145,6 +145,7 @@
     <Compile Include="TestEventsPublishing\BaseEventTest.cs" />
     <Compile Include="TestEventsPublishing\CatalogEventsPublishingTest.cs" />
     <Compile Include="TestEventsPublishing\CategoryEventsPublishTest.cs" />
+    <Compile Include="TestEventsPublishing\PropertyEventsPublishTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\VirtoCommerce.CatalogModule.Data\VirtoCommerce.CatalogModule.Data.csproj">
