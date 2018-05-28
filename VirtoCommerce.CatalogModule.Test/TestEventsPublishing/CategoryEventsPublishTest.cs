@@ -109,7 +109,46 @@ namespace VirtoCommerce.CatalogModule.Test.TestEventsPublishing
         [Fact]
         public void TestDeleteCategoryEntityEvent()
         {
+            var category = GetCategory();
 
+            var eventPublisher = GetMockedEventPublisher();
+
+            var changingEventChangedEntries = new List<GenericChangedEntry<Category>>();
+            AssignChangedEntriesToLicalVariable<CategoryChangingEvent, Category>(
+                eventPublisher,
+                (changedEntry, token) => { changingEventChangedEntries = changedEntry.ChangedEntries.ToList(); });
+
+            var changedEventChangedEntries = new List<GenericChangedEntry<Category>>();
+            AssignChangedEntriesToLicalVariable<CategoryChangedEvent, Category>(
+                eventPublisher,
+                (changedEntry, token) => { changedEventChangedEntries = changedEntry.ChangedEntries.ToList(); });
+
+            var cacheManager = GetMockedCacheManager();
+            cacheManager
+                .Setup(c => c.Get(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(new Dictionary<string, Category>
+                {
+                    {"testCategoryId", category}
+                });
+
+            var catalogService = GetMockedCatalogService();
+
+            var catalogRepository = GetMockedCatalogRepository();
+
+            var categoryService = GetCategoryService(eventPublisher.Object, cacheManager.Object, catalogService.Object,
+                GetValidator(), catalogRepository.Object);
+
+            categoryService.Delete(new[] {"testCategoryId"});
+
+            eventPublisher.Verify(e => e.Publish(It.IsAny<CategoryChangingEvent>(), It.IsAny<CancellationToken>()), Times.Once);
+
+            Assert.Equal(EntryState.Deleted, changingEventChangedEntries.Single().EntryState);
+            Assert.IsType<Category>(changingEventChangedEntries.Single().NewEntry);
+
+            eventPublisher.Verify(e => e.Publish(It.IsAny<CategoryChangedEvent>(), It.IsAny<CancellationToken>()), Times.Once);
+
+            Assert.Equal(EntryState.Deleted, changedEventChangedEntries.Single().EntryState);
+            Assert.IsType<Category>(changedEventChangedEntries.Single().NewEntry);
         }
 
         private ICategoryService GetCategoryService(IEventPublisher eventPublisher, ICacheManager<object> cacheManager, ICatalogService catalogService, AbstractValidator<IHasProperties> validator, ICatalogRepository catalogRepository)
