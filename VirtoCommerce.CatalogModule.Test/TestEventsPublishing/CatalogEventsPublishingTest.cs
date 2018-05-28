@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -5,6 +6,7 @@ using CacheManager.Core;
 using FluentValidation;
 using FluentValidation.Results;
 using Moq;
+using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Data.Services;
 using VirtoCommerce.Domain.Catalog.Events;
@@ -25,32 +27,21 @@ namespace VirtoCommerce.CatalogModule.Test.TestEventsPublishing
         {
             var catalog = GetCatalog();
 
-            var validationResult = GetMockedValidationResult();
-            validationResult.Setup(r => r.IsValid).Returns(true);
-
-            var validator = GetMockedAbstractValidator();
-            validator.Setup(v => v.Validate(It.IsAny<ValidationContext<IHasProperties>>())).Returns(validationResult.Object);
+            var eventPublisher = GetMockedEventPublisher();
 
             var changingEventChangedEntries = new List<GenericChangedEntry<Catalog>>();
-
-            var eventPublisher = GetMockedEventPublisher();
-            eventPublisher
-                .Setup(e => e.Publish(It.IsAny<CatalogChangingEvent>(), It.IsAny<CancellationToken>()))
-                .Callback<CatalogChangingEvent, CancellationToken>((changingEvent, token) =>
+            GetChangedEntires<CatalogChangingEvent, Catalog>(eventPublisher, (changedEntry, token) =>
                 {
-                    changingEventChangedEntries = changingEvent.ChangedEntries.ToList();
+                    changingEventChangedEntries = changedEntry.ChangedEntries.ToList();
                 });
 
             var changedEventChangedEntries = new List<GenericChangedEntry<Catalog>>();
-
-            eventPublisher
-                .Setup(e => e.Publish(It.IsAny<CatalogChangedEvent>(), It.IsAny<CancellationToken>()))
-                .Callback<CatalogChangedEvent, CancellationToken>((changedEvent, token) =>
+            GetChangedEntires<CatalogChangedEvent, Catalog>(eventPublisher, (changedEntry, token) =>
                 {
-                    changedEventChangedEntries = changedEvent.ChangedEntries.ToList();
+                    changedEventChangedEntries = changedEntry.ChangedEntries.ToList();
                 });
 
-            var catalogService = GetCatalogService(validator.Object, eventPublisher.Object);
+            var catalogService = GetCatalogService(GetValidator(), eventPublisher.Object, () => GetMockedCatalogRepository().Object);
 
             catalogService.Create(catalog);
 
@@ -68,7 +59,54 @@ namespace VirtoCommerce.CatalogModule.Test.TestEventsPublishing
         [Fact]
         public void TestUpdateCatalogEntityEvent()
         {
+            var catalog = GetCatalog();
 
+            var catalogEntity = new CatalogEntity
+            {
+                Id = "testCatalogId"
+            };
+
+            var eventPublisher = GetMockedEventPublisher();
+
+            var changingEventChangedEntries = new List<GenericChangedEntry<Catalog>>();
+            GetChangedEntires<CatalogChangingEvent, Catalog>(eventPublisher, (changedEntry, token) =>
+                {
+                    changingEventChangedEntries = changedEntry.ChangedEntries.ToList();
+                });
+
+            var changedEventChangedEntries = new List<GenericChangedEntry<Catalog>>();
+            GetChangedEntires<CatalogChangedEvent, Catalog>(eventPublisher, (changedEntry, token) =>
+                {
+                    changedEventChangedEntries = changedEntry.ChangedEntries.ToList();
+                });
+
+            var mockedRepo = GetMockedCatalogRepository();
+            mockedRepo.Setup(r => r.GetCatalogsByIds(It.IsAny<string[]>())).Returns(new [] { catalogEntity });
+
+            var catalogService = GetCatalogService(GetValidator(), eventPublisher.Object, () => mockedRepo.Object);
+
+            catalogService.Update(new[] { catalog });
+
+            eventPublisher.Verify(e => e.Publish(It.IsAny<CatalogChangingEvent>(), It.IsAny<CancellationToken>()), Times.Once);
+
+            Assert.Equal(EntryState.Modified, changingEventChangedEntries.Single().EntryState);
+            Assert.IsType<Catalog>(changingEventChangedEntries.Single().OldEntry);
+
+            eventPublisher.Verify(e => e.Publish(It.IsAny<CatalogChangedEvent>(), It.IsAny<CancellationToken>()), Times.Once());
+
+            Assert.Equal(EntryState.Modified, changedEventChangedEntries.Single().EntryState);
+            Assert.IsType<Catalog>(changedEventChangedEntries.Single().OldEntry);
+        }
+
+        private AbstractValidator<IHasProperties> GetValidator()
+        {
+            var validationResult = GetMockedValidationResult();
+            validationResult.Setup(r => r.IsValid).Returns(true);
+
+            var validator = new Mock<AbstractValidator<IHasProperties>>();
+            validator.Setup(v => v.Validate(It.IsAny<ValidationContext<IHasProperties>>())).Returns(validationResult.Object);
+
+            return validator.Object;
         }
 
         private Catalog GetCatalog()
@@ -91,23 +129,18 @@ namespace VirtoCommerce.CatalogModule.Test.TestEventsPublishing
             return new Mock<ValidationResult>();
         }
 
-        private ICatalogRepository GetCatalogRepositoryFactoryMethod()
+        private Mock<ICatalogRepository> GetMockedCatalogRepository()
         {
             var mocekdRepo = new Mock<ICatalogRepository>();
             mocekdRepo.Setup(r => r.UnitOfWork).Returns(GetUnitOfWork);
 
-            return mocekdRepo.Object;
+            return mocekdRepo;
         }
 
-        private Mock<AbstractValidator<IHasProperties>> GetMockedAbstractValidator()
-        {
-            return new Mock<AbstractValidator<IHasProperties>>();
-        }
-
-        private ICatalogService GetCatalogService(AbstractValidator<IHasProperties> validator, IEventPublisher eventPublisher)
+        private ICatalogService GetCatalogService(AbstractValidator<IHasProperties> validator, IEventPublisher eventPublisher, Func<ICatalogRepository> catalogRepositoryFactoryMethod)
         {
             return new CatalogServiceImpl(
-                GetCatalogRepositoryFactoryMethod,
+                catalogRepositoryFactoryMethod,
                 new Mock<ICacheManager<object>>().Object,
                 validator,
                 eventPublisher
