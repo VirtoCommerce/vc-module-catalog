@@ -102,7 +102,41 @@ namespace VirtoCommerce.CatalogModule.Test.TestEventsPublishing
         [Fact]
         public void TestDeleteCatalogEntityEvent()
         {
+            var catalogRepo = GetMockedCatalogRepository();
+            catalogRepo
+                .Setup(c => c.GetItemByIds(It.IsAny<string[]>(), It.IsAny<ItemResponseGroup>()))
+                .Returns(new[] { GetItemEntity() });
 
+            var commerceService = GetMockedCommerceService();
+
+            var outlineService = GetMockedOutlineService();
+
+            var catalogService = GetMockedCatalogService();
+            catalogService.Setup(c => c.GetCatalogsList()).Returns(new[] { GetCatalog() });
+
+            var categoryService = GetMockedCategoryService();
+            categoryService
+                .Setup(c => c.GetByIds(It.IsAny<string[]>(), It.IsAny<CategoryResponseGroup>(), It.IsAny<string>()))
+                .Returns(new[] {GetCategory()});
+
+            var eventPublisher = GetMockedEventPublisher();
+            var changingEventChangedEntries = new List<GenericChangedEntry<CatalogProduct>>();
+            AssignChangedEntriesToLicalVariable<ProductChangingEvent, CatalogProduct>(
+                eventPublisher,
+                (changedEntry, token) => { changingEventChangedEntries = changedEntry.ChangedEntries.ToList(); });
+
+            var changedEventChangedEntries = new List<GenericChangedEntry<CatalogProduct>>();
+            AssignChangedEntriesToLicalVariable<ProductChangedEvent, CatalogProduct>(
+                eventPublisher,
+                (changedEntry, token) => { changedEventChangedEntries = changedEntry.ChangedEntries.ToList(); });
+
+            var itemService = GetItemService(catalogRepo.Object, commerceService.Object, outlineService.Object,
+                catalogService.Object, categoryService.Object, GetValidator(), eventPublisher.Object);
+
+            itemService.Delete(new[] { "testCatalogProductId" });
+
+            AssertValues<ProductChangingEvent, CatalogProduct>(eventPublisher, changingEventChangedEntries, EntryState.Deleted);
+            AssertValues<ProductChangedEvent, CatalogProduct>(eventPublisher, changedEventChangedEntries, EntryState.Deleted);
         }
 
         private IItemService GetItemService(ICatalogRepository catalogRepository, ICommerceService commerceService, IOutlineService outlineService,
@@ -134,13 +168,7 @@ namespace VirtoCommerce.CatalogModule.Test.TestEventsPublishing
                 CatalogId = "testCatalogId",
                 Name = "testproductName",
                 Code = "testCode",
-                Category = new Category
-                {
-                    Properties = new[]
-                    {
-                        new Property(), 
-                    }
-                }
+                Category = GetCategory()
             };
         }
 
@@ -155,9 +183,24 @@ namespace VirtoCommerce.CatalogModule.Test.TestEventsPublishing
 
         private ItemEntity GetItemEntity()
         {
+            var product = GetCatalogProduct();
             return new ItemEntity
             {
-                Id = "testCatalogProductId"
+                Id = product.Id,
+                CatalogId = product.CatalogId,
+                CategoryId = product.Category.Id
+            };
+        }
+
+        private Category GetCategory()
+        {
+            return new Category
+            {
+                Id = "testCategoryId",
+                Properties =  new[]
+                {
+                    new Property(),
+                }
             };
         }
     }
