@@ -143,8 +143,9 @@
     <Compile Include="ReferencedAssociationsTest.cs" />
     <Compile Include="TermFilterBuilderTests.cs" />
     <Compile Include="TestEventsPublishing\BaseEventTest.cs" />
-    <Compile Include="TestEventsPublishing\CatalogEventsPublishingTest.cs" />
+    <Compile Include="TestEventsPublishing\CatalogEventsPublishTest.cs" />
     <Compile Include="TestEventsPublishing\CategoryEventsPublishTest.cs" />
+    <Compile Include="TestEventsPublishing\ProductEventPublishTest.cs" />
     <Compile Include="TestEventsPublishing\PropertyEventsPublishTest.cs" />
   </ItemGroup>
   <ItemGroup>
