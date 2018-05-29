@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using CacheManager.Core;
 using FluentValidation;
@@ -67,6 +69,14 @@ namespace VirtoCommerce.CatalogModule.Test.TestEventsPublishing
         protected virtual Mock<ICatalogService> GetMockedCatalogService()
         {
             return new Mock<ICatalogService>();
+        }
+
+        protected virtual void AssertValues<TEvent, TEntity>(Mock<IEventPublisher> eventPublisher, List<GenericChangedEntry<TEntity>> changingEventChangedEntries, EntryState state) where TEvent : GenericChangedEntryEvent<TEntity>
+        {
+            eventPublisher.Verify(e => e.Publish(It.IsAny<TEvent>(), It.IsAny<CancellationToken>()), Times.Once);
+
+            Assert.Equal(state, changingEventChangedEntries.Single().EntryState);
+            Assert.IsType<TEntity>(changingEventChangedEntries.Single().OldEntry);
         }
     }
 }

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using CacheManager.Core;
 using FluentValidation;
 using Moq;
@@ -18,7 +17,7 @@ using Xunit;
 
 namespace VirtoCommerce.CatalogModule.Test.TestEventsPublishing
 {
-    public class CatalogEventsPublishingTest : BaseEventTest
+    public class CatalogEventsPublishTest : BaseEventTest
     {
 
         [Fact]
@@ -44,15 +43,8 @@ namespace VirtoCommerce.CatalogModule.Test.TestEventsPublishing
 
             catalogService.Create(catalog);
 
-            eventPublisher.Verify(e => e.Publish(It.IsAny<CatalogChangingEvent>(), It.IsAny<CancellationToken>()), Times.Once());
-
-            Assert.Equal(EntryState.Added, changingEventChangedEntries.Single().EntryState);
-            Assert.IsType<Catalog>(changingEventChangedEntries.Single().NewEntry);
-
-            eventPublisher.Verify(e => e.Publish(It.IsAny<CatalogChangedEvent>(), It.IsAny<CancellationToken>()), Times.Once());
-
-            Assert.Equal(EntryState.Added, changedEventChangedEntries.Single().EntryState);
-            Assert.IsType<Catalog>(changedEventChangedEntries.Single().NewEntry);
+            AssertValues<CatalogChangingEvent, Catalog>(eventPublisher, changingEventChangedEntries, EntryState.Added);
+            AssertValues<CatalogChangedEvent, Catalog>(eventPublisher, changedEventChangedEntries, EntryState.Added);
         }
 
         [Fact]
@@ -85,16 +77,9 @@ namespace VirtoCommerce.CatalogModule.Test.TestEventsPublishing
             var catalogService = GetCatalogService(GetValidator(), eventPublisher.Object, () => mockedRepo.Object, GetMockedCacheManager().Object);
 
             catalogService.Update(new[] { catalog });
-
-            eventPublisher.Verify(e => e.Publish(It.IsAny<CatalogChangingEvent>(), It.IsAny<CancellationToken>()), Times.Once);
-
-            Assert.Equal(EntryState.Modified, changingEventChangedEntries.Single().EntryState);
-            Assert.IsType<Catalog>(changingEventChangedEntries.Single().OldEntry);
-
-            eventPublisher.Verify(e => e.Publish(It.IsAny<CatalogChangedEvent>(), It.IsAny<CancellationToken>()), Times.Once());
-
-            Assert.Equal(EntryState.Modified, changedEventChangedEntries.Single().EntryState);
-            Assert.IsType<Catalog>(changedEventChangedEntries.Single().OldEntry);
+       
+            AssertValues<CatalogChangingEvent, Catalog>(eventPublisher, changingEventChangedEntries, EntryState.Modified);
+            AssertValues<CatalogChangedEvent, Catalog>(eventPublisher, changedEventChangedEntries, EntryState.Modified);
         }
 
         [Fact]
@@ -126,15 +111,8 @@ namespace VirtoCommerce.CatalogModule.Test.TestEventsPublishing
 
             catalogService.Delete(new [] {"testCatalogId"});
 
-            eventPublisher.Verify(e => e.Publish(It.IsAny<CatalogChangingEvent>(), It.IsAny<CancellationToken>()), Times.Once);
-
-            Assert.Equal(EntryState.Deleted, changingEventChangedEntries.Single().EntryState);
-            Assert.IsType<Catalog>(changingEventChangedEntries.Single().OldEntry);
-
-            eventPublisher.Verify(e => e.Publish(It.IsAny<CatalogChangedEvent>(), It.IsAny<CancellationToken>()), Times.Once());
-
-            Assert.Equal(EntryState.Deleted, changedEventChangedEntries.Single().EntryState);
-            Assert.IsType<Catalog>(changedEventChangedEntries.Single().OldEntry);
+            AssertValues<CatalogChangingEvent, Catalog>(eventPublisher, changingEventChangedEntries, EntryState.Deleted);
+            AssertValues<CatalogChangedEvent, Catalog>(eventPublisher, changedEventChangedEntries, EntryState.Deleted);
         }
 
         private Catalog GetCatalog()

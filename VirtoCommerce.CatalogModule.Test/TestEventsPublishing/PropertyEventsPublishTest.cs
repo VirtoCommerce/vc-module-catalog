@@ -44,17 +44,8 @@ namespace VirtoCommerce.CatalogModule.Test.TestEventsPublishing
 
             propertyService.Create(property);
 
-            eventPublisher.Verify(e => e.Publish(It.IsAny<PropertyChangingEvent>(), It.IsAny<CancellationToken>()),
-                Times.Once);
-
-            Assert.Equal(EntryState.Added, changingEventChangedEntries.Single().EntryState);
-            Assert.IsType<Property>(changingEventChangedEntries.Single().NewEntry);
-
-            eventPublisher.Verify(e => e.Publish(It.IsAny<PropertyChangedEvent>(), It.IsAny<CancellationToken>()),
-                Times.Once());
-
-            Assert.Equal(EntryState.Added, changedEventChangedEntries.Single().EntryState);
-            Assert.IsType<Property>(changedEventChangedEntries.Single().NewEntry);
+            AssertValues<PropertyChangingEvent, Property>(eventPublisher, changingEventChangedEntries, EntryState.Added);
+            AssertValues<PropertyChangedEvent, Property>(eventPublisher, changedEventChangedEntries, EntryState.Added);
         }
 
         [Fact]
@@ -84,17 +75,8 @@ namespace VirtoCommerce.CatalogModule.Test.TestEventsPublishing
 
             propertyService.Update(new [] {property});
 
-            eventPublisher.Verify(e => e.Publish(It.IsAny<PropertyChangingEvent>(), It.IsAny<CancellationToken>()),
-                Times.Once);
-
-            Assert.Equal(EntryState.Modified, changingEventChangedEntries.Single().EntryState);
-            Assert.IsType<Property>(changingEventChangedEntries.Single().OldEntry);
-
-            eventPublisher.Verify(e => e.Publish(It.IsAny<PropertyChangedEvent>(), It.IsAny<CancellationToken>()),
-                Times.Once());
-
-            Assert.Equal(EntryState.Modified, changedEventChangedEntries.Single().EntryState);
-            Assert.IsType<Property>(changedEventChangedEntries.Single().OldEntry);
+            AssertValues<PropertyChangingEvent, Property>(eventPublisher, changingEventChangedEntries, EntryState.Modified);
+            AssertValues<PropertyChangedEvent, Property>(eventPublisher, changedEventChangedEntries, EntryState.Modified);
         }
 
         [Fact]
@@ -130,17 +112,8 @@ namespace VirtoCommerce.CatalogModule.Test.TestEventsPublishing
 
             propertyService.Delete(new[] {"testProperty"});
 
-            eventPublisher.Verify(e => e.Publish(It.IsAny<PropertyChangingEvent>(), It.IsAny<CancellationToken>()),
-                Times.Once);
-
-            Assert.Equal(EntryState.Deleted, changingEventChangedEntries.Single().EntryState);
-            Assert.IsType<Property>(changingEventChangedEntries.Single().OldEntry);
-
-            eventPublisher.Verify(e => e.Publish(It.IsAny<PropertyChangedEvent>(), It.IsAny<CancellationToken>()),
-                Times.Once());
-
-            Assert.Equal(EntryState.Deleted, changedEventChangedEntries.Single().EntryState);
-            Assert.IsType<Property>(changedEventChangedEntries.Single().OldEntry);
+            AssertValues<PropertyChangingEvent, Property>(eventPublisher, changingEventChangedEntries, EntryState.Deleted);
+            AssertValues<PropertyChangedEvent, Property>(eventPublisher, changedEventChangedEntries, EntryState.Deleted);
         }
 
         private IPropertyService GetPropertyService(ICatalogRepository catalogRepository,

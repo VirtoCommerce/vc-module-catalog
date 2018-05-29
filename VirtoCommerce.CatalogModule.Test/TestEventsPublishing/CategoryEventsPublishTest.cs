@@ -51,15 +51,8 @@ namespace VirtoCommerce.CatalogModule.Test.TestEventsPublishing
 
             categoryService.Create(new[] {category});
 
-            eventPublisher.Verify(e => e.Publish(It.IsAny<CategoryChangingEvent>(), It.IsAny<CancellationToken>()), Times.Once);
-
-            Assert.Equal(EntryState.Added, changingEventChangedEntries.Single().EntryState);
-            Assert.IsType<Category>(changingEventChangedEntries.Single().NewEntry);
-
-            eventPublisher.Verify(e => e.Publish(It.IsAny<CategoryChangedEvent>(), It.IsAny<CancellationToken>()), Times.Once);
-
-            Assert.Equal(EntryState.Added, changedEventChangedEntries.Single().EntryState);
-            Assert.IsType<Category>(changedEventChangedEntries.Single().NewEntry);
+            AssertValues<CategoryChangingEvent, Category>(eventPublisher, changingEventChangedEntries, EntryState.Added);
+            AssertValues<CategoryChangedEvent, Category>(eventPublisher, changedEventChangedEntries, EntryState.Added);
 
         }
 
@@ -95,15 +88,8 @@ namespace VirtoCommerce.CatalogModule.Test.TestEventsPublishing
 
             categoryService.Update(new [] {category});
 
-            eventPublisher.Verify(e => e.Publish(It.IsAny<CategoryChangingEvent>(), It.IsAny<CancellationToken>()), Times.Once);
-
-            Assert.Equal(EntryState.Modified, changingEventChangedEntries.Single().EntryState);
-            Assert.IsType<Category>(changingEventChangedEntries.Single().NewEntry);
-
-            eventPublisher.Verify(e => e.Publish(It.IsAny<CategoryChangedEvent>(), It.IsAny<CancellationToken>()), Times.Once);
-
-            Assert.Equal(EntryState.Modified, changedEventChangedEntries.Single().EntryState);
-            Assert.IsType<Category>(changedEventChangedEntries.Single().NewEntry);
+            AssertValues<CategoryChangingEvent, Category>(eventPublisher, changingEventChangedEntries, EntryState.Modified);
+            AssertValues<CategoryChangedEvent, Category>(eventPublisher, changedEventChangedEntries, EntryState.Modified);
         }
 
         [Fact]
@@ -140,15 +126,8 @@ namespace VirtoCommerce.CatalogModule.Test.TestEventsPublishing
 
             categoryService.Delete(new[] {"testCategoryId"});
 
-            eventPublisher.Verify(e => e.Publish(It.IsAny<CategoryChangingEvent>(), It.IsAny<CancellationToken>()), Times.Once);
-
-            Assert.Equal(EntryState.Deleted, changingEventChangedEntries.Single().EntryState);
-            Assert.IsType<Category>(changingEventChangedEntries.Single().NewEntry);
-
-            eventPublisher.Verify(e => e.Publish(It.IsAny<CategoryChangedEvent>(), It.IsAny<CancellationToken>()), Times.Once);
-
-            Assert.Equal(EntryState.Deleted, changedEventChangedEntries.Single().EntryState);
-            Assert.IsType<Category>(changedEventChangedEntries.Single().NewEntry);
+            AssertValues<CategoryChangingEvent, Category>(eventPublisher, changingEventChangedEntries, EntryState.Deleted);
+            AssertValues<CategoryChangedEvent, Category>(eventPublisher, changedEventChangedEntries, EntryState.Deleted);
         }
 
         private ICategoryService GetCategoryService(IEventPublisher eventPublisher, ICacheManager<object> cacheManager, ICatalogService catalogService, AbstractValidator<IHasProperties> validator, ICatalogRepository catalogRepository)
