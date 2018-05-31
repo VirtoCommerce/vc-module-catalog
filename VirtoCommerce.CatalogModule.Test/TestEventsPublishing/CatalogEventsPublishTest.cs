@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using CacheManager.Core;
 using FluentValidation;
+using FluentValidation.Results;
 using Moq;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
@@ -19,6 +21,36 @@ namespace VirtoCommerce.CatalogModule.Test.TestEventsPublishing
 {
     public class CatalogEventsPublishTest : BaseEventTest
     {
+
+        [Fact]
+        public void UpdateCatalog_ChecksThatDomainEventsFired()
+        {
+            //Arrange
+            var catalog = new Catalog
+            {
+                Id = "catalog",
+                Languages = new[] { new CatalogLanguage { LanguageCode = "en-US", IsDefault = true } }
+            };
+            var catalogEntity = new CatalogEntity().FromModel(catalog, new PrimaryKeyResolvingMap());
+
+            var catalogRepositoryFactory = new Mock<ICatalogRepository>();
+            catalogRepositoryFactory.Setup(x => x.GetCatalogsByIds(It.IsAny<string[]>())).Returns(new[] { catalogEntity });
+            catalogRepositoryFactory.Setup(x => x.UnitOfWork).Returns(new Mock<IUnitOfWork>().Object);
+            var cacheManager = new Mock<ICacheManager<object>>();
+            var eventPublisher = new Mock<IEventPublisher>();
+            var validator = new Mock<AbstractValidator<IHasProperties>>();
+            validator.Setup(v => v.Validate(It.IsAny<ValidationContext<IHasProperties>>())).Returns(new ValidationResult() { });
+
+            var catalogService = new CatalogServiceImpl(() => catalogRepositoryFactory.Object, cacheManager.Object, validator.Object, eventPublisher.Object);
+
+            //Act
+            catalogService.Update(new[] { catalog });
+
+            //Assertion
+            eventPublisher.Verify(e => e.Publish(It.IsAny<CatalogChangingEvent>(), It.IsAny<CancellationToken>()), Times.Once);
+            eventPublisher.Verify(e => e.Publish(It.IsAny<CatalogChangedEvent>(), It.IsAny<CancellationToken>()), Times.Once);
+
+        }
 
         [Fact]
         public void TestCreateCatalogEntityEvent()
@@ -72,12 +104,12 @@ namespace VirtoCommerce.CatalogModule.Test.TestEventsPublishing
                 });
 
             var mockedRepo = GetMockedCatalogRepository();
-            mockedRepo.Setup(r => r.GetCatalogsByIds(It.IsAny<string[]>())).Returns(new [] { catalogEntity });
+            mockedRepo.Setup(r => r.GetCatalogsByIds(It.IsAny<string[]>())).Returns(new[] { catalogEntity });
 
             var catalogService = GetCatalogService(GetValidator(), eventPublisher.Object, () => mockedRepo.Object, GetMockedCacheManager().Object);
 
             catalogService.Update(new[] { catalog });
-       
+
             AssertValues<CatalogChangingEvent, Catalog>(eventPublisher, changingEventChangedEntries, EntryState.Modified);
             AssertValues<CatalogChangedEvent, Catalog>(eventPublisher, changedEventChangedEntries, EntryState.Modified);
         }
@@ -109,7 +141,7 @@ namespace VirtoCommerce.CatalogModule.Test.TestEventsPublishing
 
             var catalogService = GetCatalogService(GetValidator(), eventPublisher.Object, () => GetMockedCatalogRepository().Object, cacheManager.Object);
 
-            catalogService.Delete(new [] {"testCatalogId"});
+            catalogService.Delete(new[] { "testCatalogId" });
 
             AssertValues<CatalogChangingEvent, Catalog>(eventPublisher, changingEventChangedEntries, EntryState.Deleted);
             AssertValues<CatalogChangedEvent, Catalog>(eventPublisher, changedEventChangedEntries, EntryState.Deleted);
