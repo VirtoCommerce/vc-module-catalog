@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.Domain.Catalog.Model.Search;
 using VirtoCommerce.Domain.Commerce.Model.Search;
@@ -36,6 +36,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                     Sorting = GetSorting(categorySearchCriteria),
                     Skip = criteria.Skip,
                     Take = criteria.Take,
+                    IsFuzzySearch = categorySearchCriteria.IsFuzzySearch,
                 };
             }
 
