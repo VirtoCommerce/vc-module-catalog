@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.Domain.Catalog.Model.Search;
 using VirtoCommerce.Domain.Commerce.Model.Search;
@@ -41,7 +41,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                     Skip = criteria.Skip,
                     Take = criteria.Take,
                     Aggregations = _aggregationConverter?.GetAggregationRequests(productSearchCriteria, allFilters),
-                };
+                    IsFuzzySearch = productSearchCriteria.IsFuzzySearch,
+            };
             }
 
             return request;
