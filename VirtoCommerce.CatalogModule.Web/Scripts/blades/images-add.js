@@ -48,7 +48,6 @@ angular.module('virtoCommerce.catalogModule')
                             image.isImage = true;
                             image.group = blade.imageType;
                             blade.currentEntities.push(image);
-                            var request = { imageUrl: image.url, isRegenerateAll: true };
                         });
                     };
 
