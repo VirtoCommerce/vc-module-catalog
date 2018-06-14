@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -24,9 +24,15 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly IItemService _itemService;
         private readonly IBlobUrlResolver _blobUrlResolver;
 
-        public CatalogModuleListEntryController(ICatalogSearchService searchService,
-                                   ICategoryService categoryService,
-                                   IItemService itemService, IBlobUrlResolver blobUrlResolver, ISecurityService securityService, IPermissionScopeService permissionScopeService, ICatalogService catalogService)
+        public CatalogModuleListEntryController(
+            ICatalogSearchService searchService,
+            ICategoryService categoryService,
+            IItemService itemService,
+            IBlobUrlResolver blobUrlResolver,
+            ISecurityService securityService,
+            IPermissionScopeService permissionScopeService,
+            ICatalogService catalogService
+            )
             : base(securityService, permissionScopeService)
         {
             _searchService = searchService;
@@ -35,7 +41,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             _blobUrlResolver = blobUrlResolver;
             _catalogService = catalogService;
         }
-
 
         /// <summary>
         /// Searches for the items by complex criteria.
@@ -99,7 +104,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return Ok(retVal);
         }
 
-
         /// <summary>
         /// Creates links for categories or items to parent categories and catalogs.
         /// </summary>
@@ -116,6 +120,75 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return StatusCode(HttpStatusCode.NoContent);
         }
 
+        /// <summary>
+        /// Bulk create links to categories and items
+        /// </summary>
+        /// <param name="creationRequest"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("~/api/catalog/listentrylinks/bulkcreate")]
+        [ResponseType(typeof(void))]
+        public IHttpActionResult BulkCreateLinks(webModel.BulkLinkCreationRequest creationRequest)
+        {
+
+            if (creationRequest.CatalogId.IsNullOrEmpty() || creationRequest.CategoryId.IsNullOrEmpty())
+            {
+                throw new ArgumentException("Target catalog and category identifiers should be specified.");
+            }
+
+            var coreModelCriteria = creationRequest.SearchCriteria.ToCoreModel();
+
+            bool haveProducts;
+
+            do
+            {
+                var links = new List<webModel.ListEntryLink>();
+
+                var searchResult = _searchService.Search(coreModelCriteria);
+
+                var productLinks = searchResult
+                    .Products
+                    .Select(x => new webModel.ListEntryLink
+                    {
+                        CatalogId = creationRequest.CatalogId,
+                        ListEntryType = webModel.ListEntryProduct.TypeName,
+                        ListEntryId = x.Id,
+                        CategoryId = creationRequest.CategoryId
+                    })
+                    .ToList();
+
+                links.AddRange(productLinks);
+
+                if (coreModelCriteria.ResponseGroup.HasFlag(coreModel.SearchResponseGroup.WithCategories))
+                {
+                    coreModelCriteria.ResponseGroup = coreModelCriteria.ResponseGroup & ~coreModel.SearchResponseGroup.WithCategories;
+
+                    var categoryLinks = searchResult
+                        .Categories
+                        .Select(c => new webModel.ListEntryLink
+                        {
+                            CatalogId = creationRequest.CatalogId,
+                            ListEntryType = webModel.ListEntryCategory.TypeName,
+                            ListEntryId = c.Id,
+                            CategoryId = creationRequest.CategoryId
+                        })
+                        .ToList();
+
+                    links.AddRange(categoryLinks);
+                }
+
+                haveProducts = productLinks.Any();
+
+                coreModelCriteria.Skip += coreModelCriteria.Take;
+
+                CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Create, links.ToArray());
+
+                InnerUpdateLinks(links.ToArray(), (x, y) => x.Links.Add(y));
+
+            } while (haveProducts);
+
+            return StatusCode(HttpStatusCode.NoContent);
+        }
 
         [ApiExplorerSettings(IgnoreApi = true)]
         [HttpGet]
@@ -129,7 +202,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             }
             return Ok(text.GenerateSlug());
         }
-
 
         /// <summary>
         /// Unlinks the linked categories or items from parent categories and catalogs.
@@ -146,7 +218,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             InnerUpdateLinks(links, (x, y) => x.Links = x.Links.Where(l => string.Join(":", l.CatalogId, l.CategoryId) != string.Join(":", y.CatalogId, y.CategoryId)).ToList());
             return StatusCode(HttpStatusCode.NoContent);
         }
-
 
         /// <summary>
         /// Move categories or products to another location.
