@@ -1,14 +1,17 @@
-﻿using CacheManager.Core;
+using CacheManager.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Data.Extensions;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
+using VirtoCommerce.Domain.Catalog.Events;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
+using VirtoCommerce.Domain.Common.Events;
 using VirtoCommerce.Domain.Search;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.Events;
 using VirtoCommerce.Platform.Data.Common;
 using VirtoCommerce.Platform.Data.Infrastructure;
 
@@ -19,12 +22,14 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private readonly Func<ICatalogRepository> _repositoryFactory;
         private readonly ICacheManager<object> _cacheManager;
         private readonly ICatalogService _catalogService;
+        private readonly IEventPublisher _eventPublisher;
 
-        public PropertyServiceImpl(Func<ICatalogRepository> repositoryFactory, ICacheManager<object> cacheManager, ICatalogService catalogService)
+        public PropertyServiceImpl(Func<ICatalogRepository> repositoryFactory, ICacheManager<object> cacheManager, ICatalogService catalogService, IEventPublisher eventPublisher)
         {
             _repositoryFactory = repositoryFactory;
             _cacheManager = cacheManager;
             _catalogService = catalogService;
+            _eventPublisher = eventPublisher;
         }
 
         #region IPropertyService Members
@@ -84,9 +89,15 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public void Delete(string[] propertyIds)
         {
+            var changedEntries = GetByIds(propertyIds)
+                .Select(p => new GenericChangedEntry<Property>(p, EntryState.Deleted))
+                .ToList();
+
             using (var repository = _repositoryFactory())
             {
                 var entities = repository.GetPropertiesByIds(propertyIds);
+
+                _eventPublisher.Publish(new PropertyChangingEvent(changedEntries));
 
                 foreach (var entity in entities)
                 {
@@ -96,6 +107,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 CommitChanges(repository);
                 //Reset cached categories and catalogs
                 ResetCache();
+
+                _eventPublisher.Publish(new PropertyChangedEvent(changedEntries));
             }
         }
 
@@ -158,6 +171,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         protected virtual void SaveChanges(Property[] properties)
         {
             var pkMap = new PrimaryKeyResolvingMap();
+            var changedEntries = new List<GenericChangedEntry<Property>>();
 
             using (var repository = _repositoryFactory())
             using (var changeTracker = GetChangeTracker(repository))
@@ -172,6 +186,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     if (originalEntity != null)
                     {
                         changeTracker.Attach(originalEntity);
+                        changedEntries.Add(new GenericChangedEntry<Property>(property, originalEntity.ToModel(AbstractTypeFactory<Property>.TryCreateInstance()), EntryState.Modified));
                         modifiedEntity.Patch(originalEntity);
                         //Force set ModifiedDate property to mark a property changed. Special for  partial update cases when property table not have changes
                         originalEntity.ModifiedDate = DateTime.UtcNow;
@@ -179,12 +194,18 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     else
                     {
                         repository.Add(modifiedEntity);
+                        changedEntries.Add(new GenericChangedEntry<Property>(property, EntryState.Added));
                     }
                 }
+
+                _eventPublisher.Publish(new PropertyChangingEvent(changedEntries));
+
                 CommitChanges(repository);
                 pkMap.ResolvePrimaryKeys();
                 //Reset cached categories and catalogs
                 ResetCache();
+
+                _eventPublisher.Publish(new PropertyChangedEvent(changedEntries));
             }
         }
 
