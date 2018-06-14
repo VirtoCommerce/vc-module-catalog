@@ -309,6 +309,7 @@
     </Content>
     <Content Include="Localizations\en.VirtoCommerce.Catalog.json" />
     <Content Include="Localizations\de.VirtoCommerce.Catalog.json" />
+    <Content Include="Localizations\ru.VirtoCommerce.Catalog.json" />
     <None Include="module.ignore" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
