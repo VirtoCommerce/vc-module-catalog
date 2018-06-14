@@ -5,16 +5,16 @@ namespace VirtoCommerce.CatalogModule.Web.Model
     /// </summary>
     public class BulkLinkCreationRequest
     {
-        public SearchCriteria SearchCriteria;
+        public SearchCriteria SearchCriteria { get; set; }
 
         /// <summary>
         /// The target category identifier for the link
         /// </summary>
-        public string CategoryId;
+        public string CategoryId { get; set; }
 
         /// <summary>
         /// The target catalog identifier for the link
         /// </summary>
-        public string CatalogId;
+        public string CatalogId { get; set; }
     }
 }
