@@ -11,10 +11,10 @@ angular.module('virtoCommerce.catalogModule')
                     executeMethod: function () {
                         var newBlade = {
                             id: 'propertyDictionaryDetails',
-                            categoryId: pb.categoryId,
+                            categoryId: blade.property.categoryId,
+                            isNew: true,
                             title: 'catalog.blades.property-dictionary.labels.dictionary-edit',
-                            catalogId: pb.catalogId,
-                            defaultLanguage: pb.defaultLanguage,
+                            catalogId: blade.property.catalogId,
                             controller: 'virtoCommerce.catalogModule.propertyDictionaryDetailsController',
                             template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-dictionary-details.tpl.html'
                         };
@@ -26,14 +26,10 @@ angular.module('virtoCommerce.catalogModule')
                 }
             ];
 
-            function showDetailBlade(bladeData) {
-                var newBlade = {
-                    id: 'propertyDictionaryDetails',
-                    controller: 'virtoCommerce.catalogModule.propertyDictionaryDetailsController',
-                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-dictionary-details.tpl.html'
-                };
-                angular.extend(newBlade, bladeData);
-                bladeNavigationService.showBlade(newBlade, blade);
+            blade.refresh = function () {
+                $scope.groupedDictionaryValues = _.map(_.groupBy(pb.currentEntity.dictionaryValues, 'alias'), function (values, key) {
+                    return { alias: key, values: values };
+                });
             };
 
             $scope.groupedDictionaryValues = _.map(_.groupBy(blade.property.dictionaryValues, 'alias'), function (values, key) {
@@ -46,17 +42,18 @@ angular.module('virtoCommerce.catalogModule')
             };
 
             $scope.selectNode = function (property) {
-                debugger;
                 var newBlade = {
-                    id: 'editCategoryProperty',
-                    categoryId: blade.categoryId,
-                    catalogId: blade.catalogId,
-                    defaultLanguage: blade.defaultLanguage,
+                    id: 'propertyDictionaryDetails',
+                    title: 'catalog.blades.property-dictionary.labels.dictionary-edit',
+                    categoryId: blade.property.categoryId,
+                    catalogId: blade.property.catalogId,
                     controller: 'virtoCommerce.catalogModule.propertyDictionaryDetailsController',
-                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-dictionary-details.tpl.html'
+                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-dictionary-details.tpl.html',
+                    property: property
                 };
                 bladeNavigationService.showBlade(newBlade, blade);
             };
 
             $scope.blade.isLoading = false;
+            blade.refresh();
         }]);
