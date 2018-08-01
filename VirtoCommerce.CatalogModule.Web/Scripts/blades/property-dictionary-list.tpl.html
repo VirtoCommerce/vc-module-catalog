@@ -1,0 +1,13 @@
+<div class="blade-content">
+    <div class="blade-inner">
+        <div class="inner-block clearfix">
+            <ul class="list __items">
+                <li class="list-item" ng-repeat="property in groupedDictionaryValues track by $index" ng-class="{'__selected': property === setSelectedNode}"
+                    ng-click='selectNode(property)'>
+                    <span style="font-weight:bold; margin-right:12px;">{{property.alias}}</span>
+                    <!-- <span class="list-descr"><span ng-if="data.backgroundColor"> {{ 'imageTools.blades.setting-managment.background' | translate }}: {{data.backgroundColor}}, </span>{{ 'imageTools.blades.setting-managment.height' | translate }}: {{data.height | number}}, {{ 'imageTools.blades.setting-managment.width' | translate }}: {{data.width | number}}</span> -->
+                </li>
+            </ul>
+        </div>
+    </div>
+</div> 

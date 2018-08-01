@@ -55,8 +55,8 @@
                     newBlade.title = 'catalog.blades.property-dictionary.title';
                     newBlade.titleValues = { name: blade.origEntity.name ? blade.origEntity.name : blade.currentEntity.name };
                     newBlade.subtitle = 'catalog.blades.property-dictionary.subtitle';
-                    newBlade.controller = 'virtoCommerce.catalogModule.propertyDictionaryController';
-                    newBlade.template = 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-dictionary.tpl.html';
+                    newBlade.controller = 'virtoCommerce.catalogModule.propertyDictionaryListController';
+                    newBlade.template = 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-dictionary-list.tpl.html';
                     break;
             }
             bladeNavigationService.showBlade(newBlade, blade);
