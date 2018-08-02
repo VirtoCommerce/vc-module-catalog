@@ -3,6 +3,8 @@ angular.module('virtoCommerce.catalogModule')
         ['$scope', '$filter', 'platformWebApp.dialogService', 'platformWebApp.settings', 'platformWebApp.bladeNavigationService', function ($scope, $filter, dialogService, settings, bladeNavigationService) {
             var blade = $scope.blade;
             var pb = $scope.blade.parentBlade;
+            $scope.blade.isLoading = false;
+            
             blade.headIcon = 'fa-book';
 
             blade.toolbarCommands = [
@@ -53,6 +55,5 @@ angular.module('virtoCommerce.catalogModule')
                 bladeNavigationService.showBlade(newBlade, blade);
             };
 
-            $scope.blade.isLoading = false;
             blade.refresh();
         }]);

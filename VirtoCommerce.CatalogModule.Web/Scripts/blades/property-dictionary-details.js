@@ -7,11 +7,11 @@ angular.module('virtoCommerce.catalogModule')
                 var languagesList = languages.query();
                 var existedDictionary = pb.parentBlade.currentEntity.dictionaryValues;
 
-                $scope.pb = pb;
-                $scope.defaultLanguage = pb.parentBlade.defaultLanguage;
-
                 blade.headIcon = 'fa-book';
 
+                $scope.pb = pb;
+                $scope.defaultLanguage = pb.parentBlade.defaultLanguage;
+                $scope.isValid = true;
                 $scope.blade.isLoading = false;
 
                 $scope.getLanguageName = function (languageCode) {
@@ -22,7 +22,7 @@ angular.module('virtoCommerce.catalogModule')
                     {
                         name: "platform.commands.save",
                         icon: 'fa fa-save',
-                        executeMethod: saveChanges,
+                        executeMethod: $scope.saveChanges,
                         canExecuteMethod: canSave
                     },
                     {
@@ -84,11 +84,12 @@ angular.module('virtoCommerce.catalogModule')
                 }
 
                 function canSave() {
-                    return (blade.isNew || isDirty()) && blade.formScope && blade.formScope.$valid;
+                    $scope.isValid = (blade.isNew || isDirty()) && blade.formScope && blade.formScope.$valid;
+                    return $scope.isValid;
                 }
 
                 blade.onClose = function (closeCallback) {
-                    bladeNavigationService.showConfirmationIfNeeded(isDirty(), canSave(), blade, saveChanges, closeCallback, "catalog.dialogs.property-save.title", "catalog.dialogs.property-save.message");
+                    bladeNavigationService.showConfirmationIfNeeded(isDirty(), canSave(), blade, $scope.saveChanges, closeCallback, "catalog.dialogs.property-save.title", "catalog.dialogs.property-save.message");
                 };
 
                 function deleteProperty() {
@@ -110,7 +111,7 @@ angular.module('virtoCommerce.catalogModule')
                     dialogService.showConfirmationDialog(dialog);
                 }
 
-                function saveChanges() {
+                $scope.saveChanges = function() {
                     blade.isLoading = true;
                     if (blade.isNew) {
                         _.each(blade.currentEntity.values, function (prop) {
@@ -125,15 +126,18 @@ angular.module('virtoCommerce.catalogModule')
                                 existedProp.alias = blade.currentEntity.alias;
                                 existedProp.value = prop.value;
                             } else {
+                                prop.alias = blade.currentEntity.alias;
                                 existedDictionary.push(prop);
                             }
                         })
                     }
+
                     pb.refresh();
                     if (blade.isNew) {
                         blade.isNew = false;
-                        blade.property = blade.currentEntity;
                     }
+                    
+                    blade.property = blade.currentEntity;
                     initializeBlade();
                     blade.isLoading = false;
                 };
