@@ -20,12 +20,6 @@ angular.module('virtoCommerce.catalogModule')
 
                 blade.toolbarCommands = [
                     {
-                        name: "platform.commands.save",
-                        icon: 'fa fa-save',
-                        executeMethod: $scope.saveChanges,
-                        canExecuteMethod: canSave
-                    },
-                    {
                         name: "platform.commands.delete",
                         icon: 'fa fa-trash-o',
                         executeMethod: deleteProperty,
@@ -83,13 +77,12 @@ angular.module('virtoCommerce.catalogModule')
                     return !angular.equals(blade.currentEntity, blade.origEntity) && blade.hasUpdatePermission();
                 }
 
-                function canSave() {
-                    $scope.isValid = (blade.isNew || isDirty()) && blade.formScope && blade.formScope.$valid;
-                    return $scope.isValid;
-                }
+                $scope.$watch("blade.currentEntity", function () {
+                    $scope.isValid = isDirty() && blade.formScope && blade.formScope.$valid;
+                }, true);
 
                 blade.onClose = function (closeCallback) {
-                    bladeNavigationService.showConfirmationIfNeeded(isDirty(), canSave(), blade, $scope.saveChanges, closeCallback, "catalog.dialogs.property-save.title", "catalog.dialogs.property-save.message");
+                    bladeNavigationService.showConfirmationIfNeeded(isDirty(), $scope.isValid, blade, $scope.saveChanges, closeCallback, "catalog.dialogs.property-save.title", "catalog.dialogs.property-save.message");
                 };
 
                 function deleteProperty() {
@@ -139,6 +132,7 @@ angular.module('virtoCommerce.catalogModule')
                     
                     blade.property = blade.currentEntity;
                     initializeBlade();
+                    $scope.isValid = false;
                     blade.isLoading = false;
                 };
 
