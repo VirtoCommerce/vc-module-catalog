@@ -38,7 +38,6 @@ angular.module('virtoCommerce.catalogModule')
 
             $scope.setSelectedNode = function (selectedNode) {
                 $scope.selectedNode = selectedNode;
-                debugger;
             };
 
             $scope.selectNode = function (property) {
