@@ -9,17 +9,21 @@
                     </div>
                 </div>
 
-                <div class="form-group" ng-repeat="prop in blade.property.values">
-                    <label class="form-label" for="">{{ getLanguageName(prop.languageCode) }}</label>
+                <div class="form-group" ng-if="!pb.parentBlade.currentEntity.multilanguage">
+                    <label class="form-label" for="">{{ 'catalog.blades.property-attributes.labels.value' | translate }}</label>
                     <div class="form-input">
-                        <input ng-model="prop.value" placeholder="{{ 'catalog.blades.property-dictionary.placeholders.value' | translate }}" class="form-control" />
+                        <input ng-model="blade.property.values[0].value" required placeholder="{{ 'catalog.blades.property-dictionary.placeholders.value' | translate }}" class="form-control" />
+                        <input type="hidden" ng-value="blade.property.values[0].languageCode" ng-init="blade.property.values[0].languageCode = defaultLanguage;"/>
                     </div>
                 </div>
 
-                <div class="form-group" ng-if="blade.isNew">
-                    <label class="form-label" for="">{{ 'catalog.blades.property-attributes.labels.value' | translate }}</label>
-                    <div class="form-input">
-                        <input ng-model="blade.property.value" required placeholder="{{ 'catalog.blades.property-dictionary.placeholders.value' | translate }}" class="form-control" />
+                <div ng-if="pb.parentBlade.currentEntity.multilanguage">
+                    <div class="form-group" ng-repeat="lang in pb.parentBlade.parentBlade.languages">
+                        <label class="form-label" for="">{{ getLanguageName(lang) }}</label>
+                        <div class="form-input">
+                            <input ng-model="blade.property.values[$index].value" ng-required="lang == defaultLanguage" placeholder="{{ 'catalog.blades.property-dictionary.placeholders.value' | translate }}" class="form-control" />
+                            <input type="hidden" ng-value="blade.property.values[$index].languageCode" ng-init="blade.property.values[$index].languageCode = lang;"/>
+                        </div>
                     </div>
                 </div>
             </form>

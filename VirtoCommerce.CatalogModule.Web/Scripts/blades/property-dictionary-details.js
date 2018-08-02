@@ -1,10 +1,14 @@
 angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.propertyDictionaryDetailsController',
-        ['$scope', '$filter', 'platformWebApp.dialogService', 'platformWebApp.settings','platformWebApp.i18n', 'platformWebApp.common.languages',
+        ['$scope', '$filter', 'platformWebApp.dialogService', 'platformWebApp.settings', 'platformWebApp.i18n', 'platformWebApp.common.languages',
             function ($scope, $filter, dialogService, settings, i18n, languages) {
                 var blade = $scope.blade;
                 var pb = $scope.blade.parentBlade;
                 var languagesList = languages.query();
+
+                $scope.pb = pb;
+                $scope.defaultLanguage = pb.parentBlade.defaultLanguage;
+
                 blade.headIcon = 'fa-book';
 
                 $scope.blade.isLoading = false;
@@ -28,7 +32,7 @@ angular.module('virtoCommerce.catalogModule')
                         name: "platform.commands.delete",
                         icon: 'fa fa-trash-o',
                         executeMethod: function () {
-                            deleteTask();
+                            deleteProperty();
                         },
                         canExecuteMethod: function () {
                             return !blade.isNew;
@@ -43,21 +47,53 @@ angular.module('virtoCommerce.catalogModule')
                     return blade.formScope && blade.formScope.$valid;
                 }
 
+                function deleteProperty() {
+                    var dictionary = pb.parentBlade.currentEntity.dictionaryValues;
+                    var item = dictionary.find(x => x.alias == blade.property.alias);
+                    var index = dictionary.indexOf(item);
+                    dictionary.splice(index, 1);
+
+                    pb.refresh();
+                    $scope.bladeClose();
+                }
+
                 function saveChanges() {
                     blade.isLoading = true;
                     if (blade.isNew) {
-                        var property  = {
-                            value: blade.property.value,
-                            alias: blade.property.alias,
-                            languageCode: pb.parentBlade.defaultLanguage
+                        var dictionary = pb.parentBlade.currentEntity.dictionaryValues;
+                        var item = dictionary.find(x => x.alias == blade.property.alias);
+                        var index = dictionary.indexOf(item);
+                        if (index != -1) {
+                            alert('already exist');
+                            blade.isLoading = false;
+                            return false;
                         }
-                        pb.parentBlade.currentEntity.dictionaryValues.push(property);
+
+                        _.each(blade.property.values, function (prop) {
+                            var property = {
+                                value: prop.value,
+                                alias: blade.property.alias,
+                                languageCode: prop.languageCode
+                            }
+                            pb.parentBlade.currentEntity.dictionaryValues.push(property);
+                        });
+
                         pb.refresh();
                     } else {
-                        return taskApi.update(blade.currentEntity,
-                            function () {
-                                blade.refresh(true);
-                            }).$promise;
+                        blade.property.values.map(function (prop) {
+                            if (prop.id) {   // existed property
+                                var existedProp = pb.parentBlade.currentEntity.dictionaryValues.find(x=>x.id == prop.id);
+                                existedProp.alias = prop.alias;
+                                existedProp.value = prop.value;
+                            } else {    // new property
+                                var property = {
+                                    value: prop.value,
+                                    alias: blade.property.alias,
+                                    languageCode: prop.languageCode
+                                }
+                                pb.parentBlade.currentEntity.dictionaryValues.push(property);
+                            }
+                        })
                     }
                     $scope.bladeClose();
                 };
