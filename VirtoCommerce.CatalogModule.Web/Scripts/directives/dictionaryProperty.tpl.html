@@ -6,7 +6,7 @@
             ng-model="ngModel.value"
             ng-maxlength="{{validationRules.charCountMax}}"
             ng-minlength="{{validationRules.charCountMin}}"
-            ng-required="{{ngModel.languageCode == defaultLanguage || !ngModel}}"
+            ng-required="{{required}}"
             ng-pattern="{{validationRules.regExp}}">
 
     <div class="form-error" ng-if="form[ngModel.languageCode].$dirty && form[ngModel.languageCode].$invalid">

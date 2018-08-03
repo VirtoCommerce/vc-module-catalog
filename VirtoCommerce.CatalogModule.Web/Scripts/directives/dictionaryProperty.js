@@ -6,7 +6,8 @@ angular.module('virtoCommerce.catalogModule')
             require: ['^form', 'ngModel'],
             scope: {
                 ngModel: "=",
-                validationRules: "="
+                validationRules: "=",
+                required: "@"
             },
             replace: true,
             transclude: true

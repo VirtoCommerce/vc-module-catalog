@@ -16,13 +16,13 @@
 
                 <div class="form-group" ng-if="!pb.parentBlade.currentEntity.multilanguage">
                     <label class="form-label" for="">{{ 'catalog.blades.property-attributes.labels.value' | translate }}</label>
-                    <va-dictionary-property validation-rules="validationRules" ng-model="blade.currentEntity.values[0]"></va-dictionary-property>
+                    <va-dictionary-property required="true" validation-rules="validationRules" ng-model="blade.currentEntity.values[0]"></va-dictionary-property>
                 </div>
 
                 <div ng-if="pb.parentBlade.currentEntity.multilanguage">
                     <div class="form-group" ng-repeat="prop in blade.currentEntity.values">
                         <label class="form-label" for="">{{ getLanguageName(prop.languageCode) }}</label>
-                        <va-dictionary-property validation-rules="validationRules" ng-model="blade.currentEntity.values[$index]"></va-dictionary-property>
+                        <va-dictionary-property required="{{prop.languageCode == defaultLanguage}}" validation-rules="validationRules" ng-model="blade.currentEntity.values[$index]"></va-dictionary-property>
                     </div>
                 </div>
 
