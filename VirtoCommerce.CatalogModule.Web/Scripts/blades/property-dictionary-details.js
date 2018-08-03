@@ -13,7 +13,8 @@ angular.module('virtoCommerce.catalogModule')
                 $scope.defaultLanguage = pb.parentBlade.defaultLanguage;
                 $scope.isValid = true;
                 $scope.blade.isLoading = false;
-
+                $scope.validationRules = pb.parentBlade.currentEntity.validationRule;
+                
                 $scope.getLanguageName = function (languageCode) {
                     return languagesList.find(x => x.id.contains(languageCode.slice(0, 2))).name;
                 }
