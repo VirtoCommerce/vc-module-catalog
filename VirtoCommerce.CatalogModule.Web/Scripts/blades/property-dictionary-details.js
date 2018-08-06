@@ -14,9 +14,9 @@ angular.module('virtoCommerce.catalogModule')
                 $scope.isValid = true;
                 $scope.blade.isLoading = false;
                 $scope.validationRules = pb.parentBlade.currentEntity.validationRule;
-                
+
                 $scope.getLanguageName = function (languageCode) {
-                    return languagesList.find(x => x.id.contains(languageCode.slice(0, 2))).name;
+                    return _.find(languagesList, function (item) { return item.id.contains(languageCode.slice(0, 2)) }).name;
                 }
 
                 blade.toolbarCommands = [
@@ -43,7 +43,7 @@ angular.module('virtoCommerce.catalogModule')
 
                     if (pb.parentBlade.currentEntity.multilanguage) {
                         _.each(pb.parentBlade.parentBlade.languages, function (lang) {
-                            if (!blade.property.values.find(x => x.languageCode == lang)) {
+                            if (!_.find(blade.property.values, function (item) { return item.languageCode == lang })) {
                                 blade.property.values.push({
                                     value: "",
                                     languageCode: lang,
@@ -57,7 +57,7 @@ angular.module('virtoCommerce.catalogModule')
                     if (!blade.isNew) {
                         if (pb.parentBlade.currentEntity.multilanguage) {
                             _.each(pb.parentBlade.parentBlade.languages, function (lang) {
-                                if (!blade.property.values.find(x => x.languageCode == lang)) {
+                                if (!_.find(blade.property.values, function (item) { return item.languageCode == lang })) {
                                     blade.property.values.push({
                                         value: "",
                                         languageCode: lang,
@@ -93,7 +93,7 @@ angular.module('virtoCommerce.catalogModule')
                         message: "catalog.dialogs.dictionary-values-delete.message",
                         callback: function (remove) {
                             if (remove) {
-                                var item = existedDictionary.find(x => x.alias == blade.currentEntity.alias);
+                                var item = _.find(existedDictionary, function (item) { return item.alias == blade.currentEntity.alias });
                                 var index = existedDictionary.indexOf(item);
                                 existedDictionary.splice(index, 1);
 
@@ -105,7 +105,7 @@ angular.module('virtoCommerce.catalogModule')
                     dialogService.showConfirmationDialog(dialog);
                 }
 
-                $scope.saveChanges = function() {
+                $scope.saveChanges = function () {
                     blade.isLoading = true;
                     if (blade.isNew) {
                         _.each(blade.currentEntity.values, function (prop) {
@@ -115,7 +115,7 @@ angular.module('virtoCommerce.catalogModule')
                         });
                     } else {
                         blade.currentEntity.values.map(function (prop) {
-                            var existedProp = existedDictionary.find(x => x.alias == blade.origEntity.alias && x.languageCode == prop.languageCode);
+                            var existedProp = _.find(existedDictionary, function (item) { return item.alias == blade.origEntity.alias && x.languageCode == prop.languageCode });
                             if (existedProp) {
                                 existedProp.alias = blade.currentEntity.alias;
                                 existedProp.value = prop.value;
@@ -130,7 +130,7 @@ angular.module('virtoCommerce.catalogModule')
                     if (blade.isNew) {
                         blade.isNew = false;
                     }
-                    
+
                     blade.property = blade.currentEntity;
                     initializeBlade();
                     $scope.isValid = false;
@@ -139,7 +139,7 @@ angular.module('virtoCommerce.catalogModule')
 
                 $scope.dictValueValidator = function (value) {
                     if (blade.isNew) {
-                        var item = existedDictionary.find(x => x.alias == value);
+                        var item = _.find(existedDictionary, function (item) { return item.alias == value });
                         var index = existedDictionary.indexOf(item);
                         if (index != -1) {
                             return false;
