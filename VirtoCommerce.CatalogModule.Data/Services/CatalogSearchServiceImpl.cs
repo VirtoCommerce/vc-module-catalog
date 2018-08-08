@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Data.Extensions;
+using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
@@ -227,58 +228,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     }
                 }
 
-                var query = repository.Items.Where(x => criteria.WithHidden || x.IsActive);
-
-                if (!criteria.SearchInVariations)
-                {
-                    query = query.Where(x => x.ParentId == null);
-                }
-
-                if (!searchCategoryIds.IsNullOrEmpty())
-                {
-                    query = query.Where(x => searchCategoryIds.Contains(x.CategoryId) || x.CategoryLinks.Any(link => searchCategoryIds.Contains(link.CategoryId)));
-                }
-                else if (!criteria.CatalogIds.IsNullOrEmpty())
-                {
-                    query = query.Where(x => criteria.CatalogIds.Contains(x.CatalogId) && (criteria.SearchInChildren || x.CategoryId == null)
-                        || x.CategoryLinks.Any(link => criteria.CatalogIds.Contains(link.CatalogId) && (criteria.SearchInChildren || link.CategoryId == null)));
-                }
-
-                if (!string.IsNullOrEmpty(criteria.Code))
-                {
-                    query = query.Where(x => x.Code == criteria.Code);
-                }
-                else if (!string.IsNullOrEmpty(criteria.Keyword))
-                {
-                    query = query.Where(x => x.Name.Contains(criteria.Keyword) || x.Code.Contains(criteria.Keyword) || x.ItemPropertyValues.Any(y => y.ShortTextValue == criteria.Keyword));
-                }
-
-                if (!criteria.VendorIds.IsNullOrEmpty())
-                {
-                    query = query.Where(x => criteria.VendorIds.Contains(x.Vendor));
-                }
-
-                //Filter by property dictionary values
-                if (!criteria.PropertyValues.IsNullOrEmpty())
-                {
-                    var propValueIds = criteria.PropertyValues.Select(x => x.ValueId).Distinct().ToArray();
-                    query = query.Where(x => x.ItemPropertyValues.Any(y => propValueIds.Contains(y.KeyValue)));
-                }
-
-                if (!criteria.ProductTypes.IsNullOrEmpty())
-                {
-                    query = query.Where(x => criteria.ProductTypes.Contains(x.ProductType));
-                }
-
-                if (criteria.OnlyBuyable != null)
-                {
-                    query = query.Where(x => x.IsBuyable == criteria.OnlyBuyable);
-                }
-
-                if (criteria.OnlyWithTrackingInventory != null)
-                {
-                    query = query.Where(x => x.TrackInventory == criteria.OnlyWithTrackingInventory);
-                }
+                // Build the query based on the search criteria
+                var query = BuildSearchQuery(repository.Items, criteria, searchCategoryIds);
 
                 result.ProductsTotalCount = query.Count();
 
@@ -310,6 +261,64 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                                           .OrderBy(x => itemIds.IndexOf(x.Id)).ToList();
             }
 
+        }
+
+        protected virtual IQueryable<ItemEntity> BuildSearchQuery(IQueryable<ItemEntity> query, SearchCriteria criteria, string[] searchCategoryIds)
+        {
+            query = query.Where(x => criteria.WithHidden || x.IsActive);
+
+            if (!criteria.SearchInVariations)
+            {
+                query = query.Where(x => x.ParentId == null);
+            }
+
+            if (!searchCategoryIds.IsNullOrEmpty())
+            {
+                query = query.Where(x => searchCategoryIds.Contains(x.CategoryId) || x.CategoryLinks.Any(link => searchCategoryIds.Contains(link.CategoryId)));
+            }
+            else if (!criteria.CatalogIds.IsNullOrEmpty())
+            {
+                query = query.Where(x => criteria.CatalogIds.Contains(x.CatalogId) && (criteria.SearchInChildren || x.CategoryId == null)
+                    || x.CategoryLinks.Any(link => criteria.CatalogIds.Contains(link.CatalogId) && (criteria.SearchInChildren || link.CategoryId == null)));
+            }
+
+            if (!string.IsNullOrEmpty(criteria.Code))
+            {
+                query = query.Where(x => x.Code == criteria.Code);
+            }
+            else if (!string.IsNullOrEmpty(criteria.Keyword))
+            {
+                query = query.Where(x => x.Name.Contains(criteria.Keyword) || x.Code.Contains(criteria.Keyword) || x.ItemPropertyValues.Any(y => y.ShortTextValue == criteria.Keyword));
+            }
+
+            if (!criteria.VendorIds.IsNullOrEmpty())
+            {
+                query = query.Where(x => criteria.VendorIds.Contains(x.Vendor));
+            }
+
+            //Filter by property dictionary values
+            if (!criteria.PropertyValues.IsNullOrEmpty())
+            {
+                var propValueIds = criteria.PropertyValues.Select(x => x.ValueId).Distinct().ToArray();
+                query = query.Where(x => x.ItemPropertyValues.Any(y => propValueIds.Contains(y.KeyValue)));
+            }
+
+            if (!criteria.ProductTypes.IsNullOrEmpty())
+            {
+                query = query.Where(x => criteria.ProductTypes.Contains(x.ProductType));
+            }
+
+            if (criteria.OnlyBuyable != null)
+            {
+                query = query.Where(x => x.IsBuyable == criteria.OnlyBuyable);
+            }
+
+            if (criteria.OnlyWithTrackingInventory != null)
+            {
+                query = query.Where(x => x.TrackInventory == criteria.OnlyWithTrackingInventory);
+            }
+
+            return query;
         }
 
         protected virtual void TryTransformSortingInfoColumnNames(IDictionary<string, string> transformationMap, SortInfo[] sortingInfos)
