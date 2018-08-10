@@ -4,7 +4,9 @@ angular.module('virtoCommerce.catalogModule')
             var blade = $scope.blade;
             var pb = $scope.blade.parentBlade;
             $scope.blade.isLoading = false;
-            
+            $scope.filter = "";
+            var dictionaryOrigin = [];
+
             blade.headIcon = 'fa-book';
 
             blade.toolbarCommands = [
@@ -29,17 +31,24 @@ angular.module('virtoCommerce.catalogModule')
             ];
 
             blade.refresh = function () {
-                $scope.groupedDictionaryValues = _.map(_.groupBy(pb.currentEntity.dictionaryValues, 'alias'), function (values, key) {
-                    return { alias: key, values: values };
+                dictionaryOrigin = _.map(_.groupBy(pb.currentEntity.dictionaryValues, 'alias'), function (values, key) {
+                    return { alias: key, values: values, langCounts: _.filter(values, function (value) { return value != "" }).length };
                 });
-            };
 
-            $scope.groupedDictionaryValues = _.map(_.groupBy(blade.property.dictionaryValues, 'alias'), function (values, key) {
-                return { alias: key, values: values };
-            });
+                $scope.groupedDictionaryValues = angular.copy(dictionaryOrigin);
+            };
 
             $scope.setSelectedNode = function (selectedNode) {
                 $scope.selectedNode = selectedNode;
+            };
+
+            $scope.searchFilter = function (value) {
+                if (value == "") {
+                    $scope.groupedDictionaryValues = angular.copy(dictionaryOrigin);
+                    return;
+                }
+
+                $scope.groupedDictionaryValues = _.filter(dictionaryOrigin, function (item) { return item.alias.toLowerCase().search(value.toLowerCase() ) != -1 });
             };
 
             $scope.selectNode = function (property) {

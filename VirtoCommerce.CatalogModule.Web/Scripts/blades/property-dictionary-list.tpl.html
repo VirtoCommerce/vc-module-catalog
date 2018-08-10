@@ -1,13 +1,25 @@
+<div class="blade-static">
+    <div class="form-group">
+        <div class="form-input" style="flex-grow: 1;">
+            <input ng-model="filter" ng-keyup="searchFilter(filter)" style="width: calc(100% - 80px);"
+                placeholder="{{'platform.placeholders.search-keyword' | translate}}">
+            <button class="btn __other" style="position: relative;right: 45px;" ng-click="filter = ''; searchFilter(filter)">
+                <i class="btn-ico fa fa-remove" title="Clear"></i>
+            </button>
+        </div>
+    </div>
+</div>
 <div class="blade-content">
     <div class="blade-inner">
         <div class="inner-block clearfix">
+            <div class="note" ng-if="!groupedDictionaryValues.length">{{ 'platform.list.no-data' | translate }}</div>
             <ul class="list __items">
                 <li class="list-item" ng-repeat="property in groupedDictionaryValues track by $index" ng-class="{'__selected': property === setSelectedNode}"
                     ng-click='selectNode(property)'>
                     <span style="font-weight:bold; margin-right:12px;">{{property.alias}}</span>
-                    <!-- <span class="list-descr"><span ng-if="data.backgroundColor"> {{ 'imageTools.blades.setting-managment.background' | translate }}: {{data.backgroundColor}}, </span>{{ 'imageTools.blades.setting-managment.height' | translate }}: {{data.height | number}}, {{ 'imageTools.blades.setting-managment.width' | translate }}: {{data.width | number}}</span> -->
+                    <span class="list-descr" ng-if="blade.parentBlade.currentEntity.multilanguage">{{property.langCounts}} of {{blade.parentBlade.languages.length}} languages defined</span>
                 </li>
             </ul>
         </div>
     </div>
-</div> 
+</div>

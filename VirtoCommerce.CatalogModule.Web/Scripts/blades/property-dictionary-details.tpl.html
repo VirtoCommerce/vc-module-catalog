@@ -5,7 +5,8 @@
                 <div class="form-group" ng-init="setForm(pdForm);">
                     <label class="form-label" for="">{{ 'catalog.blades.property-dictionary.placeholders.alias' | translate }}</label>
                     <div class="form-input">
-                        <input focus-on="" required ui-validate=" 'dictValueValidator($value)' " name="alias" class="form-control" ng-model="blade.currentEntity.alias"
+                        <input focus-on="" required ui-validate=" 'dictValueValidator($value)' " name="alias" class="form-control" 
+                        ng-model="blade.currentEntity.alias" placeholder="{{ 'catalog.blades.property-dictionary.placeholders.alias' | translate }}"
                         />
                         <div class="form-error" ng-if="pdForm.alias.$dirty && pdForm.alias.$invalid">
                             <span ng-if="pdForm.alias.$error.required">{{ 'catalog.blades.property-dictionary.validations.required' | translate }}</span>

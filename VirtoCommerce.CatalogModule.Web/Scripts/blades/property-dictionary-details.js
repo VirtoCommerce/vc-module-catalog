@@ -115,7 +115,7 @@ angular.module('virtoCommerce.catalogModule')
                         });
                     } else {
                         blade.currentEntity.values.map(function (prop) {
-                            var existedProp = _.find(existedDictionary, function (item) { return item.alias == blade.origEntity.alias && x.languageCode == prop.languageCode });
+                            var existedProp = _.find(existedDictionary, function (item) { return item.alias == blade.origEntity.alias && item.languageCode == prop.languageCode });
                             if (existedProp) {
                                 existedProp.alias = blade.currentEntity.alias;
                                 existedProp.value = prop.value;
@@ -135,6 +135,7 @@ angular.module('virtoCommerce.catalogModule')
                     initializeBlade();
                     $scope.isValid = false;
                     blade.isLoading = false;
+                    $scope.bladeClose();
                 };
 
                 $scope.dictValueValidator = function (value) {
