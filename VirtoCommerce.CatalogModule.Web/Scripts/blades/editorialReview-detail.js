@@ -1,4 +1,4 @@
-﻿angular.module('virtoCommerce.catalogModule')
+angular.module('virtoCommerce.catalogModule')
 .controller('virtoCommerce.catalogModule.editorialReviewDetailController', ['$scope', 'platformWebApp.bladeNavigationService', 'FileUploader', 'platformWebApp.settings', '$timeout',
     function ($scope, bladeNavigationService, FileUploader, settings, $timeout) {
         var blade = $scope.blade;
@@ -109,7 +109,18 @@
         };
 
         function canSave() {
-            return isDirty() && formScope && formScope.$valid;
+            var thisBlade = blade;
+            
+            var existing = blade.item.reviews.filter(function (x) {
+                return x.id && thisBlade.currentEntity && x.languageCode === thisBlade.currentEntity.languageCode && x.reviewType === thisBlade.currentEntity.reviewType;
+            });
+
+            var justAdded = blade.item.reviews.filter(function (x) { return !x.id });
+            var existingInJustAdded = justAdded.filter(function (x) {
+                return thisBlade.currentEntity && x.languageCode === thisBlade.currentEntity.languageCode && x.reviewType === thisBlade.currentEntity.reviewType;
+            });
+
+            return isDirty() && formScope && formScope.$valid && existing.length === 0 && existingInJustAdded.length === 0;
         }
 
         blade.onClose = function (closeCallback) {
