@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using VirtoCommerce.Platform.Core.Common;
 using dataModel = VirtoCommerce.CatalogModule.Data.Model;
 using moduleModel = VirtoCommerce.Domain.Catalog.Model;
@@ -15,7 +15,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         IQueryable<dataModel.AssetEntity> Assets { get; }
         IQueryable<dataModel.EditorialReviewEntity> EditorialReviews { get; }
         IQueryable<dataModel.PropertyValueEntity> PropertyValues { get; }
-        IQueryable<dataModel.PropertyDictionaryValueEntity> PropertyDictionaryValues { get; }      
+        IQueryable<dataModel.PropertyDictionaryValueEntity> PropertyDictionaryValues { get; }
         IQueryable<dataModel.CategoryItemRelationEntity> CategoryItemRelations { get; }
         IQueryable<dataModel.AssociationEntity> Associations { get; }
         IQueryable<dataModel.CategoryRelationEntity> CategoryLinks { get; }
@@ -25,8 +25,8 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         dataModel.CategoryEntity[] GetCategoriesByIds(string[] categoryIds, moduleModel.CategoryResponseGroup respGroup);
         dataModel.ItemEntity[] GetItemByIds(string[] itemIds, moduleModel.ItemResponseGroup respGroup);
         dataModel.PropertyEntity[] GetAllCatalogProperties(string catalogId);
-        dataModel.PropertyEntity[] GetPropertiesByIds(string[] propIds);
- 
+        dataModel.PropertyEntity[] GetPropertiesByIds(string[] propIds, bool loadDictValues = true);
+
         void RemoveItems(string[] ids);
         void RemoveCategories(string[] ids);
         void RemoveCatalogs(string[] ids);

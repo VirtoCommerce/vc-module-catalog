@@ -173,7 +173,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             var catalogPropertiesIds = Properties.Where(x => catalogIds.Contains(x.CatalogId) && x.CategoryId == null)
                                                  .Select(x => x.Id)
                                                  .ToArray();
-            var catalogProperties = GetPropertiesByIds(catalogPropertiesIds);
+            var catalogProperties = GetPropertiesByIds(catalogPropertiesIds, false);
 
             return retVal;
         }
@@ -215,7 +215,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 var propertyValues = PropertyValues.Where(x => categoriesIds.Contains(x.CategoryId)).ToArray();
 
                 var categoryPropertiesIds = Properties.Where(x => categoriesIds.Contains(x.CategoryId)).Select(x => x.Id).ToArray();
-                var categoryProperties = GetPropertiesByIds(categoryPropertiesIds);
+                var categoryProperties = GetPropertiesByIds(categoryPropertiesIds, false);
             }
 
             return result;
@@ -234,14 +234,14 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             }
 
             // Use breaking query EF performance concept https://msdn.microsoft.com/en-us/data/hh949853.aspx#8
-            var retVal = Items.Include(x => x.Images).Where(x => itemIds.Contains(x.Id)).ToArray();            
+            var retVal = Items.Include(x => x.Images).Where(x => itemIds.Contains(x.Id)).ToArray();
 
             if (respGroup.HasFlag(coreModel.ItemResponseGroup.Outlines))
             {
                 respGroup |= coreModel.ItemResponseGroup.Links;
             }
 
-            if(respGroup.HasFlag(coreModel.ItemResponseGroup.ItemProperties))
+            if (respGroup.HasFlag(coreModel.ItemResponseGroup.ItemProperties))
             {
                 var propertyValues = PropertyValues.Where(x => itemIds.Contains(x.ItemId)).ToArray();
             }
@@ -308,7 +308,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             return retVal;
         }
 
-        public dataModel.PropertyEntity[] GetPropertiesByIds(string[] propIds)
+        public dataModel.PropertyEntity[] GetPropertiesByIds(string[] propIds, bool loadDictValues = true)
         {
             //Used breaking query EF performance concept https://msdn.microsoft.com/en-us/data/hh949853.aspx#8
             var retVal = Properties.Where(x => propIds.Contains(x.Id)).ToArray();
@@ -319,7 +319,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
             //Do not load dictionary values for not enum properties
             var dictPropertiesIds = retVal.Where(x => x.IsEnum).Select(x => x.Id).ToArray();
-            if (!dictPropertiesIds.IsNullOrEmpty())
+            if (loadDictValues && !dictPropertiesIds.IsNullOrEmpty())
             {
                 var dictValues = PropertyDictionaryValues.Where(x => dictPropertiesIds.Contains(x.PropertyId)).ToArray();
             }
@@ -498,7 +498,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         /// <param name="propertyId"></param>
         public void RemoveAllPropertyValues(string propertyId)
         {
-            var properties = GetPropertiesByIds(new[] { propertyId });          
+            var properties = GetPropertiesByIds(new[] { propertyId });
             var catalogProperty = properties.FirstOrDefault(x => x.TargetType.EqualsInvariant(PropertyType.Catalog.ToString()));
             var categoryProperty = properties.FirstOrDefault(x => x.TargetType.EqualsInvariant(PropertyType.Category.ToString()));
             var itemProperty = properties.FirstOrDefault(x => x.TargetType.EqualsInvariant(PropertyType.Product.ToString()) || x.TargetType.EqualsInvariant(PropertyType.Variation.ToString()));
@@ -508,7 +508,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             {
                 commandTemplate = $"DELETE PV FROM PropertyValue PV INNER JOIN Catalog C ON C.Id = PV.CatalogId AND C.Id = '{catalogProperty.CatalogId}' WHERE PV.Name = '{catalogProperty.Name}'";
                 ObjectContext.ExecuteStoreCommand(commandTemplate);
-            }          
+            }
             if (categoryProperty != null)
             {
                 commandTemplate = $"DELETE PV FROM PropertyValue PV INNER JOIN Category C ON C.Id = PV.CategoryId AND C.CatalogId = '{categoryProperty.CatalogId}' WHERE PV.Name = '{categoryProperty.Name}'";
