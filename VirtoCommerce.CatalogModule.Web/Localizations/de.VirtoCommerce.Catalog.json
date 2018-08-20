@@ -195,7 +195,8 @@
         "validations": {
           "name-required": "Erforderlich",
           "value-required": "Erforderlich",
-          "name-duplicate": "Doppelte Namen gefunden"
+          "name-duplicate": "Doppelte Namen gefunden",
+          "desc-duplicate": "Doppelte Beschreibung gefunden"
         },
         "placeholders": {
           "name": "Bitte Namen eingeben",

@@ -234,7 +234,8 @@
         "validations": {
           "name-required": "Обязательное поле",
           "value-required": "Обязательное поле",
-          "name-duplicate": "Найдено повторяющееся название"
+          "name-duplicate": "Найдено повторяющееся название",
+          "desc-duplicate": "Найдено повторяющееся описание"
         },
         "placeholders": {
           "name": "Пожалуйста, введите название",

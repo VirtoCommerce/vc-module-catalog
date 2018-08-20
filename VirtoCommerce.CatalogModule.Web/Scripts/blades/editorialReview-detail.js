@@ -1,131 +1,102 @@
 angular.module('virtoCommerce.catalogModule')
-.controller('virtoCommerce.catalogModule.editorialReviewDetailController', ['$scope', 'platformWebApp.bladeNavigationService', 'FileUploader', 'platformWebApp.settings', '$timeout',
-    function ($scope, bladeNavigationService, FileUploader, settings, $timeout) {
-        var blade = $scope.blade;
+    .controller('virtoCommerce.catalogModule.editorialReviewDetailController', ['$scope', 'platformWebApp.bladeNavigationService', 'FileUploader', 'platformWebApp.settings', '$timeout',
+        function ($scope, bladeNavigationService, FileUploader, settings, $timeout) {
+            var blade = $scope.blade;
 
-        function initilize() {
-            if (!blade.item.reviews) {
-                blade.item.reviews = [];
-            };
-            if (!blade.currentEntity) {
-                blade.currentEntity = {};
-            };
+            function initilize() {
+                if (!blade.item.reviews) {
+                    blade.item.reviews = [];
+                };
+                if (!blade.currentEntity) {
+                    blade.currentEntity = {};
+                };
 
-            blade.origEntity = blade.currentEntity;
-            blade.currentEntity = angular.copy(blade.currentEntity);
-            if (!blade.currentEntity.languageCode) {
-                blade.currentEntity.languageCode = blade.catalog.defaultLanguage.languageCode;
+                blade.origEntity = blade.currentEntity;
+                blade.currentEntity = angular.copy(blade.currentEntity);
+                if (!blade.currentEntity.languageCode) {
+                    blade.currentEntity.languageCode = blade.catalog.defaultLanguage.languageCode;
+                }
+
+                $timeout(function () {
+                    $scope.$broadcast('resetContent', { body: blade.currentEntity.content });
+                    blade.isLoading = false;
+                });
             }
 
-            $timeout(function () {
-                $scope.$broadcast('resetContent', { body: blade.currentEntity.content });
-                blade.isLoading = false;
-            });
-        }
+            $scope.saveChanges = function () {
+                
+                var isValid = $scope.isValid();
+                if (isValid) {
+                    if (!blade.currentEntity.id)
+                        blade.item.reviews.push(blade.currentEntity);
+                    else {
+                        _.extend(_.findWhere(blade.item.reviews, { id: blade.currentEntity.id }), blade.currentEntity);
+                    }
+                    angular.copy(blade.currentEntity, blade.origEntity);
+                    $scope.bladeClose();
+                }
+            }
 
-        $scope.isValid = true;
+            $scope.isValid = function () {
+                var result = formScope && formScope.$valid;
 
-        $scope.saveChanges = function () {
-            var existReview = _.find(blade.item.reviews, function (x) { return x == blade.origEntity; });
-            if (!existReview) {
-                blade.item.reviews.push(blade.origEntity);
-            };
-            angular.copy(blade.currentEntity, blade.origEntity);
-            $scope.bladeClose();
-        };
+                //Check  duplicates for new editorial  reviews
+                result = !_.any(blade.item.reviews, function (x) {
+                    return (x.id !== blade.currentEntity.id || (!x.id && !blade.currentEntity.id)) // 1st check is for edit mode, 2nd is for adding to prevent multiple same descs to be added
+                        && x.reviewType === blade.currentEntity.reviewType && x.languageCode === blade.currentEntity.languageCode;
+                });
 
-        blade.headIcon = 'fa-comments';
-        blade.title = 'catalog.blades.editorialReview-detail.title';
-        blade.subtitle = 'catalog.blades.editorialReview-detail.subtitle';
-        blade.editAsMarkdown = true;
-        blade.hasAssetCreatePermission = bladeNavigationService.checkPermission('platform:asset:create');
+                return result;
+            }
 
-        if (blade.hasAssetCreatePermission) {
-            $scope.fileUploader = new FileUploader({
-                url: 'api/platform/assets?folderUrl=catalog/' + blade.item.code,
-                headers: { Accept: 'application/json' },
-                autoUpload: true,
-                removeAfterUpload: true,
-                onBeforeUploadItem: function (fileItem) {
-                    blade.isLoading = true;
-                },
-                onSuccessItem: function (fileItem, response) {
-                    $scope.$broadcast('filesUploaded', { items: response });
-                },
-                onErrorItem: function (fileItem, response, status) {
-                    bladeNavigationService.setError(fileItem._file.name + ' failed: ' + (response.message ? response.message : status), blade);
-                },
-                onCompleteAll: function () {
-                    blade.isLoading = false;
+            blade.headIcon = 'fa-comments';
+            blade.title = 'catalog.blades.editorialReview-detail.title';
+            blade.subtitle = 'catalog.blades.editorialReview-detail.subtitle';
+            blade.editAsMarkdown = true;
+            blade.hasAssetCreatePermission = bladeNavigationService.checkPermission('platform:asset:create');
+
+            if (blade.hasAssetCreatePermission) {
+                $scope.fileUploader = new FileUploader({
+                    url: 'api/platform/assets?folderUrl=catalog/' + blade.item.code,
+                    headers: { Accept: 'application/json' },
+                    autoUpload: true,
+                    removeAfterUpload: true,
+                    onBeforeUploadItem: function (fileItem) {
+                        blade.isLoading = true;
+                    },
+                    onSuccessItem: function (fileItem, response) {
+                        $scope.$broadcast('filesUploaded', { items: response });
+                    },
+                    onErrorItem: function (fileItem, response, status) {
+                        bladeNavigationService.setError(fileItem._file.name + ' failed: ' + (response.message ? response.message : status), blade);
+                    },
+                    onCompleteAll: function () {
+                        blade.isLoading = false;
+                    }
+                });
+            }
+
+            settings.getValues({ id: 'Catalog.EditorialReviewTypes' }, function (data) {
+                $scope.types = data;
+                if (!blade.currentEntity.reviewType) {
+                    blade.currentEntity.reviewType = $scope.types[0];
                 }
             });
-        }
 
-        settings.getValues({ id: 'Catalog.EditorialReviewTypes' }, function (data) {
-            $scope.types = data;
-            if (!blade.currentEntity.reviewType) {
-                blade.currentEntity.reviewType = $scope.types[0];
-            }
-        });
-
-        $scope.openDictionarySettingManagement = function () {
-            var newBlade = new DictionarySettingDetailBlade('Catalog.EditorialReviewTypes');
-            newBlade.parentRefresh = function (data) {
-                $scope.types = data;
-            };
-            bladeNavigationService.showBlade(newBlade, blade);
-        };
-
-        var formScope;
-        $scope.setForm = function (form) { formScope = form; }
-
-        blade.toolbarCommands = [
-            {
-                name: "platform.commands.save", icon: 'fa fa-save',
-                executeMethod: saveChanges,
-                canExecuteMethod: canSave
-            },
-            {
-                name: "platform.commands.reset", icon: 'fa fa-undo',
-                executeMethod: function () {
-                    angular.copy(blade.origEntity, blade.currentEntity);
-                    $scope.$broadcast('resetContent', { body: blade.currentEntity.content });
-                },
-                canExecuteMethod: isDirty
-            }
-        ];
-
-        function saveChanges() {
-            var existReview = _.find(blade.item.reviews, function (x) { return x === blade.origEntity; });
-            if (!existReview) {
-                blade.item.reviews.push(blade.origEntity);
+            $scope.openDictionarySettingManagement = function () {
+                var newBlade = new DictionarySettingDetailBlade('Catalog.EditorialReviewTypes');
+                newBlade.parentRefresh = function (data) {
+                    $scope.types = data;
+                };
+                bladeNavigationService.showBlade(newBlade, blade);
             };
 
-            angular.copy(blade.currentEntity, blade.origEntity);
-        }
+            var formScope;
+            $scope.setForm = function (form) { formScope = form; }
 
-        function isDirty() {
-            return !angular.equals(blade.currentEntity, blade.origEntity);
-        };
+            function isDirty() {
+                return !angular.equals(blade.currentEntity, blade.origEntity);
+            };
 
-        function canSave() {
-            var thisBlade = blade;
-            
-            var existing = blade.item.reviews.filter(function (x) {
-                return x.id && thisBlade.currentEntity && x.languageCode === thisBlade.currentEntity.languageCode && x.reviewType === thisBlade.currentEntity.reviewType;
-            });
-
-            var justAdded = blade.item.reviews.filter(function (x) { return !x.id });
-            var existingInJustAdded = justAdded.filter(function (x) {
-                return thisBlade.currentEntity && x.languageCode === thisBlade.currentEntity.languageCode && x.reviewType === thisBlade.currentEntity.reviewType;
-            });
-
-            return isDirty() && formScope && formScope.$valid && existing.length === 0 && existingInJustAdded.length === 0;
-        }
-
-        blade.onClose = function (closeCallback) {
-            bladeNavigationService.showConfirmationIfNeeded(isDirty(), canSave(), blade, saveChanges, closeCallback, "catalog.dialogs.review-save.title", "catalog.dialogs.review-save.message");
-        };
-
-        initilize();
-    }]);
+            initilize();
+        }]);

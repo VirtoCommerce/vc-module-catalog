@@ -234,7 +234,8 @@
         "validations": {
           "name-required": "Required",
           "value-required": "Required",
-          "name-duplicate": "Duplicate name found"
+          "name-duplicate": "Duplicate name found",
+          "desc-duplicate": "Duplicate description found"
         },
         "placeholders": {
           "name": "Please enter name",
