@@ -50,7 +50,7 @@ angular.module('virtoCommerce.catalogModule')
             $scope.typeSelected = function (item) {
                 var selectedType = item;
                 blade.currentEntity.reviewType = selectedType;
-                
+
                 $scope.typeLangCombinationsDiff = calcCombinationsDiff($scope.typeLangCombinations, blade.item.reviews);
                 var filteredLangs = $scope.typeLangCombinationsDiff.filter(function (x) {
                     return x[0] === selectedType;
@@ -58,11 +58,19 @@ angular.module('virtoCommerce.catalogModule')
 
                 var validatedLangs = filteredLangs.length > 0 ? filteredLangs.map(x => x[1]).filter(onlyUnique) : [];
                 $scope.validatedLangsFull = getLanguagesFullInfo(validatedLangs);
+
                 if (!blade.currentEntity.languageCode)
                     blade.currentEntity.languageCode = $scope.validatedLangsFull[0].languageCode; //resetting lang to first available one if not set yet
-                if (!_.any($scope.validatedLangsFull, x => x.languageCode === blade.currentEntity.languageCode)) { // in case our selected value is not in the list
-                    $scope.validatedLangsFull.push(blade.languages.find(x => x.languageCode === blade.currentEntity.languageCode))
+                if ($scope.selectedFirstItemOnAddOperation) {
+                    blade.currentEntity.languageCode = validatedLangs[0]; // reset it to first
+                } else if (!_.any($scope.validatedLangsFull, x => x.languageCode === blade.currentEntity.languageCode)) { // in case our selected value is not in the list
+                    if (blade.origEntity.reviewType === blade.currentEntity.reviewType)
+                        $scope.validatedLangsFull.push(blade.languages.find(x => x.languageCode === blade.currentEntity.languageCode))
+                    else {
+                        blade.currentEntity.languageCode = $scope.validatedLangsFull[0].languageCode;
+                    }
                 }
+
             }
 
             $scope.langSelected = function (item) {
@@ -72,7 +80,7 @@ angular.module('virtoCommerce.catalogModule')
                 var filteredTypes = $scope.typeLangCombinationsDiff.filter(function (x) {
                     return x[1] === selectedLang;
                 });
-                
+
                 var validatedTypes = filteredTypes.length > 0 ? filteredTypes.map(x => x[0]).filter(onlyUnique) : [];
                 $scope.validatedTypes = validatedTypes;
                 blade.currentEntity.reviewType = $scope.validatedTypes[0]; //resetting type to first available one
@@ -95,12 +103,12 @@ angular.module('virtoCommerce.catalogModule')
             }
 
             $scope.saveChanges = function () {
-                
+
                 var isValid = $scope.isValid();
                 if (isValid) {
-                    if (_.any(blade.item.reviews, x => x.reviewType === blade.currentEntity.reviewType && x.languageCode === blade.currentEntity.languageCode))
+                    if (_.any(blade.item.reviews, x => x.reviewType === blade.origEntity.reviewType && x.languageCode === blade.origEntity.languageCode))
                         //if an item already exists in our list - modify it
-                        _.extend(_.findWhere(blade.item.reviews, { reviewType: blade.currentEntity.reviewType, languageCode: blade.currentEntity.languageCode }), blade.currentEntity);
+                        _.extend(_.findWhere(blade.item.reviews, { reviewType: blade.origEntity.reviewType, languageCode: blade.origEntity.languageCode }), blade.currentEntity);
                     else {
                         blade.item.reviews.push(blade.currentEntity);
                     }
@@ -150,25 +158,33 @@ angular.module('virtoCommerce.catalogModule')
                 $scope.types = data;
                 $scope.typeLangCombinations = cartesian($scope.types, blade.languages.map(x => x.languageCode));
                 $scope.typeLangCombinationsDiff = calcCombinationsDiff($scope.typeLangCombinations, blade.item.reviews);
-
+                $scope.selectedFirstItemOnAddOperation = false; // meaning of this is, when true - it's trully add operation
                 if (blade.currentEntity.id) { // edit mode case of existing in db records
                     blade.currentEntity.reviewType = blade.currentEntity.reviewType;
                     blade.currentEntity.languageCode = blade.currentEntity.languageCode;
-                    
+
                     var filteredLangs = $scope.typeLangCombinationsDiff.filter(function (x) {
                         return x[0] === blade.currentEntity.reviewType;
                     });
                     $scope.validatedTypes = $scope.typeLangCombinationsDiff.map(x => x[0]).filter(onlyUnique);
                     var validatedLangsForEdit = filteredLangs.length > 0 ? filteredLangs.map(x => x[1]).filter(onlyUnique) : [];
                     $scope.validatedLangsFull = getLanguagesFullInfo(validatedLangsForEdit);
-                } else { // editing just newly added records (not in db) or adding new ones                    
+
+                } else { // editing just newly added records (not in db) or adding new ones
+                    $scope.validatedTypes = $scope.typeLangCombinationsDiff.map(x => x[0]).filter(onlyUnique);
+                    var validatedLangs = $scope.typeLangCombinationsDiff.map(x => x[1]).filter(onlyUnique);
                     if (!blade.currentEntity.reviewType || !blade.currentEntity.languageCode) { // if editing just newly added records - skip it, select first combination only when adding new one
                         var selectedCombination = $scope.typeLangCombinationsDiff[0];// selecting first combination by default that we have
                         blade.currentEntity.reviewType = selectedCombination[0];
                         blade.currentEntity.languageCode = selectedCombination[1]; // in add new mode - just use default one
+                        $scope.selectedFirstItemOnAddOperation = true;
+                        var filteredLangsForAdd = $scope.typeLangCombinationsDiff.filter(function (x) {
+                            return x[0] === blade.currentEntity.reviewType;
+                        });
+
+                        validatedLangs = filteredLangsForAdd.length > 0 ? filteredLangsForAdd.map(x => x[1]).filter(onlyUnique) : [];
                     }
-                    $scope.validatedTypes = $scope.typeLangCombinationsDiff.map(x => x[0]).filter(onlyUnique);
-                    var validatedLangs = $scope.typeLangCombinationsDiff.map(x => x[1]).filter(onlyUnique);
+
                     $scope.validatedLangsFull = getLanguagesFullInfo(validatedLangs);
                 }
                 if (!_.any($scope.validatedLangsFull, x => x.languageCode === blade.currentEntity.languageCode)) { // in case our selected value is not in the list
