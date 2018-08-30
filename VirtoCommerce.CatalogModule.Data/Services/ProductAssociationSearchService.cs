@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Domain.Catalog.Model;
@@ -6,7 +6,6 @@ using VirtoCommerce.Domain.Catalog.Model.Search;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Commerce.Model.Search;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.Exceptions;
 using VirtoCommerce.Platform.Data.Infrastructure;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
@@ -15,7 +14,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
     {
         private readonly Func<ICatalogRepository> _catalogRepositoryFactory;
         private readonly IItemService _itemService;
-         public ProductAssociationSearchService(Func<ICatalogRepository> catalogRepositoryFactory, IItemService itemService)
+        public ProductAssociationSearchService(Func<ICatalogRepository> catalogRepositoryFactory, IItemService itemService)
         {
             _catalogRepositoryFactory = catalogRepositoryFactory;
             _itemService = itemService;
@@ -38,15 +37,15 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 {
                     query = query.Where(x => x.AssociationType == criteria.Group);
                 }
-                
+
                 var associationCategoriesIds = query.Where(x => x.AssociatedCategoryId != null)
                                                     .Select(x => x.AssociatedCategoryId)
                                                     .ToArray();
                 //Need to return all products from the associated categories (recursive)
                 associationCategoriesIds = repository.GetAllChildrenCategoriesIds(associationCategoriesIds).Concat(associationCategoriesIds)
                                                     .Distinct()
-                                                    .ToArray();                
-                var itemsQuery = repository.Items.Join(query, item => item.Id, association => association.AssociatedItemId, (item, association) => item)                                           
+                                                    .ToArray();
+                var itemsQuery = repository.Items.Join(query, item => item.Id, association => association.AssociatedItemId, (item, association) => item)
                                            .Union(repository.Items.Where(x => associationCategoriesIds.Contains(x.CategoryId)));
 
                 var sortInfos = criteria.SortInfos;

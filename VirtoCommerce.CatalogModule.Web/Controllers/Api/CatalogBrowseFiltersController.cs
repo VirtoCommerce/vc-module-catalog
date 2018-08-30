@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -104,6 +104,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [ResponseType(typeof(string[]))]
         public IHttpActionResult GetPropertyValues(string storeId, string propertyName)
         {
+            var result = Array.Empty<string>();
             var store = _storeService.GetById(storeId);
             if (store == null)
             {
@@ -112,13 +113,11 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.ReadBrowseFilters, store);
 
-            var result = _propertyService.GetAllCatalogProperties(store.Catalog)
-                .Where(p => p.Name.EqualsInvariant(propertyName) && p.Dictionary && p.DictionaryValues != null)
-                .SelectMany(p => p.DictionaryValues.Select(v => v.Alias))
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .OrderBy(v => v, StringComparer.OrdinalIgnoreCase)
-                .ToArray();
-
+            var property = _propertyService.GetAllCatalogProperties(store.Catalog).Where(p => p.Name.EqualsInvariant(propertyName) && p.Dictionary).FirstOrDefault();
+            if (property != null)
+            {
+                result = _propertyService.SearchDictionaryValues(property.Id, null).Select(x => x.Alias).Distinct().ToArray();
+            }
             return Ok(result);
         }
 

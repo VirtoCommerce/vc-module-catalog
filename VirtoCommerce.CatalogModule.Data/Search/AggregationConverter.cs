@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
@@ -291,6 +291,12 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 var properties = allProperties
                     .Where(p => p.Name.EqualsInvariant(aggregation.Field))
                     .ToArray();
+
+                //Load dictionary  values for properties
+                foreach (var dictProperty in properties.Where(x => x.Dictionary && x.DictionaryValues.IsNullOrEmpty()))
+                {
+                    dictProperty.DictionaryValues = _propertyService.SearchDictionaryValues(dictProperty.Id, null).ToList();
+                }
 
                 if (properties.Any())
                 {

@@ -114,13 +114,21 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public PropertyDictionaryValue[] SearchDictionaryValues(string propertyId, string keyword)
         {
-            var property = GetById(propertyId);
-            var result = property.DictionaryValues.ToArray();
-            if (!string.IsNullOrEmpty(keyword))
+            if (propertyId == null)
             {
-                result = result.Where(x => x.Value.Contains(keyword)).ToArray();
+                throw new ArgumentNullException(nameof(propertyId));
             }
-            return result;
+
+            using (var repository = _repositoryFactory())
+            {
+                var query = repository.PropertyDictionaryValues.Where(x => x.PropertyId == propertyId);
+                if (!string.IsNullOrEmpty(keyword))
+                {
+                    query = query.Where(x => x.Value.Contains(keyword));
+                }
+                var result = query.OrderBy(x => x.Alias).ToArray();
+                return result.Select(x => x.ToModel(AbstractTypeFactory<PropertyDictionaryValue>.TryCreateInstance())).ToArray();
+            }
         }
         #endregion
 
@@ -152,13 +160,13 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         protected virtual void TryAddPredefinedValidationRules(Property[] properties)
         {
             foreach (var property in properties)
-            { 
-                if(property.ValueType == PropertyValueType.GeoPoint)
+            {
+                if (property.ValueType == PropertyValueType.GeoPoint)
                 {
                     var geoPointValidationRule = property.ValidationRules?.FirstOrDefault(x => x.RegExp.EqualsInvariant(GeoPoint.Regexp.ToString()));
-                    if(geoPointValidationRule == null)
+                    if (geoPointValidationRule == null)
                     {
-                        if(property.ValidationRules == null)
+                        if (property.ValidationRules == null)
                         {
                             property.ValidationRules = new List<PropertyValidationRule>();
                         }
@@ -223,7 +231,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     repository.DisableChangesTracking();
 
                     var propertyIds = repository.Properties.Select(p => p.Id).ToArray();
-                    var entities = repository.GetPropertiesByIds(propertyIds);
+                    var entities = repository.GetPropertiesByIds(propertyIds, loadDictValues: false);
                     var properties = entities.Select(p => p.ToModel(AbstractTypeFactory<Property>.TryCreateInstance())).ToArray();
 
                     LoadDependencies(properties);
