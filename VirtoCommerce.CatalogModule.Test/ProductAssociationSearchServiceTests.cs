@@ -42,18 +42,18 @@ namespace VirtoCommerce.CatalogModule.Test
         //    Assert.Equal(result.Results, verifySet);
         //}
 
-        [Fact]
-        public void GetCriteria_InvalidArguments_ThrowsArgumentNullException()
-        {
-            var criteria = new ProductAssociationSearchCriteria()
-            {
-                ObjectIds = new string[] { }.ToList()
-            };
-            var catalogRepository = new Mock<ICatalogRepository>();
-            var itemService = new Mock<IItemService>();
-            var sut = new ProductAssociationSearchService(() => catalogRepository.Object, itemService.Object);
-            Assert.Throws<ArgumentNullException>(() => sut.SearchProductAssociations(criteria));
-        }
+        //[Fact]
+        //public void GetCriteria_InvalidArguments_ThrowsArgumentNullException()
+        //{
+        //    var criteria = new ProductAssociationSearchCriteria()
+        //    {
+        //        ObjectIds = new string[] { }.ToList()
+        //    };
+        //    var catalogRepository = new Mock<ICatalogRepository>();
+        //    var itemService = new Mock<IItemService>();
+        //    var sut = new ProductAssociationSearchService(() => catalogRepository.Object, itemService.Object);
+        //    Assert.Throws<ArgumentNullException>(() => sut.SearchProductAssociations(criteria));
+        //}
 
         private static string[] TestChildCategories
         {
