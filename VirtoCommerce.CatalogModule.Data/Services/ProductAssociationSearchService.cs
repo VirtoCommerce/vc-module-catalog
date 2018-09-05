@@ -20,53 +20,44 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _itemService = itemService;
         }
 
-        public GenericSearchResult<CatalogProduct> SearchProductAssociations(ProductAssociationSearchCriteria criteria)
+        public GenericSearchResult<ProductAssociation> SearchProductAssociations(ProductAssociationSearchCriteria criteria)
         {
-            if (criteria.ObjectIds.IsNullOrEmpty())
+            if (criteria == null)
             {
-                throw new ArgumentNullException($"{ nameof(criteria.ObjectIds) } must be set");
+                throw new ArgumentNullException(nameof(criteria));
             }
-            var retVal = new GenericSearchResult<CatalogProduct>();
+
+            var result = new GenericSearchResult<ProductAssociation>();
             using (var repository = _catalogRepositoryFactory())
             {
                 //Optimize performance and CPU usage
                 repository.DisableChangesTracking();
 
-                var query = repository.Associations.Where(x => criteria.ObjectIds.Contains(x.ItemId));
+                var query = repository.Associations;
+
+                if (!criteria.ObjectIds.IsNullOrEmpty())
+                {
+                    query = query.Where(x => criteria.ObjectIds.Contains(x.ItemId));
+                }
                 if (!string.IsNullOrEmpty(criteria.Group))
                 {
                     query = query.Where(x => x.AssociationType == criteria.Group);
                 }
 
-                var associationCategoriesIds = query.Where(x => x.AssociatedCategoryId != null)
-                                                    .Select(x => x.AssociatedCategoryId)
-                                                    .ToArray();
-                //Need to return all products from the associated categories (recursive)
-                associationCategoriesIds = repository.GetAllChildrenCategoriesIds(associationCategoriesIds).Concat(associationCategoriesIds)
-                                                    .Distinct()
-                                                    .ToArray();
-                var itemsQuery = repository.Items.Join(query, item => item.Id, association => association.AssociatedItemId, (item, association) => item)
-                                           .Union(repository.Items.Where(x => associationCategoriesIds.Contains(x.CategoryId)));
-
                 var sortInfos = criteria.SortInfos;
                 if (sortInfos.IsNullOrEmpty())
                 {
-                    sortInfos = new[] { new SortInfo { SortColumn = "CreatedDate", SortDirection = SortDirection.Descending } };
+                    sortInfos = new[] { new SortInfo { SortColumn = "Priority", SortDirection = SortDirection.Descending } };
                 }
                 //TODO: Sort by association priority
-                itemsQuery = itemsQuery.OrderBySortInfos(sortInfos);
+                query = query.OrderBySortInfos(sortInfos);
 
-                retVal.TotalCount = itemsQuery.Count();
-                var itemIds = itemsQuery
-                              .Skip(criteria.Skip)
-                              .Take(criteria.Take)
-                              .Select(x => x.Id).ToList();
-
-                retVal.Results = _itemService.GetByIds(itemIds.ToArray(), EnumUtility.SafeParse(criteria.ResponseGroup, ItemResponseGroup.ItemInfo))
-                                             .OrderBy(x => itemIds.IndexOf(x.Id))
-                                             .ToList();
+                result.TotalCount = query.Count();
+                result.Results = query.Skip(criteria.Skip).Take(criteria.Take)
+                                   .ToArray().Select(x => x.ToModel(AbstractTypeFactory<ProductAssociation>.TryCreateInstance()))
+                                   .ToList();
             }
-            return retVal;
+            return result;
         }
     }
 }

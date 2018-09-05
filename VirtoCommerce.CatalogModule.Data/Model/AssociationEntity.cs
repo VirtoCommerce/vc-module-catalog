@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Platform.Core.Common;
@@ -41,20 +41,20 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             if (association == null)
                 throw new ArgumentNullException(nameof(association));
 
-            association.Type = this.AssociationType;
-            association.Priority = this.Priority;
-            association.AssociatedObjectId = this.ItemId;
-            association.Quantity = this.Quantity;
+            association.Type = AssociationType;
+            association.Priority = Priority;
+            association.AssociatedObjectId = ItemId;
+            association.Quantity = Quantity;
 
-            if (this.Item != null)
+            if (Item != null)
             {
-                association.AssociatedObject = this.Item.ToModel(AbstractTypeFactory<CatalogProduct>.TryCreateInstance(), false, false);
+                association.AssociatedObject = Item.ToModel(AbstractTypeFactory<CatalogProduct>.TryCreateInstance(), false, false);
                 association.AssociatedObjectType = "product";
             }
 
-            if (!this.Tags.IsNullOrEmpty())
+            if (!Tags.IsNullOrEmpty())
             {
-                association.Tags = this.Tags.Split(';');
+                association.Tags = Tags.Split(';');
             }
 
             return association;
@@ -65,26 +65,26 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             if (association == null)
                 throw new ArgumentNullException(nameof(association));
 
-            association.Type = this.AssociationType;
-            association.Priority = this.Priority;
-            association.AssociatedObjectId = this.AssociatedItemId ?? this.AssociatedCategoryId;
-            association.Quantity = this.Quantity;
+            association.Type = AssociationType;
+            association.Priority = Priority;
+            association.AssociatedObjectId = AssociatedItemId ?? AssociatedCategoryId;
+            association.Quantity = Quantity;
 
-            if (this.AssociatedCategory != null)
+            if (AssociatedCategory != null)
             {
-                association.AssociatedObject = this.AssociatedCategory.ToModel(AbstractTypeFactory<Category>.TryCreateInstance());
+                association.AssociatedObject = AssociatedCategory.ToModel(AbstractTypeFactory<Category>.TryCreateInstance());
                 association.AssociatedObjectType = "category";
             }
 
-            if (this.AssociatedItem != null)
+            if (AssociatedItem != null)
             {
-                association.AssociatedObject = this.AssociatedItem.ToModel(AbstractTypeFactory<CatalogProduct>.TryCreateInstance(), false, false);
+                association.AssociatedObject = AssociatedItem.ToModel(AbstractTypeFactory<CatalogProduct>.TryCreateInstance(), false, false);
                 association.AssociatedObjectType = "product";
             }
 
-            if (!this.Tags.IsNullOrEmpty())
+            if (!Tags.IsNullOrEmpty())
             {
-                association.Tags = this.Tags.Split(';');
+                association.Tags = Tags.Split(';');
             }
 
             return association;
@@ -95,21 +95,21 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             if (association == null)
                 throw new ArgumentNullException(nameof(association));
 
-            this.Priority = association.Priority;
-            this.AssociationType = association.Type;
-            this.Quantity = association.Quantity;
+            Priority = association.Priority;
+            AssociationType = association.Type;
+            Quantity = association.Quantity;
 
             if (association.AssociatedObjectType.EqualsInvariant("product"))
             {
-                this.AssociatedItemId = association.AssociatedObjectId;
+                AssociatedItemId = association.AssociatedObjectId;
             }
             else if (association.AssociatedObjectType.EqualsInvariant("category"))
             {
-                this.AssociatedCategoryId = association.AssociatedObjectId;
+                AssociatedCategoryId = association.AssociatedObjectId;
             }
             if (!association.Tags.IsNullOrEmpty())
             {
-                this.Tags = string.Join(";", association.Tags);
+                Tags = string.Join(";", association.Tags);
             }
 
             return this;
@@ -117,10 +117,10 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
         public virtual void Patch(AssociationEntity target)
         {
-            target.Priority = this.Priority;
-            target.Tags = this.Tags;
-            target.AssociationType = this.AssociationType;
-            target.Quantity = this.Quantity;
+            target.Priority = Priority;
+            target.Tags = Tags;
+            target.AssociationType = AssociationType;
+            target.Quantity = Quantity;
         }
     }
 }
