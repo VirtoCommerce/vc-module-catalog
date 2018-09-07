@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -63,6 +63,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             document.Add(new IndexDocumentField("modifieddate", product.ModifiedDate ?? DateTime.MaxValue) { IsRetrievable = true, IsFilterable = true });
             document.Add(new IndexDocumentField("priority", product.Priority) { IsRetrievable = true, IsFilterable = true });
             document.Add(new IndexDocumentField("vendor", product.Vendor ?? "") { IsRetrievable = true, IsFilterable = true });
+            document.Add(new IndexDocumentField("productType", product.ProductType ?? "") { IsRetrievable = true, IsFilterable = true });
 
             // Add priority in virtual categories to search index
             if (product.Links != null)

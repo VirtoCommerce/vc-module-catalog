@@ -153,6 +153,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 result.Add(FiltersHelper.CreateTermFilter("__type", criteria.ClassTypes));
             }
 
+            if (!string.IsNullOrEmpty(criteria.ProductType))
+            {
+                result.Add(FiltersHelper.CreateTermFilter("productType", criteria.ProductType));
+            }
+
             if (!criteria.WithHidden)
             {
                 result.Add(FiltersHelper.CreateTermFilter("status", "visible"));
