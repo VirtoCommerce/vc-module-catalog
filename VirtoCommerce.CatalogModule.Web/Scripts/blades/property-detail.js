@@ -1,4 +1,4 @@
-﻿angular.module('virtoCommerce.catalogModule')
+angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.propertyDetailController', ['$scope', 'virtoCommerce.catalogModule.properties', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'virtoCommerce.catalogModule.valueTypes', function ($scope, properties, bladeNavigationService, dialogService, valueTypes) {
         var blade = $scope.blade;
         blade.updatePermission = 'catalog:update';
@@ -64,15 +64,18 @@
         }
 
         function initializeBlade(data) {
-            if (data.valueType === 'Number' && data.dictionaryValues) {
-                _.forEach(data.dictionaryValues, function (entry) {
-                    entry.value = parseFloat(entry.value);
-                });
-            }
+            properties.values({ propertyId: data.id }, function (response) {
+                data.dictionaryValues = response;
+                if (data.valueType === 'Number' && data.dictionaryValues) {
+                    _.forEach(data.dictionaryValues, function (entry) {
+                        entry.value = parseFloat(entry.value);
+                    });
+                }
 
-            blade.currentEntity = angular.copy(data);
-            blade.origEntity = data;
-            blade.isLoading = false;
+                blade.currentEntity = angular.copy(data);
+                blade.origEntity = data;
+                blade.isLoading = false;
+            });
         };
 
         function isDirty() {

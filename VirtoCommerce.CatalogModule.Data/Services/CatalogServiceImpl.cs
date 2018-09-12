@@ -23,7 +23,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private readonly Func<ICatalogRepository> _repositoryFactory;
         private readonly IEventPublisher _eventPublisher;
 
-        public CatalogServiceImpl(Func<ICatalogRepository> catalogRepositoryFactory, ICacheManager<object> cacheManager, AbstractValidator<IHasProperties> hasPropertyValidator, 
+        public CatalogServiceImpl(Func<ICatalogRepository> catalogRepositoryFactory, ICacheManager<object> cacheManager, AbstractValidator<IHasProperties> hasPropertyValidator,
                                   IEventPublisher eventPublisher)
         {
             _repositoryFactory = catalogRepositoryFactory;
@@ -199,15 +199,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                         {
                             propValue.Property = catalog.Properties.Where(x => x.Type == PropertyType.Catalog)
                                                                    .FirstOrDefault(x => x.IsSuitableForValue(propValue));
-                            //Because multilingual dictionary values for all languages may not stored in db then need to add it in result manually from property dictionary values
-                            var localizedDictValues = propValue.TryGetAllLocalizedDictValues();
-                            foreach (var localizedDictValue in localizedDictValues)
-                            {
-                                if (!catalog.PropertyValues.Any(x => x.ValueId == localizedDictValue.ValueId && x.LanguageCode == localizedDictValue.LanguageCode))
-                                {
-                                    catalog.PropertyValues.Add(localizedDictValue);
-                                }
-                            }
                         }
                     }
                 }

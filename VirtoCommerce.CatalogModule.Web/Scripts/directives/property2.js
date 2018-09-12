@@ -134,7 +134,7 @@ angular.module('virtoCommerce.catalogModule')
 
                     angular.forEach(result, function (dictValue) {
                         //Need to select already selected values. Dictionary values have same type as standard values.
-                        dictValue.selected = angular.isDefined(_.find(scope.currentEntity.values, function (value) { return value.valueId == dictValue.valueId }));
+                        dictValue.selected = angular.isDefined(_.find(scope.currentEntity.values, function (value) { return value.alias == dictValue.alias }));
                         scope.context.allDictionaryValues.push(dictValue);
                         if (dictValue.selected) {
                             //add selected value

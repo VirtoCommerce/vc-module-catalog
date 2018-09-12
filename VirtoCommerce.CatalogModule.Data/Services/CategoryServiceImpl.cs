@@ -338,15 +338,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     {
                         propValue.Property = category.Properties.Where(x => x.Type == PropertyType.Category)
                                                                 .FirstOrDefault(x => x.IsSuitableForValue(propValue));
-                        //Because multilingual dictionary values for all languages may not stored in db then need to add it in result manually from property dictionary values
-                        var localizedDictValues = propValue.TryGetAllLocalizedDictValues();
-                        foreach (var localizedDictValue in localizedDictValues)
-                        {
-                            if (!category.PropertyValues.Any(x => x.ValueId == localizedDictValue.ValueId && x.LanguageCode == localizedDictValue.LanguageCode))
-                            {
-                                category.PropertyValues.Add(localizedDictValue);
-                            }
-                        }
                     }
                 }
             }

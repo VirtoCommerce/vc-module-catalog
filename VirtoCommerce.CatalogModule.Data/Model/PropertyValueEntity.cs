@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Globalization;
@@ -10,14 +11,13 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
     public class PropertyValueEntity : AuditableEntity
     {
-        [StringLength(64)]
+
+        [NotMapped]
         public string Alias { get; set; }
+
 
         [StringLength(64)]
         public string Name { get; set; }
-
-        [StringLength(128)]
-        public string KeyValue { get; set; }
 
         [Required]
         public int ValueType { get; set; }
@@ -48,27 +48,48 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
         public string CategoryId { get; set; }
         public virtual CategoryEntity Category { get; set; }
+
+        public string DictionaryItemId { get; set; }
+        public virtual PropertyDictionaryItemEntity DictionaryItem { get; set; }
+
         #endregion
 
-        public virtual PropertyValue ToModel(PropertyValue propValue)
+        public virtual IEnumerable<PropertyValue> ToModel(PropertyValue propValue)
         {
             if (propValue == null)
+            {
                 throw new ArgumentNullException(nameof(propValue));
+            }
 
-            propValue.Id = this.Id;
-            propValue.CreatedBy = this.CreatedBy;
-            propValue.CreatedDate = this.CreatedDate;
-            propValue.ModifiedBy = this.ModifiedBy;
-            propValue.ModifiedDate = this.ModifiedDate;
-
-            propValue.Alias = this.Alias;
-            propValue.LanguageCode = this.Locale;
-            propValue.PropertyName = this.Name;
-            propValue.ValueId = this.KeyValue;
-            propValue.ValueType = (PropertyValueType)this.ValueType;
+            propValue.Id = Id;
+            propValue.CreatedBy = CreatedBy;
+            propValue.CreatedDate = CreatedDate;
+            propValue.ModifiedBy = ModifiedBy;
+            propValue.ModifiedDate = ModifiedDate;
+            propValue.LanguageCode = Locale;
+            propValue.PropertyName = Name;
+            propValue.ValueId = DictionaryItemId;
+            propValue.ValueType = (PropertyValueType)ValueType;
             propValue.Value = GetValue(propValue.ValueType);
+            //Need to expand all dictionary values
+            if (DictionaryItem != null)
+            {
+                foreach (var dictItemValue in DictionaryItem.DictionaryItemValues)
+                {
+                    var dictPropValue = propValue.Clone() as PropertyValue;
+                    dictPropValue.Id = dictItemValue.Id;
+                    dictPropValue.Alias = DictionaryItem.Alias;
+                    dictPropValue.ValueId = DictionaryItem.Id;
+                    dictPropValue.LanguageCode = dictItemValue.Locale;
+                    dictPropValue.Value = dictItemValue.Value;
+                    yield return dictPropValue;
 
-            return propValue;
+                }
+            }
+            else
+            {
+                yield return propValue;
+            }
         }
 
         public virtual PropertyValueEntity FromModel(PropertyValue propValue, PrimaryKeyResolvingMap pkMap)
@@ -78,17 +99,17 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
             pkMap.AddPair(propValue, this);
 
-            this.Id = propValue.Id;
-            this.CreatedBy = propValue.CreatedBy;
-            this.CreatedDate = propValue.CreatedDate;
-            this.ModifiedBy = propValue.ModifiedBy;
-            this.ModifiedDate = propValue.ModifiedDate;
-
-            this.Alias = propValue.Alias;
-            this.Locale = propValue.LanguageCode;
-            this.Name = propValue.PropertyName;
-            this.ValueType = (int)propValue.ValueType;
-            this.KeyValue = propValue.ValueId;
+            Id = propValue.Id;
+            CreatedBy = propValue.CreatedBy;
+            CreatedDate = propValue.CreatedDate;
+            ModifiedBy = propValue.ModifiedBy;
+            ModifiedDate = propValue.ModifiedDate;
+            Locale = propValue.LanguageCode;
+            Name = propValue.PropertyName;
+            ValueType = (int)propValue.ValueType;
+            DictionaryItemId = propValue.ValueId;
+            //Required for manual reference
+            Alias = propValue.Alias;
             SetValue(propValue.ValueType, propValue.Value);
 
             return this;
@@ -96,36 +117,35 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
         public virtual void Patch(PropertyValueEntity target)
         {
-            target.Alias = this.Alias;
-            target.BooleanValue = this.BooleanValue;
-            target.DateTimeValue = this.DateTimeValue;
-            target.DecimalValue = this.DecimalValue;
-            target.IntegerValue = this.IntegerValue;
-            target.KeyValue = this.KeyValue;
-            target.Locale = this.Locale;
-            target.LongTextValue = this.LongTextValue;
-            target.Name = this.Name;
-            target.ShortTextValue = this.ShortTextValue;
-            target.ValueType = this.ValueType;
-        }     
+            target.BooleanValue = BooleanValue;
+            target.DateTimeValue = DateTimeValue;
+            target.DecimalValue = DecimalValue;
+            target.IntegerValue = IntegerValue;
+            target.DictionaryItemId = DictionaryItemId;
+            target.Locale = Locale;
+            target.LongTextValue = LongTextValue;
+            target.Name = Name;
+            target.ShortTextValue = ShortTextValue;
+            target.ValueType = ValueType;
+        }
 
 
         protected virtual object GetValue(PropertyValueType valueType)
         {
-            switch (this.ValueType)
+            switch (ValueType)
             {
                 case (int)PropertyValueType.Boolean:
-                    return this.BooleanValue;
+                    return BooleanValue;
                 case (int)PropertyValueType.DateTime:
-                    return this.DateTimeValue;
+                    return DateTimeValue;
                 case (int)PropertyValueType.Number:
-                    return this.DecimalValue;
+                    return DecimalValue;
                 case (int)PropertyValueType.LongText:
-                    return this.LongTextValue;
+                    return LongTextValue;
                 case (int)PropertyValueType.Integer:
-                    return this.IntegerValue;
+                    return IntegerValue;
                 default:
-                    return this.ShortTextValue;
+                    return ShortTextValue;
             }
         }
 
@@ -134,25 +154,25 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             switch (valueType)
             {
                 case PropertyValueType.LongText:
-                    this.LongTextValue = Convert.ToString(value);
+                    LongTextValue = Convert.ToString(value);
                     break;
                 case PropertyValueType.ShortText:
-                    this.ShortTextValue = Convert.ToString(value);
+                    ShortTextValue = Convert.ToString(value);
                     break;
                 case PropertyValueType.Number:
-                    this.DecimalValue = Convert.ToDecimal(value, CultureInfo.InvariantCulture);
+                    DecimalValue = Convert.ToDecimal(value, CultureInfo.InvariantCulture);
                     break;
                 case PropertyValueType.DateTime:
-                    this.DateTimeValue = Convert.ToDateTime(value, CultureInfo.InvariantCulture);
+                    DateTimeValue = Convert.ToDateTime(value, CultureInfo.InvariantCulture);
                     break;
                 case PropertyValueType.Boolean:
-                    this.BooleanValue = Convert.ToBoolean(value);
+                    BooleanValue = Convert.ToBoolean(value);
                     break;
                 case PropertyValueType.Integer:
-                    this.IntegerValue = Convert.ToInt32(value);
+                    IntegerValue = Convert.ToInt32(value);
                     break;
                 case PropertyValueType.GeoPoint:
-                    this.ShortTextValue = Convert.ToString(value);
+                    ShortTextValue = Convert.ToString(value);
                     break;
                 default:
                     throw new NotSupportedException();

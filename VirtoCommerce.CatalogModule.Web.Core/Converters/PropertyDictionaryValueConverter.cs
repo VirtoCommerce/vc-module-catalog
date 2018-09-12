@@ -1,4 +1,4 @@
-﻿using Omu.ValueInjecter;
+using Omu.ValueInjecter;
 using moduleModel = VirtoCommerce.Domain.Catalog.Model;
 using webModel = VirtoCommerce.CatalogModule.Web.Model;
 
@@ -8,12 +8,14 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
     {
         public static webModel.PropertyDictionaryValue ToWebModel(this moduleModel.PropertyDictionaryValue propDictValue)
         {
-            var retVal = new webModel.PropertyDictionaryValue();
-            retVal.Id = propDictValue.Id;
-            retVal.PropertyId = propDictValue.PropertyId;
-            retVal.Value = propDictValue.Value;
-            retVal.LanguageCode = propDictValue.LanguageCode;
-            retVal.Alias = propDictValue.Alias;           
+            var retVal = new webModel.PropertyDictionaryValue
+            {
+                Id = propDictValue.Id,
+                PropertyId = propDictValue.PropertyId,
+                Value = propDictValue.Value,
+                LanguageCode = propDictValue.LanguageCode,
+                Alias = propDictValue.Alias
+            };
 
             return retVal;
         }

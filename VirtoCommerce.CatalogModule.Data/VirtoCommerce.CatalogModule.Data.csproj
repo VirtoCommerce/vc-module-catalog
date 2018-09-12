@@ -189,6 +189,10 @@
     <Compile Include="Migrations\201707051005213_PropertyValidation.Designer.cs">
       <DependentUpon>201707051005213_PropertyValidation.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201809121003346_DictionaryShemaRedesign.cs" />
+    <Compile Include="Migrations\201809121003346_DictionaryShemaRedesign.Designer.cs">
+      <DependentUpon>201809121003346_DictionaryShemaRedesign.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Model\AssetEntity.cs" />
     <Compile Include="Model\AssociationEntity.cs" />
@@ -200,6 +204,7 @@
     <Compile Include="Model\EditorialReviewEntity.cs" />
     <Compile Include="Model\ImageEntity.cs" />
     <Compile Include="Model\ItemEntity.cs" />
+    <Compile Include="Model\PropertyDictionaryItemEntity.cs" />
     <Compile Include="Model\PropertyDisplayNameEntity.cs" />
     <Compile Include="Model\PropertyEntity.cs" />
     <Compile Include="Model\PropertyAttributeEntity.cs" />
@@ -334,6 +339,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201707051005213_PropertyValidation.resx">
       <DependentUpon>201707051005213_PropertyValidation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809121003346_DictionaryShemaRedesign.resx">
+      <DependentUpon>201809121003346_DictionaryShemaRedesign.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

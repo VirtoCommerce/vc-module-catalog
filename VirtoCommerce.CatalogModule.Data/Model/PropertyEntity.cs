@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
@@ -13,7 +13,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
     {
         public PropertyEntity()
         {
-            DictionaryValues = new NullCollection<PropertyDictionaryValueEntity>();
+            DictionaryItems = new NullCollection<PropertyDictionaryItemEntity>();
             PropertyAttributes = new NullCollection<PropertyAttributeEntity>();
             DisplayNames = new NullCollection<PropertyDisplayNameEntity>();
             ValidationRules = new NullCollection<PropertyValidationRuleEntity>();
@@ -59,7 +59,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         public string CategoryId { get; set; }
         public virtual CategoryEntity Category { get; set; }
 
-        public virtual ObservableCollection<PropertyDictionaryValueEntity> DictionaryValues { get; set; }
+        public virtual ObservableCollection<PropertyDictionaryItemEntity> DictionaryItems { get; set; }
         public virtual ObservableCollection<PropertyAttributeEntity> PropertyAttributes { get; set; }
         public virtual ObservableCollection<PropertyDisplayNameEntity> DisplayNames { get; set; }
         public virtual ObservableCollection<PropertyValidationRuleEntity> ValidationRules { get; set; }
@@ -69,30 +69,33 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         public virtual Property ToModel(Property property)
         {
             if (property == null)
+            {
                 throw new ArgumentNullException(nameof(property));
+            }
 
-            property.Id = this.Id;
-            property.CreatedBy = this.CreatedBy;
-            property.CreatedDate = this.CreatedDate;
-            property.ModifiedBy = this.ModifiedBy;
-            property.ModifiedDate = this.ModifiedDate;
+            property.Id = Id;
+            property.CreatedBy = CreatedBy;
+            property.CreatedDate = CreatedDate;
+            property.ModifiedBy = ModifiedBy;
+            property.ModifiedDate = ModifiedDate;
 
-            property.CatalogId = this.CatalogId;
-            property.CategoryId = this.CategoryId;
+            property.CatalogId = CatalogId;
+            property.CategoryId = CategoryId;
+
+            property.Name = Name;
+            property.Required = IsRequired;
+            property.Multivalue = IsMultiValue;
+            property.Multilanguage = IsLocaleDependant;
+            property.Dictionary = IsEnum;
+            property.ValueType = (PropertyValueType)PropertyValueType;
+            property.Type = EnumUtility.SafeParse(TargetType, PropertyType.Catalog);
 
 
-            property.Name = this.Name;
-            property.Required = this.IsRequired;
-            property.Multivalue = this.IsMultiValue;
-            property.Multilanguage = this.IsLocaleDependant;
-            property.Dictionary = this.IsEnum;
-            property.ValueType = (PropertyValueType)this.PropertyValueType;
-            property.Type = EnumUtility.SafeParse(this.TargetType, PropertyType.Catalog);
+            property.Attributes = PropertyAttributes.Select(x => x.ToModel(AbstractTypeFactory<PropertyAttribute>.TryCreateInstance())).ToList();
+            property.DisplayNames = DisplayNames.Select(x => x.ToModel(AbstractTypeFactory<PropertyDisplayName>.TryCreateInstance())).ToList();
+            property.ValidationRules = ValidationRules.Select(x => x.ToModel(AbstractTypeFactory<PropertyValidationRule>.TryCreateInstance())).ToList();
+            property.DictionaryValues = DictionaryItems.SelectMany(x => x.DictionaryItemValues).Select(x => x.ToModel(AbstractTypeFactory<PropertyDictionaryValue>.TryCreateInstance())).ToList();
 
-            property.DictionaryValues = this.DictionaryValues.Select(x => x.ToModel(AbstractTypeFactory<PropertyDictionaryValue>.TryCreateInstance())).ToList();
-            property.Attributes = this.PropertyAttributes.Select(x => x.ToModel(AbstractTypeFactory<PropertyAttribute>.TryCreateInstance())).ToList();
-            property.DisplayNames = this.DisplayNames.Select(x => x.ToModel(AbstractTypeFactory<PropertyDisplayName>.TryCreateInstance())).ToList();
-            property.ValidationRules = this.ValidationRules.Select(x => x.ToModel(AbstractTypeFactory<PropertyValidationRule>.TryCreateInstance())).ToList();
             foreach (var rule in property.ValidationRules)
             {
                 rule.Property = property;
@@ -104,77 +107,99 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         public virtual PropertyEntity FromModel(Property property, PrimaryKeyResolvingMap pkMap)
         {
             if (property == null)
+            {
                 throw new ArgumentNullException(nameof(property));
+            }
 
             pkMap.AddPair(property, this);
 
-            this.Id = property.Id;
-            this.CreatedBy = property.CreatedBy;
-            this.CreatedDate = property.CreatedDate;
-            this.ModifiedBy = property.ModifiedBy;
-            this.ModifiedDate = property.ModifiedDate;
+            Id = property.Id;
+            CreatedBy = property.CreatedBy;
+            CreatedDate = property.CreatedDate;
+            ModifiedBy = property.ModifiedBy;
+            ModifiedDate = property.ModifiedDate;
 
-            this.CatalogId = property.CatalogId;
-            this.CategoryId = property.CategoryId;
-            
-            this.Name = property.Name;
-            this.PropertyValueType = (int)property.ValueType;
-            this.IsMultiValue = property.Multivalue;
-            this.IsLocaleDependant = property.Multilanguage;
-            this.IsEnum = property.Dictionary;
-            this.IsRequired = property.Required;
-            this.TargetType = property.Type.ToString();
-  
+            CatalogId = property.CatalogId;
+            CategoryId = property.CategoryId;
+
+            Name = property.Name;
+            PropertyValueType = (int)property.ValueType;
+            IsMultiValue = property.Multivalue;
+            IsLocaleDependant = property.Multilanguage;
+            IsEnum = property.Dictionary;
+            IsRequired = property.Required;
+            TargetType = property.Type.ToString();
+
             if (property.Attributes != null)
             {
-                this.PropertyAttributes = new ObservableCollection<PropertyAttributeEntity>(property.Attributes.Select(x => AbstractTypeFactory<PropertyAttributeEntity>.TryCreateInstance().FromModel(x, pkMap)));
+                PropertyAttributes = new ObservableCollection<PropertyAttributeEntity>(property.Attributes.Select(x => AbstractTypeFactory<PropertyAttributeEntity>.TryCreateInstance().FromModel(x, pkMap)));
             }
 
             if (property.DictionaryValues != null)
             {
-                this.DictionaryValues = new ObservableCollection<PropertyDictionaryValueEntity>(property.DictionaryValues.Select(x => AbstractTypeFactory<PropertyDictionaryValueEntity>.TryCreateInstance().FromModel(x, pkMap)));
+                DictionaryItems = new ObservableCollection<PropertyDictionaryItemEntity>();
+                //Need to group all incoming DictValues by alias
+                foreach (var dictItemGroup in property.DictionaryValues.GroupBy(x => x.Alias))
+                {
+                    var dictItemEntity = AbstractTypeFactory<PropertyDictionaryItemEntity>.TryCreateInstance();
+                    dictItemEntity.Alias = dictItemGroup.Key;
+                    dictItemEntity.PropertyId = dictItemGroup.First().PropertyId;
+                    DictionaryItems.Add(dictItemEntity);
+
+                    dictItemEntity.DictionaryItemValues = new ObservableCollection<PropertyDictionaryValueEntity>();
+                    foreach (var dictValue in dictItemGroup)
+                    {
+                        var dictValueEntity = AbstractTypeFactory<PropertyDictionaryValueEntity>.TryCreateInstance();
+                        pkMap.AddPair(dictValue, dictValueEntity);
+                        dictValueEntity.Id = dictValue.Id;
+                        dictValueEntity.Locale = dictValue.LanguageCode;
+                        dictValueEntity.Value = dictValue.Value;
+                        dictItemEntity.DictionaryItemValues.Add(dictValueEntity);
+                    }
+                }
             }
 
             if (property.DisplayNames != null)
             {
-                this.DisplayNames = new ObservableCollection<PropertyDisplayNameEntity>(property.DisplayNames.Select(x => AbstractTypeFactory<PropertyDisplayNameEntity>.TryCreateInstance().FromModel(x)));
+                DisplayNames = new ObservableCollection<PropertyDisplayNameEntity>(property.DisplayNames.Select(x => AbstractTypeFactory<PropertyDisplayNameEntity>.TryCreateInstance().FromModel(x)));
             }
 
             if (property.ValidationRules != null)
             {
-                this.ValidationRules = new ObservableCollection<PropertyValidationRuleEntity>(property.ValidationRules.Select(x => AbstractTypeFactory<PropertyValidationRuleEntity>.TryCreateInstance().FromModel(x)));
+                ValidationRules = new ObservableCollection<PropertyValidationRuleEntity>(property.ValidationRules.Select(x => AbstractTypeFactory<PropertyValidationRuleEntity>.TryCreateInstance().FromModel(x)));
             }
             return this;
         }
 
         public virtual void Patch(PropertyEntity target)
         {
-            target.PropertyValueType = this.PropertyValueType;
-            target.IsEnum = this.IsEnum;
-            target.IsMultiValue = this.IsMultiValue;
-            target.IsLocaleDependant = this.IsLocaleDependant;
-            target.IsRequired = this.IsRequired;
-            target.TargetType = this.TargetType;
-            target.Name = this.Name;
+            target.PropertyValueType = PropertyValueType;
+            target.IsEnum = IsEnum;
+            target.IsMultiValue = IsMultiValue;
+            target.IsLocaleDependant = IsLocaleDependant;
+            target.IsRequired = IsRequired;
+            target.TargetType = TargetType;
+            target.Name = Name;
 
-            if (!this.PropertyAttributes.IsNullCollection())
+            if (!PropertyAttributes.IsNullCollection())
             {
                 var attributeComparer = AnonymousComparer.Create((PropertyAttributeEntity x) => x.IsTransient() ? x.PropertyAttributeName : x.Id);
-                this.PropertyAttributes.Patch(target.PropertyAttributes, attributeComparer, (sourceAsset, targetAsset) => sourceAsset.Patch(targetAsset));
+                PropertyAttributes.Patch(target.PropertyAttributes, attributeComparer, (sourceAsset, targetAsset) => sourceAsset.Patch(targetAsset));
             }
-            if (!this.DictionaryValues.IsNullCollection())
+            if (!DictionaryItems.IsNullCollection())
             {
-                this.DictionaryValues.Patch(target.DictionaryValues, (sourcePropValue, targetPropValue) => sourcePropValue.Patch(targetPropValue));
+                var dictItemComparer = AnonymousComparer.Create((PropertyDictionaryItemEntity x) => $"{x.Alias}-{x.PropertyId}");
+                DictionaryItems.Patch(target.DictionaryItems, dictItemComparer, (sourceDictItem, targetDictItem) => sourceDictItem.Patch(targetDictItem));
             }
-            if (!this.DisplayNames.IsNullCollection())
+            if (!DisplayNames.IsNullCollection())
             {
                 var displayNamesComparer = AnonymousComparer.Create((PropertyDisplayNameEntity x) => $"{x.Name}-{x.Locale}");
-                this.DisplayNames.Patch(target.DisplayNames, displayNamesComparer, (sourceDisplayName, targetDisplayName) => sourceDisplayName.Patch(targetDisplayName));
+                DisplayNames.Patch(target.DisplayNames, displayNamesComparer, (sourceDisplayName, targetDisplayName) => sourceDisplayName.Patch(targetDisplayName));
             }
 
-            if (!this.ValidationRules.IsNullCollection())
+            if (!ValidationRules.IsNullCollection())
             {
-                this.ValidationRules.Patch(target.ValidationRules, (sourceRule, targetRule) => sourceRule.Patch(targetRule));
+                ValidationRules.Patch(target.ValidationRules, (sourceRule, targetRule) => sourceRule.Patch(targetRule));
             }
         }
     }
