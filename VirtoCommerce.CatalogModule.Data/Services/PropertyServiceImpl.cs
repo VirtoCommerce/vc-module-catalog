@@ -114,21 +114,13 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public PropertyDictionaryValue[] SearchDictionaryValues(string propertyId, string keyword)
         {
-            if (propertyId == null)
+            var property = GetById(propertyId);
+            var result = property.DictionaryValues.ToArray();
+            if (!string.IsNullOrEmpty(keyword))
             {
-                throw new ArgumentNullException(nameof(propertyId));
+                result = result.Where(x => x.Value.Contains(keyword)).ToArray();
             }
-
-            using (var repository = _repositoryFactory())
-            {
-                var query = repository.PropertyDictionaryValues.Where(x => x.PropertyId == propertyId);
-                if (!string.IsNullOrEmpty(keyword))
-                {
-                    query = query.Where(x => x.Value.Contains(keyword));
-                }
-                var result = query.OrderBy(x => x.Alias).ToArray();
-                return result.Select(x => x.ToModel(AbstractTypeFactory<PropertyDictionaryValue>.TryCreateInstance())).ToArray();
-            }
+            return result;
         }
         #endregion
 
@@ -231,7 +223,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     repository.DisableChangesTracking();
 
                     var propertyIds = repository.Properties.Select(p => p.Id).ToArray();
-                    var entities = repository.GetPropertiesByIds(propertyIds, loadDictValues: false);
+                    var entities = repository.GetPropertiesByIds(propertyIds);
                     var properties = entities.Select(p => p.ToModel(AbstractTypeFactory<Property>.TryCreateInstance())).ToArray();
 
                     LoadDependencies(properties);

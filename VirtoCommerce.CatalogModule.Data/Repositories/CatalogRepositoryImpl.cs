@@ -173,7 +173,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             var catalogPropertiesIds = Properties.Where(x => catalogIds.Contains(x.CatalogId) && x.CategoryId == null)
                                                  .Select(x => x.Id)
                                                  .ToArray();
-            var catalogProperties = GetPropertiesByIds(catalogPropertiesIds, false);
+            var catalogProperties = GetPropertiesByIds(catalogPropertiesIds);
 
             return retVal;
         }
@@ -215,7 +215,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 var propertyValues = PropertyValues.Where(x => categoriesIds.Contains(x.CategoryId)).ToArray();
 
                 var categoryPropertiesIds = Properties.Where(x => categoriesIds.Contains(x.CategoryId)).Select(x => x.Id).ToArray();
-                var categoryProperties = GetPropertiesByIds(categoryPropertiesIds, false);
+                var categoryProperties = GetPropertiesByIds(categoryPropertiesIds);
             }
 
             return result;
