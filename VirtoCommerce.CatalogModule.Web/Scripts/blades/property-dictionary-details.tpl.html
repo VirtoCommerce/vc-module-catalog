@@ -1,0 +1,35 @@
+<div class="blade-content">
+    <div class="blade-inner">
+        <div class="inner-block">
+            <form name="pdForm" class="form">
+                <div class="form-group" ng-init="setForm(pdForm);">
+                    <label class="form-label" for="">{{ 'catalog.blades.property-dictionary.placeholders.alias' | translate }}</label>
+                    <div class="form-input">
+                        <input focus-on="" required ui-validate=" 'dictValueValidator($value)' " name="alias" class="form-control" 
+                        ng-model="blade.currentEntity.alias" placeholder="{{ 'catalog.blades.property-dictionary.placeholders.alias' | translate }}"
+                        />
+                        <div class="form-error" ng-if="pdForm.alias.$dirty && pdForm.alias.$invalid">
+                            <span ng-if="pdForm.alias.$error.required">{{ 'catalog.blades.property-dictionary.validations.required' | translate }}</span>
+                            <span ng-if="pdForm.alias.$error.validator">{{ 'catalog.blades.property-dictionary.validations.duplicate' | translate }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group" ng-if="!pb.parentBlade.currentEntity.multilanguage">
+                    <label class="form-label" for="">{{ 'catalog.blades.property-attributes.labels.value' | translate }}</label>
+                    <va-dictionary-property required="true" validation-rules="validationRules" ng-model="blade.currentEntity.values[0]"></va-dictionary-property>
+                </div>
+
+                <div ng-if="pb.parentBlade.currentEntity.multilanguage">
+                    <div class="form-group" ng-repeat="prop in blade.currentEntity.values">
+                        <label class="form-label" for="">{{ getLanguageName(prop.languageCode) }}</label>
+                        <va-dictionary-property required="{{prop.languageCode == defaultLanguage}}" validation-rules="validationRules" ng-model="blade.currentEntity.values[$index]"></va-dictionary-property>
+                    </div>
+                </div>
+
+                <div class="blade-static __bottom" ng-include="'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/common/templates/ok-cancel.tpl.html'"></div>
+
+            </form>
+        </div>
+    </div>
+</div>
