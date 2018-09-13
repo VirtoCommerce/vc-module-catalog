@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Data.Services;
 using VirtoCommerce.Domain.Catalog.Model;
@@ -36,6 +36,8 @@ namespace VirtoCommerce.CatalogModule.Test
         [Fact]
         public void GetCategories_When_PhysicalCatalog_Expect_SinglePhysicalOutline()
         {
+            var bol = false;
+            bol |= true;
             var service = GetOutlineService();
             var c3 = GetTestData().OfType<Category>().FirstOrDefault(x => x.Id == "c3");
             service.FillOutlinesForObjects(new[] { c3 }, "c");

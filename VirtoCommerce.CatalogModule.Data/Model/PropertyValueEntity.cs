@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Globalization;
+using System.Linq;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Platform.Core.Common;
 
@@ -90,6 +91,31 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             {
                 yield return propValue;
             }
+        }
+
+        public virtual IEnumerable<PropertyValueEntity> FromModels(IEnumerable<PropertyValue> propValues, PrimaryKeyResolvingMap pkMap)
+        {
+            if (propValues == null)
+            {
+                throw new ArgumentNullException(nameof(propValues));
+            }
+            var groupedValues = propValues.Where(x => !x.IsInherited && x.Value != null && !string.IsNullOrEmpty(x.Value.ToString()))
+                                           .Select(x => AbstractTypeFactory<PropertyValueEntity>.TryCreateInstance().FromModel(x, pkMap))
+                                           .GroupBy(x => x.DictionaryItemId);
+            var result = new List<PropertyValueEntity>();
+            foreach (var group in groupedValues)
+            {
+                if (group.Key == null)
+                {
+                    result.AddRange(group);
+                }
+                else
+                {
+                    result.Add(group.FirstOrDefault());
+                }
+            }
+            return result;
+
         }
 
         public virtual PropertyValueEntity FromModel(PropertyValue propValue, PrimaryKeyResolvingMap pkMap)

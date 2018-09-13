@@ -91,8 +91,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
             if (catalog.PropertyValues != null)
             {
-                CatalogPropertyValues = new ObservableCollection<PropertyValueEntity>(catalog.PropertyValues.Where(x => !x.IsInherited && x.Value != null && !string.IsNullOrEmpty(x.Value.ToString()))
-                                           .Select(x => AbstractTypeFactory<PropertyValueEntity>.TryCreateInstance().FromModel(x, pkMap)));
+                CatalogPropertyValues = new ObservableCollection<PropertyValueEntity>(AbstractTypeFactory<PropertyValueEntity>.TryCreateInstance().FromModels(catalog.PropertyValues, pkMap));
 
             }
             if (catalog.Languages != null)

@@ -138,11 +138,11 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             if (property.DictionaryValues != null)
             {
                 DictionaryItems = new ObservableCollection<PropertyDictionaryItemEntity>();
-                //Need to group all incoming DictValues by alias
+                //Need to group all incoming DictValues by alias to convert flat list of values to data model structure  
                 foreach (var dictItemGroup in property.DictionaryValues.GroupBy(x => x.Alias))
                 {
                     var dictItemEntity = AbstractTypeFactory<PropertyDictionaryItemEntity>.TryCreateInstance();
-                    dictItemEntity.Alias = dictItemGroup.Key;
+                    dictItemEntity.Id = dictItemGroup.Key;
                     dictItemEntity.PropertyId = dictItemGroup.First().PropertyId;
                     DictionaryItems.Add(dictItemEntity);
 
@@ -188,8 +188,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             }
             if (!DictionaryItems.IsNullCollection())
             {
-                var dictItemComparer = AnonymousComparer.Create((PropertyDictionaryItemEntity x) => $"{x.Alias}-{x.PropertyId}");
-                DictionaryItems.Patch(target.DictionaryItems, dictItemComparer, (sourceDictItem, targetDictItem) => sourceDictItem.Patch(targetDictItem));
+                DictionaryItems.Patch(target.DictionaryItems, (sourceDictItem, targetDictItem) => sourceDictItem.Patch(targetDictItem));
             }
             if (!DisplayNames.IsNullCollection())
             {

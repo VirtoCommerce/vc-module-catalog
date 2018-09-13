@@ -25,7 +25,8 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 throw new ArgumentNullException(nameof(propDictValue));
             }
             propDictValue.Id = Id;
-            propDictValue.Alias = DictionaryItem?.Alias;
+            //Use alias property for store DictionaryItem identifier
+            propDictValue.Alias = DictionaryItem?.Id;
             propDictValue.LanguageCode = Locale;
             propDictValue.PropertyId = DictionaryItem?.PropertyId;
             propDictValue.Value = Value;

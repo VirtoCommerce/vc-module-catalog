@@ -1,4 +1,4 @@
-﻿angular.module('virtoCommerce.catalogModule')
+angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.propertyDictionaryController',
         ['$scope', '$filter', 'platformWebApp.dialogService', 'platformWebApp.settings', function ($scope, $filter, dialogService, settings) {
             var dictionaryValues;
@@ -41,11 +41,11 @@
                                 var existingValue = _.findWhere(dictionaryValues, { alias: $scope.exposeAlias ? $scope.newValue.alias : value.alias, languageCode: value.languageCode });
                                 if (value.value) {
                                     if (existingValue) {
-                                        existingValue.alias = $scope.exposeAlias ? $scope.newValue.alias : $scope.newValue.values[0].value;
+                                        existingValue.alias = $scope.exposeAlias ? $scope.newValue.alias : uid(); //$scope.newValue.values[0].value;
                                         existingValue.value = value.value;
                                     } else {
                                         dictionaryValues.push({
-                                            alias: $scope.exposeAlias ? $scope.newValue.alias : $scope.newValue.values[0].value,
+                                            alias: $scope.exposeAlias ? $scope.newValue.alias : uid(),//$scope.newValue.values[0].value,
                                             languageCode: value.languageCode,
                                             propertyId: pb.currentEntity.id,
                                             value: value.value
@@ -60,7 +60,7 @@
                             _.each($scope.newValue.values, function (value) {
                                 if (value.value) {
                                     dictionaryValues.push({
-                                        alias: $scope.exposeAlias ? $scope.newValue.alias : $scope.newValue.values[0].value,
+                                        alias: $scope.exposeAlias ? $scope.newValue.alias : uid(),// $scope.newValue.values[0].value,
                                         languageCode: value.languageCode,
                                         propertyId: pb.currentEntity.id,
                                         value: value.value
@@ -70,7 +70,7 @@
                         }
                         initializeDictionaryValues();
                     } else {
-                        $scope.newValue.alias = $scope.newValue.alias ? $scope.newValue.alias : $scope.newValue.value;
+                        $scope.newValue.alias = $scope.newValue.alias ? $scope.newValue.alias : uid();// $scope.newValue.value;
                         dictionaryValues.push($scope.newValue);
                     }
                     resetNewValue($scope.newValue.languageCode);
@@ -181,7 +181,7 @@
                 dictionaryValues = pb.currentEntity.dictionaryValues;
                 _.each(dictionaryValues, function (x) {
                     if (!x.alias) {
-                        x.alias = x.value;
+                        x.alias = uid();//x.value;
                     }
                 });
 
@@ -193,6 +193,14 @@
                 resetNewValue(pb.defaultLanguage);
             }
 
+            function uid() {
+                function S4() {
+                    return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+                }
+
+                // then to call it, plus stitch in '4' in the third group
+                return (S4() + S4() +  S4() + "-4" + S4().substr(0, 3) + S4() + S4() + S4() + S4()).toLowerCase();
+            }
             $scope.$watch('blade.parentBlade.currentEntity.dictionaryValues', initializeDictionaryValues);
             $scope.$watch('blade.parentBlade.currentEntity.multilanguage', initializeDictionaryValues);
 

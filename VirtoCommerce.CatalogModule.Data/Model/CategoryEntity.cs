@@ -139,8 +139,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
             if (category.PropertyValues != null)
             {
-                CategoryPropertyValues = new ObservableCollection<PropertyValueEntity>(category.PropertyValues.Where(x => !x.IsInherited && x.Value != null && !string.IsNullOrEmpty(x.Value.ToString()))
-                                           .Select(x => AbstractTypeFactory<PropertyValueEntity>.TryCreateInstance().FromModel(x, pkMap)));
+                CategoryPropertyValues = new ObservableCollection<PropertyValueEntity>(AbstractTypeFactory<PropertyValueEntity>.TryCreateInstance().FromModels(category.PropertyValues, pkMap));
             }
 
             if (category.Links != null)
