@@ -36,6 +36,8 @@ angular.module('virtoCommerce.catalogModule')
         $scope.openChild = function (childType) {
             var newBlade = { id: "propertyChild" };
             newBlade.property = blade.currentEntity;
+            newBlade.languages = blade.languages;
+            newBlade.defaultLanguage = blade.defaultLanguage;
             switch (childType) {
                 case 'attr':
                     newBlade.title = 'catalog.blades.property-attributes.title';
@@ -88,6 +90,7 @@ angular.module('virtoCommerce.catalogModule')
 
         function saveChanges() {
             blade.isLoading = true;
+            bladeNavigationService.closeChildrenBlades(blade);
 
             if (blade.currentEntity.valueType !== "ShortText" && blade.currentEntity.valueType !== "LongText") {
                 blade.currentEntity.validationRule = null;

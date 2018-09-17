@@ -1,9 +1,9 @@
 <div class="blade-static">
     <div class="form-group">
         <div class="form-input" style="flex-grow: 1;">
-            <input ng-model="filter" ng-keyup="searchFilter(filter)" style="width: calc(100% - 80px);"
+            <input ng-model="searchPhrase" ng-keyup="$event.which === 13 && search(searchPhrase)" style="width: calc(100% - 80px);"
                 placeholder="{{'platform.placeholders.search-keyword' | translate}}">
-            <button class="btn __other" style="position: relative;right: 45px;" ng-click="filter = ''; searchFilter(filter)">
+            <button class="btn __other" style="position: relative;right: 45px;" ng-click="searchPhrase=undefined;search(searchPhrase);">
                 <i class="btn-ico fa fa-remove" title="Clear"></i>
             </button>
         </div>
@@ -11,15 +11,32 @@
 </div>
 <div class="blade-content">
     <div class="blade-inner">
-        <div class="inner-block clearfix">
-            <div class="note" ng-if="!groupedDictionaryValues.length">{{ 'platform.list.no-data' | translate }}</div>
-            <ul class="list __items">
-                <li class="list-item" ng-repeat="property in groupedDictionaryValues track by $index" ng-class="{'__selected': property === setSelectedNode}"
-                    ng-click='selectNode(property)'>
-                    <span style="font-weight:bold; margin-right:12px;">{{property.alias}}</span>
-                    <span class="list-descr" ng-if="blade.parentBlade.currentEntity.multilanguage">{{property.langCounts}} of {{blade.parentBlade.languages.length}} languages defined</span>
+        <div class="table-wrapper"  ng-if="currentEntities.length" ng-init="setGridOptions({
+                    useExternalSorting: false,
+                    rowTemplate: 'dictionary-item.row.html',
+                    data: 'currentEntities',
+                    columnDefs: [
+                            { name: 'actions', displayName: '', enableColumnResizing: false, enableSorting: false, width: 30, cellTemplate: 'list-actions.cell.html', pinnedLeft:true },
+                            { name: 'label', displayName: 'catalog.blades.property-dictionary.labels.value' },
+                        ]})">
+            <div ui-grid="gridOptions" ui-grid-auto-resize ui-grid-save-state ui-grid-selection ui-grid-resize-columns ui-grid-move-columns ui-grid-pinning ui-grid-height></div>
+            <ul class="menu __context" role="menu" id="prop_dic_item_menu">
+                <li class="menu-item" ng-click='selectDictItem(contextMenuEntity)'>
+                    <i class="menu-ico fa fa-edit"></i> {{'platform.commands.manage' | translate}}
+                </li>
+                <li class="menu-item" ng-click='deleteDictItem(contextMenuEntity)'>
+                    <i class="menu-ico fa fa-trash-o"></i> {{'platform.commands.delete' | translate}}
                 </li>
             </ul>
         </div>
+        <div class="note" ng-if="!currentEntities.length">{{ 'platform.list.no-data' | translate }}</div>
     </div>
 </div>
+<script type="text/ng-template" id="list-actions.cell.html">
+    <div class="ui-grid-actions" left-click-menu="grid.appScope.contextMenuEntity = row.entity" data-target="prop_dic_item_menu">
+        <i class="fa fa-ellipsis-v"></i>
+    </div>
+</script>
+<script type="text/ng-template" id="dictionary-item.row.html">
+    <div ng-click='grid.appScope.selectNode(row.entity)' ng-repeat="(colRenderIndex, col) in colContainer.renderedColumns track by col.uid" ui-grid-one-bind-id-grid="rowRenderIndex + '-' + col.uid + '-cell'" class="ui-grid-cell" ng-class="{'ui-grid-row-header-cell': col.isRowHeader, '__hovered': grid.appScope.contextMenuEntity === row.entity, '__selected': row.entity.alias===grid.appScope.selectedNodeId }" role="{{col.isRowHeader ? 'rowheader' : 'gridcell' }}" ui-grid-cell context-menu="grid.appScope.contextMenuEntity = row.entity" data-target="prop_dic_item_menu"></div>
+</script>

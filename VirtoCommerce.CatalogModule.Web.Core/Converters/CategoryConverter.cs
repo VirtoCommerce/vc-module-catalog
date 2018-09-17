@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Omu.ValueInjecter;
 using VirtoCommerce.Platform.Core.Assets;
@@ -27,7 +27,7 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             retVal.CreatedDate = category.CreatedDate;
             retVal.ModifiedBy = category.ModifiedBy;
             retVal.ModifiedDate = category.ModifiedDate;
-      
+
             retVal.SeoInfos = category.SeoInfos;
             if (!category.Outlines.IsNullOrEmpty())
             {
@@ -118,7 +118,7 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
                 retVal.PropertyValues = new List<moduleModel.PropertyValue>();
                 foreach (var property in category.Properties)
                 {
-                    foreach (var propValue in property.Values)
+                    foreach (var propValue in property.Values ?? Enumerable.Empty<webModel.PropertyValue>())
                     {
                         propValue.ValueType = property.ValueType;
                         //Need populate required fields

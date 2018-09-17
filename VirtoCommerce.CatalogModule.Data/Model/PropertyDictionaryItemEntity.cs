@@ -25,7 +25,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         {
             if (!DictionaryItemValues.IsNullCollection())
             {
-                var comparer = AnonymousComparer.Create((PropertyDictionaryValueEntity x) => x.IsTransient() ? x.Value + '|' + x.Locale : x.Id);
+                var comparer = AnonymousComparer.Create((PropertyDictionaryValueEntity x) => x.Value + '|' + x.Locale);
                 DictionaryItemValues.Patch(target.DictionaryItemValues, comparer, (sourceDictItem, targetDictItem) => sourceDictItem.Patch(targetDictItem));
             }
         }
