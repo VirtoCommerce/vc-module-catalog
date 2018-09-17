@@ -598,7 +598,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 	                    UNION
 	                    SELECT * FROM Association_CTE
                     ) 
-                    SELECT  * FROM Item_CTE WHERE Id IS NOT NULL ORDER BY Priority DESC " +
+                    SELECT  * FROM Item_CTE WHERE AssociatedItemId IS NOT NULL ORDER BY Priority DESC " +
                     $"OFFSET {criteria.Skip} ROWS FETCH NEXT {criteria.Take} ROWS ONLY";
 
             var associations = ExecuteStoreQuery<dataModel.AssociationEntity>(sqlAssociations, criteria.ObjectIds).ToArray();
