@@ -559,7 +559,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
             var count = ExecuteStoreQuery<int>(sqlCount, criteria.ObjectIds).FirstOrDefault();
 
-            string sqlAssoctiations = @"
+            string sqlAssociations = @"
                     ;WITH Association_CTE AS
                     (
 	                    SELECT *
@@ -601,7 +601,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     SELECT  * FROM Item_CTE WHERE Id IS NOT NULL ORDER BY Priority DESC " +
                     $"OFFSET {criteria.Skip} ROWS FETCH NEXT {criteria.Take} ROWS ONLY";
 
-            var associations = ExecuteStoreQuery<dataModel.AssociationEntity>(sqlAssoctiations, criteria.ObjectIds).ToArray();
+            var associations = ExecuteStoreQuery<dataModel.AssociationEntity>(sqlAssociations, criteria.ObjectIds).ToArray();
 
             result.TotalCount = count;
             result.Results = associations.Select(x => x.ToModel(AbstractTypeFactory<ProductAssociation>.TryCreateInstance())).ToList();
