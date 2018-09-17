@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Model.Search;
@@ -27,37 +26,17 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 throw new ArgumentNullException(nameof(criteria));
             }
 
-            var result = new GenericSearchResult<ProductAssociation>();
+            if (criteria.ObjectIds.IsNullOrEmpty())
+                return new GenericSearchResult<ProductAssociation>();
+
             using (var repository = _catalogRepositoryFactory())
             {
                 //Optimize performance and CPU usage
                 repository.DisableChangesTracking();
 
-                var query = repository.Associations;
-
-                if (!criteria.ObjectIds.IsNullOrEmpty())
-                {
-                    query = query.Where(x => criteria.ObjectIds.Contains(x.ItemId));
-                }
-                if (!string.IsNullOrEmpty(criteria.Group))
-                {
-                    query = query.Where(x => x.AssociationType == criteria.Group);
-                }
-
-                var sortInfos = criteria.SortInfos;
-                if (sortInfos.IsNullOrEmpty())
-                {
-                    sortInfos = new[] { new SortInfo { SortColumn = "Priority", SortDirection = SortDirection.Descending } };
-                }
-                //TODO: Sort by association priority
-                query = query.OrderBySortInfos(sortInfos);
-
-                result.TotalCount = query.Count();
-                result.Results = query.Skip(criteria.Skip).Take(criteria.Take)
-                                   .ToArray().Select(x => x.ToModel(AbstractTypeFactory<ProductAssociation>.TryCreateInstance()))
-                                   .ToList();
+                return repository.GetProductsAssociations(criteria);
             }
-            return result;
+
         }
     }
 }

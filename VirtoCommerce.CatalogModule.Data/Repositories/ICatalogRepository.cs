@@ -1,4 +1,6 @@
 using System.Linq;
+using VirtoCommerce.Domain.Catalog.Model.Search;
+using VirtoCommerce.Domain.Commerce.Model.Search;
 using VirtoCommerce.Platform.Core.Common;
 using dataModel = VirtoCommerce.CatalogModule.Data.Model;
 using moduleModel = VirtoCommerce.Domain.Catalog.Model;
@@ -26,6 +28,8 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         dataModel.ItemEntity[] GetItemByIds(string[] itemIds, moduleModel.ItemResponseGroup respGroup);
         dataModel.PropertyEntity[] GetAllCatalogProperties(string catalogId);
         dataModel.PropertyEntity[] GetPropertiesByIds(string[] propIds, bool loadDictValues = true);
+
+        GenericSearchResult<moduleModel.ProductAssociation> GetProductsAssociations(ProductAssociationSearchCriteria criteria);
 
         void RemoveItems(string[] ids);
         void RemoveCategories(string[] ids);
