@@ -303,11 +303,6 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                 }
                 writer.Flush();
                 progressInfo.Description = $"{ Math.Min(totalProductCount, i + BatchSize) } of { totalProductCount } products exported";
-                if (progressInfo.ErrorCount > 0)
-                {
-                    progressInfo.Description +=
-                        $"; warnings: {progressInfo.Errors.Select(x => x + ", ").Aggregate((a, b) => a + ", " + b)}";
-                }
                 progressCallback(progressInfo);
             }
             writer.WriteEndArray();
