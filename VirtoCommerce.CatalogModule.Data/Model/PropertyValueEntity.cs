@@ -78,7 +78,6 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 foreach (var dictItemValue in DictionaryItem.DictionaryItemValues)
                 {
                     var dictPropValue = propValue.Clone() as PropertyValue;
-                    dictPropValue.Id = dictItemValue.Id;
                     dictPropValue.Alias = DictionaryItem.Alias;
                     dictPropValue.ValueId = DictionaryItem.Id;
                     dictPropValue.LanguageCode = dictItemValue.Locale;

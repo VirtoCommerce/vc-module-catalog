@@ -179,9 +179,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             }
 
             //item property values
-            product.PropertyValues = ItemPropertyValues.OrderBy(x => x.Name)
-                                                       .SelectMany(x => x.ToModel(AbstractTypeFactory<PropertyValue>.TryCreateInstance()))
-                                                       .Distinct(AnonymousComparer.Create((PropertyValue x) => x.ValueId + '|' + x.LanguageCode)).ToList();
+            product.PropertyValues = ItemPropertyValues.OrderBy(x => x.Name).SelectMany(x => x.ToModel(AbstractTypeFactory<PropertyValue>.TryCreateInstance())).ToList();
 
             if (Parent != null)
             {

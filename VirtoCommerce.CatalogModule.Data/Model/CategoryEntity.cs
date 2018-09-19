@@ -105,9 +105,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             category.Properties = Properties.Select(x => x.ToModel(AbstractTypeFactory<Property>.TryCreateInstance())).ToList();
 
             //category property values
-            category.PropertyValues = CategoryPropertyValues.OrderBy(x => x.Name)
-                                                       .SelectMany(x => x.ToModel(AbstractTypeFactory<PropertyValue>.TryCreateInstance()))
-                                                       .Distinct(AnonymousComparer.Create((PropertyValue x) => x.ValueId + '|' + x.LanguageCode)).ToList();
+            category.PropertyValues = CategoryPropertyValues.OrderBy(x => x.Name).SelectMany(x => x.ToModel(AbstractTypeFactory<PropertyValue>.TryCreateInstance())).ToList();
             return category;
         }
 
