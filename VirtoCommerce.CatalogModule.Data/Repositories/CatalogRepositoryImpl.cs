@@ -61,9 +61,14 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
             #endregion
 
+            #region PropertyDictionaryItem
+            modelBuilder.Entity<dataModel.PropertyDictionaryItemEntity>().ToTable("PropertyDictionaryItem").HasKey(x => x.Id).Property(x => x.Id);
+            modelBuilder.Entity<dataModel.PropertyDictionaryItemEntity>().HasRequired(m => m.Property).WithMany(x => x.DictionaryItems).HasForeignKey(x => x.PropertyId).WillCascadeOnDelete(true);
+            #endregion
+
             #region PropertyDictionaryValue
             modelBuilder.Entity<dataModel.PropertyDictionaryValueEntity>().ToTable("PropertyDictionaryValue").HasKey(x => x.Id).Property(x => x.Id);
-            modelBuilder.Entity<dataModel.PropertyDictionaryValueEntity>().HasRequired(m => m.Property).WithMany(x => x.DictionaryValues).HasForeignKey(x => x.PropertyId).WillCascadeOnDelete(true);
+            modelBuilder.Entity<dataModel.PropertyDictionaryValueEntity>().HasRequired(m => m.DictionaryItem).WithMany(x => x.DictionaryItemValues).HasForeignKey(x => x.DictionaryItemId).WillCascadeOnDelete(true);
             #endregion
 
             #region PropertyAttribute
@@ -81,6 +86,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             modelBuilder.Entity<dataModel.PropertyValueEntity>().HasOptional(m => m.CatalogItem).WithMany(x => x.ItemPropertyValues).HasForeignKey(x => x.ItemId).WillCascadeOnDelete(false);
             modelBuilder.Entity<dataModel.PropertyValueEntity>().HasOptional(m => m.Category).WithMany(x => x.CategoryPropertyValues).HasForeignKey(x => x.CategoryId).WillCascadeOnDelete(false);
             modelBuilder.Entity<dataModel.PropertyValueEntity>().HasOptional(m => m.Catalog).WithMany(x => x.CatalogPropertyValues).HasForeignKey(x => x.CatalogId).WillCascadeOnDelete(false);
+            modelBuilder.Entity<dataModel.PropertyValueEntity>().HasOptional(m => m.DictionaryItem).WithMany().HasForeignKey(x => x.DictionaryItemId).WillCascadeOnDelete(false);
             #endregion
 
             #region PropertyValidationRule
@@ -155,6 +161,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         public IQueryable<dataModel.EditorialReviewEntity> EditorialReviews => GetAsQueryable<dataModel.EditorialReviewEntity>();
         public IQueryable<dataModel.PropertyEntity> Properties => GetAsQueryable<dataModel.PropertyEntity>();
         public IQueryable<dataModel.PropertyDictionaryValueEntity> PropertyDictionaryValues => GetAsQueryable<dataModel.PropertyDictionaryValueEntity>();
+        public IQueryable<dataModel.PropertyDictionaryItemEntity> PropertyDictionaryItems => GetAsQueryable<dataModel.PropertyDictionaryItemEntity>();
         public IQueryable<dataModel.PropertyDisplayNameEntity> PropertyDisplayNames => GetAsQueryable<dataModel.PropertyDisplayNameEntity>();
         public IQueryable<dataModel.PropertyAttributeEntity> PropertyAttributes => GetAsQueryable<dataModel.PropertyAttributeEntity>();
         public IQueryable<dataModel.CategoryItemRelationEntity> CategoryItemRelations => GetAsQueryable<dataModel.CategoryItemRelationEntity>();
@@ -169,7 +176,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                                  .Where(x => catalogIds.Contains(x.Id))
                                  .ToArray();
 
-            var propertyValues = PropertyValues.Where(x => catalogIds.Contains(x.CatalogId) && x.CategoryId == null).ToArray();
+            var propertyValues = PropertyValues.Include(x => x.DictionaryItem.DictionaryItemValues).Where(x => catalogIds.Contains(x.CatalogId) && x.CategoryId == null).ToArray();
             var catalogPropertiesIds = Properties.Where(x => catalogIds.Contains(x.CatalogId) && x.CategoryId == null)
                                                  .Select(x => x.Id)
                                                  .ToArray();
@@ -212,7 +219,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             if (respGroup.HasFlag(coreModel.CategoryResponseGroup.WithProperties))
             {
                 //Load category property values by separate query
-                var propertyValues = PropertyValues.Where(x => categoriesIds.Contains(x.CategoryId)).ToArray();
+                var propertyValues = PropertyValues.Include(x => x.DictionaryItem.DictionaryItemValues).Where(x => categoriesIds.Contains(x.CategoryId)).ToArray();
 
                 var categoryPropertiesIds = Properties.Where(x => categoriesIds.Contains(x.CategoryId)).Select(x => x.Id).ToArray();
                 var categoryProperties = GetPropertiesByIds(categoryPropertiesIds);
@@ -243,7 +250,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
             if (respGroup.HasFlag(coreModel.ItemResponseGroup.ItemProperties))
             {
-                var propertyValues = PropertyValues.Where(x => itemIds.Contains(x.ItemId)).ToArray();
+                var propertyValues = PropertyValues.Include(x => x.DictionaryItem.DictionaryItemValues).Where(x => itemIds.Contains(x.ItemId)).ToArray();
             }
 
             if (respGroup.HasFlag(coreModel.ItemResponseGroup.Links))
@@ -308,7 +315,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             return retVal;
         }
 
-        public dataModel.PropertyEntity[] GetPropertiesByIds(string[] propIds, bool loadDictValues = true)
+        public dataModel.PropertyEntity[] GetPropertiesByIds(string[] propIds, bool loadDictValues = false)
         {
             //Used breaking query EF performance concept https://msdn.microsoft.com/en-us/data/hh949853.aspx#8
             var retVal = Properties.Where(x => propIds.Contains(x.Id)).ToArray();
@@ -316,14 +323,10 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             var propAttributes = PropertyAttributes.Where(x => propIds.Contains(x.PropertyId)).ToArray();
             var propDisplayNames = PropertyDisplayNames.Where(x => propIds.Contains(x.PropertyId)).ToArray();
             var propValidationRules = PropertyValidationRules.Where(x => propIds.Contains(x.PropertyId)).ToArray();
-
-            //Do not load dictionary values for not enum properties
-            var dictPropertiesIds = retVal.Where(x => x.IsEnum).Select(x => x.Id).ToArray();
-            if (loadDictValues && !dictPropertiesIds.IsNullOrEmpty())
+            if (loadDictValues)
             {
-                var dictValues = PropertyDictionaryValues.Where(x => dictPropertiesIds.Contains(x.PropertyId)).ToArray();
+                var propDictionaryItems = PropertyDictionaryItems.Include(x => x.DictionaryItemValues).Where(x => propIds.Contains(x.PropertyId)).ToArray();
             }
-
             return retVal;
         }
 

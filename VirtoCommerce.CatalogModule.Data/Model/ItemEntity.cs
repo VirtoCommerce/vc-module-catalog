@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
@@ -119,76 +119,80 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         public virtual CatalogProduct ToModel(CatalogProduct product, bool convertChildrens = true, bool convertAssociations = true)
         {
             if (product == null)
+            {
                 throw new ArgumentNullException(nameof(product));
+            }
 
 
-            product.Id = this.Id;
-            product.CreatedDate = this.CreatedDate;
-            product.CreatedBy = this.CreatedBy;
-            product.ModifiedDate = this.ModifiedDate;
-            product.ModifiedBy = this.ModifiedBy;
+            product.Id = Id;
+            product.CreatedDate = CreatedDate;
+            product.CreatedBy = CreatedBy;
+            product.ModifiedDate = ModifiedDate;
+            product.ModifiedBy = ModifiedBy;
 
-            product.CatalogId = this.CatalogId;
-            product.CategoryId = this.CategoryId;
-            product.Code = this.Code;
-            product.DownloadExpiration = this.DownloadExpiration;
-            product.DownloadType = this.DownloadType;
-            product.EnableReview = this.EnableReview;
-            product.EndDate = this.EndDate;
-            product.Gtin = this.Gtin;
-            product.HasUserAgreement = this.HasUserAgreement;
-            product.Height = this.Height;
-            product.IsActive = this.IsActive;
-            product.IsBuyable = this.IsBuyable;
-            product.Length = this.Length;
-            product.MainProductId = this.ParentId;
-            product.ManufacturerPartNumber = this.ManufacturerPartNumber;
-            product.MaxNumberOfDownload = this.MaxNumberOfDownload;
-            product.MaxQuantity = (int)this.MaxQuantity;
-            product.MeasureUnit = this.MeasureUnit;
-            product.MinQuantity = (int)this.MinQuantity;
-            product.Name = this.Name;
-            product.PackageType = this.PackageType;
-            product.Priority = this.Priority;
-            product.ProductType = this.ProductType;
-            product.ShippingType = this.ShippingType;
-            product.StartDate = this.StartDate;
-            product.TaxType = this.TaxType;
-            product.TrackInventory = this.TrackInventory;
-            product.Vendor = this.Vendor;
-            product.Weight = this.Weight;
-            product.WeightUnit = this.WeightUnit;
-            product.Width = this.Width;
+            product.CatalogId = CatalogId;
+            product.CategoryId = CategoryId;
+            product.Code = Code;
+            product.DownloadExpiration = DownloadExpiration;
+            product.DownloadType = DownloadType;
+            product.EnableReview = EnableReview;
+            product.EndDate = EndDate;
+            product.Gtin = Gtin;
+            product.HasUserAgreement = HasUserAgreement;
+            product.Height = Height;
+            product.IsActive = IsActive;
+            product.IsBuyable = IsBuyable;
+            product.Length = Length;
+            product.MainProductId = ParentId;
+            product.ManufacturerPartNumber = ManufacturerPartNumber;
+            product.MaxNumberOfDownload = MaxNumberOfDownload;
+            product.MaxQuantity = (int)MaxQuantity;
+            product.MeasureUnit = MeasureUnit;
+            product.MinQuantity = (int)MinQuantity;
+            product.Name = Name;
+            product.PackageType = PackageType;
+            product.Priority = Priority;
+            product.ProductType = ProductType;
+            product.ShippingType = ShippingType;
+            product.StartDate = StartDate;
+            product.TaxType = TaxType;
+            product.TrackInventory = TrackInventory;
+            product.Vendor = Vendor;
+            product.Weight = Weight;
+            product.WeightUnit = WeightUnit;
+            product.Width = Width;
 
             //Links
-            product.Links = this.CategoryLinks.Select(x => x.ToModel(AbstractTypeFactory<CategoryLink>.TryCreateInstance())).ToList();
+            product.Links = CategoryLinks.Select(x => x.ToModel(AbstractTypeFactory<CategoryLink>.TryCreateInstance())).ToList();
             //Images
-            product.Images = this.Images.OrderBy(x => x.SortOrder).Select(x => x.ToModel(AbstractTypeFactory<Image>.TryCreateInstance())).ToList();
+            product.Images = Images.OrderBy(x => x.SortOrder).Select(x => x.ToModel(AbstractTypeFactory<Image>.TryCreateInstance())).ToList();
             //Assets
-            product.Assets = this.Assets.OrderBy(x => x.CreatedDate).Select(x => x.ToModel(AbstractTypeFactory<Asset>.TryCreateInstance())).ToList();
+            product.Assets = Assets.OrderBy(x => x.CreatedDate).Select(x => x.ToModel(AbstractTypeFactory<Asset>.TryCreateInstance())).ToList();
             // EditorialReviews
-            product.Reviews = this.EditorialReviews.Select(x => x.ToModel(AbstractTypeFactory<EditorialReview>.TryCreateInstance())).ToList();
+            product.Reviews = EditorialReviews.Select(x => x.ToModel(AbstractTypeFactory<EditorialReview>.TryCreateInstance())).ToList();
 
             if (convertAssociations)
             {
                 // Associations
-                product.Associations = this.Associations.Select(x => x.ToModel(AbstractTypeFactory<ProductAssociation>.TryCreateInstance())).OrderBy(x => x.Priority).ToList();
-                product.ReferencedAssociations = this.ReferencedAssociations.Select(x => x.ToReferencedAssociationModel(AbstractTypeFactory<ProductAssociation>.TryCreateInstance())).OrderBy(x => x.Priority).ToList();
+                product.Associations = Associations.Select(x => x.ToModel(AbstractTypeFactory<ProductAssociation>.TryCreateInstance())).OrderBy(x => x.Priority).ToList();
+                product.ReferencedAssociations = ReferencedAssociations.Select(x => x.ToReferencedAssociationModel(AbstractTypeFactory<ProductAssociation>.TryCreateInstance())).OrderBy(x => x.Priority).ToList();
             }
 
-            //Self item property values
-            product.PropertyValues = this.ItemPropertyValues.OrderBy(x => x.Name).Select(x => x.ToModel(AbstractTypeFactory<PropertyValue>.TryCreateInstance())).ToList();
+            //item property values
+            product.PropertyValues = ItemPropertyValues.OrderBy(x => x.Name)
+                                                       .SelectMany(x => x.ToModel(AbstractTypeFactory<PropertyValue>.TryCreateInstance()))
+                                                       .Distinct(AnonymousComparer.Create((PropertyValue x) => x.ValueId + '|' + x.LanguageCode)).ToList();
 
-            if (this.Parent != null)
+            if (Parent != null)
             {
-                product.MainProduct = this.Parent.ToModel(AbstractTypeFactory<CatalogProduct>.TryCreateInstance(), false, convertAssociations);
+                product.MainProduct = Parent.ToModel(AbstractTypeFactory<CatalogProduct>.TryCreateInstance(), false, convertAssociations);
             }
 
             if (convertChildrens)
             {
                 // Variations
                 product.Variations = new List<CatalogProduct>();
-                foreach (var variation in this.Childrens)
+                foreach (var variation in Childrens)
                 {
                     var productVariation = variation.ToModel(AbstractTypeFactory<CatalogProduct>.TryCreateInstance());
                     productVariation.MainProduct = product;
@@ -202,108 +206,100 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         public virtual ItemEntity FromModel(CatalogProduct product, PrimaryKeyResolvingMap pkMap)
         {
             if (product == null)
+            {
                 throw new ArgumentNullException(nameof(product));
+            }
 
             pkMap.AddPair(product, this);
 
-            this.Id = product.Id;
-            this.CreatedDate = product.CreatedDate;
-            this.CreatedBy = product.CreatedBy;
-            this.ModifiedDate = product.ModifiedDate;
-            this.ModifiedBy = product.ModifiedBy;
+            Id = product.Id;
+            CreatedDate = product.CreatedDate;
+            CreatedBy = product.CreatedBy;
+            ModifiedDate = product.ModifiedDate;
+            ModifiedBy = product.ModifiedBy;
 
-            this.CatalogId = product.CatalogId;
-            this.CategoryId = product.CategoryId;
-            this.Code = product.Code;
-            this.DownloadExpiration = product.DownloadExpiration;
-            this.DownloadType = product.DownloadType;
-            this.EnableReview = product.EnableReview;
-            this.EndDate = product.EndDate;
-            this.Gtin = product.Gtin;
-            this.HasUserAgreement = product.HasUserAgreement;
-            this.Height = product.Height;
-            this.IsActive = product.IsActive ?? true;
-            this.IsBuyable = product.IsBuyable ?? true;
-            this.Length = product.Length;
-            this.ParentId = product.MainProductId;
-            this.ManufacturerPartNumber = product.ManufacturerPartNumber;
-            this.MaxNumberOfDownload = product.MaxNumberOfDownload;
-            this.MaxQuantity = product.MaxQuantity ?? 0;
-            this.MeasureUnit = product.MeasureUnit;
-            this.MinQuantity = product.MinQuantity ?? 0;
-            this.Name = product.Name;
-            this.PackageType = product.PackageType;
-            this.Priority = product.Priority;
-            this.ProductType = product.ProductType;
-            this.ShippingType = product.ShippingType;
-            this.TaxType = product.TaxType;
-            this.TrackInventory = product.TrackInventory ?? true;
-            this.Vendor = product.Vendor;
-            this.Weight = product.Weight;
-            this.WeightUnit = product.WeightUnit;
-            this.Width = product.Width;
+            CatalogId = product.CatalogId;
+            CategoryId = product.CategoryId;
+            Code = product.Code;
+            DownloadExpiration = product.DownloadExpiration;
+            DownloadType = product.DownloadType;
+            EnableReview = product.EnableReview;
+            EndDate = product.EndDate;
+            Gtin = product.Gtin;
+            HasUserAgreement = product.HasUserAgreement;
+            Height = product.Height;
+            IsActive = product.IsActive ?? true;
+            IsBuyable = product.IsBuyable ?? true;
+            Length = product.Length;
+            ParentId = product.MainProductId;
+            ManufacturerPartNumber = product.ManufacturerPartNumber;
+            MaxNumberOfDownload = product.MaxNumberOfDownload;
+            MaxQuantity = product.MaxQuantity ?? 0;
+            MeasureUnit = product.MeasureUnit;
+            MinQuantity = product.MinQuantity ?? 0;
+            Name = product.Name;
+            PackageType = product.PackageType;
+            Priority = product.Priority;
+            ProductType = product.ProductType;
+            ShippingType = product.ShippingType;
+            TaxType = product.TaxType;
+            TrackInventory = product.TrackInventory ?? true;
+            Vendor = product.Vendor;
+            Weight = product.Weight;
+            WeightUnit = product.WeightUnit;
+            Width = product.Width;
 
-            this.StartDate = product.StartDate == default(DateTime) ? DateTime.UtcNow : product.StartDate;
+            StartDate = product.StartDate == default(DateTime) ? DateTime.UtcNow : product.StartDate;
 
             //Constant fields
             //Only for main product
-            this.AvailabilityRule = (int)VirtoCommerce.Domain.Catalog.Model.AvailabilityRule.Always;
+            AvailabilityRule = (int)Domain.Catalog.Model.AvailabilityRule.Always;
 
-            this.CatalogId = product.CatalogId;
-            this.CategoryId = string.IsNullOrEmpty(product.CategoryId) ? null : product.CategoryId;
+            CatalogId = product.CatalogId;
+            CategoryId = string.IsNullOrEmpty(product.CategoryId) ? null : product.CategoryId;
 
             #region ItemPropertyValues
-            if (product.PropertyValues != null)
-            {
-                this.ItemPropertyValues = new ObservableCollection<PropertyValueEntity>();
-                foreach (var propertyValue in product.PropertyValues)
-                {
-                    if (!propertyValue.IsInherited && propertyValue.Value != null && !string.IsNullOrEmpty(propertyValue.Value.ToString()))
-                    {
-                        this.ItemPropertyValues.Add(AbstractTypeFactory<PropertyValueEntity>.TryCreateInstance().FromModel(propertyValue, pkMap));
-                    }
-                }
-            }
+            ItemPropertyValues = new ObservableCollection<PropertyValueEntity>(new ObservableCollection<PropertyValueEntity>(AbstractTypeFactory<PropertyValueEntity>.TryCreateInstance().FromModels(product.PropertyValues, pkMap)));
             #endregion
 
             #region Assets
             if (product.Assets != null)
             {
-                this.Assets = new ObservableCollection<AssetEntity>(product.Assets.Where(x => !x.IsInherited).Select(x => AbstractTypeFactory<AssetEntity>.TryCreateInstance().FromModel(x, pkMap)));
+                Assets = new ObservableCollection<AssetEntity>(product.Assets.Where(x => !x.IsInherited).Select(x => AbstractTypeFactory<AssetEntity>.TryCreateInstance().FromModel(x, pkMap)));
             }
             #endregion
 
             #region Images
             if (product.Images != null)
             {
-                this.Images = new ObservableCollection<ImageEntity>(product.Images.Where(x => !x.IsInherited).Select(x => AbstractTypeFactory<ImageEntity>.TryCreateInstance().FromModel(x, pkMap)));
+                Images = new ObservableCollection<ImageEntity>(product.Images.Where(x => !x.IsInherited).Select(x => AbstractTypeFactory<ImageEntity>.TryCreateInstance().FromModel(x, pkMap)));
             }
             #endregion
 
             #region Links
             if (product.Links != null)
             {
-                this.CategoryLinks = new ObservableCollection<CategoryItemRelationEntity>(product.Links.Select(x => AbstractTypeFactory<CategoryItemRelationEntity>.TryCreateInstance().FromModel(x)));
+                CategoryLinks = new ObservableCollection<CategoryItemRelationEntity>(product.Links.Select(x => AbstractTypeFactory<CategoryItemRelationEntity>.TryCreateInstance().FromModel(x)));
             }
             #endregion
 
             #region EditorialReview
             if (product.Reviews != null)
             {
-                this.EditorialReviews = new ObservableCollection<EditorialReviewEntity>(product.Reviews.Where(x => !x.IsInherited).Select(x => AbstractTypeFactory<EditorialReviewEntity>.TryCreateInstance().FromModel(x, pkMap)));
+                EditorialReviews = new ObservableCollection<EditorialReviewEntity>(product.Reviews.Where(x => !x.IsInherited).Select(x => AbstractTypeFactory<EditorialReviewEntity>.TryCreateInstance().FromModel(x, pkMap)));
             }
             #endregion
 
             #region Associations
             if (product.Associations != null)
             {
-                this.Associations = new ObservableCollection<AssociationEntity>(product.Associations.Select(x => AbstractTypeFactory<AssociationEntity>.TryCreateInstance().FromModel(x)));
+                Associations = new ObservableCollection<AssociationEntity>(product.Associations.Select(x => AbstractTypeFactory<AssociationEntity>.TryCreateInstance().FromModel(x)));
             }
             #endregion
 
             if (product.Variations != null)
             {
-                this.Childrens = new ObservableCollection<ItemEntity>(product.Variations.Select(x => AbstractTypeFactory<ItemEntity>.TryCreateInstance().FromModel(x, pkMap)));
+                Childrens = new ObservableCollection<ItemEntity>(product.Variations.Select(x => AbstractTypeFactory<ItemEntity>.TryCreateInstance().FromModel(x, pkMap)));
             }
 
             return this;
@@ -314,80 +310,80 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             if (target == null)
                 throw new ArgumentNullException(nameof(target));
 
-            target.IsBuyable = this.IsBuyable;
-            target.IsActive = this.IsActive;
-            target.TrackInventory = this.TrackInventory;
-            target.MinQuantity = this.MinQuantity;
-            target.MaxQuantity = this.MaxQuantity;
-            target.EnableReview = this.EnableReview;
+            target.IsBuyable = IsBuyable;
+            target.IsActive = IsActive;
+            target.TrackInventory = TrackInventory;
+            target.MinQuantity = MinQuantity;
+            target.MaxQuantity = MaxQuantity;
+            target.EnableReview = EnableReview;
 
-            target.CatalogId = this.CatalogId;
-            target.CategoryId = this.CategoryId;
-            target.Name = this.Name;
-            target.Code = this.Code;
-            target.ManufacturerPartNumber = this.ManufacturerPartNumber;
-            target.Gtin = this.Gtin;
-            target.ProductType = this.ProductType;
-            target.MaxNumberOfDownload = this.MaxNumberOfDownload;
-            target.DownloadType = this.DownloadType;
-            target.HasUserAgreement = this.HasUserAgreement;
-            target.DownloadExpiration = this.DownloadExpiration;
-            target.Vendor = this.Vendor;
-            target.TaxType = this.TaxType;
-            target.WeightUnit = this.WeightUnit;
-            target.Weight = this.Weight;
-            target.MeasureUnit = this.MeasureUnit;
-            target.PackageType = this.PackageType;
-            target.Height = this.Height;
-            target.Length = this.Length;
-            target.Width = this.Width;
-            target.ShippingType = this.ShippingType;
-            target.Priority = this.Priority;
-            target.ParentId = this.ParentId;
-            target.StartDate = this.StartDate;
-            target.EndDate = this.EndDate;
+            target.CatalogId = CatalogId;
+            target.CategoryId = CategoryId;
+            target.Name = Name;
+            target.Code = Code;
+            target.ManufacturerPartNumber = ManufacturerPartNumber;
+            target.Gtin = Gtin;
+            target.ProductType = ProductType;
+            target.MaxNumberOfDownload = MaxNumberOfDownload;
+            target.DownloadType = DownloadType;
+            target.HasUserAgreement = HasUserAgreement;
+            target.DownloadExpiration = DownloadExpiration;
+            target.Vendor = Vendor;
+            target.TaxType = TaxType;
+            target.WeightUnit = WeightUnit;
+            target.Weight = Weight;
+            target.MeasureUnit = MeasureUnit;
+            target.PackageType = PackageType;
+            target.Height = Height;
+            target.Length = Length;
+            target.Width = Width;
+            target.ShippingType = ShippingType;
+            target.Priority = Priority;
+            target.ParentId = ParentId;
+            target.StartDate = StartDate;
+            target.EndDate = EndDate;
 
             #region Assets
-            if (!this.Assets.IsNullCollection())
+            if (!Assets.IsNullCollection())
             {
-                this.Assets.Patch(target.Assets, (sourceAsset, targetAsset) => sourceAsset.Patch(targetAsset));
+                Assets.Patch(target.Assets, (sourceAsset, targetAsset) => sourceAsset.Patch(targetAsset));
             }
             #endregion
 
             #region Images
-            if (!this.Images.IsNullCollection())
+            if (!Images.IsNullCollection())
             {
-                this.Images.Patch(target.Images, (sourceImage, targetImage) => sourceImage.Patch(targetImage));
+                Images.Patch(target.Images, (sourceImage, targetImage) => sourceImage.Patch(targetImage));
             }
             #endregion
 
             #region ItemPropertyValues
-            if (!this.ItemPropertyValues.IsNullCollection())
+            if (!ItemPropertyValues.IsNullCollection())
             {
-                this.ItemPropertyValues.Patch(target.ItemPropertyValues, (sourcePropValue, targetPropValue) => sourcePropValue.Patch(targetPropValue));
+                ItemPropertyValues.Patch(target.ItemPropertyValues, (sourcePropValue, targetPropValue) => sourcePropValue.Patch(targetPropValue));
             }
             #endregion
 
             #region Links
-            if (!this.CategoryLinks.IsNullCollection())
+            if (!CategoryLinks.IsNullCollection())
             {
-                this.CategoryLinks.Patch(target.CategoryLinks, new CategoryItemRelationComparer(),
+                CategoryLinks.Patch(target.CategoryLinks, new CategoryItemRelationComparer(),
                                          (sourcePropValue, targetPropValue) => sourcePropValue.Patch(targetPropValue));
             }
             #endregion
 
             #region EditorialReviews
-            if (!this.EditorialReviews.IsNullCollection())
+            if (!EditorialReviews.IsNullCollection())
             {
-                this.EditorialReviews.Patch(target.EditorialReviews, (sourcePropValue, targetPropValue) => sourcePropValue.Patch(targetPropValue));
+                EditorialReviews.Patch(target.EditorialReviews, (sourcePropValue, targetPropValue) => sourcePropValue.Patch(targetPropValue));
             }
             #endregion
 
             #region Association
-            if (!this.Associations.IsNullCollection())
+            if (!Associations.IsNullCollection())
             {
                 var associationComparer = AnonymousComparer.Create((AssociationEntity x) => x.AssociationType + ":" + x.AssociatedItemId + ":" + x.AssociatedCategoryId);
-                this.Associations.Patch(target.Associations, associationComparer,
+                Associations.Patch(target.Associations, associationComparer,
                                              (sourceAssociation, targetAssociation) => sourceAssociation.Patch(targetAssociation));
             }
             #endregion

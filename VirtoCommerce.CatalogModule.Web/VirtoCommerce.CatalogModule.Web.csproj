@@ -129,8 +129,10 @@
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="VirtoCommerce.Domain, Version=2.25.11.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VirtoCommerce.Domain.2.25.11\lib\net461\VirtoCommerce.Domain.dll</HintPath>
+    <Reference Include="VirtoCommerce.Domain, Version=2.25.14.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VirtoCommerce.Domain.2.25.14\lib\net461\VirtoCommerce.Domain.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="VirtoCommerce.Platform.Core, Version=2.13.26.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\VirtoCommerce.Platform.Core.2.13.26\lib\net461\VirtoCommerce.Platform.Core.dll</HintPath>
@@ -174,6 +176,12 @@
     <Content Include="Scripts\blades\aggregation-properties-details.js" />
     <Content Include="Scripts\blades\aggregation-properties-details.tpl.html" />
     <Content Include="Scripts\blades\export\catalog-export.js" />
+    <Content Include="Scripts\blades\property-dictionary-details.js" />
+    <Content Include="Scripts\blades\property-dictionary-details.tpl.html" />
+    <Content Include="Scripts\blades\property-dictionary-list.js" />
+    <Content Include="Scripts\blades\property-dictionary-list.tpl.html" />
+    <Content Include="Scripts\directives\dictionaryValue.js" />
+    <Content Include="Scripts\directives\dictionaryValue.tpl.html" />
     <Content Include="Scripts\filters\thumbnail.js" />
     <Content Include="Scripts\blades\image-detail.js" />
     <Content Include="Scripts\blades\image-detail.tpl.html" />
@@ -228,9 +236,7 @@
     <Content Include="Scripts\blades\editorialReview-detail.js" />
     <Content Include="Scripts\blades\editorialReview-detail.tpl.html" />
     <Content Include="Scripts\blades\property-attributes.js" />
-    <Content Include="Scripts\blades\property-dictionary.js" />
     <Content Include="Scripts\blades\property-attributes.tpl.html" />
-    <Content Include="Scripts\blades\property-dictionary.tpl.html" />
     <Content Include="Scripts\blades\property-validationRules.js" />
     <Content Include="Scripts\blades\property-type.js" />
     <Content Include="Scripts\blades\property-validationRules.tpl.html" />

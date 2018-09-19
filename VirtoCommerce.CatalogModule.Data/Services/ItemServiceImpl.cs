@@ -321,16 +321,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                         //Try to find property meta information
                         propertyValue.Property = product.Properties.Where(x => x.Type == PropertyType.Product || x.Type == PropertyType.Variation)
                                                                    .FirstOrDefault(x => x.IsSuitableForValue(propertyValue));
-                        //Return each localized value for selected dictionary value
-                        //Because multilingual dictionary values for all languages may not stored in db need add it in result manually from property dictionary values
-                        var localizedDictValues = propertyValue.TryGetAllLocalizedDictValues();
-                        foreach (var localizedDictValue in localizedDictValues)
-                        {
-                            if (!product.PropertyValues.Any(x => x.ValueId == localizedDictValue.ValueId && x.LanguageCode == localizedDictValue.LanguageCode))
-                            {
-                                product.PropertyValues.Add(localizedDictValue);
-                            }
-                        }
                     }
                 }
 

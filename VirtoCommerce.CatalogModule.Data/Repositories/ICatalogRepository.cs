@@ -16,6 +16,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         IQueryable<dataModel.EditorialReviewEntity> EditorialReviews { get; }
         IQueryable<dataModel.PropertyValueEntity> PropertyValues { get; }
         IQueryable<dataModel.PropertyDictionaryValueEntity> PropertyDictionaryValues { get; }
+        IQueryable<dataModel.PropertyDictionaryItemEntity> PropertyDictionaryItems { get; }
         IQueryable<dataModel.CategoryItemRelationEntity> CategoryItemRelations { get; }
         IQueryable<dataModel.AssociationEntity> Associations { get; }
         IQueryable<dataModel.CategoryRelationEntity> CategoryLinks { get; }
@@ -25,7 +26,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         dataModel.CategoryEntity[] GetCategoriesByIds(string[] categoryIds, moduleModel.CategoryResponseGroup respGroup);
         dataModel.ItemEntity[] GetItemByIds(string[] itemIds, moduleModel.ItemResponseGroup respGroup);
         dataModel.PropertyEntity[] GetAllCatalogProperties(string catalogId);
-        dataModel.PropertyEntity[] GetPropertiesByIds(string[] propIds, bool loadDictValues = true);
+        dataModel.PropertyEntity[] GetPropertiesByIds(string[] propIds, bool loadDictValues = false);
 
         void RemoveItems(string[] ids);
         void RemoveCategories(string[] ids);

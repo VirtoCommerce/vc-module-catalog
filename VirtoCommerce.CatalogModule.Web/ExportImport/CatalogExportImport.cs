@@ -174,7 +174,7 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                                             progressInfo.Description = $"{ productsCount } products imported";
                                         }
                                         progressCallback(progressInfo);
-                                    }          
+                                    }
                                 }
                                 //Import products associations separately to avoid DB constrain violation
                                 var totalProductsWithAssociationsCount = associationBackupMap.Count();
@@ -187,7 +187,7 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                                     {
                                         var fakeProduct = AbstractTypeFactory<CatalogProduct>.TryCreateInstance();
                                         fakeProduct.Id = pair.Key;
-                                        fakeProduct.Associations = pair.Value;                                        
+                                        fakeProduct.Associations = pair.Value;
                                         fakeProducts.Add(fakeProduct);
                                     }
                                     _associationService.SaveChanges(fakeProducts.ToArray());
@@ -199,7 +199,7 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                     }
                 }
             }
-        } 
+        }
         #endregion
 
         private void ExportCatalogs(JsonTextWriter writer, JsonSerializer serializer, PlatformExportManifest manifest, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback)
@@ -262,9 +262,10 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
             var properties = _propertyService.GetAllProperties();
             writer.WritePropertyName("Properties");
             writer.WriteStartArray();
-            //Reset some props to descrease resulting json size
+            //Load property dictionary values and reset some props to decrease size of the resulting json 
             foreach (var property in properties)
             {
+                property.DictionaryValues = _propertyService.SearchDictionaryValues(property.Id, null);
                 ResetRedundantReferences(property);
                 serializer.Serialize(writer, property);
             }

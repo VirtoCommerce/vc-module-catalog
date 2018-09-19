@@ -1,6 +1,7 @@
 using CacheManager.Core;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Data.Extensions;
 using VirtoCommerce.CatalogModule.Data.Model;
@@ -46,7 +47,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             var result = propertyIds
                 .Where(propertyId => preloadedProperties.ContainsKey(propertyId))
                 .Select(propertyId => preloadedProperties[propertyId])
-                .Select(MemberwiseCloneProperty)
+                .Select(x => x.Clone() as Property)
                 .ToArray();
 
             return result;
@@ -55,7 +56,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         public Property[] GetAllCatalogProperties(string catalogId)
         {
             var preloadedProperties = PreloadAllCatalogProperties(catalogId);
-            var result = preloadedProperties.Select(MemberwiseCloneProperty).ToArray();
+            var result = preloadedProperties.Select(x => x.Clone() as Property).ToArray();
             return result;
         }
 
@@ -63,7 +64,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         public Property[] GetAllProperties()
         {
             var preloadedProperties = PreloadAllProperties();
-            var result = preloadedProperties.Values.Select(MemberwiseCloneProperty).ToArray();
+            var result = preloadedProperties.Values.Select(x => x.Clone() as Property).ToArray();
             return result;
         }
 
@@ -114,13 +115,22 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public PropertyDictionaryValue[] SearchDictionaryValues(string propertyId, string keyword)
         {
-            var property = GetById(propertyId);
-            var result = property.DictionaryValues.ToArray();
-            if (!string.IsNullOrEmpty(keyword))
+            if (propertyId == null)
             {
-                result = result.Where(x => x.Value.Contains(keyword)).ToArray();
+                throw new ArgumentNullException(nameof(propertyId));
             }
-            return result;
+
+            using (var repository = _repositoryFactory())
+            {
+                var query = repository.PropertyDictionaryValues.Include(x => x.DictionaryItem)
+                                      .Where(x => x.DictionaryItem.PropertyId == propertyId);
+                if (!string.IsNullOrEmpty(keyword))
+                {
+                    query = query.Where(x => x.Value.Contains(keyword));
+                }
+                var result = query.OrderBy(x => x.Id).ToArray();
+                return result.Select(x => x.ToModel(AbstractTypeFactory<PropertyDictionaryValue>.TryCreateInstance())).ToArray();
+            }
         }
         #endregion
 
@@ -178,7 +188,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             {
                 TryAddPredefinedValidationRules(properties);
 
-                var dbExistEntities = repository.GetPropertiesByIds(properties.Where(x => !x.IsTransient()).Select(x => x.Id).ToArray());
+                var dbExistEntities = repository.GetPropertiesByIds(properties.Where(x => !x.IsTransient()).Select(x => x.Id).ToArray(), loadDictValues: true);
                 foreach (var property in properties)
                 {
                     var originalEntity = dbExistEntities.FirstOrDefault(x => x.Id == property.Id);
@@ -254,43 +264,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     return result;
                 }
             });
-        }
-
-        // TODO: Move to domain
-        protected virtual Property MemberwiseCloneProperty(Property property)
-        {
-            var result = AbstractTypeFactory<Property>.TryCreateInstance();
-
-            // Entity
-            result.Id = property.Id;
-
-            // AuditableEntity
-            result.CreatedDate = property.CreatedDate;
-            result.ModifiedDate = property.ModifiedDate;
-            result.CreatedBy = property.CreatedBy;
-            result.ModifiedBy = property.ModifiedBy;
-
-            // Property
-            result.CatalogId = property.CatalogId;
-            result.CategoryId = property.CategoryId;
-            result.Name = property.Name;
-            result.Required = property.Required;
-            result.Dictionary = property.Dictionary;
-            result.Multivalue = property.Multivalue;
-            result.Multilanguage = property.Multilanguage;
-            result.Type = property.Type;
-            result.ValueType = property.ValueType;
-            result.IsInherited = property.IsInherited;
-
-            // TODO: clone reference objects
-            result.Catalog = property.Catalog;
-            result.Category = property.Category;
-            result.Attributes = property.Attributes;
-            result.DictionaryValues = property.DictionaryValues;
-            result.DisplayNames = property.DisplayNames;
-            result.ValidationRules = property.ValidationRules;
-
-            return result;
         }
     }
 }

@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Domain.Catalog.Model;
+using System.Collections.Generic;
 
 namespace VirtoCommerce.CatalogModule.Data.Model
 {
@@ -44,7 +45,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             get
             {
                 var retVal = new CategoryEntity[] { };
-                if(ParentCategory != null)
+                if (ParentCategory != null)
                 {
                     retVal = ParentCategory.AllParents.Concat(new[] { ParentCategory }).ToArray();
                 }
@@ -79,77 +80,76 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         public virtual Category ToModel(Category category)
         {
             if (category == null)
+            {
                 throw new ArgumentNullException(nameof(category));
+            }
 
-            category.Id = this.Id;
-            category.CreatedBy = this.CreatedBy;
-            category.CreatedDate = this.CreatedDate;
-            category.ModifiedBy = this.ModifiedBy;
-            category.ModifiedDate = this.ModifiedDate;
+            category.Id = Id;
+            category.CreatedBy = CreatedBy;
+            category.CreatedDate = CreatedDate;
+            category.ModifiedBy = ModifiedBy;
+            category.ModifiedDate = ModifiedDate;
 
-            category.Code = this.Code;
-            category.Name = this.Name;
-            category.Priority = this.Priority;
-            category.TaxType = this.TaxType;
+            category.Code = Code;
+            category.Name = Name;
+            category.Priority = Priority;
+            category.TaxType = TaxType;
 
-            category.CatalogId = this.CatalogId;
-         
-            category.ParentId = this.ParentCategoryId;
-            category.IsActive = this.IsActive;
+            category.CatalogId = CatalogId;
 
-            category.Links = this.OutgoingLinks.Select(x => x.ToModel(new CategoryLink())).ToList();
-            category.Images = this.Images.OrderBy(x => x.SortOrder).Select(x => x.ToModel(AbstractTypeFactory<Image>.TryCreateInstance())).ToList();
-            category.PropertyValues = this.CategoryPropertyValues.Select(x => x.ToModel(AbstractTypeFactory<PropertyValue>.TryCreateInstance())).ToList();
-            category.Properties = this.Properties.Select(x => x.ToModel(AbstractTypeFactory<Property>.TryCreateInstance())).ToList();
-          
+            category.ParentId = ParentCategoryId;
+            category.IsActive = IsActive;
+
+            category.Links = OutgoingLinks.Select(x => x.ToModel(new CategoryLink())).ToList();
+            category.Images = Images.OrderBy(x => x.SortOrder).Select(x => x.ToModel(AbstractTypeFactory<Image>.TryCreateInstance())).ToList();
+            category.Properties = Properties.Select(x => x.ToModel(AbstractTypeFactory<Property>.TryCreateInstance())).ToList();
+
+            //category property values
+            category.PropertyValues = CategoryPropertyValues.OrderBy(x => x.Name)
+                                                       .SelectMany(x => x.ToModel(AbstractTypeFactory<PropertyValue>.TryCreateInstance()))
+                                                       .Distinct(AnonymousComparer.Create((PropertyValue x) => x.ValueId + '|' + x.LanguageCode)).ToList();
             return category;
         }
 
         public virtual CategoryEntity FromModel(Category category, PrimaryKeyResolvingMap pkMap)
         {
             if (category == null)
+            {
                 throw new ArgumentNullException(nameof(category));
+            }
 
             pkMap.AddPair(category, this);
 
-            this.Id = category.Id;
-            this.CreatedBy = category.CreatedBy;
-            this.CreatedDate = category.CreatedDate;
-            this.ModifiedBy = category.ModifiedBy;
-            this.ModifiedDate = category.ModifiedDate;
+            Id = category.Id;
+            CreatedBy = category.CreatedBy;
+            CreatedDate = category.CreatedDate;
+            ModifiedBy = category.ModifiedBy;
+            ModifiedDate = category.ModifiedDate;
 
-            this.Code = category.Code;
-            this.Name = category.Name;
-            this.Priority = category.Priority;
-            this.TaxType = category.TaxType;
-            this.CatalogId = category.CatalogId;
+            Code = category.Code;
+            Name = category.Name;
+            Priority = category.Priority;
+            TaxType = category.TaxType;
+            CatalogId = category.CatalogId;
 
-            this.ParentCategoryId = category.ParentId;
-            this.EndDate = DateTime.UtcNow.AddYears(100);
-            this.StartDate = DateTime.UtcNow;
-            this.IsActive = category.IsActive ?? true;
+            ParentCategoryId = category.ParentId;
+            EndDate = DateTime.UtcNow.AddYears(100);
+            StartDate = DateTime.UtcNow;
+            IsActive = category.IsActive ?? true;
 
             if (category.PropertyValues != null)
             {
-                this.CategoryPropertyValues = new ObservableCollection<PropertyValueEntity>();
-                foreach (var propertyValue in category.PropertyValues)
-                {
-                    if (!propertyValue.IsInherited && propertyValue.Value != null && !string.IsNullOrEmpty(propertyValue.Value.ToString()))
-                    {
-                        var dbPropertyValue = AbstractTypeFactory<PropertyValueEntity>.TryCreateInstance().FromModel(propertyValue, pkMap);
-                        this.CategoryPropertyValues.Add(dbPropertyValue);
-                    }
-                }
+                CategoryPropertyValues = new ObservableCollection<PropertyValueEntity>(AbstractTypeFactory<PropertyValueEntity>.TryCreateInstance().FromModels(category.PropertyValues, pkMap));
             }
 
             if (category.Links != null)
             {
-                this.OutgoingLinks = new ObservableCollection<CategoryRelationEntity>(category.Links.Select(x => AbstractTypeFactory<CategoryRelationEntity>.TryCreateInstance().FromModel(x)));
+                OutgoingLinks = new ObservableCollection<CategoryRelationEntity>(category.Links.Select(x => AbstractTypeFactory<CategoryRelationEntity>.TryCreateInstance().FromModel(x)));
             }
 
             if (category.Images != null)
             {
-                this.Images = new ObservableCollection<ImageEntity>(category.Images.Select(x => AbstractTypeFactory<ImageEntity>.TryCreateInstance().FromModel(x, pkMap)));
+                Images = new ObservableCollection<ImageEntity>(category.Images.Select(x => AbstractTypeFactory<ImageEntity>.TryCreateInstance().FromModel(x, pkMap)));
             }
 
             return this;
@@ -160,27 +160,27 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             if (target == null)
                 throw new ArgumentNullException(nameof(target));
 
-            target.CatalogId = this.CatalogId;
-            target.ParentCategoryId = this.ParentCategoryId;
-            target.Code = this.Code;
-            target.Name = this.Name;
-            target.TaxType = this.TaxType;
-            target.Priority = this.Priority;
-            target.IsActive = this.IsActive;
+            target.CatalogId = CatalogId;
+            target.ParentCategoryId = ParentCategoryId;
+            target.Code = Code;
+            target.Name = Name;
+            target.TaxType = TaxType;
+            target.Priority = Priority;
+            target.IsActive = IsActive;
 
-            if (!this.CategoryPropertyValues.IsNullCollection())
+            if (!CategoryPropertyValues.IsNullCollection())
             {
-                this.CategoryPropertyValues.Patch(target.CategoryPropertyValues, (sourcePropValue, targetPropValue) => sourcePropValue.Patch(targetPropValue));
+                CategoryPropertyValues.Patch(target.CategoryPropertyValues, (sourcePropValue, targetPropValue) => sourcePropValue.Patch(targetPropValue));
             }
 
-            if (!this.OutgoingLinks.IsNullCollection())
+            if (!OutgoingLinks.IsNullCollection())
             {
-                this.OutgoingLinks.Patch(target.OutgoingLinks, new LinkedCategoryComparer(), (sourceLink, targetLink) => sourceLink.Patch(targetLink));
+                OutgoingLinks.Patch(target.OutgoingLinks, new LinkedCategoryComparer(), (sourceLink, targetLink) => sourceLink.Patch(targetLink));
             }
 
-            if (!this.Images.IsNullCollection())
+            if (!Images.IsNullCollection())
             {
-                this.Images.Patch(target.Images, (sourceImage, targetImage) => sourceImage.Patch(targetImage));
+                Images.Patch(target.Images, (sourceImage, targetImage) => sourceImage.Patch(targetImage));
             }
 
         }

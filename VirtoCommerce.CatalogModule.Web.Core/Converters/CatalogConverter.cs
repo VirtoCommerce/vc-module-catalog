@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Omu.ValueInjecter;
 using VirtoCommerce.Platform.Core.Common;
@@ -17,7 +17,7 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             retVal.Name = catalog.Name;
             retVal.IsVirtual = catalog.IsVirtual;
             retVal.Properties = new List<webModel.Property>();
-            
+
             if (catalog.Languages != null)
             {
                 retVal.Languages = catalog.Languages.Select(x => x.ToWebModel()).ToList();
@@ -83,7 +83,7 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
                 retVal.PropertyValues = new List<moduleModel.PropertyValue>();
                 foreach (var property in catalog.Properties)
                 {
-                    foreach (var propValue in property.Values)
+                    foreach (var propValue in property.Values ?? Enumerable.Empty<webModel.PropertyValue>())
                     {
                         propValue.ValueType = property.ValueType;
                         //Need populate required fields

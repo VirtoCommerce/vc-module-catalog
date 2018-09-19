@@ -300,7 +300,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             if (!criteria.PropertyValues.IsNullOrEmpty())
             {
                 var propValueIds = criteria.PropertyValues.Select(x => x.ValueId).Distinct().ToArray();
-                query = query.Where(x => x.ItemPropertyValues.Any(y => propValueIds.Contains(y.KeyValue)));
+                query = query.Where(x => x.ItemPropertyValues.Any(y => propValueIds.Contains(y.DictionaryItemId)));
             }
 
             if (!criteria.ProductTypes.IsNullOrEmpty())
