@@ -13,7 +13,7 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201809121003346_DictionaryShemaRedesign"; }
+            get { return "201809190617321_DictionaryShemaRedesign"; }
         }
         
         string IMigrationMetadata.Source

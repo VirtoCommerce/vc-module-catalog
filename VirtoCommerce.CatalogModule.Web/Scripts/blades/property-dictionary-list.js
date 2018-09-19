@@ -11,7 +11,7 @@ angular.module('virtoCommerce.catalogModule')
                 {
                     name: "platform.commands.add", icon: 'fa fa-plus',
                     executeMethod: function () {
-                        $scope.selectNode({ values: [] })
+                        $scope.selectNode({ values: [], isNew: true })
                     },
                     canExecuteMethod: function () {
                         return true;
@@ -31,21 +31,28 @@ angular.module('virtoCommerce.catalogModule')
 
             blade.refresh = function () {
 
-                blade.languages = blade.property.multilanguage ? blade.languages : [blade.defaultLanguage];
+                blade.languages = blade.property.multilanguage ? blade.languages : [];
+                $scope.search();
+            };
+
+            $scope.search = function (searchPhrase) {
 
                 $scope.currentEntities = _.map(_.groupBy(blade.property.dictionaryValues, 'alias'), function (values, key) {
-                    var dictItem = { alias: key };
+                    var dictItem = { alias: key, valueId: values[0].valueId };
                     blade.languages.forEach(function (lang) {
                         var dictValue = _.find(values, function (x) { return x.languageCode === lang || (!x.languageCode && lang === blade.defaultLanguage) });
                         dictItem[lang] = dictValue ? dictValue.value : undefined;
                     });
-                    dictItem.label = dictItem[blade.defaultLanguage];
                     return dictItem;
                 });
-            };
 
-            $scope.search = function (searchPhrase) {
-                blade.refresh();
+                if (searchPhrase) {
+                    $scope.currentEntities = _.filter($scope.currentEntities, function (x) {
+                        return _.some(blade.languages, function (lang) {
+                            return x[lang] && x[lang].toLowerCase().indexOf(searchPhrase.toLowerCase()) !== -1;
+                        });
+                    });
+                }
             };
 
             // ui-grid
@@ -54,16 +61,7 @@ angular.module('virtoCommerce.catalogModule')
                     uiGridHelper.bindRefreshOnSortChanged($scope);
                 });
             };
-
-            function guid() {
-                function s4() {
-                    return Math.floor((1 + Math.random()) * 0x10000)
-                        .toString(16)
-                        .substring(1);
-                }
-                return s4() + s4() + s4() + s4() + s4() + s4() + s4() + s4();
-            }
-
+           
             $scope.deleteList = function (selection) {
                 var dialog = {
                     id: "confirmDeletePropertyValue",
@@ -90,14 +88,20 @@ angular.module('virtoCommerce.catalogModule')
 
             $scope.saveChanges = function () {
                 blade.property.dictionaryValues = [];
-                $scope.currentEntities.forEach(function (x) {
-                    var dictPropValuePrototype = { alias: x.alias, propertyId: blade.property.id };
-                    blade.languages.forEach(function (lang) {
-                        var dictPropValue = angular.extend({}, dictPropValuePrototype);
-                        dictPropValue.languageCode = blade.property.multilanguage ? lang : undefined;
-                        dictPropValue.value = x[lang];
-                        blade.property.dictionaryValues.push(dictPropValue);
-                    });
+                $scope.currentEntities.forEach(function (x) {                  
+                    if (blade.property.multilanguage) {
+                        var dictPropValuePrototype = { alias: x.alias, valueId: x.valueId };
+                        blade.languages.forEach(function (lang) {
+                            var dictPropValue = angular.extend({}, dictPropValuePrototype);
+                            dictPropValue.languageCode = blade.property.multilanguage ? lang : undefined;
+                            dictPropValue.value = x[lang];
+                            blade.property.dictionaryValues.push(dictPropValue);
+                        });
+                    }
+                    else {
+                        x.value = x.alias;
+                        blade.property.dictionaryValues.push(x);
+                    }
                 });
             };
 
@@ -118,9 +122,7 @@ angular.module('virtoCommerce.catalogModule')
 
                     onSaveChanges: function (dictItem) {
                         angular.extend(selectedDictItem, dictItem);
-                        if (!dictItem.alias) {
-                            dictItem.alias = guid();
-                            dictItem.label = dictItem[blade.defaultLanguage];
+                        if (dictItem.isNew) {
                             $scope.currentEntities.push(dictItem);
                             $scope.selectedNodeId = dictItem.alias;
                         }

@@ -133,7 +133,6 @@ angular.module('virtoCommerce.catalogModule')
                     scope.context.currentPropValues = [];
 
                     angular.forEach(result, function (dictValue) {
-                        dictValue.valueId = dictValue.alias;
                         //Need to select already selected values. Dictionary values have same type as standard values.
                         dictValue.selected = angular.isDefined(_.find(scope.currentEntity.values, function (value) { return value.valueId == dictValue.valueId }));
                         scope.context.allDictionaryValues.push(dictValue);

@@ -43,7 +43,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <returns></returns>
         [HttpGet]
         [Route("{propertyId}/values")]
-        [ResponseType(typeof(webModel.PropertyValue[]))]
+        [ResponseType(typeof(webModel.PropertyDictionaryValue[]))]
         public IHttpActionResult GetPropertyValues(string propertyId, [FromUri]string keyword = null)
         {
             var dictValues = _propertyService.SearchDictionaryValues(propertyId, keyword);

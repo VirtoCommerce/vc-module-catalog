@@ -10,16 +10,16 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
             DropForeignKey("dbo.PropertyDictionaryValue", "PropertyId", "dbo.Property");
             DropIndex("dbo.PropertyDictionaryValue", new[] { "PropertyId" });
             CreateTable(
-                "dbo.PropertyDictionaryItem",
-                c => new
-                {
-                    Id = c.String(nullable: false, maxLength: 128),
-                    Alias = c.String(maxLength: 512),
-                    PropertyId = c.String(nullable: false, maxLength: 128),
-                })
-                .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.Property", t => t.PropertyId, cascadeDelete: true)
-                .Index(t => t.PropertyId);
+               "dbo.PropertyDictionaryItem",
+               c => new
+               {
+                   Id = c.String(nullable: false, maxLength: 128),
+                   Alias = c.String(nullable: false, maxLength: 512),
+                   PropertyId = c.String(nullable: false, maxLength: 128),
+               })
+               .PrimaryKey(t => t.Id)
+               .ForeignKey("dbo.Property", t => t.PropertyId, cascadeDelete: true)
+               .Index(t => new { t.Alias, t.PropertyId }, unique: true, name: "IX_AliasAndPropertyId");
 
             AddColumn("dbo.PropertyValue", "DictionaryItemId", c => c.String(maxLength: 128));
             AddColumn("dbo.PropertyDictionaryValue", "DictionaryItemId", c => c.String(nullable: false, maxLength: 128));
@@ -69,22 +69,7 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
 
         public override void Down()
         {
-            AddColumn("dbo.PropertyDictionaryValue", "PropertyId", c => c.String(nullable: false, maxLength: 128));
-            AddColumn("dbo.PropertyDictionaryValue", "Name", c => c.String(maxLength: 64));
-            AddColumn("dbo.PropertyDictionaryValue", "Alias", c => c.String(maxLength: 64));
-            AddColumn("dbo.PropertyValue", "KeyValue", c => c.String(maxLength: 128));
-            AddColumn("dbo.PropertyValue", "Alias", c => c.String(maxLength: 64));
-            DropForeignKey("dbo.PropertyValue", "DictionaryItemId", "dbo.PropertyDictionaryItem");
-            DropForeignKey("dbo.PropertyDictionaryItem", "PropertyId", "dbo.Property");
-            DropForeignKey("dbo.PropertyDictionaryValue", "DictionaryItemId", "dbo.PropertyDictionaryItem");
-            DropIndex("dbo.PropertyDictionaryValue", new[] { "DictionaryItemId" });
-            DropIndex("dbo.PropertyDictionaryItem", new[] { "PropertyId" });
-            DropIndex("dbo.PropertyValue", new[] { "DictionaryItemId" });
-            DropColumn("dbo.PropertyDictionaryValue", "DictionaryItemId");
-            DropColumn("dbo.PropertyValue", "DictionaryItemId");
-            DropTable("dbo.PropertyDictionaryItem");
-            CreateIndex("dbo.PropertyDictionaryValue", "PropertyId");
-            AddForeignKey("dbo.PropertyDictionaryValue", "PropertyId", "dbo.Property", "Id", cascadeDelete: true);
+            //Nothing 
         }
     }
 }

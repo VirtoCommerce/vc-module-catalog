@@ -14,7 +14,8 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
                 PropertyId = propDictValue.PropertyId,
                 Value = propDictValue.Value,
                 LanguageCode = propDictValue.LanguageCode,
-                Alias = propDictValue.Alias
+                Alias = propDictValue.Alias,
+                ValueId = propDictValue.ValueId
             };
 
             return retVal;

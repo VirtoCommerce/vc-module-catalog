@@ -9,7 +9,6 @@ angular.module('virtoCommerce.catalogModule')
             $scope.validationRules = blade.property.validationRule;
 
           
-            blade.formScope = null;
             $scope.setForm = function (form) { blade.formScope = form; }
 
             function initializeBlade() {

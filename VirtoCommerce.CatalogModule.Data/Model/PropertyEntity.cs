@@ -137,26 +137,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
             if (property.DictionaryValues != null)
             {
-                DictionaryItems = new ObservableCollection<PropertyDictionaryItemEntity>();
-                //Need to group all incoming DictValues by alias to convert flat list of values to data model structure  
-                foreach (var dictItemGroup in property.DictionaryValues.GroupBy(x => x.Alias))
-                {
-                    var dictItemEntity = AbstractTypeFactory<PropertyDictionaryItemEntity>.TryCreateInstance();
-                    dictItemEntity.Id = dictItemGroup.Key;
-                    dictItemEntity.PropertyId = dictItemGroup.First().PropertyId;
-                    DictionaryItems.Add(dictItemEntity);
-
-                    dictItemEntity.DictionaryItemValues = new ObservableCollection<PropertyDictionaryValueEntity>();
-                    foreach (var dictValue in dictItemGroup)
-                    {
-                        var dictValueEntity = AbstractTypeFactory<PropertyDictionaryValueEntity>.TryCreateInstance();
-                        pkMap.AddPair(dictValue, dictValueEntity);
-                        dictValueEntity.Id = dictValue.Id;
-                        dictValueEntity.Locale = dictValue.LanguageCode;
-                        dictValueEntity.Value = dictValue.Value;
-                        dictItemEntity.DictionaryItemValues.Add(dictValueEntity);
-                    }
-                }
+                DictionaryItems = new ObservableCollection<PropertyDictionaryItemEntity>(PropertyDictionaryItemEntity.FromModels(property.DictionaryValues, pkMap));
             }
 
             if (property.DisplayNames != null)
@@ -188,7 +169,8 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             }
             if (!DictionaryItems.IsNullCollection())
             {
-                DictionaryItems.Patch(target.DictionaryItems, (sourceDictItem, targetDictItem) => sourceDictItem.Patch(targetDictItem));
+                var dictItemComparer = AnonymousComparer.Create((PropertyDictionaryItemEntity x) => x.IsTransient() ? x.Alias : x.Id);
+                DictionaryItems.Patch(target.DictionaryItems, dictItemComparer, (sourceDictItem, targetDictItem) => sourceDictItem.Patch(targetDictItem));
             }
             if (!DisplayNames.IsNullCollection())
             {

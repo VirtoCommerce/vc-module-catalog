@@ -1,29 +1,14 @@
 <div class="blade-content">
     <div class="blade-inner">
         <div class="inner-block">
-            <form name="pdForm" class="form" >              
-                <div class="form-group" ng-repeat="language in blade.languages" ng-init="setForm(pdForm);">
-                    <label class="form-label" for="">{{ language }}</label>
-
-                    <div class="form-input">
-                        <input type="text"
-                               name="{{language}}"
-                               class="form-control"
-                               placeholder="{{ 'catalog.blades.property-dictionary.placeholders.value' | translate }}"
-                               ng-model="blade.currentEntity[language]"
-                               ng-maxlength="{{validationRules.charCountMax}}"
-                               ng-minlength="{{validationRules.charCountMin}}"
-                               ng-required="true"
-                               ng-pattern="{{validationRules.regExp}}">
-
-                        <div class="form-error" ng-if="pdForm[language].$invalid">
-                            <span ng-if="pdForm[language].$error.required">{{ 'catalog.blades.property-list.validations.required' | translate }}</span>
-                            <span ng-if="pdForm[language].$error.maxlength">{{ 'catalog.blades.property-list.validations.maxLength' | translate: { max: validationRules.charCountMax } }}</span>
-                            <span ng-if="pdForm[language].$error.minlength">{{ 'catalog.blades.property-list.validations.minLenght' | translate: { min: validationRules.charCountMin } }}</span>
-                            <span ng-if="pdForm[language].$error.pattern">{{ 'catalog.blades.property-list.validations.pattern' | translate }}</span>
-                            <span ng-if="pdForm[language].$error.validator">{{ 'catalog.blades.property-dictionary.validations.duplicate' | translate }}</span>
-                        </div>
-                    </div>
+            <form name="pdForm" class="form">
+                <div class="form-group"  ng-init="setForm(pdForm);">
+                    <label class="form-label" for="">{{ 'catalog.blades.property-dictionary.labels.alias' | translate }}</label>
+                    <va-dictionary-value name="'alias'" form="pdForm" required="true" validation-rules="validationRules" ng-model="blade.currentEntity.alias"></va-dictionary-value>
+                </div>
+                <div class="form-group" ng-repeat="language in blade.languages">
+                    <label class="form-label" for="">{{ language }} </label>
+                    <va-dictionary-value name="language" form="pdForm" required="true" validation-rules="validationRules" ng-model="blade.currentEntity[language]"></va-dictionary-valuename="alias">
                 </div>
                 <div class="blade-static __bottom" ng-include="'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/common/templates/ok-cancel.tpl.html'"></div>
             </form>
