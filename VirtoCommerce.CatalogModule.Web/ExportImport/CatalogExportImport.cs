@@ -115,7 +115,7 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                             _categoryService.Update(categories);
                             if (manifest.HandleBinaryData)
                             {
-                                ImportImages(categories);
+                                ImportImages(categories, progressInfo);
                             }
                         }
                         else if (reader.Value.ToString() == "Properties")
@@ -161,7 +161,7 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                                         _itemService.Update(products.ToArray());
                                         if (manifest.HandleBinaryData)
                                         {
-                                            ImportImages(products.ToArray());
+                                            ImportImages(products.ToArray(), progressInfo);
                                         }
 
                                         products.Clear();
@@ -236,7 +236,7 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
             var categories = _categoryService.GetByIds(categoriesSearchResult.Categories.Select(x => x.Id).ToArray(), CategoryResponseGroup.Full);
             if (manifest.HandleBinaryData)
             {
-                LoadImages(categories);
+                LoadImages(categories, progressInfo);
             }
 
             writer.WritePropertyName("Categories");
@@ -295,7 +295,7 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                 var products = _itemService.GetByIds(searchResponse.Products.Select(x => x.Id).ToArray(), ItemResponseGroup.ItemLarge);
                 if (manifest.HandleBinaryData)
                 {
-                    LoadImages(products);
+                    LoadImages(products, progressInfo);
                 }
                 foreach (var product in products)
                 {
@@ -392,34 +392,48 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
             }
         }
 
-        private void LoadImages(IHasImages[] haveImagesObjects)
+        private void LoadImages(IHasImages[] haveImagesObjects, ExportImportProgressInfo progressInfo)
         {
             var allImages = haveImagesObjects.SelectMany(x => x.GetFlatObjectsListWithInterface<IHasImages>())
                                              .SelectMany(x => x.Images).ToArray();
             foreach (var image in allImages)
             {
-                using (var stream = _blobStorageProvider.OpenRead(image.Url))
+                try
                 {
-                    image.BinaryData = stream.ReadFully();
+                    using (var stream = _blobStorageProvider.OpenRead(image.Url))
+                    {
+                        image.BinaryData = stream.ReadFully();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    progressInfo.Errors.Add(ex.Message);
                 }
             }
         }
 
-        private void ImportImages(IHasImages[] haveImagesObjects)
+        private void ImportImages(IHasImages[] haveImagesObjects, ExportImportProgressInfo progressInfo)
         {
 
             var allImages = haveImagesObjects.SelectMany(x => x.GetFlatObjectsListWithInterface<IHasImages>())
                                        .SelectMany(x => x.Images).ToArray();
             foreach (var image in allImages.Where(x => x.BinaryData != null))
             {
-                //do not save images with external url
-                if (image.Url != null && !image.Url.IsAbsoluteUrl())
+                try
                 {
-                    using (var sourceStream = new MemoryStream(image.BinaryData))
-                    using (var targetStream = _blobStorageProvider.OpenWrite(image.Url))
+                    //do not save images with external url
+                    if (image.Url != null && !image.Url.IsAbsoluteUrl())
                     {
-                        sourceStream.CopyTo(targetStream);
+                        using (var sourceStream = new MemoryStream(image.BinaryData))
+                        using (var targetStream = _blobStorageProvider.OpenWrite(image.Url))
+                        {
+                            sourceStream.CopyTo(targetStream);
+                        }
                     }
+                }
+                catch (Exception ex)
+                {
+                    progressInfo.Errors.Add(ex.Message);
                 }
             }
         }
