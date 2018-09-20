@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Web.Http;
 using FluentValidation;
@@ -50,7 +50,8 @@ namespace VirtoCommerce.CatalogModule.Web
             using (var db = new CatalogRepositoryImpl(_connectionString, _container.Resolve<AuditableInterceptor>()))
             {
                 var initializer = new SetupDatabaseInitializer<CatalogRepositoryImpl, Data.Migrations.Configuration>();
-
+                //The workaround of a known bug with specifying default command timeout within the EF connection string. https://stackoverflow.com/questions/6232633/entity-framework-timeouts/6234593#6234593
+                db.Database.CommandTimeout = db.Database.Connection.ConnectionTimeout;
                 initializer.InitializeDatabase(db);
             }
         }
