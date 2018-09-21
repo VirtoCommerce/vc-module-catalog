@@ -30,7 +30,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         dataModel.PropertyEntity[] GetAllCatalogProperties(string catalogId);
         dataModel.PropertyEntity[] GetPropertiesByIds(string[] propIds, bool loadDictValues = false);
 
-        GenericSearchResult<moduleModel.ProductAssociation> GetProductsAssociations(ProductAssociationSearchCriteria criteria);
+        GenericSearchResult<dataModel.AssociationEntity> SearchAssociations(ProductAssociationSearchCriteria criteria);
 
         void RemoveItems(string[] ids);
         void RemoveCategories(string[] ids);

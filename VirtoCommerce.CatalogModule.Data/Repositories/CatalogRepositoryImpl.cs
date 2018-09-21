@@ -525,22 +525,20 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 ObjectContext.ExecuteStoreCommand(commandTemplate);
             }
         }
-        #endregion
 
-        #region Associations
-
-        public GenericSearchResult<ProductAssociation> GetProductsAssociations(ProductAssociationSearchCriteria criteria)
+        public GenericSearchResult<dataModel.AssociationEntity> SearchAssociations(ProductAssociationSearchCriteria criteria)
         {
-            var result = new GenericSearchResult<ProductAssociation>();
+            var result = new GenericSearchResult<dataModel.AssociationEntity>();
 
-            string sqlCount = @"
+            var countSqlCommand = @"
                 ;WITH Association_CTE AS
                 (
 	                SELECT *
 	                FROM Association
 	                WHERE ItemId IN ({0})
-                ),
-                Category_CTE AS
+                "
+                + (!string.IsNullOrEmpty(criteria.Group) ? $" AND AssociationType = N'{criteria.Group}'" : string.Empty) +
+                @"), Category_CTE AS
                 (
 	                SELECT AssociatedCategoryId Id
 	                FROM Association_CTE
@@ -554,22 +552,22 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 (
 	                SELECT  i.Id
 	                FROM (SELECT DISTINCT Id FROM Category_CTE) c
-	                LEFT JOIN Item i ON c.Id=i.CategoryId
+	                LEFT JOIN Item i ON c.Id=i.CategoryId WHERE i.ParentId IS NULL
 	                UNION
 	                SELECT AssociatedItemId Id FROM Association_CTE
                 ) 
                 SELECT COUNT(Id) FROM Item_CTE";
 
-            var count = ExecuteStoreQuery<int>(sqlCount, criteria.ObjectIds).FirstOrDefault();
+            var count = ExecuteStoreQuery<int>(countSqlCommand, criteria.ObjectIds).FirstOrDefault();
 
-            string sqlAssociations = @"
+            var querySqlCommand = @"
                     ;WITH Association_CTE AS
                     (
 	                    SELECT *
 	                    FROM Association
-	                    WHERE ItemId IN({0})
-                    ),
-                    Category_CTE AS
+	                    WHERE ItemId IN({0})"
+                    + (!string.IsNullOrEmpty(criteria.Group) ? $" AND AssociationType = N'{criteria.Group}'" : string.Empty) +
+                    @"), Category_CTE AS
                     (
 	                    SELECT AssociatedCategoryId Id, AssociatedCategoryId
 	                    FROM Association_CTE
@@ -597,17 +595,17 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 		                    ,a.Quantity
 	                    FROM Category_CTE cat
 	                    LEFT JOIN Item i ON cat.Id=i.CategoryId
-	                    LEFT JOIN Association a ON cat.AssociatedCategoryId=a.AssociatedCategoryId	
+	                    LEFT JOIN Association a ON cat.AssociatedCategoryId=a.AssociatedCategoryId
+                        WHERE i.ParentId IS NULL
 	                    UNION
 	                    SELECT * FROM Association_CTE
                     ) 
-                    SELECT  * FROM Item_CTE WHERE AssociatedItemId IS NOT NULL ORDER BY Priority DESC " +
+                    SELECT  * FROM Item_CTE WHERE AssociatedItemId IS NOT NULL ORDER BY Priority " +
                     $"OFFSET {criteria.Skip} ROWS FETCH NEXT {criteria.Take} ROWS ONLY";
 
-            var associations = ExecuteStoreQuery<dataModel.AssociationEntity>(sqlAssociations, criteria.ObjectIds).ToArray();
+            result.TotalCount = ExecuteStoreQuery<int>(countSqlCommand, criteria.ObjectIds).FirstOrDefault();
+            result.Results = ExecuteStoreQuery<dataModel.AssociationEntity>(querySqlCommand, criteria.ObjectIds).ToList();
 
-            result.TotalCount = count;
-            result.Results = associations.Select(x => x.ToModel(AbstractTypeFactory<ProductAssociation>.TryCreateInstance())).ToList();
             return result;
         }
 

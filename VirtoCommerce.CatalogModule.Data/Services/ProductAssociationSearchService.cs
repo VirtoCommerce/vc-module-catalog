@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Model.Search;
@@ -34,9 +35,14 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 //Optimize performance and CPU usage
                 repository.DisableChangesTracking();
 
-                return repository.GetProductsAssociations(criteria);
-            }
+                var result = new GenericSearchResult<ProductAssociation>();
 
+                var dbResult = repository.SearchAssociations(criteria);
+
+                result.TotalCount = dbResult.TotalCount;
+                result.Results = dbResult.Results.Select(x => x.ToModel(AbstractTypeFactory<ProductAssociation>.TryCreateInstance())).ToList();
+                return result;
+            }
         }
     }
 }
