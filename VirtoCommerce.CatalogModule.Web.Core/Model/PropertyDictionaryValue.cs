@@ -1,4 +1,4 @@
-﻿using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Web.Model
 {
@@ -35,5 +35,9 @@ namespace VirtoCommerce.CatalogModule.Web.Model
         /// The value.
         /// </value>
         public string Value { get; set; }
+        /// <summary>
+        /// Dictionary item identifier
+        /// </summary>
+        public string ValueId { get; set; }
     }
 }

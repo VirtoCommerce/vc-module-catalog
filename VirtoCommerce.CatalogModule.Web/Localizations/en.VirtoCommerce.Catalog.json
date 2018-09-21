@@ -254,7 +254,8 @@
           "value": "Value",
           "alias": "Alias",
           "language-edit": "Edit values",
-          "language-add": "New values"
+          "language-add": "New values",
+          "dictionary-edit": "Dictionary value edit"
         },
         "validations": {
           "required": "Required",

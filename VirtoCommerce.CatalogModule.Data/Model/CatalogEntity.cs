@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
@@ -45,25 +45,28 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             if (catalog == null)
                 throw new ArgumentNullException(nameof(catalog));
 
-            catalog.Id = this.Id;         
-            catalog.Name = this.Name;
-            catalog.IsVirtual = this.Virtual;
+            catalog.Id = Id;
+            catalog.Name = Name;
+            catalog.IsVirtual = Virtual;
 
             catalog.Languages = new List<CatalogLanguage>();
-            var defaultLanguage = (new CatalogLanguageEntity { Language = string.IsNullOrEmpty(this.DefaultLanguage) ? "en-us" : this.DefaultLanguage }).ToModel(AbstractTypeFactory<CatalogLanguage>.TryCreateInstance());
+            var defaultLanguage = (new CatalogLanguageEntity { Language = string.IsNullOrEmpty(DefaultLanguage) ? "en-us" : DefaultLanguage }).ToModel(AbstractTypeFactory<CatalogLanguage>.TryCreateInstance());
             defaultLanguage.IsDefault = true;
             catalog.Languages.Add(defaultLanguage);
             //populate additional languages
-            foreach (var additionalLanguage in this.CatalogLanguages.Where(x => x.Language != defaultLanguage.LanguageCode).Select(x => x.ToModel(AbstractTypeFactory<CatalogLanguage>.TryCreateInstance())))
+            foreach (var additionalLanguage in CatalogLanguages.Where(x => x.Language != defaultLanguage.LanguageCode).Select(x => x.ToModel(AbstractTypeFactory<CatalogLanguage>.TryCreateInstance())))
             {
                 catalog.Languages.Add(additionalLanguage);
             }
-            catalog.PropertyValues = this.CatalogPropertyValues.Select(x => x.ToModel(AbstractTypeFactory<PropertyValue>.TryCreateInstance())).ToList();
+
+            //item property values
+            catalog.PropertyValues = CatalogPropertyValues.OrderBy(x => x.Name).SelectMany(x => x.ToModel(AbstractTypeFactory<PropertyValue>.TryCreateInstance())).ToList();
+
             //Self properties
-            catalog.Properties = this.Properties.Where(x => x.CategoryId == null)
+            catalog.Properties = Properties.Where(x => x.CategoryId == null)
                                                 .OrderBy(x => x.Name)
                                                 .Select(x => x.ToModel(AbstractTypeFactory<Property>.TryCreateInstance())).ToList();
-            
+
             return catalog;
         }
 
@@ -73,29 +76,25 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 throw new ArgumentNullException(nameof(catalog));
 
             if (catalog.DefaultLanguage == null)
+            {
                 throw new NullReferenceException("DefaultLanguage");
+            }
 
             pkMap.AddPair(catalog, this);
 
-            this.Id = catalog.Id;
-            this.Name = catalog.Name;
-            this.Virtual = catalog.IsVirtual;
-            this.DefaultLanguage = catalog.DefaultLanguage.LanguageCode;
+            Id = catalog.Id;
+            Name = catalog.Name;
+            Virtual = catalog.IsVirtual;
+            DefaultLanguage = catalog.DefaultLanguage.LanguageCode;
 
             if (catalog.PropertyValues != null)
             {
-                this.CatalogPropertyValues = new ObservableCollection<PropertyValueEntity>();
-                foreach (var propertyValue in catalog.PropertyValues)
-                {
-                    if (!propertyValue.IsInherited && propertyValue.Value != null && !string.IsNullOrEmpty(propertyValue.Value.ToString()))
-                    {
-                       this.CatalogPropertyValues.Add(AbstractTypeFactory<PropertyValueEntity>.TryCreateInstance().FromModel(propertyValue, pkMap));
-                    }
-                }
+                CatalogPropertyValues = new ObservableCollection<PropertyValueEntity>(AbstractTypeFactory<PropertyValueEntity>.TryCreateInstance().FromModels(catalog.PropertyValues, pkMap));
+
             }
             if (catalog.Languages != null)
             {
-                this.CatalogLanguages = new ObservableCollection<CatalogLanguageEntity>(catalog.Languages.Select(x => AbstractTypeFactory<CatalogLanguageEntity>.TryCreateInstance().FromModel(x, pkMap)));
+                CatalogLanguages = new ObservableCollection<CatalogLanguageEntity>(catalog.Languages.Select(x => AbstractTypeFactory<CatalogLanguageEntity>.TryCreateInstance().FromModel(x, pkMap)));
             }
 
             return this;
@@ -104,21 +103,21 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         public virtual void Patch(CatalogEntity target)
         {
 
-            target.Name = this.Name;
-            target.DefaultLanguage = this.DefaultLanguage;
+            target.Name = Name;
+            target.DefaultLanguage = DefaultLanguage;
 
             //Languages patch
-            if (!this.CatalogLanguages.IsNullCollection())
+            if (!CatalogLanguages.IsNullCollection())
             {
                 var languageComparer = AnonymousComparer.Create((CatalogLanguageEntity x) => x.Language);
-                this.CatalogLanguages.Patch(target.CatalogLanguages, languageComparer,
+                CatalogLanguages.Patch(target.CatalogLanguages, languageComparer,
                                                      (sourceLang, targetlang) => sourceLang.Patch(targetlang));
             }
 
             //Property values
-            if (!this.CatalogPropertyValues.IsNullCollection())
+            if (!CatalogPropertyValues.IsNullCollection())
             {
-                this.CatalogPropertyValues.Patch(target.CatalogPropertyValues, (sourcePropValue, targetPropValue) => sourcePropValue.Patch(targetPropValue));
+                CatalogPropertyValues.Patch(target.CatalogPropertyValues, (sourcePropValue, targetPropValue) => sourcePropValue.Patch(targetPropValue));
             }
 
         }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -43,24 +43,11 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <returns></returns>
         [HttpGet]
         [Route("{propertyId}/values")]
-        [ResponseType(typeof(webModel.PropertyValue[]))]
+        [ResponseType(typeof(webModel.PropertyDictionaryValue[]))]
         public IHttpActionResult GetPropertyValues(string propertyId, [FromUri]string keyword = null)
         {
-            //Need to return PropertyValue as it's more convenient in UI
-            var retVal = new List<webModel.PropertyValue>();
             var dictValues = _propertyService.SearchDictionaryValues(propertyId, keyword);
-            foreach (var dictValue in dictValues)
-            {
-                var propValue = new webModel.PropertyValue
-                {
-                    Value = dictValue.Value,
-                    Alias = dictValue.Alias,
-                    ValueId = dictValue.Id,
-                    LanguageCode = dictValue.LanguageCode
-                };
-                retVal.Add(propValue);
-            }
-            return Ok(retVal.ToArray());
+            return Ok(dictValues.Select(x => x.ToWebModel()).ToArray());
         }
 
 

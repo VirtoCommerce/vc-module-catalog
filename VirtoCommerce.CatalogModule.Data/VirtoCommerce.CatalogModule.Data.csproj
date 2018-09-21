@@ -81,8 +81,10 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="VirtoCommerce.Domain, Version=2.25.11.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VirtoCommerce.Domain.2.25.11\lib\net461\VirtoCommerce.Domain.dll</HintPath>
+    <Reference Include="VirtoCommerce.Domain, Version=2.25.14.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VirtoCommerce.Domain.2.25.14\lib\net461\VirtoCommerce.Domain.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="VirtoCommerce.Platform.Core, Version=2.13.26.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\VirtoCommerce.Platform.Core.2.13.26\lib\net461\VirtoCommerce.Platform.Core.dll</HintPath>
@@ -189,6 +191,14 @@
     <Compile Include="Migrations\201707051005213_PropertyValidation.Designer.cs">
       <DependentUpon>201707051005213_PropertyValidation.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201809190617321_DictionaryShemaRedesign.cs" />
+    <Compile Include="Migrations\201809190617321_DictionaryShemaRedesign.Designer.cs">
+      <DependentUpon>201809190617321_DictionaryShemaRedesign.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201809200853133_RemoveDuplicatedDitionaryValues.cs" />
+    <Compile Include="Migrations\201809200853133_RemoveDuplicatedDitionaryValues.Designer.cs">
+      <DependentUpon>201809200853133_RemoveDuplicatedDitionaryValues.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Model\AssetEntity.cs" />
     <Compile Include="Model\AssociationEntity.cs" />
@@ -200,6 +210,7 @@
     <Compile Include="Model\EditorialReviewEntity.cs" />
     <Compile Include="Model\ImageEntity.cs" />
     <Compile Include="Model\ItemEntity.cs" />
+    <Compile Include="Model\PropertyDictionaryItemEntity.cs" />
     <Compile Include="Model\PropertyDisplayNameEntity.cs" />
     <Compile Include="Model\PropertyEntity.cs" />
     <Compile Include="Model\PropertyAttributeEntity.cs" />
@@ -334,6 +345,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201707051005213_PropertyValidation.resx">
       <DependentUpon>201707051005213_PropertyValidation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809190617321_DictionaryShemaRedesign.resx">
+      <DependentUpon>201809190617321_DictionaryShemaRedesign.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809200853133_RemoveDuplicatedDitionaryValues.resx">
+      <DependentUpon>201809200853133_RemoveDuplicatedDitionaryValues.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
