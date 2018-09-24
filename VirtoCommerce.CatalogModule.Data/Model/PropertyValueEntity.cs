@@ -98,7 +98,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             {
                 throw new ArgumentNullException(nameof(propValues));
             }
-            var groupedValues = propValues.Where(x => !x.IsInherited && x.Value != null && !string.IsNullOrEmpty(x.Value.ToString()))
+            var groupedValues = propValues.Where(x => !x.IsInherited && (!string.IsNullOrEmpty(x.ValueId) || !string.IsNullOrEmpty(x.Value?.ToString())))
                                            .Select(x => AbstractTypeFactory<PropertyValueEntity>.TryCreateInstance().FromModel(x, pkMap))
                                            .GroupBy(x => x.DictionaryItemId);
             var result = new List<PropertyValueEntity>();
