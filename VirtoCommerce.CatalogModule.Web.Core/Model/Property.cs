@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using VirtoCommerce.Domain.Catalog.Model;
@@ -140,14 +140,6 @@ namespace VirtoCommerce.CatalogModule.Web.Model
         /// The values.
         /// </value>
         public ICollection<PropertyValue> Values { get; set; }
-
-        /// <summary>
-        /// Gets or sets the dictionary values.
-        /// </summary>
-        /// <value>
-        /// The dictionary values.
-        /// </value>
-        public ICollection<PropertyDictionaryValue> DictionaryValues { get; set; }
 
         /// <summary>
         /// Gets or sets the attributes.

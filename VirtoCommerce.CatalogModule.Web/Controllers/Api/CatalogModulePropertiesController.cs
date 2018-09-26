@@ -8,7 +8,6 @@ using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Web.Converters;
 using VirtoCommerce.CatalogModule.Web.Security;
 using VirtoCommerce.Domain.Catalog.Services;
-using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Security;
 using moduleModel = VirtoCommerce.Domain.Catalog.Model;
 using webModel = VirtoCommerce.CatalogModule.Web.Model;
@@ -21,17 +20,19 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly IPropertyService _propertyService;
         private readonly ICategoryService _categoryService;
         private readonly ICatalogService _catalogService;
+        private readonly IProperyDictionaryItemSearchService _propertyDictionarySearchService;
         //Workaround: Bad design to use repository in the controller layer, need to extend in the future IPropertyService.Delete with new parameter DeleteAllValues
         private readonly Func<ICatalogRepository> _repositoryFactory;
         public CatalogModulePropertiesController(IPropertyService propertyService, ICategoryService categoryService, ICatalogService catalogService,
-                                                 ISecurityService securityService, IPermissionScopeService permissionScopeService, Func<ICatalogRepository> repositoryFactory)
+                                                 ISecurityService securityService, IPermissionScopeService permissionScopeService, Func<ICatalogRepository> repositoryFactory,
+                                                 IProperyDictionaryItemSearchService propertyDictionarySearchService)
             : base(securityService, permissionScopeService)
         {
             _propertyService = propertyService;
             _categoryService = categoryService;
             _catalogService = catalogService;
             _repositoryFactory = repositoryFactory;
-
+            _propertyDictionarySearchService = propertyDictionarySearchService;
         }
 
 
@@ -44,10 +45,12 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [HttpGet]
         [Route("{propertyId}/values")]
         [ResponseType(typeof(webModel.PropertyDictionaryValue[]))]
+        [Obsolete("Use POST api/catalog/properties/dictionaryitems/search instead")]
         public IHttpActionResult GetPropertyValues(string propertyId, [FromUri]string keyword = null)
         {
-            var dictValues = _propertyService.SearchDictionaryValues(propertyId, keyword);
-            return Ok(dictValues.Select(x => x.ToWebModel()).ToArray());
+            var dictValues = _propertyDictionarySearchService.Search(new moduleModel.Search.PropertyDictionaryItemSearchCriteria { SearchPhrase = keyword, PropertyIds = new[] { propertyId }, Take = int.MaxValue }).Results;
+
+            return Ok(dictValues.Select(x => new webModel.PropertyDictionaryValue { Id = x.Id, Alias = x.Alias, ValueId = x.PropertyId, Value = x.Alias }).ToArray());
         }
 
 
@@ -91,7 +94,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 Name = "new property",
                 Type = moduleModel.PropertyType.Catalog,
                 ValueType = moduleModel.PropertyValueType.ShortText,
-                DictionaryValues = new List<webModel.PropertyDictionaryValue>(),
                 Attributes = new List<webModel.PropertyAttribute>(),
                 DisplayNames = catalog.Languages.Select(x => new moduleModel.PropertyDisplayName { LanguageCode = x.LanguageCode }).ToList()
             };
@@ -121,7 +123,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 Name = "new property",
                 Type = moduleModel.PropertyType.Category,
                 ValueType = moduleModel.PropertyValueType.ShortText,
-                DictionaryValues = new List<webModel.PropertyDictionaryValue>(),
                 Attributes = new List<webModel.PropertyAttribute>(),
                 DisplayNames = category.Catalog.Languages.Select(x => new moduleModel.PropertyDisplayName { LanguageCode = x.LanguageCode }).ToList()
             };

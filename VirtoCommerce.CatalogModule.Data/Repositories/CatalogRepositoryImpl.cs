@@ -609,7 +609,15 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             return result;
         }
 
-
+        public dataModel.PropertyDictionaryItemEntity[] GetPropertyDictionaryItemsByIds(string[] dictItemIds)
+        {
+            if (dictItemIds == null)
+            {
+                throw new ArgumentNullException(nameof(dictItemIds));
+            }
+            var result = PropertyDictionaryItems.Include(x => x.DictionaryItemValues).Where(x => dictItemIds.Contains(x.Id)).ToArray();
+            return result;
+        }
         #endregion
 
         protected virtual void AddBatchDeletedEntities<T>(IList<string> ids)

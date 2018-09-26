@@ -99,6 +99,8 @@ namespace VirtoCommerce.CatalogModule.Web
 
             _container.RegisterType<IProductSearchService, ProductSearchService>();
             _container.RegisterType<ICategorySearchService, CategorySearchService>();
+            _container.RegisterType<IProperyDictionaryItemService, PropertyDictionaryItemService>();
+            _container.RegisterType<IProperyDictionaryItemSearchService, PropertyDictionaryItemService>();
 
             #endregion
 

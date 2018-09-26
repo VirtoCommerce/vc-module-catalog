@@ -29,6 +29,8 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         dataModel.ItemEntity[] GetItemByIds(string[] itemIds, moduleModel.ItemResponseGroup respGroup);
         dataModel.PropertyEntity[] GetAllCatalogProperties(string catalogId);
         dataModel.PropertyEntity[] GetPropertiesByIds(string[] propIds, bool loadDictValues = false);
+        dataModel.PropertyDictionaryItemEntity[] GetPropertyDictionaryItemsByIds(string[] dictItemIds);
+
 
         GenericSearchResult<dataModel.AssociationEntity> SearchAssociations(ProductAssociationSearchCriteria criteria);
 

@@ -1,5 +1,5 @@
-﻿angular.module('virtoCommerce.catalogModule')
-	.controller('virtoCommerce.catalogModule.propertyListController', ['$scope', 'virtoCommerce.catalogModule.properties', 'platformWebApp.bladeNavigationService', function ($scope, properties, bladeNavigationService) {
+angular.module('virtoCommerce.catalogModule')
+    .controller('virtoCommerce.catalogModule.propertyListController', ['$scope', 'virtoCommerce.catalogModule.properties', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.propDictItems', function ($scope, properties, bladeNavigationService, propDictItems) {
 		var blade = $scope.blade;
 		$scope.isValid = false;
 		blade.refresh = function (entity) {
@@ -62,8 +62,9 @@
 			bladeNavigationService.showBlade(newBlade, blade);
 		}
 
-		$scope.getPropValues = function (propId, keyword) {
-			return properties.values({ propertyId: propId, keyword: keyword }).$promise.then(function (result) {
+        $scope.getPropValues = function (propId, keyword) {
+            //TODO: Replace to lazy loading and infinite scroll
+            return propDictItems.search({ propertyIds: [propId], searchPhrase: keyword, take : 10000 }).$promise.then(function (result) {
 				return result;
 			});
 		};

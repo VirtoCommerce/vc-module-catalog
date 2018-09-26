@@ -16,11 +16,13 @@ namespace VirtoCommerce.CatalogModule.Data.Search
     {
         private readonly IBrowseFilterService _browseFilterService;
         private readonly IPropertyService _propertyService;
+        private readonly IProperyDictionaryItemSearchService _propDictItemsSearchService;
 
-        public AggregationConverter(IBrowseFilterService browseFilterService, IPropertyService propertyService)
+        public AggregationConverter(IBrowseFilterService browseFilterService, IPropertyService propertyService, IProperyDictionaryItemSearchService propDictItemsSearchService)
         {
             _browseFilterService = browseFilterService;
             _propertyService = propertyService;
+            _propDictItemsSearchService = propDictItemsSearchService;
         }
 
         #region Request converter
@@ -292,11 +294,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                     .Where(p => p.Name.EqualsInvariant(aggregation.Field))
                     .ToArray();
 
-                //Load dictionary  values for properties
-                foreach (var dictProperty in properties.Where(x => x.Dictionary && x.DictionaryValues.IsNullOrEmpty()))
-                {
-                    dictProperty.DictionaryValues = _propertyService.SearchDictionaryValues(dictProperty.Id, null).ToList();
-                }
 
                 if (properties.Any())
                 {
@@ -306,14 +303,9 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                         .ToArray();
 
                     aggregation.Labels = GetFirstLabelForEachLanguage(allPropertyLabels);
-
+                    var allCatalogPropDictItems = _propDictItemsSearchService.Search(new PropertyDictionaryItemSearchCriteria { PropertyIds = properties.Select(x => x.Id).ToArray(), Take = int.MaxValue }).Results;
                     // Get distinct labels for each dictionary value alias
-                    var allValueLabels = properties
-                        .Where(p => p.Dictionary && p.DictionaryValues != null && p.DictionaryValues.Any())
-                        .SelectMany(p => p.DictionaryValues)
-                        .Where(v => !string.IsNullOrEmpty(v.Alias)) // Workaround for incorrect data
-                        .GroupBy(v => v.Alias, StringComparer.OrdinalIgnoreCase)
-                        .ToDictionary(g => g.Key, g => GetFirstLabelForEachLanguage(g.Select(v => new AggregationLabel { Language = v.LanguageCode, Label = v.Value })), StringComparer.OrdinalIgnoreCase);
+                    var allValueLabels = allCatalogPropDictItems.ToDictionary(propDictItem => propDictItem.Id, propDictItem => GetFirstLabelForEachLanguage(propDictItem.LocalizedValues.Select(v => new AggregationLabel { Language = v.LanguageCode, Label = v.Value })), StringComparer.OrdinalIgnoreCase);
 
                     foreach (var aggregationItem in aggregation.Items)
                     {

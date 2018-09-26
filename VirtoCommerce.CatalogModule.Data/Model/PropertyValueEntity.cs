@@ -71,9 +71,10 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             propValue.PropertyName = Name;
             propValue.ValueId = DictionaryItemId;
             propValue.ValueType = (PropertyValueType)ValueType;
-            propValue.Value = GetValue(propValue.ValueType);
+            propValue.Value = DictionaryItem != null ? DictionaryItem.Alias : GetValue(propValue.ValueType);
+            propValue.Alias = DictionaryItem?.Alias;
             //Need to expand all dictionary values
-            if (DictionaryItem != null)
+            if (DictionaryItem != null && !DictionaryItem.DictionaryItemValues.IsNullOrEmpty())
             {
                 foreach (var dictItemValue in DictionaryItem.DictionaryItemValues)
                 {

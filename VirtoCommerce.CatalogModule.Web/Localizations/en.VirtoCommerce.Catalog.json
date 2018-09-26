@@ -163,6 +163,7 @@
           "applies-to": "Applies to",
           "value-type": "Value Type",
           "manage-dictionary": "Manage dictionary",
+          "new-dictionary-property-caution": "You can manage dictionary items only after saving property",
           "attributes": "Attributes",
           "manage-attributes": "Manage property attributes"
         },

@@ -37,25 +37,13 @@ angular.module('virtoCommerce.catalogModule')
 
             scope.$watch('context.currentPropValues', function (newValues) {
                 //reflect only real changes
-                if (isValuesDifferent(newValues, scope.currentEntity.values)) {                    
-                    if (scope.currentEntity.dictionary && scope.currentEntity.multilanguage) {
-                        if (scope.currentEntity.multivalue) {
-                            var realAliases = _.pluck(_.where(newValues, { languageCode: scope.defaultLanguage }), 'alias');
-                            scope.currentEntity.values = _.filter(scope.context.allDictionaryValues, function (x) {
-                                return _.contains(realAliases, x.alias);
-                            });
-                        } else {
-                            scope.currentEntity.values = _.where(scope.context.allDictionaryValues, { alias: newValues[0].alias });
-                        }
-                    } else {
-                        if (newValues[0] === undefined) {
-                            scope.currentEntity.values = null;
-                        } else {
-                            scope.currentEntity.values = newValues;
-                        }
-                        
-                    }
+                if (isValuesDifferent(newValues, scope.currentEntity.values)) {                   
 
+                    if (newValues[0] === undefined) {
+                        scope.currentEntity.values = null;
+                    } else {
+                        scope.currentEntity.values = newValues;
+                    }
                 	//reset inherited status to force property value override
                     _.each(scope.currentEntity.values, function (x) { x.isInherited = false; });
 
@@ -97,6 +85,7 @@ angular.module('virtoCommerce.catalogModule')
                 return !property.multivalue && !property.dictionary && values.length == 0;
             };
 
+
             function initLanguagesValuesMap() {
                 if (scope.currentEntity.multilanguage) {
                     //Group values by language 
@@ -132,9 +121,10 @@ angular.module('virtoCommerce.catalogModule')
                     scope.context.allDictionaryValues = [];
                     scope.context.currentPropValues = [];
 
-                    angular.forEach(result, function (dictValue) {
+                    angular.forEach(result.results, function (dictItem) {
+                        var dictValue = { alias: dictItem.alias, valueId: dictItem.id, value: dictItem.alias };
                         //Need to select already selected values. Dictionary values have same type as standard values.
-                        dictValue.selected = angular.isDefined(_.find(scope.currentEntity.values, function (value) { return value.valueId == dictValue.valueId }));
+                        dictValue.selected = angular.isDefined(_.find(scope.currentEntity.values, function (x) { return x.valueId == dictItem.id }));
                         scope.context.allDictionaryValues.push(dictValue);
                         if (dictValue.selected) {
                             //add selected value
@@ -142,7 +132,7 @@ angular.module('virtoCommerce.catalogModule')
                         }
                     });
 
-                    initLanguagesValuesMap();
+                    //initLanguagesValuesMap();
 
                     return result;
                 });
