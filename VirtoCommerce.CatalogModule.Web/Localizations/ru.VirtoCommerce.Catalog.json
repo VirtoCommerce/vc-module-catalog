@@ -163,6 +163,7 @@
           "applies-to": "Применяется к",
           "value-type": "Тип значения",
           "manage-dictionary": "Управление словарем",
+          "new-dictionary-property-caution": "Для доступа к значениям в начале сохраните свойство",
           "attributes": "Атрибуты",
           "manage-attributes": "Управление атрибутами свойств"
         },

@@ -18,6 +18,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         public virtual PropertyDictionaryItemEntity DictionaryItem { get; set; }
         #endregion
 
+        [Obsolete]
         public virtual PropertyDictionaryValue ToModel(PropertyDictionaryValue propDictValue)
         {
             if (propDictValue == null)
@@ -31,6 +32,28 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             propDictValue.Value = Value;
             propDictValue.ValueId = DictionaryItemId;
             return propDictValue;
+        }
+
+        public virtual PropertyDictionaryItemLocalizedValue ToModel(PropertyDictionaryItemLocalizedValue localizedValue)
+        {
+            if (localizedValue == null)
+            {
+                throw new ArgumentNullException(nameof(localizedValue));
+            }
+            localizedValue.LanguageCode = Locale;
+            localizedValue.Value = Value;
+            return localizedValue;
+        }
+
+        public virtual PropertyDictionaryValueEntity FromModel(PropertyDictionaryItemLocalizedValue localizedValue, PrimaryKeyResolvingMap pkMap)
+        {
+            if (localizedValue == null)
+            {
+                throw new ArgumentNullException(nameof(localizedValue));
+            }
+            Locale = localizedValue.LanguageCode;
+            Value = localizedValue.Value;
+            return this;
         }
 
         public virtual void Patch(PropertyDictionaryValueEntity target)

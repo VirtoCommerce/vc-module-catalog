@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using VirtoCommerce.Domain.Catalog.Model;
+using VirtoCommerce.Domain.Catalog.Model.Search;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Platform.Core.Assets;
 using VirtoCommerce.Platform.Core.Common;
@@ -24,6 +25,8 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
         private readonly IAssociationService _associationService;
         private readonly ISettingsManager _settingsManager;
         private readonly JsonSerializer _serializer;
+        private readonly IProperyDictionaryItemSearchService _propertyDictionarySearchService;
+        private readonly IProperyDictionaryItemService _propertyDictionaryService;
 
         private int? _batchSize;
 
@@ -35,7 +38,9 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
             IPropertyService propertyService,
             IBlobStorageProvider blobStorageProvider,
             IAssociationService associationService,
-            ISettingsManager settingsManager
+            ISettingsManager settingsManager,
+            IProperyDictionaryItemSearchService propertyDictionarySearchService,
+            IProperyDictionaryItemService propertyDictionaryService
             )
         {
             _blobStorageProvider = blobStorageProvider;
@@ -46,6 +51,8 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
             _propertyService = propertyService;
             _associationService = associationService;
             _settingsManager = settingsManager;
+            _propertyDictionarySearchService = propertyDictionarySearchService;
+            _propertyDictionaryService = propertyDictionaryService;
 
             _serializer = new JsonSerializer();
             _serializer.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
@@ -72,14 +79,15 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
             var progressInfo = new ExportImportProgressInfo { Description = "loading data..." };
             progressCallback(progressInfo);
 
-            using (StreamWriter sw = new StreamWriter(outStream, Encoding.UTF8))
-            using (JsonTextWriter writer = new JsonTextWriter(sw))
+            using (var sw = new StreamWriter(outStream, Encoding.UTF8))
+            using (var writer = new JsonTextWriter(sw))
             {
                 writer.WriteStartObject();
 
                 ExportCatalogs(writer, _serializer, manifest, progressInfo, progressCallback);
                 ExportCategories(writer, _serializer, manifest, progressInfo, progressCallback);
                 ExportProperties(writer, _serializer, manifest, progressInfo, progressCallback);
+                ExportPropertiesDictionaryItems(writer, _serializer, manifest, progressInfo, progressCallback);
                 ExportProducts(writer, _serializer, manifest, progressInfo, progressCallback);
 
                 writer.WriteEndObject();
@@ -91,8 +99,9 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
         {
             var progressInfo = new ExportImportProgressInfo();
             var productsTotalCount = 0;
-            using (StreamReader streamReader = new StreamReader(stream))
-            using (JsonTextReader reader = new JsonTextReader(streamReader))
+            var propDictItemTotalCount = 0;
+            using (var streamReader = new StreamReader(stream))
+            using (var reader = new JsonTextReader(streamReader))
             {
                 while (reader.Read())
                 {
@@ -102,7 +111,7 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                         {
                             reader.Read();
                             var catalogs = _serializer.Deserialize<Catalog[]>(reader);
-                            progressInfo.Description = $"{ catalogs.Count() } catalogs importing...";
+                            progressInfo.Description = $"{ catalogs.Count() } catalogs are importing...";
                             progressCallback(progressInfo);
                             _catalogService.Update(catalogs);
                         }
@@ -110,7 +119,7 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                         {
                             reader.Read();
                             var categories = _serializer.Deserialize<Category[]>(reader);
-                            progressInfo.Description = $"{ categories.Count() } categories importing...";
+                            progressInfo.Description = $"{ categories.Count() } categories are importing...";
                             progressCallback(progressInfo);
                             _categoryService.Update(categories);
                             if (manifest.HandleBinaryData)
@@ -122,13 +131,51 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                         {
                             reader.Read();
                             var properties = _serializer.Deserialize<Property[]>(reader);
-                            progressInfo.Description = $"{ properties.Count() } properties importing...";
+                            progressInfo.Description = $"{ properties.Count() } properties are importing...";
                             progressCallback(progressInfo);
                             _propertyService.Update(properties);
                         }
                         else if (reader.Value.ToString() == "ProductsTotalCount")
                         {
                             productsTotalCount = reader.ReadAsInt32() ?? 0;
+                        }
+                        else if (reader.Value.ToString() == "PropertyDictionaryItemsTotalCount")
+                        {
+                            propDictItemTotalCount = reader.ReadAsInt32() ?? 0;
+                        }
+                        else if (reader.Value.ToString() == "PropertyDictionaryItems")
+                        {
+                            reader.Read();
+                            if (reader.TokenType == JsonToken.StartArray)
+                            {
+                                reader.Read();
+
+                                var propDictItems = new List<PropertyDictionaryItem>();
+                                var propDictItemsCount = 0;
+                                //Import property dcitonary items
+                                while (reader.TokenType != JsonToken.EndArray)
+                                {
+                                    var propDictItem = AbstractTypeFactory<PropertyDictionaryItem>.TryCreateInstance();
+                                    propDictItem = _serializer.Deserialize(reader, propDictItem.GetType()) as PropertyDictionaryItem;
+                                    propDictItems.Add(propDictItem);
+                                    propDictItemsCount++;
+                                    reader.Read();
+                                    if (propDictItemsCount % BatchSize == 0 || reader.TokenType == JsonToken.EndArray)
+                                    {
+                                        _propertyDictionaryService.SaveChanges(propDictItems.ToArray());
+                                        propDictItems.Clear();
+                                        if (propDictItemsCount > 0)
+                                        {
+                                            progressInfo.Description = $"{ propDictItemsCount } of { propDictItemTotalCount } dictionary items have been imported";
+                                        }
+                                        else
+                                        {
+                                            progressInfo.Description = $"{ propDictItemsCount } dictionary items have been imported";
+                                        }
+                                        progressCallback(progressInfo);
+                                    }
+                                }
+                            }
                         }
                         else if (reader.Value.ToString() == "Products")
                         {
@@ -167,18 +214,18 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                                         products.Clear();
                                         if (productsTotalCount > 0)
                                         {
-                                            progressInfo.Description = $"{ productsCount } of { productsTotalCount } products imported";
+                                            progressInfo.Description = $"{ productsCount } of { productsTotalCount } products have been imported";
                                         }
                                         else
                                         {
-                                            progressInfo.Description = $"{ productsCount } products imported";
+                                            progressInfo.Description = $"{ productsCount } products have been imported";
                                         }
                                         progressCallback(progressInfo);
                                     }
                                 }
                                 //Import products associations separately to avoid DB constrain violation
                                 var totalProductsWithAssociationsCount = associationBackupMap.Count();
-                                progressInfo.Description = $"{ totalProductsWithAssociationsCount } products associations importing...";
+                                progressInfo.Description = $"{ totalProductsWithAssociationsCount } products associations are importing...";
                                 progressCallback(progressInfo);
                                 for (int i = 0; i < totalProductsWithAssociationsCount; i += BatchSize)
                                 {
@@ -205,14 +252,14 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
         private void ExportCatalogs(JsonTextWriter writer, JsonSerializer serializer, PlatformExportManifest manifest, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback)
         {
             //Catalogs
-            progressInfo.Description = string.Format("Catalogs exporting...");
+            progressInfo.Description = string.Format("Catalogs are exporting...");
             progressCallback(progressInfo);
 
             var catalogs = _catalogService.GetCatalogsList().ToArray();
 
             writer.WritePropertyName("Catalogs");
             writer.WriteStartArray();
-            //Reset some props to descrease resulting json size
+            //Reset some props to decrease resulting json size
             foreach (var catalog in catalogs)
             {
                 ResetRedundantReferences(catalog);
@@ -221,14 +268,14 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
             writer.WriteEndArray();
 
 
-            progressInfo.Description = $"{ catalogs.Count() } catalogs exported";
+            progressInfo.Description = $"{ catalogs.Count() } catalogs have been exported";
             progressCallback(progressInfo);
         }
 
         private void ExportCategories(JsonTextWriter writer, JsonSerializer serializer, PlatformExportManifest manifest, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback)
         {
             //Categories
-            progressInfo.Description = string.Format("Categories exporting...");
+            progressInfo.Description = string.Format("Categories are exporting...");
             progressCallback(progressInfo);
 
             var categorySearchCriteria = new SearchCriteria { WithHidden = true, Skip = 0, Take = 0, ResponseGroup = SearchResponseGroup.WithCategories };
@@ -241,7 +288,7 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
 
             writer.WritePropertyName("Categories");
             writer.WriteStartArray();
-            //reset some properties to decrease resultin JSON size
+            //reset some properties to decrease resulting JSON size
             foreach (var category in categories)
             {
                 ResetRedundantReferences(category);
@@ -249,7 +296,7 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
             }
             writer.WriteEndArray();
 
-            progressInfo.Description = $"{ categoriesSearchResult.Categories.Count } categories exported";
+            progressInfo.Description = $"{ categoriesSearchResult.Categories.Count } categories have been exported";
             progressCallback(progressInfo);
         }
 
@@ -265,20 +312,44 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
             //Load property dictionary values and reset some props to decrease size of the resulting json 
             foreach (var property in properties)
             {
-                property.DictionaryValues = _propertyService.SearchDictionaryValues(property.Id, null);
                 ResetRedundantReferences(property);
                 serializer.Serialize(writer, property);
             }
             writer.WriteEndArray();
-
-            progressInfo.Description = $"{ properties.Count() } properties exported";
+            progressInfo.Description = $"{ properties.Count() } properties have been exported";
             progressCallback(progressInfo);
+        }
+
+        private void ExportPropertiesDictionaryItems(JsonTextWriter writer, JsonSerializer serializer, PlatformExportManifest manifest, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback)
+        {
+            progressInfo.Description = "The dictionary items are exporting...";
+            progressCallback(progressInfo);
+
+            var criteria = new PropertyDictionaryItemSearchCriteria { Take = 0, Skip = 0 };
+            var totalCount = _propertyDictionarySearchService.Search(criteria).TotalCount;
+            writer.WritePropertyName("PropertyDictionaryItemsTotalCount");
+            writer.WriteValue(totalCount);
+
+            writer.WritePropertyName("PropertyDictionaryItems");
+            writer.WriteStartArray();
+            for (var i = 0; i < totalCount; i += BatchSize)
+            {
+                var searchResponse = _propertyDictionarySearchService.Search(new PropertyDictionaryItemSearchCriteria { Take = BatchSize, Skip = i });
+                foreach (var dictItem in searchResponse.Results)
+                {
+                    serializer.Serialize(writer, dictItem);
+                }
+                writer.Flush();
+                progressInfo.Description = $"{ Math.Min(totalCount, i + BatchSize) } of { totalCount } dictionary items have been exported";
+                progressCallback(progressInfo);
+            }
+            writer.WriteEndArray();
         }
 
         private void ExportProducts(JsonTextWriter writer, JsonSerializer serializer, PlatformExportManifest manifest, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback)
         {
             //Products
-            progressInfo.Description = string.Format("Products exporting...");
+            progressInfo.Description = string.Format("Products are exporting...");
             progressCallback(progressInfo);
 
             var productSearchCriteria = new SearchCriteria { WithHidden = true, Take = 0, Skip = 0, ResponseGroup = SearchResponseGroup.WithProducts };
@@ -288,7 +359,7 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
 
             writer.WritePropertyName("Products");
             writer.WriteStartArray();
-            for (int i = 0; i < totalProductCount; i += BatchSize)
+            for (var i = 0; i < totalProductCount; i += BatchSize)
             {
                 var searchResponse = _catalogSearchService.Search(new SearchCriteria { WithHidden = true, Take = BatchSize, Skip = i, ResponseGroup = SearchResponseGroup.WithProducts });
 
@@ -303,7 +374,7 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                     serializer.Serialize(writer, product);
                 }
                 writer.Flush();
-                progressInfo.Description = $"{ Math.Min(totalProductCount, i + BatchSize) } of { totalProductCount } products exported";
+                progressInfo.Description = $"{ Math.Min(totalProductCount, i + BatchSize) } of { totalProductCount } products have been exported";
                 progressCallback(progressInfo);
             }
             writer.WriteEndArray();

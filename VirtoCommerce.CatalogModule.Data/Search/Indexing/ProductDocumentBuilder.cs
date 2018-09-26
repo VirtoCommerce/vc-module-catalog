@@ -15,7 +15,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
     {
         private readonly IItemService _itemService;
         private readonly IBlobUrlResolver _blobUrlResolver;
-
         public ProductDocumentBuilder(ISettingsManager settingsManager, IItemService itemService, IBlobUrlResolver blobUrlResolver)
             : base(settingsManager)
         {

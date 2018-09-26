@@ -301,10 +301,10 @@
     </script>
 
     <script type="text/ng-template" id="ShortText-dictionary-multilang.html">
-        <div class="form-input" data-role="input-control">
-            <ui-select ng-model="context.langValuesMap[defaultLanguage].currentPropValues[0]" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
+        <div class="form-input">
+            <ui-select ng-model="context.currentPropValues[0]" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
                 <ui-select-match allow-clear="true" placeholder="Select value">{{$select.selected.value}}</ui-select-match>
-                <ui-select-choices repeat="propValue in context.langValuesMap[defaultLanguage].allValues | filter: {value: $select.search}">
+                <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search} | orderBy: 'value'">
                     <span ng-bind-html="propValue.value | highlight: $select.search"></span>
                 </ui-select-choices>
             </ui-select>
@@ -312,10 +312,10 @@
     </script>
 
     <script type="text/ng-template" id="Number-dictionary-multilang.html">
-        <div class="form-input" data-role="input-control">
-            <ui-select ng-model="context.langValuesMap[defaultLanguage].currentPropValues[0]" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
+        <div class="form-input">
+            <ui-select ng-model="context.currentPropValues[0]" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
                 <ui-select-match allow-clear="true" placeholder="Select value">{{$select.selected.value}}</ui-select-match>
-                <ui-select-choices repeat="propValue in context.langValuesMap[defaultLanguage].allValues | filter: {value: $select.search}">
+                <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search} | orderBy: 'value'">
                     <span ng-bind-html="propValue.value | highlight: $select.search"></span>
                 </ui-select-choices>
             </ui-select>
@@ -323,10 +323,10 @@
     </script>
 
     <script type="text/ng-template" id="ShortText-dictionary-multivalue-multilang.html">
-        <div class="form-input" data-role="input-control">
-            <ui-select multiple ng-model="context.langValuesMap[defaultLanguage].currentPropValues" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
+        <div class="form-input">
+            <ui-select multiple ng-model="context.currentPropValues" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
                 <ui-select-match placeholder="Select value">{{$item.value}}</ui-select-match>
-                <ui-select-choices repeat="propValue in context.langValuesMap[defaultLanguage].allValues | filter: {value: $select.search}">
+                <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search} | orderBy: 'value'">
                     <span ng-bind-html="propValue.value | highlight: $select.search"></span>
                 </ui-select-choices>
             </ui-select>
@@ -334,10 +334,10 @@
     </script>
 
     <script type="text/ng-template" id="Number-dictionary-multivalue-multilang.html">
-        <div class="form-input" data-role="input-control">
-            <ui-select multiple ng-model="context.langValuesMap[defaultLanguage].currentPropValues[0]" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
+        <div class="form-input">
+            <ui-select multiple ng-model="context.currentPropValues[0]" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
                 <ui-select-match placeholder="Select value">{{$item.value}}</ui-select-match>
-                <ui-select-choices repeat="propValue in context.langValuesMap[defaultLanguage].allValues | filter: {value: $select.search}">
+                <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search} | orderBy: 'value'">
                     <span ng-bind-html="propValue.value | highlight: $select.search"></span>
                 </ui-select-choices>
             </ui-select>

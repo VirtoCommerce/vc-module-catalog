@@ -7,6 +7,8 @@ using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Data.SqlClient;
 using System.Linq;
 using VirtoCommerce.Domain.Catalog.Model;
+using VirtoCommerce.Domain.Catalog.Model.Search;
+using VirtoCommerce.Domain.Commerce.Model.Search;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Data.Infrastructure;
 using VirtoCommerce.Platform.Data.Infrastructure.Interceptors;
@@ -523,8 +525,106 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 ObjectContext.ExecuteStoreCommand(commandTemplate);
             }
         }
-        #endregion
 
+        public GenericSearchResult<dataModel.AssociationEntity> SearchAssociations(ProductAssociationSearchCriteria criteria)
+        {
+            var result = new GenericSearchResult<dataModel.AssociationEntity>();
+
+            var countSqlCommandText = @"
+                ;WITH Association_CTE AS
+                (
+	                SELECT *
+	                FROM Association
+	                WHERE ItemId IN ({0})
+                "
+                + (!string.IsNullOrEmpty(criteria.Group) ? $" AND AssociationType = @group" : string.Empty) +
+                @"), Category_CTE AS
+                (
+	                SELECT AssociatedCategoryId Id
+	                FROM Association_CTE
+	                WHERE AssociatedCategoryId IS NOT NULL
+	                UNION ALL
+	                SELECT c.Id
+	                FROM Category c
+	                INNER JOIN Category_CTE cte ON c.ParentCategoryId = cte.Id
+                ),
+                Item_CTE AS 
+                (
+	                SELECT  i.Id
+	                FROM (SELECT DISTINCT Id FROM Category_CTE) c
+	                LEFT JOIN Item i ON c.Id=i.CategoryId WHERE i.ParentId IS NULL
+	                UNION
+	                SELECT AssociatedItemId Id FROM Association_CTE
+                ) 
+                SELECT COUNT(Id) FROM Item_CTE";
+
+            var querySqlCommandText = @"
+                    ;WITH Association_CTE AS
+                    (
+	                    SELECT *
+	                    FROM Association
+	                    WHERE ItemId IN({0})"
+                    + (!string.IsNullOrEmpty(criteria.Group) ? $" AND AssociationType = @group" : string.Empty) +
+                    @"), Category_CTE AS
+                    (
+	                    SELECT AssociatedCategoryId Id, AssociatedCategoryId
+	                    FROM Association_CTE
+	                    WHERE AssociatedCategoryId IS NOT NULL
+	                    UNION ALL
+	                    SELECT c.Id, cte.AssociatedCategoryId
+	                    FROM Category c
+	                    INNER JOIN Category_CTE cte ON c.ParentCategoryId = cte.Id
+                    ),
+                    Item_CTE AS 
+                    (
+	                    SELECT 
+		                    a.Id	
+		                    ,a.AssociationType
+		                    ,a.Priority
+		                    ,a.ItemId
+		                    ,a.CreatedDate
+		                    ,a.ModifiedDate
+		                    ,a.CreatedBy
+		                    ,a.ModifiedBy
+		                    ,a.Discriminator
+		                    ,i.Id AssociatedItemId
+		                    ,a.AssociatedCategoryId
+		                    ,a.Tags
+		                    ,a.Quantity
+	                    FROM Category_CTE cat
+	                    LEFT JOIN Item i ON cat.Id=i.CategoryId
+	                    LEFT JOIN Association a ON cat.AssociatedCategoryId=a.AssociatedCategoryId
+                        WHERE i.ParentId IS NULL
+	                    UNION
+	                    SELECT * FROM Association_CTE
+                    ) 
+                    SELECT  * FROM Item_CTE WHERE AssociatedItemId IS NOT NULL ORDER BY Priority " +
+                    $"OFFSET {criteria.Skip} ROWS FETCH NEXT {criteria.Take} ROWS ONLY";
+
+            var countSqlCommand = CreateCommand(countSqlCommandText, criteria.ObjectIds);
+            var querySqlCommand = CreateCommand(querySqlCommandText, criteria.ObjectIds);
+            if (!string.IsNullOrEmpty(criteria.Group))
+            {
+                countSqlCommand.Parameters = countSqlCommand.Parameters.Concat(new[] { new SqlParameter($"@group", criteria.Group) }).ToArray();
+                querySqlCommand.Parameters = querySqlCommand.Parameters.Concat(new[] { new SqlParameter($"@group", criteria.Group) }).ToArray();
+            }
+
+            result.TotalCount = ObjectContext.ExecuteStoreQuery<int>(countSqlCommand.Text, countSqlCommand.Parameters).FirstOrDefault();
+            result.Results = ObjectContext.ExecuteStoreQuery<dataModel.AssociationEntity>(querySqlCommand.Text, querySqlCommand.Parameters).ToList();
+
+            return result;
+        }
+
+        public dataModel.PropertyDictionaryItemEntity[] GetPropertyDictionaryItemsByIds(string[] dictItemIds)
+        {
+            if (dictItemIds == null)
+            {
+                throw new ArgumentNullException(nameof(dictItemIds));
+            }
+            var result = PropertyDictionaryItems.Include(x => x.DictionaryItemValues).Where(x => dictItemIds.Contains(x.Id)).ToArray();
+            return result;
+        }
+        #endregion
 
         protected virtual void AddBatchDeletedEntities<T>(IList<string> ids)
             where T : Entity, new()

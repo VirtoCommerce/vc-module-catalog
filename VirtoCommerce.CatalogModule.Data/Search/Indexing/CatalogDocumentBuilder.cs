@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.Domain.Catalog.Model;
+using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Search;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Settings;
@@ -49,8 +50,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                         case PropertyValueType.ShortText:
                             // Index alias when it is available instead of display value.
                             // Do not tokenize small values as they will be used for lookups and filters.
-                            var alias = GetPropertyValueAlias(property, propValue);
-                            var shortTextValue = !string.IsNullOrEmpty(alias) ? alias : propValue.Value.ToString();
+                            var shortTextValue = propValue.Alias ?? propValue.Value.ToString();
                             document.Add(new IndexDocumentField(propertyName, shortTextValue) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection });
                             break;
                         case PropertyValueType.GeoPoint:
@@ -79,13 +79,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                     }
                 }
             }
-        }
-
-        protected virtual string GetPropertyValueAlias(Property property, PropertyValue propValue)
-        {
-            var dictionaryValueAlias = property?.DictionaryValues?.Where(v => v.Id.EqualsInvariant(propValue.ValueId)).Select(v => v.Alias).FirstOrDefault();
-            var result = !string.IsNullOrEmpty(dictionaryValueAlias) ? dictionaryValueAlias : propValue.Alias;
-            return result;
         }
 
         protected virtual string[] GetOutlineStrings(IEnumerable<Outline> outlines)

@@ -11,12 +11,14 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
     {
         public static webModel.Catalog ToWebModel(this moduleModel.Catalog catalog, bool convertProps = true)
         {
-            var retVal = new webModel.Catalog();
-            //Do not use omu.InjectFrom for performance reasons 
-            retVal.Id = catalog.Id;
-            retVal.Name = catalog.Name;
-            retVal.IsVirtual = catalog.IsVirtual;
-            retVal.Properties = new List<webModel.Property>();
+            var retVal = new webModel.Catalog
+            {
+                //Do not use omu.InjectFrom for performance reasons 
+                Id = catalog.Id,
+                Name = catalog.Name,
+                IsVirtual = catalog.IsVirtual,
+                Properties = new List<webModel.Property>()
+            };
 
             if (catalog.Languages != null)
             {
@@ -31,8 +33,6 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
                     foreach (var property in catalog.Properties)
                     {
                         var webModelProperty = property.ToWebModel();
-                        //Reset dict values to decrease response size
-                        webModelProperty.DictionaryValues = null;
                         webModelProperty.Values = new List<webModel.PropertyValue>();
                         webModelProperty.IsManageable = true;
                         webModelProperty.IsReadOnly = property.Type != moduleModel.PropertyType.Catalog;

@@ -26,13 +26,16 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly IStoreService _storeService;
         private readonly IPropertyService _propertyService;
         private readonly IBrowseFilterService _browseFilterService;
+        private readonly IProperyDictionaryItemSearchService _propDictItemsSearchService;
 
-        public CatalogBrowseFiltersController(ISecurityService securityService, IPermissionScopeService permissionScopeService, IStoreService storeService, IPropertyService propertyService, IBrowseFilterService browseFilterService)
+
+        public CatalogBrowseFiltersController(ISecurityService securityService, IPermissionScopeService permissionScopeService, IStoreService storeService, IPropertyService propertyService, IBrowseFilterService browseFilterService, IProperyDictionaryItemSearchService propDictItemsSearchService)
             : base(securityService, permissionScopeService)
         {
             _storeService = storeService;
             _propertyService = propertyService;
             _browseFilterService = browseFilterService;
+            _propDictItemsSearchService = propDictItemsSearchService;
         }
 
         /// <summary>
@@ -116,7 +119,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var property = _propertyService.GetAllCatalogProperties(store.Catalog).Where(p => p.Name.EqualsInvariant(propertyName) && p.Dictionary).FirstOrDefault();
             if (property != null)
             {
-                result = _propertyService.SearchDictionaryValues(property.Id, null).Select(x => x.Alias).Distinct().ToArray();
+                result = _propDictItemsSearchService.Search(new Domain.Catalog.Model.Search.PropertyDictionaryItemSearchCriteria { PropertyIds = new[] { property.Id }, Take = int.MaxValue }).Results.Select(x => x.Alias).Distinct().ToArray();
             }
             return Ok(result);
         }

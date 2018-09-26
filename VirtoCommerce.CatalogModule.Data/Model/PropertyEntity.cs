@@ -94,7 +94,6 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             property.Attributes = PropertyAttributes.Select(x => x.ToModel(AbstractTypeFactory<PropertyAttribute>.TryCreateInstance())).ToList();
             property.DisplayNames = DisplayNames.Select(x => x.ToModel(AbstractTypeFactory<PropertyDisplayName>.TryCreateInstance())).ToList();
             property.ValidationRules = ValidationRules.Select(x => x.ToModel(AbstractTypeFactory<PropertyValidationRule>.TryCreateInstance())).ToList();
-            property.DictionaryValues = DictionaryItems.SelectMany(x => x.DictionaryItemValues).Select(x => x.ToModel(AbstractTypeFactory<PropertyDictionaryValue>.TryCreateInstance())).ToList();
 
             foreach (var rule in property.ValidationRules)
             {
@@ -134,12 +133,13 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             {
                 PropertyAttributes = new ObservableCollection<PropertyAttributeEntity>(property.Attributes.Select(x => AbstractTypeFactory<PropertyAttributeEntity>.TryCreateInstance().FromModel(x, pkMap)));
             }
-
+#pragma warning disable 612, 618
+            //Left for backward compatibility, when the dictionary items of the property  can only be changed with the property
             if (property.DictionaryValues != null)
             {
                 DictionaryItems = new ObservableCollection<PropertyDictionaryItemEntity>(PropertyDictionaryItemEntity.FromModels(property.DictionaryValues, pkMap));
             }
-
+#pragma warning restore 612, 618
             if (property.DisplayNames != null)
             {
                 DisplayNames = new ObservableCollection<PropertyDisplayNameEntity>(property.DisplayNames.Select(x => AbstractTypeFactory<PropertyDisplayNameEntity>.TryCreateInstance().FromModel(x)));

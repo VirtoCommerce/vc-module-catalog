@@ -29,22 +29,40 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         public virtual ObservableCollection<PropertyDictionaryValueEntity> DictionaryItemValues { get; set; }
         #endregion
 
-        public virtual PropertyDictionaryValue ToModel(PropertyDictionaryValue propDictValue)
+        public virtual PropertyDictionaryItem ToModel(PropertyDictionaryItem propDictItem)
         {
-            if (propDictValue == null)
+            if (propDictItem == null)
             {
-                throw new ArgumentNullException(nameof(propDictValue));
+                throw new ArgumentNullException(nameof(propDictItem));
             }
-            propDictValue.Id = Id;
-            propDictValue.Alias = Alias;
-            propDictValue.PropertyId = PropertyId;
-            propDictValue.Value = Alias;
-            propDictValue.ValueId = Id;
+            propDictItem.Id = Id;
+            propDictItem.Alias = Alias;
+            propDictItem.PropertyId = PropertyId;
+            propDictItem.LocalizedValues = DictionaryItemValues.Select(x => x.ToModel(AbstractTypeFactory<PropertyDictionaryItemLocalizedValue>.TryCreateInstance())).ToList();
 
-            return propDictValue;
+            return propDictItem;
+        }
+
+        public virtual PropertyDictionaryItemEntity FromModel(PropertyDictionaryItem propDictItem, PrimaryKeyResolvingMap pkMap)
+        {
+            if (propDictItem == null)
+            {
+                throw new ArgumentNullException(nameof(propDictItem));
+            }
+            pkMap.AddPair(propDictItem, this);
+
+            Id = propDictItem.Id;
+            Alias = propDictItem.Alias;
+            PropertyId = propDictItem.PropertyId;
+            if (propDictItem.LocalizedValues != null)
+            {
+                DictionaryItemValues = new ObservableCollection<PropertyDictionaryValueEntity>(propDictItem.LocalizedValues.Select(x => AbstractTypeFactory<PropertyDictionaryValueEntity>.TryCreateInstance().FromModel(x, pkMap)));
+            }
+            return this;
         }
 
 
+        [Obsolete]
         public static IEnumerable<PropertyDictionaryItemEntity> FromModels(IEnumerable<PropertyDictionaryValue> dictValues, PrimaryKeyResolvingMap pkMap)
         {
             if (dictValues == null)

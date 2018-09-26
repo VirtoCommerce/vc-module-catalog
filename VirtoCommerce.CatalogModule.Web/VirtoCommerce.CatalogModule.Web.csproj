@@ -129,10 +129,8 @@
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="VirtoCommerce.Domain, Version=2.25.14.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VirtoCommerce.Domain.2.25.14\lib\net461\VirtoCommerce.Domain.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
+    <Reference Include="VirtoCommerce.Domain, Version=2.25.15.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VirtoCommerce.Domain.2.25.15\lib\net461\VirtoCommerce.Domain.dll</HintPath>
     </Reference>
     <Reference Include="VirtoCommerce.Platform.Core, Version=2.13.26.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\VirtoCommerce.Platform.Core.2.13.26\lib\net461\VirtoCommerce.Platform.Core.dll</HintPath>
@@ -154,6 +152,7 @@
     <Compile Include="Controllers\Api\CatalogModuleCategoriesController.cs" />
     <Compile Include="Controllers\Api\CatalogModuleProductsController.cs" />
     <Compile Include="Controllers\Api\CatalogModuleListEntryController.cs" />
+    <Compile Include="Controllers\Api\CatalogModulePropertyDictionaryItemsController.cs" />
     <Compile Include="Controllers\Api\CatalogModuleSearchController.cs" />
     <Compile Include="Controllers\Api\CatalogModulePropertiesController.cs" />
     <Compile Include="Converters\ImportJobConverter.cs" />
@@ -272,6 +271,7 @@
     <Content Include="Scripts\resources\import.js" />
     <Content Include="Scripts\resources\items.js" />
     <Content Include="Scripts\resources\listEntries.js" />
+    <Content Include="Scripts\resources\propDictItems.js" />
     <Content Include="Scripts\resources\properties.js" />
     <Content Include="Scripts\resources\valueTypes.js" />
     <Content Include="Scripts\widgets\catalogEntryImageWidget.js" />

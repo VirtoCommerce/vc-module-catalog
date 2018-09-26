@@ -58,8 +58,6 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
                     foreach (var property in category.Properties)
                     {
                         var webModelProperty = property.ToWebModel();
-                        //Reset dict values to decrease response size
-                        webModelProperty.DictionaryValues = null;
                         webModelProperty.Values = new List<webModel.PropertyValue>();
                         webModelProperty.IsManageable = true;
                         webModelProperty.IsReadOnly = property.Type != moduleModel.PropertyType.Category;

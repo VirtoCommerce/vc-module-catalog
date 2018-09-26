@@ -112,7 +112,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 _eventPublisher.Publish(new PropertyChangedEvent(changedEntries));
             }
         }
-
+        [Obsolete("Use IProperyDictionaryItemService instead")]
         public PropertyDictionaryValue[] SearchDictionaryValues(string propertyId, string keyword)
         {
             if (propertyId == null)

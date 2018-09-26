@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using VirtoCommerce.CatalogModule.Data.Search;
 using VirtoCommerce.Domain.Catalog.Model.Search;
 using VirtoCommerce.Domain.Search;
@@ -66,7 +66,7 @@ namespace VirtoCommerce.CatalogModule.Test
 
         private static IAggregationConverter GetAggregationRequestBuilder()
         {
-            return new AggregationConverter(GetBrowseFilterService(), null);
+            return new AggregationConverter(GetBrowseFilterService(), null, null);
         }
     }
 }
