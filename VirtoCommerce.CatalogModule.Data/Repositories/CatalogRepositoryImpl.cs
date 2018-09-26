@@ -530,14 +530,14 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         {
             var result = new GenericSearchResult<dataModel.AssociationEntity>();
 
-            var countSqlCommand = @"
+            var countSqlCommandText = @"
                 ;WITH Association_CTE AS
                 (
 	                SELECT *
 	                FROM Association
 	                WHERE ItemId IN ({0})
                 "
-                + (!string.IsNullOrEmpty(criteria.Group) ? $" AND AssociationType = N'{criteria.Group}'" : string.Empty) +
+                + (!string.IsNullOrEmpty(criteria.Group) ? $" AND AssociationType = @group" : string.Empty) +
                 @"), Category_CTE AS
                 (
 	                SELECT AssociatedCategoryId Id
@@ -558,15 +558,13 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 ) 
                 SELECT COUNT(Id) FROM Item_CTE";
 
-            var count = ExecuteStoreQuery<int>(countSqlCommand, criteria.ObjectIds).FirstOrDefault();
-
-            var querySqlCommand = @"
+            var querySqlCommandText = @"
                     ;WITH Association_CTE AS
                     (
 	                    SELECT *
 	                    FROM Association
 	                    WHERE ItemId IN({0})"
-                    + (!string.IsNullOrEmpty(criteria.Group) ? $" AND AssociationType = N'{criteria.Group}'" : string.Empty) +
+                    + (!string.IsNullOrEmpty(criteria.Group) ? $" AND AssociationType = @group" : string.Empty) +
                     @"), Category_CTE AS
                     (
 	                    SELECT AssociatedCategoryId Id, AssociatedCategoryId
@@ -603,8 +601,16 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     SELECT  * FROM Item_CTE WHERE AssociatedItemId IS NOT NULL ORDER BY Priority " +
                     $"OFFSET {criteria.Skip} ROWS FETCH NEXT {criteria.Take} ROWS ONLY";
 
-            result.TotalCount = ExecuteStoreQuery<int>(countSqlCommand, criteria.ObjectIds).FirstOrDefault();
-            result.Results = ExecuteStoreQuery<dataModel.AssociationEntity>(querySqlCommand, criteria.ObjectIds).ToList();
+            var countSqlCommand = CreateCommand(countSqlCommandText, criteria.ObjectIds);
+            var querySqlCommand = CreateCommand(querySqlCommandText, criteria.ObjectIds);
+            if (!string.IsNullOrEmpty(criteria.Group))
+            {
+                countSqlCommand.Parameters = countSqlCommand.Parameters.Concat(new[] { new SqlParameter($"@group", criteria.Group) }).ToArray();
+                querySqlCommand.Parameters = querySqlCommand.Parameters.Concat(new[] { new SqlParameter($"@group", criteria.Group) }).ToArray();
+            }
+
+            result.TotalCount = ObjectContext.ExecuteStoreQuery<int>(countSqlCommand.Text, countSqlCommand.Parameters).FirstOrDefault();
+            result.Results = ObjectContext.ExecuteStoreQuery<dataModel.AssociationEntity>(querySqlCommand.Text, querySqlCommand.Parameters).ToList();
 
             return result;
         }
