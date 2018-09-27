@@ -169,7 +169,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             }
             if (!DictionaryItems.IsNullCollection())
             {
-                var dictItemComparer = AnonymousComparer.Create((PropertyDictionaryItemEntity x) => x.IsTransient() ? x.Alias : x.Id);
+                var dictItemComparer = AnonymousComparer.Create((PropertyDictionaryItemEntity x) => $"{x.Alias}-${x.PropertyId}");
                 DictionaryItems.Patch(target.DictionaryItems, dictItemComparer, (sourceDictItem, targetDictItem) => sourceDictItem.Patch(targetDictItem));
             }
             if (!DisplayNames.IsNullCollection())

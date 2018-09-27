@@ -197,6 +197,10 @@
     <Compile Include="Migrations\201809200853133_RemoveDuplicatedDitionaryValues.Designer.cs">
       <DependentUpon>201809200853133_RemoveDuplicatedDitionaryValues.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201809270711531_PropertyValueCascadeDelete.cs" />
+    <Compile Include="Migrations\201809270711531_PropertyValueCascadeDelete.Designer.cs">
+      <DependentUpon>201809270711531_PropertyValueCascadeDelete.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Model\AssetEntity.cs" />
     <Compile Include="Model\AssociationEntity.cs" />
@@ -350,6 +354,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201809200853133_RemoveDuplicatedDitionaryValues.resx">
       <DependentUpon>201809200853133_RemoveDuplicatedDitionaryValues.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809270711531_PropertyValueCascadeDelete.resx">
+      <DependentUpon>201809270711531_PropertyValueCascadeDelete.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -89,7 +89,7 @@ angular.module('virtoCommerce.catalogModule')
                     }
                 }
             };
-            dialogService.showConfirmationDialog(dialog);
+            dialogService.showDialog(dialog, 'Modules/$(VirtoCommerce.Catalog)/Scripts/dialogs/deletePropertyDictionaryItem-dialog.tpl.html', 'platformWebApp.confirmDialogController');
         };
 
         $scope.deleteDictItem = function (selectedDictItem) {

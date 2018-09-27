@@ -534,6 +534,10 @@
         "shallow": "Metadata",
         "full": "Completely"
       },
+      "property-dictionary-item-delete": {
+        "message": "Are you sure you want to delete selected dictionary items?",
+        "warning": "WARNING: this change is permanent and can't be undone afterwards. It can lead to data loss."
+      },
       "virtual-catalog-save": {
         "title": "Save changes",
         "message": "The virtual catalog has been modified. Do you want to save changes?"

@@ -88,7 +88,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             modelBuilder.Entity<dataModel.PropertyValueEntity>().HasOptional(m => m.CatalogItem).WithMany(x => x.ItemPropertyValues).HasForeignKey(x => x.ItemId).WillCascadeOnDelete(false);
             modelBuilder.Entity<dataModel.PropertyValueEntity>().HasOptional(m => m.Category).WithMany(x => x.CategoryPropertyValues).HasForeignKey(x => x.CategoryId).WillCascadeOnDelete(false);
             modelBuilder.Entity<dataModel.PropertyValueEntity>().HasOptional(m => m.Catalog).WithMany(x => x.CatalogPropertyValues).HasForeignKey(x => x.CatalogId).WillCascadeOnDelete(false);
-            modelBuilder.Entity<dataModel.PropertyValueEntity>().HasOptional(m => m.DictionaryItem).WithMany().HasForeignKey(x => x.DictionaryItemId).WillCascadeOnDelete(false);
+            modelBuilder.Entity<dataModel.PropertyValueEntity>().HasOptional(m => m.DictionaryItem).WithMany().HasForeignKey(x => x.DictionaryItemId).WillCascadeOnDelete(true);
             #endregion
 
             #region PropertyValidationRule
