@@ -86,46 +86,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             //Reduce details according to response group
             foreach (var product in productsWithVariationsList)
             {
-                if (!respGroup.HasFlag(ItemResponseGroup.ItemAssets))
-                {
-                    product.Assets = null;
-                }
-                if (!respGroup.HasFlag(ItemResponseGroup.ItemAssociations))
-                {
-                    product.Associations = null;
-                }
-                if (!respGroup.HasFlag(ItemResponseGroup.ReferencedAssociations))
-                {
-                    product.ReferencedAssociations = null;
-                }
-                if (!respGroup.HasFlag(ItemResponseGroup.ItemEditorialReviews))
-                {
-                    product.Reviews = null;
-                }
-                if (!respGroup.HasFlag(ItemResponseGroup.Inventory))
-                {
-                    product.Inventories = null;
-                }
-                if (!respGroup.HasFlag(ItemResponseGroup.ItemProperties))
-                {
-                    product.Properties = null;
-                }
-                if (!respGroup.HasFlag(ItemResponseGroup.Links))
-                {
-                    product.Links = null;
-                }
-                if (!respGroup.HasFlag(ItemResponseGroup.Outlines))
-                {
-                    product.Outlines = null;
-                }
-                if (!respGroup.HasFlag(ItemResponseGroup.Seo))
-                {
-                    product.SeoInfos = null;
-                }
-                if (!respGroup.HasFlag(ItemResponseGroup.Variations))
-                {
-                    product.Variations = null;
-                }
+                ReduceDetails(product, respGroup);
             }
 
             return result;
@@ -167,6 +128,60 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         }
 
         #endregion
+        /// <summary>
+        /// Reduce product details according to response group
+        /// </summary>
+        /// <param name="product"></param>
+        /// <param name="respGroup"></param>
+        protected virtual void ReduceDetails(CatalogProduct product, ItemResponseGroup respGroup)
+        {
+            if (product == null)
+            {
+                throw new ArgumentNullException(nameof(product));
+            }
+
+            if (!respGroup.HasFlag(ItemResponseGroup.ItemAssets))
+            {
+                product.Assets = null;
+            }
+            if (!respGroup.HasFlag(ItemResponseGroup.ItemAssociations))
+            {
+                product.Associations = null;
+            }
+            if (!respGroup.HasFlag(ItemResponseGroup.ReferencedAssociations))
+            {
+                product.ReferencedAssociations = null;
+            }
+            if (!respGroup.HasFlag(ItemResponseGroup.ItemEditorialReviews))
+            {
+                product.Reviews = null;
+            }
+            if (!respGroup.HasFlag(ItemResponseGroup.Inventory))
+            {
+                product.Inventories = null;
+            }
+            if (!respGroup.HasFlag(ItemResponseGroup.ItemProperties))
+            {
+                product.Properties = null;
+                product.PropertyValues = null;
+            }
+            if (!respGroup.HasFlag(ItemResponseGroup.Links))
+            {
+                product.Links = null;
+            }
+            if (!respGroup.HasFlag(ItemResponseGroup.Outlines))
+            {
+                product.Outlines = null;
+            }
+            if (!respGroup.HasFlag(ItemResponseGroup.Seo))
+            {
+                product.SeoInfos = null;
+            }
+            if (!respGroup.HasFlag(ItemResponseGroup.Variations))
+            {
+                product.Variations = null;
+            }
+        }
 
         protected virtual void SaveChanges(CatalogProduct[] products, bool disableValidation = false)
         {
