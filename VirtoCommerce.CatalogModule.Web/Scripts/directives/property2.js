@@ -128,11 +128,10 @@ angular.module('virtoCommerce.catalogModule')
 
                 return scope.getPropValues()(scope.currentEntity.id, '', countToSkip, countToTake).then(function (result) {
                     populateDictionaryValues(result.results);
+                    $select.page++;
 
                     // If there are more items to display, let's prepare to handle these items.
                     if (scope.context.allDictionaryValues.length < result.totalCount) {
-                        $select.page++;
-
                         // Reset scrolling for the when-scrolled directive, so it could trigger this method for next page.
                         scope.$broadcast('scrollCompleted');
                     }
