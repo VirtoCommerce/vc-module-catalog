@@ -10,12 +10,16 @@ angular.module('virtoCommerce.catalogModule')
         scope: {
             languages: "=",
             defaultLanguage: "=",
+            pageSize: "=?",
             getPropValues: "&"
         },
         link: function (scope, element, attr, ctrls, linker) {
             var ngModelController = ctrls[1];
 
             scope.currentEntity = ngModelController.$modelValue;
+
+            scope.currentPage = 0;
+            scope.pageSize = angular.isDefined(scope.size) ? scope.size : 10;
 
             scope.context = {};
             scope.context.currentPropValues = [];
@@ -58,10 +62,6 @@ angular.module('virtoCommerce.catalogModule')
                 scope.context.currentPropValues = angular.copy(scope.currentEntity.values);
                 if (needAddEmptyValue(scope.currentEntity, scope.context.currentPropValues)) {
                     scope.context.currentPropValues.push({ value: null });
-                }
-
-                if (scope.currentEntity.dictionary) {
-                    loadDictionaryValues();
                 }
 
                 initLanguagesValuesMap();
@@ -116,28 +116,55 @@ angular.module('virtoCommerce.catalogModule')
                 }
             };
 
-            function loadDictionaryValues() {
-                scope.getPropValues()(scope.currentEntity.id).then(function (result) {
-                    scope.context.allDictionaryValues = [];
-                    scope.context.currentPropValues = [];
+            scope.loadDictionaryValues = function ($select) {
+                $select.page = 0;
+                scope.context.allDictionaryValues = [];
 
-                    angular.forEach(result.results, function (dictItem) {
-                        var dictValue = { alias: dictItem.alias, valueId: dictItem.id, value: dictItem.alias };
+                return scope.loadNextDictionaryValues($select);
+            };
+
+            scope.loadNextDictionaryValues = function($select) {
+                var countToSkip = $select.page * scope.pageSize;
+                var countToTake = scope.pageSize;
+
+                return scope.getPropValues()(scope.currentEntity.id, '', countToSkip, countToTake).then(function (result) {
+                    populateDictionaryValues(result.results);
+
+                    // If there are more items to display, let's prepare to handle these items.
+                    if (scope.context.allDictionaryValues.length < result.totalCount) {
+                        $select.page++;
+
+                        // Reset scrolling for the when-scrolled directive, so it could trigger this method for next page.
+                        scope.$broadcast('scrollCompleted');
+                    }
+
+                    return result;
+                });
+            }
+
+            function populateDictionaryValues(dictionaryValues) {
+                angular.forEach(dictionaryValues,
+                    function(dictItem) {
+                        var dictValue = {
+                            alias: dictItem.alias,
+                            valueId: dictItem.id,
+                            value: dictItem.alias
+                        };
+
                         //Need to select already selected values. Dictionary values have same type as standard values.
-                        dictValue.selected = angular.isDefined(_.find(scope.currentEntity.values, function (x) { return x.valueId == dictItem.id }));
+                        dictValue.selected = angular.isDefined(_.find(scope.currentEntity.values,
+                            function(item) {
+                                return item.valueId == dictItem.id;
+                            }));
+
                         scope.context.allDictionaryValues.push(dictValue);
+
                         if (dictValue.selected) {
                             //add selected value
                             scope.context.currentPropValues.push(dictValue);
                         }
                     });
-
-                    //initLanguagesValuesMap();
-
-                    return result;
-                });
-
-            };
+            }
 
             function getTemplateName(property) {
                 var result = property.valueType;
