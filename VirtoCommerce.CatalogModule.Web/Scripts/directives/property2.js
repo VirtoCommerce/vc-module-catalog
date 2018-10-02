@@ -10,22 +10,21 @@ angular.module('virtoCommerce.catalogModule')
         scope: {
             languages: "=",
             defaultLanguage: "=",
-            pageSize: "=?",
-            getPropValues: "&"
+            getPropValues: "&",
+            pageSize: "@?"
         },
         link: function (scope, element, attr, ctrls, linker) {
             var ngModelController = ctrls[1];
 
             scope.currentEntity = ngModelController.$modelValue;
 
-            scope.currentPage = 0;
-            scope.pageSize = angular.isDefined(scope.size) ? scope.size : 10;
-
             scope.context = {};
             scope.context.currentPropValues = [];
             scope.context.allDictionaryValues = [];
             scope.context.langValuesMap = {};
             scope.context.form = ctrls[0];
+
+            scope.pageSize = angular.isDefined(scope.pageSize) ? scope.pageSize : 50;
 
             scope.$watch('context.langValuesMap', function (newValue, oldValue) {
                 if (newValue != oldValue) {
@@ -41,7 +40,7 @@ angular.module('virtoCommerce.catalogModule')
 
             scope.$watch('context.currentPropValues', function (newValues) {
                 //reflect only real changes
-                if (isValuesDifferent(newValues, scope.currentEntity.values)) {                   
+                if (isValuesDifferent(newValues, scope.currentEntity.values)) {
 
                     if (newValues[0] === undefined) {
                         scope.currentEntity.values = null;
