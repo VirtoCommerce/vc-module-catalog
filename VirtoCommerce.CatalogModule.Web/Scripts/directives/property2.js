@@ -145,24 +145,27 @@ angular.module('virtoCommerce.catalogModule')
             function populateDictionaryValues(dictionaryValues) {
                 angular.forEach(dictionaryValues,
                     function(dictItem) {
-                        var dictValue = {
-                            alias: dictItem.alias,
-                            valueId: dictItem.id,
-                            value: dictItem.alias
-                        };
-
-                        //Need to select already selected values. Dictionary values have same type as standard values.
-                        dictValue.selected = angular.isDefined(_.find(scope.currentEntity.values,
+                        // Check if current dictionary value is already selected
+                        var dictValue = _.find(scope.context.currentPropValues,
                             function(item) {
                                 return item.valueId == dictItem.id;
-                            }));
+                            });
+
+                        var valueIsSelected = angular.isDefined(dictValue);
+
+                        // If the value is not selected, create a new item to add it to ui-select
+                        if (!valueIsSelected) {
+                            dictValue = {
+                                alias: dictItem.alias,
+                                valueId: dictItem.id,
+                                value: dictItem.alias
+                            };
+                        }
+
+                        // Need to select already selected values. Dictionary values have same type as standard values.
+                        dictValue.selected = valueIsSelected;
 
                         scope.context.allDictionaryValues.push(dictValue);
-
-                        if (dictValue.selected) {
-                            //add selected value
-                            scope.context.currentPropValues.push(dictValue);
-                        }
                     });
             }
 
