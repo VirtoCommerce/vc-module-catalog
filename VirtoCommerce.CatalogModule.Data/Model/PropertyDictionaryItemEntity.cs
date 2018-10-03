@@ -61,7 +61,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             return this;
         }
 
-
+        //Left only for backward compatibility when dictionary items used to save within property
         [Obsolete]
         public static IEnumerable<PropertyDictionaryItemEntity> FromModels(IEnumerable<PropertyDictionaryValue> dictValues, PrimaryKeyResolvingMap pkMap)
         {
@@ -73,7 +73,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             foreach (var dictItemGroup in dictValues.GroupBy(x => x.Alias))
             {
                 var dictItemEntity = AbstractTypeFactory<PropertyDictionaryItemEntity>.TryCreateInstance();
-                dictItemEntity.Id = dictItemGroup.First().ValueId;
+                dictItemEntity.Id = dictItemGroup.First().ValueId ?? dictItemGroup.First().Id;
                 dictItemEntity.Alias = dictItemGroup.Key;
                 dictItemEntity.PropertyId = dictItemGroup.First().PropertyId;
 
