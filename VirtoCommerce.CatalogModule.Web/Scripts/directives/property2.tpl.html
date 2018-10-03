@@ -137,7 +137,7 @@
         <div class="form-input">
             <ui-select ng-model="context.currentPropValues[0]" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
                 <ui-select-match allow-clear="true" placeholder="{{ 'platform.genericValueInput.placeholders.short-text-dictionary' | translate }}">{{$select.selected.value}}</ui-select-match>
-                <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search} | orderBy: 'value'" refresh="loadDictionaryValues($select)" when-scrolled="loadNextDictionaryValues($select)">
+                <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search} | orderBy: 'value'" refresh="loadDictionaryValues($select)" refresh-delay="200" when-scrolled="loadNextDictionaryValues($select)">
                     <span ng-bind-html="propValue.value | highlight: $select.search"></span>
                 </ui-select-choices>
             </ui-select>
@@ -147,7 +147,7 @@
         <div class="form-input">
             <ui-select ng-model="context.currentPropValues[0]" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
                 <ui-select-match allow-clear="true" placeholder="{{ 'platform.genericValueInput.placeholders.number' | translate }}">{{$select.selected.value}}</ui-select-match>
-                <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search} | orderBy: 'value'" refresh="loadDictionaryValues($select)" when-scrolled="loadNextDictionaryValues($select)">
+                <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search} | orderBy: 'value'" refresh="loadDictionaryValues($select)" refresh-delay="200" when-scrolled="loadNextDictionaryValues($select)">
                     <span ng-bind-html="propValue.value | highlight: $select.search"></span>
                 </ui-select-choices>
             </ui-select>
@@ -159,7 +159,7 @@
         <div class="form-input">
             <ui-select multiple ng-model="context.currentPropValues" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
                 <ui-select-match placeholder="{{ 'platform.genericValueInput.placeholders.short-text-dictionary-multivalue' | translate }}">{{$item.value}}</ui-select-match>
-                <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search} | orderBy: 'value'" refresh="loadDictionaryValues($select)" when-scrolled="loadNextDictionaryValues($select)">
+                <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search} | orderBy: 'value'" refresh="loadDictionaryValues($select)" refresh-delay="200" when-scrolled="loadNextDictionaryValues($select)">
                     <span ng-bind-html="propValue.value | highlight: $select.search"></span>
                 </ui-select-choices>
             </ui-select>
@@ -169,7 +169,7 @@
         <div class="form-input">
             <ui-select multiple ng-model="context.currentPropValues[0]" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
                 <ui-select-match placeholder="{{ 'platform.genericValueInput.placeholders.number-multivalue' | translate }}">{{$item.value}}</ui-select-match>
-                <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search} | orderBy: 'value'" refresh="loadDictionaryValues($select)" when-scrolled="loadNextDictionaryValues($select)">
+                <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search} | orderBy: 'value'" refresh="loadDictionaryValues($select)" refresh-delay="200" when-scrolled="loadNextDictionaryValues($select)">
                     <span ng-bind-html="propValue.value | highlight: $select.search"></span>
                 </ui-select-choices>
             </ui-select>
@@ -304,7 +304,7 @@
         <div class="form-input">
             <ui-select ng-model="context.currentPropValues[0]" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
                 <ui-select-match allow-clear="true" placeholder="{{ 'platform.genericValueInput.placeholders.short-text-dictionary-multilang' | translate }}">{{$select.selected.value}}</ui-select-match>
-                <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search} | orderBy: 'value'" refresh="loadDictionaryValues($select)" when-scrolled="loadNextDictionaryValues($select)">
+                <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search} | orderBy: 'value'" refresh="loadDictionaryValues($select)" refresh-delay="200" when-scrolled="loadNextDictionaryValues($select)">
                     <span ng-bind-html="propValue.value | highlight: $select.search"></span>
                 </ui-select-choices>
             </ui-select>
@@ -315,7 +315,7 @@
         <div class="form-input">
             <ui-select ng-model="context.currentPropValues[0]" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
                 <ui-select-match allow-clear="true" placeholder="{{ 'platform.genericValueInput.placeholders.number' | translate }}">{{$select.selected.value}}</ui-select-match>
-                <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search} | orderBy: 'value'" refresh="loadDictionaryValues($select)" when-scrolled="loadNextDictionaryValues($select)">
+                <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search} | orderBy: 'value'" refresh="loadDictionaryValues($select)" refresh-delay="200" when-scrolled="loadNextDictionaryValues($select)">
                     <span ng-bind-html="propValue.value | highlight: $select.search"></span>
                 </ui-select-choices>
             </ui-select>
@@ -326,7 +326,7 @@
         <div class="form-input">
             <ui-select multiple ng-model="context.currentPropValues" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
                 <ui-select-match placeholder="{{ 'platform.genericValueInput.placeholders.short-text-dictionary-multivalue-multilang' | translate }}">{{$item.value}}</ui-select-match>
-                <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search} | orderBy: 'value'" refresh="loadDictionaryValues($select)" when-scrolled="loadNextDictionaryValues($select)">
+                <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search} | orderBy: 'value'" refresh="loadDictionaryValues($select)" refresh-delay="200" when-scrolled="loadNextDictionaryValues($select)">
                     <span ng-bind-html="propValue.value | highlight: $select.search"></span>
                 </ui-select-choices>
             </ui-select>
@@ -337,7 +337,7 @@
         <div class="form-input">
             <ui-select multiple ng-model="context.currentPropValues[0]" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
                 <ui-select-match placeholder="{{ 'platform.genericValueInput.placeholders.number-multivalue' | translate }}">{{$item.value}}</ui-select-match>
-                <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search} | orderBy: 'value'" refresh="loadDictionaryValues($select)" when-scrolled="loadNextDictionaryValues($select)">
+                <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search} | orderBy: 'value'" refresh="loadDictionaryValues($select)" refresh-delay="200" when-scrolled="loadNextDictionaryValues($select)">
                     <span ng-bind-html="propValue.value | highlight: $select.search"></span>
                 </ui-select-choices>
             </ui-select>
