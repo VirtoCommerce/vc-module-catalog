@@ -62,12 +62,16 @@ angular.module('virtoCommerce.catalogModule')
 			bladeNavigationService.showBlade(newBlade, blade);
 		}
 
-        $scope.getPropValues = function (propId, keyword) {
-            //TODO: Replace to lazy loading and infinite scroll
-            return propDictItems.search({ propertyIds: [propId], searchPhrase: keyword, take : 10000 }).$promise.then(function (result) {
-				return result;
-			});
-		};
+        $scope.getPropValues = function (propId, keyword, countToSkip, countToTake) {
+            return propDictItems.search({
+                propertyIds: [propId],
+                searchPhrase: keyword,
+                skip: countToSkip,
+                take: countToTake
+            }).$promise.then(function(result) {
+                return result;
+            });
+        };
 
 		var formScope;
 		$scope.setForm = function (form) {

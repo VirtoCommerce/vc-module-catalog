@@ -66,7 +66,7 @@ angular.module('virtoCommerce.catalogModule')
         // ui-grid
         $scope.setGridOptions = function (gridOptions) {
             uiGridHelper.initialize($scope, gridOptions, function (gridApi) {
-                if ($scope.gridApi.core) {
+                if (gridApi && gridApi.core) {
                     uiGridHelper.bindRefreshOnSortChanged($scope);
                 }
             });

@@ -10,7 +10,8 @@ angular.module('virtoCommerce.catalogModule')
         scope: {
             languages: "=",
             defaultLanguage: "=",
-            getPropValues: "&"
+            getPropValues: "&",
+            pageSize: "@?"
         },
         link: function (scope, element, attr, ctrls, linker) {
             var ngModelController = ctrls[1];
@@ -22,6 +23,8 @@ angular.module('virtoCommerce.catalogModule')
             scope.context.allDictionaryValues = [];
             scope.context.langValuesMap = {};
             scope.context.form = ctrls[0];
+
+            scope.pageSize = angular.isDefined(scope.pageSize) ? scope.pageSize : 50;
 
             scope.$watch('context.langValuesMap', function (newValue, oldValue) {
                 if (newValue != oldValue) {
@@ -37,7 +40,7 @@ angular.module('virtoCommerce.catalogModule')
 
             scope.$watch('context.currentPropValues', function (newValues) {
                 //reflect only real changes
-                if (isValuesDifferent(newValues, scope.currentEntity.values)) {                   
+                if (isValuesDifferent(newValues, scope.currentEntity.values)) {
 
                     if (newValues[0] === undefined) {
                         scope.currentEntity.values = null;
@@ -58,10 +61,6 @@ angular.module('virtoCommerce.catalogModule')
                 scope.context.currentPropValues = angular.copy(scope.currentEntity.values);
                 if (needAddEmptyValue(scope.currentEntity, scope.context.currentPropValues)) {
                     scope.context.currentPropValues.push({ value: null });
-                }
-
-                if (scope.currentEntity.dictionary) {
-                    loadDictionaryValues();
                 }
 
                 initLanguagesValuesMap();
@@ -116,28 +115,57 @@ angular.module('virtoCommerce.catalogModule')
                 }
             };
 
-            function loadDictionaryValues() {
-                scope.getPropValues()(scope.currentEntity.id).then(function (result) {
-                    scope.context.allDictionaryValues = [];
-                    scope.context.currentPropValues = [];
+            scope.loadDictionaryValues = function ($select) {
+                $select.page = 0;
+                scope.context.allDictionaryValues = [];
 
-                    angular.forEach(result.results, function (dictItem) {
-                        var dictValue = { alias: dictItem.alias, valueId: dictItem.id, value: dictItem.alias };
-                        //Need to select already selected values. Dictionary values have same type as standard values.
-                        dictValue.selected = angular.isDefined(_.find(scope.currentEntity.values, function (x) { return x.valueId == dictItem.id }));
-                        scope.context.allDictionaryValues.push(dictValue);
-                        if (dictValue.selected) {
-                            //add selected value
-                            scope.context.currentPropValues.push(dictValue);
-                        }
-                    });
+                return scope.loadNextDictionaryValues($select);
+            };
 
-                    //initLanguagesValuesMap();
+            scope.loadNextDictionaryValues = function($select) {
+                var countToSkip = $select.page * scope.pageSize;
+                var countToTake = scope.pageSize;
+
+                return scope.getPropValues()(scope.currentEntity.id, $select.search, countToSkip, countToTake).then(function (result) {
+                    populateDictionaryValues(result.results);
+                    $select.page++;
+
+                    // If there are more items to display, let's prepare to handle these items.
+                    if (scope.context.allDictionaryValues.length < result.totalCount) {
+                        // Reset scrolling for the when-scrolled directive, so it could trigger this method for next page.
+                        scope.$broadcast('scrollCompleted');
+                    }
 
                     return result;
                 });
+            }
 
-            };
+            function populateDictionaryValues(dictionaryValues) {
+                angular.forEach(dictionaryValues,
+                    function(dictItem) {
+                        // Check if current dictionary value is already selected
+                        var dictValue = _.find(scope.context.currentPropValues,
+                            function(item) {
+                                return item.valueId == dictItem.id;
+                            });
+
+                        var valueIsSelected = angular.isDefined(dictValue);
+
+                        // If the value is not selected, create a new item to add it to ui-select
+                        if (!valueIsSelected) {
+                            dictValue = {
+                                alias: dictItem.alias,
+                                valueId: dictItem.id,
+                                value: dictItem.alias
+                            };
+                        }
+
+                        // Need to select already selected values. Dictionary values have same type as standard values.
+                        dictValue.selected = valueIsSelected;
+
+                        scope.context.allDictionaryValues.push(dictValue);
+                    });
+            }
 
             function getTemplateName(property) {
                 var result = property.valueType;
