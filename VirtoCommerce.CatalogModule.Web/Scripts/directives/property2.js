@@ -126,7 +126,7 @@ angular.module('virtoCommerce.catalogModule')
                 var countToSkip = $select.page * scope.pageSize;
                 var countToTake = scope.pageSize;
 
-                return scope.getPropValues()(scope.currentEntity.id, '', countToSkip, countToTake).then(function (result) {
+                return scope.getPropValues()(scope.currentEntity.id, $select.search, countToSkip, countToTake).then(function (result) {
                     populateDictionaryValues(result.results);
                     $select.page++;
 
