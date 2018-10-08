@@ -253,6 +253,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
                 if (product.MainProduct != null)
                 {
+                    if (product.MainProduct.MainProduct != null)
+                    {
+                        throw new OperationCanceledException($"The main product can't contains reference to another main product! It can lead to the infinite recursion.");
+                    }
                     LoadDependencies(new[] { product.MainProduct }, false);
                 }
                 if (processVariations && !product.Variations.IsNullOrEmpty())
