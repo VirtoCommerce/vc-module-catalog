@@ -27,7 +27,7 @@ angular.module('virtoCommerce.catalogModule')
             scope.pageSize = angular.isDefined(scope.pageSize) ? scope.pageSize : 50;
 
             scope.$watch('context.langValuesMap', function (newValue, oldValue) {
-                if (newValue != oldValue) {
+                if (newValue != oldValue && !scope.currentEntity.dictionary) {
                     scope.context.currentPropValues = [];
                     angular.forEach(scope.context.langValuesMap, function (langGroup, languageCode) {
                         angular.forEach(langGroup.currentPropValues, function (propValue) {
@@ -41,7 +41,6 @@ angular.module('virtoCommerce.catalogModule')
             scope.$watch('context.currentPropValues', function (newValues) {
                 //reflect only real changes
                 if (isValuesDifferent(newValues, scope.currentEntity.values)) {
-
                     if (newValues[0] === undefined) {
                         scope.currentEntity.values = null;
                     } else {
@@ -52,6 +51,9 @@ angular.module('virtoCommerce.catalogModule')
 
                     ngModelController.$setViewValue(scope.currentEntity);
                 }
+                if (newValues[0] === undefined) {
+                    scope.currentEntity.values = [];
+                } 
             }, true);
 
 
@@ -59,6 +61,19 @@ angular.module('virtoCommerce.catalogModule')
                 scope.currentEntity = ngModelController.$modelValue;
 
                 scope.context.currentPropValues = angular.copy(scope.currentEntity.values);
+                //For dictionary multilingual properties need to left only distinct dictionary items
+                if (scope.currentEntity.dictionary) {
+                    scope.context.currentPropValues = _.uniq(_.map(scope.context.currentPropValues, function (x) {
+                        return {
+                            id: x.id,
+                            alias: x.alias,
+                            valueId: x.valueId,
+                            value: x.alias,
+                            selected: true
+                        };
+                    }), function (x) { return x.valueId; });
+                  
+                }
                 if (needAddEmptyValue(scope.currentEntity, scope.context.currentPropValues)) {
                     scope.context.currentPropValues.push({ value: null });
                 }
@@ -86,7 +101,7 @@ angular.module('virtoCommerce.catalogModule')
 
 
             function initLanguagesValuesMap() {
-                if (scope.currentEntity.multilanguage) {
+                if (scope.currentEntity.multilanguage && !scope.currentEntity.dictionary) {
                     //Group values by language 
                     angular.forEach(scope.languages, function (language) {
                         //Currently select values
@@ -140,31 +155,20 @@ angular.module('virtoCommerce.catalogModule')
                 });
             }
 
-            function populateDictionaryValues(dictionaryValues) {
-                angular.forEach(dictionaryValues,
-                    function(dictItem) {
-                        // Check if current dictionary value is already selected
-                        var dictValue = _.find(scope.context.currentPropValues,
-                            function(item) {
-                                return item.valueId == dictItem.id;
-                            });
-
-                        var valueIsSelected = angular.isDefined(dictValue);
-
-                        // If the value is not selected, create a new item to add it to ui-select
-                        if (!valueIsSelected) {
-                            dictValue = {
-                                alias: dictItem.alias,
-                                valueId: dictItem.id,
-                                value: dictItem.alias
-                            };
-                        }
-
-                        // Need to select already selected values. Dictionary values have same type as standard values.
-                        dictValue.selected = valueIsSelected;
-
-                        scope.context.allDictionaryValues.push(dictValue);
+            function populateDictionaryValues(dictItems) {
+                angular.forEach(dictItems, function (dictItem) {
+                    var dictValue = _.find(scope.context.currentPropValues, function (x) {
+                        return x.valueId == dictItem.id;
                     });
+                    if (!dictValue) {
+                        dictValue = {
+                            alias: dictItem.alias,
+                            valueId: dictItem.id,
+                            value: dictItem.alias
+                        };
+                    }
+                    scope.context.allDictionaryValues.push(dictValue);
+                });
             }
 
             function getTemplateName(property) {

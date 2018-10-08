@@ -130,13 +130,14 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             CreatedDate = propValue.CreatedDate;
             ModifiedBy = propValue.ModifiedBy;
             ModifiedDate = propValue.ModifiedDate;
-            Locale = propValue.LanguageCode;
             Name = propValue.PropertyName;
             ValueType = (int)propValue.ValueType;
             DictionaryItemId = propValue.ValueId;
             //Required for manual reference
             Alias = propValue.Alias;
-            SetValue(propValue.ValueType, propValue.Value);
+            //Store alias as value for dictionary properties values
+            SetValue(propValue.ValueType, !string.IsNullOrEmpty(DictionaryItemId) ? propValue.Alias : propValue.Value);
+            Locale = !string.IsNullOrEmpty(DictionaryItemId) ? null : propValue.LanguageCode;
 
             return this;
         }
