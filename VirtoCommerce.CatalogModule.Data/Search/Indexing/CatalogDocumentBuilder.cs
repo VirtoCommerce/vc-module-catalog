@@ -41,6 +41,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                     {
                         case PropertyValueType.Boolean:
                         case PropertyValueType.DateTime:
+                        case PropertyValueType.Integer:
                         case PropertyValueType.Number:
                             document.Add(new IndexDocumentField(propertyName, propValue.Value) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection });
                             break;
