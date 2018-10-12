@@ -108,12 +108,12 @@ angular.module('virtoCommerce.catalogModule')
         };
         
         var newBlade = {
-            id: 'CatalogItemsSelect',
+            id: blade.id,
             breadcrumbs: blade.breadcrumbs,
             catalogId: blade.catalogId,
             catalog: blade.catalog,
-            controller: 'virtoCommerce.catalogModule.catalogItemSelectController',
-            template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/common/catalog-items-select.tpl.html',
+            controller: blade.controller,
+            template: blade.template,
             options: $scope.options,
             searchCriteria: blade.searchCriteria,
             toolbarCommands: blade.toolbarCommands
@@ -175,9 +175,14 @@ angular.module('virtoCommerce.catalogModule')
     };
 
     $scope.setGridOptions = function (gridId, gridOptions) {
-        gridOptions.isRowSelectable = function (row) {
-            return ($scope.options.allowCheckingItem && row.entity.type !== 'category') || ($scope.options.allowCheckingCategory && row.entity.type === 'category');
-        };
+        gridOptions.isRowSelectable = angular.isFunction($scope.options.isItemSelectable)
+            ? function(row) {
+                return $scope.options.isItemSelectable(row.entity);
+            }
+            : function(row) {
+                return $scope.options.allowCheckingItem && row.entity.type !== 'category' ||
+                    $scope.options.allowCheckingCategory && row.entity.type === 'category';
+            };
 
         gridOptions.columnDefs = gridOptions.columnDefs.concat($scope.options.gridColumns);
         gridOptionExtension.tryExtendGridOptions(gridId, gridOptions);
