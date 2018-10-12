@@ -139,22 +139,26 @@ angular.module('virtoCommerce.catalogModule')
             });
         }
         else {
+            //default blade for product details
+            newBlade = {
+                id: "listItemDetail",
+                itemId: listItem.id,
+                productType: listItem.productType,
+                title: listItem.name,
+                catalog: blade.catalog,
+                variationsToolbarCommandsAndEvents: { toolbarCommands: blade.toolbarCommands, externalRegisterApiCallback: externalRegisterApiCallback },
+                controller: 'virtoCommerce.catalogModule.itemDetailController',
+                template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/item-detail.tpl.html'
+            };
+
             //extension point allows to use custom views for product details
-            if ($scope.options.fnItemBladeFactory) {
-                newBlade = $scope.options.fnItemBladeFactory(listItem);
+            if ($scope.options.fnGetBladeForItem) {
+                var customBlade = $scope.options.fnGetBladeForItem(listItem);
+                if (customBlade) {
+                    newBlade = customBlade;
+                }
             }
-            if (!newBlade) {
-                newBlade = {
-                    id: "listItemDetail",
-                    itemId: listItem.id,
-                    productType: listItem.productType,
-                    title: listItem.name,
-                    catalog: blade.catalog,
-                    variationsToolbarCommandsAndEvents: { toolbarCommands: blade.toolbarCommands, externalRegisterApiCallback: externalRegisterApiCallback },
-                    controller: 'virtoCommerce.catalogModule.itemDetailController',
-                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/item-detail.tpl.html'
-                };
-            }
+           
             bladeNavigationService.showBlade(newBlade, blade);
 
             // setting current categoryId to be globally available
