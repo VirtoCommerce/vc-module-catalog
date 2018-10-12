@@ -1,4 +1,4 @@
-﻿angular.module('virtoCommerce.catalogModule')
+angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.catalogItemSelectController', ['$scope', 'virtoCommerce.catalogModule.catalogs', 'virtoCommerce.catalogModule.listEntries', 'platformWebApp.bladeUtils', 'uiGridConstants', 'platformWebApp.uiGridHelper', 'platformWebApp.ui-grid.extension', '$timeout',
     function ($scope, catalogs, listEntries, bladeUtils, uiGridConstants, uiGridHelper, gridOptionExtension, $timeout) {
     var blade = $scope.blade;
@@ -106,7 +106,7 @@
         if ($scope.options.selectItemFn) {
             $scope.options.selectItemFn(listItem);
         };
-
+        
         var newBlade = {
             id: 'CatalogItemsSelect',
             breadcrumbs: blade.breadcrumbs,
@@ -118,7 +118,6 @@
             searchCriteria: blade.searchCriteria,
             toolbarCommands: blade.toolbarCommands
         };
-
 
         if ($scope.isCatalogSelectMode()) {
             newBlade.catalogId = listItem.id;
@@ -140,16 +139,22 @@
             });
         }
         else {
-            newBlade = {
-                id: "listItemDetail",
-                itemId: listItem.id,
-                productType: listItem.productType,
-                title: listItem.name,
-                catalog: blade.catalog,
-                variationsToolbarCommandsAndEvents: { toolbarCommands: blade.toolbarCommands, externalRegisterApiCallback: externalRegisterApiCallback },
-                controller: 'virtoCommerce.catalogModule.itemDetailController',
-                template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/item-detail.tpl.html'
-            };
+            //extension point allows to use custom views for product details
+            if ($scope.options.fnItemBladeFactory) {
+                newBlade = $scope.options.fnItemBladeFactory(listItem);
+            }
+            if (!newBlade) {
+                newBlade = {
+                    id: "listItemDetail",
+                    itemId: listItem.id,
+                    productType: listItem.productType,
+                    title: listItem.name,
+                    catalog: blade.catalog,
+                    variationsToolbarCommandsAndEvents: { toolbarCommands: blade.toolbarCommands, externalRegisterApiCallback: externalRegisterApiCallback },
+                    controller: 'virtoCommerce.catalogModule.itemDetailController',
+                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/item-detail.tpl.html'
+                };
+            }
             bladeNavigationService.showBlade(newBlade, blade);
 
             // setting current categoryId to be globally available
