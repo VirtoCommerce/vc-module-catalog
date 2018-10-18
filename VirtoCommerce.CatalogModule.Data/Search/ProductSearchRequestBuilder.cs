@@ -42,6 +42,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                     Take = criteria.Take,
                     Aggregations = _aggregationConverter?.GetAggregationRequests(productSearchCriteria, allFilters),
                     IsFuzzySearch = productSearchCriteria.IsFuzzySearch,
+                    RawQuery = productSearchCriteria.RawQuery
             };
             }
 
