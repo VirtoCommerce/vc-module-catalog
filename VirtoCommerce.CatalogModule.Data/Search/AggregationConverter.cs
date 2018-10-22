@@ -305,7 +305,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                     aggregation.Labels = GetFirstLabelForEachLanguage(allPropertyLabels);
                     var allCatalogPropDictItems = _propDictItemsSearchService.Search(new PropertyDictionaryItemSearchCriteria { PropertyIds = properties.Select(x => x.Id).ToArray(), Take = int.MaxValue }).Results;
                     // Get distinct labels for each dictionary value alias
-                    var allValueLabels = allCatalogPropDictItems.ToDictionary(propDictItem => propDictItem.Id, propDictItem => GetFirstLabelForEachLanguage(propDictItem.LocalizedValues.Select(v => new AggregationLabel { Language = v.LanguageCode, Label = v.Value })), StringComparer.OrdinalIgnoreCase);
+                    var allValueLabels = allCatalogPropDictItems.ToDictionary(propDictItem => propDictItem.Alias, propDictItem => GetFirstLabelForEachLanguage(propDictItem.LocalizedValues.Select(v => new AggregationLabel { Language = v.LanguageCode, Label = v.Value })), StringComparer.OrdinalIgnoreCase);
 
                     foreach (var aggregationItem in aggregation.Items)
                     {
