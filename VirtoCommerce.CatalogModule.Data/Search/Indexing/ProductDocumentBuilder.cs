@@ -53,7 +53,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             IndexIsProperty(document, product.Code);
 
             document.Add(new IndexDocumentField("status", statusField) { IsRetrievable = true, IsFilterable = true });
-            document.Add(new IndexDocumentField("code", product.Code) { IsRetrievable = true, IsFilterable = true });
+            document.Add(new IndexDocumentField("code", product.Code) { IsRetrievable = true, IsFilterable = true, IsCollection = true });
             document.Add(new IndexDocumentField("name", product.Name) { IsRetrievable = true, IsFilterable = true });
             document.Add(new IndexDocumentField("startdate", product.StartDate) { IsRetrievable = true, IsFilterable = true });
             document.Add(new IndexDocumentField("enddate", product.EndDate ?? DateTime.MaxValue) { IsRetrievable = true, IsFilterable = true });
@@ -125,6 +125,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
                 foreach (var variation in product.Variations)
                 {
+                    document.Add(new IndexDocumentField("code", variation.Code) { IsRetrievable = true, IsFilterable = true, IsCollection = true });
                     IndexCustomProperties(document, variation.Properties, variation.PropertyValues, contentPropertyTypes);
                 }
             }
