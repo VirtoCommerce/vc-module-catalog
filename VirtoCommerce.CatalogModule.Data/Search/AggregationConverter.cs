@@ -79,7 +79,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return new TermAggregationRequest
             {
                 FieldName = attributeFilter.Key,
-                Values = attributeFilter.Values?.Select(v => v.Id).ToArray(),
+                Values = !attributeFilter.Values.IsNullOrEmpty() ? attributeFilter.Values.Select(v => v.Id).ToArray() : null,
                 Filter = existingFilters.And(),
                 Size = attributeFilter.FacetSize,
             };
@@ -182,7 +182,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             {
                 IList<AggregationResponseValue> aggregationResponseValues;
 
-                if (attributeFilter.Values == null)
+                if (attributeFilter.Values.IsNullOrEmpty())
                 {
                     // Return all values
                     aggregationResponseValues = aggregationResponse.Values;
