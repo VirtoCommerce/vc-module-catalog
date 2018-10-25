@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using CacheManager.Core;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Domain.Catalog.Model;
@@ -7,6 +8,7 @@ using VirtoCommerce.Domain.Catalog.Model.Search;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Commerce.Model.Search;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Data.Common;
 using VirtoCommerce.Platform.Data.Infrastructure;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
@@ -14,10 +16,12 @@ namespace VirtoCommerce.CatalogModule.Data.Services
     public class PropertyDictionaryItemService : ServiceBase, IProperyDictionaryItemService, IProperyDictionaryItemSearchService
     {
         private readonly Func<ICatalogRepository> _repositoryFactory;
+        private readonly ICacheManager<object> _cacheManager;
 
-        public PropertyDictionaryItemService(Func<ICatalogRepository> repositoryFactory)
+        public PropertyDictionaryItemService(Func<ICatalogRepository> repositoryFactory, ICacheManager<object> cacheManager)
         {
             _repositoryFactory = repositoryFactory;
+            _cacheManager = cacheManager;
         }
 
         public PropertyDictionaryItem[] GetByIds(string[] ids)
@@ -65,6 +69,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 CommitChanges(repository);
                 pkMap.ResolvePrimaryKeys();
             }
+            ResetCache();
         }
 
         public void Delete(string[] ids)
@@ -79,6 +84,12 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 }
                 CommitChanges(repository);
             }
+            ResetCache();
+        }
+
+        protected virtual void ResetCache()
+        {
+            _cacheManager.ClearRegion(CatalogConstants.DictionaryItemsCacheRegion);
         }
 
         public GenericSearchResult<PropertyDictionaryItem> Search(PropertyDictionaryItemSearchCriteria criteria)
@@ -88,36 +99,39 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 throw new ArgumentNullException(nameof(criteria));
             }
 
-            using (var repository = _repositoryFactory())
+            return _cacheManager.Get($"PropertyDictionaryItemService.Search-{criteria.GetCacheKey()}", CatalogConstants.DictionaryItemsCacheRegion, () =>
             {
-                //Optimize performance and CPU usage
-                repository.DisableChangesTracking();
-
-                var result = new GenericSearchResult<PropertyDictionaryItem>();
-
-                var query = repository.PropertyDictionaryItems;
-                if (!criteria.PropertyIds.IsNullOrEmpty())
+                using (var repository = _repositoryFactory())
                 {
-                    query = query.Where(x => criteria.PropertyIds.Contains(x.PropertyId));
-                }
-                if (!string.IsNullOrEmpty(criteria.SearchPhrase))
-                {
-                    query = query.Where(x => x.Alias.Contains(criteria.SearchPhrase));
-                }
+                    //Optimize performance and CPU usage
+                    repository.DisableChangesTracking();
 
-                var sortInfos = criteria.SortInfos;
-                if (sortInfos.IsNullOrEmpty())
-                {
-                    sortInfos = new[] { new SortInfo { SortColumn = "Alias" } };
+                    var result = new GenericSearchResult<PropertyDictionaryItem>();
+
+                    var query = repository.PropertyDictionaryItems;
+                    if (!criteria.PropertyIds.IsNullOrEmpty())
+                    {
+                        query = query.Where(x => criteria.PropertyIds.Contains(x.PropertyId));
+                    }
+                    if (!string.IsNullOrEmpty(criteria.SearchPhrase))
+                    {
+                        query = query.Where(x => x.Alias.Contains(criteria.SearchPhrase));
+                    }
+
+                    var sortInfos = criteria.SortInfos;
+                    if (sortInfos.IsNullOrEmpty())
+                    {
+                        sortInfos = new[] { new SortInfo { SortColumn = "Alias" } };
+                    }
+
+                    query = query.OrderBySortInfos(sortInfos);
+
+                    result.TotalCount = query.Count();
+                    var ids = query.Skip(criteria.Skip).Take(criteria.Take).Select(x => x.Id).ToArray();
+                    result.Results = GetByIds(ids).AsQueryable().OrderBySortInfos(sortInfos).ToList();
+                    return result;
                 }
-
-                query = query.OrderBySortInfos(sortInfos);
-
-                result.TotalCount = query.Count();
-                var ids = query.Skip(criteria.Skip).Take(criteria.Take).Select(x => x.Id).ToArray();
-                result.Results = GetByIds(ids).AsQueryable().OrderBySortInfos(sortInfos).ToList();
-                return result;
-            }
+            });
         }
     }
 }

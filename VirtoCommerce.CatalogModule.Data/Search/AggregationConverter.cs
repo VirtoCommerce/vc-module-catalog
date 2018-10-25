@@ -290,32 +290,35 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             foreach (var aggregation in aggregations)
             {
                 // There can be many properties with the same name
-                var properties = allProperties
-                    .Where(p => p.Name.EqualsInvariant(aggregation.Field))
-                    .ToArray();
-
+                var properties = allProperties.Where(p => p.Name.EqualsInvariant(aggregation.Field)).ToArray();
 
                 if (properties.Any())
                 {
-                    var allPropertyLabels = properties
-                        .SelectMany(p => p.DisplayNames)
-                        .Select(n => new AggregationLabel { Language = n.LanguageCode, Label = n.Name })
-                        .ToArray();
+                    var allPropertyLabels = properties.SelectMany(p => p.DisplayNames)
+                                                      .Select(n => new AggregationLabel { Language = n.LanguageCode, Label = n.Name })
+                                                      .ToArray();
 
                     aggregation.Labels = GetFirstLabelForEachLanguage(allPropertyLabels);
-                    var allCatalogPropDictItems = _propDictItemsSearchService.Search(new PropertyDictionaryItemSearchCriteria { PropertyIds = properties.Select(x => x.Id).ToArray(), Take = int.MaxValue }).Results;
-                    // Get distinct labels for each dictionary value alias
-                    var allValueLabels = allCatalogPropDictItems.ToDictionary(propDictItem => propDictItem.Alias, propDictItem => GetFirstLabelForEachLanguage(propDictItem.LocalizedValues.Select(v => new AggregationLabel { Language = v.LanguageCode, Label = v.Value })), StringComparer.OrdinalIgnoreCase);
+
+                    var allDictItemsMap = _propDictItemsSearchService.Search(new PropertyDictionaryItemSearchCriteria { PropertyIds = properties.Select(x => x.Id).ToArray(), Take = int.MaxValue })
+                                                                     .Results.GroupBy(x => x.Alias)
+                                                                     .ToDictionary(x => x.Key, x => x.SelectMany(dictItem => dictItem.LocalizedValues)
+                                                                                                     .Select(localizedValue => new AggregationLabel { Language = localizedValue.LanguageCode, Label = localizedValue.Value }));
 
                     foreach (var aggregationItem in aggregation.Items)
                     {
-                        var valueId = aggregationItem.Value.ToString();
-                        aggregationItem.Labels = allValueLabels.ContainsKey(valueId) ? allValueLabels[valueId] : null;
+                        var alias = aggregationItem.Value?.ToString();
+                        if (!string.IsNullOrEmpty(alias))
+                        {
+                            if (allDictItemsMap.TryGetValue(alias, out var labels))
+                            {
+                                aggregationItem.Labels = GetFirstLabelForEachLanguage(labels);
+                            }
+                        }
                     }
                 }
             }
         }
-
 
         private static IList<AggregationLabel> GetFirstLabelForEachLanguage(IEnumerable<AggregationLabel> labels)
         {

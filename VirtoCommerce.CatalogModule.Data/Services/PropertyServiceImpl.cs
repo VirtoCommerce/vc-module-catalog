@@ -222,6 +222,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         protected virtual void ResetCache()
         {
             _cacheManager.ClearRegion(CatalogConstants.CacheRegion);
+            _cacheManager.ClearRegion(CatalogConstants.DictionaryItemsCacheRegion);
         }
 
         protected virtual IDictionary<string, Property> PreloadAllProperties()
