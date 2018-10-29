@@ -561,7 +561,20 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             var querySqlCommandText = @"
                     ;WITH Association_CTE AS
                     (
-	                    SELECT *
+	                    SELECT
+ 		                    Id	
+		                    ,AssociationType
+		                    ,Priority
+		                    ,ItemId
+		                    ,CreatedDate
+		                    ,ModifiedDate
+		                    ,CreatedBy
+		                    ,ModifiedBy
+		                    ,Discriminator
+		                    ,AssociatedItemId
+		                    ,AssociatedCategoryId
+		                    ,Tags
+		                    ,Quantity
 	                    FROM Association
 	                    WHERE ItemId IN({0})"
                     + (!string.IsNullOrEmpty(criteria.Group) ? $" AND AssociationType = @group" : string.Empty) +
