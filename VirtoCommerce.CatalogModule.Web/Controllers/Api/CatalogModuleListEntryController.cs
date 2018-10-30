@@ -70,6 +70,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             //Because products and categories represent in search result as two separated collections for handle paging request 
             //we should join two resulting collection artificially
             //search categories
+            var copyRespGroup = coreModelCriteria.ResponseGroup;
             if ((coreModelCriteria.ResponseGroup & coreModel.SearchResponseGroup.WithCategories) == coreModel.SearchResponseGroup.WithCategories)
             {
                 coreModelCriteria.ResponseGroup = coreModelCriteria.ResponseGroup & ~coreModel.SearchResponseGroup.WithProducts;
@@ -82,10 +83,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
                 retVal.TotalCount = categoriesTotalCount;
                 retVal.ListEntries.AddRange(categories);
-
-                coreModelCriteria.ResponseGroup = coreModelCriteria.ResponseGroup | coreModel.SearchResponseGroup.WithProducts;
             }
-
+            coreModelCriteria.ResponseGroup = copyRespGroup;
             //search products
             if ((coreModelCriteria.ResponseGroup & coreModel.SearchResponseGroup.WithProducts) == coreModel.SearchResponseGroup.WithProducts)
             {
