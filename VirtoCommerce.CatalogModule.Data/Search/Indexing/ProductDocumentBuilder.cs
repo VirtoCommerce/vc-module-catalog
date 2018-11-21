@@ -126,6 +126,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 foreach (var variation in product.Variations)
                 {
                     document.Add(new IndexDocumentField("code", variation.Code) { IsRetrievable = true, IsFilterable = true, IsCollection = true });
+                    // add the variation code to content
+                    document.Add(new IndexDocumentField("__content", variation.Code) { IsRetrievable = true, IsSearchable = true, IsCollection = true });
                     IndexCustomProperties(document, variation.Properties, variation.PropertyValues, contentPropertyTypes);
                 }
             }
