@@ -201,6 +201,10 @@
     <Compile Include="Migrations\201809270711531_PropertyValueCascadeDelete.Designer.cs">
       <DependentUpon>201809270711531_PropertyValueCascadeDelete.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201812131122560_CatalogPropertyDictionaryItemSortOrder.cs" />
+    <Compile Include="Migrations\201812131122560_CatalogPropertyDictionaryItemSortOrder.Designer.cs">
+      <DependentUpon>201812131122560_CatalogPropertyDictionaryItemSortOrder.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Model\AssetEntity.cs" />
     <Compile Include="Model\AssociationEntity.cs" />
@@ -357,6 +361,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201809270711531_PropertyValueCascadeDelete.resx">
       <DependentUpon>201809270711531_PropertyValueCascadeDelete.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201812131122560_CatalogPropertyDictionaryItemSortOrder.resx">
+      <DependentUpon>201812131122560_CatalogPropertyDictionaryItemSortOrder.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
