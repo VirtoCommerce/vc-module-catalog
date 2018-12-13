@@ -9,6 +9,7 @@ angular.module('virtoCommerce.catalogModule')
         templateUrl: 'Modules/$(VirtoCommerce.Catalog)/Scripts/directives/property2.tpl.html',
         scope: {
             languages: "=",
+            hiddenLanguages: "=",
             defaultLanguage: "=",
             getPropValues: "&",
             pageSize: "@?"
@@ -129,6 +130,13 @@ angular.module('virtoCommerce.catalogModule')
                     });
                 }
             };
+
+            scope.isLanguageVisible = function (language) {
+                if (_.contains(scope.hiddenLanguages, language)) {
+                    return false;
+                }
+                return true;
+            }
 
             scope.loadDictionaryValues = function ($select) {
                 $select.page = 0;
