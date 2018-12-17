@@ -99,6 +99,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         public virtual void Patch(PropertyDictionaryItemEntity target)
         {
             target.Alias = Alias;
+            target.SortOrder = SortOrder;
             if (!DictionaryItemValues.IsNullCollection())
             {
                 var comparer = AnonymousComparer.Create((PropertyDictionaryValueEntity x) => x.Value + '|' + x.Locale);

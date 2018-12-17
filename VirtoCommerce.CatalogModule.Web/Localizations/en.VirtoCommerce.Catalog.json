@@ -254,6 +254,7 @@
           "current-values": "Current values",
           "value": "Value",
           "alias": "Alias",
+          "sort-order": "Sort order",
           "language-edit": "Edit values",
           "language-add": "New values",
           "dictionary-edit": "Dictionary value edit"

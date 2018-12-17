@@ -5,6 +5,9 @@
                 <div class="form-group" ng-init="setForm(pdForm);">
                     <label class="form-label" for="">{{ 'catalog.blades.property-dictionary.labels.alias' | translate }}</label>
                     <va-dictionary-value name="'alias'" form="pdForm" required="true" validation-rules="validationRules" ng-model="blade.currentEntity.alias"></va-dictionary-value>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="">{{ 'catalog.blades.property-dictionary.labels.sort-order' | translate }}</label>
                     <va-dictionary-value name="'sortOrder'" form="pdForm" validation-rules="validationRules" ng-model="blade.currentEntity.sortOrder"></va-dictionary-value>
                 </div>
                 <div class="form-group" ng-repeat="language in blade.languages">
