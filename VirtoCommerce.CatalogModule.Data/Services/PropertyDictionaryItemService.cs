@@ -121,7 +121,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     var sortInfos = criteria.SortInfos;
                     if (sortInfos.IsNullOrEmpty())
                     {
-                        sortInfos = new[] { new SortInfo { SortColumn = "SortOrder", SortDirection = SortDirection.Descending } };
+                        sortInfos = new[] {
+                            new SortInfo { SortColumn = "SortOrder", SortDirection = SortDirection.Descending },
+                            new SortInfo { SortColumn = "Alias", SortDirection = SortDirection.Ascending }
+                        };
                     }
 
                     query = query.OrderBySortInfos(sortInfos);
