@@ -122,7 +122,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     if (sortInfos.IsNullOrEmpty())
                     {
                         sortInfos = new[] {
-                            new SortInfo { SortColumn = "SortOrder", SortDirection = SortDirection.Descending },
+                            new SortInfo { SortColumn = "SortOrder", SortDirection = SortDirection.Ascending },
                             new SortInfo { SortColumn = "Alias", SortDirection = SortDirection.Ascending }
                         };
                     }
