@@ -178,7 +178,7 @@
 
 
     <script type="text/ng-template" id="ShortText-multilang.html">
-        <div class="form-group" ng-repeat="(language, langValuesGroup) in context.langValuesMap">
+        <div class="form-group" ng-repeat="(language, langValuesGroup) in context.langValuesMap" ng-if="isLanguageVisible(language)">
             <div class="form-input __langs">
                 <span ng-if="language.length>2" class="flag flag-{{language.substr(3).toLowerCase()}}"></span>
                 <span ng-if="language.length<=2" class="langCode">{{language.toUpperCase()}}</span>
@@ -197,7 +197,7 @@
     </script>
 
     <script type="text/ng-template" id="LongText-multilang.html">
-        <div class="form-group" ng-repeat="(language, langValuesGroup) in context.langValuesMap">
+        <div class="form-group" ng-repeat="(language, langValuesGroup) in context.langValuesMap" ng-if="isLanguageVisible(language)">
             <div class="form-input __langs">
                 <span ng-if="language.length>2" class="flag flag-{{language.substr(3).toLowerCase()}}"></span>
                 <span ng-if="language.length<=2" class="langCode">{{language.toUpperCase()}}</span>
@@ -213,7 +213,7 @@
         </div>
     </script>
     <script type="text/ng-template" id="Number-multilang.html">
-        <div class="form-group" ng-repeat="(language, langValuesGroup) in context.langValuesMap">
+        <div class="form-group" ng-repeat="(language, langValuesGroup) in context.langValuesMap" ng-if="isLanguageVisible(language)">
             <div class="form-input __number">
                 <input ng-disabled="currentEntity.isReadOnly"
                        ng-required="currentEntity.required && !currentEntity.isReadOnly"
@@ -225,7 +225,7 @@
         </div>
     </script>
     <script type="text/ng-template" id="DateTime-multilang.html">
-        <div class="form-group" ng-repeat="(language, langValuesGroup) in context.langValuesMap">
+        <div class="form-group" ng-repeat="(language, langValuesGroup) in context.langValuesMap" ng-if="isLanguageVisible(language)">
             <div class="form-input __langs __calendar">
                 <span ng-if="language.length>2" class="flag flag-{{language.substr(3).toLowerCase()}}"></span>
                 <span ng-if="language.length<=2" class="langCode">{{language.toUpperCase()}}</span>
@@ -243,7 +243,7 @@
 
 
     <script type="text/ng-template" id="ShortText-multivalue-multilang.html">
-        <div class="form-group" ng-repeat="(language, langValuesGroup) in context.langValuesMap">
+        <div class="form-group" ng-repeat="(language, langValuesGroup) in context.langValuesMap" ng-if="isLanguageVisible(language)">
             <div class="form-input __langs">
                 <span ng-if="language.length>2" class="flag flag-{{language.substr(3).toLowerCase()}}"></span>
                 <span ng-if="language.length<=2" class="langCode">{{language.toUpperCase()}}</span>
@@ -265,7 +265,7 @@
         </div>
     </script>
     <script type="text/ng-template" id="LongText-multivalue-multilang.html">
-        <div class="form-group" ng-repeat="(language, langValuesGroup) in context.langValuesMap">
+        <div class="form-group" ng-repeat="(language, langValuesGroup) in context.langValuesMap" ng-if="isLanguageVisible(language)">
             <div class="form-input __langs" ng-repeat="val in langValuesGroup.currentPropValues track by $index">
                 <span ng-if="language.length>2" class="flag flag-{{language.substr(3).toLowerCase()}}"></span>
                 <span ng-if="language.length<=2" class="langCode">{{language.toUpperCase()}}</span>
@@ -283,7 +283,7 @@
         </div>
     </script>
     <script type="text/ng-template" id="Number-multivalue-multilang.html">
-        <div class="form-group" ng-repeat="(language, langValuesGroup) in context.langValuesMap">
+        <div class="form-group" ng-repeat="(language, langValuesGroup) in context.langValuesMap" ng-if="isLanguageVisible(language)">
             <div class="form-input __langs">
                 <span ng-if="language.length>2" class="flag flag-{{language.substr(3).toLowerCase()}}"></span>
                 <span ng-if="language.length<=2" class="langCode">{{language.toUpperCase()}}</span>
