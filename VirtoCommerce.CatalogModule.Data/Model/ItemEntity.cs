@@ -180,7 +180,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
             //item property values
             product.PropertyValues = ItemPropertyValues
-                .OrderByDescending(x => x.DictionaryItem?.SortOrder)
+                .OrderBy(x => x.DictionaryItem?.SortOrder)
                 .ThenBy(x => x.Name)
                 .SelectMany(x => x.ToModel(AbstractTypeFactory<PropertyValue>.TryCreateInstance())).ToList();
 

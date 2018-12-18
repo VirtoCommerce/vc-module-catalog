@@ -106,7 +106,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
             //category property values
             category.PropertyValues = CategoryPropertyValues
-                .OrderByDescending(x => x.DictionaryItem?.SortOrder)
+                .OrderBy(x => x.DictionaryItem?.SortOrder)
                 .ThenBy(x => x.Name)
                 .SelectMany(x => x.ToModel(AbstractTypeFactory<PropertyValue>.TryCreateInstance())).ToList();
             return category;
