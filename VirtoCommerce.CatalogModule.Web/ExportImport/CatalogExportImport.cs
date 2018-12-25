@@ -54,10 +54,12 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
             _propertyDictionarySearchService = propertyDictionarySearchService;
             _propertyDictionaryService = propertyDictionaryService;
 
-            _serializer = new JsonSerializer();
-            _serializer.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-            _serializer.Formatting = Formatting.Indented;
-            _serializer.NullValueHandling = NullValueHandling.Ignore;
+            _serializer = new JsonSerializer
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                Formatting = Formatting.Indented,
+                NullValueHandling = NullValueHandling.Ignore
+            };
         }
 
         private int BatchSize
@@ -76,7 +78,7 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
         #region Export/Import methods
         public void DoExport(Stream outStream, PlatformExportManifest manifest, Action<ExportImportProgressInfo> progressCallback)
         {
-            var progressInfo = new ExportImportProgressInfo { Description = "loading data..." };
+            var progressInfo = new ExportImportProgressInfo { Description = "loading data…" };
             progressCallback(progressInfo);
 
             using (var sw = new StreamWriter(outStream, Encoding.UTF8))
@@ -84,10 +86,11 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
             {
                 writer.WriteStartObject();
 
-                ExportCatalogs(writer, _serializer, manifest, progressInfo, progressCallback);
+                // Properties and Property dictionary items should preceed Catalogs and Categories for proper import
+                ExportProperties(writer, _serializer, progressInfo, progressCallback);
+                ExportPropertiesDictionaryItems(writer, _serializer, progressInfo, progressCallback);
+                ExportCatalogs(writer, _serializer, progressInfo, progressCallback);
                 ExportCategories(writer, _serializer, manifest, progressInfo, progressCallback);
-                ExportProperties(writer, _serializer, manifest, progressInfo, progressCallback);
-                ExportPropertiesDictionaryItems(writer, _serializer, manifest, progressInfo, progressCallback);
                 ExportProducts(writer, _serializer, manifest, progressInfo, progressCallback);
 
                 writer.WriteEndObject();
@@ -100,6 +103,7 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
             var progressInfo = new ExportImportProgressInfo();
             var productsTotalCount = 0;
             var propDictItemTotalCount = 0;
+            var propertiesWithForeignKeys = new List<Property>();
             using (var streamReader = new StreamReader(stream))
             using (var reader = new JsonTextReader(streamReader))
             {
@@ -111,7 +115,7 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                         {
                             reader.Read();
                             var catalogs = _serializer.Deserialize<Catalog[]>(reader);
-                            progressInfo.Description = $"{ catalogs.Count() } catalogs are importing...";
+                            progressInfo.Description = $"{ catalogs.Count() } catalogs are importing…";
                             progressCallback(progressInfo);
                             _catalogService.Update(catalogs);
                         }
@@ -119,7 +123,7 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                         {
                             reader.Read();
                             var categories = _serializer.Deserialize<Category[]>(reader);
-                            progressInfo.Description = $"{ categories.Count() } categories are importing...";
+                            progressInfo.Description = $"{ categories.Count() } categories are importing…";
                             progressCallback(progressInfo);
                             _categoryService.Update(categories);
                             if (manifest.HandleBinaryData)
@@ -131,7 +135,17 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                         {
                             reader.Read();
                             var properties = _serializer.Deserialize<Property[]>(reader);
-                            progressInfo.Description = $"{ properties.Count() } properties are importing...";
+                            foreach (var property in properties)
+                            {
+                                if (property.CategoryId != null || property.CatalogId != null)
+                                {
+                                    propertiesWithForeignKeys.Add(property.Clone() as Property);
+                                    //Need to reset property foreign keys to prevent FK violation during  inserting into database 
+                                    property.CategoryId = null;
+                                    property.CatalogId = null;
+                                }
+                            }
+                            progressInfo.Description = $"{ properties.Count() } properties are importing…";
                             progressCallback(progressInfo);
                             _propertyService.Update(properties);
                         }
@@ -224,10 +238,10 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                                     }
                                 }
                                 //Import products associations separately to avoid DB constrain violation
-                                var totalProductsWithAssociationsCount = associationBackupMap.Count();
-                                progressInfo.Description = $"{ totalProductsWithAssociationsCount } products associations are importing...";
+                                var totalProductsWithAssociationsCount = associationBackupMap.Count;
+                                progressInfo.Description = $"{ totalProductsWithAssociationsCount } products associations are importing…";
                                 progressCallback(progressInfo);
-                                for (int i = 0; i < totalProductsWithAssociationsCount; i += BatchSize)
+                                for (var i = 0; i < totalProductsWithAssociationsCount; i += BatchSize)
                                 {
                                     var fakeProducts = new List<CatalogProduct>();
                                     foreach (var pair in associationBackupMap.Skip(i).Take(BatchSize))
@@ -246,13 +260,28 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                     }
                 }
             }
+
+            //Update property associations after all required data are saved (Catalogs and Categories)
+            if (propertiesWithForeignKeys.Count > 0)
+            {
+                progressInfo.Description = $"Updating {propertiesWithForeignKeys.Count} property associations…";
+                progressCallback(progressInfo);
+
+                var totalCount = propertiesWithForeignKeys.Count;
+                for (var i = 0; i < totalCount; i += BatchSize)
+                {
+                    _propertyService.Update(propertiesWithForeignKeys.Skip(i).Take(BatchSize).ToArray());
+                    progressInfo.Description = $"{ Math.Min(totalCount, i + BatchSize) } of { totalCount } property associations updated.";
+                    progressCallback(progressInfo);
+                }
+            }
         }
         #endregion
 
-        private void ExportCatalogs(JsonTextWriter writer, JsonSerializer serializer, PlatformExportManifest manifest, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback)
+        private void ExportCatalogs(JsonTextWriter writer, JsonSerializer serializer, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback)
         {
             //Catalogs
-            progressInfo.Description = string.Format("Catalogs are exporting...");
+            progressInfo.Description = "Catalogs are exporting…";
             progressCallback(progressInfo);
 
             var catalogs = _catalogService.GetCatalogsList().ToArray();
@@ -275,7 +304,7 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
         private void ExportCategories(JsonTextWriter writer, JsonSerializer serializer, PlatformExportManifest manifest, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback)
         {
             //Categories
-            progressInfo.Description = string.Format("Categories are exporting...");
+            progressInfo.Description = "Categories are exporting…";
             progressCallback(progressInfo);
 
             var categorySearchCriteria = new SearchCriteria { WithHidden = true, Skip = 0, Take = 0, ResponseGroup = SearchResponseGroup.WithCategories };
@@ -300,10 +329,10 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
             progressCallback(progressInfo);
         }
 
-        private void ExportProperties(JsonTextWriter writer, JsonSerializer serializer, PlatformExportManifest manifest, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback)
+        private void ExportProperties(JsonTextWriter writer, JsonSerializer serializer, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback)
         {
             //Properties
-            progressInfo.Description = "Properties exporting...";
+            progressInfo.Description = "Properties exporting…";
             progressCallback(progressInfo);
 
             var properties = _propertyService.GetAllProperties();
@@ -320,9 +349,9 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
             progressCallback(progressInfo);
         }
 
-        private void ExportPropertiesDictionaryItems(JsonTextWriter writer, JsonSerializer serializer, PlatformExportManifest manifest, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback)
+        private void ExportPropertiesDictionaryItems(JsonTextWriter writer, JsonSerializer serializer, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback)
         {
-            progressInfo.Description = "The dictionary items are exporting...";
+            progressInfo.Description = "The dictionary items are exporting…";
             progressCallback(progressInfo);
 
             var criteria = new PropertyDictionaryItemSearchCriteria { Take = 0, Skip = 0 };
@@ -349,7 +378,7 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
         private void ExportProducts(JsonTextWriter writer, JsonSerializer serializer, PlatformExportManifest manifest, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback)
         {
             //Products
-            progressInfo.Description = string.Format("Products are exporting...");
+            progressInfo.Description = "Products are exporting…";
             progressCallback(progressInfo);
 
             var productSearchCriteria = new SearchCriteria { WithHidden = true, Take = 0, Skip = 0, ResponseGroup = SearchResponseGroup.WithProducts };
@@ -508,6 +537,5 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                 }
             }
         }
-
     }
 }

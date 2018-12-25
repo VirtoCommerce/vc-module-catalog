@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using VirtoCommerce.Domain.Catalog.Model;
-using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.Model
@@ -161,6 +159,9 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             target.IsRequired = IsRequired;
             target.TargetType = TargetType;
             target.Name = Name;
+
+            target.CatalogId = CatalogId;
+            target.CategoryId = CategoryId;
 
             if (!PropertyAttributes.IsNullCollection())
             {
