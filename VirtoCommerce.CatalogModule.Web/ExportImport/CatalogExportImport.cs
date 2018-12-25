@@ -102,8 +102,7 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
             var progressInfo = new ExportImportProgressInfo();
             var productsTotalCount = 0;
             var propDictItemTotalCount = 0;
-            Property[] properties = new Property[0];
-            var propertyAssociations = new Dictionary<string, CatalogModuleModel.PropertyAssociationInfo>();
+            var propertiesWithForeignKeys = new List<Property>();
             using (var streamReader = new StreamReader(stream))
             using (var reader = new JsonTextReader(streamReader))
             {
@@ -134,12 +133,13 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                         else if (reader.Value.ToString() == "Properties")
                         {
                             reader.Read();
-                            properties = _serializer.Deserialize<Property[]>(reader);
+                            var properties = _serializer.Deserialize<Property[]>(reader);
                             foreach (var property in properties)
                             {
                                 if (property.CategoryId != null || property.CatalogId != null)
                                 {
-                                    propertyAssociations.Add(property.Id, new CatalogModuleModel.PropertyAssociationInfo().FromEntity(property));
+                                    propertiesWithForeignKeys.Add(property.Clone() as Property);
+                                    //Need to reset property foreign keys to prevent FK violation during  inserting into database 
                                     property.CategoryId = null;
                                     property.CatalogId = null;
                                 }
@@ -240,7 +240,7 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                                 var totalProductsWithAssociationsCount = associationBackupMap.Count;
                                 progressInfo.Description = $"{ totalProductsWithAssociationsCount } products associations are importing…";
                                 progressCallback(progressInfo);
-                                for (int i = 0; i < totalProductsWithAssociationsCount; i += BatchSize)
+                                for (var i = 0; i < totalProductsWithAssociationsCount; i += BatchSize)
                                 {
                                     var fakeProducts = new List<CatalogProduct>();
                                     foreach (var pair in associationBackupMap.Skip(i).Take(BatchSize))
@@ -261,28 +261,18 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
             }
 
             //Update property associations after all required data are saved (Catalogs and Categories)
-            if (propertyAssociations.Count > 0)
+            if (propertiesWithForeignKeys.Count > 0)
             {
-                progressInfo.Description = $"Updating {propertyAssociations.Count} property associations…";
+                progressInfo.Description = $"Updating {propertiesWithForeignKeys.Count} property associations…";
                 progressCallback(progressInfo);
-                var propertiesToUpdate = new List<Property>();
-                foreach (var property in properties)
+
+                var totalCount = propertiesWithForeignKeys.Count;
+                for (var i = 0; i < totalCount; i += BatchSize)
                 {
-                    if (propertyAssociations.ContainsKey(property.Id))
-                    {
-                        propertyAssociations[property.Id].Patch(property);
-                        propertiesToUpdate.Add(property);
-                    }
-                }
-                var updatedPropertiesCount = propertiesToUpdate.Count;
-                for (int i = 0; i < updatedPropertiesCount; i += BatchSize)
-                {
-                    _propertyService.Update(propertiesToUpdate.Skip(i).Take(BatchSize).ToArray());
-                    progressInfo.Description = $"{ Math.Min(updatedPropertiesCount, i + BatchSize) } of { updatedPropertiesCount } property associations updated.";
+                    _propertyService.Update(propertiesWithForeignKeys.Skip(i).Take(BatchSize).ToArray());
+                    progressInfo.Description = $"{ Math.Min(totalCount, i + BatchSize) } of { totalCount } property associations updated.";
                     progressCallback(progressInfo);
                 }
-
-                _propertyService.Update(propertiesToUpdate.ToArray());
             }
         }
         #endregion
@@ -546,6 +536,5 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
                 }
             }
         }
-
     }
 }
