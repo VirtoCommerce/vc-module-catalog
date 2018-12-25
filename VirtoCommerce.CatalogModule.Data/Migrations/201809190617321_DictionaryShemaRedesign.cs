@@ -7,6 +7,8 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
     {
         public override void Up()
         {
+            Sql("UPDATE dbo.PropertyDictionaryValue SET Alias = Value WHERE Alias IS NULL");
+
             DropForeignKey("dbo.PropertyDictionaryValue", "PropertyId", "dbo.Property");
             DropIndex("dbo.PropertyDictionaryValue", new[] { "PropertyId" });
             CreateTable(
