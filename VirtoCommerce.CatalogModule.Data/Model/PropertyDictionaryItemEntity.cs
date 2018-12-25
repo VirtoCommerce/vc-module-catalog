@@ -21,6 +21,8 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         [Index("IX_AliasAndPropertyId", 1, IsUnique = true)]
         public string Alias { get; set; }
 
+        public int SortOrder { get; set; }
+
         #region Navigation Properties
         [Index("IX_AliasAndPropertyId", 2, IsUnique = true)]
         public string PropertyId { get; set; }
@@ -37,6 +39,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             }
             propDictItem.Id = Id;
             propDictItem.Alias = Alias;
+            propDictItem.SortOrder = SortOrder;
             propDictItem.PropertyId = PropertyId;
             propDictItem.LocalizedValues = DictionaryItemValues.Select(x => x.ToModel(AbstractTypeFactory<PropertyDictionaryItemLocalizedValue>.TryCreateInstance())).ToList();
 
@@ -53,6 +56,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
             Id = propDictItem.Id;
             Alias = propDictItem.Alias;
+            SortOrder = propDictItem.SortOrder;
             PropertyId = propDictItem.PropertyId;
             if (propDictItem.LocalizedValues != null)
             {
@@ -95,6 +99,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         public virtual void Patch(PropertyDictionaryItemEntity target)
         {
             target.Alias = Alias;
+            target.SortOrder = SortOrder;
             if (!DictionaryItemValues.IsNullCollection())
             {
                 var comparer = AnonymousComparer.Create((PropertyDictionaryValueEntity x) => x.Value + '|' + x.Locale);
