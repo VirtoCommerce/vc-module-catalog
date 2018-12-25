@@ -257,7 +257,9 @@
           "sort-order": "Sort order",
           "language-edit": "Edit values",
           "language-add": "New values",
-          "dictionary-edit": "Dictionary value edit"
+          "dictionary-edit": "Dictionary value edit",
+          "priority": "Priority",
+          "priority-description": "The lowest value will be used first."
         },
         "validations": {
           "required": "Required",
@@ -265,7 +267,8 @@
         },
         "placeholders": {
           "value": "Enter value",
-          "alias": "Enter an alias"
+          "alias": "Enter an alias",
+          "priority": "Enter priority"
         }
       },
       "item-detail": {
