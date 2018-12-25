@@ -11,7 +11,6 @@ using VirtoCommerce.Platform.Core.Assets;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.ExportImport;
 using VirtoCommerce.Platform.Core.Settings;
-using CatalogModuleModel = VirtoCommerce.CatalogModule.Web.Model;
 
 namespace VirtoCommerce.CatalogModule.Web.ExportImport
 {
@@ -55,10 +54,12 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
             _propertyDictionarySearchService = propertyDictionarySearchService;
             _propertyDictionaryService = propertyDictionaryService;
 
-            _serializer = new JsonSerializer();
-            _serializer.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-            _serializer.Formatting = Formatting.Indented;
-            _serializer.NullValueHandling = NullValueHandling.Ignore;
+            _serializer = new JsonSerializer
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                Formatting = Formatting.Indented,
+                NullValueHandling = NullValueHandling.Ignore
+            };
         }
 
         private int BatchSize
