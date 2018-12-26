@@ -27,6 +27,7 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             retVal.CreatedDate = category.CreatedDate;
             retVal.ModifiedBy = category.ModifiedBy;
             retVal.ModifiedDate = category.ModifiedDate;
+            retVal.Priority = category.Priority;
 
             retVal.SeoInfos = category.SeoInfos;
             if (!category.Outlines.IsNullOrEmpty())
@@ -36,7 +37,6 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             }
 
             //Init outline and path
-            var parents = new List<moduleModel.Category>();
             if (category.Parents != null)
             {
                 retVal.Outline = string.Join("/", category.Parents.Select(x => x.Id));

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Commerce.Model;
@@ -72,12 +72,17 @@ namespace VirtoCommerce.CatalogModule.Web.Model
         public bool? IsActive { get; set; }
 
         /// <summary>
+        /// Gets or sets category display order.
+        /// </summary>
+        public int Priority { get; set; }
+
+        /// <summary>
         /// Gets or sets the properties.
         /// </summary>
         /// <value>
         /// The properties.
         /// </value>
-		public ICollection<Property> Properties { get; set; }
+        public ICollection<Property> Properties { get; set; }
         /// <summary>
         /// Gets or sets the links.
         /// </summary>
