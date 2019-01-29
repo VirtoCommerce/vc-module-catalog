@@ -1,11 +1,8 @@
-using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
-using VirtoCommerce.CatalogModule.Web.Converters;
 using VirtoCommerce.CatalogModule.Web.Security;
 using VirtoCommerce.Domain.Catalog.Model.Search;
 using VirtoCommerce.Domain.Catalog.Services;
-using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.Platform.Core.Web.Security;
 using moduleModel = VirtoCommerce.Domain.Catalog.Model;
 
@@ -17,9 +14,10 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly IProperyDictionaryItemSearchService _propertyDictionarySearchService;
         private readonly IProperyDictionaryItemService _propertyDictionaryService;
 
-        public CatalogModulePropertyDictionaryItemsController(ISecurityService securityService, IPermissionScopeService permissionScopeService, IProperyDictionaryItemSearchService propertyDictionarySearchService,
-                                                             IProperyDictionaryItemService propertyDictionaryService)
-            : base(securityService, permissionScopeService)
+        public CatalogModulePropertyDictionaryItemsController(
+            IProperyDictionaryItemSearchService propertyDictionarySearchService, IProperyDictionaryItemService propertyDictionaryService,
+            ICatalogSecurity catalogSecurity)
+            : base(catalogSecurity)
         {
             _propertyDictionarySearchService = propertyDictionarySearchService;
             _propertyDictionaryService = propertyDictionaryService;

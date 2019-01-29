@@ -49,8 +49,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             var preloadedCategoriesMap = PreloadCategories(catalogId);
             foreach (var categoryId in categoryIds.Where(x => x != null))
             {
-                Category category;
-                if (preloadedCategoriesMap.TryGetValue(categoryId, out category))
+                if (preloadedCategoriesMap.TryGetValue(categoryId, out var category))
                 {
                     result.Add(MemberwiseCloneCategory(category));
                 }
@@ -77,7 +76,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
             SaveChanges(categories);
         }
-
 
         public virtual Category Create(Category category)
         {

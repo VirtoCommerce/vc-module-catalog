@@ -269,6 +269,7 @@
     <Compile Include="Services\ProductAssociationSearchService.cs" />
     <Compile Include="Services\PropertyDictionaryItemService.cs" />
     <Compile Include="Services\PropertyServiceImpl.cs" />
+    <Compile Include="Services\Security\CatalogSecurity.cs" />
     <Compile Include="Services\Validation\CategoryValidator.cs" />
     <Compile Include="Services\Validation\HasPropertiesValidator.cs" />
     <Compile Include="Services\Validation\ProductValidator.cs" />

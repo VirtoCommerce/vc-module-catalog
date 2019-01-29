@@ -1,47 +1,40 @@
-﻿using System.Linq;
 using System.Net;
 using System.Web.Http;
 using VirtoCommerce.CatalogModule.Web.Security;
 using VirtoCommerce.Domain.Catalog.Model;
-using VirtoCommerce.Platform.Core.Security;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
     public class CatalogBaseController : ApiController
     {
-        private readonly ISecurityService _securityService;
-        private readonly IPermissionScopeService _permissionScopeService;
+        private readonly ICatalogSecurity _catalogSecurity;
 
-        public CatalogBaseController(ISecurityService securityService, IPermissionScopeService permissionScopeService)
+        public CatalogBaseController(ICatalogSecurity catalogSecurity)
         {
-            _securityService = securityService;
-            _permissionScopeService = permissionScopeService;
+            _catalogSecurity = catalogSecurity;
         }
 
         protected string[] GetObjectPermissionScopeStrings(object obj)
         {
-            return _permissionScopeService.GetObjectPermissionScopeStrings(obj).ToArray();
+            return _catalogSecurity.GetObjectPermissionScopeStrings(obj);
         }
 
         protected void CheckCurrentUserHasPermissionForObjects(string permission, params object[] objects)
         {
-            //Scope bound security check
-            var scopes = objects.SelectMany(x => _permissionScopeService.GetObjectPermissionScopeStrings(x)).Distinct().ToArray();
-            if (!_securityService.UserHasAnyPermission(User.Identity.Name, scopes, permission))
+            var userName = User.Identity.Name;
+            if (!_catalogSecurity.UserHasPermissionForObjects(permission, userName, objects))
             {
-                throw new HttpResponseException(HttpStatusCode.Unauthorized);
+                throw new HttpResponseException(HttpStatusCode.Forbidden);
             }
         }
 
-        /// <summary>
-        /// Filter catalog search criteria based on current user permissions
-        /// </summary>
-        /// <param name="criteria"></param>
-        /// <returns></returns>
+        // <summary>
+        // Filter catalog search criteria based on current user permissions
+        // </summary>
         protected void ApplyRestrictionsForCurrentUser(SearchCriteria criteria)
         {
             var userName = User.Identity.Name;
-            criteria.ApplyRestrictionsForUser(userName, _securityService);
+            _catalogSecurity.ApplayUserRestrictions(criteria, userName);
         }
     }
 }

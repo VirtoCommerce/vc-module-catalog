@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Net;
 using System.Web.Http;
 using System.Web.Http.Description;
 using VirtoCommerce.CatalogModule.Web.Converters;
 using VirtoCommerce.CatalogModule.Web.Security;
 using VirtoCommerce.Domain.Catalog.Services;
-using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.Platform.Core.Web.Security;
 using moduleModel = VirtoCommerce.Domain.Catalog.Model;
 using webModel = VirtoCommerce.CatalogModule.Web.Model;
@@ -18,8 +17,9 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly ICatalogService _catalogService;
         private readonly ICatalogSearchService _searchService;
 
-        public CatalogModuleCatalogsController(ICatalogService catalogService, ICatalogSearchService itemSearchService, ISecurityService securityService, IPermissionScopeService permissionScopeService)
-            : base(securityService, permissionScopeService)
+        public CatalogModuleCatalogsController(ICatalogService catalogService, ICatalogSearchService itemSearchService,
+            ICatalogSecurity catalogSecurity)
+            : base(catalogSecurity)
         {
             _catalogService = catalogService;
             _searchService = itemSearchService;
@@ -29,7 +29,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// Get Catalogs list
         /// </summary>
         /// <remarks>Get common and virtual Catalogs list with minimal information included. Returns array of Catalog</remarks>
-		[HttpGet]
+        [HttpGet]
         [Route("")]
         [ResponseType(typeof(webModel.Catalog[]))]
         public IHttpActionResult GetCatalogs(string sort = null, int skip = 0, int take = 20)
@@ -44,10 +44,10 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             ApplyRestrictionsForCurrentUser(criteria);
 
-            var serviceResult = _searchService.Search(criteria);
+            var searchResult = _searchService.Search(criteria);
             var retVal = new List<webModel.Catalog>();
 
-            foreach (var catalog in serviceResult.Catalogs)
+            foreach (var catalog in searchResult.Catalogs)
             {
                 var webCatalog = catalog.ToWebModel();
                 webCatalog.SecurityScopes = GetObjectPermissionScopeStrings(catalog);
@@ -62,7 +62,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// </summary>
         /// <remarks>Gets Catalog by id with full information loaded</remarks>
         /// <param name="id">The Catalog id.</param>
-		[HttpGet]
+        [HttpGet]
         [Route("{id}")]
         [ResponseType(typeof(webModel.Catalog))]
         public IHttpActionResult Get(string id)
@@ -141,7 +141,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <remarks>Creates the specified catalog</remarks>
         /// <param name="catalog">The catalog to create</param>
         /// <exception cref="System.UnauthorizedAccessException"></exception>
-		[HttpPost]
+        [HttpPost]
         [Route("")]
         [ResponseType(typeof(webModel.Catalog))]
         [CheckPermission(Permission = CatalogPredefinedPermissions.Create)]

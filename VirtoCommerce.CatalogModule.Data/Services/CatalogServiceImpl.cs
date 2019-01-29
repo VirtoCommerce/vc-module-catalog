@@ -76,6 +76,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
         }
 
+
         protected virtual Catalog[] GetByIds(string[] catalogIds)
         {
             return PreloadCatalogs()
@@ -184,8 +185,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
             foreach (var catalog in catalogs.Where(x => !x.IsTransient()))
             {
-                Catalog preloadedCatalog;
-                if (preloadedCatalogsMap.TryGetValue(catalog.Id, out preloadedCatalog))
+                if (preloadedCatalogsMap.TryGetValue(catalog.Id, out var preloadedCatalog))
                 {
                     catalog.Properties = preloadedCatalog.Properties;
                     foreach (var property in catalog.Properties)

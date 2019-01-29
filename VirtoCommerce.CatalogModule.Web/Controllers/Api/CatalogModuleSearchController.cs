@@ -1,14 +1,14 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using VirtoCommerce.CatalogModule.Data.Search;
 using VirtoCommerce.CatalogModule.Web.Converters;
 using VirtoCommerce.CatalogModule.Web.Model;
+using VirtoCommerce.CatalogModule.Web.Security;
 using VirtoCommerce.Domain.Catalog.Model.Search;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Search;
 using VirtoCommerce.Platform.Core.Assets;
-using VirtoCommerce.Platform.Core.Security;
 using SearchCriteria = VirtoCommerce.CatalogModule.Web.Model.SearchCriteria;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
@@ -21,8 +21,10 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly IProductSearchService _productSearchService;
         private readonly ICategorySearchService _categorySearchService;
 
-        public CatalogModuleSearchController(ISecurityService securityService, IPermissionScopeService permissionScopeService, ICatalogSearchService searchService, IBlobUrlResolver blobUrlResolver, IProductSearchService productSearchService, ICategorySearchService categorySearchService)
-            : base(securityService, permissionScopeService)
+        public CatalogModuleSearchController(ICatalogSearchService searchService, IBlobUrlResolver blobUrlResolver,
+            IProductSearchService productSearchService, ICategorySearchService categorySearchService,
+            ICatalogSecurity catalogSecurity)
+            : base(catalogSecurity)
         {
             _searchService = searchService;
             _blobUrlResolver = blobUrlResolver;
