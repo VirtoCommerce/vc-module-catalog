@@ -8,7 +8,6 @@ using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Web.Converters;
 using VirtoCommerce.CatalogModule.Web.Security;
 using VirtoCommerce.Domain.Catalog.Services;
-using VirtoCommerce.Platform.Core.Security;
 using moduleModel = VirtoCommerce.Domain.Catalog.Model;
 using webModel = VirtoCommerce.CatalogModule.Web.Model;
 
@@ -23,10 +22,10 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly IProperyDictionaryItemSearchService _propertyDictionarySearchService;
         //Workaround: Bad design to use repository in the controller layer, need to extend in the future IPropertyService.Delete with new parameter DeleteAllValues
         private readonly Func<ICatalogRepository> _repositoryFactory;
-        public CatalogModulePropertiesController(IPropertyService propertyService, ICategoryService categoryService, ICatalogService catalogService,
-                                                 ISecurityService securityService, IPermissionScopeService permissionScopeService, Func<ICatalogRepository> repositoryFactory,
-                                                 IProperyDictionaryItemSearchService propertyDictionarySearchService)
-            : base(securityService, permissionScopeService)
+        public CatalogModulePropertiesController(IPropertyService propertyService, ICategoryService categoryService,
+            ICatalogService catalogService, Func<ICatalogRepository> repositoryFactory,
+            IProperyDictionaryItemSearchService propertyDictionarySearchService, ICatalogSecurity catalogSecurity)
+            : base(catalogSecurity)
         {
             _propertyService = propertyService;
             _categoryService = categoryService;
@@ -58,7 +57,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// Gets property metainformation by id.
         /// </summary>
         /// <param name="propertyId">The property id.</param>
-		[HttpGet]
+        [HttpGet]
         [Route("{propertyId}")]
         [ResponseType(typeof(webModel.Property))]
         public IHttpActionResult Get(string propertyId)

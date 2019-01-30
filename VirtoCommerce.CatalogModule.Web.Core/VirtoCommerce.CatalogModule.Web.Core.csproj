@@ -102,7 +102,7 @@
     <Compile Include="Security\CatalogPredefinedPermissions.cs" />
     <Compile Include="Security\CatalogSelectedCategoryScope.cs" />
     <Compile Include="Security\CatalogSelectedScope.cs" />
-    <Compile Include="Security\SearchCriteriaExtensions.cs" />
+    <Compile Include="Security\ICatalogSecurity.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

@@ -9,7 +9,6 @@ using VirtoCommerce.CatalogModule.Web.Security;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Platform.Core.Assets;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.Security;
 using coreModel = VirtoCommerce.Domain.Catalog.Model;
 using webModel = VirtoCommerce.CatalogModule.Web.Model;
 
@@ -25,15 +24,10 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly IBlobUrlResolver _blobUrlResolver;
 
         public CatalogModuleListEntryController(
-            ICatalogSearchService searchService,
-            ICategoryService categoryService,
-            IItemService itemService,
-            IBlobUrlResolver blobUrlResolver,
-            ISecurityService securityService,
-            IPermissionScopeService permissionScopeService,
-            ICatalogService catalogService
-            )
-            : base(securityService, permissionScopeService)
+            ICatalogSearchService searchService, ICategoryService categoryService,
+            IItemService itemService, IBlobUrlResolver blobUrlResolver,
+            ICatalogService catalogService, ICatalogSecurity catalogSecurity)
+            : base(catalogSecurity)
         {
             _searchService = searchService;
             _categoryService = categoryService;

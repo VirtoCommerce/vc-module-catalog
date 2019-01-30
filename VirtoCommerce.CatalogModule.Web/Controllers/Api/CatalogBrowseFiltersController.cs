@@ -11,7 +11,6 @@ using VirtoCommerce.CatalogModule.Web.Security;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Store.Services;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.Security;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
@@ -29,8 +28,10 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly IProperyDictionaryItemSearchService _propDictItemsSearchService;
 
 
-        public CatalogBrowseFiltersController(ISecurityService securityService, IPermissionScopeService permissionScopeService, IStoreService storeService, IPropertyService propertyService, IBrowseFilterService browseFilterService, IProperyDictionaryItemSearchService propDictItemsSearchService)
-            : base(securityService, permissionScopeService)
+        public CatalogBrowseFiltersController(IStoreService storeService, IPropertyService propertyService,
+            IBrowseFilterService browseFilterService, IProperyDictionaryItemSearchService propDictItemsSearchService,
+            ICatalogSecurity catalogSecurity)
+            : base(catalogSecurity)
         {
             _storeService = storeService;
             _propertyService = propertyService;

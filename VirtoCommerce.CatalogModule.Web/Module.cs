@@ -10,6 +10,7 @@ using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
 using VirtoCommerce.CatalogModule.Data.Search.Indexing;
 using VirtoCommerce.CatalogModule.Data.Services;
 using VirtoCommerce.CatalogModule.Data.Services.OutlineParts;
+using VirtoCommerce.CatalogModule.Data.Services.Security;
 using VirtoCommerce.CatalogModule.Data.Services.Validation;
 using VirtoCommerce.CatalogModule.Web.ExportImport;
 using VirtoCommerce.CatalogModule.Web.JsonConverters;
@@ -112,6 +113,12 @@ namespace VirtoCommerce.CatalogModule.Web
             _container.RegisterInstance(propertyValueValidatorFactory);
 
             _container.RegisterType<AbstractValidator<IHasProperties>, HasPropertiesValidator>();
+
+            #endregion
+
+            #region Security
+
+            _container.RegisterType<ICatalogSecurity, CatalogSecurity>();
 
             #endregion
         }
