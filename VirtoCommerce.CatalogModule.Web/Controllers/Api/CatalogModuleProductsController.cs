@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net;
 using System.Web.Http;
 using System.Web.Http.Description;
-using VirtoCommerce.CatalogModule.Data.Search;
 using VirtoCommerce.CatalogModule.Web.Converters;
 using VirtoCommerce.CatalogModule.Web.Security;
 using VirtoCommerce.Domain.Catalog.Model.Search;
@@ -12,7 +11,6 @@ using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Commerce.Model;
 using VirtoCommerce.Platform.Core.Assets;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.Security;
 using coreModel = VirtoCommerce.Domain.Catalog.Model;
 using webModel = VirtoCommerce.CatalogModule.Web.Model;
 
@@ -28,9 +26,11 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly ISkuGenerator _skuGenerator;
         private readonly IProductAssociationSearchService _productAssociationSearchService;
 
-        public CatalogModuleProductsController(IItemService itemsService, IBlobUrlResolver blobUrlResolver, ICatalogService catalogService, ICategoryService categoryService,
-                                               ISkuGenerator skuGenerator, ISecurityService securityService, IPermissionScopeService permissionScopeService, IProductAssociationSearchService productAssociationSearchService)
-            : base(securityService, permissionScopeService)
+        public CatalogModuleProductsController(IItemService itemsService, IBlobUrlResolver blobUrlResolver,
+            ICatalogService catalogService, ICategoryService categoryService,
+            ISkuGenerator skuGenerator, IProductAssociationSearchService productAssociationSearchService,
+            ICatalogSecurity catalogSecurity)
+            : base(catalogSecurity)
         {
             _itemsService = itemsService;
             _categoryService = categoryService;
@@ -137,7 +137,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             retVal.CategoryId = categoryId;
             retVal.CatalogId = catalogId;
             retVal.IsActive = true;
-            retVal.SeoInfos = Array.Empty<SeoInfo>();            
+            retVal.SeoInfos = Array.Empty<SeoInfo>();
 
             CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Create, retVal.ToModuleModel(_blobUrlResolver));
 
@@ -194,7 +194,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             newVariation.CatalogId = product.CatalogId;
             newVariation.TitularItemId = product.MainProductId ?? productId;
             newVariation.Properties = mainWebProduct.Properties.Where(x => x.Type == coreModel.PropertyType.Variation).ToList();
- 
+
             foreach (var property in newVariation.Properties)
             {
                 // Mark variation property as required

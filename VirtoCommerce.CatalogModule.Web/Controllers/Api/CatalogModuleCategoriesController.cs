@@ -1,10 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Web.Http;
 using System.Web.Http.Description;
-using System.Web.Http.ModelBinding;
 using System.Web.Http.Results;
 using VirtoCommerce.CatalogModule.Web.Converters;
 using VirtoCommerce.CatalogModule.Web.Security;
@@ -12,7 +11,6 @@ using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Commerce.Model;
 using VirtoCommerce.Platform.Core.Assets;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.Security;
 using coreModel = VirtoCommerce.Domain.Catalog.Model;
 using webModel = VirtoCommerce.CatalogModule.Web.Model;
 
@@ -25,14 +23,14 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly ICatalogService _catalogService;
         private readonly IBlobUrlResolver _blobUrlResolver;
 
-        public CatalogModuleCategoriesController(ICategoryService categoryService, ICatalogService catalogService, IBlobUrlResolver blobUrlResolver, ISecurityService securityService, IPermissionScopeService permissionScopeService)
-            : base(securityService, permissionScopeService)
+        public CatalogModuleCategoriesController(ICategoryService categoryService, ICatalogService catalogService,
+            IBlobUrlResolver blobUrlResolver, ICatalogSecurity catalogSecurity)
+            : base(catalogSecurity)
         {
             _categoryService = categoryService;
             _catalogService = catalogService;
             _blobUrlResolver = blobUrlResolver;
         }
-
 
         /// <summary>
         /// Gets category by id.
@@ -115,7 +113,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return Ok(retVal);
         }
 
-
         /// <summary>
         /// Creates or updates the specified category.
         /// </summary>
@@ -153,7 +150,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return StatusCode(HttpStatusCode.NoContent);
             }
         }
-
 
         /// <summary>
         /// Deletes the specified categories by id.

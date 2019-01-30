@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.Domain.Catalog.Model;
@@ -12,38 +12,35 @@ namespace VirtoCommerce.CatalogModule.Web.Security
         public override bool IsScopeAvailableForPermission(string permission)
         {
             return permission == CatalogPredefinedPermissions.Read
-                      || permission == CatalogPredefinedPermissions.Update;
+                   || permission == CatalogPredefinedPermissions.Update;
         }
 
-        public override IEnumerable<string> GetEntityScopeStrings(object obj)
+        public override IEnumerable<string> GetEntityScopeStrings(object entity)
         {
-            if (obj == null)
-            {
-                throw new ArgumentNullException("obj");
-            }
-            var catalog = obj as Catalog;
-            var category = obj as Category;
-            var product = obj as CatalogProduct;
-            var link = obj as Model.ListEntryLink;
-            var property = obj as Property;
+            if (entity == null) { throw new ArgumentNullException(nameof(entity)); }
 
-            string catalogId = null;
-            if (catalog != null)
-                catalogId = catalog.Id;
-            if (category != null)
-                catalogId = category.CatalogId;
-            if (product != null)
-                catalogId = product.CatalogId;
-            if (link != null)
-                catalogId = link.CatalogId;
-            if (property != null)
-                catalogId = property.CatalogId;
+            var catalogId = GetCatalogIdFromEntity(entity);
 
-            if (catalogId != null)
+            return catalogId == null ? Enumerable.Empty<string>() : new[] { $"{Type}:{catalogId}" };
+        }
+
+        private string GetCatalogIdFromEntity(object entity)
+        {
+            switch (entity)
             {
-                return new[] { Type + ":" + catalogId };
+                case Catalog catalog:
+                    return catalog.Id;
+                case Category category:
+                    return category.CatalogId;
+                case CatalogProduct catalogProduct:
+                    return catalogProduct.CatalogId;
+                case Model.ListEntryLink listEntryLink:
+                    return listEntryLink.CatalogId;
+                case Model.Property property:
+                    return property.CatalogId;
             }
-            return Enumerable.Empty<string>();
+
+            return null;
         }
     }
 }
