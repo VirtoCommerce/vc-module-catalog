@@ -26,8 +26,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         public CatalogModuleListEntryController(
             ICatalogSearchService searchService, ICategoryService categoryService,
             IItemService itemService, IBlobUrlResolver blobUrlResolver,
-            ICatalogService catalogService, ICatalogSecurity catalogSecurity)
-            : base(catalogSecurity)
+            ICatalogService catalogService, ICatalogSecurityService catalogSecurityService)
+            : base(catalogSecurityService)
         {
             _searchService = searchService;
             _categoryService = categoryService;

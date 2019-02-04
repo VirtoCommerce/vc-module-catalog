@@ -7,22 +7,22 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
     public class CatalogBaseController : ApiController
     {
-        private readonly ICatalogSecurity _catalogSecurity;
+        private readonly ICatalogSecurityService _catalogSecurityService;
 
-        public CatalogBaseController(ICatalogSecurity catalogSecurity)
+        public CatalogBaseController(ICatalogSecurityService catalogSecurityService)
         {
-            _catalogSecurity = catalogSecurity;
+            _catalogSecurityService = catalogSecurityService;
         }
 
         protected string[] GetObjectPermissionScopeStrings(object obj)
         {
-            return _catalogSecurity.GetObjectPermissionScopeStrings(obj);
+            return _catalogSecurityService.GetObjectPermissionScopeStrings(obj);
         }
 
         protected void CheckCurrentUserHasPermissionForObjects(string permission, params object[] objects)
         {
             var userName = User.Identity.Name;
-            if (!_catalogSecurity.UserHasPermissionForObjects(permission, userName, objects))
+            if (!_catalogSecurityService.UserHasPermissionForObjects(permission, userName, objects))
             {
                 throw new HttpResponseException(HttpStatusCode.Forbidden);
             }
@@ -36,7 +36,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         protected void ApplyRestrictionsForCurrentUser(SearchCriteria criteria)
         {
             var userName = User.Identity.Name;
-            _catalogSecurity.ApplayUserRestrictions(criteria, userName);
+            _catalogSecurityService.ApplyUserRestrictions(criteria, userName);
         }
     }
 }

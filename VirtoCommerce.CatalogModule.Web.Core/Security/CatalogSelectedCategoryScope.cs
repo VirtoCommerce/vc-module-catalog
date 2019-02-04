@@ -22,11 +22,29 @@ namespace VirtoCommerce.CatalogModule.Web.Security
                       || permission == CatalogPredefinedPermissions.Update;
         }
 
-        public override IEnumerable<string> GetEntityScopeStrings(object entity)
+        public override IEnumerable<string> GetEntityScopeStrings(object obj)
         {
-            if (entity == null) { throw new ArgumentNullException(nameof(entity)); }
+            if (obj == null)
+            {
+                throw new ArgumentNullException("obj");
+            }
 
-            var categoryId = GetCategoryIdFromEntity(entity);
+
+            var category = obj as Category;
+            var product = obj as CatalogProduct;
+            var link = obj as Model.ListEntryLink;
+            var property = obj as Model.Property;
+
+            string categoryId = null;
+
+            if (category != null)
+                categoryId = category.Id;
+            if (product != null)
+                categoryId = product.CategoryId;
+            if (link != null)
+                categoryId = link.CategoryId;
+            if (property != null)
+                categoryId = property.CategoryId;
 
             if (categoryId != null)
             {
@@ -34,29 +52,12 @@ namespace VirtoCommerce.CatalogModule.Web.Security
                 if (resultCategory != null)
                 {
                     //Need to return scopes for all parent categories to support scope inheritance (permission defined on parent category should be active for children)
-                    var retVal = new[] { resultCategory.Id }.Concat(resultCategory.Parents.Select(x => x.Id)).Select(x => $"{Type}:{x}");
+                    var retVal = new[] { resultCategory.Id }.Concat(resultCategory.Parents.Select(x => x.Id)).Select(x => Type + ":" + x);
                     return retVal;
                 }
             }
 
             return Enumerable.Empty<string>();
-        }
-
-        private string GetCategoryIdFromEntity(object entity)
-        {
-            switch (entity)
-            {
-                case Category category:
-                    return category.Id;
-                case CatalogProduct product:
-                    return product.CategoryId;
-                case Model.ListEntryLink link:
-                    return link.CategoryId;
-                case Model.Property property:
-                    return property.CategoryId;
-            }
-
-            return null;
         }
     }
 }

@@ -18,8 +18,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly ICatalogSearchService _searchService;
 
         public CatalogModuleCatalogsController(ICatalogService catalogService, ICatalogSearchService itemSearchService,
-            ICatalogSecurity catalogSecurity)
-            : base(catalogSecurity)
+            ICatalogSecurityService catalogSecurityService)
+            : base(catalogSecurityService)
         {
             _catalogService = catalogService;
             _searchService = itemSearchService;

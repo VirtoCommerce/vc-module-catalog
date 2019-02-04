@@ -15,32 +15,35 @@ namespace VirtoCommerce.CatalogModule.Web.Security
                    || permission == CatalogPredefinedPermissions.Update;
         }
 
-        public override IEnumerable<string> GetEntityScopeStrings(object entity)
+        public override IEnumerable<string> GetEntityScopeStrings(object obj)
         {
-            if (entity == null) { throw new ArgumentNullException(nameof(entity)); }
-
-            var catalogId = GetCatalogIdFromEntity(entity);
-
-            return catalogId == null ? Enumerable.Empty<string>() : new[] { $"{Type}:{catalogId}" };
-        }
-
-        private string GetCatalogIdFromEntity(object entity)
-        {
-            switch (entity)
+            if (obj == null)
             {
-                case Catalog catalog:
-                    return catalog.Id;
-                case Category category:
-                    return category.CatalogId;
-                case CatalogProduct catalogProduct:
-                    return catalogProduct.CatalogId;
-                case Model.ListEntryLink listEntryLink:
-                    return listEntryLink.CatalogId;
-                case Model.Property property:
-                    return property.CatalogId;
+                throw new ArgumentNullException("obj");
             }
+            var catalog = obj as Catalog;
+            var category = obj as Category;
+            var product = obj as CatalogProduct;
+            var link = obj as Model.ListEntryLink;
+            var property = obj as Property;
 
-            return null;
+            string catalogId = null;
+            if (catalog != null)
+                catalogId = catalog.Id;
+            if (category != null)
+                catalogId = category.CatalogId;
+            if (product != null)
+                catalogId = product.CatalogId;
+            if (link != null)
+                catalogId = link.CatalogId;
+            if (property != null)
+                catalogId = property.CatalogId;
+
+            if (catalogId != null)
+            {
+                return new[] { Type + ":" + catalogId };
+            }
+            return Enumerable.Empty<string>();
         }
     }
 }

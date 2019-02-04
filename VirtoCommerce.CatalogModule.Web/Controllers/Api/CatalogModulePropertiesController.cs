@@ -24,8 +24,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly Func<ICatalogRepository> _repositoryFactory;
         public CatalogModulePropertiesController(IPropertyService propertyService, ICategoryService categoryService,
             ICatalogService catalogService, Func<ICatalogRepository> repositoryFactory,
-            IProperyDictionaryItemSearchService propertyDictionarySearchService, ICatalogSecurity catalogSecurity)
-            : base(catalogSecurity)
+            IProperyDictionaryItemSearchService propertyDictionarySearchService, ICatalogSecurityService catalogSecurityService)
+            : base(catalogSecurityService)
         {
             _propertyService = propertyService;
             _categoryService = categoryService;

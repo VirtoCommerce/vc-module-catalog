@@ -30,8 +30,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
         public CatalogBrowseFiltersController(IStoreService storeService, IPropertyService propertyService,
             IBrowseFilterService browseFilterService, IProperyDictionaryItemSearchService propDictItemsSearchService,
-            ICatalogSecurity catalogSecurity)
-            : base(catalogSecurity)
+            ICatalogSecurityService catalogSecurityService)
+            : base(catalogSecurityService)
         {
             _storeService = storeService;
             _propertyService = propertyService;

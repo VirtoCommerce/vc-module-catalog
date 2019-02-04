@@ -29,8 +29,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         public CatalogModuleProductsController(IItemService itemsService, IBlobUrlResolver blobUrlResolver,
             ICatalogService catalogService, ICategoryService categoryService,
             ISkuGenerator skuGenerator, IProductAssociationSearchService productAssociationSearchService,
-            ICatalogSecurity catalogSecurity)
-            : base(catalogSecurity)
+            ICatalogSecurityService catalogSecurityService)
+            : base(catalogSecurityService)
         {
             _itemsService = itemsService;
             _categoryService = categoryService;

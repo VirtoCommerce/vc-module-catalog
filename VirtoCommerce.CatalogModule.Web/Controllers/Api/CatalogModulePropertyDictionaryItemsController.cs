@@ -16,8 +16,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
         public CatalogModulePropertyDictionaryItemsController(
             IProperyDictionaryItemSearchService propertyDictionarySearchService, IProperyDictionaryItemService propertyDictionaryService,
-            ICatalogSecurity catalogSecurity)
-            : base(catalogSecurity)
+            ICatalogSecurityService catalogSecurityService)
+            : base(catalogSecurityService)
         {
             _propertyDictionarySearchService = propertyDictionarySearchService;
             _propertyDictionaryService = propertyDictionaryService;

@@ -24,8 +24,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly IBlobUrlResolver _blobUrlResolver;
 
         public CatalogModuleCategoriesController(ICategoryService categoryService, ICatalogService catalogService,
-            IBlobUrlResolver blobUrlResolver, ICatalogSecurity catalogSecurity)
-            : base(catalogSecurity)
+            IBlobUrlResolver blobUrlResolver, ICatalogSecurityService catalogSecurityService)
+            : base(catalogSecurityService)
         {
             _categoryService = categoryService;
             _catalogService = catalogService;

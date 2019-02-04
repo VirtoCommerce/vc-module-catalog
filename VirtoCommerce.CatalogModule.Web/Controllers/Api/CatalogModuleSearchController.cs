@@ -23,8 +23,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
         public CatalogModuleSearchController(ICatalogSearchService searchService, IBlobUrlResolver blobUrlResolver,
             IProductSearchService productSearchService, ICategorySearchService categorySearchService,
-            ICatalogSecurity catalogSecurity)
-            : base(catalogSecurity)
+            ICatalogSecurityService catalogSecurityService)
+            : base(catalogSecurityService)
         {
             _searchService = searchService;
             _blobUrlResolver = blobUrlResolver;
