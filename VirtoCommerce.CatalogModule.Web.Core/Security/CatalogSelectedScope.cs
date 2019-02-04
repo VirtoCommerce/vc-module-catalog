@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.Domain.Catalog.Model;
@@ -12,7 +12,7 @@ namespace VirtoCommerce.CatalogModule.Web.Security
         public override bool IsScopeAvailableForPermission(string permission)
         {
             return permission == CatalogPredefinedPermissions.Read
-                   || permission == CatalogPredefinedPermissions.Update;
+                      || permission == CatalogPredefinedPermissions.Update;
         }
 
         public override IEnumerable<string> GetEntityScopeStrings(object obj)
