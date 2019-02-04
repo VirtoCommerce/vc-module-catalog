@@ -136,7 +136,6 @@
     <Compile Include="AggregationRequestBuilderTests.cs" />
     <Compile Include="BrowseFiltersTestBase.cs" />
     <Compile Include="CatalogPropertyTest.cs" />
-    <Compile Include="CatalogSecurityTest.cs" />
     <Compile Include="FiltersHelperTests.cs" />
     <Compile Include="PropertyDictionaryItemTest.cs" />
     <Compile Include="OutlineTests.cs" />
