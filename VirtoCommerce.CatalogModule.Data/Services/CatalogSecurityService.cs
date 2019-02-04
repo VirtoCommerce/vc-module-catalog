@@ -186,11 +186,11 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private string[] FilterScopes<T>(PermissionScope[] permissionScopes) where T : PermissionScope
         {
             var result = Array.Empty<string>();
-            var categoryScopes = permissionScopes.OfType<T>().ToArray();
+            var scopes = permissionScopes.OfType<T>().ToArray();
 
-            if (categoryScopes.Any())
+            if (scopes.Any())
             {
-                result = categoryScopes.Select(x => x.Scope)
+                result = scopes.Select(x => x.Scope)
                     .Where(x => !string.IsNullOrEmpty(x))
                     .ToArray();
             }
