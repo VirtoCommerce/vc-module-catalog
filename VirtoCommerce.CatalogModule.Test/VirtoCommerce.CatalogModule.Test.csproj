@@ -137,6 +137,7 @@
     <Compile Include="BrowseFiltersTestBase.cs" />
     <Compile Include="CatalogPropertyTest.cs" />
     <Compile Include="FiltersHelperTests.cs" />
+    <Compile Include="ProductSearchRequestBuilderTests.cs" />
     <Compile Include="PropertyDictionaryItemTest.cs" />
     <Compile Include="OutlineTests.cs" />
     <Compile Include="ProductAssociationSearchServiceTests.cs" />
