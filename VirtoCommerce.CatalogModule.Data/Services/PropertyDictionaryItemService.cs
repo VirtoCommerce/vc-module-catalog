@@ -1,4 +1,5 @@
 using System;
+using System.Data.Entity;
 using System.Linq;
 using CacheManager.Core;
 using VirtoCommerce.CatalogModule.Data.Model;
@@ -130,7 +131,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     query = query.OrderBySortInfos(sortInfos);
 
                     result.TotalCount = query.Count();
-                    var ids = query.Skip(criteria.Skip).Take(criteria.Take).Select(x => x.Id).ToArray();
+                    var ids = query.Skip(() => criteria.Skip).Take(() => criteria.Take).Select(x => x.Id).ToArray();
                     result.Results = GetByIds(ids).AsQueryable().OrderBySortInfos(sortInfos).ToList();
                     return result;
                 }
