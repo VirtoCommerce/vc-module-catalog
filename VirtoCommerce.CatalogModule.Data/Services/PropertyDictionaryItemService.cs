@@ -127,8 +127,9 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                             new SortInfo { SortColumn = "Alias", SortDirection = SortDirection.Ascending }
                         };
                     }
-
-                    query = query.OrderBySortInfos(sortInfos);
+                    //Force sorting order by Id to prevent issue with nondeterministic behavior for queries that contains pagination with data that have same values for sorting by columns
+                    //https://github.com/VirtoCommerce/vc-platform/issues/1525 
+                    query = query.OrderBySortInfos(sortInfos).ThenBy(x => x.Id);
 
                     result.TotalCount = query.Count();
                     var ids = query.Skip(() => criteria.Skip).Take(() => criteria.Take).Select(x => x.Id).ToArray();
