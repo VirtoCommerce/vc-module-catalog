@@ -278,7 +278,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
                 // Always load info, images and property values for variations
                 var variations = Items.Include(x => x.Images).Where(x => variationIds.Contains(x.Id)).ToArray();
-                var variationPropertyValues = PropertyValues.Where(x => variationIds.Contains(x.ItemId)).ToArray();
+                var variationPropertyValues = PropertyValues.Include(x => x.DictionaryItem.DictionaryItemValues).Where(x => variationIds.Contains(x.ItemId)).ToArray();
 
                 if (respGroup.HasFlag(coreModel.ItemResponseGroup.ItemAssets))
                 {
