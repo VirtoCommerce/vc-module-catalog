@@ -116,6 +116,11 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 .Select(i => new GenericChangedEntry<CatalogProduct>(i, EntryState.Deleted))
                 .ToList();
 
+            foreach (var catalogProduct in items)
+            {
+                _commerceService.DeleteSeoForObject(catalogProduct);
+            }
+
             using (var repository = _repositoryFactory())
             {
                 _eventPublisher.Publish(new ProductChangingEvent(changedEntries));
