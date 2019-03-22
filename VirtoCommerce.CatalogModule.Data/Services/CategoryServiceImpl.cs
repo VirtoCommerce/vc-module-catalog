@@ -100,7 +100,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 .Select(c => new GenericChangedEntry<Category>(c, EntryState.Deleted))
                 .ToList();
 
-            _commerceService.DeleteSeoForObjects(categories);
+            foreach (var category in categories)
+            {
+                _commerceService.DeleteSeoForObject(category);
+            }
 
             using (var repository = _repositoryFactory())
             {
