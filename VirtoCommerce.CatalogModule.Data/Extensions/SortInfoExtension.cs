@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.Platform.Core.Common;
 
@@ -7,19 +8,16 @@ namespace VirtoCommerce.CatalogModule.Data.Extensions
     {
         public static SortInfo[] EnsureIdIncluded(this SortInfo[] sortInfos)
         {
-            if (!sortInfos.IsNullOrEmpty())
+            var sortInfoList = sortInfos?.ToList() ?? new List<SortInfo>();
+            if (!sortInfoList.Any(x => x.SortColumn.EqualsInvariant("id")))
             {
-                if (!sortInfos.Any(x => x.SortColumn.EqualsInvariant("id")))
+                sortInfoList.Add(new SortInfo
                 {
-                    var sortInfoLst = sortInfos.ToList();
-                    sortInfoLst.Add(new SortInfo()
-                    {
-                        SortColumn = "id"
-                    });
-                    return sortInfoLst.ToArray();
-                }
+                    SortColumn = "id"
+                });
             }
-            return sortInfos;
+
+            return sortInfoList.ToArray();
         }
     }
 }

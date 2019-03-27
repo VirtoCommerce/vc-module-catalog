@@ -129,10 +129,12 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 {
                     sortInfos = new[] { new SortInfo { SortColumn = "Name" } };
                 }
+
+                sortInfos = sortInfos.EnsureIdIncluded();
                 //Try to replace sorting columns names
                 TryTransformSortingInfoColumnNames(_categorySortingAliases, sortInfos);
 
-                query = query.OrderBySortInfos(sortInfos.EnsureIdIncluded());
+                query = query.OrderBySortInfos(sortInfos);
 
                 var categoryIds = query.Select(x => x.Id).ToList();
                 var categoryResponseGroup = CategoryResponseGroup.Info | CategoryResponseGroup.WithImages | CategoryResponseGroup.WithSeo | CategoryResponseGroup.WithLinks | CategoryResponseGroup.WithParents;
@@ -172,9 +174,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                                           }
                                     : criteria.SortInfos;
 
+                sortInfos = sortInfos.EnsureIdIncluded();
                 if (catalogIds.IsNullOrEmpty())
                 {
-                    catalogIds = repository.Catalogs.OrderBySortInfos(sortInfos.EnsureIdIncluded()).Select(x => x.Id).ToArray();
+                    catalogIds = repository.Catalogs.OrderBySortInfos(sortInfos).Select(x => x.Id).ToArray();
                 }
 
 
@@ -199,6 +202,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             {
                 sortInfos = new[] { new SortInfo { SortColumn = "Priority", SortDirection = SortDirection.Descending }, new SortInfo { SortColumn = "Name", SortDirection = SortDirection.Ascending } };
             }
+
+            sortInfos = sortInfos.EnsureIdIncluded();
             //Try to replace sorting columns names
             TryTransformSortingInfoColumnNames(_productSortingAliases, sortInfos);
 
@@ -233,7 +238,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
                 result.ProductsTotalCount = query.Count();
 
-                query = query.OrderBySortInfos(sortInfos.EnsureIdIncluded());
+                query = query.OrderBySortInfos(sortInfos);
 
                 var itemIds = query.Skip(criteria.Skip)
                                    .Take(criteria.Take)
