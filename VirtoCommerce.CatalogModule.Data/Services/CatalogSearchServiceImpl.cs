@@ -1,9 +1,7 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using VirtoCommerce.CatalogModule.Data.Extensions;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Domain.Catalog.Model;
@@ -133,7 +131,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 //Try to replace sorting columns names
                 TryTransformSortingInfoColumnNames(_categorySortingAliases, sortInfos);
 
-                query = query.OrderBySortInfos(sortInfos);
+                query = query.OrderBySortInfos(sortInfos).ThenBy(q => q.Id);
 
                 var categoryIds = query.Select(x => x.Id).ToList();
                 var categoryResponseGroup = CategoryResponseGroup.Info | CategoryResponseGroup.WithImages | CategoryResponseGroup.WithSeo | CategoryResponseGroup.WithLinks | CategoryResponseGroup.WithParents;
@@ -175,7 +173,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
                 if (catalogIds.IsNullOrEmpty())
                 {
-                    catalogIds = repository.Catalogs.OrderBySortInfos(sortInfos).Select(x => x.Id).ToArray();
+                    catalogIds = repository.Catalogs.OrderBySortInfos(sortInfos).ThenBy(q => q.Id).Select(x => x.Id).ToArray();
                 }
 
                 result.Catalogs = new List<Catalog>();
@@ -233,7 +231,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
                 result.ProductsTotalCount = query.Count();
 
-                query = query.OrderBySortInfos(sortInfos);
+                query = query.OrderBySortInfos(sortInfos).ThenBy(q => q.Id);
 
                 var itemIds = query.Skip(criteria.Skip)
                                    .Take(criteria.Take)
@@ -333,6 +331,5 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 }
             }
         }
-
     }
 }
