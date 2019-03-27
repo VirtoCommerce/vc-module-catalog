@@ -8,28 +8,16 @@ namespace VirtoCommerce.CatalogModule.Data.Extensions
     {
         public static SortInfo[] EnsureIdIncluded(this SortInfo[] sortInfos)
         {
-            List<SortInfo> sortInfoList = null;
+            var result = sortInfos;
 
-            if (sortInfos.IsNullOrEmpty())
+            if (sortInfos?.Any(x => x.SortColumn.EqualsInvariant("id")) != true)
             {
-                sortInfoList = new List<SortInfo>();
+                var list = sortInfos?.ToList() ?? new List<SortInfo>();
+                list.Add(new SortInfo { SortColumn = "id" });
+                result = list.ToArray();
             }
 
-            else if (!sortInfos.Any(x => x.SortColumn.EqualsInvariant("id")))
-            {
-                sortInfoList = sortInfos.ToList();
-            }
-
-            if (sortInfoList != null)
-            {
-                sortInfoList.Add(new SortInfo
-                {
-                    SortColumn = "id"
-                });
-                sortInfos = sortInfoList.ToArray();
-            }
-
-            return sortInfos;
+            return result;
         }
     }
 }
