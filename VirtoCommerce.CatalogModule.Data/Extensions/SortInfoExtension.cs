@@ -6,7 +6,13 @@ namespace VirtoCommerce.CatalogModule.Data.Extensions
 {
     public static class SortInfoExtension
     {
-        public static SortInfo[] EnsureIdIncluded(this SortInfo[] sortInfos)
+        public static IOrderedQueryable<T> OrderBySortInfosWithId<T>(this IQueryable<T> query, SortInfo[] sortInfos) where T : Entity
+        {
+            return query.OrderBySortInfos(sortInfos.EnsureIdIncluded());
+        }
+
+
+        private static SortInfo[] EnsureIdIncluded(this SortInfo[] sortInfos)
         {
             var result = sortInfos;
 
