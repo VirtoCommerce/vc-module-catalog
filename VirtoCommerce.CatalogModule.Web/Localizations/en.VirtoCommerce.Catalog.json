@@ -331,12 +331,13 @@
       },
       "item-variation-list": {
           "subtitle": "Item variations",
-          "labels": {
-              "no-items": "No Variations yet",
-              "picture": "Pic",
-              "name": "Name",
-              "sku": "SKU"
-          }
+        "labels": {
+          "no-items": "No Variations yet",
+          "picture": "Pic",
+          "name": "Name",
+          "sku": "SKU",
+          "manufacturerNumber": "Manufacturer Part Number"
+        }
       },
       "editorialReviews-list": {
         "subtitle": "Item descriptions",
