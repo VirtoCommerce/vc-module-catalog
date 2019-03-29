@@ -330,7 +330,7 @@
           "picture": "Картинка",
           "name": "Название",
           "sku": "SKU",
-          "manufacturerNumber": "Номер детали производителя"
+          "manufacturer-part-number": "Номер детали производителя"
         }
       },
       "editorialReviews-list": {
