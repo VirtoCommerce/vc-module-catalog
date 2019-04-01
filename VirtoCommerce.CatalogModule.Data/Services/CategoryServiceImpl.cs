@@ -100,16 +100,21 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 .Select(c => new GenericChangedEntry<Category>(c, EntryState.Deleted))
                 .ToList();
 
+            Category[] children;
             using (var repository = _repositoryFactory())
             {
                 _eventPublisher.Publish(new CategoryChangingEvent(changedEntries));
-
+                children = GetByIds(repository.GetAllChildrenCategoriesIds(categoryIds).ToArray(), CategoryResponseGroup.Info);
                 repository.RemoveCategories(categoryIds);
                 CommitChanges(repository);
                 //Reset cached categories and catalogs
                 ResetCache();
-
                 _eventPublisher.Publish(new CategoryChangedEvent(changedEntries));
+            }
+
+            foreach (var child in children)
+            {
+                _commerceService.DeleteSeoForObject(child);
             }
 
             foreach (var category in categories)
@@ -117,6 +122,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 _commerceService.DeleteSeoForObject(category);
             }
         }
+
 
         #endregion
         /// <summary>

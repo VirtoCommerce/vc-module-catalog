@@ -111,7 +111,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public virtual void Delete(string[] itemIds)
         {
-            var items = GetByIds(itemIds, ItemResponseGroup.ItemInfo);
+            var items = GetByIds(itemIds, ItemResponseGroup.Variations);
             var changedEntries = items
                 .Select(i => new GenericChangedEntry<CatalogProduct>(i, EntryState.Deleted))
                 .ToList();
@@ -124,6 +124,11 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 CommitChanges(repository);
 
                 _eventPublisher.Publish(new ProductChangedEvent(changedEntries));
+            }
+
+            foreach (var variation in items.SelectMany(x => x.Variations))
+            {
+                _commerceService.DeleteSeoForObject(variation);
             }
 
             foreach (var catalogProduct in items)
