@@ -100,11 +100,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 .Select(c => new GenericChangedEntry<Category>(c, EntryState.Deleted))
                 .ToList();
 
-            foreach (var category in categories)
-            {
-                _commerceService.DeleteSeoForObject(category);
-            }
-
             using (var repository = _repositoryFactory())
             {
                 _eventPublisher.Publish(new CategoryChangingEvent(changedEntries));
@@ -115,6 +110,11 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 ResetCache();
 
                 _eventPublisher.Publish(new CategoryChangedEvent(changedEntries));
+            }
+
+            foreach (var category in categories)
+            {
+                _commerceService.DeleteSeoForObject(category);
             }
         }
 
