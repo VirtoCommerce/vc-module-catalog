@@ -325,13 +325,13 @@
       },
       "item-variation-list": {
           "subtitle": "Вариации продукта",
-        "labels": {
-          "no-items": "Пока нет вариаций",
-          "picture": "Картинка",
-          "name": "Название",
-          "sku": "SKU",
-          "manufacturer-part-number": "Номер детали производителя"
-        }
+          "labels": {
+              "no-items": "Пока нет вариаций",
+              "picture": "Картинка",
+              "name": "Название",
+              "sku": "SKU",
+              "manufacturer-part-number": "Номер детали производителя"
+          }
       },
       "editorialReviews-list": {
         "subtitle": "Описание продукта",
