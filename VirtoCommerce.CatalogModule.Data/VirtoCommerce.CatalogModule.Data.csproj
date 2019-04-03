@@ -97,7 +97,6 @@
     </Compile>
     <Compile Include="CatalogConstants.cs" />
     <Compile Include="Extensions\DictionaryExtension.cs" />
-    <Compile Include="Extensions\SortInfoExtension.cs" />
     <Compile Include="Migrations\201504301302574_Initial.cs" />
     <Compile Include="Migrations\201504301302574_Initial.Designer.cs">
       <DependentUpon>201504301302574_Initial.cs</DependentUpon>
