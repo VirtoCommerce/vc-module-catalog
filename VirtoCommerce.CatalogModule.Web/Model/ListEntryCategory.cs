@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 
 namespace VirtoCommerce.CatalogModule.Web.Model
 {
@@ -16,6 +16,7 @@ namespace VirtoCommerce.CatalogModule.Web.Model
             Code = category.Code;
             Name = category.Name;
             IsActive = category.IsActive;
+            CatalogId = category.CatalogId;
 
             if (!string.IsNullOrEmpty(category.Outline))
             {

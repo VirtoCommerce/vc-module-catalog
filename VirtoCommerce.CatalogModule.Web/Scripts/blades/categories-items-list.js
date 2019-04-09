@@ -296,7 +296,7 @@ angular.module('virtoCommerce.catalogModule')
                         title: 'catalog.blades.categories-items-list.title',
                         subtitle: 'catalog.blades.categories-items-list.subtitle',
                         subtitleValues: listItem.name != null ? { name: listItem.name } : '',
-                        catalogId: blade.catalogId,
+                        catalogId: blade.catalogId || listItem.catalogId,
                         categoryId: listItem.id,
                         category: listItem,
                         catalog: blade.catalog,
