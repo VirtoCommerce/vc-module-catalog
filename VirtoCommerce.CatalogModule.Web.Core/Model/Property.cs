@@ -32,7 +32,6 @@ namespace VirtoCommerce.CatalogModule.Web.Model
             Type = propertyType;
             ValueType = propValue.ValueType;
             Values = new List<PropertyValue>();
-            Hidden = false;
         }
 
         /// <summary>
