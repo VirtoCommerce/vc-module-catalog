@@ -32,6 +32,7 @@ namespace VirtoCommerce.CatalogModule.Web.Model
             Type = propertyType;
             ValueType = propValue.ValueType;
             Values = new List<PropertyValue>();
+            Hidden = false;
         }
 
         /// <summary>
@@ -114,6 +115,14 @@ namespace VirtoCommerce.CatalogModule.Web.Model
         ///   <c>true</c> if multilanguage; otherwise, <c>false</c>.
         /// </value>
         public bool Multilanguage { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="Property"/> is hidden.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if hidden; otherwise, <c>false</c>.
+        /// </value>
+        public bool Hidden { get; set; }
 
         /// <summary>
         /// Gets or sets the type of the value.

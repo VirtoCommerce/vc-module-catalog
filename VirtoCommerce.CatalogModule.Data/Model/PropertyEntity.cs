@@ -36,6 +36,8 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
         public bool IsMultiValue { get; set; }
 
+        public bool IsHidden { get; set; }
+
         /// <summary>
         /// Gets or sets a value indicating whether this instance is locale dependant. If true, the locale must be specified for the values.
         /// </summary>
@@ -85,6 +87,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             property.Multivalue = IsMultiValue;
             property.Multilanguage = IsLocaleDependant;
             property.Dictionary = IsEnum;
+            property.Hidden = IsHidden;
             property.ValueType = (PropertyValueType)PropertyValueType;
             property.Type = EnumUtility.SafeParse(TargetType, PropertyType.Catalog);
 
@@ -125,6 +128,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             IsLocaleDependant = property.Multilanguage;
             IsEnum = property.Dictionary;
             IsRequired = property.Required;
+            IsHidden = property.Hidden;
             TargetType = property.Type.ToString();
 
             if (property.Attributes != null)
@@ -159,6 +163,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             target.IsRequired = IsRequired;
             target.TargetType = TargetType;
             target.Name = Name;
+            target.IsHidden = IsHidden;
 
             target.CatalogId = CatalogId;
             target.CategoryId = CategoryId;

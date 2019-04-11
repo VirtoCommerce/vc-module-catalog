@@ -1,8 +1,8 @@
+using System.Collections.Generic;
 using System.Linq;
 using Omu.ValueInjecter;
 using coreModel = VirtoCommerce.Domain.Catalog.Model;
 using webModel = VirtoCommerce.CatalogModule.Web.Model;
-using System.Collections.Generic;
 
 namespace VirtoCommerce.CatalogModule.Web.Converters
 {
@@ -25,6 +25,7 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             retVal.Type = property.Type;
             retVal.Multilanguage = property.Multilanguage;
             retVal.IsInherited = property.IsInherited;
+            retVal.Hidden = property.Hidden;
 
             retVal.ValueType = property.ValueType;
             retVal.Type = property.Type;
@@ -48,6 +49,7 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             retVal.ValueType = (coreModel.PropertyValueType)(int)property.ValueType;
             retVal.Type = (coreModel.PropertyType)(int)property.Type;
             retVal.DisplayNames = property.DisplayNames;
+            retVal.Hidden = property.Hidden;
 
             if (property.Attributes != null)
             {
