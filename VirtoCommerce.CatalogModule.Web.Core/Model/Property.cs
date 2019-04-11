@@ -116,6 +116,14 @@ namespace VirtoCommerce.CatalogModule.Web.Model
         public bool Multilanguage { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="Property"/> is hidden.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if hidden; otherwise, <c>false</c>.
+        /// </value>
+        public bool Hidden { get; set; }
+
+        /// <summary>
         /// Gets or sets the type of the value.
         /// </summary>
         /// <value>
