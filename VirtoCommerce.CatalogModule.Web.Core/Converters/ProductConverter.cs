@@ -49,6 +49,7 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             retVal.Width = product.Width;
             retVal.StartDate = product.StartDate;
             retVal.EndDate = product.EndDate;
+            retVal.MainProductId = product.MainProductId;
 
             retVal.SeoInfos = product.SeoInfos;
 

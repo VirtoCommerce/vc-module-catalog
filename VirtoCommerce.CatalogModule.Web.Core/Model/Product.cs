@@ -303,6 +303,8 @@ namespace VirtoCommerce.CatalogModule.Web.Model
 
         public string[] SecurityScopes { get; set; }
 
+        public string MainProductId { get; set; }
+
         #region ISeoSupport Members 
         public string SeoObjectType { get { return GetType().Name; } }
         /// <summary>
