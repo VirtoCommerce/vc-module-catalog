@@ -93,6 +93,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                     case "title":
                         result.Add(new SortingField("name", isDescending));
                         break;
+                    case "manual":
+                        break;
                     default:
                         result.Add(new SortingField(fieldName, isDescending));
                         break;
