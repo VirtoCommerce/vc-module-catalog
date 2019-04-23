@@ -127,6 +127,8 @@
             <permission id="catalog:export" name="Export catalog data" description=""/>
             <permission id="catalog:import" name="Import catalog data" description=""/>
             <permission id="catalog:imagetypes" name="Manage image types" description=""/>
+            <permission id="catalog:BrowseFilters:Read" name="Read Browse Filters" description=""/>
+            <permission id="catalog:BrowseFilters:Update" name="Update Browse Filters" description=""/>
         </group>
     </permissions>
 </module>
