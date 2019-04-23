@@ -101,6 +101,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 .ToList();
 
             Category[] children;
+            
             using (var repository = _repositoryFactory())
             {
                 _eventPublisher.Publish(new CategoryChangingEvent(changedEntries));
