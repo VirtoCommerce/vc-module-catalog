@@ -41,7 +41,19 @@ angular.module('virtoCommerce.catalogModule')
 
             scope.$watch('context.currentPropValues', function (newValues) {
                 //reflect only real changes
-                if (isValuesDifferent(newValues, scope.currentEntity.values)) {
+                var currentValues = angular.copy(scope.currentEntity.values);
+                if (scope.currentEntity.dictionary) {
+                    currentValues = _.uniq(_.map(currentValues,function (x) {
+                            return {
+                                id: x.id,
+                                alias: x.alias,
+                                valueId: x.valueId,
+                                value: x.alias
+                            };
+                        }), function (x) { return x.valueId; });
+                }
+
+                if (isValuesDifferent(newValues, currentValues)) {
                     if (newValues[0] === undefined) {
                         scope.currentEntity.values = null;
                     } else {
@@ -93,7 +105,7 @@ angular.module('virtoCommerce.catalogModule')
                 });
 
                 return (elementCountIsDifferent || elementsNotEqual) &&
-                        (_.any(currentValues) || (newValues[0] && newValues[0].value)); //Prevent reflecting the change when null value was added to empty initial values
+                    (_.any(currentValues) || (newValues[0] && newValues[0].value)); //Prevent reflecting the change when null value was added to empty initial values
             };
 
             function needAddEmptyValue(property, values) {
