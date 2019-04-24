@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Web.Converters;
 using VirtoCommerce.Domain.Catalog.Model;
@@ -38,6 +38,36 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
         protected override void ReduceSearchResults(IEnumerable<Category> items, CategorySearchCriteria criteria)
         {
+            var responseGroup = GetResponseGroup(criteria);
+
+            foreach (var category in items)
+            {
+
+                if (!responseGroup.HasFlag(CategoryResponseGroup.WithImages))
+                {
+                    category.Images = null;
+                }
+
+                if (!responseGroup.HasFlag(CategoryResponseGroup.WithProperties))
+                {
+                    category.Properties = null;
+                }
+
+                if (!responseGroup.HasFlag(CategoryResponseGroup.WithLinks))
+                {
+                    category.Links = null;
+                }
+
+                if (!responseGroup.HasFlag(CategoryResponseGroup.WithSeo))
+                {
+                    category.SeoInfos = null;
+                }
+
+                if (!responseGroup.HasFlag(CategoryResponseGroup.WithOutlines))
+                {
+                    category.Outlines = null;
+                }
+            }
         }
 
         protected override Aggregation[] ConvertAggregations(IList<AggregationResponse> aggregationResponses, CategorySearchCriteria criteria)
