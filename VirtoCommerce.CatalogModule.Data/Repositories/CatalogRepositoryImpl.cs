@@ -399,9 +399,10 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         {
             if (!itemIds.IsNullOrEmpty())
             {
-                const string commandTemplate = @"
+
+                var commandTemplate = (IsSeoUrlKeywordExists() ? @"
                     DELETE SEO FROM SeoUrlKeyword SEO INNER JOIN Item I ON I.Id = SEO.ObjectId AND SEO.ObjectType = 'CatalogProduct'
-                    WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
+                    WHERE I.Id IN({0}) OR I.ParentId IN({0})" : string.Empty) + @"
 
                     DELETE CR FROM CategoryItemRelation  CR INNER JOIN Item I ON I.Id = CR.ItemId
                     WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
@@ -454,8 +455,9 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 var itemIds = Items.Where(i => categoryIds.Contains(i.CategoryId)).Select(i => i.Id).ToArray();
                 RemoveItems(itemIds);
 
-                const string commandTemplate = @"
-                    DELETE FROM SeoUrlKeyword WHERE ObjectType = 'Category' AND ObjectId IN ({0})
+                var commandTemplate = (IsSeoUrlKeywordExists() ? @"
+                    DELETE FROM SeoUrlKeyword WHERE ObjectType = 'Category' AND ObjectId IN ({0}) " : string.Empty) +
+                    @"
                     DELETE CI FROM CatalogImage CI INNER JOIN Category C ON C.Id = CI.CategoryId WHERE C.Id IN ({0}) 
                     DELETE PV FROM PropertyValue PV INNER JOIN Category C ON C.Id = PV.CategoryId WHERE C.Id IN ({0}) 
                     DELETE CR FROM CategoryRelation CR INNER JOIN Category C ON C.Id = CR.SourceCategoryId OR C.Id = CR.TargetCategoryId  WHERE C.Id IN ({0}) 
@@ -674,6 +676,18 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         {
             public string Text { get; set; }
             public object[] Parameters { get; set; }
+        }
+
+
+        private bool IsSeoUrlKeywordExists()
+        {
+            var commandSeoIsExists = new Command()
+            {
+                Text = @"SELECT 1 FROM sys.tables AS T
+                         WHERE T.Name = 'SeoUrlKeyword'"
+            };
+
+            return ObjectContext.ExecuteStoreQuery<int?>(commandSeoIsExists.Text).SingleOrDefault() != null;
         }
     }
 }
