@@ -677,5 +677,17 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             public string Text { get; set; }
             public object[] Parameters { get; set; }
         }
+
+
+        private bool IsSeoUrlKeywordExists()
+        {
+            var commandSeoIsExists = new Command()
+            {
+                Text = @"SELECT 1 FROM sys.tables AS T
+                         WHERE T.Name = 'SeoUrlKeyword'"
+            };
+
+            return ObjectContext.ExecuteStoreQuery<int?>(commandSeoIsExists.Text).SingleOrDefault() != null;
+        }
     }
 }
