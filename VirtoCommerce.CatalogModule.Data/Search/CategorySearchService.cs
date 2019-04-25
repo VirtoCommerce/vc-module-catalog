@@ -42,31 +42,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
             foreach (var category in items)
             {
-
-                if (!responseGroup.HasFlag(CategoryResponseGroup.WithImages))
-                {
-                    category.Images = null;
-                }
-
-                if (!responseGroup.HasFlag(CategoryResponseGroup.WithProperties))
-                {
-                    category.Properties = null;
-                }
-
-                if (!responseGroup.HasFlag(CategoryResponseGroup.WithLinks))
-                {
-                    category.Links = null;
-                }
-
-                if (!responseGroup.HasFlag(CategoryResponseGroup.WithSeo))
-                {
-                    category.SeoInfos = null;
-                }
-
-                if (!responseGroup.HasFlag(CategoryResponseGroup.WithOutlines))
-                {
-                    category.Outlines = null;
-                }
+                category.ReduceDetails(responseGroup.ToString());
             }
         }
 
