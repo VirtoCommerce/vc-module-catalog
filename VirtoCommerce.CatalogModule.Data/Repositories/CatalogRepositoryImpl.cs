@@ -244,89 +244,91 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
         public dataModel.ItemEntity[] GetItemByIds(string[] itemIds, coreModel.ItemResponseGroup respGroup = coreModel.ItemResponseGroup.ItemLarge)
         {
-            if (itemIds == null)
+
+            // Array.Empty does not create empty array each time, all creations returns the same static object:
+            // https://stackoverflow.com/a/33515349/5907312
+            dataModel.ItemEntity[] result = Array.Empty<dataModel.ItemEntity>();
+
+            if (!itemIds.IsNullOrEmpty())
             {
-                throw new ArgumentNullException(nameof(itemIds));
-            }
+                result = Items.Include(x => x.Images).Where(x => itemIds.Contains(x.Id)).ToArray();
 
-            if (!itemIds.Any())
-            {
-                return new dataModel.ItemEntity[] { };
-            }
-
-            // Use breaking query EF performance concept https://msdn.microsoft.com/en-us/data/hh949853.aspx#8
-            var retVal = Items.Include(x => x.Images).Where(x => itemIds.Contains(x.Id)).ToArray();
-
-            if (respGroup.HasFlag(coreModel.ItemResponseGroup.Outlines))
-            {
-                respGroup |= coreModel.ItemResponseGroup.Links;
-            }
-
-            if (respGroup.HasFlag(coreModel.ItemResponseGroup.ItemProperties))
-            {
-                var propertyValues = PropertyValues.Include(x => x.DictionaryItem.DictionaryItemValues).Where(x => itemIds.Contains(x.ItemId)).ToArray();
-            }
-
-            if (respGroup.HasFlag(coreModel.ItemResponseGroup.Links))
-            {
-                var relations = CategoryItemRelations.Where(x => itemIds.Contains(x.ItemId)).ToArray();
-            }
-
-            if (respGroup.HasFlag(coreModel.ItemResponseGroup.ItemAssets))
-            {
-                var assets = Assets.Where(x => itemIds.Contains(x.ItemId)).ToArray();
-            }
-
-            if (respGroup.HasFlag(coreModel.ItemResponseGroup.ItemEditorialReviews))
-            {
-                var editorialReviews = EditorialReviews.Where(x => itemIds.Contains(x.ItemId)).ToArray();
-            }
-
-            if (respGroup.HasFlag(coreModel.ItemResponseGroup.Variations))
-            {
-                // TODO: Call GetItemByIds for variations recursively (need to measure performance and data amount first)
-
-                var variationIds = Items.Where(x => itemIds.Contains(x.ParentId)).Select(x => x.Id).ToArray();
-
-                // Always load info, images and property values for variations
-                var variations = Items.Include(x => x.Images).Where(x => variationIds.Contains(x.Id)).ToArray();
-                var variationPropertyValues = PropertyValues.Include(x => x.DictionaryItem.DictionaryItemValues).Where(x => variationIds.Contains(x.ItemId)).ToArray();
-
-                if (respGroup.HasFlag(coreModel.ItemResponseGroup.ItemAssets))
+                if (result.Any())
                 {
-                    var variationAssets = Assets.Where(x => variationIds.Contains(x.ItemId)).ToArray();
+                    itemIds = result.Select(x => x.Id).ToArray();
+
+                    if (respGroup.HasFlag(coreModel.ItemResponseGroup.Outlines))
+                    {
+                        respGroup |= coreModel.ItemResponseGroup.Links;
+                    }
+
+                    if (respGroup.HasFlag(coreModel.ItemResponseGroup.ItemProperties))
+                    {
+                        var propertyValues = PropertyValues.Include(x => x.DictionaryItem.DictionaryItemValues).Where(x => itemIds.Contains(x.ItemId)).ToArray();
+                    }
+
+                    if (respGroup.HasFlag(coreModel.ItemResponseGroup.Links))
+                    {
+                        var relations = CategoryItemRelations.Where(x => itemIds.Contains(x.ItemId)).ToArray();
+                    }
+
+                    if (respGroup.HasFlag(coreModel.ItemResponseGroup.ItemAssets))
+                    {
+                        var assets = Assets.Where(x => itemIds.Contains(x.ItemId)).ToArray();
+                    }
+
+                    if (respGroup.HasFlag(coreModel.ItemResponseGroup.ItemEditorialReviews))
+                    {
+                        var editorialReviews = EditorialReviews.Where(x => itemIds.Contains(x.ItemId)).ToArray();
+                    }
+
+                    if (respGroup.HasFlag(coreModel.ItemResponseGroup.Variations))
+                    {
+                        // TODO: Call GetItemByIds for variations recursively (need to measure performance and data amount first)
+
+                        var variationIds = Items.Where(x => itemIds.Contains(x.ParentId)).Select(x => x.Id).ToArray();
+
+                        // Always load info, images and property values for variations
+                        var variations = Items.Include(x => x.Images).Where(x => variationIds.Contains(x.Id)).ToArray();
+                        var variationPropertyValues = PropertyValues.Include(x => x.DictionaryItem.DictionaryItemValues).Where(x => variationIds.Contains(x.ItemId)).ToArray();
+
+                        if (respGroup.HasFlag(coreModel.ItemResponseGroup.ItemAssets))
+                        {
+                            var variationAssets = Assets.Where(x => variationIds.Contains(x.ItemId)).ToArray();
+                        }
+
+                        if (respGroup.HasFlag(coreModel.ItemResponseGroup.ItemEditorialReviews))
+                        {
+                            var variationEditorialReviews = EditorialReviews.Where(x => variationIds.Contains(x.ItemId)).ToArray();
+                        }
+                    }
+
+                    if (respGroup.HasFlag(coreModel.ItemResponseGroup.ItemAssociations))
+                    {
+                        var assosiations = Associations.Where(x => itemIds.Contains(x.ItemId)).ToArray();
+                        var assosiatedProductIds = assosiations.Where(x => x.AssociatedItemId != null)
+                                                               .Select(x => x.AssociatedItemId).Distinct().ToArray();
+
+                        var assosiatedItems = GetItemByIds(assosiatedProductIds, coreModel.ItemResponseGroup.ItemInfo | coreModel.ItemResponseGroup.ItemAssets);
+
+                        var assosiatedCategoryIdsIds = assosiations.Where(x => x.AssociatedCategoryId != null).Select(x => x.AssociatedCategoryId).Distinct().ToArray();
+                        var associatedCategories = GetCategoriesByIds(assosiatedCategoryIdsIds, coreModel.CategoryResponseGroup.Info | CategoryResponseGroup.WithImages);
+                    }
+
+                    if (respGroup.HasFlag(coreModel.ItemResponseGroup.ReferencedAssociations))
+                    {
+                        var referencedAssociations = Associations.Where(x => itemIds.Contains(x.AssociatedItemId)).ToArray();
+                        var referencedProductIds = referencedAssociations.Select(x => x.ItemId).Distinct().ToArray();
+                        var referencedProducts = GetItemByIds(referencedProductIds, coreModel.ItemResponseGroup.ItemInfo);
+                    }
+
+                    // Load parents
+                    var parentIds = result.Where(x => x.Parent == null && x.ParentId != null).Select(x => x.ParentId).ToArray();
+                    var parents = GetItemByIds(parentIds, respGroup);
                 }
-
-                if (respGroup.HasFlag(coreModel.ItemResponseGroup.ItemEditorialReviews))
-                {
-                    var variationEditorialReviews = EditorialReviews.Where(x => variationIds.Contains(x.ItemId)).ToArray();
-                }
             }
 
-            if (respGroup.HasFlag(coreModel.ItemResponseGroup.ItemAssociations))
-            {
-                var assosiations = Associations.Where(x => itemIds.Contains(x.ItemId)).ToArray();
-                var assosiatedProductIds = assosiations.Where(x => x.AssociatedItemId != null)
-                                                       .Select(x => x.AssociatedItemId).Distinct().ToArray();
-
-                var assosiatedItems = GetItemByIds(assosiatedProductIds, coreModel.ItemResponseGroup.ItemInfo | coreModel.ItemResponseGroup.ItemAssets);
-
-                var assosiatedCategoryIdsIds = assosiations.Where(x => x.AssociatedCategoryId != null).Select(x => x.AssociatedCategoryId).Distinct().ToArray();
-                var associatedCategories = GetCategoriesByIds(assosiatedCategoryIdsIds, coreModel.CategoryResponseGroup.Info | CategoryResponseGroup.WithImages);
-            }
-
-            if (respGroup.HasFlag(coreModel.ItemResponseGroup.ReferencedAssociations))
-            {
-                var referencedAssociations = Associations.Where(x => itemIds.Contains(x.AssociatedItemId)).ToArray();
-                var referencedProductIds = referencedAssociations.Select(x => x.ItemId).Distinct().ToArray();
-                var referencedProducts = GetItemByIds(referencedProductIds, coreModel.ItemResponseGroup.ItemInfo);
-            }
-
-            // Load parents
-            var parentIds = retVal.Where(x => x.Parent == null && x.ParentId != null).Select(x => x.ParentId).ToArray();
-            var parents = GetItemByIds(parentIds, respGroup);
-
-            return retVal;
+            return result;
         }
 
         public dataModel.PropertyEntity[] GetPropertiesByIds(string[] propIds, bool loadDictValues = false)
