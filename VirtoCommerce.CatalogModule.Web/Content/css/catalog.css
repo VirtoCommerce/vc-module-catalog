@@ -251,3 +251,12 @@
 .capitalizeText {
     text-transform: capitalize;
 }
+
+vc-item-search {
+    flex-grow: 1
+}
+
+body .blade .blade-wrapper .blade-container .bc.blade-static .form-group .blade-search-panel .form-input {
+    width: 100%;
+    padding: 0 10px
+}
