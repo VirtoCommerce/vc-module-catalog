@@ -333,17 +333,30 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
         public dataModel.PropertyEntity[] GetPropertiesByIds(string[] propIds, bool loadDictValues = false)
         {
-            //Used breaking query EF performance concept https://msdn.microsoft.com/en-us/data/hh949853.aspx#8
-            var retVal = Properties.Where(x => propIds.Contains(x.Id)).ToArray();
+            // Array.Empty does not create empty array each time, all creations returns the same static object:
+            // https://stackoverflow.com/a/33515349/5907312
+            dataModel.PropertyEntity[] result = Array.Empty<dataModel.PropertyEntity>();
 
-            var propAttributes = PropertyAttributes.Where(x => propIds.Contains(x.PropertyId)).ToArray();
-            var propDisplayNames = PropertyDisplayNames.Where(x => propIds.Contains(x.PropertyId)).ToArray();
-            var propValidationRules = PropertyValidationRules.Where(x => propIds.Contains(x.PropertyId)).ToArray();
-            if (loadDictValues)
+            if (!propIds.IsNullOrEmpty())
             {
-                var propDictionaryItems = PropertyDictionaryItems.Include(x => x.DictionaryItemValues).Where(x => propIds.Contains(x.PropertyId)).ToArray();
+                //Used breaking query EF performance concept https://msdn.microsoft.com/en-us/data/hh949853.aspx#8
+                result = Properties.Where(x => propIds.Contains(x.Id)).ToArray();
+
+                if (result.Any())
+                {
+                    propIds = result.Select(x => x.Id).ToArray();
+
+                    var propAttributes = PropertyAttributes.Where(x => propIds.Contains(x.PropertyId)).ToArray();
+                    var propDisplayNames = PropertyDisplayNames.Where(x => propIds.Contains(x.PropertyId)).ToArray();
+                    var propValidationRules = PropertyValidationRules.Where(x => propIds.Contains(x.PropertyId)).ToArray();
+                    if (loadDictValues)
+                    {
+                        var propDictionaryItems = PropertyDictionaryItems.Include(x => x.DictionaryItemValues).Where(x => propIds.Contains(x.PropertyId)).ToArray();
+                    }
+                }
             }
-            return retVal;
+
+            return result;
         }
 
         /// <summary>
