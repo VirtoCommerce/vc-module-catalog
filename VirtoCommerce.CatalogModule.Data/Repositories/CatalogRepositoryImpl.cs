@@ -173,18 +173,30 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
         public dataModel.CatalogEntity[] GetCatalogsByIds(string[] catalogIds)
         {
-            var retVal = Catalogs.Include(x => x.CatalogLanguages)
-                                 .Include(x => x.IncommingLinks)
-                                 .Where(x => catalogIds.Contains(x.Id))
-                                 .ToArray();
+            // Array.Empty does not create empty array each time, all creations returns the same static object:
+            // https://stackoverflow.com/a/33515349/5907312
+            dataModel.CatalogEntity[] result = Array.Empty<dataModel.CatalogEntity>();
 
-            var propertyValues = PropertyValues.Include(x => x.DictionaryItem.DictionaryItemValues).Where(x => catalogIds.Contains(x.CatalogId) && x.CategoryId == null).ToArray();
-            var catalogPropertiesIds = Properties.Where(x => catalogIds.Contains(x.CatalogId) && x.CategoryId == null)
-                                                 .Select(x => x.Id)
-                                                 .ToArray();
-            var catalogProperties = GetPropertiesByIds(catalogPropertiesIds);
+            if (!catalogIds.IsNullOrEmpty())
+            {
+                result = Catalogs.Include(x => x.CatalogLanguages)
+                    .Include(x => x.IncommingLinks)
+                    .Where(x => catalogIds.Contains(x.Id))
+                    .ToArray();
 
-            return retVal;
+                if (result.Any())
+                {
+                    catalogIds = result.Select(x => x.Id).ToArray();
+
+                    var propertyValues = PropertyValues.Include(x => x.DictionaryItem.DictionaryItemValues).Where(x => catalogIds.Contains(x.CatalogId) && x.CategoryId == null).ToArray();
+                    var catalogPropertiesIds = Properties.Where(x => catalogIds.Contains(x.CatalogId) && x.CategoryId == null)
+                        .Select(x => x.Id)
+                        .ToArray();
+                    var catalogProperties = GetPropertiesByIds(catalogPropertiesIds);
+                }
+            }
+
+            return result;
         }
 
         public dataModel.CategoryEntity[] GetCategoriesByIds(string[] categoriesIds, coreModel.CategoryResponseGroup respGroup)
