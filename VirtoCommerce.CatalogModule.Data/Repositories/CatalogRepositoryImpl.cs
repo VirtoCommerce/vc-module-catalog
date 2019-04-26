@@ -367,38 +367,44 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         /// <returns></returns>
         public dataModel.PropertyEntity[] GetAllCatalogProperties(string catalogId)
         {
-            var retVal = new List<dataModel.PropertyEntity>();
+            // Array.Empty does not create empty array each time, all creations returns the same static object:
+            // https://stackoverflow.com/a/33515349/5907312
+            dataModel.PropertyEntity[] result = Array.Empty<dataModel.PropertyEntity>();
 
-            var catalog = Catalogs.FirstOrDefault(x => x.Id == catalogId);
-            if (catalog != null)
+            if (!catalogId.IsNullOrEmpty())
             {
-                var propertyIds = Properties.Where(x => x.CatalogId == catalogId).Select(x => x.Id).ToArray();
+                var catalog = Catalogs.FirstOrDefault(x => x.Id == catalogId);
 
-                if (catalog.Virtual)
+                if (catalog != null)
                 {
-                    //get all category relations
-                    var linkedCategoryIds = CategoryLinks.Where(x => x.TargetCatalogId == catalogId)
-                                                         .Select(x => x.SourceCategoryId)
-                                                         .Distinct()
-                                                         .ToArray();
-                    //linked product categories links
-                    var linkedProductCategoryIds = CategoryItemRelations.Where(x => x.CatalogId == catalogId)
-                                                             .Join(Items, link => link.ItemId, item => item.Id, (link, item) => item)
-                                                             .Select(x => x.CategoryId)
+                    var propertyIds = Properties.Where(x => x.CatalogId == catalogId).Select(x => x.Id).ToArray();
+
+                    if (catalog.Virtual)
+                    {
+                        //get all category relations
+                        var linkedCategoryIds = CategoryLinks.Where(x => x.TargetCatalogId == catalogId)
+                                                             .Select(x => x.SourceCategoryId)
                                                              .Distinct()
                                                              .ToArray();
-                    linkedCategoryIds = linkedCategoryIds.Concat(linkedProductCategoryIds).Distinct().ToArray();
-                    var expandedFlatLinkedCategoryIds = linkedCategoryIds.Concat(GetAllChildrenCategoriesIds(linkedCategoryIds)).Distinct().ToArray();
+                        //linked product categories links
+                        var linkedProductCategoryIds = CategoryItemRelations.Where(x => x.CatalogId == catalogId)
+                                                                 .Join(Items, link => link.ItemId, item => item.Id, (link, item) => item)
+                                                                 .Select(x => x.CategoryId)
+                                                                 .Distinct()
+                                                                 .ToArray();
+                        linkedCategoryIds = linkedCategoryIds.Concat(linkedProductCategoryIds).Distinct().ToArray();
+                        var expandedFlatLinkedCategoryIds = linkedCategoryIds.Concat(GetAllChildrenCategoriesIds(linkedCategoryIds)).Distinct().ToArray();
 
-                    propertyIds = propertyIds.Concat(Properties.Where(x => expandedFlatLinkedCategoryIds.Contains(x.CategoryId)).Select(x => x.Id)).Distinct().ToArray();
-                    var linkedCatalogIds = Categories.Where(x => expandedFlatLinkedCategoryIds.Contains(x.Id)).Select(x => x.CatalogId).Distinct().ToArray();
-                    propertyIds = propertyIds.Concat(Properties.Where(x => linkedCatalogIds.Contains(x.CatalogId) && x.CategoryId == null).Select(x => x.Id)).Distinct().ToArray();
+                        propertyIds = propertyIds.Concat(Properties.Where(x => expandedFlatLinkedCategoryIds.Contains(x.CategoryId)).Select(x => x.Id)).Distinct().ToArray();
+                        var linkedCatalogIds = Categories.Where(x => expandedFlatLinkedCategoryIds.Contains(x.Id)).Select(x => x.CatalogId).Distinct().ToArray();
+                        propertyIds = propertyIds.Concat(Properties.Where(x => linkedCatalogIds.Contains(x.CatalogId) && x.CategoryId == null).Select(x => x.Id)).Distinct().ToArray();
+                    }
+
+                    result = GetPropertiesByIds(propertyIds).ToArray();
                 }
-
-                retVal.AddRange(GetPropertiesByIds(propertyIds));
             }
 
-            return retVal.ToArray();
+            return result;
         }
 
         public string[] GetAllChildrenCategoriesIds(string[] categoryIds)
