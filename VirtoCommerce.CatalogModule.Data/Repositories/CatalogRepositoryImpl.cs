@@ -663,11 +663,15 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
         public dataModel.PropertyDictionaryItemEntity[] GetPropertyDictionaryItemsByIds(string[] dictItemIds)
         {
-            if (dictItemIds == null)
+            // Array.Empty does not create empty array each time, all creations returns the same static object:
+            // https://stackoverflow.com/a/33515349/5907312
+            dataModel.PropertyDictionaryItemEntity[] result = Array.Empty<dataModel.PropertyDictionaryItemEntity>();
+
+            if (!dictItemIds.IsNullOrEmpty())
             {
-                throw new ArgumentNullException(nameof(dictItemIds));
+                result = PropertyDictionaryItems.Include(x => x.DictionaryItemValues).Where(x => dictItemIds.Contains(x.Id)).ToArray();
             }
-            var result = PropertyDictionaryItems.Include(x => x.DictionaryItemValues).Where(x => dictItemIds.Contains(x.Id)).ToArray();
+
             return result;
         }
         #endregion
