@@ -1,0 +1,157 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="VirtoCommerce.CatalogModule.Data.Model.AssetEntity">
+    <Position X="14" Y="10.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAAIAAgAQAgAAAAAQAAAAAQAABCAAAAAAEAAA=</HashCode>
+      <FileName>Model\AssetEntity.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="CatalogItem" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="VirtoCommerce.CatalogModule.Data.Model.AssociationEntity">
+    <Position X="9" Y="28.5" Width="3" />
+    <TypeIdentifier>
+      <HashCode>IAAAABAAAAAAAAAEgAACAAAEgQAAQEABAAAAgQQAAAA=</HashCode>
+      <FileName>Model\AssociationEntity.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="VirtoCommerce.CatalogModule.Data.Model.CatalogEntity">
+    <Position X="3" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IABAAQAIAAAAAAAAAAAAAAQAAAAAQAEBAAAAAAADAAI=</HashCode>
+      <FileName>Model\CatalogEntity.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="VirtoCommerce.CatalogModule.Data.Model.CatalogLanguageEntity">
+    <Position X="0.5" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAACAAAAAAAAAAAAAABAAAAQAABAAAAAAAAAAg=</HashCode>
+      <FileName>Model\CatalogLanguageEntity.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Catalog" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="VirtoCommerce.CatalogModule.Data.Model.CategoryEntity">
+    <Position X="5.25" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAAAAAAAAEEIAgAAQhAAAAUJABAQAAAMAiAAo=</HashCode>
+      <FileName>Model\CategoryEntity.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Catalog" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="VirtoCommerce.CatalogModule.Data.Model.CategoryItemRelationEntity">
+    <Position X="5.75" Y="28.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAAIAAAgAEgAAAAAABAAAAQAABAAAAAAAACAg=</HashCode>
+      <FileName>Model\CategoryItemRelationEntity.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="VirtoCommerce.CatalogModule.Data.Model.CategoryRelationEntity">
+    <Position X="2.25" Y="28.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>IAAAAQAAABAAAABAAAACQAAAAAAAQAABAAAAAAAAEAA=</HashCode>
+      <FileName>Model\CategoryRelationEntity.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="VirtoCommerce.CatalogModule.Data.Model.EditorialReviewEntity">
+    <Position X="14" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAAoAAAAAEgAAAAAAAAABAQAABCAAAAAAAIAA=</HashCode>
+      <FileName>Model\EditorialReviewEntity.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="CatalogItem" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="VirtoCommerce.CatalogModule.Data.Model.ImageEntity">
+    <Position X="14" Y="14.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAABEAAAIAAAgAAgAAAAAQAAAAAQAABCAAAAAAECAA=</HashCode>
+      <FileName>Model\ImageEntity.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="CatalogItem" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="VirtoCommerce.CatalogModule.Data.Model.ItemEntity">
+    <Position X="8" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAACIAAQBJAAAgIEEIAsQEThAGIARBBBAiAgANGADxg=</HashCode>
+      <FileName>Model\ItemEntity.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Catalog" />
+      <Property Name="Category" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="VirtoCommerce.CatalogModule.Data.Model.PropertyAttributeEntity">
+    <Position X="4.25" Y="25.25" Width="3" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAEAAAAAAAAEAAAAAAAAAAAAUAABBAAAAQAAAAA=</HashCode>
+      <FileName>Model\PropertyAttributeEntity.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Property" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="VirtoCommerce.CatalogModule.Data.Model.PropertyDictionaryItemEntity">
+    <Position X="11.75" Y="19" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>IAAABAAAAEIAAAAAAAAAAAAAAAAAUAABABAAAQAAAAA=</HashCode>
+      <FileName>Model\PropertyDictionaryItemEntity.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="VirtoCommerce.CatalogModule.Data.Model.PropertyDictionaryValueEntity">
+    <Position X="15.25" Y="19" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAAAAAAAAAAAAAAAAAAAJAQAABAAAgAAgAAAA=</HashCode>
+      <FileName>Model\PropertyDictionaryValueEntity.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="DictionaryItem" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="VirtoCommerce.CatalogModule.Data.Model.PropertyDisplayNameEntity">
+    <Position X="4.25" Y="19.25" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAAAAAAAAAAAAAAAQAAABAUAABAAAAAQAAAAA=</HashCode>
+      <FileName>Model\PropertyDisplayNameEntity.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Property" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="VirtoCommerce.CatalogModule.Data.Model.PropertyEntity">
+    <Position X="2" Y="19" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>JAAAEAAAAACAAhAAQIABAAQhAAIAwAgBAAAAgAAAGAg=</HashCode>
+      <FileName>Model\PropertyEntity.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="VirtoCommerce.CatalogModule.Data.Model.PropertyValidationRuleEntity">
+    <Position X="4.25" Y="22" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>oAAAAACEAAAAAAAAgAAAAAAAAAAAUAABAAAAAQAAAAA=</HashCode>
+      <FileName>Model\PropertyValidationRuleEntity.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Property" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="VirtoCommerce.CatalogModule.Data.Model.PropertyValueEntity">
+    <Position X="8.5" Y="19" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAIIIAAgEAgEQAAAQBAApgQAABABAAAAwAGAg=</HashCode>
+      <FileName>Model\PropertyValueEntity.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="DictionaryItem" />
+    </ShowAsAssociation>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
