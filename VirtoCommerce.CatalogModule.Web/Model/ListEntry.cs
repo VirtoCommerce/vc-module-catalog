@@ -1,4 +1,4 @@
-﻿using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Web.Model
 {
@@ -82,5 +82,10 @@ namespace VirtoCommerce.CatalogModule.Web.Model
         /// All entry parents names
         /// </summary>
         public string[] Path { get; set; }
+
+        /// <summary>
+        /// Gets or sets the catalog id.
+        /// </summary>
+        public string CatalogId { get; set; }
     }
 }

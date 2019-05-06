@@ -3,6 +3,7 @@ using System.Linq;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Commerce.Model;
 using VirtoCommerce.Platform.Core.Common;
+using moduleModel = VirtoCommerce.Domain.Catalog.Model;
 
 namespace VirtoCommerce.CatalogModule.Web.Model
 {
@@ -129,8 +130,17 @@ namespace VirtoCommerce.CatalogModule.Web.Model
 
         public string[] SecurityScopes { get; set; }
 
-        #region ISeoSupport Members 
+        public virtual Category FromModel(moduleModel.Category category)
+        {
+            return this;
+        }
 
+        public virtual moduleModel.Category ToModel(moduleModel.Category category)
+        {
+            return category;
+        }
+
+        #region ISeoSupport Members
         public string SeoObjectType { get { return GetType().Name; } }
 
         /// <summary>
