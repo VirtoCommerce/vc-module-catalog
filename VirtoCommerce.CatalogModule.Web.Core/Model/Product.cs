@@ -329,5 +329,64 @@ namespace VirtoCommerce.CatalogModule.Web.Model
         {
             return product;
         }
+
+        public virtual void ReduceDetails(string responseGroup)
+        {
+            var productResponseGroup = EnumUtility.SafeParseFlags(responseGroup, ItemResponseGroup.ItemLarge);
+
+            if (!productResponseGroup.HasFlag(ItemResponseGroup.ItemAssets))
+            {
+                Assets = null;
+            }
+
+            if (!productResponseGroup.HasFlag(ItemResponseGroup.ItemProperties))
+            {
+                Properties = null;
+            }
+
+            if (!productResponseGroup.HasFlag(ItemResponseGroup.ItemAssociations))
+            {
+                Associations = null;
+            }
+
+            if (!productResponseGroup.HasFlag(ItemResponseGroup.ItemEditorialReviews))
+            {
+                Reviews = null;
+            }
+
+            if (!productResponseGroup.HasFlag(ItemResponseGroup.Links))
+            {
+                Links = null;
+            }
+
+            if (!productResponseGroup.HasFlag(ItemResponseGroup.Outlines))
+            {
+                Outlines = null;
+            }
+
+            if (!productResponseGroup.HasFlag(ItemResponseGroup.Seo))
+            {
+                SeoInfos = null;
+            }
+
+            if (!productResponseGroup.HasFlag(ItemResponseGroup.Variations))
+            {
+                Variations = null;
+            }
+
+            if (Variations != null)
+            {
+                //For nested variations leave only variation properties to decrease resulting JSON
+                foreach (var variation in Variations)
+                {
+                    if (variation.Properties != null)
+                    {
+                        variation.Properties = variation.Properties.Where(x => x.Type == PropertyType.Variation).ToList();
+                    }
+                    variation.Outlines = null;
+                    variation.Reviews = null;
+                }
+            }
+        }
     }
 }
