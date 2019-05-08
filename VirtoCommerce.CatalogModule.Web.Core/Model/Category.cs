@@ -35,14 +35,13 @@ namespace VirtoCommerce.CatalogModule.Web.Model
         /// The code.
         /// </value>
         public string Code { get; set; }
-
         /// <summary>
         /// Gets or sets the type of the tax.
         /// </summary>
         /// <value>
         /// The type of the tax.
         /// </value>
-        public string TaxType { get; set; }
+		public string TaxType { get; set; }
 
         /// <summary>
         /// Gets or sets the catalog id that this category belongs to.
@@ -51,7 +50,6 @@ namespace VirtoCommerce.CatalogModule.Web.Model
         /// The catalog identifier.
         /// </value>
         public string CatalogId { get; set; }
-
         /// <summary>
         /// Gets or sets the name.
         /// </summary>
@@ -64,7 +62,6 @@ namespace VirtoCommerce.CatalogModule.Web.Model
         /// Category outline in physical catalog (all parent categories ids concatenated. E.g. (1/21/344))
         /// </summary>
         public string Outline { get; set; }
-
         /// <summary>
         /// Category path in physical catalog (all parent categories names concatenated. E.g. (parent1/parent2))
         /// </summary>
@@ -87,17 +84,15 @@ namespace VirtoCommerce.CatalogModule.Web.Model
         /// The properties.
         /// </value>
         public ICollection<Property> Properties { get; set; }
-
         /// <summary>
         /// Gets or sets the links.
         /// </summary>
         /// <value>
         /// The links.
         /// </value>
-        public ICollection<CategoryLink> Links { get; set; }
+		public ICollection<CategoryLink> Links { get; set; }
 
         private string _imgSrc;
-
         /// <summary>
         /// Gets the default image for the category.
         /// </summary>
@@ -115,7 +110,6 @@ namespace VirtoCommerce.CatalogModule.Web.Model
                         _imgSrc = Images.First().Url;
                     }
                 }
-
                 return _imgSrc;
             }
         }
@@ -142,7 +136,6 @@ namespace VirtoCommerce.CatalogModule.Web.Model
 
         #region ISeoSupport Members
         public string SeoObjectType { get { return GetType().Name; } }
-
         /// <summary>
         /// Gets or sets the list of SEO information records.
         /// </summary>
@@ -150,7 +143,6 @@ namespace VirtoCommerce.CatalogModule.Web.Model
         /// The seo infos.
         /// </value>
         public ICollection<SeoInfo> SeoInfos { get; set; }
-
         #endregion
 
         #region Implementation of IHasOutlines
