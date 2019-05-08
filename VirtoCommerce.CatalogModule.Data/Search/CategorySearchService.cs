@@ -38,7 +38,12 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
         protected override void ReduceSearchResults(IEnumerable<Category> items, CategorySearchCriteria criteria)
         {
+            var responseGroup = GetResponseGroup(criteria);
 
+            foreach (var category in items)
+            {
+                category.ReduceDetails(responseGroup.ToString());
+            }
         }
 
         protected override Aggregation[] ConvertAggregations(IList<AggregationResponse> aggregationResponses, CategorySearchCriteria criteria)

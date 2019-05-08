@@ -141,7 +141,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
 
             product.ReduceDetails(respGroup.ToString());
-
         }
 
         protected virtual void SaveChanges(CatalogProduct[] products, bool disableValidation = false)

@@ -45,10 +45,12 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
         protected override void ReduceSearchResults(IEnumerable<Product> products, ProductSearchCriteria criteria)
         {
+            var responseGroup = GetResponseGroup(criteria);
 
             foreach (var product in products)
             {
-                
+                product.ReduceDetails(responseGroup.ToString());
+
                 if (!string.IsNullOrEmpty(criteria.LanguageCode))
                 {
                     if (!product.Properties.IsNullOrEmpty())
