@@ -6,13 +6,13 @@ using System.Data.Entity.Core.Objects;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Data.SqlClient;
 using System.Linq;
+using VirtoCommerce.CatalogModule.Data.Model;
+using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Model.Search;
 using VirtoCommerce.Domain.Commerce.Model.Search;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Data.Infrastructure;
 using VirtoCommerce.Platform.Data.Infrastructure.Interceptors;
-using VirtoCommerce.Domain.Catalog.Model;
-using VirtoCommerce.CatalogModule.Data.Model;
 
 namespace VirtoCommerce.CatalogModule.Data.Repositories
 {
