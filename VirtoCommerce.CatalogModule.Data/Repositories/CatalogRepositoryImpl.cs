@@ -6,14 +6,13 @@ using System.Data.Entity.Core.Objects;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Data.SqlClient;
 using System.Linq;
-using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Model.Search;
 using VirtoCommerce.Domain.Commerce.Model.Search;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Data.Infrastructure;
 using VirtoCommerce.Platform.Data.Infrastructure.Interceptors;
-using coreModel = VirtoCommerce.Domain.Catalog.Model;
-using dataModel = VirtoCommerce.CatalogModule.Data.Model;
+using VirtoCommerce.Domain.Catalog.Model;
+using VirtoCommerce.CatalogModule.Data.Model;
 
 namespace VirtoCommerce.CatalogModule.Data.Repositories
 {
@@ -40,111 +39,111 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
 
             #region Catalog
-            modelBuilder.Entity<dataModel.CatalogEntity>().ToTable("Catalog").HasKey(x => x.Id).Property(x => x.Id);
+            modelBuilder.Entity<CatalogEntity>().ToTable("Catalog").HasKey(x => x.Id).Property(x => x.Id);
             #endregion
 
             #region Category
-            modelBuilder.Entity<dataModel.CategoryEntity>().ToTable("Category").HasKey(x => x.Id).Property(x => x.Id);
-            modelBuilder.Entity<dataModel.CategoryEntity>().HasOptional(x => x.ParentCategory).WithMany().HasForeignKey(x => x.ParentCategoryId).WillCascadeOnDelete(false);
-            modelBuilder.Entity<dataModel.CategoryEntity>().HasRequired(x => x.Catalog).WithMany().HasForeignKey(x => x.CatalogId).WillCascadeOnDelete(true);
+            modelBuilder.Entity<CategoryEntity>().ToTable("Category").HasKey(x => x.Id).Property(x => x.Id);
+            modelBuilder.Entity<CategoryEntity>().HasOptional(x => x.ParentCategory).WithMany().HasForeignKey(x => x.ParentCategoryId).WillCascadeOnDelete(false);
+            modelBuilder.Entity<CategoryEntity>().HasRequired(x => x.Catalog).WithMany().HasForeignKey(x => x.CatalogId).WillCascadeOnDelete(true);
             #endregion
 
             #region Item
-            modelBuilder.Entity<dataModel.ItemEntity>().ToTable("Item").HasKey(x => x.Id).Property(x => x.Id);
-            modelBuilder.Entity<dataModel.ItemEntity>().HasRequired(m => m.Catalog).WithMany().HasForeignKey(x => x.CatalogId).WillCascadeOnDelete(false);
-            modelBuilder.Entity<dataModel.ItemEntity>().HasOptional(m => m.Category).WithMany().HasForeignKey(x => x.CategoryId).WillCascadeOnDelete(false);
-            modelBuilder.Entity<dataModel.ItemEntity>().HasOptional(m => m.Parent).WithMany(x => x.Childrens).HasForeignKey(x => x.ParentId).WillCascadeOnDelete(false);
+            modelBuilder.Entity<ItemEntity>().ToTable("Item").HasKey(x => x.Id).Property(x => x.Id);
+            modelBuilder.Entity<ItemEntity>().HasRequired(m => m.Catalog).WithMany().HasForeignKey(x => x.CatalogId).WillCascadeOnDelete(false);
+            modelBuilder.Entity<ItemEntity>().HasOptional(m => m.Category).WithMany().HasForeignKey(x => x.CategoryId).WillCascadeOnDelete(false);
+            modelBuilder.Entity<ItemEntity>().HasOptional(m => m.Parent).WithMany(x => x.Childrens).HasForeignKey(x => x.ParentId).WillCascadeOnDelete(false);
             #endregion
 
             #region Property
-            modelBuilder.Entity<dataModel.PropertyEntity>().ToTable("Property").HasKey(x => x.Id).Property(x => x.Id);
-            modelBuilder.Entity<dataModel.PropertyEntity>().HasOptional(m => m.Catalog).WithMany(x => x.Properties).HasForeignKey(x => x.CatalogId).WillCascadeOnDelete(false);
-            modelBuilder.Entity<dataModel.PropertyEntity>().HasOptional(m => m.Category).WithMany(x => x.Properties).HasForeignKey(x => x.CategoryId).WillCascadeOnDelete(false);
+            modelBuilder.Entity<PropertyEntity>().ToTable("Property").HasKey(x => x.Id).Property(x => x.Id);
+            modelBuilder.Entity<PropertyEntity>().HasOptional(m => m.Catalog).WithMany(x => x.Properties).HasForeignKey(x => x.CatalogId).WillCascadeOnDelete(false);
+            modelBuilder.Entity<PropertyEntity>().HasOptional(m => m.Category).WithMany(x => x.Properties).HasForeignKey(x => x.CategoryId).WillCascadeOnDelete(false);
 
             #endregion
 
             #region PropertyDictionaryItem
-            modelBuilder.Entity<dataModel.PropertyDictionaryItemEntity>().ToTable("PropertyDictionaryItem").HasKey(x => x.Id).Property(x => x.Id);
-            modelBuilder.Entity<dataModel.PropertyDictionaryItemEntity>().HasRequired(m => m.Property).WithMany(x => x.DictionaryItems).HasForeignKey(x => x.PropertyId).WillCascadeOnDelete(true);
+            modelBuilder.Entity<PropertyDictionaryItemEntity>().ToTable("PropertyDictionaryItem").HasKey(x => x.Id).Property(x => x.Id);
+            modelBuilder.Entity<PropertyDictionaryItemEntity>().HasRequired(m => m.Property).WithMany(x => x.DictionaryItems).HasForeignKey(x => x.PropertyId).WillCascadeOnDelete(true);
             #endregion
 
             #region PropertyDictionaryValue
-            modelBuilder.Entity<dataModel.PropertyDictionaryValueEntity>().ToTable("PropertyDictionaryValue").HasKey(x => x.Id).Property(x => x.Id);
-            modelBuilder.Entity<dataModel.PropertyDictionaryValueEntity>().HasRequired(m => m.DictionaryItem).WithMany(x => x.DictionaryItemValues).HasForeignKey(x => x.DictionaryItemId).WillCascadeOnDelete(true);
+            modelBuilder.Entity<PropertyDictionaryValueEntity>().ToTable("PropertyDictionaryValue").HasKey(x => x.Id).Property(x => x.Id);
+            modelBuilder.Entity<PropertyDictionaryValueEntity>().HasRequired(m => m.DictionaryItem).WithMany(x => x.DictionaryItemValues).HasForeignKey(x => x.DictionaryItemId).WillCascadeOnDelete(true);
             #endregion
 
             #region PropertyAttribute
-            modelBuilder.Entity<dataModel.PropertyAttributeEntity>().ToTable("PropertyAttribute").HasKey(x => x.Id).Property(x => x.Id);
-            modelBuilder.Entity<dataModel.PropertyAttributeEntity>().HasRequired(m => m.Property).WithMany(x => x.PropertyAttributes).HasForeignKey(x => x.PropertyId).WillCascadeOnDelete(true);
+            modelBuilder.Entity<PropertyAttributeEntity>().ToTable("PropertyAttribute").HasKey(x => x.Id).Property(x => x.Id);
+            modelBuilder.Entity<PropertyAttributeEntity>().HasRequired(m => m.Property).WithMany(x => x.PropertyAttributes).HasForeignKey(x => x.PropertyId).WillCascadeOnDelete(true);
             #endregion
 
             #region PropertyDisplayName
-            modelBuilder.Entity<dataModel.PropertyDisplayNameEntity>().ToTable("PropertyDisplayName").HasKey(x => x.Id).Property(x => x.Id);
-            modelBuilder.Entity<dataModel.PropertyDisplayNameEntity>().HasRequired(m => m.Property).WithMany(x => x.DisplayNames).HasForeignKey(x => x.PropertyId).WillCascadeOnDelete(true);
+            modelBuilder.Entity<PropertyDisplayNameEntity>().ToTable("PropertyDisplayName").HasKey(x => x.Id).Property(x => x.Id);
+            modelBuilder.Entity<PropertyDisplayNameEntity>().HasRequired(m => m.Property).WithMany(x => x.DisplayNames).HasForeignKey(x => x.PropertyId).WillCascadeOnDelete(true);
             #endregion
 
             #region PropertyValue
-            modelBuilder.Entity<dataModel.PropertyValueEntity>().ToTable("PropertyValue").HasKey(x => x.Id).Property(x => x.Id);
-            modelBuilder.Entity<dataModel.PropertyValueEntity>().HasOptional(m => m.CatalogItem).WithMany(x => x.ItemPropertyValues).HasForeignKey(x => x.ItemId).WillCascadeOnDelete(false);
-            modelBuilder.Entity<dataModel.PropertyValueEntity>().HasOptional(m => m.Category).WithMany(x => x.CategoryPropertyValues).HasForeignKey(x => x.CategoryId).WillCascadeOnDelete(false);
-            modelBuilder.Entity<dataModel.PropertyValueEntity>().HasOptional(m => m.Catalog).WithMany(x => x.CatalogPropertyValues).HasForeignKey(x => x.CatalogId).WillCascadeOnDelete(false);
-            modelBuilder.Entity<dataModel.PropertyValueEntity>().HasOptional(m => m.DictionaryItem).WithMany().HasForeignKey(x => x.DictionaryItemId).WillCascadeOnDelete(true);
+            modelBuilder.Entity<PropertyValueEntity>().ToTable("PropertyValue").HasKey(x => x.Id).Property(x => x.Id);
+            modelBuilder.Entity<PropertyValueEntity>().HasOptional(m => m.CatalogItem).WithMany(x => x.ItemPropertyValues).HasForeignKey(x => x.ItemId).WillCascadeOnDelete(false);
+            modelBuilder.Entity<PropertyValueEntity>().HasOptional(m => m.Category).WithMany(x => x.CategoryPropertyValues).HasForeignKey(x => x.CategoryId).WillCascadeOnDelete(false);
+            modelBuilder.Entity<PropertyValueEntity>().HasOptional(m => m.Catalog).WithMany(x => x.CatalogPropertyValues).HasForeignKey(x => x.CatalogId).WillCascadeOnDelete(false);
+            modelBuilder.Entity<PropertyValueEntity>().HasOptional(m => m.DictionaryItem).WithMany().HasForeignKey(x => x.DictionaryItemId).WillCascadeOnDelete(true);
             #endregion
 
             #region PropertyValidationRule
-            modelBuilder.Entity<dataModel.PropertyValidationRuleEntity>().ToTable("PropertyValidationRule").HasKey(x => x.Id).Property(x => x.Id);
-            modelBuilder.Entity<dataModel.PropertyValidationRuleEntity>().HasRequired(m => m.Property).WithMany(x => x.ValidationRules).HasForeignKey(x => x.PropertyId).WillCascadeOnDelete(true);
+            modelBuilder.Entity<PropertyValidationRuleEntity>().ToTable("PropertyValidationRule").HasKey(x => x.Id).Property(x => x.Id);
+            modelBuilder.Entity<PropertyValidationRuleEntity>().HasRequired(m => m.Property).WithMany(x => x.ValidationRules).HasForeignKey(x => x.PropertyId).WillCascadeOnDelete(true);
 
             #endregion
 
             #region CatalogImage
-            modelBuilder.Entity<dataModel.ImageEntity>().ToTable("CatalogImage").HasKey(x => x.Id).Property(x => x.Id);
-            modelBuilder.Entity<dataModel.ImageEntity>().HasOptional(m => m.Category).WithMany(x => x.Images).HasForeignKey(x => x.CategoryId).WillCascadeOnDelete(false);
-            modelBuilder.Entity<dataModel.ImageEntity>().HasOptional(m => m.CatalogItem).WithMany(x => x.Images).HasForeignKey(x => x.ItemId).WillCascadeOnDelete(false);
+            modelBuilder.Entity<ImageEntity>().ToTable("CatalogImage").HasKey(x => x.Id).Property(x => x.Id);
+            modelBuilder.Entity<ImageEntity>().HasOptional(m => m.Category).WithMany(x => x.Images).HasForeignKey(x => x.CategoryId).WillCascadeOnDelete(false);
+            modelBuilder.Entity<ImageEntity>().HasOptional(m => m.CatalogItem).WithMany(x => x.Images).HasForeignKey(x => x.ItemId).WillCascadeOnDelete(false);
             #endregion
 
             #region EditorialReview
-            modelBuilder.Entity<dataModel.EditorialReviewEntity>().ToTable("EditorialReview").HasKey(x => x.Id).Property(x => x.Id);
-            modelBuilder.Entity<dataModel.EditorialReviewEntity>().HasRequired(x => x.CatalogItem).WithMany(x => x.EditorialReviews).HasForeignKey(x => x.ItemId).WillCascadeOnDelete(true);
+            modelBuilder.Entity<EditorialReviewEntity>().ToTable("EditorialReview").HasKey(x => x.Id).Property(x => x.Id);
+            modelBuilder.Entity<EditorialReviewEntity>().HasRequired(x => x.CatalogItem).WithMany(x => x.EditorialReviews).HasForeignKey(x => x.ItemId).WillCascadeOnDelete(true);
             #endregion         
 
             #region Association
-            modelBuilder.Entity<dataModel.AssociationEntity>().ToTable("Association").HasKey(x => x.Id).Property(x => x.Id);
-            modelBuilder.Entity<dataModel.AssociationEntity>().HasRequired(m => m.Item).WithMany(x => x.Associations).HasForeignKey(x => x.ItemId).WillCascadeOnDelete(false);
-            modelBuilder.Entity<dataModel.AssociationEntity>().HasOptional(a => a.AssociatedItem).WithMany(i => i.ReferencedAssociations).HasForeignKey(a => a.AssociatedItemId).WillCascadeOnDelete(false);
-            modelBuilder.Entity<dataModel.AssociationEntity>().HasOptional(a => a.AssociatedCategory).WithMany().HasForeignKey(a => a.AssociatedCategoryId).WillCascadeOnDelete(false);
+            modelBuilder.Entity<AssociationEntity>().ToTable("Association").HasKey(x => x.Id).Property(x => x.Id);
+            modelBuilder.Entity<AssociationEntity>().HasRequired(m => m.Item).WithMany(x => x.Associations).HasForeignKey(x => x.ItemId).WillCascadeOnDelete(false);
+            modelBuilder.Entity<AssociationEntity>().HasOptional(a => a.AssociatedItem).WithMany(i => i.ReferencedAssociations).HasForeignKey(a => a.AssociatedItemId).WillCascadeOnDelete(false);
+            modelBuilder.Entity<AssociationEntity>().HasOptional(a => a.AssociatedCategory).WithMany().HasForeignKey(a => a.AssociatedCategoryId).WillCascadeOnDelete(false);
             #endregion
 
             #region Asset
-            modelBuilder.Entity<dataModel.AssetEntity>().ToTable("CatalogAsset").HasKey(x => x.Id).Property(x => x.Id);
-            modelBuilder.Entity<dataModel.AssetEntity>().HasRequired(m => m.CatalogItem).WithMany(x => x.Assets).HasForeignKey(x => x.ItemId).WillCascadeOnDelete(true);
+            modelBuilder.Entity<AssetEntity>().ToTable("CatalogAsset").HasKey(x => x.Id).Property(x => x.Id);
+            modelBuilder.Entity<AssetEntity>().HasRequired(m => m.CatalogItem).WithMany(x => x.Assets).HasForeignKey(x => x.ItemId).WillCascadeOnDelete(true);
             #endregion
 
             #region CatalogLanguage
-            modelBuilder.Entity<dataModel.CatalogLanguageEntity>().ToTable("CatalogLanguage").HasKey(x => x.Id).Property(x => x.Id);
-            modelBuilder.Entity<dataModel.CatalogLanguageEntity>().HasRequired(m => m.Catalog).WithMany(x => x.CatalogLanguages).HasForeignKey(x => x.CatalogId).WillCascadeOnDelete(true);
+            modelBuilder.Entity<CatalogLanguageEntity>().ToTable("CatalogLanguage").HasKey(x => x.Id).Property(x => x.Id);
+            modelBuilder.Entity<CatalogLanguageEntity>().HasRequired(m => m.Catalog).WithMany(x => x.CatalogLanguages).HasForeignKey(x => x.CatalogId).WillCascadeOnDelete(true);
             #endregion
 
             #region CategoryItemRelation
-            modelBuilder.Entity<dataModel.CategoryItemRelationEntity>().ToTable("CategoryItemRelation").HasKey(x => x.Id).Property(x => x.Id);
+            modelBuilder.Entity<CategoryItemRelationEntity>().ToTable("CategoryItemRelation").HasKey(x => x.Id).Property(x => x.Id);
 
-            modelBuilder.Entity<dataModel.CategoryItemRelationEntity>().HasOptional(p => p.Category).WithMany().HasForeignKey(x => x.CategoryId).WillCascadeOnDelete(false);
-            modelBuilder.Entity<dataModel.CategoryItemRelationEntity>().HasRequired(p => p.CatalogItem).WithMany(x => x.CategoryLinks).HasForeignKey(x => x.ItemId).WillCascadeOnDelete(false);
-            modelBuilder.Entity<dataModel.CategoryItemRelationEntity>().HasRequired(p => p.Catalog).WithMany().HasForeignKey(x => x.CatalogId).WillCascadeOnDelete(false);
+            modelBuilder.Entity<CategoryItemRelationEntity>().HasOptional(p => p.Category).WithMany().HasForeignKey(x => x.CategoryId).WillCascadeOnDelete(false);
+            modelBuilder.Entity<CategoryItemRelationEntity>().HasRequired(p => p.CatalogItem).WithMany(x => x.CategoryLinks).HasForeignKey(x => x.ItemId).WillCascadeOnDelete(false);
+            modelBuilder.Entity<CategoryItemRelationEntity>().HasRequired(p => p.Catalog).WithMany().HasForeignKey(x => x.CatalogId).WillCascadeOnDelete(false);
             #endregion
 
             #region CategoryRelation
-            modelBuilder.Entity<dataModel.CategoryRelationEntity>().ToTable("CategoryRelation").HasKey(x => x.Id).Property(x => x.Id);
+            modelBuilder.Entity<CategoryRelationEntity>().ToTable("CategoryRelation").HasKey(x => x.Id).Property(x => x.Id);
 
-            modelBuilder.Entity<dataModel.CategoryRelationEntity>().HasOptional(x => x.TargetCategory)
+            modelBuilder.Entity<CategoryRelationEntity>().HasOptional(x => x.TargetCategory)
                                        .WithMany(x => x.IncommingLinks)
                                        .HasForeignKey(x => x.TargetCategoryId).WillCascadeOnDelete(false);
 
-            modelBuilder.Entity<dataModel.CategoryRelationEntity>().HasRequired(x => x.SourceCategory)
+            modelBuilder.Entity<CategoryRelationEntity>().HasRequired(x => x.SourceCategory)
                                        .WithMany(x => x.OutgoingLinks)
                                        .HasForeignKey(x => x.SourceCategoryId).WillCascadeOnDelete(false);
 
-            modelBuilder.Entity<dataModel.CategoryRelationEntity>().HasOptional(x => x.TargetCatalog)
+            modelBuilder.Entity<CategoryRelationEntity>().HasOptional(x => x.TargetCatalog)
                                        .WithMany(x => x.IncommingLinks)
                                        .HasForeignKey(x => x.TargetCatalogId).WillCascadeOnDelete(false);
             #endregion
@@ -154,28 +153,28 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
         #region ICatalogRepository Members
 
-        public IQueryable<dataModel.CategoryEntity> Categories => GetAsQueryable<dataModel.CategoryEntity>();
-        public IQueryable<dataModel.CatalogEntity> Catalogs => GetAsQueryable<dataModel.CatalogEntity>();
-        public IQueryable<dataModel.PropertyValueEntity> PropertyValues => GetAsQueryable<dataModel.PropertyValueEntity>();
-        public IQueryable<dataModel.ImageEntity> Images => GetAsQueryable<dataModel.ImageEntity>();
-        public IQueryable<dataModel.AssetEntity> Assets => GetAsQueryable<dataModel.AssetEntity>();
-        public IQueryable<dataModel.ItemEntity> Items => GetAsQueryable<dataModel.ItemEntity>();
-        public IQueryable<dataModel.EditorialReviewEntity> EditorialReviews => GetAsQueryable<dataModel.EditorialReviewEntity>();
-        public IQueryable<dataModel.PropertyEntity> Properties => GetAsQueryable<dataModel.PropertyEntity>();
-        public IQueryable<dataModel.PropertyDictionaryValueEntity> PropertyDictionaryValues => GetAsQueryable<dataModel.PropertyDictionaryValueEntity>();
-        public IQueryable<dataModel.PropertyDictionaryItemEntity> PropertyDictionaryItems => GetAsQueryable<dataModel.PropertyDictionaryItemEntity>();
-        public IQueryable<dataModel.PropertyDisplayNameEntity> PropertyDisplayNames => GetAsQueryable<dataModel.PropertyDisplayNameEntity>();
-        public IQueryable<dataModel.PropertyAttributeEntity> PropertyAttributes => GetAsQueryable<dataModel.PropertyAttributeEntity>();
-        public IQueryable<dataModel.CategoryItemRelationEntity> CategoryItemRelations => GetAsQueryable<dataModel.CategoryItemRelationEntity>();
-        public IQueryable<dataModel.AssociationEntity> Associations => GetAsQueryable<dataModel.AssociationEntity>();
-        public IQueryable<dataModel.CategoryRelationEntity> CategoryLinks => GetAsQueryable<dataModel.CategoryRelationEntity>();
-        public IQueryable<dataModel.PropertyValidationRuleEntity> PropertyValidationRules => GetAsQueryable<dataModel.PropertyValidationRuleEntity>();
+        public IQueryable<CategoryEntity> Categories => GetAsQueryable<CategoryEntity>();
+        public IQueryable<CatalogEntity> Catalogs => GetAsQueryable<CatalogEntity>();
+        public IQueryable<PropertyValueEntity> PropertyValues => GetAsQueryable<PropertyValueEntity>();
+        public IQueryable<ImageEntity> Images => GetAsQueryable<ImageEntity>();
+        public IQueryable<AssetEntity> Assets => GetAsQueryable<AssetEntity>();
+        public IQueryable<ItemEntity> Items => GetAsQueryable<ItemEntity>();
+        public IQueryable<EditorialReviewEntity> EditorialReviews => GetAsQueryable<EditorialReviewEntity>();
+        public IQueryable<PropertyEntity> Properties => GetAsQueryable<PropertyEntity>();
+        public IQueryable<PropertyDictionaryValueEntity> PropertyDictionaryValues => GetAsQueryable<PropertyDictionaryValueEntity>();
+        public IQueryable<PropertyDictionaryItemEntity> PropertyDictionaryItems => GetAsQueryable<PropertyDictionaryItemEntity>();
+        public IQueryable<PropertyDisplayNameEntity> PropertyDisplayNames => GetAsQueryable<PropertyDisplayNameEntity>();
+        public IQueryable<PropertyAttributeEntity> PropertyAttributes => GetAsQueryable<PropertyAttributeEntity>();
+        public IQueryable<CategoryItemRelationEntity> CategoryItemRelations => GetAsQueryable<CategoryItemRelationEntity>();
+        public IQueryable<AssociationEntity> Associations => GetAsQueryable<AssociationEntity>();
+        public IQueryable<CategoryRelationEntity> CategoryLinks => GetAsQueryable<CategoryRelationEntity>();
+        public IQueryable<PropertyValidationRuleEntity> PropertyValidationRules => GetAsQueryable<PropertyValidationRuleEntity>();
 
-        public dataModel.CatalogEntity[] GetCatalogsByIds(string[] catalogIds)
+        public CatalogEntity[] GetCatalogsByIds(string[] catalogIds)
         {
             // Array.Empty does not create empty array each time, all creations returns the same static object:
             // https://stackoverflow.com/a/33515349/5907312
-            dataModel.CatalogEntity[] result = Array.Empty<dataModel.CatalogEntity>();
+            var result = Array.Empty<CatalogEntity>();
 
             if (!catalogIds.IsNullOrEmpty())
             {
@@ -199,7 +198,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             return result;
         }
 
-        public dataModel.CategoryEntity[] GetCategoriesByIds(string[] categoriesIds, coreModel.CategoryResponseGroup respGroup)
+        public CategoryEntity[] GetCategoriesByIds(string[] categoriesIds, CategoryResponseGroup respGroup)
         {
             if (categoriesIds == null)
             {
@@ -208,29 +207,29 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
             if (!categoriesIds.Any())
             {
-                return new dataModel.CategoryEntity[] { };
+                return new CategoryEntity[] { };
             }
 
-            if (respGroup.HasFlag(coreModel.CategoryResponseGroup.WithOutlines))
+            if (respGroup.HasFlag(CategoryResponseGroup.WithOutlines))
             {
-                respGroup |= coreModel.CategoryResponseGroup.WithLinks | coreModel.CategoryResponseGroup.WithParents;
+                respGroup |= CategoryResponseGroup.WithLinks | CategoryResponseGroup.WithParents;
             }
 
             var result = Categories.Where(x => categoriesIds.Contains(x.Id)).ToArray();
 
-            if (respGroup.HasFlag(coreModel.CategoryResponseGroup.WithLinks))
+            if (respGroup.HasFlag(CategoryResponseGroup.WithLinks))
             {
                 var incommingLinks = CategoryLinks.Where(x => categoriesIds.Contains(x.TargetCategoryId)).ToArray();
                 var outgoingLinks = CategoryLinks.Where(x => categoriesIds.Contains(x.SourceCategoryId)).ToArray();
             }
 
-            if (respGroup.HasFlag(coreModel.CategoryResponseGroup.WithImages))
+            if (respGroup.HasFlag(CategoryResponseGroup.WithImages))
             {
                 var images = Images.Where(x => categoriesIds.Contains(x.CategoryId)).ToArray();
             }
 
             //Load all properties meta information and information for inheritance
-            if (respGroup.HasFlag(coreModel.CategoryResponseGroup.WithProperties))
+            if (respGroup.HasFlag(CategoryResponseGroup.WithProperties))
             {
                 //Load category property values by separate query
                 var propertyValues = PropertyValues.Include(x => x.DictionaryItem.DictionaryItemValues).Where(x => categoriesIds.Contains(x.CategoryId)).ToArray();
@@ -242,12 +241,12 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             return result;
         }
 
-        public dataModel.ItemEntity[] GetItemByIds(string[] itemIds, coreModel.ItemResponseGroup respGroup = coreModel.ItemResponseGroup.ItemLarge)
+        public ItemEntity[] GetItemByIds(string[] itemIds, ItemResponseGroup respGroup = ItemResponseGroup.ItemLarge)
         {
 
             // Array.Empty does not create empty array each time, all creations returns the same static object:
             // https://stackoverflow.com/a/33515349/5907312
-            dataModel.ItemEntity[] result = Array.Empty<dataModel.ItemEntity>();
+            var result = Array.Empty<ItemEntity>();
 
             if (!itemIds.IsNullOrEmpty())
             {
@@ -257,32 +256,32 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 {
                     itemIds = result.Select(x => x.Id).ToArray();
 
-                    if (respGroup.HasFlag(coreModel.ItemResponseGroup.Outlines))
+                    if (respGroup.HasFlag(ItemResponseGroup.Outlines))
                     {
-                        respGroup |= coreModel.ItemResponseGroup.Links;
+                        respGroup |= ItemResponseGroup.Links;
                     }
 
-                    if (respGroup.HasFlag(coreModel.ItemResponseGroup.ItemProperties))
+                    if (respGroup.HasFlag(ItemResponseGroup.ItemProperties))
                     {
                         var propertyValues = PropertyValues.Include(x => x.DictionaryItem.DictionaryItemValues).Where(x => itemIds.Contains(x.ItemId)).ToArray();
                     }
 
-                    if (respGroup.HasFlag(coreModel.ItemResponseGroup.Links))
+                    if (respGroup.HasFlag(ItemResponseGroup.Links))
                     {
                         var relations = CategoryItemRelations.Where(x => itemIds.Contains(x.ItemId)).ToArray();
                     }
 
-                    if (respGroup.HasFlag(coreModel.ItemResponseGroup.ItemAssets))
+                    if (respGroup.HasFlag(ItemResponseGroup.ItemAssets))
                     {
                         var assets = Assets.Where(x => itemIds.Contains(x.ItemId)).ToArray();
                     }
 
-                    if (respGroup.HasFlag(coreModel.ItemResponseGroup.ItemEditorialReviews))
+                    if (respGroup.HasFlag(ItemResponseGroup.ItemEditorialReviews))
                     {
                         var editorialReviews = EditorialReviews.Where(x => itemIds.Contains(x.ItemId)).ToArray();
                     }
 
-                    if (respGroup.HasFlag(coreModel.ItemResponseGroup.Variations))
+                    if (respGroup.HasFlag(ItemResponseGroup.Variations))
                     {
                         // TODO: Call GetItemByIds for variations recursively (need to measure performance and data amount first)
 
@@ -292,34 +291,34 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                         var variations = Items.Include(x => x.Images).Where(x => variationIds.Contains(x.Id)).ToArray();
                         var variationPropertyValues = PropertyValues.Include(x => x.DictionaryItem.DictionaryItemValues).Where(x => variationIds.Contains(x.ItemId)).ToArray();
 
-                        if (respGroup.HasFlag(coreModel.ItemResponseGroup.ItemAssets))
+                        if (respGroup.HasFlag(ItemResponseGroup.ItemAssets))
                         {
                             var variationAssets = Assets.Where(x => variationIds.Contains(x.ItemId)).ToArray();
                         }
 
-                        if (respGroup.HasFlag(coreModel.ItemResponseGroup.ItemEditorialReviews))
+                        if (respGroup.HasFlag(ItemResponseGroup.ItemEditorialReviews))
                         {
                             var variationEditorialReviews = EditorialReviews.Where(x => variationIds.Contains(x.ItemId)).ToArray();
                         }
                     }
 
-                    if (respGroup.HasFlag(coreModel.ItemResponseGroup.ItemAssociations))
+                    if (respGroup.HasFlag(ItemResponseGroup.ItemAssociations))
                     {
                         var assosiations = Associations.Where(x => itemIds.Contains(x.ItemId)).ToArray();
                         var assosiatedProductIds = assosiations.Where(x => x.AssociatedItemId != null)
                                                                .Select(x => x.AssociatedItemId).Distinct().ToArray();
 
-                        var assosiatedItems = GetItemByIds(assosiatedProductIds, coreModel.ItemResponseGroup.ItemInfo | coreModel.ItemResponseGroup.ItemAssets);
+                        var assosiatedItems = GetItemByIds(assosiatedProductIds, ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemAssets);
 
                         var assosiatedCategoryIdsIds = assosiations.Where(x => x.AssociatedCategoryId != null).Select(x => x.AssociatedCategoryId).Distinct().ToArray();
-                        var associatedCategories = GetCategoriesByIds(assosiatedCategoryIdsIds, coreModel.CategoryResponseGroup.Info | CategoryResponseGroup.WithImages);
+                        var associatedCategories = GetCategoriesByIds(assosiatedCategoryIdsIds, CategoryResponseGroup.Info | CategoryResponseGroup.WithImages);
                     }
 
-                    if (respGroup.HasFlag(coreModel.ItemResponseGroup.ReferencedAssociations))
+                    if (respGroup.HasFlag(ItemResponseGroup.ReferencedAssociations))
                     {
                         var referencedAssociations = Associations.Where(x => itemIds.Contains(x.AssociatedItemId)).ToArray();
                         var referencedProductIds = referencedAssociations.Select(x => x.ItemId).Distinct().ToArray();
-                        var referencedProducts = GetItemByIds(referencedProductIds, coreModel.ItemResponseGroup.ItemInfo);
+                        var referencedProducts = GetItemByIds(referencedProductIds, ItemResponseGroup.ItemInfo);
                     }
 
                     // Load parents
@@ -331,11 +330,11 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             return result;
         }
 
-        public dataModel.PropertyEntity[] GetPropertiesByIds(string[] propIds, bool loadDictValues = false)
+        public PropertyEntity[] GetPropertiesByIds(string[] propIds, bool loadDictValues = false)
         {
             // Array.Empty does not create empty array each time, all creations returns the same static object:
             // https://stackoverflow.com/a/33515349/5907312
-            dataModel.PropertyEntity[] result = Array.Empty<dataModel.PropertyEntity>();
+            var result = Array.Empty<PropertyEntity>();
 
             if (!propIds.IsNullOrEmpty())
             {
@@ -365,11 +364,11 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         /// </summary>
         /// <param name="catalogId"></param>
         /// <returns></returns>
-        public dataModel.PropertyEntity[] GetAllCatalogProperties(string catalogId)
+        public PropertyEntity[] GetAllCatalogProperties(string catalogId)
         {
             // Array.Empty does not create empty array each time, all creations returns the same static object:
             // https://stackoverflow.com/a/33515349/5907312
-            dataModel.PropertyEntity[] result = Array.Empty<dataModel.PropertyEntity>();
+            var result = Array.Empty<PropertyEntity>();
 
             if (!catalogId.IsNullOrEmpty())
             {
@@ -474,7 +473,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 }
                 while (skip < itemIds.Length);
 
-                AddBatchDeletedEntities<dataModel.ItemEntity>(itemIds);
+                AddBatchDeletedEntities<ItemEntity>(itemIds);
             }
         }
 
@@ -500,7 +499,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
                 ExecuteStoreCommand(commandTemplate, categoryIds);
 
-                AddBatchDeletedEntities<dataModel.CategoryEntity>(ids);
+                AddBatchDeletedEntities<CategoryEntity>(ids);
             }
         }
 
@@ -524,7 +523,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
                 ExecuteStoreCommand(commandTemplate, ids);
 
-                AddBatchDeletedEntities<dataModel.CatalogEntity>(ids);
+                AddBatchDeletedEntities<CatalogEntity>(ids);
             }
         }
 
@@ -559,9 +558,9 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             }
         }
 
-        public GenericSearchResult<dataModel.AssociationEntity> SearchAssociations(ProductAssociationSearchCriteria criteria)
+        public GenericSearchResult<AssociationEntity> SearchAssociations(ProductAssociationSearchCriteria criteria)
         {
-            var result = new GenericSearchResult<dataModel.AssociationEntity>();
+            var result = new GenericSearchResult<AssociationEntity>();
 
             var countSqlCommandText = @"
                 ;WITH Association_CTE AS
@@ -656,16 +655,16 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             }
 
             result.TotalCount = ObjectContext.ExecuteStoreQuery<int>(countSqlCommand.Text, countSqlCommand.Parameters).FirstOrDefault();
-            result.Results = ObjectContext.ExecuteStoreQuery<dataModel.AssociationEntity>(querySqlCommand.Text, querySqlCommand.Parameters).ToList();
+            result.Results = ObjectContext.ExecuteStoreQuery<AssociationEntity>(querySqlCommand.Text, querySqlCommand.Parameters).ToList();
 
             return result;
         }
 
-        public dataModel.PropertyDictionaryItemEntity[] GetPropertyDictionaryItemsByIds(string[] dictItemIds)
+        public PropertyDictionaryItemEntity[] GetPropertyDictionaryItemsByIds(string[] dictItemIds)
         {
             // Array.Empty does not create empty array each time, all creations returns the same static object:
             // https://stackoverflow.com/a/33515349/5907312
-            dataModel.PropertyDictionaryItemEntity[] result = Array.Empty<dataModel.PropertyDictionaryItemEntity>();
+            var result = Array.Empty<PropertyDictionaryItemEntity>();
 
             if (!dictItemIds.IsNullOrEmpty())
             {
