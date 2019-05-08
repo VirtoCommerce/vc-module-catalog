@@ -381,8 +381,9 @@ namespace VirtoCommerce.CatalogModule.Web.Model
                 {
                     if (variation.Properties != null)
                     {
-                        variation.Properties =
-                            variation.Properties.Where(x => x.Type == PropertyType.Variation).ToList();
+                        variation.Properties = variation.Properties
+                            .Where(x => x.Type == PropertyType.Variation)
+                            .ToList();
                     }
 
                     variation.Outlines = null;
