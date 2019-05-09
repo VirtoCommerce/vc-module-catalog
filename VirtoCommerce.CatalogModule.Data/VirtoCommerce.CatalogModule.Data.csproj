@@ -282,6 +282,7 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="entity-data-model.cd" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
