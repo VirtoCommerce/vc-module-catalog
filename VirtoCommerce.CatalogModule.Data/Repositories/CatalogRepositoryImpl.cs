@@ -172,8 +172,6 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
         public CatalogEntity[] GetCatalogsByIds(string[] catalogIds)
         {
-            // Array.Empty does not create empty array each time, all creations returns the same static object:
-            // https://stackoverflow.com/a/33515349/5907312
             var result = Array.Empty<CatalogEntity>();
 
             if (!catalogIds.IsNullOrEmpty())
@@ -200,42 +198,42 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
         public CategoryEntity[] GetCategoriesByIds(string[] categoriesIds, CategoryResponseGroup respGroup)
         {
-            if (categoriesIds == null)
+            var result = Array.Empty<CategoryEntity>();
+
+            if (!categoriesIds.IsNullOrEmpty())
             {
-                throw new ArgumentNullException(nameof(categoriesIds));
-            }
+                if (respGroup.HasFlag(CategoryResponseGroup.WithOutlines))
+                {
+                    respGroup |= CategoryResponseGroup.WithLinks | CategoryResponseGroup.WithParents;
+                }
 
-            if (!categoriesIds.Any())
-            {
-                return new CategoryEntity[] { };
-            }
+                result = Categories.Where(x => categoriesIds.Contains(x.Id)).ToArray();
 
-            if (respGroup.HasFlag(CategoryResponseGroup.WithOutlines))
-            {
-                respGroup |= CategoryResponseGroup.WithLinks | CategoryResponseGroup.WithParents;
-            }
+                if (result.Any())
+                {
+                    categoriesIds = result.Select(x => x.Id).ToArray();
 
-            var result = Categories.Where(x => categoriesIds.Contains(x.Id)).ToArray();
+                    if (respGroup.HasFlag(CategoryResponseGroup.WithLinks))
+                    {
+                        var incommingLinks = CategoryLinks.Where(x => categoriesIds.Contains(x.TargetCategoryId)).ToArray();
+                        var outgoingLinks = CategoryLinks.Where(x => categoriesIds.Contains(x.SourceCategoryId)).ToArray();
+                    }
 
-            if (respGroup.HasFlag(CategoryResponseGroup.WithLinks))
-            {
-                var incommingLinks = CategoryLinks.Where(x => categoriesIds.Contains(x.TargetCategoryId)).ToArray();
-                var outgoingLinks = CategoryLinks.Where(x => categoriesIds.Contains(x.SourceCategoryId)).ToArray();
-            }
+                    if (respGroup.HasFlag(CategoryResponseGroup.WithImages))
+                    {
+                        var images = Images.Where(x => categoriesIds.Contains(x.CategoryId)).ToArray();
+                    }
 
-            if (respGroup.HasFlag(CategoryResponseGroup.WithImages))
-            {
-                var images = Images.Where(x => categoriesIds.Contains(x.CategoryId)).ToArray();
-            }
+                    //Load all properties meta information and information for inheritance
+                    if (respGroup.HasFlag(CategoryResponseGroup.WithProperties))
+                    {
+                        //Load category property values by separate query
+                        var propertyValues = PropertyValues.Include(x => x.DictionaryItem.DictionaryItemValues).Where(x => categoriesIds.Contains(x.CategoryId)).ToArray();
 
-            //Load all properties meta information and information for inheritance
-            if (respGroup.HasFlag(CategoryResponseGroup.WithProperties))
-            {
-                //Load category property values by separate query
-                var propertyValues = PropertyValues.Include(x => x.DictionaryItem.DictionaryItemValues).Where(x => categoriesIds.Contains(x.CategoryId)).ToArray();
-
-                var categoryPropertiesIds = Properties.Where(x => categoriesIds.Contains(x.CategoryId)).Select(x => x.Id).ToArray();
-                var categoryProperties = GetPropertiesByIds(categoryPropertiesIds);
+                        var categoryPropertiesIds = Properties.Where(x => categoriesIds.Contains(x.CategoryId)).Select(x => x.Id).ToArray();
+                        var categoryProperties = GetPropertiesByIds(categoryPropertiesIds);
+                    }
+                }
             }
 
             return result;
@@ -243,9 +241,6 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
         public ItemEntity[] GetItemByIds(string[] itemIds, ItemResponseGroup respGroup = ItemResponseGroup.ItemLarge)
         {
-
-            // Array.Empty does not create empty array each time, all creations returns the same static object:
-            // https://stackoverflow.com/a/33515349/5907312
             var result = Array.Empty<ItemEntity>();
 
             if (!itemIds.IsNullOrEmpty())
@@ -287,18 +282,27 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
                         var variationIds = Items.Where(x => itemIds.Contains(x.ParentId)).Select(x => x.Id).ToArray();
 
-                        // Always load info, images and property values for variations
-                        var variations = Items.Include(x => x.Images).Where(x => variationIds.Contains(x.Id)).ToArray();
-                        var variationPropertyValues = PropertyValues.Include(x => x.DictionaryItem.DictionaryItemValues).Where(x => variationIds.Contains(x.ItemId)).ToArray();
-
-                        if (respGroup.HasFlag(ItemResponseGroup.ItemAssets))
+                        if (!variationIds.IsNullOrEmpty())
                         {
-                            var variationAssets = Assets.Where(x => variationIds.Contains(x.ItemId)).ToArray();
-                        }
+                            // Always load info, images and property values for variations
+                            var variations = Items.Include(x => x.Images).Where(x => variationIds.Contains(x.Id)).ToArray();
 
-                        if (respGroup.HasFlag(ItemResponseGroup.ItemEditorialReviews))
-                        {
-                            var variationEditorialReviews = EditorialReviews.Where(x => variationIds.Contains(x.ItemId)).ToArray();
+                            if (variations.Any())
+                            {
+                                variationIds = variations.Select(x => x.Id).ToArray();
+
+                                var variationPropertyValues = PropertyValues.Include(x => x.DictionaryItem.DictionaryItemValues).Where(x => variationIds.Contains(x.ItemId)).ToArray();
+
+                                if (respGroup.HasFlag(ItemResponseGroup.ItemAssets))
+                                {
+                                    var variationAssets = Assets.Where(x => variationIds.Contains(x.ItemId)).ToArray();
+                                }
+
+                                if (respGroup.HasFlag(ItemResponseGroup.ItemEditorialReviews))
+                                {
+                                    var variationEditorialReviews = EditorialReviews.Where(x => variationIds.Contains(x.ItemId)).ToArray();
+                                }
+                            }
                         }
                     }
 
@@ -332,8 +336,6 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
         public PropertyEntity[] GetPropertiesByIds(string[] propIds, bool loadDictValues = false)
         {
-            // Array.Empty does not create empty array each time, all creations returns the same static object:
-            // https://stackoverflow.com/a/33515349/5907312
             var result = Array.Empty<PropertyEntity>();
 
             if (!propIds.IsNullOrEmpty())
@@ -348,6 +350,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     var propAttributes = PropertyAttributes.Where(x => propIds.Contains(x.PropertyId)).ToArray();
                     var propDisplayNames = PropertyDisplayNames.Where(x => propIds.Contains(x.PropertyId)).ToArray();
                     var propValidationRules = PropertyValidationRules.Where(x => propIds.Contains(x.PropertyId)).ToArray();
+
                     if (loadDictValues)
                     {
                         var propDictionaryItems = PropertyDictionaryItems.Include(x => x.DictionaryItemValues).Where(x => propIds.Contains(x.PropertyId)).ToArray();
@@ -366,8 +369,6 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         /// <returns></returns>
         public PropertyEntity[] GetAllCatalogProperties(string catalogId)
         {
-            // Array.Empty does not create empty array each time, all creations returns the same static object:
-            // https://stackoverflow.com/a/33515349/5907312
             var result = Array.Empty<PropertyEntity>();
 
             if (!catalogId.IsNullOrEmpty())
@@ -394,9 +395,16 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                         linkedCategoryIds = linkedCategoryIds.Concat(linkedProductCategoryIds).Distinct().ToArray();
                         var expandedFlatLinkedCategoryIds = linkedCategoryIds.Concat(GetAllChildrenCategoriesIds(linkedCategoryIds)).Distinct().ToArray();
 
-                        propertyIds = propertyIds.Concat(Properties.Where(x => expandedFlatLinkedCategoryIds.Contains(x.CategoryId)).Select(x => x.Id)).Distinct().ToArray();
-                        var linkedCatalogIds = Categories.Where(x => expandedFlatLinkedCategoryIds.Contains(x.Id)).Select(x => x.CatalogId).Distinct().ToArray();
-                        propertyIds = propertyIds.Concat(Properties.Where(x => linkedCatalogIds.Contains(x.CatalogId) && x.CategoryId == null).Select(x => x.Id)).Distinct().ToArray();
+                        if (expandedFlatLinkedCategoryIds.Any())
+                        {
+                            propertyIds = propertyIds.Concat(Properties.Where(x => expandedFlatLinkedCategoryIds.Contains(x.CategoryId)).Select(x => x.Id)).Distinct().ToArray();
+                            var linkedCatalogIds = Categories.Where(x => expandedFlatLinkedCategoryIds.Contains(x.Id)).Select(x => x.CatalogId).Distinct().ToArray();
+
+                            if (linkedCatalogIds.Any())
+                            {
+                                propertyIds = propertyIds.Concat(Properties.Where(x => linkedCatalogIds.Contains(x.CatalogId) && x.CategoryId == null).Select(x => x.Id)).Distinct().ToArray();
+                            }
+                        }
                     }
 
                     result = GetPropertiesByIds(propertyIds).ToArray();
@@ -662,8 +670,6 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
         public PropertyDictionaryItemEntity[] GetPropertyDictionaryItemsByIds(string[] dictItemIds)
         {
-            // Array.Empty does not create empty array each time, all creations returns the same static object:
-            // https://stackoverflow.com/a/33515349/5907312
             var result = Array.Empty<PropertyDictionaryItemEntity>();
 
             if (!dictItemIds.IsNullOrEmpty())
