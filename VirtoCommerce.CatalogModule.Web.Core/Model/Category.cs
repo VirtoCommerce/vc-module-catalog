@@ -3,6 +3,7 @@ using System.Linq;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Commerce.Model;
 using VirtoCommerce.Platform.Core.Common;
+using moduleModel = VirtoCommerce.Domain.Catalog.Model;
 
 namespace VirtoCommerce.CatalogModule.Web.Model
 {
@@ -123,7 +124,17 @@ namespace VirtoCommerce.CatalogModule.Web.Model
 
         public string[] SecurityScopes { get; set; }
 
-        #region ISeoSupport Members 
+        public virtual Category FromModel(moduleModel.Category category)
+        {
+            return this;
+        }
+
+        public virtual moduleModel.Category ToModel(moduleModel.Category category)
+        {
+            return category;
+        }
+
+        #region ISeoSupport Members
         public string SeoObjectType { get { return GetType().Name; } }
         /// <summary>
         /// Gets or sets the list of SEO information records.
@@ -139,5 +150,36 @@ namespace VirtoCommerce.CatalogModule.Web.Model
         public ICollection<Outline> Outlines { get; set; }
 
         #endregion
+
+        public virtual void ReduceDetails(string responseGroup)
+        {
+            //Reduce details according to response group
+            var categoryResponseGroup = EnumUtility.SafeParseFlags(responseGroup, CategoryResponseGroup.Full);
+
+            if (!categoryResponseGroup.HasFlag(CategoryResponseGroup.WithImages))
+            {
+                Images = null;
+            }
+
+            if (!categoryResponseGroup.HasFlag(CategoryResponseGroup.WithLinks))
+            {
+                Links = null;
+            }
+
+            if (!categoryResponseGroup.HasFlag(CategoryResponseGroup.WithProperties))
+            {
+                Properties = null;
+            }
+
+            if (!categoryResponseGroup.HasFlag(CategoryResponseGroup.WithOutlines))
+            {
+                Outlines = null;
+            }
+
+            if (!categoryResponseGroup.HasFlag(CategoryResponseGroup.WithSeo))
+            {
+                SeoInfos = null;
+            }
+        }
     }
 }

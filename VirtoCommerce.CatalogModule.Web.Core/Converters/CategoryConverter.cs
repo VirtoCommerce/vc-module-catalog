@@ -12,8 +12,8 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
     {
         public static webModel.Category ToWebModel(this moduleModel.Category category, IBlobUrlResolver blobUrlResolver = null, bool convertProps = true)
         {
-            var retVal = new webModel.Category();
-            //Do not use omu.InjectFrom for performance reasons 
+            var retVal = AbstractTypeFactory<webModel.Category>.TryCreateInstance().FromModel(category);
+            //Do not use omu.InjectFrom for performance reasons
             retVal.Id = category.Id;
             retVal.IsActive = category.IsActive;
             retVal.IsVirtual = category.IsVirtual;
@@ -76,6 +76,7 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
                         {
                             property = retVal.Properties.FirstOrDefault(x => x.Name.EqualsInvariant(propValue.PropertyName));
                         }
+
                         if (property == null)
                         {
                             //Need add dummy property for each value without property
@@ -83,8 +84,10 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
                             retVal.Properties.Add(property);
                             sort = true;
                         }
+
                         property.Values.Add(propValue);
                     }
+
                     if (sort)
                     {
                         retVal.Properties = retVal.Properties.OrderBy(x => x.Name).ToList();
@@ -102,7 +105,8 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
 
         public static moduleModel.Category ToModuleModel(this webModel.Category category)
         {
-            var retVal = new moduleModel.Category();
+            var retVal = category.ToModel(AbstractTypeFactory<moduleModel.Category>.TryCreateInstance());
+
             retVal.InjectFrom(category);
             retVal.SeoInfos = category.SeoInfos;
 

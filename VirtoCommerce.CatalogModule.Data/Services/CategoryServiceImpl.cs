@@ -59,7 +59,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             //Reduce details according to response group
             foreach (var category in result)
             {
-                ReduceDetails(category, responseGroup);
+                category.ReduceDetails(responseGroup.ToString());
             }
 
             return result.ToArray();
@@ -114,39 +114,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         }
 
         #endregion
-        /// <summary>
-        /// Reduce category details according to response group
-        /// </summary>
-        /// <param name="category"></param>
-        /// <param name="respGroup"></param>
-        protected virtual void ReduceDetails(Category category, CategoryResponseGroup responseGroup)
-        {
-            if (!responseGroup.HasFlag(CategoryResponseGroup.WithImages))
-            {
-                category.Images = null;
-            }
-            if (!responseGroup.HasFlag(CategoryResponseGroup.WithLinks))
-            {
-                category.Links = null;
-            }
-            if (!responseGroup.HasFlag(CategoryResponseGroup.WithParents))
-            {
-                category.Parents = null;
-            }
-            if (!responseGroup.HasFlag(CategoryResponseGroup.WithProperties))
-            {
-                category.Properties = null;
-                category.PropertyValues = null;
-            }
-            if (!responseGroup.HasFlag(CategoryResponseGroup.WithOutlines))
-            {
-                category.Outlines = null;
-            }
-            if (!responseGroup.HasFlag(CategoryResponseGroup.WithSeo))
-            {
-                category.SeoInfos = null;
-            }
-        }
+
 
         protected virtual void SaveChanges(Category[] categories)
         {

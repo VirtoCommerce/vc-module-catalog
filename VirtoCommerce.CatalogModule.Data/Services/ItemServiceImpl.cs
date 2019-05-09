@@ -140,47 +140,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 throw new ArgumentNullException(nameof(product));
             }
 
-            if (!respGroup.HasFlag(ItemResponseGroup.ItemAssets))
-            {
-                product.Assets = null;
-            }
-            if (!respGroup.HasFlag(ItemResponseGroup.ItemAssociations))
-            {
-                product.Associations = null;
-            }
-            if (!respGroup.HasFlag(ItemResponseGroup.ReferencedAssociations))
-            {
-                product.ReferencedAssociations = null;
-            }
-            if (!respGroup.HasFlag(ItemResponseGroup.ItemEditorialReviews))
-            {
-                product.Reviews = null;
-            }
-            if (!respGroup.HasFlag(ItemResponseGroup.Inventory))
-            {
-                product.Inventories = null;
-            }
-            if (!respGroup.HasFlag(ItemResponseGroup.ItemProperties))
-            {
-                product.Properties = null;
-                product.PropertyValues = null;
-            }
-            if (!respGroup.HasFlag(ItemResponseGroup.Links))
-            {
-                product.Links = null;
-            }
-            if (!respGroup.HasFlag(ItemResponseGroup.Outlines))
-            {
-                product.Outlines = null;
-            }
-            if (!respGroup.HasFlag(ItemResponseGroup.Seo))
-            {
-                product.SeoInfos = null;
-            }
-            if (!respGroup.HasFlag(ItemResponseGroup.Variations))
-            {
-                product.Variations = null;
-            }
+            product.ReduceDetails(respGroup.ToString());
         }
 
         protected virtual void SaveChanges(CatalogProduct[] products, bool disableValidation = false)
