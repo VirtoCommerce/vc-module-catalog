@@ -251,3 +251,14 @@
 .capitalizeText {
     text-transform: capitalize;
 }
+
+vc-item-search {
+    -o-flex-grow: 1;
+    -webkit-flex-grow: 1;
+    flex-grow: 1;
+}
+
+.form-group .blade-search-panel .form-input {
+    width: 100%;
+    padding: 0 10px;
+}
