@@ -44,49 +44,62 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public virtual CatalogProduct GetById(string itemId, ItemResponseGroup respGroup, string catalogId = null)
         {
-            var results = GetByIds(new[] { itemId }, respGroup, catalogId);
-            return results.Any() ? results.First() : null;
+            CatalogProduct result = null;
+
+            if (!string.IsNullOrEmpty(itemId))
+            {
+                var results = GetByIds(new[] { itemId }, respGroup, catalogId);
+                result = results.Any() ? results.First() : null;
+            }
+
+            return result;
         }
 
         public virtual CatalogProduct[] GetByIds(string[] itemIds, ItemResponseGroup respGroup, string catalogId = null)
         {
-            CatalogProduct[] result;
+            var result = Array.Empty<CatalogProduct>();
 
-            using (var repository = _repositoryFactory())
+            if (!itemIds.IsNullOrEmpty())
             {
-                //Optimize performance and CPU usage
-                repository.DisableChangesTracking();
+                using (var repository = _repositoryFactory())
+                {
+                    //Optimize performance and CPU usage
+                    repository.DisableChangesTracking();
 
-                result = repository.GetItemByIds(itemIds, respGroup)
-                                   .Select(x => x.ToModel(AbstractTypeFactory<CatalogProduct>.TryCreateInstance()))
-                                   .ToArray();
-            }
+                    result = repository.GetItemByIds(itemIds, respGroup)
+                                       .Select(x => x.ToModel(AbstractTypeFactory<CatalogProduct>.TryCreateInstance()))
+                                       .ToArray();
+                }
 
-            LoadDependencies(result);
-            ApplyInheritanceRules(result);
+                if (result.Any())
+                {
+                    LoadDependencies(result);
+                    ApplyInheritanceRules(result);
 
-            var productsWithVariationsList = result.Concat(result.Where(p => p.Variations != null)
-                                       .SelectMany(p => p.Variations));
-            // Fill outlines for products and variations
-            if (respGroup.HasFlag(ItemResponseGroup.Outlines))
-            {
-                _outlineService.FillOutlinesForObjects(productsWithVariationsList, catalogId);
-            }
-            // Fill SEO info for products, variations and outline items
-            if ((respGroup & ItemResponseGroup.Seo) == ItemResponseGroup.Seo)
-            {
-                var objectsWithSeo = productsWithVariationsList.OfType<ISeoSupport>().ToList();
-                //Load SEO information for all Outline.Items
-                var outlineItems = productsWithVariationsList.Where(p => p.Outlines != null)
-                                         .SelectMany(p => p.Outlines.SelectMany(o => o.Items));
-                objectsWithSeo.AddRange(outlineItems);
-                _commerceService.LoadSeoForObjects(objectsWithSeo.ToArray());
-            }
+                    var productsWithVariationsList = result.Concat(result.Where(p => p.Variations != null)
+                                               .SelectMany(p => p.Variations));
+                    // Fill outlines for products and variations
+                    if (respGroup.HasFlag(ItemResponseGroup.Outlines))
+                    {
+                        _outlineService.FillOutlinesForObjects(productsWithVariationsList, catalogId);
+                    }
+                    // Fill SEO info for products, variations and outline items
+                    if ((respGroup & ItemResponseGroup.Seo) == ItemResponseGroup.Seo)
+                    {
+                        var objectsWithSeo = productsWithVariationsList.OfType<ISeoSupport>().ToList();
+                        //Load SEO information for all Outline.Items
+                        var outlineItems = productsWithVariationsList.Where(p => p.Outlines != null)
+                                                 .SelectMany(p => p.Outlines.SelectMany(o => o.Items));
+                        objectsWithSeo.AddRange(outlineItems);
+                        _commerceService.LoadSeoForObjects(objectsWithSeo.ToArray());
+                    }
 
-            //Reduce details according to response group
-            foreach (var product in productsWithVariationsList)
-            {
-                ReduceDetails(product, respGroup);
+                    //Reduce details according to response group
+                    foreach (var product in productsWithVariationsList)
+                    {
+                        ReduceDetails(product, respGroup);
+                    }
+                }
             }
 
             return result;
