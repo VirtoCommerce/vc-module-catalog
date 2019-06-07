@@ -12,6 +12,12 @@ In order to view the list of catalogs in VirtoCommerce platform, the admin shoul
 
 1. Selecting a category will result in displaying the list of physical items of the selected category.  
 
+![Fig. View Catalog](media/screen-browse-catalog-module.png)
+
+![Fig. View Catalog](media/screen-view-catalog-and-items.png)
+
+![Fig. View Catalog](media/screen-view-items.png)
+
 In order to view the physical item details, the user should do the following:
 
 1. Select an item and click on it
@@ -49,3 +55,5 @@ In order to view the physical item details, the user should do the following:
        1. Auto order schedule;
        1. Channels;
        1. Tags.
+
+![Fig. View Catalog](media/screen-physical-item-details.png)

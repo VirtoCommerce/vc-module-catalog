@@ -12,6 +12,8 @@ A (common) catalog is defined as a list of items or services that a company show
 
 ![Fig. Catalog](docs/media/screen-catalogs.png)
 
+[View catalogs and physical items details](/docs/view-catalogs-and-physical-items.md)
+
 ### Virtual Catalogs
 
 Virtual catalogs are created from one or more common catalogs. This kind of catalogs aggregates multiple base catalogs into a single catalog. Virtual catalogs are generally used to display seasonal goods that can be collected from multiple catalogs.
@@ -99,7 +101,7 @@ Expandability points:
 
 ## Manage Catalogs
 
-[View catalogs and physical items details](/docs/view-catalogs-and-physical-items.md)
+
 
 
 
