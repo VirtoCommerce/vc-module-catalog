@@ -1,5 +1,6 @@
 # VirtoCommerce Catalog Module
-## Overview 
+
+## Overview
 
 The Catalog module presents the ability to add items to your e-commerce store.  It can be electronics, groceries, digital content or anything else. Items can be grouped into categories and catalogs. The item grouping is individual depending on the stock size, item types, vendors, etc.
 
@@ -98,7 +99,7 @@ Expandability points:
 
 ## Manage Catalogs
 
-[View catalogs and physical items details](/docs/view-catalogs-and-physical-items.ms)
+[View catalogs and physical items details](/docs/view-catalogs-and-physical-items.md)
 
 
 
