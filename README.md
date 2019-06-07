@@ -12,7 +12,11 @@ A (common) catalog is defined as a list of items or services that a company show
 
 ![Fig. Catalog](docs/media/screen-catalogs.png)
 
+### Manage Catalogs
+
 [View catalogs and physical items details](/docs/view-catalogs-and-physical-items.md)
+
+[Add new catalog](/docs/add-new-catalog.md)
 
 ### Virtual Catalogs
 
@@ -21,6 +25,8 @@ A virtual catalog must have a unique name different from other virtual catalogs 
 The major difference between a catalog and a virtual catalog is that the second one is just a view of items from common catalogs. Physically all items from a virtual catalog are located in common catalogs. This also means that if a modification is made to an item in the common catalog, the update will be reflected in all virtual catalogs instantly.
 
 ![Fig. Virtual Catalog](docs/media/screen-virtual-catalog.png)
+
+[Add virtual catalog](/docs/add-virtual-catalog.md)
 
 ### Categories
 
