@@ -18,9 +18,6 @@ A (common) catalog is defined as a list of items or services that a company show
 
 [Add new catalog](/docs/add-new-catalog.md)
 
-[Catalog](/docs/catalog.md)
-
-
 ### Virtual Catalogs
 
 Virtual catalogs are created from one or more common catalogs. This kind of catalogs aggregates multiple base catalogs into a single catalog. Virtual catalogs are generally used to display seasonal goods that can be collected from multiple catalogs.
@@ -37,6 +34,7 @@ A category is a container for other categories or items. Category in the catalog
 
 ![Fig. Categories](docs/media/screen-categories.png)
 
+[Manage Categories](/docs/manage-categories.md)
 ### Items (Product)
 
 A product with its variations in the system is presented as a collection of products (variations).
