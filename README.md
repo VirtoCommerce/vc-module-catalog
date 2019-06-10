@@ -35,6 +35,7 @@ A category is a container for other categories or items. Category in the catalog
 ![Fig. Categories](docs/media/screen-categories.png)
 
 [Manage Categories](/docs/manage-categories.md)
+
 ### Items (Product)
 
 A product with its variations in the system is presented as a collection of products (variations).
@@ -60,6 +61,8 @@ User can manage simple item properties as well as complex information:
 Inventory and prices management are integrated from other modules - “Virto Commerce Inventory” and “Virto Commerce Pricing” respectively.
 
 ![Fig. Physical Item Details](docs/media/screen-physical-item-details.png)
+
+[Manage Products](/docs/manage-physical-products.md)
 
 ### Variations
 
