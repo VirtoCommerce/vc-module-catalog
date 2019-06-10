@@ -11,8 +11,6 @@ A (common) catalog is defined as a list of items or services that a company show
 
 ![Fig. Catalog](docs/media/screen-catalogs.png)
 
-### Manage Catalogs
-
 [View catalogs and physical items details](/docs/view-catalogs-and-physical-items.md)
 
 [Add new catalog](/docs/add-new-catalog.md)
