@@ -11,6 +11,8 @@ A (common) catalog is defined as a list of items or services that a company show
 
 ![Fig. Catalog](docs/media/screen-catalogs.png)
 
+#### Scenarios
+
 [View catalogs and physical items details](/docs/view-catalogs-and-physical-items.md)
 
 [Add new catalog](/docs/add-new-catalog.md)
@@ -23,6 +25,8 @@ The major difference between a catalog and a virtual catalog is that the second 
 
 ![Fig. Virtual Catalog](docs/media/screen-virtual-catalog.png)
 
+#### Scenarios 
+
 [Add Virtual Catalog](/docs/add-virtual-catalog.md)
 
 ### Categories
@@ -30,6 +34,8 @@ The major difference between a catalog and a virtual catalog is that the second 
 A category is a container for other categories or items. Category in the catalog can have sub-categories. Categories allow building hierarchy and relationship between various items in the catalog. This helps to make it easier for customers to navigate to the items they would like to purchase. Large catalogs containing many items should be organized using parent-child relations.
 
 ![Fig. Categories](docs/media/screen-categories.png)
+
+#### Scenarios
 
 [Manage Categories](/docs/manage-categories.md)
 
@@ -58,6 +64,8 @@ User can manage simple item properties as well as complex information:
 Inventory and prices management are integrated from other modules - “Virto Commerce Inventory” and “Virto Commerce Pricing” respectively.
 
 ![Fig. Physical Item Details](docs/media/screen-physical-item-details.png)
+
+#### Scenarios
 
 [Manage Products](/docs/manage-physical-products.md)
 
@@ -105,6 +113,10 @@ Expandability points:
 - additional widgets in (virtual) catalog detail;
 - additional widgets in category detail;
 - additional widgets in item detail.
+
+## Data Model Diagram
+
+![Fig. Data Model](docs/media/entity-data-model.png)
 
 ## License
 
