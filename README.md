@@ -4,7 +4,6 @@
 
 The Catalog module presents the ability to add items to your e-commerce store.  It can be electronics, groceries, digital content or anything else. Items can be grouped into categories and catalogs. The item grouping is individual depending on the stock size, item types, vendors, etc.
 
-
 ### Common Catalogs
 
 A (common) catalog is defined as a list of items or services that a company showcases online. Physically the catalog is a collection of items, which can be grouped into categories. An item can be assigned to only one category or be direct child of a catalog without any category.  
@@ -71,8 +70,6 @@ To show such a product with variations on the storefront, the title product (var
 
 ![Fig. Product variations](docs/media/screen-product-variations.png)
 
-[Manage physical products](/docs/manage-physical-products.md)
-
 ### Properties
 
 Properties (or custom properties) is the additional characteristics for your catalog entities. They can be defined at different levels of item hierarchy:
@@ -110,10 +107,3 @@ Expandability points:
 - additional widgets in (virtual) catalog detail;
 - additional widgets in category detail;
 - additional widgets in item detail.
-
-
-
-
-
-
-

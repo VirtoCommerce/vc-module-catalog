@@ -1,4 +1,4 @@
-# Manage Physical Products
+# Manage Products 
 
 ## Add physical product
 
@@ -30,7 +30,7 @@ The user can add as many properties to the new product as needed. In order to ad
 ![Add property](media/screen-add-property.png)
 ![Property added](media/screen-property-added-to-new-product.png)
 
-## View and manage physical item details 
+## View and manage physical item details
 
 In order to view and manage the physical item details, the user should navigate to the Categories and items screen, select an item and click on it. The system will then display the ‘Physical item details’ screen. The system allows the user to edit and specify the following item details:  
 
@@ -52,24 +52,34 @@ In order to view and manage the physical item details, the user should navigate 
 1. ‘Vendor’ drop down helps to select a Vendor and add new vendors;
 1. ‘Tax type’ drop down allows the user to select an existing tax type or add new tax types to the list;
 1. The following widgets, displayed on the screen, help the user to configure different physical item parameters:
-     1. ‘Properties’ widget contains product properties. The user can add as many product properties as needed. Each property can be either edited or deleted.
+     1. ‘Properties’ widget contains product properties. The user can add as many product properties as needed. Each property can be
+     either edited or deleted.
+     ![Fig. Properties](media/screen-properties-widget.png)
      1. ‘Associations’ widget:
-          1. Used to add associated products to the selected physical product that will be visible on store together with the main product;
-          1. The user can create as many groups of associations as needed and add tags, number and items to the selected group.  
-     1. ‘SEO’ widget;
-     1. ‘Descriptions’ widget contains:
-         1. Description types;
-         1. Description Languages;
-         1. Product description that is visible on store;
-         1. The user can add a new description or edit/delete the existing description(s)  
-    ‘Variations’ widget includes the main product variation(s). The user can add new product variations and edit/delete the existing once  
 
+         1. Used to add associated products to the selected physical product that will be visible on store together with the main product;
+         1. The user can create as many groups of associations as needed and add tags, number and items to the selected group. ![Fig. Associations](media/screen-associations-widget.png)
+     1. ‘SEO’ widget; ![Fig. SEO](media/screen-seo-widget.png)
+     1. ‘Descriptions’ widget contains:
+          1. Description types;
+          1. Description Languages;
+          1. Product description that is visible on store;
+          1. The user can add a new description or edit/delete the existing description(s) ![Fig. Descriptions](media/screen-descriptions-widget.png)
+     1. ‘Variations’ widget includes the main product variation(s). The user can add new product variations and edit/delete the existing once; ![Fig. Variations](media/screen-variations-widget.png)
      1. ‘Assets’ widget:
          1. Contains assets in file format and links to different groups of images if the assets were previously added;  
-         1. The user can add new assets or remove the existing once.  
+         1. The user can add new assets or remove the existing once.  ![Fig. Assets](media/screen-assets-widget.png)
      1. ‘Inventory’ widget enables to:
           1. Add stocked products to the system;
           1. Add reserved products;
           1. Specify reorder min. Quantity;
-          1. Allow or don’t allow reorder and back order.
-     1. ‘Price’ widget contains price lists. The user can add new price list(s) or edit/delete the existing ones.
+          1. Allow or don’t allow reorder and back order. ![Fig. Inventory](media/screen-inventory-widget.png)
+     1. ‘Price’ widget contains price lists. The user can add new price list(s) or edit/delete the existing ones. ![Fig. Prices](media/screen-price-widget.png)
+
+## Digital Products
+
+The Catalog can contain not only physical, but also digital products. The digital products are downloaded on purchase, not shipped.  
+
+In order to add a digital product, the user should navigate to Catalog->Categories and items and select ‘Digital product’  
+The flow for adding/ editing and deleting a digital product is the same as for a physical product.  
+![Fig. Digital Products](media/screen-digital-product.png)
