@@ -68,6 +68,8 @@ To show such a product with variations on the storefront, the title product (var
 
 ![Fig. Product variations](docs/media/screen-product-variations.png)
 
+[Manage physical products](/docs/manage-physical-products.md)
+
 ### Properties
 
 Properties (or custom properties) is the additional characteristics for your catalog entities. They can be defined at different levels of item hierarchy:
@@ -106,7 +108,7 @@ Expandability points:
 - additional widgets in category detail;
 - additional widgets in item detail.
 
-## Manage Catalogs
+
 
 
 
