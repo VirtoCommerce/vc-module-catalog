@@ -21,13 +21,11 @@ A (common) catalog is defined as a list of items or services that a company show
 ### Virtual Catalogs
 
 Virtual catalogs are created from one or more common catalogs. This kind of catalogs aggregates multiple base catalogs into a single catalog.
-
 For example, a Virtual catalog may be used to display seasonal goods that can be collected from multiple catalogs.
 
 A virtual catalog must have a unique name different from other virtual catalogs and common catalogs. Though virtual catalogs are composed of items and categories from common catalogs, items from a virtual catalog cannot be added to another virtual catalog.
 
 The major difference between a catalog and a virtual catalog is that the second one is just a view of items from common catalogs.
-
  Physically all items from a virtual catalog are located in common catalogs. This also means that if a modification is made to an item in the common catalog, the update will be reflected in all virtual catalogs instantly.
 
 ![Fig. Virtual Catalog](docs/media/screen-virtual-catalog.png)
