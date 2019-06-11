@@ -7,7 +7,8 @@ The Catalog module presents the ability to add items to your e-commerce store.  
 ### Common Catalogs
 
 A (common) catalog is defined as a list of items or services that a company showcases online. Physically the catalog is a collection of items, which can be grouped into categories. An item can be assigned to only one category or be direct child of a catalog without any category.  
- Each trademark or product line should have its own catalog of all the offerings in that category. Or when dealing with several suppliers. In this case each supplier should have its own catalog with offered items.
+
+ Each trademark or product line may have its own catalog of all the offerings in that category. Or when dealing with several suppliers, in this case each supplier may have its own catalog with offered items.
 
 ![Fig. Catalog](docs/media/screen-catalogs.png)
 
@@ -19,9 +20,15 @@ A (common) catalog is defined as a list of items or services that a company show
 
 ### Virtual Catalogs
 
-Virtual catalogs are created from one or more common catalogs. This kind of catalogs aggregates multiple base catalogs into a single catalog. Virtual catalogs are generally used to display seasonal goods that can be collected from multiple catalogs.
+Virtual catalogs are created from one or more common catalogs. This kind of catalogs aggregates multiple base catalogs into a single catalog.
+
+For example, a Virtual catalog may be used to display seasonal goods that can be collected from multiple catalogs.
+
 A virtual catalog must have a unique name different from other virtual catalogs and common catalogs. Though virtual catalogs are composed of items and categories from common catalogs, items from a virtual catalog cannot be added to another virtual catalog.
-The major difference between a catalog and a virtual catalog is that the second one is just a view of items from common catalogs. Physically all items from a virtual catalog are located in common catalogs. This also means that if a modification is made to an item in the common catalog, the update will be reflected in all virtual catalogs instantly.
+
+The major difference between a catalog and a virtual catalog is that the second one is just a view of items from common catalogs.
+
+ Physically all items from a virtual catalog are located in common catalogs. This also means that if a modification is made to an item in the common catalog, the update will be reflected in all virtual catalogs instantly.
 
 ![Fig. Virtual Catalog](docs/media/screen-virtual-catalog.png)
 
@@ -31,7 +38,11 @@ The major difference between a catalog and a virtual catalog is that the second 
 
 ### Categories
 
-A category is a container for other categories or items. Category in the catalog can have sub-categories. Categories allow building hierarchy and relationship between various items in the catalog. This helps to make it easier for customers to navigate to the items they would like to purchase. Large catalogs containing many items should be organized using parent-child relations.
+A category is a container for other categories or items. Category in the catalog can have sub-categories.
+
+Categories allow building hierarchy and relationship between various items in the catalog. This helps to make it easier for customers to navigate on client side to the items they would like to purchase.
+
+Large catalogs containing many items might be reasonable to organize using parent-child relations.
 
 ![Fig. Categories](docs/media/screen-categories.png)
 
@@ -71,8 +82,15 @@ Inventory and prices management are integrated from other modules - “Virto Com
 
 ### Variations
 
-In case there is a need to add variations of the product, a relation should be implemented between the products as well as special type of variative properties definition added. Thus, a product with its variations in the system is presented as a collection of products (variations) The title (main) product can be also a variation. The title product has variative property values set. And all other products (variations) has the relation with the title product. Every product that has relation to the title product (variation) can inherit some property values of the title product (description, assets etc.) but can also override the values of those properties if they differ from the title product (variation) property values. 
-To show such a product with variations on the storefront, the title product (variation) is loaded with all the related products (variations). Property values of the title product (variation) are used for the main product description. SKU selector for such a product with variations is built using variations properties of the title product and its variations.
+In case there is a need to add variations of the product, a relation should be implemented between the products as well as special type of variative properties definition added.
+
+Thus, a product with its variations in the system is presented as a collection of products (variations). The title (main) product can be also a variation and can have variative property values set. And all other products (variations) has the relation with the title product.
+
+ Every product that has relation to the title product (variation) can inherit some property values of the title product (description, assets etc.) but can also override the values of those properties if they differ from the title product (variation) property values.
+
+To show such a product with variations on the storefront, the title product is loaded with all the related products (variations). Property values of the title product (variation) are used for the main product description.
+
+SKU selector for such a product with variations is built using variations properties of the title product and its variations.
 
 ![Fig. Product variations](docs/media/screen-product-variations.png)
 
