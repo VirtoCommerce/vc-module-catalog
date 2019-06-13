@@ -138,7 +138,7 @@ The user can manage the validation rules of all the category properties:
 
 ![Fig. Manage attributes](media/screen-new-attribute.png)
 
-
+![Fig. Manage attributes](media/screen-new-property-attribute.png)
 
 ### Manage SEOs 
 
