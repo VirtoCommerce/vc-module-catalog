@@ -26,6 +26,8 @@ In order to add a new category to the Catalog, the user should go through the fo
 1. The system will create a new category and display the ‘Category details’ screen:  
 
       1. ‘Is Active’ button- the user can switch or un-switch this button;
+         1. If switched on- the category will be activated by the system;
+         1. If switched off - the category will be de-activated in the system.
       1. ‘Priority’ text field;
       1. ‘Name’ text field;
       1. ‘Code’ text field;

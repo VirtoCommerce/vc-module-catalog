@@ -7,7 +7,9 @@ In order to add a new catalog, the user should pass through the following steps:
 ![New catalog](media/screen-new-catalog.png)
 1. The user selects the ‘Catalog’ button;
 1. The system will display the next blade ‘Catalog details’ and the user will be prompted to enter the Catalog name and specify the languages;
-![New catalog](media/screen-new-catalog-details.png) 
+
+![New catalog](media/screen-new-catalog-details.png)
+
 1. The user enters the catalog name into the input filed and specifies the catalog languages by navigating to ‘Manage languages’ blade:
 
      1. The user selects the default language from the drop-down box;
@@ -34,5 +36,4 @@ In order to add a new catalog, the user should pass through the following steps:
 
 1. The user selects the language and clicks the ‘Delete’ button;
 1. The system will delete the selected value from the list.  
-
 ![Fig. Delete language](media/screen-delete-language.png)

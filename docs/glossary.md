@@ -13,4 +13,12 @@ GTIN can be used by a company to uniquely identify all of its trade items.  Curr
 
 **Store visible**- when this parameter is set on admin side, the product will be visible on Store. If this parameter is not set on admin side, it will not be visible for clients.
 
-**Track inventory**- setting this parameter allows the system start tracking the inventory. If this parametr is not set, the invntory will not be tracked by the system. 
+**Track inventory**- setting this parameter allows the system start tracking the inventory. If this parametr is not set, the inventory will not be tracked by the system.
+
+**Physical Product** is a product that can be purchased and shipped
+
+**Digital Product** is a product that can be purchased, but not shipped.
+
+**Is Active**- see [Manage categories](/docs/manage-categories.md)
+
+**Priority** - see [Manage categories](/docs/manage-categories.md)
