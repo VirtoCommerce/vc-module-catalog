@@ -130,6 +130,8 @@ Expandability points:
 - additional widgets in category detail;
 - additional widgets in item detail.
 
+[Glossary](/dosc/glossary.md)
+
 ## Data Model Diagram
 
 ![Fig. Data Model](docs/media/entity-data-model.png)

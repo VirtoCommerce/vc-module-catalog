@@ -22,7 +22,7 @@ In order to view the physical item details, the user should do the following:
 
 1. Select an item and click on it
 
-1. The system will display the following details: 
+1. The system will display the following details:![Fig. View Catalog](media/screen-physical-item-details1.png)
 
    1. Input fields:
 
