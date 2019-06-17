@@ -4,6 +4,8 @@
 
 The Catalog module presents the ability to add items to your e-commerce store.  It can be electronics, groceries, digital content or anything else. Items can be grouped into categories and catalogs. The item grouping is individual depending on the stock size, item types, vendors, etc.
 
+The Catalog Module supports two types of catalogs- physical catalogs and virtual catalogs.
+
 ### Common Catalogs
 
 A (common) catalog is defined as a list of items or services that a company showcases online. Physically the catalog is a collection of items, which can be grouped into categories. An item can be assigned to only one category or be direct child of a catalog without any category.  
@@ -52,6 +54,8 @@ Large catalogs containing many items might be reasonable to organize using paren
 
 A product with its variations in the system is presented as a collection of products (variations).
 
+There are two types of products presented in the Catalog- physical products and digital products.
+
 The title (main) product has variative property set of values. And all other products (variations) has the relation with the title product. Every product that has relation to the title product (variation) can inherit some property values of the title product (description, assets etc.) but can also override the values of those properties if they differ from the title product (variation) property values.
 
 To show such a product with variations on the storefront, the title product (main) is loaded with all the related products (variations). Property values of the title product are used for product description. SKU selector for such a product with variations is built using variations properties of the title product and its variations.
@@ -67,7 +71,7 @@ User can manage simple item properties as well as complex information:
 1. Assets.
 1. Images.
 1. Variations (SKUs).
-1. Inventory.
+1. Inventory
 1. Prices.
 
 Inventory and prices management are integrated from other modules - “Virto Commerce Inventory” and “Virto Commerce Pricing” respectively.
@@ -92,6 +96,12 @@ SKU selector for such a product with variations is built using variations proper
 
 ![Fig. Product variations](docs/media/screen-product-variations.png)
 
+#### Scenarios
+
+[View Product variations](/docs/view-product-variations.md)
+
+[Manage Product Variations](/docs/manage-product-variations.md)
+
 ### Properties
 
 Properties (or custom properties) is the additional characteristics for your catalog entities. They can be defined at different levels of item hierarchy:
@@ -105,6 +115,10 @@ All properties defined in parent hierarchy entities are available in (inherited 
 Every property has its “Assign to” trait set to one of: “catalog”, “category”, “product” or “variation”. This defines at what level the property’s value can be set.
 
 ![Fig. Properties](docs/media/screen-product-properties.png)
+
+#### Scenarios
+
+[View Properties](/docs/view-properties.md)
 
 ### Linked Category
 
@@ -131,6 +145,29 @@ Expandability points:
 - additional widgets in item detail.
 
 [Glossary](/docs/glossary.md)
+
+## VirtoCommerce Search
+
+The solution uses Search as primary tool for customer interaction. The customers expect high-level relevance, multiple-languages and near-instantaneous responses. 
+
+### Benefits
+
+1. Document based full text search and text analysis for Products, Categories and Members;
+
+1. Search by keyword, filters, aggregations and geo-search;
+
+1. Supports multiple search engines: Elastic Search, Elastic Cloud, Azure Search and Lucence;
+
+1. Functionality is exposed through REST API or .NET SDK that makes the inherent complexity of information retrieval;
+
+1. The support documents can be easily extended by third party team.
+
+### Architecture Overview
+
+The Architecture is focused to isolate the search engine from documents and provide abilities to add new types of documents.
+
+[Search Engine Architecture Details](/docs/search-engine-architechture-details.md)
+
 
 ## Data Model Diagram
 
