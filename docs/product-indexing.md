@@ -1,4 +1,4 @@
-# Product Indexing 
+# Product Indexing
 
 Product indexing is used to improve the search performance and speed.
 
@@ -8,7 +8,7 @@ VirtoCommerce reindexes automatically whenever one or more items are changed (fo
 
 ## Indexing Widget
 
-### Access Indexing Widget 
+### Access Indexing Widget
 
 1. In order to access the Indexing widget, the user should open the Product details screen; 
 1. The Indexing widget displays the information about when the product was last indexed;

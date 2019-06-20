@@ -82,7 +82,7 @@ Inventory and prices management are integrated from other modules - “Virto Com
 
 [Manage Products](/docs/manage-physical-products.md)
 
-[Product Indexing](product-indexing.md)
+[Product Indexing](/docs/product-indexing.md)
 
 ### Variations
 
@@ -170,7 +170,7 @@ The solution uses Search as primary tool for customer interaction. The customers
 
 The Architecture is focused to isolate the search engine from documents and provide abilities to add new types of documents.
 
-[Search Engine Architecture Details](/docs/search-engine-architechture-details.md)
+[Search Engine Architecture Details](/docs/search-engine-architecture-details.md)
 
 [Catalog Search](/docs/catalog-search.md)
 
