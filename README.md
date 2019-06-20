@@ -16,9 +16,9 @@ A (common) catalog is defined as a list of items or services that a company show
 
 #### Scenarios
 
-[View catalogs and physical items details](/docs/view-catalogs-and-physical-items.md)
+[View Catalogs And Physical Items Details](/docs/view-catalogs-and-physical-items.md)
 
-[Add new catalog](/docs/add-new-catalog.md)
+[Add New Catalog](/docs/add-new-catalog.md)
 
 ### Virtual Catalogs
 
@@ -100,7 +100,7 @@ SKU selector for such a product with variations is built using variations proper
 
 #### Scenarios
 
-[View Product variations](/docs/view-product-variations.md)
+[View Product Variations](/docs/view-product-variations.md)
 
 [Manage Product Variations](/docs/manage-product-variations.md)
 
@@ -148,8 +148,6 @@ Expandability points:
 - additional widgets in category detail;
 - additional widgets in item detail.
 
-
-
 ## VirtoCommerce Search
 
 The solution uses Search as primary tool for customer interaction. The customers expect high-level relevance, multiple-languages and near-instantaneous responses.
@@ -174,13 +172,16 @@ The Architecture is focused to isolate the search engine from documents and prov
 
 [Catalog Search](/docs/catalog-search.md)
 
-### Elastic Search 
+### Elastic Search
+
 https://github.com/VirtoCommerce/vc-module-elastic-search
 
 ### Azure Search
+
 https://github.com/VirtoCommerce/vc-module-azure-search
 
 ### Search Provider Tests
+
 https://github.com/VirtoCommerce/vc-module-core/blob/dev/VirtoCommerce.CoreModule.Search.Tests/SearchProviderTests.cs
 
 ## Search Index
