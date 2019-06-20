@@ -24,3 +24,5 @@ Provide the ability to use different search engines:
      1. RemoveAsync;
      1. SearchAsync;
 1. Class Search Request.
+
+![Fig. Async Update and Search](media/diagram-async-update-and-search.png)

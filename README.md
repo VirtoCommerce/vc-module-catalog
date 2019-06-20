@@ -82,6 +82,8 @@ Inventory and prices management are integrated from other modules - “Virto Com
 
 [Manage Products](/docs/manage-physical-products.md)
 
+[Product Indexing](product-indexing.md)
+
 ### Variations
 
 In case there is a need to add variations of the product, a relation should be implemented between the products as well as special type of variative properties definition added.
@@ -120,6 +122,8 @@ Every property has its “Assign to” trait set to one of: “catalog”, “ca
 
 [View Properties](/docs/view-properties.md)
 
+[Manage Properties](/docs/manage-properties.md)
+
 ### Linked Category
 
 Common category has the same meaning as the category in common catalogs. User can create common category and link products to it or create linked category in it.
@@ -144,11 +148,11 @@ Expandability points:
 - additional widgets in category detail;
 - additional widgets in item detail.
 
-[Glossary](/docs/glossary.md)
+
 
 ## VirtoCommerce Search
 
-The solution uses Search as primary tool for customer interaction. The customers expect high-level relevance, multiple-languages and near-instantaneous responses. 
+The solution uses Search as primary tool for customer interaction. The customers expect high-level relevance, multiple-languages and near-instantaneous responses.
 
 ### Benefits
 
@@ -168,6 +172,28 @@ The Architecture is focused to isolate the search engine from documents and prov
 
 [Search Engine Architecture Details](/docs/search-engine-architechture-details.md)
 
+[Catalog Search](/docs/catalog-search.md)
+
+### Elastic Search 
+https://github.com/VirtoCommerce/vc-module-elastic-search
+
+### Azure Search
+https://github.com/VirtoCommerce/vc-module-azure-search
+
+### Search Provider Tests
+https://github.com/VirtoCommerce/vc-module-core/blob/dev/VirtoCommerce.CoreModule.Search.Tests/SearchProviderTests.cs
+
+## Search Index
+
+VirtoCommerce platform provides a unified solution for indexing and search of different types of objects. The search engine is unable to operate directly with the database, especially when full text search, aggregations, partial search are needed. For this reason, from the architecture point of view, it was decided to isolate the search engine from the documents that should be searched.
+
+The Search Index is used to improve the search performance and speed.
+
+The indexing process starts automatically based on a pre-defined schedule. But at the same time, VirtoCommerce Platform provides the possibility to start the indexing process manually if needed.
+
+[Manage Search Index](/docs/manage-search-index.md)
+
+[Glossary](/docs/glossary.md)
 
 ## Data Model Diagram
 
