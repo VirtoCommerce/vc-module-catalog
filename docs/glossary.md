@@ -5,7 +5,7 @@ SKUs are used by catalogs, online e-tailers, warehouses, and product fulfillment
 
 **Important**: By adding SKUs to every product variation, store owners can easily track the quantity of available products and create threshold limits to let them know when new purchase orders must be made.
 
-**SKU selector**
+**SKU selector** is a visual element that enables selecting product variations.
 
 **GTIN**- see [Manage Products](/docs/manage-physical-products.md) Global Trade Item Number
 GTIN can be used by a company to uniquely identify all of its trade items.  Currently, GTIN is used exclusively within bar codes.
@@ -22,11 +22,20 @@ GTIN can be used by a company to uniquely identify all of its trade items.  Curr
 
 **Is Active**- see [Manage categories](/docs/manage-categories.md)
 
-**Category**
+**Category** is a container for other categories or items (products).
 
 **Priority** - see [Manage categories](/docs/manage-categories.md)
 
 **Product Property** is an additional characteristics for a catalog entity. All properties defined in parent hierarchy entity are inherited by child items.
 
-**Product Variations** 
+**Product Variation** is a variation of the main product that has additional properties.
 
+**Mapping**  is the process of defining how a document, and the fields it contains, are stored and indexed.
+
+**Search engine** is a set of applications designed to search for information.
+
+**Elastic search** search engine from json REST API, uses Lucene and written in Java.
+
+**Index** is a database, document is a table in it. The document is document format JSON, which is stored in elasticsearch. Each document is stored in the index, and is the type and ID. The original JSON document indexing will be stored in the field_source that returns a default receipt or document search.
+
+**Analysis** is the process of converting text into tokens or terms which are added to the inverted index for searching. Analysis is performed by an analyzer, which can be either a built-in analyzer or a custom analyzer defined per index.

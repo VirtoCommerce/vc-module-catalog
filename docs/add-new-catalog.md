@@ -36,4 +36,5 @@ In order to add a new catalog, the user should pass through the following steps:
 
 1. The user selects the language and clicks the ‘Delete’ button;
 1. The system will delete the selected value from the list.  
+
 ![Fig. Delete language](media/screen-delete-language.png)

@@ -130,7 +130,7 @@ Common category has the same meaning as the category in common catalogs. User ca
 
 catalog CRUD:
 
-- properties.
+- properties
 
 category CRUD:
 

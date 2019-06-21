@@ -40,7 +40,7 @@ Customization - Override or Extend Document or Search Request with custom proper
      - For local environment only.
 
 ​
-## Scenarios
+### Scenarios
 
 VirtoCommerce Catalog Module provides two types of search :
 
