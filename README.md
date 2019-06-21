@@ -180,6 +180,12 @@ https://github.com/VirtoCommerce/vc-module-elastic-search
 
 https://github.com/VirtoCommerce/vc-module-azure-search
 
+### Lucene Search
+
+https://github.com/VirtoCommerce/vc-module-lucene-search
+
+This Search Module is used only for development.
+
 ### Search Provider Tests
 
 https://github.com/VirtoCommerce/vc-module-core/blob/dev/VirtoCommerce.CoreModule.Search.Tests/SearchProviderTests.cs
