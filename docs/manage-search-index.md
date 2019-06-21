@@ -8,12 +8,6 @@ The analysis is performed by а custom analyzer defined by index. Token filter:
 
 Mapping is used to define how a document, and the fields it contains, are stored and indexed.
 
-
-
-
-
-
-
 ## Scenarios
 
 ### View Document Types in Search Index
@@ -39,7 +33,7 @@ Build: index for all data without recreating.
 Delete + build: Current search index will be deleted and built from scratch. Note that there WON'T BE ANY SEARCH RESULTS until the build process finishes.'**
 1. 'Build', 'Delete + Build', 'Cancel' buttons are active
 1. The user clicks the 'Build' button
-1. The build will run through all the objects and index them into the search engine. 
+1. The build will run through all the objects and index them into the search engine.
 
 ![Fig. Build Index](media/screen-build-index.png)
 

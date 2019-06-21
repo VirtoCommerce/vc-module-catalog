@@ -12,7 +12,7 @@ VirtoCommerce reindexes automatically whenever one or more items are changed (fo
 
 1. In order to access the Indexing widget, the user should open the Product details screen; 
 1. The Indexing widget displays the information about when the product was last indexed;
-1. The user clicks on the Indexing widget; 
+1. The user clicks on the Indexing widget;
 1. The system will open the 'Search index details' of the product and the Index content (code) will be displayed. 
 
 ![Fig. Indexing Widget](media/screen-index-widget.png)
@@ -20,10 +20,10 @@ VirtoCommerce reindexes automatically whenever one or more items are changed (fo
 ### Build Index
 
 1. The user navigates to the 'Product details' screen and make some changes to the product details;
-1. The Indexing widget changes the color from light blue to rose, which means that changes to product details made, but not indexed; 
+1. The Indexing widget changes the color from light blue to rose, which means that changes to product details made, but not indexed;
 1. The user clicks on the widget to open the 'Search index details' and clicks on the 'Build index' button;
-1. The system starts the indexing process. Once the indexing is completed, the system will display the correspondent message on the screen. 
-1. The Indexing widget becomes light blue and new information about last indexing will be displayed. 
+1. The system starts the indexing process. Once the indexing is completed, the system will display the correspondent message on the screen.
+1. The Indexing widget becomes light blue and new information about last indexing will be displayed.
 
 ![Fig. Change product details](media/screen-change-details-index.png)
 

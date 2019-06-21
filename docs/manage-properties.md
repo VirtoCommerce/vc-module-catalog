@@ -48,11 +48,11 @@
 1. The user browses the Catalog Module, selects a catalog from the displayed list-> selects  Categories and Items-> selects a Product and clicks on the three dots located on the left side of the category name and selects 'Manage' option or simply clicks on the selected item;
 1. The system will display the 'Physical item details' screen;
 1. The user selects the 'Properties' widget;
-1. The system will open the 'Properties list' screen with the following types of properties: 
+1. The system will open the 'Properties list' screen with the following types of properties:
      1. Product properties;
      1. Variation properties.
-1. The user click the 'Add property' button; 
-1. The system will display the 'Edit item property' screen
+1. The user click the 'Add property' button;
+1. The system will display the 'Edit item property' screen;
 1. The user should enter the new item property name and specify the 'Value type' (select from drop-down box). Once the property information is entered, the user saves the changes made;
 1. The system will add the new item property and display it on the 'Properties list'.
 
