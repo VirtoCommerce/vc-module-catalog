@@ -1,10 +1,9 @@
 # Manage Search Index
 
-Each document is stored in the index, and has the type and ID. The document is a JSON object that contains zero or more fields or key-value pairs. The original JSON document indexing will be stored in the field_source that returns a default receipt or document search.
+VirtoCommerce uses custom analyzer to extract tokens from the text when building search index. Following token filters are supported:
 
-The analysis is performed by а custom analyzer defined by index. Token filter:
-- custom_edge_ngram (default) 
-- custome_ngram
+custom_edge_ngram (default)
+custom_ngram
 
 Mapping is used to define how a document and its fields are stored and indexed.
 
