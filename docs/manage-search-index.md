@@ -5,8 +5,6 @@ VirtoCommerce uses custom analyzer to extract tokens from the text when building
 custom_edge_ngram (default)
 custom_ngram
 
-Mapping is used to define how a document and its fields are stored and indexed.
-
 ## Scenarios
 
 ### View Document Types in Search Index
