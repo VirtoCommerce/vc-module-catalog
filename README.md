@@ -4,7 +4,7 @@
 
 The Catalog module presents the ability to add items to your e-commerce store.  It can be electronics, groceries, digital content or anything else. Items can be grouped into categories and catalogs. The item grouping is individual depending on the stock size, item types, vendors, etc.
 
-The Catalog Module supports two types of catalogs- physical catalogs and virtual catalogs.
+The Catalog Module supports two types of catalogs - physical and virtual.
 
 ### Common Catalogs
 
@@ -40,7 +40,7 @@ The major difference between a catalog and a virtual catalog is that the second 
 
 A category is a container for other categories or items. Category in the catalog can have sub-categories.
 
-Categories allow building hierarchy and relationship between various items in the catalog. This helps to make it easier for customers to navigate on client side to the items they would like to purchase.
+Categories allow building hierarchies and relationships between various items in the catalog. This helps customers to navigate on client side to the items they would like to purchase.
 
 Large catalogs containing many items might be reasonable to organize using parent-child relations.
 
@@ -56,7 +56,7 @@ A product with its variations in the system is presented as a collection of prod
 
 There are two types of products presented in the Catalog- physical products and digital products.
 
-The title (main) product has variative property set of values. And all other products (variations) has the relation with the title product. Every product that has relation to the title product (variation) can inherit some property values of the title product (description, assets etc.) but can also override the values of those properties if they differ from the title product (variation) property values.
+The title (main) product has variative property set of values. All product variations have the parent-child relation with the title product. Thus, variation inherits property values of the title product (e.g. description, assets etc.) but can also override the values of those properties if they differ from the title product property values.
 
 To show such a product with variations on the storefront, the title product (main) is loaded with all the related products (variations). Property values of the title product are used for product description. SKU selector for such a product with variations is built using variations properties of the title product and its variations.
 So, an item concept in Virto Commerce is a generalization of Variation/SKU or Product. An item corresponds to item in the store that can be promoted and sold.
@@ -106,7 +106,7 @@ SKU selector for such a product with variations is built using variations proper
 
 ### Properties
 
-Properties (or custom properties) is the additional characteristics for your catalog entities. They can be defined at different levels of item hierarchy:
+Properties (or custom properties) are the additional characteristics for your catalog entities. They can be defined at different levels of item hierarchy:
 
 1. Catalog - value assigned in catalog level.
 1. Category - value assigned in category level and can be overwritten in child categories.

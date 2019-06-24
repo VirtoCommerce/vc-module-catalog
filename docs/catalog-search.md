@@ -80,10 +80,10 @@ The user can search for products using the 'Select filter' search. by selecting 
 ### Add Filter
 
 1. The user opens the 'Select filter' drop down and selects 'Add new filter';
-1. the system will display the 'New filter (Create New Filter) screen;
+1. the system will display the 'New filter (Create New Filter)' screen;
 1. The user enters the 'Filter Name', 'Search phrase' and can also select either to display variations or not by switching on/off the correspondent button and clicks the 'Save & apply' button;
 1. The system will create and apply the new filter;
-1. The filter results will be displayed on the screen.
+1. The filtering results will be displayed on the screen.
 
 ![Fig. Add new filter](media/screen-add-new-filter.png)
 
