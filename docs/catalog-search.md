@@ -9,9 +9,9 @@
      - Price range;
      - Category.
 1. Aggregations​
-     - With count of products for every value 
+     - With count of products for every value
 1. Response Group​
-     - To limit response size.
+     - To limit response content and size.
 1. Linguistic analysis​
      - Token filter: custom_edge_ngram with minimum number of characters in a gram and​
      minimum number of characters in a gram.
@@ -36,7 +36,7 @@ Customization - Override or Extend Document or Search Request with custom proper
 1. Rebuild and delete index​.
 1. Elastic​-
      - Recommended Provider.
-1. Lucence-​
+1. Lucene-​
      - For local environment only.
 
 ​
@@ -45,7 +45,7 @@ Customization - Override or Extend Document or Search Request with custom proper
 VirtoCommerce Catalog Module provides two types of search :
 
 1. Search by keyword.
-1. Search by select a filter.
+1. Search by filter.
 
 ### Search by keyword
 
@@ -66,12 +66,12 @@ This type of search is available throughout the whole VC Catalog Module.
 
 ### Select Filter
 
-The user can search for products using the 'Select filter' search. by selecting the filter, the system will return the search results based on the  specified by filter value.
+The user can search for products using the 'Select filter' search. by selecting the filter, the system will return the search results based on the specified filter.
 
 1. The user browses the Catalog Module
 1. The system will display the list of catalogs and the 'Search' pane on the top of the screen
 1. The user opens the 'Select filter' drop down and selects the filter he needs from the list of filters
-1. The system will return the results based on the specified filter value.
+1. The system will return the results based on the specified filter.
 
 ![Fig. Select filter](media/screen-select-filter.png)
 

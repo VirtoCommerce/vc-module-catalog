@@ -126,6 +126,8 @@ Every property has its “Assign to” trait set to one of: “catalog”, “ca
 
 ### Linked Category
 
+**Possible Operations** 
+
 Common category has the same meaning as the category in common catalogs. User can create common category and link products to it or create linked category in it.
 
 catalog CRUD:
@@ -160,9 +162,9 @@ The solution uses Search as primary tool for customer interaction. The customers
 
 1. Supports multiple search engines: Elastic Search, Elastic Cloud, Azure Search and Lucence;
 
-1. Functionality is exposed through REST API or .NET SDK that makes the inherent complexity of information retrieval;
+1. Functionality, which implements the inherent complexity of information retrieval is exposed through REST API or .NET SDK;
 
-1. The support documents can be easily extended by third party team.
+1. The support document types (Product, Category, Member) can be easily extended by third party team.
 
 ### Architecture Overview
 
@@ -184,7 +186,7 @@ https://github.com/VirtoCommerce/vc-module-azure-search
 
 https://github.com/VirtoCommerce/vc-module-lucene-search
 
-This Search Module is used only for development.
+Lucene Search Module is recommended for development purposes only, not for production usage
 
 ### Search Provider Tests
 
@@ -192,7 +194,7 @@ https://github.com/VirtoCommerce/vc-module-core/blob/dev/VirtoCommerce.CoreModul
 
 ## Search Index
 
-VirtoCommerce platform provides a unified solution for indexing and search of different types of objects. The search engine is unable to operate directly with the database, especially when full text search, aggregations, partial search are needed. For this reason, from the architecture point of view, it was decided to isolate the search engine from the documents that should be searched.
+VirtoCommerce platform provides a unified solution for indexing and searching of different types of objects. The search engine is unable to operate directly with the database, especially when full text search, aggregations, partial search are needed. For this reason, from the architecture point of view, it was decided to isolate the search engine from the documents that should be searched.
 
 The Search Index is used to improve the search performance and speed.
 

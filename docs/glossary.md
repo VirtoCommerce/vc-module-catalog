@@ -7,7 +7,8 @@ SKUs are used by catalogs, online e-tailers, warehouses, and product fulfillment
 
 **SKU selector** is a visual element that enables selecting product variations.
 
-**GTIN**- see [Manage Products](/docs/manage-physical-products.md) Global Trade Item Number
+**GTIN**- see [Manage Products](/docs/manage-physical-products.md) Global Trade Item Number.
+
 GTIN can be used by a company to uniquely identify all of its trade items.  Currently, GTIN is used exclusively within bar codes.
 
 **Can be purchased** - see [Manage Products](/docs/manage-physical-products.md). If this parameter is set for a product on admin side, the item will be available for purchasing on store side. If this parameter is not set on admin side, the item may be visible but not available for purchasing.
@@ -36,6 +37,6 @@ GTIN can be used by a company to uniquely identify all of its trade items.  Curr
 
 **Elastic search** search engine from json REST API, uses Lucene and written in Java.
 
-**Index** is a database, document is a table in it. The document is document format JSON, which is stored in elasticsearch. Each document is stored in the index, and is the type and ID. The original JSON document indexing will be stored in the field_source that returns a default receipt or document search.
+**Index** is a database, document is a table in it. The document is document format JSON, which is stored in elasticsearch. Each document is stored in the index, and has the type and ID. The original JSON document indexing will be stored in the field_source that returns a default receipt or document search.
 
 **Analysis** is the process of converting text into tokens or terms which are added to the inverted index for searching. Analysis is performed by an analyzer, which can be either a built-in analyzer or a custom analyzer defined per index.

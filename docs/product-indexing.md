@@ -13,7 +13,7 @@ VirtoCommerce reindexes automatically whenever one or more items are changed (fo
 1. In order to access the Indexing widget, the user should open the Product details screen; 
 1. The Indexing widget displays the information about when the product was last indexed;
 1. The user clicks on the Indexing widget;
-1. The system will open the 'Search index details' of the product and the Index content (code) will be displayed. 
+1. The system will open the 'Search index details' of the product and the Index content (json) will be displayed.
 
 ![Fig. Indexing Widget](media/screen-index-widget.png)
 

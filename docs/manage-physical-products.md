@@ -65,10 +65,10 @@ In order to view and manage the physical item details, the user should navigate 
           1. Description Languages;
           1. Product description that is visible on store;
           1. The user can add a new description or edit/delete the existing description(s) ![Fig. Descriptions](media/screen-descriptions-widget.png)
-     1. ‘Variations’ widget includes the main product variation(s). The user can add new product variations and edit/delete the existing once; ![Fig. Variations](media/screen-variations-widget.png)
+     1. ‘Variations’ widget includes the main product variation(s). The user can add new product variations and edit/delete the existing one; ![Fig. Variations](media/screen-variations-widget.png)
      1. ‘Assets’ widget:
          1. Contains assets in file format and links to different groups of images if the assets were previously added;  
-         1. The user can add new assets or remove the existing once.  ![Fig. Assets](media/screen-assets-widget.png)
+         1. The user can add new assets or remove the existing one.  ![Fig. Assets](media/screen-assets-widget.png)
      1. ‘Inventory’ widget enables to:
           1. Add stocked products to the system;
           1. Add reserved products;
