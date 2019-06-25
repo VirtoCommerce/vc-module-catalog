@@ -88,7 +88,7 @@ Inventory and prices management are integrated from other modules - “Virto Com
 
 In case there is a need to add variations of the product, a relation should be implemented between the products as well as special type of variative properties definition added.
 
-Thus, a product with its variations in the system is presented as a collection of products (variations). The title (main) product can be also a variation and can have variative property values set. And all other products (variations) has the relation with the title product.
+Thus, a product with its variations in the system is presented as a collection of products (variations). The title (main) product is a parent variation and has all variation properties. And all other variations are related as children to the title product.
 
  Every product that has relation to the title product (variation) can inherit some property values of the title product (description, assets etc.) but can also override the values of those properties if they differ from the title product (variation) property values.
 
@@ -126,10 +126,9 @@ Every property has its “Assign to” trait set to one of: “catalog”, “ca
 
 ### Linked Category
 
-**Possible Operations** 
-
 Common category has the same meaning as the category in common catalogs. User can create common category and link products to it or create linked category in it.
 
+**Possible Operations**
 catalog CRUD:
 
 - properties
@@ -164,7 +163,7 @@ The solution uses Search as primary tool for customer interaction. The customers
 
 1. Functionality, which implements the inherent complexity of information retrieval is exposed through REST API or .NET SDK;
 
-1. The support document types (Product, Category, Member) can be easily extended by third party team.
+1. The supported document types (Product, Category, Member) can be easily extended by third party team.
 
 ### Architecture Overview
 
