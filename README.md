@@ -193,7 +193,7 @@ https://github.com/VirtoCommerce/vc-module-core/blob/dev/VirtoCommerce.CoreModul
 
 ## Search Index
 
-VirtoCommerce platform provides a unified solution for indexing and searching of different types of objects. The search engine is unable to operate directly with the database, especially when full text search, aggregations, partial search are needed. For this reason, from the architecture point of view, it was decided to isolate the search engine from the documents that should be searched.
+VirtoCommerce platform provides a unified solution for indexing and searching of different types of objects. The search engine should not operate directly with the database, especially when full text search, aggregations, partial search are needed. For this reason, from the architecture point of view, it was decided to isolate the search engine from the documents that should be searched.
 
 The Search Index is used to improve the search performance and speed.
 
