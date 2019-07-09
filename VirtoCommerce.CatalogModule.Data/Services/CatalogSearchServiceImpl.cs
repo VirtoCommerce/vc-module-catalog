@@ -269,7 +269,11 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
             query = query.Where(x => criteria.WithHidden || x.IsActive);
 
-            if (!criteria.SearchInVariations)
+            if(!string.IsNullOrEmpty(criteria.MainProductId))
+            {
+                query = query.Where(x => x.ParentId == criteria.MainProductId);
+            }
+            else if (!criteria.SearchInVariations)
             {
                 query = query.Where(x => x.ParentId == null);
             }

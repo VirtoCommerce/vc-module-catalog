@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,6 +17,11 @@ namespace VirtoCommerce.CatalogModule.Web.Model
         public string StoreId { get; set; }
         public SearchResponseGroup ResponseGroup { get; set; }
         public string Keyword { get; set; }
+
+        /// <summary>
+        /// Search within variations of specified main product
+        /// </summary>
+        public string MainProductId { get; set; }
 
         /// <summary>
         /// Search  in all children categories for specified catalog or categories
