@@ -26,7 +26,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         {
             var products = GetProducts(documentIds);
 
-            IList<IndexDocument> result = products
+            IList<IndexDocument> result = products.Concat(products.Where(x => x.Variations != null)
+                .SelectMany(x => x.Variations))
                 .Select(CreateDocument)
                 .Where(doc => doc != null)
                 .ToArray();
@@ -49,8 +50,9 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
             var statusField = product.IsActive != true || product.MainProductId != null ? "hidden" : "visible";
             IndexIsProperty(document, statusField);
-            IndexIsProperty(document, "product");
+            IndexIsProperty(document, string.IsNullOrEmpty(product.MainProductId) ? "product" : "variation");
             IndexIsProperty(document, product.Code);
+
 
             document.Add(new IndexDocumentField("status", statusField) { IsRetrievable = true, IsFilterable = true });
             document.Add(new IndexDocumentField("code", product.Code) { IsRetrievable = true, IsFilterable = true, IsCollection = true });
@@ -63,6 +65,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             document.Add(new IndexDocumentField("priority", product.Priority) { IsRetrievable = true, IsFilterable = true });
             document.Add(new IndexDocumentField("vendor", product.Vendor ?? "") { IsRetrievable = true, IsFilterable = true });
             document.Add(new IndexDocumentField("productType", product.ProductType ?? "") { IsRetrievable = true, IsFilterable = true });
+            document.Add(new IndexDocumentField("mainProductId", product.MainProductId ?? "") { IsRetrievable = true, IsFilterable = true });
 
             // Add priority in virtual categories to search index
             if (product.Links != null)
