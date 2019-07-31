@@ -129,14 +129,12 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [ResponseType(typeof(void))]
         public IHttpActionResult BulkCreateLinks(webModel.BulkLinkCreationRequest creationRequest)
         {
-
-            if (creationRequest.CatalogId.IsNullOrEmpty() || creationRequest.CategoryId.IsNullOrEmpty())
+            if (creationRequest.CatalogId.IsNullOrEmpty())
             {
-                throw new ArgumentException("Target catalog and category identifiers should be specified.");
+                throw new ArgumentException("Target catalog identifiers should be specified.");
             }
 
             var coreModelCriteria = creationRequest.SearchCriteria.ToCoreModel();
-
             bool haveProducts;
 
             do
