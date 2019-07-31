@@ -131,7 +131,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         {
             if (creationRequest.CatalogId.IsNullOrEmpty())
             {
-                throw new ArgumentException("Target catalog identifiers should be specified.");
+                throw new ArgumentException("Target catalog identifier should be specified.");
             }
 
             var coreModelCriteria = creationRequest.SearchCriteria.ToCoreModel();
