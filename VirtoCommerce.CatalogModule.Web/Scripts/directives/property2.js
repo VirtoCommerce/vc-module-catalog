@@ -1,5 +1,4 @@
-angular.module('virtoCommerce.catalogModule')
-.directive('vaProperty2', ['$compile', '$filter', '$parse', '$templateCache', '$http', function ($compile, $filter, $parse, $templateCache, $http) {
+angular.module('virtoCommerce.catalogModule').directive('vaProperty2', ['$compile', '$filter', '$parse', '$templateCache', '$http', function ($compile, $filter, $parse, $templateCache, $http) {
 
     return {
         restrict: 'E',
@@ -43,14 +42,14 @@ angular.module('virtoCommerce.catalogModule')
                 //reflect only real changes
                 var currentValues = angular.copy(scope.currentEntity.values);
                 if (scope.currentEntity.dictionary) {
-                    currentValues = _.uniq(_.map(currentValues,function (x) {
-                            return {
-                                id: x.id,
-                                alias: x.alias,
-                                valueId: x.valueId,
-                                value: x.alias
-                            };
-                        }), function (x) { return x.valueId; });
+                    currentValues = _.uniq(_.map(currentValues, function (x) {
+                        return {
+                            id: x.id,
+                            alias: x.alias,
+                            valueId: x.valueId,
+                            value: x.alias
+                        };
+                    }), function (x) { return x.valueId; });
                 }
 
                 if (isValuesDifferent(newValues, currentValues)) {
@@ -59,14 +58,14 @@ angular.module('virtoCommerce.catalogModule')
                     } else {
                         scope.currentEntity.values = newValues;
                     }
-                	//reset inherited status to force property value override
+                    //reset inherited status to force property value override
                     _.each(scope.currentEntity.values, function (x) { x.isInherited = false; });
 
                     ngModelController.$setViewValue(scope.currentEntity);
                 }
                 if (newValues[0] === undefined) {
                     scope.currentEntity.values = [];
-                } 
+                }
             }, true);
 
 
@@ -85,7 +84,7 @@ angular.module('virtoCommerce.catalogModule')
                             selected: true
                         };
                     }), function (x) { return x.valueId; });
-                  
+
                 }
                 if (needAddEmptyValue(scope.currentEntity, scope.context.currentPropValues)) {
                     scope.context.currentPropValues.push({ value: null });
@@ -144,12 +143,12 @@ angular.module('virtoCommerce.catalogModule')
             };
 
             scope.isLanguageVisible = function (language) {
-                if(scope.hiddenLanguages){
+                if (scope.hiddenLanguages) {
                     if (_.contains(scope.hiddenLanguages, language)) {
                         return false;
                     }
                 }
-                
+
                 return true;
             }
 
@@ -160,7 +159,7 @@ angular.module('virtoCommerce.catalogModule')
                 return scope.loadNextDictionaryValues($select);
             };
 
-            scope.loadNextDictionaryValues = function($select) {
+            scope.loadNextDictionaryValues = function ($select) {
                 var countToSkip = $select.page * scope.pageSize;
                 var countToTake = scope.pageSize;
 
@@ -181,7 +180,7 @@ angular.module('virtoCommerce.catalogModule')
             function populateDictionaryValues(dictItems) {
                 angular.forEach(dictItems, function (dictItem) {
                     var dictValue = _.find(scope.context.currentPropValues, function (x) {
-                        return x.valueId == dictItem.id;
+                        return x && (x.valueId == dictItem.id);
                     });
                     if (!dictValue) {
                         dictValue = {
@@ -245,7 +244,7 @@ angular.module('virtoCommerce.catalogModule')
             };
 
             scope.dateOptions = {
-            	datepickerMode: 'day'
+                datepickerMode: 'day'
             };
 
             linker(function (clone) {
@@ -278,7 +277,7 @@ angular.module('virtoCommerce.catalogModule')
                 setValid(name);
             };
 
-            scope.addederror = function(tag, name, minValue, maxValue, pattern) {
+            scope.addederror = function (tag, name, minValue, maxValue, pattern) {
                 var form = scope.context.form;
                 if (minValue && tag.value.length < minValue) {
                     form[name].$setValidity('minlength', false);
