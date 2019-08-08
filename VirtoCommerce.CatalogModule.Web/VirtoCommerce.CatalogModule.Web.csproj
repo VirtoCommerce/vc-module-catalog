@@ -270,6 +270,7 @@
     <Content Include="Scripts\resources\catalogs.js" />
     <Content Include="Scripts\resources\categories.js" />
     <Content Include="Scripts\resources\import.js" />
+    <Content Include="Scripts\resources\search.js" />
     <Content Include="Scripts\resources\items.js" />
     <Content Include="Scripts\resources\listEntries.js" />
     <Content Include="Scripts\resources\propDictItems.js" />
