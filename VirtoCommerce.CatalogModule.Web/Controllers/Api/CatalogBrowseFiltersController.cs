@@ -133,6 +133,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             result.AddRange(currencies.Select(c => new AggregationProperty { Type = _priceRangeType, Name = $"Price {c}", Currency = c }));
 
+            result.Add(new AggregationProperty { Type = _attributeType, Name = $"__outline" });
             return result;
         }
 
