@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.Domain.Catalog.Model.Search;
@@ -57,7 +57,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
         public static IList<StringKeyValues> GetTerms(this CatalogSearchCriteriaBase criteria)
         {
             var result = new List<StringKeyValues>();
-
+            const string commaEscapeString = "%x2C";
             if (criteria.Terms != null)
             {
                 var nameValueDelimeter = new[] { ':' };
@@ -66,7 +66,12 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 result.AddRange(criteria.Terms
                     .Select(item => item.Split(nameValueDelimeter, 2))
                     .Where(item => item.Length == 2)
-                    .Select(item => new StringKeyValues { Key = item[0], Values = item[1].Split(valuesDelimeter, StringSplitOptions.RemoveEmptyEntries) }));
+                    .Select(item => new StringKeyValues {
+                        Key = item[0],
+                        Values = item[1].Split(valuesDelimeter, StringSplitOptions.RemoveEmptyEntries)
+                                        .Select(x=> x?.Replace(commaEscapeString, ","))
+                                        .ToArray()
+                    }));
             }
 
             return result;
