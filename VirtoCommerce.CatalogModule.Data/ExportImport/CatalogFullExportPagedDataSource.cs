@@ -46,7 +46,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 // -- ExportProperties
                 new ExportDataSourceState
                 {
-                    FetchFunc = (x) => new Task( ()=>
+                    FetchFunc = (x) => Task.Factory.StartNew( ()=>
                     {
                         var allproperties = _propertyService.GetAllProperties(); // (!!!!- It needs to filter by CatalogIDs
                         var properties = allproperties.Skip(x.Skip).Take(x.Take); // (!!!!- Terrible, but _propertyService does not have paged read)
@@ -64,7 +64,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 //ExportPropertiesDictionaryItems
                 new ExportDataSourceState
                 {
-                    FetchFunc = (x) => new Task( ()=>
+                    FetchFunc = (x) => Task.Factory.StartNew( ()=>
                     {
                         var criteria = new PropertyDictionaryItemSearchCriteria { Take = x.Take, Skip = x.Skip }; // (!!!!- It needs to filter by CatalogIDs
                         var searchResponse = _propertyDictionarySearchService.Search(criteria);
@@ -76,7 +76,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 // ExportCatalogs
                 new ExportDataSourceState
                 {
-                    FetchFunc = (x) =>new Task( ()=>
+                    FetchFunc = (x) => Task.Factory.StartNew( ()=>
                     {
 
                         var allcatalogs = _catalogService.GetCatalogsList().ToArray(); // (!!!!- It needs to filter by CatalogIDs
@@ -93,7 +93,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 // ExportCategories
                 new ExportDataSourceState
                 {
-                    FetchFunc = (x) =>new Task( ()=>
+                    FetchFunc = (x) => Task.Factory.StartNew( ()=>
                     {
                         var categorySearchCriteria = new SearchCriteria { WithHidden = true, Skip = x.Skip, Take = x.Take, ResponseGroup = SearchResponseGroup.WithCategories }; // (!!!!- It needs to filter by CatalogIDs
                         var categoriesSearchResult = _catalogSearchService.Search(categorySearchCriteria);
@@ -106,14 +106,14 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                         }
 
                         x.TotalCount = categoriesSearchResult.Categories.Count; // (!!!!- No hope about total no of categories
-                        x.Result = categories.Cast<ExportablePropertyDictionaryItem>();
+                        x.Result = categories.Cast<ExportableCategory>();
                     }
                     )
                 },
                 // ExportProducts
                 new ExportDataSourceState
                 {
-                    FetchFunc = (x) =>new Task( ()=>
+                    FetchFunc = (x) => Task.Factory.StartNew( ()=>
                     {
                         var productSearchCriteria = new SearchCriteria { WithHidden = true, Take = x.Take, Skip = x.Skip, ResponseGroup = SearchResponseGroup.WithProducts }; // (!!!!- It needs to filter by CatalogIDs
                         x.TotalCount = _catalogSearchService.Search(productSearchCriteria).ProductsTotalCount;

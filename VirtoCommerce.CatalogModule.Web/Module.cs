@@ -3,6 +3,7 @@ using System.IO;
 using System.Web.Http;
 using FluentValidation;
 using Microsoft.Practices.Unity;
+using VirtoCommerce.CatalogModule.Data.ExportImport;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Data.Search;
@@ -19,6 +20,10 @@ using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Commerce.Services;
 using VirtoCommerce.Domain.Search;
 using VirtoCommerce.Domain.Store.Model;
+using VirtoCommerce.ExportModule.Core.Model;
+using VirtoCommerce.ExportModule.Core.Services;
+using VirtoCommerce.ExportModule.Data.Extensions;
+using VirtoCommerce.ExportModule.Data.Services;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.DynamicProperties;
 using VirtoCommerce.Platform.Core.ExportImport;
@@ -85,6 +90,8 @@ namespace VirtoCommerce.CatalogModule.Web
                 _container.RegisterType<IOutlinePartResolver, IdOutlinePartResolver>();
 
             _container.RegisterType<IOutlineService, OutlineService>();
+
+            _container.RegisterType<CatalogFullExportPagedDataSourceFactory>();
 
             #endregion
 
@@ -165,6 +172,14 @@ namespace VirtoCommerce.CatalogModule.Web
             };
 
             _container.RegisterInstance(categoryIndexingConfiguration.DocumentType, categoryIndexingConfiguration);
+
+            var registrar = _container.Resolve<IKnownExportTypesRegistrar>();
+            registrar.RegisterType(
+            ExportedTypeDefinitionBuilder.Build<ExportableCatalogFull, CatalogFullExportDataQuery>()
+                .WithDataSourceFactory(_container.Resolve<CatalogFullExportPagedDataSourceFactory>())
+                .WithPermissionAuthorization(CatalogPredefinedPermissions.Export, CatalogPredefinedPermissions.Read)
+                .WithMetadata(new ExportedTypeMetadata { PropertyInfos = new ExportedTypePropertyInfo[] { } })
+                );
         }
 
         #endregion
