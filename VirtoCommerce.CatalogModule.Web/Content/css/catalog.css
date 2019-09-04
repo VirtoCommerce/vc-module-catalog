@@ -262,3 +262,11 @@ vc-item-search {
     width: 100%;
     padding: 0 10px;
 }
+
+.vc-catalog .new-label {
+    background-color: #ee0701;
+    color: #ffffff;
+    border-radius: 2px;
+    font-size: 12px;
+    padding: .15em 4px;
+}

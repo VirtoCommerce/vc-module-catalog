@@ -77,18 +77,27 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
+    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="VirtoCommerce.Domain, Version=2.25.24.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VirtoCommerce.Domain.2.25.24\lib\net461\VirtoCommerce.Domain.dll</HintPath>
+    <Reference Include="VirtoCommerce.Domain, Version=2.25.26.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VirtoCommerce.Domain.2.25.26\lib\net461\VirtoCommerce.Domain.dll</HintPath>
+    </Reference>
+    <Reference Include="VirtoCommerce.ExportModule.Core, Version=2.1.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VirtoCommerce.ExportModule.Core.2.1.1\lib\net461\VirtoCommerce.ExportModule.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="VirtoCommerce.ExportModule.Data, Version=2.1.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VirtoCommerce.ExportModule.Data.2.1.1\lib\net461\VirtoCommerce.ExportModule.Data.dll</HintPath>
     </Reference>
     <Reference Include="VirtoCommerce.Platform.Core, Version=2.13.42.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\VirtoCommerce.Platform.Core.2.13.42\lib\net461\VirtoCommerce.Platform.Core.dll</HintPath>
     </Reference>
-    <Reference Include="VirtoCommerce.Platform.Data, Version=2.13.37.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VirtoCommerce.Platform.Data.2.13.37\lib\net461\VirtoCommerce.Platform.Data.dll</HintPath>
+    <Reference Include="VirtoCommerce.Platform.Data, Version=2.13.39.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VirtoCommerce.Platform.Data.2.13.39\lib\net461\VirtoCommerce.Platform.Data.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -96,6 +105,11 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="CatalogConstants.cs" />
+    <Compile Include="ExportImport\ExportableProduct.cs" />
+    <Compile Include="ExportImport\ProductExportDataQuery.cs" />
+    <Compile Include="ExportImport\ProductExportPagedDataSource.cs" />
+    <Compile Include="ExportImport\ProductExportPagedDataSourceFactory.cs" />
+    <Compile Include="ExportImport\TabularProduct.cs" />
     <Compile Include="Extensions\DictionaryExtension.cs" />
     <Compile Include="Migrations\201504301302574_Initial.cs" />
     <Compile Include="Migrations\201504301302574_Initial.Designer.cs">
