@@ -5,9 +5,5 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 {
     public class ExportableCategory : Category, IExportable
     {
-        public object Clone()
-        {
-            throw new System.NotImplementedException();
-        }
     }
 }
