@@ -1,9 +1,10 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Net;
 using System.Web.Http;
 using VirtoCommerce.CatalogModule.Web.Security;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Platform.Core.Security;
+
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
