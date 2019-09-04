@@ -147,8 +147,8 @@
     <Reference Include="VirtoCommerce.Platform.Core.Web, Version=2.13.37.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\VirtoCommerce.Platform.Core.Web.2.13.37\lib\net461\VirtoCommerce.Platform.Core.Web.dll</HintPath>
     </Reference>
-    <Reference Include="VirtoCommerce.Platform.Data, Version=2.13.39.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VirtoCommerce.Platform.Data.2.13.39\lib\net461\VirtoCommerce.Platform.Data.dll</HintPath>
+    <Reference Include="VirtoCommerce.Platform.Data, Version=2.13.42.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VirtoCommerce.Platform.Data.2.13.42\lib\net461\VirtoCommerce.Platform.Data.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -347,6 +347,10 @@
     <Content Include="Scripts\widgets\catalogLanguagesWidget.tpl.html" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\VirtoCommerce.CatalogModule.Core\VirtoCommerce.CatalogModule.Core.csproj">
+      <Project>{602DFA19-CD9A-4FC2-A32C-09B73B016484}</Project>
+      <Name>VirtoCommerce.CatalogModule.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\VirtoCommerce.CatalogModule.Data\VirtoCommerce.CatalogModule.Data.csproj">
       <Project>{b8c758d7-822f-40d8-b28c-ef21c873af49}</Project>
       <Name>VirtoCommerce.CatalogModule.Data</Name>

@@ -5,7 +5,7 @@ angular.module('virtoCommerce.catalogModule')
 	$scope.selectedNodeId = null;
 
 	function initializeBlade() {
-	    $scope.registrationsList = catalogExportService.registrationsList;
+        $scope.registrationsList = catalogExportService.registrationsList;
 		blade.isLoading = false;
 	};
 
