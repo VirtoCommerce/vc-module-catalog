@@ -9,6 +9,7 @@ using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Data.Search;
 using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
 using VirtoCommerce.CatalogModule.Data.Search.Indexing;
+using VirtoCommerce.CatalogModule.Data.Security;
 using VirtoCommerce.CatalogModule.Data.Services;
 using VirtoCommerce.CatalogModule.Data.Services.OutlineParts;
 using VirtoCommerce.CatalogModule.Data.Services.Validation;
@@ -93,6 +94,7 @@ namespace VirtoCommerce.CatalogModule.Web
 
             _container.RegisterType<ProductExportPagedDataSourceFactory>();
             _container.RegisterType<CatalogFullExportPagedDataSourceFactory>();
+            _container.RegisterType<CatalogExportSecurityHandler>();
 
             #endregion
 
@@ -203,7 +205,8 @@ namespace VirtoCommerce.CatalogModule.Web
                         nameof(ExportableProduct.ReferencedAssociations),
                         nameof(ExportableProduct.Outlines),
                         nameof(ExportableProduct.Images)))
-                    .WithTabularMetadata(typeof(ExportableProduct).GetPropertyNames()));
+                    .WithTabularMetadata(typeof(ExportableProduct).GetPropertyNames())
+                    .WithAuthorizationHandler(_container.Resolve<CatalogExportSecurityHandler>()));
 
             #endregion
         }
