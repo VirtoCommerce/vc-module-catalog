@@ -37,8 +37,7 @@ namespace VirtoCommerce.CatalogModule.Data.Security
                     productExportDataQuery.CatalogIds = ApplyScope<CatalogSelectedScope>(productExportDataQuery.CatalogIds, readPermissionScopes);
                     productExportDataQuery.CategoryIds = ApplyScope<CatalogSelectedCategoryScope>(productExportDataQuery.CategoryIds, readPermissionScopes);
                 }
-
-                if (dataQuery is CatalogFullExportDataQuery catalogFullExportDataQuery)
+                else if (dataQuery is CatalogFullExportDataQuery catalogFullExportDataQuery)
                 {
                     catalogFullExportDataQuery.CatalogIds = ApplyScope<CatalogSelectedScope>(catalogFullExportDataQuery.CatalogIds, readPermissionScopes);
                 }
