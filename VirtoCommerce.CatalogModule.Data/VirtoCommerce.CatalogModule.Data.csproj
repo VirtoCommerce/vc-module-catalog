@@ -105,9 +105,11 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="CatalogConstants.cs" />
+    <Compile Include="ExportImport\ExportableProduct.cs" />
     <Compile Include="ExportImport\ProductExportDataQuery.cs" />
     <Compile Include="ExportImport\ProductExportPagedDataSource.cs" />
     <Compile Include="ExportImport\ProductExportPagedDataSourceFactory.cs" />
+    <Compile Include="ExportImport\TabularProduct.cs" />
     <Compile Include="Extensions\DictionaryExtension.cs" />
     <Compile Include="Migrations\201504301302574_Initial.cs" />
     <Compile Include="Migrations\201504301302574_Initial.Designer.cs">
@@ -387,10 +389,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\VirtoCommerce.CatalogModule.Core\VirtoCommerce.CatalogModule.Core.csproj">
-      <Project>{602DFA19-CD9A-4FC2-A32C-09B73B016484}</Project>
-      <Name>VirtoCommerce.CatalogModule.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\VirtoCommerce.CatalogModule.Web.Core\VirtoCommerce.CatalogModule.Web.Core.csproj">
       <Project>{7b591603-92cc-4a50-ab60-70f6e32ff706}</Project>
       <Name>VirtoCommerce.CatalogModule.Web.Core</Name>
