@@ -91,6 +91,7 @@ namespace VirtoCommerce.CatalogModule.Web
 
             _container.RegisterType<IOutlineService, OutlineService>();
 
+            _container.RegisterType<ProductExportPagedDataSourceFactory>();
             _container.RegisterType<CatalogFullExportPagedDataSourceFactory>();
 
             #endregion
@@ -184,7 +185,7 @@ namespace VirtoCommerce.CatalogModule.Web
                 .WithPermissionAuthorization(CatalogPredefinedPermissions.Export, CatalogPredefinedPermissions.Read)
                 .WithMetadata(new ExportedTypeMetadata { PropertyInfos = new ExportedTypePropertyInfo[] { } })
                 );
-                
+
             registrar.RegisterType(
                 ExportedTypeDefinitionBuilder.Build<ExportableProduct, ProductExportDataQuery>()
                     .WithDataSourceFactory(_container.Resolve<ProductExportPagedDataSourceFactory>())

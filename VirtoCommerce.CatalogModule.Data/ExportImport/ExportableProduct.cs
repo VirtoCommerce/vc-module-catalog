@@ -59,6 +59,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             ReferencedAssociations = source.ReferencedAssociations?.Select(x => x.Clone() as ProductAssociation).ToList();
             Outlines = source.Outlines?.Select(x => x.Clone() as Outline).ToList();
             Properties = source.Properties?.Select(x => x.Clone() as Property).ToList();
+            PropertyValues = source.PropertyValues?.Select(x => x.Clone() as PropertyValue).ToList();
 
             return this;
         }
