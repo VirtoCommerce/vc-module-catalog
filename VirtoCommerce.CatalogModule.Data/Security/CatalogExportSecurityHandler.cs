@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Data.ExportImport;
@@ -33,42 +34,35 @@ namespace VirtoCommerce.CatalogModule.Data.Security
 
                 if (dataQuery is ProductExportDataQuery productExportDataQuery)
                 {
-                    var catalogScopes = readPermissionScopes.OfType<CatalogSelectedScope>().ToList();
-                    if (catalogScopes.Any())
-                    {
-                        productExportDataQuery.CatalogIds = ApplyScope(productExportDataQuery.CatalogIds, catalogScopes);
-                    }
-
-                    var categoryScopes = readPermissionScopes.OfType<CatalogSelectedCategoryScope>().ToList();
-                    if (categoryScopes.Any())
-                    {
-                        productExportDataQuery.CategoryIds = ApplyScope(productExportDataQuery.CategoryIds, categoryScopes);
-                    }
+                    productExportDataQuery.CatalogIds = ApplyScope<CatalogSelectedScope>(productExportDataQuery.CatalogIds, readPermissionScopes);
+                    productExportDataQuery.CategoryIds = ApplyScope<CatalogSelectedCategoryScope>(productExportDataQuery.CategoryIds, readPermissionScopes);
                 }
 
                 if (dataQuery is CatalogFullExportDataQuery catalogFullExportDataQuery)
                 {
-                    var catalogScopes = readPermissionScopes.OfType<CatalogSelectedScope>().ToList();
-
-                    if (catalogScopes.Any())
-                    {
-                        catalogFullExportDataQuery.CatalogIds = ApplyScope(catalogFullExportDataQuery.CatalogIds, catalogScopes);
-                    }
+                    catalogFullExportDataQuery.CatalogIds = ApplyScope<CatalogSelectedScope>(catalogFullExportDataQuery.CatalogIds, readPermissionScopes);
                 }
             }
 
             return result;
         }
 
-
-        private string[] ApplyScope(string[] target, IEnumerable<PermissionScope> permissionScope)
+        private string[] ApplyScope<TScopeType>(string[] target, IEnumerable<PermissionScope> permissionScopes) where TScopeType : PermissionScope
         {
-            var allowedIds = permissionScope.Select(x => x.Scope)
-                .Where(x => !string.IsNullOrEmpty(x))
-                .ToArray();
+            var result = Array.Empty<string>();
+            var typedScopes = permissionScopes.OfType<TScopeType>().ToList();
 
-            return target.IsNullOrEmpty() ? allowedIds : target.Intersect(allowedIds).ToArray();
+            if (typedScopes.Any())
+            {
+                var allowedIds = typedScopes.Select(x => x.Scope)
+                    .Where(x => !string.IsNullOrEmpty(x))
+                    .ToArray();
 
+                result = target.IsNullOrEmpty() ? allowedIds : target.Intersect(allowedIds).ToArray();
+
+            }
+
+            return result;
         }
     }
 }
