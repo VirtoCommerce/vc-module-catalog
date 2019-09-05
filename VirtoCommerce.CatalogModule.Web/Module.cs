@@ -173,13 +173,38 @@ namespace VirtoCommerce.CatalogModule.Web
 
             _container.RegisterInstance(categoryIndexingConfiguration.DocumentType, categoryIndexingConfiguration);
 
+
+            #region Register types for generic Export
+
             var registrar = _container.Resolve<IKnownExportTypesRegistrar>();
+
             registrar.RegisterType(
             ExportedTypeDefinitionBuilder.Build<ExportableCatalogFull, CatalogFullExportDataQuery>()
                 .WithDataSourceFactory(_container.Resolve<CatalogFullExportPagedDataSourceFactory>())
                 .WithPermissionAuthorization(CatalogPredefinedPermissions.Export, CatalogPredefinedPermissions.Read)
                 .WithMetadata(new ExportedTypeMetadata { PropertyInfos = new ExportedTypePropertyInfo[] { } })
                 );
+                
+            registrar.RegisterType(
+                ExportedTypeDefinitionBuilder.Build<ExportableProduct, ProductExportDataQuery>()
+                    .WithDataSourceFactory(_container.Resolve<ProductExportPagedDataSourceFactory>())
+                    .WithMetadata(typeof(ExportableProduct).GetPropertyNames(
+                        nameof(ExportableProduct.Properties),
+                        $"{nameof(ExportableProduct.Properties)}.{nameof(Property.Attributes)}",
+                        $"{nameof(ExportableProduct.Properties)}.{nameof(Property.DisplayNames)}",
+                        $"{nameof(ExportableProduct.Properties)}.{nameof(Property.ValidationRules)}",
+                        nameof(ExportableProduct.PropertyValues),
+                        nameof(ExportableProduct.Assets),
+                        nameof(ExportableProduct.Links),
+                        nameof(ExportableProduct.SeoInfos),
+                        nameof(ExportableProduct.Reviews),
+                        nameof(ExportableProduct.Associations),
+                        nameof(ExportableProduct.ReferencedAssociations),
+                        nameof(ExportableProduct.Outlines),
+                        nameof(ExportableProduct.Images)))
+                    .WithTabularMetadata(typeof(ExportableProduct).GetPropertyNames()));
+
+            #endregion
         }
 
         #endregion

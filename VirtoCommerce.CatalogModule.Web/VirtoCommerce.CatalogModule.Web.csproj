@@ -147,8 +147,8 @@
     <Reference Include="VirtoCommerce.Platform.Core.Web, Version=2.13.37.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\VirtoCommerce.Platform.Core.Web.2.13.37\lib\net461\VirtoCommerce.Platform.Core.Web.dll</HintPath>
     </Reference>
-    <Reference Include="VirtoCommerce.Platform.Data, Version=2.13.39.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VirtoCommerce.Platform.Data.2.13.39\lib\net461\VirtoCommerce.Platform.Data.dll</HintPath>
+    <Reference Include="VirtoCommerce.Platform.Data, Version=2.13.42.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VirtoCommerce.Platform.Data.2.13.42\lib\net461\VirtoCommerce.Platform.Data.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -285,6 +285,10 @@
     <Content Include="Scripts\resources\propDictItems.js" />
     <Content Include="Scripts\resources\properties.js" />
     <Content Include="Scripts\resources\valueTypes.js" />
+    <Content Include="Scripts\selectors\catalog-selector.js" />
+    <Content Include="Scripts\selectors\catalog-selector.tpl.html" />
+    <Content Include="Scripts\selectors\category-selector.js" />
+    <Content Include="Scripts\selectors\category-selector.tpl.html" />
     <Content Include="Scripts\widgets\catalogEntryImageWidget.js" />
     <Content Include="Scripts\widgets\catalogEntryImageWidget.tpl.html" />
     <Content Include="Scripts\widgets\catalogLanguagesWidget.js" />
