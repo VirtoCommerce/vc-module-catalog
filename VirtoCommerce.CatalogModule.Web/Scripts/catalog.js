@@ -316,4 +316,58 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                 // compile the response, which will put stuff into the cache
                 $compile(response.data);
             });
+
+            metaFormsService.registerMetaFields('VirtoCommerce.CatalogModule.Data.ExportImport.ExportableProduct' + 'ExportFilter', [
+                {
+                    name: 'catalogSelector',
+                    title: "catalog.selectors.titles.catalogs",
+                    templateUrl: 'Modules/$(VirtoCommerce.Catalog)/Scripts/selectors/catalog-selector.tpl.html'
+                },
+                {
+                    name: 'categorySelector',
+                    title: "catalog.selectors.titles.categories",
+                    templateUrl: 'Modules/$(VirtoCommerce.Catalog)/Scripts/selectors/category-selector.tpl.html'
+                },
+                {
+                    name: 'searchInVariations',
+                    title: "catalog.selectors.titles.search-in-variations",
+                    valueType: "Boolean"
+                }
+            ]);
+
+            metaFormsService.registerMetaFields('VirtoCommerce.CatalogModule.Data.ExportImport.ExportableCatalogFull' + 'ExportFilter', [
+                {
+                    name: 'catalogSelector',
+                    title: "catalog.selectors.titles.catalogs",
+                    templateUrl: 'Modules/$(VirtoCommerce.Catalog)/Scripts/selectors/catalog-selector.tpl.html'
+                }
+            ]);
+
+            catalogExportService.register({
+                name: 'Generic Export',
+                description: 'Export products filtered by catalogs or categories to JSON or CSV',
+                icon: 'fa-fw fa fa-database',
+                controller: 'virtoCommerce.exportModule.exportSettingsController',
+                template: 'Modules/$(VirtoCommerce.Export)/Scripts/blades/export-settings.tpl.html',
+                id: 'catalogGenericExport',
+                title: 'catalog.blades.exporter.productTitle',
+                subtitle: 'catalog.blades.exporter.productSubtitle',
+                isNew: true,
+                onInitialize: function (newBlade) {
+                    var exportDataRequest = {
+                        exportTypeName: 'VirtoCommerce.CatalogModule.Data.ExportImport.ExportableProduct',
+                        dataQuery: {
+                            exportTypeName: 'ProductExportDataQuery',
+                            categoryIds: _.pluck(newBlade.selectedCategories, 'id'),
+                            objectIds: _.pluck(newBlade.selectedProducts, 'id'),
+                            catalogIds: [newBlade.catalog.id],
+                            isAllSelected: true
+                        }
+                    };
+                    newBlade.exportDataRequest = exportDataRequest;
+                    newBlade.totalItemsCount = (newBlade.selectedProducts || []).length;
+                }
+            });
+
+
         }]);

@@ -702,6 +702,44 @@
       "category-scope": {
         "title": "Only for selected categories"
       }
+    },
+    "selectors": {
+      "titles": {
+        "catalogs": "Catalogs",
+        "categories": "Categories",
+        "search-in-variations": "Search in product variations",
+        "search-in-children": "Search in children categories"
+      },
+      "labels": {
+        "select": "Select",
+        "selected": "Selected: "
+      },
+      "placeholders": {
+        "catalog-lists": "Select catalog…"
+      },
+      "blades": {
+        "titles": {
+          "select-categories": "Select categories…"
+        }
+      }
+    }
+  },
+  "export": {
+    "types": {
+      "VirtoCommerce.CatalogModule.Data.ExportImport.ExportableProduct": {
+        "name": "Products",
+        "description": "Catalog products data with related objects. Supports JSON and CSV"
+      },
+      "VirtoCommerce.CatalogModule.Data.ExportImport.ExportableCatalogFull": {
+        "name": "Catalog",
+        "description": "Catalog data with related objects. Supports JSON"
+      }
+    },
+    "groups": {
+      "VirtoCommerce.CatalogModule.Data.ExportImport": {
+        "name": "Catalog",
+        "description": "Catalogs, Categories, Products"
+      }
     }
   },
   "export": {
