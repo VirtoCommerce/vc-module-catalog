@@ -9,6 +9,7 @@ using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Data.Search;
 using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
 using VirtoCommerce.CatalogModule.Data.Search.Indexing;
+using VirtoCommerce.CatalogModule.Data.Security;
 using VirtoCommerce.CatalogModule.Data.Services;
 using VirtoCommerce.CatalogModule.Data.Services.OutlineParts;
 using VirtoCommerce.CatalogModule.Data.Services.Validation;
@@ -93,6 +94,7 @@ namespace VirtoCommerce.CatalogModule.Web
 
             _container.RegisterType<ProductExportPagedDataSourceFactory>();
             _container.RegisterType<CatalogFullExportPagedDataSourceFactory>();
+            _container.RegisterType<CatalogExportSecurityHandler>();
 
             #endregion
 
@@ -184,6 +186,7 @@ namespace VirtoCommerce.CatalogModule.Web
                 .WithDataSourceFactory(_container.Resolve<CatalogFullExportPagedDataSourceFactory>())
                 .WithPermissionAuthorization(CatalogPredefinedPermissions.Export, CatalogPredefinedPermissions.Read)
                 .WithMetadata(new ExportedTypeMetadata { PropertyInfos = new ExportedTypePropertyInfo[] { } })
+                .WithAuthorizationHandler(_container.Resolve<CatalogExportSecurityHandler>())
                 );
 
             registrar.RegisterType(
@@ -203,7 +206,9 @@ namespace VirtoCommerce.CatalogModule.Web
                         nameof(ExportableProduct.ReferencedAssociations),
                         nameof(ExportableProduct.Outlines),
                         nameof(ExportableProduct.Images)))
-                    .WithTabularMetadata(typeof(ExportableProduct).GetPropertyNames()));
+                    .WithTabularMetadata(typeof(ExportableProduct).GetPropertyNames())
+                    .WithPermissionAuthorization(CatalogPredefinedPermissions.Export, CatalogPredefinedPermissions.Read)
+                    .WithAuthorizationHandler(_container.Resolve<CatalogExportSecurityHandler>()));
 
             #endregion
         }
