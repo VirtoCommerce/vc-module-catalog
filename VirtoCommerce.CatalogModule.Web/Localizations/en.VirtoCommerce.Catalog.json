@@ -168,7 +168,7 @@
           "new-dictionary-property-caution": "You can manage dictionary items only after saving property",
           "attributes": "Attributes",
           "manage-attributes": "Manage property attributes",
-          "hidden": "Hidden" 
+          "hidden": "Hidden"
         },
         "placeholders": {
           "display-name": "Enter display name..."
@@ -275,7 +275,7 @@
         }
       },
       "item-detail": {
-          "subtitle-variation": "Variation details",
+        "subtitle-variation": "Variation details",
         "labels": {
           "sku": "SKU",
           "priority": "Priority",
@@ -320,25 +320,25 @@
         }
       },
       "catalog-items-select": {
-          "title": "Select categories",
-          "title-association": "Select items to associate",
-          "subtitle-association": "Adding Associations to product",
-          "labels": {
-              "picture": "Pic",
-              "name": "Name",
-              "sku": "SKU",
-              "virtual": "{{name}} (virtual)"
-          }
+        "title": "Select categories",
+        "title-association": "Select items to associate",
+        "subtitle-association": "Adding Associations to product",
+        "labels": {
+          "picture": "Pic",
+          "name": "Name",
+          "sku": "SKU",
+          "virtual": "{{name}} (virtual)"
+        }
       },
       "item-variation-list": {
-          "subtitle": "Item variations",
-          "labels": {
-              "no-items": "No Variations yet",
-              "picture": "Pic",
-              "name": "Name",
-              "sku": "SKU",
-              "manufacturer-part-number": "Manufacturer part number"
-          }
+        "subtitle": "Item variations",
+        "labels": {
+          "no-items": "No Variations yet",
+          "picture": "Pic",
+          "name": "Name",
+          "sku": "SKU",
+          "manufacturer-part-number": "Manufacturer part number"
+        }
       },
       "editorialReviews-list": {
         "subtitle": "Item descriptions",
@@ -703,5 +703,20 @@
         "title": "Only for selected categories"
       }
     }
+  },
+  "export": {
+    "types": {
+      "VirtoCommerce.CatalogModule.Data.ExportImport.ExportableCatalogFull": {
+        "name": "Catalog",
+        "description": "Catalog data with related objects. Supports JSON"
+      }
+    },
+    "groups": {
+      "VirtoCommerce.CatalogModule.Data.ExportImport": {
+        "name": "Catalog",
+        "description": "Catalogs, Categories, Products"
+      }
+    }
   }
+
 }

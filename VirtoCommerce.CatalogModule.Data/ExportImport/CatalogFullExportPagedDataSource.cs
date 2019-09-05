@@ -56,7 +56,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                             ResetRedundantReferences(property);
                         }
                         x.TotalCount = allproperties.Count();
-                        x.Result = properties.Cast<ExportableProperty>();
+                        x.Result = properties.Select(y =>ExportableProperty.FromModel(y));
                     }
                     )
                 },
@@ -69,7 +69,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                         var criteria = new PropertyDictionaryItemSearchCriteria { Take = x.Take, Skip = x.Skip }; // (!!!!- It needs to filter by CatalogIDs
                         var searchResponse = _propertyDictionarySearchService.Search(criteria);
                         x.TotalCount = searchResponse.TotalCount;
-                        x.Result = searchResponse.Results.Cast<ExportablePropertyDictionaryItem>();
+                        x.Result = searchResponse.Results.Select(y =>ExportablePropertyDictionaryItem.FromModel(y));
                     }
                     )
                 },
@@ -86,7 +86,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                             ResetRedundantReferences(catalog);
                         }
                         x.TotalCount = allcatalogs.Count();
-                        x.Result = catalogs.Cast<ExportableCatalog>();
+                        x.Result = catalogs.Select(y =>ExportableCatalog.FromModel(y));
                     }
                     )
                 },
@@ -106,7 +106,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                         }
 
                         x.TotalCount = categoriesSearchResult.Categories.Count; // (!!!!- No hope about total no of categories
-                        x.Result = categories.Cast<ExportableCategory>();
+                        x.Result = categories.Select(y =>ExportableCategory.FromModel(y));
                     }
                     )
                 },
@@ -125,7 +125,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                         {
                             ResetRedundantReferences(product);
                         }
-                        x.Result = products.Cast<ExportableCatalogProduct>();
+                        x.Result = products.Select(y =>ExportableCatalogProduct.FromModel(y));
                     }
                     )
                 }
