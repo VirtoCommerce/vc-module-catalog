@@ -94,6 +94,8 @@ namespace VirtoCommerce.CatalogModule.Web
 
             _container.RegisterType<ProductExportPagedDataSourceFactory>();
             _container.RegisterType<CatalogFullExportPagedDataSourceFactory>();
+            _container.RegisterType<CatalogExportPagedDataSourceFactory>();
+            _container.RegisterType<CategoryExportPagedDataSourceFactory>();
             _container.RegisterType<CatalogExportSecurityHandler>();
 
             #endregion

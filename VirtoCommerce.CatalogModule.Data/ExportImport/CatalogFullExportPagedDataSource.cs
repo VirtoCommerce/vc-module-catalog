@@ -1,218 +1,152 @@
-using System.Linq;
-using System.Threading.Tasks;
-using VirtoCommerce.Domain.Catalog.Model;
-using VirtoCommerce.Domain.Catalog.Model.Search;
-using VirtoCommerce.Domain.Catalog.Services;
-using VirtoCommerce.ExportModule.Data.Services;
+using System.Collections.Generic;
+using VirtoCommerce.ExportModule.Core.Model;
+using VirtoCommerce.ExportModule.Data.Extensions;
+using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.ExportImport
 {
-    public class CatalogFullExportPagedDataSource : ComplexExportPagedDataSource<CatalogFullExportDataQuery>
+    public class CatalogFullExportPagedDataSource : IPagedDataSource
     {
-        private readonly ICatalogService _catalogService;
-        private readonly ICatalogSearchService _catalogSearchService;
-        private readonly ICategoryService _categoryService;
-        private readonly IItemService _itemService;
-        private readonly IPropertyService _propertyService;
-        private readonly IAssociationService _associationService;
-        private readonly IProperyDictionaryItemSearchService _propertyDictionarySearchService;
-        private readonly IProperyDictionaryItemService _propertyDictionaryService;
+        private readonly CatalogExportPagedDataSourceFactory _catalogDataSourceFactory;
+        private readonly CategoryExportPagedDataSourceFactory _categoryDataSourceFactory;
+        //private readonly ICatalogSearchService _catalogSearchService;
+        //private readonly ICategoryService _categoryService;
+        //private readonly IItemService _itemService;
+        //private readonly IPropertyService _propertyService;
+        //private readonly IAssociationService _associationService;
+        //private readonly IProperyDictionaryItemSearchService _propertyDictionarySearchService;
+        //private readonly IProperyDictionaryItemService _propertyDictionaryService;
 
-        public CatalogFullExportPagedDataSource(ICatalogSearchService catalogSearchService,
-            ICatalogService catalogService,
-            ICategoryService categoryService,
-            IItemService itemService,
-            IPropertyService propertyService,
-            IAssociationService associationService,
-            IProperyDictionaryItemSearchService propertyDictionarySearchService,
-            IProperyDictionaryItemService propertyDictionaryService,
+        private readonly CatalogFullExportDataQuery _dataQuery;
+        private readonly IEnumerable<IPagedDataSource> _dataSources;
+
+        public int CurrentPageNumber { get; protected set; }
+        public int PageSize { get; set; } = 50;
+        public int? Skip { get => _dataQuery.Skip; set => _dataQuery.Skip = value; }
+        public int? Take { get => _dataQuery.Take; set => _dataQuery.Take = value; }
+        public IEnumerable<IExportable> Items { get; protected set; }
+
+        public CatalogFullExportPagedDataSource(CatalogExportPagedDataSourceFactory catalogDataSourceFactory,
+            CategoryExportPagedDataSourceFactory categoryDataSourceFactory,
+            //ICatalogSearchService catalogSearchService,
+            //ICategoryService categoryService,
+            //IItemService itemService,
+            //IPropertyService propertyService,
+            //IAssociationService associationService,
+            //IProperyDictionaryItemSearchService propertyDictionarySearchService,
+            //IProperyDictionaryItemService propertyDictionaryService,
             CatalogFullExportDataQuery dataQuery)
-        : base(dataQuery)
         {
-            _catalogSearchService = catalogSearchService;
-            _catalogService = catalogService;
-            _categoryService = categoryService;
-            _itemService = itemService;
-            _propertyService = propertyService;
-            _associationService = associationService;
-            _propertyDictionarySearchService = propertyDictionarySearchService;
-            _propertyDictionaryService = propertyDictionaryService;
+            _catalogDataSourceFactory = catalogDataSourceFactory;
+            _categoryDataSourceFactory = categoryDataSourceFactory;
+            //_catalogSearchService = catalogSearchService;
+            //_categoryService = categoryService;
+            //_itemService = itemService;
+            //_propertyService = propertyService;
+            //_associationService = associationService;
+            //_propertyDictionarySearchService = propertyDictionarySearchService;
+            //_propertyDictionaryService = propertyDictionaryService;
+
+            _dataQuery = dataQuery;
+            _dataSources = CreateDataSources();
         }
 
-        protected override void InitDataSourceStates()
+        protected virtual IEnumerable<IPagedDataSource> CreateDataSources()
         {
-            _exportDataSourceStates.AddRange(new ExportDataSourceState[]
+            var catalogExportDataQuery = AbstractTypeFactory<CatalogExportDataQuery>.TryCreateInstance();
+            catalogExportDataQuery.CatalogIds = _dataQuery.CatalogIds;
+
+            var categoryExportDataQuery = AbstractTypeFactory<CategoryExportDataQuery>.TryCreateInstance();
+            categoryExportDataQuery.CatalogIds = _dataQuery.CatalogIds;
+
+            //var propertyExportDataQuery = AbstractTypeFactory<PropertyExportDataQuery>.TryCreateInstance();
+            //propertyExportDataQuery.CatalogIds = _dataQuery.CatalogIds;
+
+            //var propertyDictionaryItemExportDataQuery = AbstractTypeFactory<PropertyDictionaryItemExportDataQuery>.TryCreateInstance();
+            //propertyDictionaryItemExportDataQuery.CatalogIds = _dataQuery.CatalogIds;
+
+            //var productExportDataQuery = AbstractTypeFactory<ProductExportDataQuery>.TryCreateInstance();
+            //productExportDataQuery.CatalogIds = _dataQuery.CatalogIds;
+            //productExportDataQuery.SearchInVariations = true;
+            //productExportDataQuery.ResponseGroup = (ItemResponseGroup.ItemLarge & ~ItemResponseGroup.Variations).ToString();
+
+            return new IPagedDataSource[]
             {
-                // -- ExportProperties
-                new ExportDataSourceState
-                {
-                    FetchFunc = (x) => Task.Factory.StartNew( ()=>
-                    {
-                        var allproperties = _propertyService.GetAllProperties();
-                        var properties = allproperties.Where(y=>DataQuery.CatalogIds.Contains(y.CatalogId)).Skip(x.Skip).Take(x.Take); 
-                        //Load property dictionary values and reset some props to decrease size of the resulting json 
-                        foreach (var property in properties)
-                        {
-                            ResetRedundantReferences(property);
-                        }
-                        x.TotalCount = allproperties.Count();
-                        x.Result = properties.Select(y =>ExportableProperty.FromModel(y));
-                    }
-                    )
-                },
-
-                //ExportPropertiesDictionaryItems
-                new ExportDataSourceState
-                {
-                    FetchFunc = (x) => Task.Factory.StartNew( ()=>
-                    {
-                        var criteria = new PropertyDictionaryItemSearchCriteria { Take = x.Take, Skip = x.Skip, CatalogIds = DataQuery.CatalogIds };
-                        var searchResponse = _propertyDictionarySearchService.Search(criteria);
-                        x.TotalCount = searchResponse.TotalCount;
-                        x.Result = searchResponse.Results.Select(y =>ExportablePropertyDictionaryItem.FromModel(y));
-                    }
-                    )
-                },
-                // ExportCatalogs
-                new ExportDataSourceState
-                {
-                    FetchFunc = (x) => Task.Factory.StartNew( ()=>
-                    {
-
-                        var allcatalogs = _catalogService.GetCatalogsList().ToArray(); // (!!!!- It needs to filter by CatalogIDs
-                        var catalogs = allcatalogs.Skip(x.Skip).Take(x.Take); // (!!!!- Terrible, but _catalogService does not have paged read)
-                        foreach (var catalog in catalogs)
-                        {
-                            ResetRedundantReferences(catalog);
-                        }
-                        x.TotalCount = allcatalogs.Count();
-                        x.Result = catalogs.Select(y =>ExportableCatalog.FromModel(y));
-                    }
-                    )
-                },
-                // ExportCategories
-                new ExportDataSourceState
-                {
-                    FetchFunc = (x) => Task.Factory.StartNew( ()=>
-                    {
-                        var categorySearchCriteria = new SearchCriteria { WithHidden = true, Skip = x.Skip, Take = x.Take, ResponseGroup = SearchResponseGroup.WithCategories }; // (!!!!- It needs to filter by CatalogIDs
-                        var categoriesSearchResult = _catalogSearchService.Search(categorySearchCriteria);
-                        var categories = _categoryService.GetByIds(categoriesSearchResult.Categories.Select(y => y.Id).ToArray(), CategoryResponseGroup.Full);
-
-                        //reset some properties to decrease resulting JSON size
-                        foreach (var category in categories)
-                        {
-                            ResetRedundantReferences(category);
-                        }
-
-                        x.TotalCount = categoriesSearchResult.Categories.Count; // (!!!!- No hope about total no of categories
-                        x.Result = categories.Select(y =>ExportableCategory.FromModel(y));
-                    }
-                    )
-                },
-                // ExportProducts
-                new ExportDataSourceState
-                {
-                    FetchFunc = (x) => Task.Factory.StartNew( ()=>
-                    {
-                        var productSearchCriteria = new SearchCriteria { WithHidden = true, Take = x.Take, Skip = x.Skip, ResponseGroup = SearchResponseGroup.WithProducts }; // (!!!!- It needs to filter by CatalogIDs
-                        x.TotalCount = _catalogSearchService.Search(productSearchCriteria).ProductsTotalCount;
-
-                        var searchResponse = _catalogSearchService.Search(new SearchCriteria { WithHidden = true, Take = x.Take, Skip = x.Skip, ResponseGroup = SearchResponseGroup.WithProducts });
-
-                        var products = _itemService.GetByIds(searchResponse.Products.Select(y => y.Id).ToArray(), ItemResponseGroup.ItemLarge);
-                        foreach (var product in products)
-                        {
-                            ResetRedundantReferences(product);
-                        }
-                        x.Result = products.Select(y =>ExportableCatalogProduct.FromModel(y));
-                    }
-                    )
-                }
-            });
-
+                _catalogDataSourceFactory.Create(catalogExportDataQuery),
+                _categoryDataSourceFactory.Create(categoryExportDataQuery),
+                //_propertyDataSourceFactory.Create(propertyExportDataQuery),
+                //_propertyDictionaryItemDataSourceFactory.Create(propertyDictionaryItemExportDataQuery),
+                //_productDataSourceFactory.Create(productExportDataQuery),
+            };
         }
-        //Remove redundant references to reduce resulting JSON size. Copypasted from VirtoCommerce.CatalogModule.Web.ExportImport.CatalogExportImport
-        private static void ResetRedundantReferences(object entity)
+
+        public bool Fetch()
         {
-            var product = entity as CatalogProduct;
-            var category = entity as Category;
-            var catalog = entity as Catalog;
-            var asscociation = entity as ProductAssociation;
-            var property = entity as Property;
-            var propertyValue = entity as PropertyValue;
+            var skip = Skip ?? CurrentPageNumber * PageSize;
+            var take = Take ?? PageSize;
 
-            if (propertyValue != null)
-            {
-                propertyValue.Property = null;
-            }
+            Items = _dataSources.GetItems(skip, take);
+            CurrentPageNumber++;
 
-            if (asscociation != null)
-            {
-                asscociation.AssociatedObject = null;
-            }
-
-            if (catalog != null)
-            {
-                catalog.Properties = null;
-                foreach (var lang in catalog.Languages)
-                {
-                    lang.Catalog = null;
-                }
-            }
-
-            if (category != null)
-            {
-                category.Catalog = null;
-                category.Properties = null;
-                category.Children = null;
-                category.Parents = null;
-                category.Outlines = null;
-                if (category.PropertyValues != null)
-                {
-                    foreach (var propvalue in category.PropertyValues)
-                    {
-                        ResetRedundantReferences(propvalue);
-                    }
-                }
-            }
-
-            if (property != null)
-            {
-                property.Catalog = null;
-                property.Category = null;
-            }
-
-            if (product != null)
-            {
-                product.Catalog = null;
-                product.Category = null;
-                product.Properties = null;
-                product.MainProduct = null;
-                product.Outlines = null;
-                product.ReferencedAssociations = null;
-                if (product.PropertyValues != null)
-                {
-                    foreach (var propvalue in product.PropertyValues)
-                    {
-                        ResetRedundantReferences(propvalue);
-                    }
-                }
-                if (product.Associations != null)
-                {
-                    foreach (var association in product.Associations)
-                    {
-                        ResetRedundantReferences(association);
-                    }
-                }
-                if (product.Variations != null)
-                {
-                    foreach (var variation in product.Variations)
-                    {
-                        ResetRedundantReferences(variation);
-                    }
-                }
-            }
+            return !Items.IsNullOrEmpty();
         }
+
+        public int GetTotalCount() => _dataSources.GetTotalCount();
+
+        //protected override void InitDataSourceStates()
+        //{
+        //    _exportDataSourceStates.AddRange(new ExportDataSourceState[]
+        //    {
+        //        // -- ExportProperties
+        //        new ExportDataSourceState
+        //        {
+        //            FetchFunc = (x) => Task.Factory.StartNew( ()=>
+        //            {
+        //                var allproperties = _propertyService.GetAllProperties(); // (!!!!- It needs to filter by CatalogIDs
+        //                var properties = allproperties.Skip(x.Skip).Take(x.Take); // (!!!!- Terrible, but _propertyService does not have paged read)
+        //                //Load property dictionary values and reset some props to decrease size of the resulting json 
+        //                foreach (var property in properties)
+        //                {
+        //                    property.ResetRedundantReferences();
+        //                }
+        //                x.TotalCount = allproperties.Count();
+        //                x.Result = properties.Select(y =>ExportableProperty.FromModel(y));
+        //            }
+        //            )
+        //        },
+
+        //        //ExportPropertiesDictionaryItems
+        //        new ExportDataSourceState
+        //        {
+        //            FetchFunc = (x) => Task.Factory.StartNew( ()=>
+        //            {
+        //                var criteria = new PropertyDictionaryItemSearchCriteria { Take = x.Take, Skip = x.Skip }; // (!!!!- It needs to filter by CatalogIDs
+        //                var searchResponse = _propertyDictionarySearchService.Search(criteria);
+        //                x.TotalCount = searchResponse.TotalCount;
+        //                x.Result = searchResponse.Results.Select(y =>ExportablePropertyDictionaryItem.FromModel(y));
+        //            }
+        //            )
+        //        },
+        //        // ExportProducts
+        //        new ExportDataSourceState
+        //        {
+        //            FetchFunc = (x) => Task.Factory.StartNew( ()=>
+        //            {
+        //                var productSearchCriteria = new SearchCriteria { WithHidden = true, Take = x.Take, Skip = x.Skip, ResponseGroup = SearchResponseGroup.WithProducts }; // (!!!!- It needs to filter by CatalogIDs
+        //                x.TotalCount = _catalogSearchService.Search(productSearchCriteria).ProductsTotalCount;
+
+        //                var searchResponse = _catalogSearchService.Search(new SearchCriteria { WithHidden = true, Take = x.Take, Skip = x.Skip, ResponseGroup = SearchResponseGroup.WithProducts });
+
+        //                var products = _itemService.GetByIds(searchResponse.Products.Select(y => y.Id).ToArray(), ItemResponseGroup.ItemLarge);
+        //                foreach (var product in products)
+        //                {
+        //                    product.ResetRedundantReferences();
+        //                }
+        //                x.Result = products.Select(y =>ExportableCatalogProduct.FromModel(y));
+        //            }
+        //            )
+        //        }
+        //    });
+        //}
     }
 }

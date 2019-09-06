@@ -7,19 +7,17 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
     {
         public new CatalogLanguage DefaultLanguage { get; set; }
 
-        public static ExportableCatalog FromModel(Catalog catalog)
+        public virtual ExportableCatalog FromModel(Catalog catalog)
         {
-            var result = new ExportableCatalog
-            {
-                Id = catalog.Id,
-                Name = catalog.Name,
-                IsVirtual = catalog.IsVirtual,
-                DefaultLanguage = catalog.DefaultLanguage,
-                Languages = catalog.Languages,
-                Properties = catalog.Properties,
-                PropertyValues = catalog.PropertyValues
-            };
-            return result;
+            Id = catalog.Id;
+            Name = catalog.Name;
+            IsVirtual = catalog.IsVirtual;
+            DefaultLanguage = catalog.DefaultLanguage;
+            Languages = catalog.Languages;
+            Properties = catalog.Properties;
+            PropertyValues = catalog.PropertyValues;
+
+            return this;
         }
     }
 }

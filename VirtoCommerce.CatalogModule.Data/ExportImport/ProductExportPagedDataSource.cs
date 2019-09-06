@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using VirtoCommerce.CatalogModule.Data.Extensions;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Model.Search;
 using VirtoCommerce.Domain.Catalog.Services;
@@ -60,7 +61,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 
             if (DataQuery.IncludedProperties.Any(x => x.FullName.Contains("Images.BinaryData")))
             {
-                LoadImages(result);
+                result.LoadImages(_blobStorageProvider);
             }
 
             return new ExportableSearchResult()
@@ -96,20 +97,6 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             result.CategoryIds = exportDataQuery.CategoryIds;
 
             return result;
-        }
-
-
-        private void LoadImages(IHasImages[] haveImagesObjects)
-        {
-            var allImages = haveImagesObjects.SelectMany(x => x.GetFlatObjectsListWithInterface<IHasImages>())
-                .SelectMany(x => x.Images).ToArray();
-            foreach (var image in allImages)
-            {
-                using (var stream = _blobStorageProvider.OpenRead(image.Url))
-                {
-                    image.BinaryData = stream.ReadFully();
-                }
-            }
         }
 
         private ItemResponseGroup BuildResponseGroup()
