@@ -373,7 +373,7 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                 var itemCopy = angular.copy(item);
 
                 return {
-                    id: "itemmDetail",
+                    id: "itemDetail",
                     itemId: itemCopy.id,
                     productType: itemCopy.productType,
                     title: itemCopy.name,
