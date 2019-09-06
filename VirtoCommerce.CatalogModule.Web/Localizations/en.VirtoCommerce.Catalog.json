@@ -741,20 +741,5 @@
         "description": "Catalogs, Categories, Products"
       }
     }
-  },
-  "export": {
-    "types": {
-      "VirtoCommerce.CatalogModule.Data.ExportImport.ExportableCatalogFull": {
-        "name": "Catalog",
-        "description": "Catalog data with related objects. Supports JSON"
-      }
-    },
-    "groups": {
-      "VirtoCommerce.CatalogModule.Data.ExportImport": {
-        "name": "Catalog",
-        "description": "Catalogs, Categories, Products"
-      }
-    }
   }
-
 }

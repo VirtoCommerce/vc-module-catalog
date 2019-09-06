@@ -4,6 +4,6 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 {
     public class CatalogFullExportDataQuery : ExportDataQuery
     {
-        public string[] CatalogIds { get; set; }
+        public string[] CatalogIds { get; set; } = new string[] { };
     }
 }

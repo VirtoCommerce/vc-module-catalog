@@ -48,8 +48,8 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 {
                     FetchFunc = (x) => Task.Factory.StartNew( ()=>
                     {
-                        var allproperties = _propertyService.GetAllProperties(); // (!!!!- It needs to filter by CatalogIDs
-                        var properties = allproperties.Skip(x.Skip).Take(x.Take); // (!!!!- Terrible, but _propertyService does not have paged read)
+                        var allproperties = _propertyService.GetAllProperties();
+                        var properties = allproperties.Where(y=>DataQuery.CatalogIds.Contains(y.CatalogId)).Skip(x.Skip).Take(x.Take); 
                         //Load property dictionary values and reset some props to decrease size of the resulting json 
                         foreach (var property in properties)
                         {
@@ -66,7 +66,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 {
                     FetchFunc = (x) => Task.Factory.StartNew( ()=>
                     {
-                        var criteria = new PropertyDictionaryItemSearchCriteria { Take = x.Take, Skip = x.Skip }; // (!!!!- It needs to filter by CatalogIDs
+                        var criteria = new PropertyDictionaryItemSearchCriteria { Take = x.Take, Skip = x.Skip, CatalogIds = DataQuery.CatalogIds };
                         var searchResponse = _propertyDictionarySearchService.Search(criteria);
                         x.TotalCount = searchResponse.TotalCount;
                         x.Result = searchResponse.Results.Select(y =>ExportablePropertyDictionaryItem.FromModel(y));
