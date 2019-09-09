@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.ExportModule.Core.Model;
 using VirtoCommerce.ExportModule.Data.Extensions;
 using VirtoCommerce.Platform.Core.Common;
@@ -71,9 +72,9 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             var propertyDictionaryItemExportDataQuery = AbstractTypeFactory<PropertyDictionaryItemExportDataQuery>.TryCreateInstance();
             propertyDictionaryItemExportDataQuery.CatalogIds = _dataQuery.CatalogIds;
 
-            //var productExportDataQuery = AbstractTypeFactory<ProductExportDataQuery>.TryCreateInstance();
-            //productExportDataQuery.CatalogIds = _dataQuery.CatalogIds;
-            //productExportDataQuery.SearchInVariations = true;
+            var productExportDataQuery = AbstractTypeFactory<ProductExportDataQuery>.TryCreateInstance();
+            productExportDataQuery.CatalogIds = _dataQuery.CatalogIds;
+            productExportDataQuery.SearchInVariations = true;
             //productExportDataQuery.ResponseGroup = (ItemResponseGroup.ItemLarge & ~ItemResponseGroup.Variations).ToString();
 
             return new IPagedDataSource[]

@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Data.Extensions;
+using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.ExportModule.Core.Model;
 using VirtoCommerce.ExportModule.Data.Services;
@@ -20,8 +22,12 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 
         protected override ExportableSearchResult FetchData(PropertyExportSearchCriteria searchCriteria)
         {
-            var allproperties = _propertyService.GetAllProperties();
-            var properties = allproperties.Where(x => searchCriteria.CatalogIds.Contains(x.CatalogId)).Skip(searchCriteria.Skip).Take(searchCriteria.Take);
+            var allproperties = (IEnumerable<Property>)_propertyService.GetAllProperties();
+            if (!searchCriteria.CatalogIds.IsNullOrEmpty())
+            {
+                allproperties = allproperties.Where(x => searchCriteria.CatalogIds.Contains(x.CatalogId));
+            }
+            var properties = allproperties.Skip(searchCriteria.Skip).Take(searchCriteria.Take);
 
             //Load property dictionary values and reset some props to decrease size of the resulting json 
             foreach (var property in properties)
