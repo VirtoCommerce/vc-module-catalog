@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Data.Extensions;
 using VirtoCommerce.Domain.Catalog.Model;
-using VirtoCommerce.Domain.Catalog.Model.Search;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.ExportModule.Core.Model;
 using VirtoCommerce.ExportModule.Data.Services;
@@ -12,7 +11,7 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.ExportImport
 {
-    public class ProductExportPagedDataSource : ExportPagedDataSource<ProductExportDataQuery, ProductSearchCriteria>
+    public class ProductExportPagedDataSource : ExportPagedDataSource<ProductExportDataQuery, ProductExportSearchCriteria>
     {
         private readonly IBlobStorageProvider _blobStorageProvider;
         private readonly IItemService _itemService;
@@ -29,7 +28,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         }
 
 
-        protected override ExportableSearchResult FetchData(ProductSearchCriteria searchCriteria)
+        protected override ExportableSearchResult FetchData(ProductExportSearchCriteria searchCriteria)
         {
             var result = Array.Empty<CatalogProduct>();
             int totalCount = 0;
@@ -39,14 +38,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 
             if (productIds.IsNullOrEmpty())
             {
-                var catalogSearchCriteria = AbstractTypeFactory<SearchCriteria>.TryCreateInstance();
-                catalogSearchCriteria.SearchInChildren = true;
-                catalogSearchCriteria.CategoryIds = searchCriteria.CategoryIds;
-                catalogSearchCriteria.CatalogIds = searchCriteria.CatalogIds;
-                catalogSearchCriteria.SearchInVariations = searchCriteria.SearchInVariations;
-                catalogSearchCriteria.ResponseGroup = SearchResponseGroup.WithProducts;
-                catalogSearchCriteria.Skip = searchCriteria.Skip;
-                catalogSearchCriteria.Take = searchCriteria.Take;
+                var catalogSearchCriteria = searchCriteria.ToCatalogSearchCriteria();
 
                 var productSearchResult = _catalogSearchService.Search(catalogSearchCriteria);
                 productIds = productSearchResult.Products.Select(x => x.Id).ToArray();
@@ -88,13 +80,13 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             return exportableProducts;
         }
 
-        protected override ProductSearchCriteria BuildSearchCriteria(ProductExportDataQuery exportDataQuery)
+        protected override ProductExportSearchCriteria BuildSearchCriteria(ProductExportDataQuery exportDataQuery)
         {
             var result = base.BuildSearchCriteria(exportDataQuery);
 
+            result.CategoryIds = exportDataQuery.CategoryIds;
             result.SearchInVariations = exportDataQuery.SearchInVariations;
             result.CatalogIds = exportDataQuery.CatalogIds;
-            result.CategoryIds = exportDataQuery.CategoryIds;
 
             return result;
         }

@@ -135,6 +135,7 @@
     <Compile Include="ExportImport\PropertyExportPagedDataSource.cs" />
     <Compile Include="ExportImport\PropertyExportPagedDataSourceFactory.cs" />
     <Compile Include="ExportImport\PropertyExportSearchCriteria.cs" />
+    <Compile Include="ExportImport\ProductExportSearchCriteria.cs" />
     <Compile Include="ExportImport\TabularProduct.cs" />
     <Compile Include="Extensions\CatalogExportExtensions.cs" />
     <Compile Include="Extensions\DictionaryExtension.cs" />
