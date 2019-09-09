@@ -12,15 +12,15 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         private readonly IProperyDictionaryItemSearchService _propertyDictionarySearchService;
 
         public PropertyDictionaryItemExportPagedDataSource(
-    IProperyDictionaryItemSearchService propertyDictionarySearchService,
-    PropertyDictionaryItemExportDataQuery dataQuery) : base(dataQuery)
+            IProperyDictionaryItemSearchService propertyDictionarySearchService,
+            PropertyDictionaryItemExportDataQuery dataQuery) : base(dataQuery)
         {
             _propertyDictionarySearchService = propertyDictionarySearchService;
         }
 
         protected override ExportableSearchResult FetchData(PropertyDictionaryItemExportSearchCriteria searchCriteria)
         {
-            var criteria = new PropertyDictionaryItemSearchCriteria { Take = searchCriteria.Take, Skip = searchCriteria.Skip };
+            var criteria = new PropertyDictionaryItemSearchCriteria { Take = searchCriteria.Take, Skip = searchCriteria.Skip, CatalogIds = searchCriteria.CatalogIds };
             var searchResponse = _propertyDictionarySearchService.Search(criteria);
             return new ExportableSearchResult
             {
