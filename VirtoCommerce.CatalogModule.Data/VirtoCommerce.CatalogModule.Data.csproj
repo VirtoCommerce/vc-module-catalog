@@ -127,6 +127,7 @@
     <Compile Include="ExportImport\ProductExportDataQuery.cs" />
     <Compile Include="ExportImport\ProductExportPagedDataSource.cs" />
     <Compile Include="ExportImport\ProductExportPagedDataSourceFactory.cs" />
+    <Compile Include="ExportImport\ProductExportSearchCriteria.cs" />
     <Compile Include="ExportImport\TabularProduct.cs" />
     <Compile Include="Extensions\CatalogExportExtensions.cs" />
     <Compile Include="Extensions\DictionaryExtension.cs" />
