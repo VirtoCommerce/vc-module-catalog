@@ -26,7 +26,9 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 
             var searchResult = _catalogSearchService.Search(catalogSearchCriteria);
 
-            foreach (var catalog in searchResult.Catalogs)
+            var catalogs = searchResult.Catalogs.Skip(catalogSearchCriteria.Skip).Take(catalogSearchCriteria.Take).ToList();
+
+            foreach (var catalog in catalogs)
             {
                 catalog.ResetRedundantReferences();
             }
@@ -34,7 +36,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             return new ExportableSearchResult
             {
                 TotalCount = searchResult.CatalogsTotalCount,
-                Results = searchResult.Catalogs.Select(x => AbstractTypeFactory<ExportableCatalog>.TryCreateInstance().FromModel(x)).Cast<IExportable>().ToList(),
+                Results = catalogs.Select(x => AbstractTypeFactory<ExportableCatalog>.TryCreateInstance().FromModel(x)).Cast<IExportable>().ToList(),
             };
         }
 

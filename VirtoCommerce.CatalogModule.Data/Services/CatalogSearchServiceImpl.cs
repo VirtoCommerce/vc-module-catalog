@@ -123,6 +123,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     query = query.Where(x => x.Code == criteria.Code);
                 }
 
+                result.CategoriesTotalCount = query.Count();
+
                 var sortInfos = criteria.SortInfos;
                 if (sortInfos.IsNullOrEmpty())
                 {
@@ -190,6 +192,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                         result.Catalogs.Add(catalog);
                     }
                 }
+                result.CatalogsTotalCount = result.Catalogs.Count;
             }
         }
 
@@ -269,7 +272,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
             query = query.Where(x => criteria.WithHidden || x.IsActive);
 
-            if(!string.IsNullOrEmpty(criteria.MainProductId))
+            if (!string.IsNullOrEmpty(criteria.MainProductId))
             {
                 query = query.Where(x => x.ParentId == criteria.MainProductId);
             }

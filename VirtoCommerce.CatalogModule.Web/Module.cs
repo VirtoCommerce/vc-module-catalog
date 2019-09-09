@@ -92,10 +92,9 @@ namespace VirtoCommerce.CatalogModule.Web
 
             _container.RegisterType<IOutlineService, OutlineService>();
 
-            _container.RegisterType<ProductExportPagedDataSourceFactory>();
-            _container.RegisterType<CatalogFullExportPagedDataSourceFactory>();
-            _container.RegisterType<CatalogExportPagedDataSourceFactory>();
-            _container.RegisterType<CategoryExportPagedDataSourceFactory>();
+            _container.RegisterType<ICatalogExportPagedDataSourceFactory, CatalogExportPagedDataSourceFactory>();
+
+
             _container.RegisterType<CatalogExportSecurityHandler>();
 
             #endregion
@@ -185,15 +184,15 @@ namespace VirtoCommerce.CatalogModule.Web
 
             registrar.RegisterType(
             ExportedTypeDefinitionBuilder.Build<ExportableCatalogFull, CatalogFullExportDataQuery>()
-                .WithDataSourceFactory(_container.Resolve<CatalogFullExportPagedDataSourceFactory>())
+                .WithDataSourceFactory(_container.Resolve<ICatalogExportPagedDataSourceFactory>())
                 .WithPermissionAuthorization(CatalogPredefinedPermissions.Export, CatalogPredefinedPermissions.Read)
-                .WithMetadata(new ExportedTypeMetadata { PropertyInfos = new ExportedTypePropertyInfo[] { } })
+                .WithMetadata(new ExportedTypeMetadata { PropertyInfos = Array.Empty<ExportedTypePropertyInfo>() })
                 .WithAuthorizationHandler(_container.Resolve<CatalogExportSecurityHandler>())
                 );
 
             registrar.RegisterType(
                 ExportedTypeDefinitionBuilder.Build<ExportableProduct, ProductExportDataQuery>()
-                    .WithDataSourceFactory(_container.Resolve<ProductExportPagedDataSourceFactory>())
+                    .WithDataSourceFactory(_container.Resolve<ICatalogExportPagedDataSourceFactory>())
                     .WithMetadata(typeof(ExportableProduct).GetPropertyNames(
                         nameof(ExportableProduct.Properties),
                         $"{nameof(ExportableProduct.Properties)}.{nameof(Property.Attributes)}",
