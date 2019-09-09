@@ -93,14 +93,14 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _cacheManager.ClearRegion(CatalogConstants.DictionaryItemsCacheRegion);
         }
 
-        public GenericSearchResult<PropertyDictionaryItem> Search(PropertyDictionaryItemSearchCriteria criteria)
+        public GenericSearchResult<PropertyDictionaryItem> Search(PropertyDictionaryItemSearchCriteria searchCriteria)
         {
-            if (criteria == null)
+            if (searchCriteria == null)
             {
-                throw new ArgumentNullException(nameof(criteria));
+                throw new ArgumentNullException(nameof(searchCriteria));
             }
 
-            return _cacheManager.Get($"PropertyDictionaryItemService.Search-{criteria.GetCacheKey()}", CatalogConstants.DictionaryItemsCacheRegion, () =>
+            return _cacheManager.Get($"PropertyDictionaryItemService.Search-{searchCriteria.GetCacheKey()}", CatalogConstants.DictionaryItemsCacheRegion, () =>
             {
                 using (var repository = _repositoryFactory())
                 {
@@ -110,20 +110,20 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     var result = new GenericSearchResult<PropertyDictionaryItem>();
 
                     var query = repository.PropertyDictionaryItems;
-                    if (!criteria.CatalogIds.IsNullOrEmpty())
+                    if (!searchCriteria.CatalogIds.IsNullOrEmpty())
                     {
-                        query = query.Where(x => criteria.CatalogIds.Contains(x.Property.CatalogId));
+                        query = query.Where(x => searchCriteria.CatalogIds.Contains(x.Property.CatalogId));
                     }
-                    if (!criteria.PropertyIds.IsNullOrEmpty())
+                    if (!searchCriteria.PropertyIds.IsNullOrEmpty())
                     {
-                        query = query.Where(x => criteria.PropertyIds.Contains(x.PropertyId));
+                        query = query.Where(x => searchCriteria.PropertyIds.Contains(x.PropertyId));
                     }
-                    if (!string.IsNullOrEmpty(criteria.SearchPhrase))
+                    if (!string.IsNullOrEmpty(searchCriteria.SearchPhrase))
                     {
-                        query = query.Where(x => x.Alias.Contains(criteria.SearchPhrase));
+                        query = query.Where(x => x.Alias.Contains(searchCriteria.SearchPhrase));
                     }
 
-                    var sortInfos = criteria.SortInfos;
+                    var sortInfos = searchCriteria.SortInfos;
                     if (sortInfos.IsNullOrEmpty())
                     {
                         sortInfos = new[] {
@@ -136,7 +136,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     query = query.OrderBySortInfos(sortInfos).ThenBy(x => x.Id);
 
                     result.TotalCount = query.Count();
-                    var ids = query.Skip(criteria.Skip).Take(criteria.Take).Select(x => x.Id).ToArray();
+                    var ids = query.Skip(searchCriteria.Skip).Take(searchCriteria.Take).Select(x => x.Id).ToArray();
                     result.Results = GetByIds(ids).AsQueryable().OrderBySortInfos(sortInfos).ToList();
                     return result;
                 }
