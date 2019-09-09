@@ -9,6 +9,8 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
     {
         private readonly CatalogExportPagedDataSourceFactory _catalogDataSourceFactory;
         private readonly CategoryExportPagedDataSourceFactory _categoryDataSourceFactory;
+        private readonly PropertyDictionaryItemExportPagedDataSourceFactory _propertyDictionaryItemExportPagedDataSourceFactory;
+        private readonly PropertyExportPagedDataSourceFactory _propertyExportPagedDataSourceFactory;
         //private readonly ICatalogSearchService _catalogSearchService;
         //private readonly ICategoryService _categoryService;
         //private readonly IItemService _itemService;
@@ -28,6 +30,8 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 
         public CatalogFullExportPagedDataSource(CatalogExportPagedDataSourceFactory catalogDataSourceFactory,
             CategoryExportPagedDataSourceFactory categoryDataSourceFactory,
+            PropertyDictionaryItemExportPagedDataSourceFactory propertyDictionaryItemExportPagedDataSourceFactory,
+            PropertyExportPagedDataSourceFactory propertyExportPagedDataSourceFactory,
             //ICatalogSearchService catalogSearchService,
             //ICategoryService categoryService,
             //IItemService itemService,
@@ -39,6 +43,8 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         {
             _catalogDataSourceFactory = catalogDataSourceFactory;
             _categoryDataSourceFactory = categoryDataSourceFactory;
+            _propertyExportPagedDataSourceFactory = propertyExportPagedDataSourceFactory;
+            _propertyDictionaryItemExportPagedDataSourceFactory = propertyDictionaryItemExportPagedDataSourceFactory;
             //_catalogSearchService = catalogSearchService;
             //_categoryService = categoryService;
             //_itemService = itemService;
@@ -59,11 +65,11 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             var categoryExportDataQuery = AbstractTypeFactory<CategoryExportDataQuery>.TryCreateInstance();
             categoryExportDataQuery.CatalogIds = _dataQuery.CatalogIds;
 
-            //var propertyExportDataQuery = AbstractTypeFactory<PropertyExportDataQuery>.TryCreateInstance();
-            //propertyExportDataQuery.CatalogIds = _dataQuery.CatalogIds;
+            var propertyExportDataQuery = AbstractTypeFactory<PropertyExportDataQuery>.TryCreateInstance();
+            propertyExportDataQuery.CatalogIds = _dataQuery.CatalogIds;
 
-            //var propertyDictionaryItemExportDataQuery = AbstractTypeFactory<PropertyDictionaryItemExportDataQuery>.TryCreateInstance();
-            //propertyDictionaryItemExportDataQuery.CatalogIds = _dataQuery.CatalogIds;
+            var propertyDictionaryItemExportDataQuery = AbstractTypeFactory<PropertyDictionaryItemExportDataQuery>.TryCreateInstance();
+            propertyDictionaryItemExportDataQuery.CatalogIds = _dataQuery.CatalogIds;
 
             //var productExportDataQuery = AbstractTypeFactory<ProductExportDataQuery>.TryCreateInstance();
             //productExportDataQuery.CatalogIds = _dataQuery.CatalogIds;
@@ -72,6 +78,8 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 
             return new IPagedDataSource[]
             {
+                _propertyExportPagedDataSourceFactory.Create(propertyExportDataQuery),
+                _propertyDictionaryItemExportPagedDataSourceFactory.Create(propertyDictionaryItemExportDataQuery),
                 _catalogDataSourceFactory.Create(catalogExportDataQuery),
                 _categoryDataSourceFactory.Create(categoryExportDataQuery),
                 //_propertyDataSourceFactory.Create(propertyExportDataQuery),
