@@ -5,6 +5,7 @@ using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.ExportModule.Core.Model;
 using VirtoCommerce.ExportModule.Data.Services;
 using VirtoCommerce.Platform.Core.Assets;
+using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.ExportImport
 {
@@ -32,8 +33,13 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             categorySearchCriteria.ResponseGroup = SearchResponseGroup.WithCategories;
 
             var searchResult = _catalogSearchService.Search(categorySearchCriteria);
+            var categoryIds = searchResult.Categories
+                .Skip(categorySearchCriteria.Skip)
+                .Take(categorySearchCriteria.Take)
+                .Select(x => x.Id)
+                .ToArray();
 
-            var categories = _categoryService.GetByIds(searchResult.Categories.Select(x => x.Id).ToArray(), CategoryResponseGroup.Full);
+            var categories = _categoryService.GetByIds(categoryIds, CategoryResponseGroup.Full);
 
             categories.LoadImages(_blobStorageProvider);
 
@@ -44,8 +50,8 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 
             return new ExportableSearchResult
             {
-                TotalCount = searchResult.CatalogsTotalCount,
-                Results = searchResult.Catalogs.Cast<IExportable>().ToList(),
+                TotalCount = searchResult.CategoriesTotalCount,
+                Results = categories.Select(x => AbstractTypeFactory<ExportableCategory>.TryCreateInstance().FromModel(x)).Cast<IExportable>().ToList(),
             };
         }
 
