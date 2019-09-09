@@ -9,8 +9,8 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 {
     public class CatalogExportPagedDataSourceFactory : ICatalogExportPagedDataSourceFactory
     {
-        private readonly IPropertySearchService _propertySearchService;
-        private readonly IPropertyDictionaryItemSearchService _propertyDictionaryItemSearchService;
+        private readonly IPropertyService _propertyService;
+        private readonly IProperyDictionaryItemSearchService _propertyDictionaryItemSearchService;
         private readonly IBlobStorageProvider _blobStorageProvider;
         private readonly IItemService _itemService;
         private readonly ICatalogSearchService _catalogSearchService;
@@ -18,15 +18,15 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         private readonly ICategoryService _categoryService;
 
         public CatalogExportPagedDataSourceFactory(
-            IPropertySearchService propertySearchService
-            , IPropertyDictionaryItemSearchService propertyDictionaryItemSearchService
+            IPropertyService propertyService
+            , IProperyDictionaryItemSearchService propertyDictionaryItemSearchService
             , IBlobStorageProvider blobStorageProvider
             , IItemService itemService
             , ICatalogSearchService catalogSearchService
             , IBlobUrlResolver blobUrlResolver
             , ICategoryService categoryService)
         {
-            _propertySearchService = propertySearchService;
+            _propertyService = propertyService;
             _propertyDictionaryItemSearchService = propertyDictionaryItemSearchService;
             _blobStorageProvider = blobStorageProvider;
             _itemService = itemService;
@@ -40,15 +40,15 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             IPagedDataSource result = null;
             if (dataQuery is PropertyExportDataQuery propertyExportQuery)
             {
-                result = new PropertyExportPagedDataSource(_propertySearchService, propertyExportQuery);
+                result = new PropertyExportPagedDataSource(_propertyService, propertyExportQuery);
             }
             else if (dataQuery is PropertyDictionaryItemExportDataQuery propDictExportQuery)
             {
                 result = new PropertyDictionaryItemExportPagedDataSource(_propertyDictionaryItemSearchService, propDictExportQuery);
             }
-            else if (dataQuery is ProductExportDataQuery productExportQuery)
+            else if (dataQuery is ProductFullExportDataQuery productFullExportQuery)
             {
-                result = new ProductExportPagedDataSource(_blobStorageProvider, _itemService, _catalogSearchService, _blobUrlResolver, productExportQuery);
+                result = new ProductExportPagedDataSource(_blobStorageProvider, _itemService, _catalogSearchService, _blobUrlResolver, productFullExportQuery.ToProductExportDataQuery());
             }
             else if (dataQuery is CategoryExportDataQuery categoryExportQuery)
             {
@@ -57,6 +57,14 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             else if (dataQuery is CatalogExportDataQuery catalogExportQuery)
             {
                 result = new CatalogExportPagedDataSource(_catalogSearchService, catalogExportQuery);
+            }
+            else if (dataQuery is ProductExportDataQuery productExportQuery)
+            {
+                result = new ProductExportPagedDataSource(_blobStorageProvider, _itemService, _catalogSearchService, _blobUrlResolver, productExportQuery);
+            }
+            else if (dataQuery is CatalogFullExportDataQuery catalogFullExportDataQuery)
+            {
+                result = new CatalogFullExportPagedDataSource(this, catalogFullExportDataQuery);
             }
 
             if (result == null)
@@ -70,7 +78,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         {
             yield return Create(AbstractTypeFactory<CatalogExportDataQuery>.TryCreateInstance().FromOther(query));
             yield return Create(AbstractTypeFactory<CategoryExportDataQuery>.TryCreateInstance().FromOther(query));
-            yield return Create(AbstractTypeFactory<ProductExportDataQuery>.TryCreateInstance().FromOther(query));
+            yield return Create(AbstractTypeFactory<ProductFullExportDataQuery>.TryCreateInstance().FromOther(query));
             yield return Create(AbstractTypeFactory<PropertyExportDataQuery>.TryCreateInstance().FromOther(query));
             yield return Create(AbstractTypeFactory<PropertyDictionaryItemExportDataQuery>.TryCreateInstance().FromOther(query));
         }

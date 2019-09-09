@@ -105,7 +105,6 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="CatalogConstants.cs" />
-    <Compile Include="ExportImport\CategoryExportPagedDataSourceFactory.cs" />
     <Compile Include="ExportImport\CategoryExportPagedDataSource.cs" />
     <Compile Include="ExportImport\CategoryExportDataQuery.cs" />
     <Compile Include="ExportImport\CatalogExportDataQuery.cs" />
@@ -114,7 +113,6 @@
     <Compile Include="ExportImport\CatalogExportSearchCriteria.cs" />
     <Compile Include="ExportImport\CatalogFullExportDataQuery.cs" />
     <Compile Include="ExportImport\CatalogFullExportPagedDataSource.cs" />
-    <Compile Include="ExportImport\CatalogFullExportPagedDataSourceFactory.cs" />
     <Compile Include="ExportImport\CatalogFullExportSearchCriteria.cs" />
     <Compile Include="ExportImport\CategoryExportSearchCriteria.cs" />
     <Compile Include="ExportImport\ExportableCatalog.cs" />
@@ -124,9 +122,10 @@
     <Compile Include="ExportImport\ExportableProperty.cs" />
     <Compile Include="ExportImport\ExportablePropertyDictionaryItem.cs" />
     <Compile Include="ExportImport\ExportableProduct.cs" />
+    <Compile Include="ExportImport\ICatalogExportPagedDataSourceFactory.cs" />
     <Compile Include="ExportImport\ProductExportDataQuery.cs" />
     <Compile Include="ExportImport\ProductExportPagedDataSource.cs" />
-    <Compile Include="ExportImport\ProductExportPagedDataSourceFactory.cs" />
+    <Compile Include="ExportImport\ProductFullExportDataQuery.cs" />
     <Compile Include="ExportImport\PropertyDictionaryItemExportDataQuery.cs" />
     <Compile Include="ExportImport\PropertyDictionaryItemExportPagedDataSource.cs" />
     <Compile Include="ExportImport\PropertyDictionaryItemExportPagedDataSourceFactory.cs" />

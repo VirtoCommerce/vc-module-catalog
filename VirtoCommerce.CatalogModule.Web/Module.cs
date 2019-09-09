@@ -186,7 +186,7 @@ namespace VirtoCommerce.CatalogModule.Web
             ExportedTypeDefinitionBuilder.Build<ExportableCatalogFull, CatalogFullExportDataQuery>()
                 .WithDataSourceFactory(_container.Resolve<ICatalogExportPagedDataSourceFactory>())
                 .WithPermissionAuthorization(CatalogPredefinedPermissions.Export, CatalogPredefinedPermissions.Read)
-                .WithMetadata(new ExportedTypeMetadata { PropertyInfos = new ExportedTypePropertyInfo[] { } })
+                .WithMetadata(new ExportedTypeMetadata { PropertyInfos = Array.Empty<ExportedTypePropertyInfo>() })
                 .WithAuthorizationHandler(_container.Resolve<CatalogExportSecurityHandler>())
                 );
 
