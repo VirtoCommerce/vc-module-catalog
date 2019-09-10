@@ -128,11 +128,9 @@
     <Compile Include="ExportImport\ProductFullExportDataQuery.cs" />
     <Compile Include="ExportImport\PropertyDictionaryItemExportDataQuery.cs" />
     <Compile Include="ExportImport\PropertyDictionaryItemExportPagedDataSource.cs" />
-    <Compile Include="ExportImport\PropertyDictionaryItemExportPagedDataSourceFactory.cs" />
     <Compile Include="ExportImport\PropertyDictionaryItemExportSearchCriteria.cs" />
     <Compile Include="ExportImport\PropertyExportDataQuery.cs" />
     <Compile Include="ExportImport\PropertyExportPagedDataSource.cs" />
-    <Compile Include="ExportImport\PropertyExportPagedDataSourceFactory.cs" />
     <Compile Include="ExportImport\PropertyExportSearchCriteria.cs" />
     <Compile Include="ExportImport\ProductExportSearchCriteria.cs" />
     <Compile Include="ExportImport\TabularProduct.cs" />
