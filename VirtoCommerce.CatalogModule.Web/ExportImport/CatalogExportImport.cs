@@ -412,21 +412,11 @@ namespace VirtoCommerce.CatalogModule.Web.ExportImport
 
         private void LoadImages(IHasImages[] haveImagesObjects, ExportImportProgressInfo progressInfo)
         {
-            var allImages = haveImagesObjects.SelectMany(x => x.GetFlatObjectsListWithInterface<IHasImages>())
-                                             .SelectMany(x => x.Images).ToArray();
-            foreach (var image in allImages)
+            var loadingErrors = haveImagesObjects.LoadImages(_blobStorageProvider);
+
+            if (!loadingErrors.IsNullOrEmpty())
             {
-                try
-                {
-                    using (var stream = _blobStorageProvider.OpenRead(image.Url))
-                    {
-                        image.BinaryData = stream.ReadFully();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    progressInfo.Errors.Add(ex.Message);
-                }
+                progressInfo.Errors.AddRange(loadingErrors);
             }
         }
 
