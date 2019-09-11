@@ -1,4 +1,4 @@
-﻿root = true
+root = true
 
 [*]
 charset = utf-8
@@ -68,3 +68,7 @@ csharp_new_line_before_members_in_anonymous_types = true
 [*.json]
 indent_style = space
 indent_size = 2
+
+#HTML code style settings
+[*.html]
+insert_final_newline = false
