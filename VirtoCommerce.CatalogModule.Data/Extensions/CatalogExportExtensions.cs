@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Platform.Core.Assets;
@@ -89,8 +91,16 @@ namespace VirtoCommerce.CatalogModule.Data.Extensions
             }
         }
 
-        public static void LoadImages(this IHasImages[] haveImagesObjects, IBlobStorageProvider blobStorageProvider)
+        /// <summary>
+        /// Loads image binary data of IHasImages objects
+        /// </summary>
+        /// <param name="haveImagesObjects"></param>
+        /// <param name="blobStorageProvider"></param>
+        /// <returns>Returns list of loading errors, or empty one, if no errors occured.</returns>
+        public static IEnumerable<string> LoadImages(this IHasImages[] haveImagesObjects, IBlobStorageProvider blobStorageProvider)
         {
+            var result = new List<string>();
+
             var allImages = haveImagesObjects
                 .SelectMany(x => x.GetFlatObjectsListWithInterface<IHasImages>())
                 .SelectMany(x => x.Images)
@@ -98,11 +108,20 @@ namespace VirtoCommerce.CatalogModule.Data.Extensions
 
             foreach (var image in allImages)
             {
-                using (var stream = blobStorageProvider.OpenRead(image.Url))
+                try
                 {
-                    image.BinaryData = stream.ReadFully();
+                    using (var stream = blobStorageProvider.OpenRead(image.Url))
+                    {
+                        image.BinaryData = stream.ReadFully();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    result.Add(ex.Message);
                 }
             }
+
+            return result;
         }
     }
 }
