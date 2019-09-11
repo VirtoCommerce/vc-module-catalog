@@ -1,2 +1,2 @@
 #!groovy
-virtoModule {}
+virtoModule_BulkUpdate {}
