@@ -3,11 +3,13 @@ using System.IO;
 using System.Web.Http;
 using FluentValidation;
 using Microsoft.Practices.Unity;
+using VirtoCommerce.CatalogModule.Data.ExportImport;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Data.Search;
 using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
 using VirtoCommerce.CatalogModule.Data.Search.Indexing;
+using VirtoCommerce.CatalogModule.Data.Security;
 using VirtoCommerce.CatalogModule.Data.Services;
 using VirtoCommerce.CatalogModule.Data.Services.OutlineParts;
 using VirtoCommerce.CatalogModule.Data.Services.Validation;
@@ -19,6 +21,10 @@ using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Commerce.Services;
 using VirtoCommerce.Domain.Search;
 using VirtoCommerce.Domain.Store.Model;
+using VirtoCommerce.ExportModule.Core.Model;
+using VirtoCommerce.ExportModule.Core.Services;
+using VirtoCommerce.ExportModule.Data.Extensions;
+using VirtoCommerce.ExportModule.Data.Services;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.DynamicProperties;
 using VirtoCommerce.Platform.Core.ExportImport;
@@ -85,6 +91,11 @@ namespace VirtoCommerce.CatalogModule.Web
                 _container.RegisterType<IOutlinePartResolver, IdOutlinePartResolver>();
 
             _container.RegisterType<IOutlineService, OutlineService>();
+
+            _container.RegisterType<ICatalogExportPagedDataSourceFactory, CatalogExportPagedDataSourceFactory>();
+
+
+            _container.RegisterType<CatalogExportSecurityHandler>();
 
             #endregion
 
@@ -165,6 +176,42 @@ namespace VirtoCommerce.CatalogModule.Web
             };
 
             _container.RegisterInstance(categoryIndexingConfiguration.DocumentType, categoryIndexingConfiguration);
+
+
+            #region Register types for generic Export
+
+            var registrar = _container.Resolve<IKnownExportTypesRegistrar>();
+
+            registrar.RegisterType(
+            ExportedTypeDefinitionBuilder.Build<ExportableCatalogFull, CatalogFullExportDataQuery>()
+                .WithDataSourceFactory(_container.Resolve<ICatalogExportPagedDataSourceFactory>())
+                .WithPermissionAuthorization(CatalogPredefinedPermissions.Export, CatalogPredefinedPermissions.Read)
+                .WithMetadata(new ExportedTypeMetadata { PropertyInfos = Array.Empty<ExportedTypePropertyInfo>() })
+                .WithAuthorizationHandler(_container.Resolve<CatalogExportSecurityHandler>())
+                );
+
+            registrar.RegisterType(
+                ExportedTypeDefinitionBuilder.Build<ExportableProduct, ProductExportDataQuery>()
+                    .WithDataSourceFactory(_container.Resolve<ICatalogExportPagedDataSourceFactory>())
+                    .WithMetadata(typeof(ExportableProduct).GetPropertyNames(
+                        nameof(ExportableProduct.Properties),
+                        $"{nameof(ExportableProduct.Properties)}.{nameof(Property.Attributes)}",
+                        $"{nameof(ExportableProduct.Properties)}.{nameof(Property.DisplayNames)}",
+                        $"{nameof(ExportableProduct.Properties)}.{nameof(Property.ValidationRules)}",
+                        nameof(ExportableProduct.PropertyValues),
+                        nameof(ExportableProduct.Assets),
+                        nameof(ExportableProduct.Links),
+                        nameof(ExportableProduct.SeoInfos),
+                        nameof(ExportableProduct.Reviews),
+                        nameof(ExportableProduct.Associations),
+                        nameof(ExportableProduct.ReferencedAssociations),
+                        nameof(ExportableProduct.Outlines),
+                        nameof(ExportableProduct.Images)))
+                    .WithTabularMetadata(typeof(ExportableProduct).GetPropertyNames())
+                    .WithPermissionAuthorization(CatalogPredefinedPermissions.Export, CatalogPredefinedPermissions.Read)
+                    .WithAuthorizationHandler(_container.Resolve<CatalogExportSecurityHandler>()));
+
+            #endregion
         }
 
         #endregion
