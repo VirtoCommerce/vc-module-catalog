@@ -2,11 +2,12 @@
 <module>
     <id>VirtoCommerce.Catalog</id>
     <version>3.0.0</version>
-	<version-tag>beta.1</version-tag>
+    <version-tag>beta.1</version-tag>
     <platformVersion>3.0.0</platformVersion>
     <dependencies>
         <dependency id="VirtoCommerce.Core" version="3.0.0" />
         <dependency id="VirtoCommerce.Search" version="3.0.0" />
+        <dependency id="VirtoCommerce.Export" version="3.0.0" />
     </dependencies>
 
     <title>Catalog module</title>

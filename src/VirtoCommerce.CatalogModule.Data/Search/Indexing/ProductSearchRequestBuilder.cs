@@ -43,7 +43,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                     Sorting = GetSorting(productSearchCriteria),
                     Skip = criteria.Skip,
                     Take = criteria.Take,
-                    Aggregations = await _aggregationConverter?.GetAggregationRequestsAsync(productSearchCriteria, allFilters),
+                    Aggregations = _aggregationConverter == null ? null : await _aggregationConverter.GetAggregationRequestsAsync(productSearchCriteria, allFilters),
                     IsFuzzySearch = productSearchCriteria.IsFuzzySearch,
                     //RawQuery = productSearchCriteria.RawQuery
                 };

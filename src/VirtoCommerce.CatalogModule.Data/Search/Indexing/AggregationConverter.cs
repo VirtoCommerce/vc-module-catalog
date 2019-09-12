@@ -41,24 +41,20 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 {
                     var existingFilters = allFilters.GetFiltersExceptSpecified(filter.Key);
 
-                    var attributeFilter = filter as AttributeFilter;
-                    var priceRangeFilter = filter as PriceRangeFilter;
-                    var rangeFilter = filter as RangeFilter;
-
                     AggregationRequest aggregationRequest = null;
                     IList<AggregationRequest> aggregationRequests = null;
 
-                    if (attributeFilter != null)
+                    switch (filter)
                     {
-                        aggregationRequest = GetAttributeFilterAggregationRequest(attributeFilter, existingFilters);
-                    }
-                    else if (rangeFilter != null)
-                    {
-                        aggregationRequests = GetRangeFilterAggregationRequests(rangeFilter, existingFilters);
-                    }
-                    else if (priceRangeFilter != null && priceRangeFilter.Currency.EqualsInvariant(criteria.Currency))
-                    {
-                        aggregationRequests = GetPriceRangeFilterAggregationRequests(priceRangeFilter, criteria, existingFilters);
+                        case AttributeFilter attributeFilter:
+                            aggregationRequest = GetAttributeFilterAggregationRequest(attributeFilter, existingFilters);
+                            break;
+                        case RangeFilter rangeFilter:
+                            aggregationRequests = GetRangeFilterAggregationRequests(rangeFilter, existingFilters);
+                            break;
+                        case PriceRangeFilter priceRangeFilter when priceRangeFilter.Currency.EqualsInvariant(criteria.Currency):
+                            aggregationRequests = GetPriceRangeFilterAggregationRequests(priceRangeFilter, criteria, existingFilters);
+                            break;
                     }
 
                     if (aggregationRequest != null)
@@ -141,21 +137,17 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 {
                     Aggregation aggregation = null;
 
-                    var attributeFilter = filter as AttributeFilter;
-                    var rangeFilter = filter as RangeFilter;
-                    var priceRangeFilter = filter as PriceRangeFilter;
-
-                    if (attributeFilter != null)
+                    switch (filter)
                     {
-                        aggregation = GetAttributeAggregation(attributeFilter, aggregationResponses);
-                    }
-                    else if (rangeFilter != null)
-                    {
-                        aggregation = GetRangeAggregation(rangeFilter, aggregationResponses);
-                    }
-                    else if (priceRangeFilter != null)
-                    {
-                        aggregation = GetPriceRangeAggregation(priceRangeFilter, aggregationResponses);
+                        case AttributeFilter attributeFilter:
+                            aggregation = GetAttributeAggregation(attributeFilter, aggregationResponses);
+                            break;
+                        case RangeFilter rangeFilter:
+                            aggregation = GetRangeAggregation(rangeFilter, aggregationResponses);
+                            break;
+                        case PriceRangeFilter priceRangeFilter:
+                            aggregation = GetPriceRangeAggregation(priceRangeFilter, aggregationResponses);
+                            break;
                     }
 
                     if (aggregation?.Items?.Any() == true)

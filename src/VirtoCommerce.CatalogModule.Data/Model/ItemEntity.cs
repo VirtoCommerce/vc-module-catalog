@@ -267,7 +267,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             WeightUnit = product.WeightUnit;
             Width = product.Width;
 
-            StartDate = product.StartDate == default(DateTime) ? DateTime.UtcNow : product.StartDate;
+            StartDate = product.StartDate == default ? DateTime.UtcNow : product.StartDate;
 
             //Constant fields
             //Only for main product
