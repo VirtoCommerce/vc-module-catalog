@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using VirtoCommerce.CatalogModule.Data.BulkUpdate.Model;
 using VirtoCommerce.Platform.Core.Common;
 
@@ -22,49 +23,81 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Services
 
             token.ThrowIfCancellationRequested();
 
+            var totalCount = 0;
+            var processedCount = 0;
+
             var progressInfo = new BulkUpdateProgressInfo()
             {
-                Description = "Validation started…",
+                Description = "Validation has started…",
             };
             progressCallback(progressInfo);
 
-            var actionDefinition = _bulkUpdateActionRegistrar.GetByName(context.ActionName);
-            var action = actionDefinition.Factory.Create(context);
-
-            var validationResult = action.Validate();
-            var proceed = validationResult.Succeeded;
-
-            token.ThrowIfCancellationRequested();
-
-            if (!proceed)
+            try
             {
-                progressInfo.Description = "Validation completed with errors.";
-                progressInfo.Errors = validationResult.Errors;
-                progressCallback(progressInfo);
-            }
+                var actionDefinition = _bulkUpdateActionRegistrar.GetByName(context.ActionName);
+                var action = actionDefinition.Factory.Create(context);
 
+                var validationResult = action.Validate();
+                var proceed = validationResult.Succeeded;
 
-            if (proceed)
-            {
-                var dataSourceFactory = actionDefinition.DataSourceFactory ?? throw new ArgumentException(nameof(IBulkUpdateActionDefinition.DataSourceFactory));
-                var dataSource = dataSourceFactory.Create(context.DataQuery);
+                token.ThrowIfCancellationRequested();
 
-                progressInfo.ProcessedCount = 0;
-                progressInfo.TotalCount = dataSource.GetTotalCount();
-                progressInfo.Description = "Bulk update started…";
-                progressCallback(progressInfo);
-
-                // Paginated execution progress need to be added
-
-                while (dataSource.Fetch())
+                if (!proceed)
                 {
-                    token.ThrowIfCancellationRequested();
-                    action.Execute(dataSource.Items);
+                    progressInfo.Description = "Validation completed with errors.";
+                    progressInfo.Errors = validationResult.Errors;
+                }
+                else
+                {
+                    progressInfo.Description = "Validation completed successfully.";
+                }
+
+                progressCallback(progressInfo);
+
+                if (proceed)
+                {
+                    var dataSourceFactory = actionDefinition.DataSourceFactory ?? throw new ArgumentException(nameof(IBulkUpdateActionDefinition.DataSourceFactory));
+                    var dataSource = dataSourceFactory.Create(context.DataQuery);
+                    totalCount = dataSource.GetTotalCount();
+                    processedCount = 0;
+
+                    progressInfo.ProcessedCount = processedCount;
+                    progressInfo.TotalCount = totalCount;
+                    progressInfo.Description = "Update has started…";
+                    progressCallback(progressInfo);
+
+                    while (dataSource.Fetch())
+                    {
+                        token.ThrowIfCancellationRequested();
+
+                        var result = action.Execute(dataSource.Items);
+
+                        if (!result.Succeeded)
+                        {
+                            progressInfo.Errors.AddRange(result.Errors);
+                        }
+
+                        processedCount += dataSource.Items.Count();
+
+                        if (processedCount < totalCount)
+                        {
+                            progressInfo.Description = $"{processedCount} out of {totalCount} have been updated.";
+                            progressCallback(progressInfo);
+                        }
+                    }
                 }
             }
+            catch (Exception e)
+            {
+                progressInfo.Errors.Add(e.Message);
+            }
+            finally
+            {
+                var completedMessage = (progressInfo.Errors?.Count > 0) ? "Update completed with errors" : "Update completed";
 
-
-
+                progressInfo.Description = $"{completedMessage}: {processedCount} out of {totalCount} have been updated.";
+                progressCallback(progressInfo);
+            }
         }
     }
 }

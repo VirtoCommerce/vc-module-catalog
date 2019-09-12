@@ -106,6 +106,7 @@
     </Compile>
     <Compile Include="BulkUpdate\Model\BulkActionCancellationRequest.cs" />
     <Compile Include="BulkUpdate\Model\BulkUpdateActionValidationResult.cs" />
+    <Compile Include="BulkUpdate\Model\BulkUpdateActionResult.cs" />
     <Compile Include="BulkUpdate\Model\BulkUpdateDataQuery.cs" />
     <Compile Include="BulkUpdate\Model\IBulkUpdateAction.cs" />
     <Compile Include="BulkUpdate\Model\IBulkUpdateActionData.cs" />

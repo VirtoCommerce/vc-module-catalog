@@ -13,12 +13,5 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model
         public List<string> Errors { get; set; }
         public int? ProcessedCount { get; set; }
         public int? TotalCount { get; set; }
-        public long ErrorCount
-        {
-            get
-            {
-                return Errors?.Count ?? 0;
-            }
-        }
     }
 }
