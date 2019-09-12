@@ -1,4 +1,4 @@
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29209.62
 MinimumVisualStudioVersion = 10.0.40219.1
@@ -12,12 +12,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.CatalogModule
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtoCommerce.CatalogModule.Core", "src\VirtoCommerce.CatalogModule.Core\VirtoCommerce.CatalogModule.Core.csproj", "{68701A95-8DB4-440C-B800-EC61F67AD826}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_build", "build\_build.csproj", "{4C35A041-2587-41F1-B3E8-AAD828D0B0EA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4C35A041-2587-41F1-B3E8-AAD828D0B0EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C35A041-2587-41F1-B3E8-AAD828D0B0EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E451D4C4-1981-4B4D-9C7A-B6698EE74AB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E451D4C4-1981-4B4D-9C7A-B6698EE74AB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E451D4C4-1981-4B4D-9C7A-B6698EE74AB8}.Release|Any CPU.ActiveCfg = Release|Any CPU

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>netcoreapp2.2</TargetFramework>
@@ -11,10 +11,10 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.3" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.3" />
         <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.0.0-beta.2" />
-        <PackageReference Include="VirtoCommerce.CoreModule.Data" Version="3.0.0-rc1" />
         <PackageReference Include="VirtoCommerce.ExportModule.Data" Version="3.0.0-beta.1" />
         <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.0.0-beta0001" />
         <PackageReference Include="VirtoCommerce.Platform.Data" Version="3.0.0-beta0001" />
+        <PackageReference Include="VirtoCommerce.StoreModule.Core" Version="3.0.0-beta.1" />
     </ItemGroup>
 
     <ItemGroup>
