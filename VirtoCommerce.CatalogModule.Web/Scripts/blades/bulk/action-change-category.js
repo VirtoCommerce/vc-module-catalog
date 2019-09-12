@@ -29,7 +29,7 @@ angular.module('virtoCommerce.catalogModule')
         };
 
         $scope.selectCategory = function () {
-            var selection = [blade.categoryId];
+            var selection = [blade.actionDataContext.categoryId];
             var options = {
                 showCheckingMultiple: false,
                 allowCheckingCategory: true,

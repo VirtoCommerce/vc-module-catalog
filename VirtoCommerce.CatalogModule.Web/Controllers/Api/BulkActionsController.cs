@@ -1,3 +1,4 @@
+using System;
 using System.Web.Http;
 using System.Web.Http.Description;
 using Hangfire;
@@ -9,7 +10,7 @@ using VirtoCommerce.Platform.Core.Web.Security;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
-    [RoutePrefix("api/catalog/bulkAction")]
+    [RoutePrefix("api/catalog/bulkActions")]
     public class BulkActionsController : CatalogBaseController
     {
         private readonly IUserNameResolver _userNameResolver;
@@ -54,7 +55,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [HttpPost]
         [Route("run")]
         [CheckPermission(Permission = CatalogPredefinedPermissions.BulkActions)]
-        public IHttpActionResult RunExport([FromBody]IBulkUpdateActionContext bulkActionContext)
+        public IHttpActionResult RunExport([FromBody]ActionContext bulkActionContext)
         {
 
             var notification = new ExportPushNotification(_userNameResolver.GetCurrentUserName())
