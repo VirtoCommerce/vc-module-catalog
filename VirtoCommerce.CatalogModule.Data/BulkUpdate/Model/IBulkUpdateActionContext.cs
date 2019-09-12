@@ -4,7 +4,5 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model
     {
         string ActionName { get; set; }
         BulkUpdateDataQuery DataQuery { get; set; }
-        string CategoryId { get; set; }
-        string CatalogId { get; set; }
     }
 }

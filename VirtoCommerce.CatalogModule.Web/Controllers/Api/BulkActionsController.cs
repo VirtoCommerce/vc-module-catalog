@@ -1,4 +1,3 @@
-using System;
 using System.Web.Http;
 using System.Web.Http.Description;
 using Hangfire;
@@ -50,17 +49,17 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <summary>
         /// Starts bulk task
         /// </summary>
-        /// <param name="bulkActionContext">Action task description</param>
+        /// <param name="bulkBulkUpdateActionContext">Action task description</param>
         /// <returns>Action task id</returns>
         [HttpPost]
         [Route("run")]
         [CheckPermission(Permission = CatalogPredefinedPermissions.BulkActions)]
-        public IHttpActionResult RunExport([FromBody]ActionContext bulkActionContext)
+        public IHttpActionResult RunExport([FromBody]BulkUpdateActionContext bulkBulkUpdateActionContext)
         {
 
             var notification = new ExportPushNotification(_userNameResolver.GetCurrentUserName())
             {
-                Title = $"{bulkActionContext.ActionName} export task",
+                Title = $"{bulkBulkUpdateActionContext.ActionName} export task",
                 Description = "starting export...."
             };
 

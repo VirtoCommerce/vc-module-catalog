@@ -3,6 +3,7 @@ using System.IO;
 using System.Web.Http;
 using FluentValidation;
 using Microsoft.Practices.Unity;
+using VirtoCommerce.CatalogModule.Data.BulkUpdate.Model;
 using VirtoCommerce.CatalogModule.Data.ExportImport;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
@@ -113,6 +114,7 @@ namespace VirtoCommerce.CatalogModule.Web
             _container.RegisterType<IProperyDictionaryItemService, PropertyDictionaryItemService>();
             _container.RegisterType<IProperyDictionaryItemSearchService, PropertyDictionaryItemService>();
 
+
             #endregion
 
             #region Property Validation
@@ -137,6 +139,8 @@ namespace VirtoCommerce.CatalogModule.Web
 
             var httpConfiguration = _container.Resolve<HttpConfiguration>();
             httpConfiguration.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new SearchCriteriaJsonConverter());
+            httpConfiguration.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new BulkUpdateActionContextJsonConverter());
+            httpConfiguration.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new BulkUpdateDataQueryJsonConverter());
 
             // Register dynamic property for storing browsing filters
             var filteredBrowsingProperty = new DynamicProperty
@@ -212,6 +216,9 @@ namespace VirtoCommerce.CatalogModule.Web
                     .WithAuthorizationHandler(_container.Resolve<CatalogExportSecurityHandler>()));
 
             #endregion
+
+            AbstractTypeFactory<BulkUpdateActionContext>.RegisterType<ChangeCategoryActionContext>();
+            AbstractTypeFactory<BulkUpdateDataQuery>.RegisterType<ProductBulkUpdateDataQuery>();
         }
 
         #endregion

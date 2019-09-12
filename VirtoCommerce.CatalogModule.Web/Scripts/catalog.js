@@ -382,8 +382,9 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                     isNew: true,
                     onInitialize: function(newBlade) {
                         var actionDataContext = {
-                            actionName: 'MoveToCategory',
+                            actionTypeName: 'ChangeCategoryActionContext',
                             dataQuery: {
+                                dataQueryType: 'ProductBulkUpdateDataQuery',
                                 categoryIds: _.pluck(newBlade.selectedCategories, 'id'),
                                 objectIds: _.pluck(newBlade.selectedProducts, 'id'),
                                 catalogIds: [newBlade.catalog.id]
@@ -405,8 +406,9 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                     isNew: true,
                     onInitialize: function (newBlade) {
                         var actionDataContext = {
-                            actionName: 'EditProperties',
+                            actionTypeName: 'EditPropertiesActionContext',
                             dataQuery: {
+                                dataQueryType: 'ProductBulkUpdateDataQuery',
                                 categoryIds: _.pluck(newBlade.selectedCategories, 'id'),
                                 objectIds: _.pluck(newBlade.selectedProducts, 'id'),
                                 catalogIds: [newBlade.catalog.id]
