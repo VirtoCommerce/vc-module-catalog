@@ -4,6 +4,7 @@ using System.Web.Http;
 using FluentValidation;
 using Microsoft.Practices.Unity;
 using VirtoCommerce.CatalogModule.Data.BulkUpdate.Model;
+using VirtoCommerce.CatalogModule.Data.BulkUpdate.Services;
 using VirtoCommerce.CatalogModule.Data.ExportImport;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
@@ -127,6 +128,12 @@ namespace VirtoCommerce.CatalogModule.Web
             _container.RegisterType<AbstractValidator<IHasProperties>, HasPropertiesValidator>();
 
             #endregion
+
+            #region Bulk update
+
+            _container.RegisterInstance<IBulkUpdateActionRegistrar>(new BulkUpdateActionRegistrar());
+
+            #endregion Bulk update
         }
 
         public override void PostInitialize()

@@ -105,19 +105,21 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="BulkUpdate\Model\BulkActionCancellationRequest.cs" />
+    <Compile Include="BulkUpdate\BulkUpdatePredefinedPermissions.cs" />
+    <Compile Include="BulkUpdate\Model\BulkUpdateActionContext.cs" />
     <Compile Include="BulkUpdate\Model\BulkUpdateActionResult.cs" />
     <Compile Include="BulkUpdate\Model\BulkUpdateDataQuery.cs" />
     <Compile Include="BulkUpdate\Model\ChangeCategoryActionContext.cs" />
     <Compile Include="BulkUpdate\Model\IBulkUpdateAction.cs" />
     <Compile Include="BulkUpdate\Model\IBulkUpdateActionData.cs" />
-    <Compile Include="BulkUpdate\Model\IBulkUpdateActionContext.cs" />
     <Compile Include="BulkUpdate\Model\IBulkUpdateActionDefinition.cs" />
     <Compile Include="BulkUpdate\Model\IBulkUpdateActionFactory.cs" />
     <Compile Include="BulkUpdate\Model\IPagedDataSource.cs" />
     <Compile Include="BulkUpdate\Model\IPagedDataSourceFactory.cs" />
-    <Compile Include="BulkUpdate\Model\BulkUpdateActionContext.cs" />
     <Compile Include="BulkUpdate\Model\ProductBulkUpdateDataQuery.cs" />
+    <Compile Include="BulkUpdate\Services\BulkUpdateActionDescriptionBuilder.cs" />
     <Compile Include="BulkUpdate\Services\BulkUpdateActionExecutor.cs" />
+    <Compile Include="BulkUpdate\Services\BulkUpdateActionRegistrar.cs" />
     <Compile Include="BulkUpdate\Services\IBulkUpdateActionRegistrar.cs" />
     <Compile Include="BulkUpdate\Model\UpdateProgressInfo.cs" />
     <Compile Include="CatalogConstants.cs" />

@@ -1,9 +1,12 @@
 angular.module('virtoCommerce.catalogModule')
     .factory('virtoCommerce.catalogModule.catalogBulkActionService', function () {
+        var registrationList = [];
         var retVal = {
-            registrationsList: [],
-            register: function (registration) {
-                this.registrationsList.push(registration);
+            getAll: function () {
+                return angular.copy(registrationList);
+            },
+            register: function (bulkAction) {
+                registrationList.push(bulkAction);
             }
         };
         return retVal;

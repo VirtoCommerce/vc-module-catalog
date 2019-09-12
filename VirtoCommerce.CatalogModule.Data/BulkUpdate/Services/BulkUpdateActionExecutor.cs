@@ -14,7 +14,7 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Services
             _bulkUpdateActionRegistrar = bulkUpdateActionRegistrar;
         }
 
-        public virtual void Execute(IBulkUpdateActionContext context, Action<BulkUpdateProgressInfo> progressCallback, ICancellationToken token)
+        public virtual void Execute(BulkUpdateActionContext context, Action<BulkUpdateProgressInfo> progressCallback, ICancellationToken token)
         {
             if (context == null)
             {

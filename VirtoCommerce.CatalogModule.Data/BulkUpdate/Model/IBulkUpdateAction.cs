@@ -5,8 +5,7 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model
 {
     public interface IBulkUpdateAction
     {
-        IBulkUpdateActionContext Context { get; }
-
+        BulkUpdateActionContext Context { get; }
         IBulkUpdateActionData GetActionData();
         BulkUpdateActionResult Validate();
         BulkUpdateActionResult Execute(IEnumerable<IEntity> entities);

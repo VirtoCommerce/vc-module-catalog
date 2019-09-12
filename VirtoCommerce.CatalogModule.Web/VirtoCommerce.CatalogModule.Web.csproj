@@ -155,7 +155,8 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Controllers\Api\BulkActionsController.cs" />
+    <Compile Include="BulkUpdate\Controllers\Api\BulkUpdateController.cs" />
+    <Compile Include="BulkUpdate\Model\UpdateCancellationRequest.cs" />
     <Compile Include="Controllers\Api\CatalogBaseController.cs" />
     <Compile Include="Controllers\Api\CatalogBrowseFiltersController.cs" />
     <Compile Include="Controllers\Api\CatalogModuleCatalogsController.cs" />
@@ -365,7 +366,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\VirtoCommerce.CatalogModule.Data\VirtoCommerce.CatalogModule.Data.csproj">
-      <Project>{b8c758d7-822f-40d8-b28c-ef21c873af49}</Project>
+      <Project>{B8C758D7-822F-40D8-B28C-EF21C873AF49}</Project>
       <Name>VirtoCommerce.CatalogModule.Data</Name>
     </ProjectReference>
     <ProjectReference Include="..\VirtoCommerce.CatalogModule.Web.Core\VirtoCommerce.CatalogModule.Web.Core.csproj">

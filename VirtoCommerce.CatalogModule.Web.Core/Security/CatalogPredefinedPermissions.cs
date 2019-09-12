@@ -11,6 +11,5 @@ namespace VirtoCommerce.CatalogModule.Web.Security
         public const string Import = "catalog:import";
         public const string ReadBrowseFilters = "catalog:BrowseFilters:Read";
         public const string UpdateBrowseFilters = "catalog:BrowseFilters:Update";
-        public const string BulkActions = "catalog:BulkActions";
     }
 }

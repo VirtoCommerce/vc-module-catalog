@@ -4,7 +4,7 @@ angular.module('virtoCommerce.catalogModule')
         $scope.selectedNodeId = null;
 
         function initializeBlade() {
-            $scope.registrationsList = catalogBulkActionService.registrationsList;
+            $scope.registrationsList = catalogBulkActionService.getAll();
             blade.isLoading = false;
         };
 
