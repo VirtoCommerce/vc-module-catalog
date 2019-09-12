@@ -1,15 +1,16 @@
 angular.module('virtoCommerce.catalogModule')
-    .controller('virtoCommerce.catalogModule.bulkActionProgressController', ['$scope', 'platformWebApp.bladeNavigationService', function ($scope, bladeNavigationService) {
+    .controller('virtoCommerce.catalogModule.bulkActionProgressController', ['$scope', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.bulkActions'
+        , function ($scope, bladeNavigationService, bulkActions) {
         var blade = $scope.blade;
         blade.isLoading = true;
         $scope.blade.headIcon = 'fa-upload';
 
         function initializeBlade() {
             blade.isLoading = false;
-            //exportApi.runExport(blade.exportDataRequest,
-            //    function (data) {
-            //        blade.notification = data;
-            //    });
+            bulkActions.runBulkAction(blade.actionDataContext,
+                function (data) {
+                    blade.notification = data;
+                });
         }
 
         $scope.$on("new-notification-event", function (event, notification) {
@@ -34,7 +35,7 @@ angular.module('virtoCommerce.catalogModule')
                 return blade.notification && !blade.notification.finished;
             },
             executeMethod: function () {
-                exportApi.cancel({ jobId: blade.notification.jobId }, function (data) {
+                bulkActions.cancel({ jobId: blade.notification.jobId }, function (data) {
                 });
             }
         };

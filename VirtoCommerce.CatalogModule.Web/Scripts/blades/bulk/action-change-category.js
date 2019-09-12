@@ -3,27 +3,28 @@ angular.module('virtoCommerce.catalogModule')
         var blade = $scope.blade;
         blade.canStartProcess = false;
         blade.isLoading = true;
-        blade.categoryId = "";
-        blade.categoryName = "Nothing";
-        
-
+        blade.selectedCategory = null;
         function initializeBlade() {
             blade.isLoading = false;
         }
 
-     
+        blade.actionDataContext = angular.extend({
+            categoryId: null,
+            catalogId: null
+        }, blade.actionDataContext);
+
         $scope.startAction = function () {
-            var progressBlade = {
-                id: 'actionProgress',
-                title: 'catalog.blades.action-progress.title',
-                controller: 'virtoCommerce.catalogModule.bulkActionProgressController',
-                template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/bulk/bulk-action-progress.tpl.html',
-                
-                onCompleted: function () {
-                    blade.isProcessing = false;
+
+        var progressBlade = {
+            id: 'actionProgress',
+            title: 'catalog.blades.action-progress.title',
+            controller: 'virtoCommerce.catalogModule.bulkActionProgressController',
+            template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/bulk/bulk-action-progress.tpl.html',
+            actionDataContext: blade.actionDataContext,
+            onCompleted: function () {
+                blade.isProcessing = false;
                 }
             };
-
             bladeNavigationService.showBlade(progressBlade, blade);
         };
 
@@ -38,7 +39,9 @@ angular.module('virtoCommerce.catalogModule')
                     if (isSelected) {
                         if (!_.find(selection, function (x) { return x === listItem.id; })) {
                             selection.push(listItem.id);
-                            blade.categoryName = listItem.name;
+                            blade.selectedCategory = listItem;
+                            blade.actionDataContext.categoryId = listItem.id;
+                            blade.actionDataContext.catalogId = listItem.catalogId;
                         }
                     }
                     else {
@@ -57,8 +60,6 @@ angular.module('virtoCommerce.catalogModule')
                     {
                         name: "platform.commands.confirm", icon: 'fa fa-check',
                         executeMethod: function (pickingBlade) {
-                            blade.categoryId = selection[0];
-                            $scope.selectedCount = 1;
                             blade.canStartProcess = true;
                             bladeNavigationService.closeBlade(pickingBlade);
                         },

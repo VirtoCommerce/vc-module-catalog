@@ -155,6 +155,7 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Controllers\Api\BulkActionsController.cs" />
     <Compile Include="Controllers\Api\CatalogBaseController.cs" />
     <Compile Include="Controllers\Api\CatalogBrowseFiltersController.cs" />
     <Compile Include="Controllers\Api\CatalogModuleCatalogsController.cs" />
@@ -189,6 +190,7 @@
     <Content Include="Scripts\blades\bulk\bulk-action-progress.tpl.html" />
     <Content Include="Scripts\blades\bulk\action-change-category.js" />
     <Content Include="Scripts\blades\bulk\action-change-category.tpl.html" />
+    <Content Include="Scripts\blades\bulk\bulk-action-registrar.js" />
     <Content Include="Scripts\blades\bulk\step-edit-properties.js" />
     <Content Include="Scripts\blades\bulk\step-edit-properties.tpl.html" />
     <Content Include="Scripts\blades\bulk\action-edit-properties.js" />
@@ -288,6 +290,7 @@
     <Content Include="Scripts\catalog.js" />
     <Content Include="Scripts\directives\property2.js" />
     <Content Include="Scripts\directives\property2.tpl.html" />
+    <Content Include="Scripts\resources\bulkActions.js" />
     <Content Include="Scripts\resources\catalogs.js" />
     <Content Include="Scripts\resources\categories.js" />
     <Content Include="Scripts\resources\import.js" />
