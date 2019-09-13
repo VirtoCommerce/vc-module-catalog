@@ -7,20 +7,24 @@ using VirtoCommerce.CatalogModule.Data.BulkUpdate;
 using VirtoCommerce.CatalogModule.Data.BulkUpdate.Model;
 using VirtoCommerce.CatalogModule.Data.BulkUpdate.Services;
 using VirtoCommerce.CatalogModule.Web.BulkUpdate.Model;
+using VirtoCommerce.ExportModule.Core.Model;
+using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.Platform.Core.Web.Security;
 
 namespace VirtoCommerce.CatalogModule.Web.BulkUpdate.Controllers.Api
 {
-    [RoutePrefix("api/bulkupdate")]
+    [RoutePrefix("api/bulkUpdate")]
     public class BulkUpdateController : ApiController
     {
         private readonly IBulkUpdateActionRegistrar _bulkUpdateActionRegistrar;
-
+        private readonly IUserNameResolver _userNameResolver;
 
         public BulkUpdateController(
-            IBulkUpdateActionRegistrar bulkUpdateActionRegistrar)
+            IBulkUpdateActionRegistrar bulkUpdateActionRegistrar,
+            IUserNameResolver userNameResolver)
         {
             _bulkUpdateActionRegistrar = bulkUpdateActionRegistrar;
+            _userNameResolver = userNameResolver;
         }
 
         /// <summary>
@@ -85,17 +89,16 @@ namespace VirtoCommerce.CatalogModule.Web.BulkUpdate.Controllers.Api
             //    return Unauthorized();
             //}
 
-            //var notification = new ExportPushNotification(_userNameResolver.GetCurrentUserName())
-            //{
-            //    Title = $"{request.ExportTypeName} export task",
-            //    Description = "starting export...."
-            //};
+            var notification = new ExportPushNotification(_userNameResolver.GetCurrentUserName())
+            {
+                Title = $"{context.ActionName} export task",
+                Description = "starting export...."
+            };
 
             //var jobId = BackgroundJob.Enqueue<ExportJob>(x => x.ExportBackground(request, notification, JobCancellationToken.Null, null));
             //notification.JobId = jobId;
 
-            //return Ok(notification);
-            return Ok();
+            return Ok(notification);
         }
 
         /// <summary>

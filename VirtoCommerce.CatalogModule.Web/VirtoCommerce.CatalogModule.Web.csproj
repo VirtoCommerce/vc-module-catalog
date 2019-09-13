@@ -169,6 +169,8 @@
     <Compile Include="Converters\ImportJobConverter.cs" />
     <Compile Include="Converters\ImportMappingItemConverter.cs" />
     <Compile Include="ExportImport\CatalogExportImport.cs" />
+    <Compile Include="JsonConverters\BulkUpdateActionContextJsonConverter.cs" />
+    <Compile Include="JsonConverters\BulkUpdateDataQueryJsonConverter.cs" />
     <Compile Include="JsonConverters\SearchCriteriaJsonConverter.cs" />
     <Compile Include="Model\AggregationProperty.cs" />
     <Compile Include="Model\ProductAssociationSearchResult.cs" />
@@ -191,6 +193,7 @@
     <Content Include="Scripts\blades\bulk\bulk-action-progress.tpl.html" />
     <Content Include="Scripts\blades\bulk\action-change-category.js" />
     <Content Include="Scripts\blades\bulk\action-change-category.tpl.html" />
+    <Content Include="Scripts\blades\bulk\bulk-action-registrar.js" />
     <Content Include="Scripts\blades\bulk\step-edit-properties.js" />
     <Content Include="Scripts\blades\bulk\step-edit-properties.tpl.html" />
     <Content Include="Scripts\blades\bulk\action-edit-properties.js" />
@@ -290,6 +293,7 @@
     <Content Include="Scripts\catalog.js" />
     <Content Include="Scripts\directives\property2.js" />
     <Content Include="Scripts\directives\property2.tpl.html" />
+    <Content Include="Scripts\resources\bulkActions.js" />
     <Content Include="Scripts\resources\catalogs.js" />
     <Content Include="Scripts\resources\categories.js" />
     <Content Include="Scripts\resources\import.js" />
@@ -362,7 +366,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\VirtoCommerce.CatalogModule.Data\VirtoCommerce.CatalogModule.Data.csproj">
-      <Project>{b8c758d7-822f-40d8-b28c-ef21c873af49}</Project>
+      <Project>{B8C758D7-822F-40D8-B28C-EF21C873AF49}</Project>
       <Name>VirtoCommerce.CatalogModule.Data</Name>
     </ProjectReference>
     <ProjectReference Include="..\VirtoCommerce.CatalogModule.Web.Core\VirtoCommerce.CatalogModule.Web.Core.csproj">

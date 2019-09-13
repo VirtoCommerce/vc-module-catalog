@@ -1,4 +1,4 @@
-﻿namespace VirtoCommerce.CatalogModule.Web.Security
+namespace VirtoCommerce.CatalogModule.Web.Security
 {
     public static class CatalogPredefinedPermissions
     {
