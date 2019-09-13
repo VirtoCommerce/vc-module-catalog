@@ -466,12 +466,12 @@
         }
       },
       "exporter-list": {
-        "title": "Export provider list",
-        "subtitle": "Select provider for export products"
+        "title": "Available export modules",
+        "subtitle": "Select module for export products"
       },
       "exporter": {
-        "productTitle": "Product export",
-        "productSubtitle": "Export products to json or csv"
+        "productTitle": "Export catalog products",
+        "productSubtitle": "Export catalog products to JSON or CSV"
       } 
     },
     "widgets": {
