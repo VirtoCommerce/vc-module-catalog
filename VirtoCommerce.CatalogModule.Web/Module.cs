@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Web.Http;
 using FluentValidation;
+using Hangfire.Common;
 using Microsoft.Practices.Unity;
 using VirtoCommerce.CatalogModule.Data.BulkUpdate.Model;
 using VirtoCommerce.CatalogModule.Data.BulkUpdate.Services;
@@ -132,6 +133,7 @@ namespace VirtoCommerce.CatalogModule.Web
             #region Bulk update
 
             _container.RegisterInstance<IBulkUpdateActionRegistrar>(new BulkUpdateActionRegistrar());
+            _container.RegisterType<IBulkUpdateActionExecutor, BulkUpdateActionExecutor>();
 
             #endregion Bulk update
         }
@@ -148,6 +150,9 @@ namespace VirtoCommerce.CatalogModule.Web
             httpConfiguration.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new SearchCriteriaJsonConverter());
             httpConfiguration.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new BulkUpdateActionContextJsonConverter());
             httpConfiguration.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new BulkUpdateDataQueryJsonConverter());
+
+            // This line refreshes Hangfire JsonConverter with the current JsonSerializerSettings - PolymorphicExportDataQueryJsonConverter needs to be included
+            JobHelper.SetSerializerSettings(httpConfiguration.Formatters.JsonFormatter.SerializerSettings);
 
             // Register dynamic property for storing browsing filters
             var filteredBrowsingProperty = new DynamicProperty

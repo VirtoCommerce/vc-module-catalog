@@ -5,7 +5,7 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Services
 {
-    public class BulkUpdateActionExecutor
+    public class BulkUpdateActionExecutor : IBulkUpdateActionExecutor
     {
         private readonly IBulkUpdateActionRegistrar _bulkUpdateActionRegistrar;
 

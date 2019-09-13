@@ -6,8 +6,8 @@ using Hangfire;
 using VirtoCommerce.CatalogModule.Data.BulkUpdate;
 using VirtoCommerce.CatalogModule.Data.BulkUpdate.Model;
 using VirtoCommerce.CatalogModule.Data.BulkUpdate.Services;
+using VirtoCommerce.CatalogModule.Web.BulkUpdate.BackgroundJobs;
 using VirtoCommerce.CatalogModule.Web.BulkUpdate.Model;
-using VirtoCommerce.ExportModule.Core.Model;
 using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.Platform.Core.Web.Security;
 
@@ -57,7 +57,7 @@ namespace VirtoCommerce.CatalogModule.Web.BulkUpdate.Controllers.Api
             }
 
             var actionDefinition = _bulkUpdateActionRegistrar.GetByName(context.ActionName)
-                ?? throw new ArgumentException($"Export type \"{context.ActionName}\" is not registered using \"{nameof(IBulkUpdateActionRegistrar)}\".");
+                ?? throw new ArgumentException($"Action \"{context.ActionName}\" is not registered using \"{nameof(IBulkUpdateActionRegistrar)}\".");
 
             if (!Authorize(actionDefinition, context))
             {
@@ -71,45 +71,50 @@ namespace VirtoCommerce.CatalogModule.Web.BulkUpdate.Controllers.Api
         }
 
         /// <summary>
-        /// Starts bulk update task task
+        /// Starts bulk update task task.
         /// </summary>
-        /// <param name="context">Execution context</param>
-        /// <returns>Export task id</returns>
+        /// <param name="context">Execution context.</param>
+        /// <returns>Notification with job id.</returns>
         [HttpPost]
         [Route("run")]
         [CheckPermission(Permission = BulkUpdatePredefinedPermissions.Execute)]
-        //[ResponseType(typeof(PlatformExportPushNotification))]
-        public IHttpActionResult RunExport([FromBody]BulkUpdateActionContext context)
+        [ResponseType(typeof(BulkUpdatePushNotification))]
+        public IHttpActionResult Run([FromBody]BulkUpdateActionContext context)
         {
-            //var exportedTypeDefinition = _knownExportTypesResolver.ResolveExportedTypeDefinition(request.ExportTypeName)
-            //    ?? throw new ArgumentException($"Export type \"{request.ExportTypeName}\" is not registered using \"{nameof(IKnownExportTypesRegistrar)}\".");
-
-            //if (!Authorize(actionDefinition, context))
-            //{
-            //    return Unauthorized();
-            //}
-
-            var notification = new ExportPushNotification(_userNameResolver.GetCurrentUserName())
+            if (context == null)
             {
-                Title = $"{context.ActionName} export task",
-                Description = "starting export...."
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            var actionDefinition = _bulkUpdateActionRegistrar.GetByName(context.ActionName)
+                ?? throw new ArgumentException($"Action \"{context.ActionName}\" is not registered using \"{nameof(IBulkUpdateActionRegistrar)}\".");
+
+            if (!Authorize(actionDefinition, context))
+            {
+                return Unauthorized();
+            }
+
+            var notification = new BulkUpdatePushNotification(_userNameResolver.GetCurrentUserName())
+            {
+                Title = $"{context.ActionName}",
+                Description = "Starting…"
             };
 
-            //var jobId = BackgroundJob.Enqueue<ExportJob>(x => x.ExportBackground(request, notification, JobCancellationToken.Null, null));
-            //notification.JobId = jobId;
+            var jobId = BackgroundJob.Enqueue<BulkUpdateJob>(x => x.Execute(context, notification, JobCancellationToken.Null, null));
+            notification.JobId = jobId;
 
             return Ok(notification);
         }
 
         /// <summary>
-        /// Attempts to cancel export task
+        /// Attempts to cancel running task
         /// </summary>
         /// <param name="cancellationRequest">Cancellation request with task id</param>
         /// <returns></returns>
         [HttpPost]
         [Route("task/cancel")]
         [CheckPermission(Permission = BulkUpdatePredefinedPermissions.Execute)]
-        public IHttpActionResult CancelExport([FromBody]UpdateCancellationRequest cancellationRequest)
+        public IHttpActionResult Cancel([FromBody]UpdateCancellationRequest cancellationRequest)
         {
             BackgroundJob.Delete(cancellationRequest.JobId);
             return Ok();
@@ -118,11 +123,10 @@ namespace VirtoCommerce.CatalogModule.Web.BulkUpdate.Controllers.Api
         #region Authorization
 
         /// <summary>
-        /// 
         /// Performs all definition security handlers checks, and returns true if all are succeeded.
         /// </summary>
-        /// <param name="definition">ExportedTypeDefinition.</param>
-        /// <param name="context">ExportDataRequest.</param>
+        /// <param name="definition"></param>
+        /// <param name="context"></param>
         /// <returns>True if all checks are succeeded, otherwise false.</returns>
         private bool Authorize(IBulkUpdateActionDefinition definition, BulkUpdateActionContext context)
         {
