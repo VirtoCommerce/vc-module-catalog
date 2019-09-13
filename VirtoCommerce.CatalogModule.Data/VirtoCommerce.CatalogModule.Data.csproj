@@ -109,6 +109,7 @@
     <Compile Include="BulkUpdate\Model\BulkUpdateActionContext.cs" />
     <Compile Include="BulkUpdate\Model\BulkUpdateActionResult.cs" />
     <Compile Include="BulkUpdate\Model\BulkUpdateDataQuery.cs" />
+    <Compile Include="BulkUpdate\Model\ChangeCategoryBulkUpdateAction.cs" />
     <Compile Include="BulkUpdate\Model\ChangeCategoryActionContext.cs" />
     <Compile Include="BulkUpdate\Model\IBulkUpdateAction.cs" />
     <Compile Include="BulkUpdate\Model\IBulkUpdateActionData.cs" />
