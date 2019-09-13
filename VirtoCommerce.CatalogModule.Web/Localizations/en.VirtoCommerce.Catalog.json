@@ -464,7 +464,15 @@
           "placeholder": "Add number",
           "description": "Bounds will be sorted automatically before saving. Price ranges are constructed as follows: Under [bound 1], [bound 1] to [bound 2], ... , Over [bound N]"
         }
-      }
+      },
+      "exporter-list": {
+        "title": "Export provider list",
+        "subtitle": "Select provider for export products"
+      },
+      "exporter": {
+        "productTitle": "Product export",
+        "productSubtitle": "Export products to json or csv"
+      } 
     },
     "widgets": {
       "catalogLanguages": {
