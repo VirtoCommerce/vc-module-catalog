@@ -466,8 +466,8 @@
         }
       },
       "exporter-list": {
-        "title": "Available export modules",
-        "subtitle": "Select module for export products"
+        "title": "Available exporters",
+        "subtitle": "Select exporter for catalog products"
       },
       "exporter": {
         "productTitle": "Export catalog products",
