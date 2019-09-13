@@ -180,17 +180,18 @@
     <script type="text/ng-template" id="ShortText-multilang.html">
         <div class="form-group" ng-repeat="(language, langValuesGroup) in context.langValuesMap" ng-if="isLanguageVisible(language)">
             <div class="form-input __langs">
-                <span ng-if="language.length>2" class="flag flag-{{language.substr(3).toLowerCase()}}"></span>
-                <span ng-if="language.length<=2" class="langCode">{{language.toUpperCase()}}</span>
-                <input ng-disabled="currentEntity.isReadOnly"
-                       ng-required="currentEntity.required && !currentEntity.isReadOnly"
-                       ng-model="langValuesGroup.currentPropValues[0].value"
-                       name="{{currentEntity.name}}"
-                       placeholder="Please enter value"
-                       type="text"
-                       ng-maxlength="currentEntity.validationRule.charCountMax"
-                       ng-minlength="currentEntity.validationRule.charCountMin"
-                       ng-pattern="currentEntity.validationRule.regExp">
+                <div class="localized-name">
+                    <label class="lang-code">{{language}}</label>
+                    <input ng-disabled="currentEntity.isReadOnly"
+                           ng-required="currentEntity.required && !currentEntity.isReadOnly"
+                           ng-model="langValuesGroup.currentPropValues[0].value"
+                           name="{{currentEntity.name}}"
+                           placeholder="Please enter value"
+                           type="text"
+                           ng-maxlength="currentEntity.validationRule.charCountMax"
+                           ng-minlength="currentEntity.validationRule.charCountMin"
+                           ng-pattern="currentEntity.validationRule.regExp">
+                </div>
             </div>
             <va-property-messages></va-property-messages>
         </div>
