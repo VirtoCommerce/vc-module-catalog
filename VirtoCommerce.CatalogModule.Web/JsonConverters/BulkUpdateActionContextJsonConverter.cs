@@ -24,10 +24,10 @@ namespace VirtoCommerce.CatalogModule.Web.JsonConverters
             var obj = JObject.Load(reader);
 
             var typeName = objectType.Name;
-            var actionTypeName = obj["actionTypeName"];
-            if (actionTypeName != null)
+            var contextTypeName = obj["contextTypeName"];
+            if (contextTypeName != null)
             {
-                typeName = actionTypeName.Value<string>();
+                typeName = contextTypeName.Value<string>();
             }
 
             var result = AbstractTypeFactory<BulkUpdateActionContext>.TryCreateInstance(typeName);

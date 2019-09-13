@@ -4,7 +4,9 @@ using System.Web.Http;
 using FluentValidation;
 using Hangfire.Common;
 using Microsoft.Practices.Unity;
+using VirtoCommerce.CatalogModule.Data.BulkUpdate.Extensions;
 using VirtoCommerce.CatalogModule.Data.BulkUpdate.Model;
+using VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.ChangeCategory;
 using VirtoCommerce.CatalogModule.Data.BulkUpdate.Services;
 using VirtoCommerce.CatalogModule.Data.ExportImport;
 using VirtoCommerce.CatalogModule.Data.Model;
@@ -37,6 +39,7 @@ using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.Platform.Data.Infrastructure;
 using VirtoCommerce.Platform.Data.Infrastructure.Interceptors;
 using VirtoCommerce.Platform.Data.Repositories;
+using BulkUpdateModel = VirtoCommerce.CatalogModule.Data.BulkUpdate.Model;
 
 namespace VirtoCommerce.CatalogModule.Web
 {
@@ -134,6 +137,8 @@ namespace VirtoCommerce.CatalogModule.Web
 
             _container.RegisterInstance<IBulkUpdateActionRegistrar>(new BulkUpdateActionRegistrar());
             _container.RegisterType<IBulkUpdateActionExecutor, BulkUpdateActionExecutor>();
+            _container.RegisterType<IBulkUpdateActionFactory, BulkUpdateActionFactory>();
+            _container.RegisterType<BulkUpdateModel.IPagedDataSourceFactory, BulkUpdateDataSourceFactory>();
 
             #endregion Bulk update
         }
@@ -229,8 +234,24 @@ namespace VirtoCommerce.CatalogModule.Web
 
             #endregion
 
+            #region Bulk update
+
             AbstractTypeFactory<BulkUpdateActionContext>.RegisterType<ChangeCategoryActionContext>();
             AbstractTypeFactory<BulkUpdateDataQuery>.RegisterType<ProductBulkUpdateDataQuery>();
+
+            var actionRegistrar = _container.Resolve<IBulkUpdateActionRegistrar>();
+
+            actionRegistrar.Register(new BulkUpdateActionDefinitionBuilder(
+                new BulkUpdateActionDefinition()
+                {
+                    Name = nameof(ChangeCategoryBulkUpdateAction),
+                    AppliableTypes = new string[] { nameof(CatalogProduct), },
+                })
+                .WithActionFactory(_container.Resolve<IBulkUpdateActionFactory>())
+                .WithDataSourceFactory(_container.Resolve<BulkUpdateModel.IPagedDataSourceFactory>())
+            );
+
+            #endregion Bulk update
         }
 
         #endregion

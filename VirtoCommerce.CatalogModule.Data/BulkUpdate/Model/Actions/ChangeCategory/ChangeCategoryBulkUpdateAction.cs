@@ -5,23 +5,24 @@ using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Platform.Core.Common;
 
-namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model
+namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.ChangeCategory
 {
     public class ChangeCategoryBulkUpdateAction : IBulkUpdateAction
     {
         private readonly IItemService _itemService;
         private readonly ICatalogService _catalogService;
 
-        public ChangeCategoryBulkUpdateAction(IItemService itemService, ICatalogService catalogService)
+        public ChangeCategoryBulkUpdateAction(IItemService itemService, ICatalogService catalogService, BulkUpdateActionContext context)
         {
             _itemService = itemService;
             _catalogService = catalogService;
+            Context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        public BulkUpdateActionContext Context { get; }
+        public BulkUpdateActionContext Context { get; protected set; }
         public IBulkUpdateActionData GetActionData()
         {
-            throw new System.NotImplementedException();
+            return null;
         }
 
         public BulkUpdateActionResult Validate()

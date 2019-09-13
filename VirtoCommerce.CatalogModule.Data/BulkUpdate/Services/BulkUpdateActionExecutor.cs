@@ -56,7 +56,7 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Services
 
                 if (proceed)
                 {
-                    var dataSourceFactory = actionDefinition.DataSourceFactory ?? throw new ArgumentException(nameof(IBulkUpdateActionDefinition.DataSourceFactory));
+                    var dataSourceFactory = actionDefinition.DataSourceFactory ?? throw new ArgumentException(nameof(BulkUpdateActionDefinition.DataSourceFactory));
                     var dataSource = dataSourceFactory.Create(context.DataQuery);
                     totalCount = dataSource.GetTotalCount();
                     processedCount = 0;

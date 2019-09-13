@@ -5,10 +5,10 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Services
 {
     public interface IBulkUpdateActionRegistrar
     {
-        IBulkUpdateActionDefinition Register(IBulkUpdateActionDefinition definition);
+        BulkUpdateActionDefinition Register(BulkUpdateActionDefinition definition);
 
-        IBulkUpdateActionDefinition GetByName(string name);
+        BulkUpdateActionDefinition GetByName(string name);
 
-        IEnumerable<IBulkUpdateActionDefinition> GetAll();
+        IEnumerable<BulkUpdateActionDefinition> GetAll();
     }
 }

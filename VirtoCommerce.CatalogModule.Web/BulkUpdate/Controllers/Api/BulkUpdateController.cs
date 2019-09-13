@@ -33,7 +33,7 @@ namespace VirtoCommerce.CatalogModule.Web.BulkUpdate.Controllers.Api
         /// <returns>The list of registered actions</returns>
         [HttpGet]
         [Route("actions")]
-        [ResponseType(typeof(IBulkUpdateActionDefinition[]))]
+        [ResponseType(typeof(BulkUpdateActionDefinition[]))]
         [CheckPermission(Permission = BulkUpdatePredefinedPermissions.Read)]
         public IHttpActionResult GetRegisteredActions()
         {
@@ -128,7 +128,7 @@ namespace VirtoCommerce.CatalogModule.Web.BulkUpdate.Controllers.Api
         /// <param name="definition"></param>
         /// <param name="context"></param>
         /// <returns>True if all checks are succeeded, otherwise false.</returns>
-        private bool Authorize(IBulkUpdateActionDefinition definition, BulkUpdateActionContext context)
+        private bool Authorize(BulkUpdateActionDefinition definition, BulkUpdateActionContext context)
         {
             // TechDebt: Need to add permission and custom authorization for bulk update.
             // For that we could use IExportSecurityHandler and IPerrmissionExportSecurityHandlerFactory - just need to move them to platform and remove export specific objects

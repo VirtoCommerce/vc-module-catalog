@@ -1,4 +1,4 @@
-namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model
+namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.ChangeCategory
 {
     public class ChangeCategoryActionContext : BulkUpdateActionContext
     {
