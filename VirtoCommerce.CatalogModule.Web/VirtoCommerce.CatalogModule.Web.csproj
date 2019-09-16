@@ -195,6 +195,7 @@
     <Content Include="Scripts\blades\bulk\bulk-action-progress.tpl.html" />
     <Content Include="Scripts\blades\bulk\action-change-category.js" />
     <Content Include="Scripts\blades\bulk\action-change-category.tpl.html" />
+    <Content Include="Scripts\blades\bulk\bulk-action-registrar.js" />
     <Content Include="Scripts\blades\bulk\step-edit-properties.js" />
     <Content Include="Scripts\blades\bulk\step-edit-properties.tpl.html" />
     <Content Include="Scripts\blades\bulk\action-edit-properties.js" />

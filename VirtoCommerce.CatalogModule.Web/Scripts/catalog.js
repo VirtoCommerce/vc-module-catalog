@@ -75,8 +75,8 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
         };
     }])
     .run(
-        ['platformWebApp.authService', 'platformWebApp.mainMenuService', 'platformWebApp.widgetService', '$state', 'platformWebApp.pushNotificationTemplateResolver', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.catalogImportService', 'virtoCommerce.catalogModule.catalogExportService', 'platformWebApp.permissionScopeResolver', 'virtoCommerce.catalogModule.catalogs', 'virtoCommerce.catalogModule.predefinedSearchFilters', 'platformWebApp.metaFormsService', 'virtoCommerce.catalogModule.itemTypesResolverService', '$http', '$compile', 'virtoCommerce.exportModule.genericViewerItemService', 
-            function (authService, mainMenuService, widgetService, $state, pushNotificationTemplateResolver, bladeNavigationService, catalogImportService, catalogExportService, scopeResolver, catalogs, predefinedSearchFilters, metaFormsService, itemTypesResolverService, $http, $compile, genericViewerItemService) {
+        ['platformWebApp.authService', 'platformWebApp.mainMenuService', 'platformWebApp.widgetService', '$state', 'platformWebApp.pushNotificationTemplateResolver', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.catalogImportService', 'virtoCommerce.catalogModule.catalogExportService', 'platformWebApp.permissionScopeResolver', 'virtoCommerce.catalogModule.catalogs', 'virtoCommerce.catalogModule.predefinedSearchFilters', 'platformWebApp.metaFormsService', 'virtoCommerce.catalogModule.itemTypesResolverService', '$http', '$compile', 'virtoCommerce.exportModule.genericViewerItemService', 'virtoCommerce.catalogModule.catalogBulkActionService',
+            function (authService, mainMenuService, widgetService, $state, pushNotificationTemplateResolver, bladeNavigationService, catalogImportService, catalogExportService, scopeResolver, catalogs, predefinedSearchFilters, metaFormsService, itemTypesResolverService, $http, $compile, genericViewerItemService, catalogBulkActionService) {
 
             //Register module in main menu
             var menuItem = {
@@ -368,6 +368,18 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                     newBlade.totalItemsCount = (newBlade.selectedProducts || []).length;
                 }
             });
+
+                catalogBulkActionService.register({
+                    name: 'ChangeCategoryBulkUpdateAction',
+                    controller: 'virtoCommerce.catalogModule.changeCategoryActionStepsController',
+                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/bulk/action-change-category.tpl.html',
+                });
+
+                catalogBulkActionService.register({
+                    name: 'EditPropertiesBulkUpdateAction',
+                    controller: 'virtoCommerce.catalogModule.editPropertiesActionController',
+                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/bulk/action-edit-properties.tpl.html',
+                });
 
             genericViewerItemService.registerViewer('CatalogProduct', function (item) {
                 var itemCopy = angular.copy(item);

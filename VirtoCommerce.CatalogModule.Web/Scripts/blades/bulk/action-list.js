@@ -1,12 +1,12 @@
 angular.module('virtoCommerce.catalogModule')
-    .controller('virtoCommerce.catalogModule.actionListController', ['$scope', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.bulkActions', function ($scope, bladeNavigationService, bulkActions) {
+    .controller('virtoCommerce.catalogModule.actionListController', ['$scope', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.catalogBulkActionService', 'virtoCommerce.catalogModule.bulkActions', function ($scope, bladeNavigationService, bulkActionServiceRegistrar, bulkActions) {
         var blade = $scope.blade;
         $scope.selectedNodeId = null;
 
         function initializeBlade() {
-            bulkActions.getActions(function(data) {
+            bulkActions.getActions(function (data) {
                 if (data) {
-                    blade.actions = _.each(data, function(action) { blade.initializeAction(action); });
+                    blade.actions = _.each(data, function (action) { blade.initializeAction(action); });
                 }
             });
 
@@ -16,22 +16,29 @@ angular.module('virtoCommerce.catalogModule')
         $scope.openBlade = function(data) {
             var newBlade = {};
             angular.copy(data, newBlade);
-            newBlade.selectedCategories = blade.selectedCategories;
-            newBlade.selectedProducts = blade.selectedProducts;
-            newBlade.catalog = blade.catalog;
 
-            if (angular.isFunction(data.onInitialize)) {
-                data.onInitialize(newBlade);
+            var registrationInfo = bulkActionServiceRegistrar.getByName(data.name);
+            if (!registrationInfo) {
+                bladeNavigationService.setError(`Can't find controller for action ${data.name}`, blade);
+            } else {
+                newBlade.controller = registrationInfo.controller;
+                newBlade.template = registrationInfo.template;
+                newBlade.actionDataContext.dataQuery = angular.extend({
+                    categoryIds: _.pluck(blade.selectedCategories, 'id'),
+                    objectIds: _.pluck(blade.selectedProducts, 'id'),
+                    catalogIds: [blade.catalog.id]
+                }, newBlade.actionDataContext.dataQuery);
+
+                bladeNavigationService.showBlade(newBlade, blade);
             }
-
-            bladeNavigationService.showBlade(newBlade, blade);
         };
 
         $scope.blade.headIcon = 'fa-upload';
         $scope.blade.title = "Bulk action list";
         $scope.blade.subtitle = "Select action for bulk operation";
 
-        blade.initializeAction = function (action) {
+
+        blade.initializeAction = function(action) {
             action.title = `actions.types.${action.name}.title`;
             action.subtitle = `actions.types.${action.name}.subtitle`;
             action.id = action.name;
@@ -40,22 +47,10 @@ angular.module('virtoCommerce.catalogModule')
                 actionName: action.name,
                 contextTypeName: action.contextTypeName,
                 dataQuery: {
-                    dataQueryTypeName: action.dataQueryTypeName,
-                    categoryIds: _.pluck(blade.selectedCategories, 'id'),
-                    objectIds: _.pluck(blade.selectedProducts, 'id'),
-                    catalogIds: [blade.catalog.id]
+                    dataQueryTypeName: action.dataQueryTypeName
                 }
             };
-
-            if (action.name === 'ChangeCategoryBulkUpdateAction') {
-                action.controller = 'virtoCommerce.catalogModule.changeCategoryActionStepsController';
-                action.template = 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/bulk/action-change-category.tpl.html';
-            }
-
-            if (action.name === 'EditPropertiesBulkUpdateAction') {
-                action.controller = 'virtoCommerce.catalogModule.editPropertiesActionController';
-                action.template = 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/bulk/action-edit-properties.tpl.html';
-            }
         };
+
         initializeBlade();
     }]);
