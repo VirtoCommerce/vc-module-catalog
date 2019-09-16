@@ -456,6 +456,25 @@ angular.module('virtoCommerce.catalogModule')
                         return $sessionStorage.catalogClipboardContent && blade.catalog && !blade.catalog.isVirtual;
                     },
                     permission: 'catalog:create'
+                },
+                {
+                    name: "Bulk Actions",
+                    icon: 'fa fa-cubes',
+                    executeMethod: function () {
+                        var newBlade = {
+                            id: 'catalogBulkActions',
+                            title: 'catalog.blades.exporter-list.title',
+                            subtitle: 'catalog.blades.exporter-list.subtitle',
+                            catalog: blade.catalog,
+                            controller: 'virtoCommerce.catalogModule.actionListController',
+                            template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/bulk/action-list.tpl.html',
+                            selectedProducts: _.filter($scope.gridApi.selection.getSelectedRows(), function (x) { return x.type == 'product' }),
+                            selectedCategories: _.filter($scope.gridApi.selection.getSelectedRows(), function (x) { return x.type == 'category' })
+                        };
+                        bladeNavigationService.showBlade(newBlade, blade);
+                    },
+                    canExecuteMethod: isItemsChecked,
+                    permission: 'bulkupdate:access'
                 }
             ];
 

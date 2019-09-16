@@ -2,7 +2,12 @@ using System;
 using System.IO;
 using System.Web.Http;
 using FluentValidation;
+using Hangfire.Common;
 using Microsoft.Practices.Unity;
+using VirtoCommerce.CatalogModule.Data.BulkUpdate.Extensions;
+using VirtoCommerce.CatalogModule.Data.BulkUpdate.Model;
+using VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.ChangeCategory;
+using VirtoCommerce.CatalogModule.Data.BulkUpdate.Services;
 using VirtoCommerce.CatalogModule.Data.ExportImport;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
@@ -34,6 +39,7 @@ using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.Platform.Data.Infrastructure;
 using VirtoCommerce.Platform.Data.Infrastructure.Interceptors;
 using VirtoCommerce.Platform.Data.Repositories;
+using BulkUpdateModel = VirtoCommerce.CatalogModule.Data.BulkUpdate.Model;
 
 namespace VirtoCommerce.CatalogModule.Web
 {
@@ -113,6 +119,7 @@ namespace VirtoCommerce.CatalogModule.Web
             _container.RegisterType<IProperyDictionaryItemService, PropertyDictionaryItemService>();
             _container.RegisterType<IProperyDictionaryItemSearchService, PropertyDictionaryItemService>();
 
+
             #endregion
 
             #region Property Validation
@@ -125,6 +132,15 @@ namespace VirtoCommerce.CatalogModule.Web
             _container.RegisterType<AbstractValidator<IHasProperties>, HasPropertiesValidator>();
 
             #endregion
+
+            #region Bulk update
+
+            _container.RegisterInstance<IBulkUpdateActionRegistrar>(new BulkUpdateActionRegistrar());
+            _container.RegisterType<IBulkUpdateActionExecutor, BulkUpdateActionExecutor>();
+            _container.RegisterType<IBulkUpdateActionFactory, BulkUpdateActionFactory>();
+            _container.RegisterType<BulkUpdateModel.IPagedDataSourceFactory, BulkUpdateDataSourceFactory>();
+
+            #endregion Bulk update
         }
 
         public override void PostInitialize()
@@ -137,6 +153,11 @@ namespace VirtoCommerce.CatalogModule.Web
 
             var httpConfiguration = _container.Resolve<HttpConfiguration>();
             httpConfiguration.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new SearchCriteriaJsonConverter());
+            httpConfiguration.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new BulkUpdateActionContextJsonConverter());
+            httpConfiguration.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new BulkUpdateDataQueryJsonConverter());
+
+            // This line refreshes Hangfire JsonConverter with the current JsonSerializerSettings - PolymorphicExportDataQueryJsonConverter needs to be included
+            JobHelper.SetSerializerSettings(httpConfiguration.Formatters.JsonFormatter.SerializerSettings);
 
             // Register dynamic property for storing browsing filters
             var filteredBrowsingProperty = new DynamicProperty
@@ -212,6 +233,27 @@ namespace VirtoCommerce.CatalogModule.Web
                     .WithAuthorizationHandler(_container.Resolve<CatalogExportSecurityHandler>()));
 
             #endregion
+
+            #region Bulk update
+
+            AbstractTypeFactory<BulkUpdateActionContext>.RegisterType<ChangeCategoryActionContext>();
+            AbstractTypeFactory<BulkUpdateDataQuery>.RegisterType<ProductBulkUpdateDataQuery>();
+
+            var actionRegistrar = _container.Resolve<IBulkUpdateActionRegistrar>();
+
+            actionRegistrar.Register(new BulkUpdateActionDefinitionBuilder(
+                new BulkUpdateActionDefinition()
+                {
+                    Name = nameof(ChangeCategoryBulkUpdateAction),
+                    AppliableTypes = new[] { nameof(CatalogProduct), },
+                    ContextTypeName = nameof(ChangeCategoryActionContext),
+                    DataQueryTypeName = nameof(ProductBulkUpdateDataQuery),
+                })
+                .WithActionFactory(_container.Resolve<IBulkUpdateActionFactory>())
+                .WithDataSourceFactory(_container.Resolve<BulkUpdateModel.IPagedDataSourceFactory>())
+            );
+
+            #endregion Bulk update
         }
 
         #endregion

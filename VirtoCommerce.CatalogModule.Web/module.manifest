@@ -130,6 +130,9 @@
             <permission id="catalog:imagetypes" name="Manage image types" description=""/>
             <permission id="catalog:BrowseFilters:Read" name="Read Browse Filters" description=""/>
             <permission id="catalog:BrowseFilters:Update" name="Update Browse Filters" description=""/>
+            <permission id="bulkupdate:access" name="Access to bulk update" description=""/>
+            <permission id="bulkupdate:read" name="See bulk update actions" description=""/>
+            <permission id="bulkupdate:execute" name="Run bulk update actions" description=""/>
         </group>
     </permissions>
 </module>

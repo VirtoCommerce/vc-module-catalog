@@ -15,6 +15,7 @@
         <div class="inner-block" ng-init="setGridOptions('catalog-item-select-grid', {
                 data: 'items',
                 rowTemplate: 'item-list.row.html',
+                multiSelect: options.showCheckingMultiple,
                 rowHeight: 61,
                 enableSelectionBatchEvent: false,
                 columnDefs: [

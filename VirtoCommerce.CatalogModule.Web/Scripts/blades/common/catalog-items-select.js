@@ -215,7 +215,11 @@ angular.module('virtoCommerce.catalogModule')
             };
             if (row.isSelected) {
                 if (!_.contains($scope.options.selectedItemIds, row.entity.id)) {
-                    $scope.options.selectedItemIds.push(row.entity.id);
+                    if ($scope.options.showCheckingMultiple) {
+                        $scope.options.selectedItemIds.push(row.entity.id);
+                    } else {
+                        $scope.options.selectedItemIds = [row.entity.id];
+                    }
                 }
             }
             else {
