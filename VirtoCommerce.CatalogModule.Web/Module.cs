@@ -7,6 +7,7 @@ using Microsoft.Practices.Unity;
 using VirtoCommerce.CatalogModule.Data.BulkUpdate.Extensions;
 using VirtoCommerce.CatalogModule.Data.BulkUpdate.Model;
 using VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.ChangeCategory;
+using VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.UpdateProperties;
 using VirtoCommerce.CatalogModule.Data.BulkUpdate.Services;
 using VirtoCommerce.CatalogModule.Data.ExportImport;
 using VirtoCommerce.CatalogModule.Data.Model;
@@ -138,6 +139,7 @@ namespace VirtoCommerce.CatalogModule.Web
             _container.RegisterInstance<IBulkUpdateActionRegistrar>(new BulkUpdateActionRegistrar());
             _container.RegisterType<IBulkUpdateActionExecutor, BulkUpdateActionExecutor>();
             _container.RegisterType<IBulkUpdateActionFactory, BulkUpdateActionFactory>();
+            _container.RegisterType<IBulkUpdatePropertyManager, BulkUpdatePropertyManager>();
             _container.RegisterType<BulkUpdateModel.IPagedDataSourceFactory, BulkUpdateDataSourceFactory>();
 
             #endregion Bulk update
@@ -239,6 +241,8 @@ namespace VirtoCommerce.CatalogModule.Web
             AbstractTypeFactory<BulkUpdateActionContext>.RegisterType<ChangeCategoryActionContext>();
             AbstractTypeFactory<BulkUpdateDataQuery>.RegisterType<ProductBulkUpdateDataQuery>();
 
+            AbstractTypeFactory<BulkUpdateActionContext>.RegisterType<UpdatePropertiesActionContext>();
+
             var actionRegistrar = _container.Resolve<IBulkUpdateActionRegistrar>();
 
             actionRegistrar.Register(new BulkUpdateActionDefinitionBuilder(
@@ -247,6 +251,18 @@ namespace VirtoCommerce.CatalogModule.Web
                     Name = nameof(ChangeCategoryBulkUpdateAction),
                     AppliableTypes = new[] { nameof(CatalogProduct), },
                     ContextTypeName = nameof(ChangeCategoryActionContext),
+                    DataQueryTypeName = nameof(ProductBulkUpdateDataQuery),
+                })
+                .WithActionFactory(_container.Resolve<IBulkUpdateActionFactory>())
+                .WithDataSourceFactory(_container.Resolve<BulkUpdateModel.IPagedDataSourceFactory>())
+            );
+
+            actionRegistrar.Register(new BulkUpdateActionDefinitionBuilder(
+                new BulkUpdateActionDefinition()
+                {
+                    Name = nameof(UpdatePropertiesBulkUpdateAction),
+                    AppliableTypes = new string[] { nameof(CatalogProduct), },
+                    ContextTypeName = nameof(UpdatePropertiesActionContext),
                     DataQueryTypeName = nameof(ProductBulkUpdateDataQuery),
                 })
                 .WithActionFactory(_container.Resolve<IBulkUpdateActionFactory>())

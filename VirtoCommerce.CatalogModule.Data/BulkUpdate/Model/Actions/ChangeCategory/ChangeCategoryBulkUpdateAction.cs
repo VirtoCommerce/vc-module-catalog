@@ -11,15 +11,16 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.ChangeCatego
     {
         private readonly IItemService _itemService;
         private readonly ICatalogService _catalogService;
+        private readonly ChangeCategoryActionContext _context;
 
-        public ChangeCategoryBulkUpdateAction(IItemService itemService, ICatalogService catalogService, BulkUpdateActionContext context)
+        public ChangeCategoryBulkUpdateAction(IItemService itemService, ICatalogService catalogService, ChangeCategoryActionContext context)
         {
             _itemService = itemService;
             _catalogService = catalogService;
-            Context = context ?? throw new ArgumentNullException(nameof(context));
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        public BulkUpdateActionContext Context { get; protected set; }
+        public BulkUpdateActionContext Context => _context;
         public IBulkUpdateActionData GetActionData()
         {
             return null;
@@ -28,19 +29,14 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.ChangeCatego
         public BulkUpdateActionResult Validate()
         {
             var result = BulkUpdateActionResult.Success;
-            if (Context is ChangeCategoryActionContext changeCategoryContext)
+
+            var dstCatalog = _catalogService.GetById(_context.CatalogId);
+            if (dstCatalog.IsVirtual)
             {
-                var dstCatalog = _catalogService.GetById(changeCategoryContext.CatalogId);
-                if (dstCatalog.IsVirtual)
-                {
-                    result.Succeeded = false;
-                    result.Errors.Add("Unable to move in virtual catalog");
-                }
+                result.Succeeded = false;
+                result.Errors.Add("Unable to move in virtual catalog");
             }
-            else
-            {
-                throw new InvalidCastException(nameof(ChangeCategoryActionContext));
-            }
+
             return result;
         }
 
@@ -48,35 +44,28 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.ChangeCatego
         {
             var result = BulkUpdateActionResult.Success;
 
-            var changeCategoryContext = Context as ChangeCategoryActionContext;
-
-            if (changeCategoryContext == null)
-            {
-                throw new InvalidCastException(nameof(ChangeCategoryActionContext));
-            }
-
             var products = new List<CatalogProduct>();
             //Move products
             foreach (var listEntryProduct in entities)
             {
                 var product = _itemService.GetById(listEntryProduct.Id, ItemResponseGroup.ItemLarge);
-                if (product.CatalogId != changeCategoryContext.CatalogId)
+                if (product.CatalogId != _context.CatalogId)
                 {
-                    product.CatalogId = changeCategoryContext.CatalogId;
+                    product.CatalogId = _context.CatalogId;
                     product.CategoryId = null;
                     foreach (var variation in product.Variations)
                     {
-                        variation.CatalogId = changeCategoryContext.CatalogId;
+                        variation.CatalogId = _context.CatalogId;
                         variation.CategoryId = null;
                     }
 
                 }
-                if (product.CategoryId != changeCategoryContext.CategoryId)
+                if (product.CategoryId != _context.CategoryId)
                 {
-                    product.CategoryId = changeCategoryContext.CategoryId;
+                    product.CategoryId = _context.CategoryId;
                     foreach (var variation in product.Variations)
                     {
-                        variation.CategoryId = changeCategoryContext.CategoryId;
+                        variation.CategoryId = _context.CategoryId;
                     }
                 }
                 products.Add(product);

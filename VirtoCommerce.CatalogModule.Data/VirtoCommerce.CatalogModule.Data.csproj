@@ -105,6 +105,11 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="BulkUpdate\Extensions\BulkUpdateActionDefinitionBuilderExtensions.cs" />
+    <Compile Include="BulkUpdate\Model\Actions\UpdateProperties\UpdatePropertiesActionData.cs" />
+    <Compile Include="BulkUpdate\Services\BulkUpdatePropertyManager.cs" />
+    <Compile Include="BulkUpdate\Services\IBulkUpdatePropertyManager.cs" />
+    <Compile Include="BulkUpdate\Model\Actions\UpdateProperties\UpdatePropertiesActionContext.cs" />
+    <Compile Include="BulkUpdate\Model\Actions\UpdateProperties\UpdatePropertiesBulkUpdateAction.cs" />
     <Compile Include="BulkUpdate\Services\BulkUpdateActionFactory.cs" />
     <Compile Include="BulkUpdate\Model\BulkActionCancellationRequest.cs" />
     <Compile Include="BulkUpdate\BulkUpdatePredefinedPermissions.cs" />

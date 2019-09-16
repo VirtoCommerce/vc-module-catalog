@@ -10,6 +10,7 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Services
 {
     public class ProductDataSource : IPagedDataSource
     {
+        private readonly ProductBulkUpdateDataQuery _dataQuery;
         private readonly ICatalogSearchService _searchService;
         private readonly IItemService _itemService;
 
@@ -17,23 +18,21 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Services
         {
             _searchService = searchService;
             _itemService = itemService;
-            DataQuery = dataQuery ?? throw new ArgumentNullException(nameof(dataQuery));
+            _dataQuery = dataQuery ?? throw new ArgumentNullException(nameof(dataQuery));
         }
 
         public int PageSize { get; set; } = 50;
         public IEnumerable<IEntity> Items { get; protected set; }
         public int CurrentPageNumber { get; protected set; }
 
-        public ProductBulkUpdateDataQuery DataQuery { get; protected set; }
-
         public virtual bool Fetch()
         {
-            var hasObjectIds = !DataQuery.ObjectIds.IsNullOrEmpty();
-            var searchCriteria = BuildSearchCriteria(DataQuery);
+            var hasObjectIds = !_dataQuery.ObjectIds.IsNullOrEmpty();
+            var searchCriteria = BuildSearchCriteria(_dataQuery);
 
             if (hasObjectIds)
             {
-                var objectIds = DataQuery.ObjectIds.Skip(searchCriteria.Skip).Take(searchCriteria.Take).ToArray();
+                var objectIds = _dataQuery.ObjectIds.Skip(searchCriteria.Skip).Take(searchCriteria.Take).ToArray();
                 Items = _itemService.GetByIds(objectIds, ItemResponseGroup.ItemInfo);
             }
             else
@@ -49,7 +48,7 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Services
 
         public virtual int GetTotalCount()
         {
-            var searchCriteria = BuildSearchCriteria(DataQuery);
+            var searchCriteria = BuildSearchCriteria(_dataQuery);
 
             searchCriteria.Take = 0;
             searchCriteria.Skip = 0;
