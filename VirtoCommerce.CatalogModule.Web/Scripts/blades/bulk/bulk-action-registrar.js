@@ -6,7 +6,16 @@ angular.module('virtoCommerce.catalogModule')
                 return _.find(registrationList, function (info) { return info.name === name});
             },
             register: function (registrationInfo) {
-                registrationList.push(registrationInfo);
+
+                var index = _.findIndex(registrationList,
+                    function (info) { return info.name === registrationInfo.name; });
+                if (index >= 0) {
+                    registrationList[index] = registrationInfo;
+                }
+                else 
+                {
+                    registrationList.push(registrationInfo);
+                }
             }
         };
         return retVal;
