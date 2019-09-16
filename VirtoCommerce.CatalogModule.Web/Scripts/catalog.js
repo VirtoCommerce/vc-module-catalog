@@ -75,8 +75,8 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
         };
     }])
     .run(
-        ['platformWebApp.authService', 'platformWebApp.mainMenuService', 'platformWebApp.widgetService', '$state', 'platformWebApp.pushNotificationTemplateResolver', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.catalogImportService', 'virtoCommerce.catalogModule.catalogExportService', 'platformWebApp.permissionScopeResolver', 'virtoCommerce.catalogModule.catalogs', 'virtoCommerce.catalogModule.predefinedSearchFilters', 'platformWebApp.metaFormsService', 'virtoCommerce.catalogModule.itemTypesResolverService', '$http', '$compile', 'virtoCommerce.exportModule.genericViewerItemService', 'virtoCommerce.catalogModule.catalogBulkActionService' ,
-            function (authService, mainMenuService, widgetService, $state, pushNotificationTemplateResolver, bladeNavigationService, catalogImportService, catalogExportService, scopeResolver, catalogs, predefinedSearchFilters, metaFormsService, itemTypesResolverService, $http, $compile, genericViewerItemService, catalogBulkActionService) {
+        ['platformWebApp.authService', 'platformWebApp.mainMenuService', 'platformWebApp.widgetService', '$state', 'platformWebApp.pushNotificationTemplateResolver', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.catalogImportService', 'virtoCommerce.catalogModule.catalogExportService', 'platformWebApp.permissionScopeResolver', 'virtoCommerce.catalogModule.catalogs', 'virtoCommerce.catalogModule.predefinedSearchFilters', 'platformWebApp.metaFormsService', 'virtoCommerce.catalogModule.itemTypesResolverService', '$http', '$compile', 'virtoCommerce.exportModule.genericViewerItemService', 
+            function (authService, mainMenuService, widgetService, $state, pushNotificationTemplateResolver, bladeNavigationService, catalogImportService, catalogExportService, scopeResolver, catalogs, predefinedSearchFilters, metaFormsService, itemTypesResolverService, $http, $compile, genericViewerItemService) {
 
             //Register module in main menu
             var menuItem = {
@@ -368,56 +368,6 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                     newBlade.totalItemsCount = (newBlade.selectedProducts || []).length;
                 }
             });
-
-            catalogBulkActionService.register(
-                {
-                    icon: 'fa fa-cogs',
-                    name: 'Change Category',
-                    description: 'Move products to another category',
-                    controller: 'virtoCommerce.catalogModule.changeCategoryActionStepsController',
-                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/bulk/action-change-category.tpl.html',
-                    id: 'changeCatalogOrCategory',
-                    title: 'Move selected products to category',
-                    subtitle: 'Select category to move',
-                    isNew: true,
-                    onInitialize: function(newBlade) {
-                        var actionDataContext = {
-                            actionName: "ChangeCategoryBulkUpdateAction",
-                            contextTypeName: 'ChangeCategoryActionContext',
-                            dataQuery: {
-                                dataQueryType: 'ProductBulkUpdateDataQuery',
-                                categoryIds: _.pluck(newBlade.selectedCategories, 'id'),
-                                objectIds: _.pluck(newBlade.selectedProducts, 'id'),
-                                catalogIds: [newBlade.catalog.id]
-                            }
-                        };
-                        newBlade.actionDataContext = actionDataContext;
-                    }
-                });
-            catalogBulkActionService.register(
-                {
-                    icon: 'fa fa-cogs',
-                    name: 'Edit Properties',
-                    description: 'Update one ore more properties',
-                    controller: 'virtoCommerce.catalogModule.editPropertiesActionController',
-                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/bulk/action-edit-properties.tpl.html',
-                    id: 'editPropertiesAction',
-                    title: 'Set property value',
-                    subtitle: 'Set one value for selected properties',
-                    isNew: true,
-                    onInitialize: function (newBlade) {
-                        var actionDataContext = {
-                            contextTypeName: 'EditPropertiesActionContext',
-                            dataQuery: {
-                                dataQueryType: 'ProductBulkUpdateDataQuery',
-                                categoryIds: _.pluck(newBlade.selectedCategories, 'id'),
-                                objectIds: _.pluck(newBlade.selectedProducts, 'id'),
-                                catalogIds: [newBlade.catalog.id]
-                            }
-                        };
-                        newBlade.actionDataContext = actionDataContext;
-                    }
-                });                
 
             genericViewerItemService.registerViewer('CatalogProduct', function (item) {
                 var itemCopy = angular.copy(item);
