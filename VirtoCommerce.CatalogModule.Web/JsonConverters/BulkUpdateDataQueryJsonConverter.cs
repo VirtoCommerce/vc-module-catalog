@@ -24,7 +24,7 @@ namespace VirtoCommerce.CatalogModule.Web.JsonConverters
             var obj = JObject.Load(reader);
 
             var typeName = objectType.Name;
-            var dataQueryTypeName = obj["dataQueryType"];
+            var dataQueryTypeName = obj["dataQueryTypeName"];
             if (dataQueryTypeName != null)
             {
                 typeName = dataQueryTypeName.Value<string>();

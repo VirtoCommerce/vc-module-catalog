@@ -741,5 +741,17 @@
         "description": "Catalogs, Categories, Products"
       }
     }
+  },
+  "actions": {
+    "types": {
+      "ChangeCategoryBulkUpdateAction": {
+        "title": "Change Category",
+        "subtitle": "Move products to another category"
+      },
+      "EditPropertiesBulkUpdateAction": {
+        "title": "Edit Properties",
+        "subtitle": "Update one ore more properties"
+      }
+    } 
   }
 }
