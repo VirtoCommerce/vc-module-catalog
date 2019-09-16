@@ -1,8 +1,8 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <RootNamespace></RootNamespace>
     <IsPackable>False</IsPackable>
@@ -12,6 +12,7 @@
   <ItemGroup>
     <PackageReference Include="Nuke.Common" Version="0.21.2" />
     <PackageReference Include="GitVersion.CommandLine.DotNetCore" Version="4.0.1-beta1-49" />
+    <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.0.0-beta0003" />
   </ItemGroup>
 
   <ItemGroup>
