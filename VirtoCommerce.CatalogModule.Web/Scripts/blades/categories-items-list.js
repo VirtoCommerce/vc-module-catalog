@@ -473,7 +473,8 @@ angular.module('virtoCommerce.catalogModule')
                         };
                         bladeNavigationService.showBlade(newBlade, blade);
                     },
-                    canExecuteMethod: isItemsChecked
+                    canExecuteMethod: isItemsChecked,
+                    permission: 'bulkupdate:access'
                 }
             ];
 
