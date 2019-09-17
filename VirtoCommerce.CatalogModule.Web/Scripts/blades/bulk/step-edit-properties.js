@@ -84,7 +84,7 @@ angular.module('virtoCommerce.catalogModule')
 
         $scope.updatePropertyValue = function(propName, newValue) {
             if (blade.currentEntities) {
-                var prop = _.find(blade.currentEntities, function(prop) { return prop.name === propName; });
+                var prop = _.find(blade.currentEntities, function (prop) { return prop.name === propName && !prop.id; });
                 if (prop) {
                     prop.values = [{ value: newValue }];
                 }
