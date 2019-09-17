@@ -1,5 +1,5 @@
 angular.module('virtoCommerce.catalogModule')
-    .controller('virtoCommerce.catalogModule.editPropertiesActionStepController', ['$scope', 'virtoCommerce.catalogModule.properties', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.propDictItems', function ($scope, properties, bladeNavigationService, propDictItems) {
+    .controller('virtoCommerce.catalogModule.editPropertiesActionStepController', ['$scope', 'virtoCommerce.catalogModule.properties', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.propDictItems', 'virtoCommerce.customerModule.members', 'platformWebApp.settings', 'virtoCommerce.coreModule.packageType.packageTypeUtils', function ($scope, properties, bladeNavigationService, propDictItems, members, settings, packageTypeUtils) {
         var blade = $scope.blade;
         $scope.isValid = false;
         blade.refresh = function () {
@@ -12,7 +12,11 @@ angular.module('virtoCommerce.catalogModule')
            // blade.currentEntity = entity;
 
             blade.currentEntities = angular.copy(blade.properties);
-
+            initVendors();
+            blade.taxTypes = settings.getValues({ id: 'VirtoCommerce.Core.General.TaxTypes' });
+            blade.weightUnits = settings.getValues({ id: 'VirtoCommerce.Core.General.WeightUnits' });
+            blade.measureUnits = settings.getValues({ id: 'VirtoCommerce.Core.General.MeasureUnits' });
+            blade.packageTypes = packageTypeUtils.getPackageTypes();
         };
 
         $scope.saveChanges = function () {
@@ -25,39 +29,6 @@ angular.module('virtoCommerce.catalogModule')
         $scope.getPropertyDisplayName = function (prop) {
             return _.first(_.map(_.filter(prop.displayNames, function (x) { return x && x.languageCode.startsWith(blade.defaultLanguage); }), function (x) { return x.name; }));
         };
-
-        //$scope.editProperty = function (prop) {
-        //    if (prop.isManageable) {
-        //        var newBlade = {
-        //            id: 'editCategoryProperty',
-        //            currentEntityId: prop ? prop.id : undefined,
-        //            categoryId: blade.categoryId,
-        //            catalogId: blade.catalogId,
-        //            defaultLanguage: blade.defaultLanguage,
-        //            languages: blade.languages,
-        //            controller: 'virtoCommerce.catalogModule.propertyDetailController',
-        //            template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-detail.tpl.html'
-        //        };
-        //        bladeNavigationService.showBlade(newBlade, blade);
-        //    } else {
-        //        editUnmanageable({
-        //            title: 'catalog.blades.item-property-detail.title',
-        //            origEntity: prop
-        //        });
-        //    }
-        //};
-
-        //function editUnmanageable(bladeData) {
-        //    var newBlade = {
-        //        id: 'editItemProperty',
-        //        properties: blade.currentEntities,
-        //        controller: 'virtoCommerce.catalogModule.itemPropertyDetailController',
-        //        template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/item-property-detail.tpl.html'
-        //    };
-        //    angular.extend(newBlade, bladeData);
-
-        //    bladeNavigationService.showBlade(newBlade, blade);
-        //}
 
         $scope.getPropValues = function (propId, keyword, countToSkip, countToTake) {
             return propDictItems.search({
@@ -79,9 +50,57 @@ angular.module('virtoCommerce.catalogModule')
             $scope.isValid = formScope && formScope.$valid;
         }, true);
 
+        //Property with own UI 
+        $scope.$watch('blade.vendor', function(newValues) {
+            $scope.isValid = formScope && formScope.$valid;
+            if (blade.currentEntities) {
+                var vendor = _.find(blade.vendors, function(item) { return item.id === newValues });
+                var vendorProp = _.find(blade.currentEntities, function(prop) { return prop.name === 'Vendor' });
+                if (vendorProp && vendor) {
+                    vendorProp.values = [{ valueId: vendor.id, value: vendor.name }];
+                }
+            }
+        });
+
+        $scope.$watch('blade.taxType', function (newValues) {
+            $scope.isValid = formScope && formScope.$valid;
+            $scope.updatePropertyValue('TaxType', newValues);
+        });
+
+        $scope.$watch('blade.weightUnit', function (newValues) {
+            $scope.isValid = formScope && formScope.$valid;
+            $scope.updatePropertyValue('WeightUnit', newValues);
+        });
+
+        $scope.$watch('blade.packageType', function (newValues) {
+            $scope.isValid = formScope && formScope.$valid;
+            $scope.updatePropertyValue('PackageType', newValues);
+        });
+
+        $scope.$watch('blade.measureUnit', function (newValues) {
+            $scope.isValid = formScope && formScope.$valid;
+            $scope.updatePropertyValue('MeasureUnit', newValues);
+        });
+
+        $scope.updatePropertyValue = function(propName, newValue) {
+            if (blade.currentEntities) {
+                var prop = _.find(blade.currentEntities, function(prop) { return prop.name === propName; });
+                if (prop) {
+                    prop.values = [{ value: newValue }];
+                }
+            }
+        };
+
+
         blade.headIcon = 'fa-gear';
 
         blade.toolbarCommands = [];
         blade.isLoading = false;
         initialize(blade.currentEntity);
+
+        function initVendors() {
+            members.search({ memberType: 'Vendor', sort: 'name:asc', take: 1000 }, function (data) {
+                blade.vendors = data.results;
+            });
+        }
     }]);

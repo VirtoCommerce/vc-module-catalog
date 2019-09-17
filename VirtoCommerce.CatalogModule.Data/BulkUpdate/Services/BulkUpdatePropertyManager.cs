@@ -65,14 +65,15 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Services
             yield return new Property() { Name = nameof(CatalogProduct.TrackInventory), Type = PropertyType.Product, ValueType = PropertyValueType.Boolean, };
             yield return new Property() { Name = nameof(CatalogProduct.MinQuantity), Type = PropertyType.Product, ValueType = PropertyValueType.Integer, };
             yield return new Property() { Name = nameof(CatalogProduct.MaxQuantity), Type = PropertyType.Product, ValueType = PropertyValueType.Integer, };
-            yield return new Property() { Name = nameof(CatalogProduct.Vendor), Type = PropertyType.Product, ValueType = PropertyValueType.ShortText, };
-            yield return new Property() { Name = nameof(CatalogProduct.WeightUnit), Type = PropertyType.Product, ValueType = PropertyValueType.ShortText, };
+            yield return new Property() { Name = nameof(CatalogProduct.Vendor), Type = PropertyType.Product, ValueType = PropertyValueType.ShortText, Dictionary = true };
+            yield return new Property() { Name = nameof(CatalogProduct.WeightUnit), Type = PropertyType.Product, ValueType = PropertyValueType.ShortText, Dictionary = true };
             yield return new Property() { Name = nameof(CatalogProduct.Weight), Type = PropertyType.Product, ValueType = PropertyValueType.Number, };
-            yield return new Property() { Name = nameof(CatalogProduct.MeasureUnit), Type = PropertyType.Product, ValueType = PropertyValueType.ShortText, };
-            yield return new Property() { Name = nameof(CatalogProduct.PackageType), Type = PropertyType.Product, ValueType = PropertyValueType.ShortText, };
+            yield return new Property() { Name = nameof(CatalogProduct.MeasureUnit), Type = PropertyType.Product, ValueType = PropertyValueType.ShortText, Dictionary = true };
+            yield return new Property() { Name = nameof(CatalogProduct.PackageType), Type = PropertyType.Product, ValueType = PropertyValueType.ShortText, Dictionary = true };
             yield return new Property() { Name = nameof(CatalogProduct.Height), Type = PropertyType.Product, ValueType = PropertyValueType.Number, };
             yield return new Property() { Name = nameof(CatalogProduct.Width), Type = PropertyType.Product, ValueType = PropertyValueType.Number, };
             yield return new Property() { Name = nameof(CatalogProduct.Length), Type = PropertyType.Product, ValueType = PropertyValueType.Number, };
+            yield return new Property() { Name = nameof(CatalogProduct.TaxType), Type = PropertyType.Product, ValueType = PropertyValueType.Number, Dictionary = true };
         }
 
         public virtual void UpdateProperties(CatalogProduct[] products, PropertyValue[] propertyValues)
