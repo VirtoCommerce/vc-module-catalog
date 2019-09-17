@@ -1,23 +1,33 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using VirtoCommerce.CatalogModule.Web.Model;
+using VirtoCommerce.CatalogModule.Web.Services;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Platform.Core.Common;
+using domain = VirtoCommerce.Domain.Catalog.Model;
 
 namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.ChangeCategory
 {
     public class ChangeCategoryBulkUpdateAction : IBulkUpdateAction
     {
-        private readonly IItemService _itemService;
+        private readonly IListEntryMover<domain.Category> _categoryMover;
+        private readonly IListEntryMover<CatalogProduct> _productMover;
         private readonly ICatalogService _catalogService;
         private readonly ChangeCategoryActionContext _context;
 
-        public ChangeCategoryBulkUpdateAction(IItemService itemService, ICatalogService catalogService, ChangeCategoryActionContext context)
+
+
+        public ChangeCategoryBulkUpdateAction(ICatalogService catalogService,
+            IListEntryMover<domain.Category> categoryMover,
+            IListEntryMover<CatalogProduct> productMover,
+            BulkUpdateActionContext context)
         {
-            _itemService = itemService;
             _catalogService = catalogService;
-            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _categoryMover = categoryMover;
+            _productMover = productMover;
+            Context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         public BulkUpdateActionContext Context => _context;
@@ -42,41 +52,22 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.ChangeCatego
 
         public BulkUpdateActionResult Execute(IEnumerable<IEntity> entities)
         {
-            //TechDebt: Get rid of code duplication at CatalogModuleListEntryController move method 
+            var changeCategoryContext = Context as ChangeCategoryActionContext ?? throw new InvalidCastException(nameof(ChangeCategoryActionContext));
+            var listEntries = entities.Cast<ListEntry>().ToArray();
+
             var result = BulkUpdateActionResult.Success;
-
-            var products = new List<CatalogProduct>();
-            //Move products
-            foreach (var listEntryProduct in entities)
+            var moveInfo = new MoveInfo()
             {
-                var product = _itemService.GetById(listEntryProduct.Id, ItemResponseGroup.ItemLarge);
-                if (product.CatalogId != _context.CatalogId)
-                {
-                    product.CatalogId = _context.CatalogId;
-                    product.CategoryId = null;
-                    foreach (var variation in product.Variations)
-                    {
-                        variation.CatalogId = _context.CatalogId;
-                        variation.CategoryId = null;
-                    }
+                Catalog = changeCategoryContext.CatalogId,
+                Category = changeCategoryContext.CategoryId,
+                ListEntries = listEntries,
+            };
 
-                }
-                if (product.CategoryId != _context.CategoryId)
-                {
-                    product.CategoryId = _context.CategoryId;
-                    foreach (var variation in product.Variations)
-                    {
-                        variation.CategoryId = _context.CategoryId;
-                    }
-                }
-                products.Add(product);
-                products.AddRange(product.Variations);
-            }
+            var categories = _categoryMover.PrepareMove(moveInfo);
+            var products = _productMover.PrepareMove(moveInfo);
 
-            if (products.Any())
-            {
-                _itemService.Update(products.ToArray());
-            }
+            _categoryMover.ConfirmMove(categories);
+            _productMover.ConfirmMove(products);
 
             return result;
         }
