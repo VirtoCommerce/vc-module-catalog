@@ -16,9 +16,8 @@ angular.module('virtoCommerce.catalogModule')
         };
 
         $scope.saveChanges = function () {
-            blade.properties = blade.currentEntities;
             if (blade.onSelected) {
-                blade.onSelected();
+                blade.onSelected(blade.currentEntities);
             }
             $scope.bladeClose();
         };

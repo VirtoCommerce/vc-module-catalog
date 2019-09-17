@@ -22,10 +22,10 @@ angular.module('virtoCommerce.catalogModule')
             bulkActions.getActionData(blade.actionDataContext,
                 function(data) {
                     blade.properties = data.properties;
-
-                    for (var prop in data.properties) {
-                        prop.values = [];
-                    }
+                    _.each(blade.properties,
+                        function (prop) {
+                            prop.values = [];
+                        });
                 });
         }
 
@@ -72,7 +72,7 @@ angular.module('virtoCommerce.catalogModule')
                 propGroups: [{ title: 'Product fields', type: 'own' },{ title: 'catalog.properties.product', type: 'Product' }, { title: 'catalog.properties.variation', type: 'Variation' }],
                 onSelected: function (editedProperties) {
                     blade.canStartProcess = true;
-                    blade.actionDataContext.editedProperties = editedProperties;
+                    blade.actionDataContext.properties = editedProperties;
                 }
             };
             bladeNavigationService.showBlade(newBlade, blade);
