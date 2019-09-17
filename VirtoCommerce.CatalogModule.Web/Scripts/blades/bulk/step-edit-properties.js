@@ -84,5 +84,5 @@ angular.module('virtoCommerce.catalogModule')
 
         blade.toolbarCommands = [];
         blade.isLoading = false;
-        initialize(blade.currentEntity);
+        initialize();
     }]);
