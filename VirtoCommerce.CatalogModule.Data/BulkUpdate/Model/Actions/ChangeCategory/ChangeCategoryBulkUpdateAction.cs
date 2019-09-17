@@ -42,6 +42,7 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.ChangeCatego
 
         public BulkUpdateActionResult Execute(IEnumerable<IEntity> entities)
         {
+            //TechDebt: Get rid of code duplication at CatalogModuleListEntryController move method 
             var result = BulkUpdateActionResult.Success;
 
             var products = new List<CatalogProduct>();
