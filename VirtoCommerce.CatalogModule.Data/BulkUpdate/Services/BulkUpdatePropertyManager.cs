@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Data.BulkUpdate.Model;
 using VirtoCommerce.Domain.Catalog.Model;
+using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Services
@@ -10,30 +11,41 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Services
     public class BulkUpdatePropertyManager : IBulkUpdatePropertyManager
     {
         private readonly IPagedDataSourceFactory _dataSourceFactory;
+        private readonly IItemService _itemService;
 
-        public BulkUpdatePropertyManager(IPagedDataSourceFactory dataSourceFactory)
+        public BulkUpdatePropertyManager(IPagedDataSourceFactory dataSourceFactory, IItemService itemService)
         {
             _dataSourceFactory = dataSourceFactory;
+            _itemService = itemService;
         }
 
         public virtual Property[] GetProperties(ProductBulkUpdateDataQuery dataQuery)
         {
-            // Maybe could get all product inherited properties faster, by getting all outlines for categories and get all properties with categoryId or CatalogId
+            // TechDebt: Should get all product inherited properties faster, by getting all outlines for categories and get all properties with categoryId or CatalogId
             var dataSource = _dataSourceFactory.Create(dataQuery);
             var result = new List<Property>();
             var propertyIds = new HashSet<string>();
+            var catalogId = dataQuery.CatalogIds?.Length == 1 ? dataQuery.CatalogIds.First() : null;
 
             while (dataSource.Fetch())
             {
-                var newProperties = dataSource.Items
-                    .Cast<CatalogProduct>()
+                var productIds = dataSource.Items.Select(x => x.Id).ToArray();
+                var products = _itemService.GetByIds(productIds, ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemProperties, catalogId);
+                var newProperties = products
                     .SelectMany(x => x.Properties.Where(y => y.IsInherited))
                     .Distinct(AnonymousComparer.Create<Property, string>(x => x.Id))
-                    .Where(x => !propertyIds.Contains(x.Id));
-
+                    .Where(x => !propertyIds.Contains(x.Id))
+                    .ToArray();
+                var propertyValues = products
+                    .SelectMany(x => x.PropertyValues.Where(y => y.IsInherited))
+                    .Distinct(AnonymousComparer.Create<PropertyValue, string>(x => x.Id))
+                    .Where(x => !propertyIds.Contains(x.Id))
+                    .ToArray();
 
                 propertyIds.AddRange(newProperties.Select(x => x.Id));
+                propertyIds.AddRange(propertyValues.Select(x => x.Id));
                 result.AddRange(newProperties);
+                result.AddRange(propertyValues.Select(x => x.Property));
             }
 
             result.AddRange(GetStandardProperties());

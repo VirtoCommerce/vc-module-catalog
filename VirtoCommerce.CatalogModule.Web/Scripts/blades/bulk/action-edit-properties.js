@@ -22,6 +22,10 @@ angular.module('virtoCommerce.catalogModule')
             bulkActions.getActionData(blade.actionDataContext,
                 function(data) {
                     blade.properties = data.properties;
+
+                    for (var prop in data.properties) {
+                        prop.values = [];
+                    }
                 });
         }
 
