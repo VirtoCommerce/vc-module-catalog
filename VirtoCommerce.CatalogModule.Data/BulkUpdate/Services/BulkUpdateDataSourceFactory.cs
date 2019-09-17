@@ -1,30 +1,29 @@
 using System;
 using VirtoCommerce.CatalogModule.Data.BulkUpdate.Model;
-using VirtoCommerce.Domain.Catalog.Services;
+using VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.ChangeCategory;
+using VirtoCommerce.CatalogModule.Web.Services;
 
 namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Services
 {
     public class BulkUpdateDataSourceFactory : IPagedDataSourceFactory
     {
-        private readonly ICatalogSearchService _searchService;
-        private readonly IItemService _itemService;
+        private readonly IListEntrySearchService _searchService;
 
-        public BulkUpdateDataSourceFactory(ICatalogSearchService searchService, IItemService itemService)
+        public BulkUpdateDataSourceFactory(IListEntrySearchService searchService)
         {
             _searchService = searchService;
-            _itemService = itemService;
         }
 
-        public IPagedDataSource Create(BulkUpdateDataQuery dataQuery)
+        public IPagedDataSource Create(BulkUpdateActionContext context)
         {
             IPagedDataSource result = null;
 
-            if (dataQuery is ProductBulkUpdateDataQuery productDataQuery)
+            if (context is ChangeCategoryActionContext changeCategoryActionContext)
             {
-                result = new ProductDataSource(_searchService, _itemService, productDataQuery);
+                result = new ListEntryPagedDataSource(_searchService, changeCategoryActionContext.DataQuery);
             }
 
-            return result ?? throw new ArgumentException($"Unsupported bulk update query type: {dataQuery.GetType().Name}");
+            return result ?? throw new ArgumentException($"Unsupported bulk update query type: {context.GetType().Name}");
         }
     }
 }
