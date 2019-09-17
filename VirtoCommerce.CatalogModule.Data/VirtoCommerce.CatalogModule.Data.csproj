@@ -105,6 +105,8 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="BulkUpdate\Extensions\BulkUpdateActionDefinitionBuilderExtensions.cs" />
+    <Compile Include="BulkUpdate\Model\ListEntryDataQuery.cs" />
+    <Compile Include="BulkUpdate\Services\ListEntryPagedDataSource.cs" />
     <Compile Include="BulkUpdate\Services\BulkUpdateActionFactory.cs" />
     <Compile Include="BulkUpdate\Model\BulkActionCancellationRequest.cs" />
     <Compile Include="BulkUpdate\BulkUpdatePredefinedPermissions.cs" />
