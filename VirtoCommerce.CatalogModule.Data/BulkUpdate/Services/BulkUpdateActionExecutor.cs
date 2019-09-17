@@ -57,7 +57,8 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Services
                 if (proceed)
                 {
                     var dataSourceFactory = actionDefinition.DataSourceFactory ?? throw new ArgumentException(nameof(BulkUpdateActionDefinition.DataSourceFactory));
-                    var dataSource = dataSourceFactory.Create(context);
+                    var dataSource = dataSourceFactory.Create(
+                        context);
                     totalCount = dataSource.GetTotalCount();
                     processedCount = 0;
 
@@ -78,8 +79,9 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Services
                         }
 
                         processedCount += dataSource.Items.Count();
+                        progressInfo.ProcessedCount = processedCount;
 
-                        if (processedCount < totalCount)
+                        if (processedCount != totalCount)
                         {
                             progressInfo.Description = $"{processedCount} out of {totalCount} have been updated.";
                             progressCallback(progressInfo);

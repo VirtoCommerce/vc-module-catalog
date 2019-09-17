@@ -27,7 +27,7 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Services
 
         public virtual bool Fetch()
         {
-            if (DataQuery.ListEntries.IsNullOrEmpty())
+            if (!DataQuery.ListEntries.IsNullOrEmpty())
             {
                 var (skip, take) = GetSkipTake();
                 Items = DataQuery.ListEntries.Skip(skip).Take(take).ToArray();
@@ -52,7 +52,7 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Services
         {
             var result = 0;
 
-            if (DataQuery.ListEntries.IsNullOrEmpty())
+            if (!DataQuery.ListEntries.IsNullOrEmpty())
             {
                 result = DataQuery.ListEntries.Length;
             }

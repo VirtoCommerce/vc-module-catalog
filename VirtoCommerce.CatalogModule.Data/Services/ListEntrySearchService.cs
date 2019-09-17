@@ -2,12 +2,13 @@ using System;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Web.Converters;
 using VirtoCommerce.CatalogModule.Web.Model;
+using VirtoCommerce.CatalogModule.Web.Services;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Platform.Core.Assets;
 using VirtoCommerce.Platform.Core.Common;
 
-namespace VirtoCommerce.CatalogModule.Web.Services
+namespace VirtoCommerce.CatalogModule.Data.Services
 {
     public class ListEntrySearchService : IListEntrySearchService
     {

@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Web.Model;
+using VirtoCommerce.CatalogModule.Web.Services;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Platform.Core.Common;
 using domain = VirtoCommerce.Domain.Catalog.Model;
 
-namespace VirtoCommerce.CatalogModule.Web.Services
+namespace VirtoCommerce.CatalogModule.Data.Services
 {
     public class CategoryMover : IListEntryMover<domain.Category>
     {
