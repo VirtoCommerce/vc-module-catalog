@@ -26,7 +26,7 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Services
 
             else if (context is UpdatePropertiesActionContext bulkUpdateActionContext)
             {
-                result = new ListEntryPagedDataSource(_searchService, bulkUpdateActionContext.DataQuery);
+                result = new ListEntryProductPagedDataSource(_searchService, bulkUpdateActionContext.DataQuery);
             }
 
             return result ?? throw new ArgumentException($"Unsupported bulk update query type: {context.GetType().Name}");

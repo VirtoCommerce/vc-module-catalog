@@ -136,6 +136,7 @@
     <Compile Include="BulkUpdate\Services\IBulkUpdateActionExecutor.cs" />
     <Compile Include="BulkUpdate\Services\IBulkUpdateActionRegistrar.cs" />
     <Compile Include="BulkUpdate\Model\BulkUpdateProgressInfo.cs" />
+    <Compile Include="BulkUpdate\Services\ListEntryProductPagedDataSource.cs" />
     <Compile Include="BulkUpdate\Services\ProductDataSource.cs" />
     <Compile Include="CatalogConstants.cs" />
     <Compile Include="ExportImport\CategoryExportPagedDataSource.cs" />
