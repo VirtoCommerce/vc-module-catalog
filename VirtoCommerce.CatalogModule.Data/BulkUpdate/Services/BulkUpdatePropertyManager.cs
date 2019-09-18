@@ -31,21 +31,15 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Services
             {
                 var productIds = dataSource.Items.Select(x => x.Id).ToArray();
                 var products = _itemService.GetByIds(productIds, ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemProperties);
+                // Using only product inherited properties from categories, own product props (only from PropertyValues) are not set via bulk update 
                 var newProperties = products
                     .SelectMany(x => x.Properties.Where(y => y.IsInherited))
                     .Distinct(AnonymousComparer.Create<Property, string>(x => x.Id))
                     .Where(x => !propertyIds.Contains(x.Id))
                     .ToArray();
-                var propertyValues = products
-                    .SelectMany(x => x.PropertyValues.Where(y => y.IsInherited))
-                    .Distinct(AnonymousComparer.Create<PropertyValue, string>(x => x.Id))
-                    .Where(x => !propertyIds.Contains(x.Id))
-                    .ToArray();
 
                 propertyIds.AddRange(newProperties.Select(x => x.Id));
-                propertyIds.AddRange(propertyValues.Select(x => x.Id));
                 result.AddRange(newProperties);
-                result.AddRange(propertyValues.Select(x => x.Property));
             }
 
             result.AddRange(GetStandardProperties());

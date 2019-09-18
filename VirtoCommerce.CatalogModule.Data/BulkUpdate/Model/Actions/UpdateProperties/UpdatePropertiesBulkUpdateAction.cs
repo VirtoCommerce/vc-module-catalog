@@ -1,14 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using VirtoCommerce.CatalogModule.Data.BulkUpdate.Services;
 using VirtoCommerce.CatalogModule.Web.Converters;
 using VirtoCommerce.CatalogModule.Web.Model;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Platform.Core.Common;
-using Property = VirtoCommerce.CatalogModule.Web.Model.Property;
-using PropertyValue = VirtoCommerce.Domain.Catalog.Model.PropertyValue;
+using domain = VirtoCommerce.Domain.Catalog.Model;
+using web = VirtoCommerce.CatalogModule.Web.Model;
 
 namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.UpdateProperties
 {
@@ -17,6 +19,8 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.UpdateProper
         private readonly UpdatePropertiesActionContext _context;
         private readonly IBulkUpdatePropertyManager _bulkUpdatePropertyManager;
         private readonly IItemService _itemService;
+
+        private readonly Dictionary<string, MethodInfo> _productProperties = new Dictionary<string, MethodInfo>();
 
         public UpdatePropertiesBulkUpdateAction(IBulkUpdatePropertyManager bulkUpdatePropertyManager,
             IItemService itemService,
@@ -75,7 +79,7 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.UpdateProper
 
         }
 
-        protected virtual bool ChangesProductPropertyValues(Web.Model.Property[] propertiesToSet, CatalogProduct[] products, BulkUpdateActionResult result)
+        protected virtual bool ChangesProductPropertyValues(web.Property[] propertiesToSet, CatalogProduct[] products, BulkUpdateActionResult result)
         {
             var hasChanges = false;
 
@@ -85,15 +89,13 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.UpdateProper
                 {
                     foreach (var propertyToSet in propertiesToSet)
                     {
-                        var valueToSet = propertyToSet.Multivalue ? propertyToSet.Values : propertyToSet.Values.FirstOrDefault()?.Value;
-
                         if (!string.IsNullOrEmpty(propertyToSet.Id))
                         {
-                            hasChanges = SetCustomProperty(product, propertyToSet, valueToSet) || hasChanges;
+                            hasChanges = SetCustomProperty(product, propertyToSet) || hasChanges;
                         }
                         else if (!string.IsNullOrEmpty(propertyToSet.Name))
                         {
-                            hasChanges = SetOwnProperty(product, propertyToSet, valueToSet) || hasChanges;
+                            hasChanges = SetOwnProperty(product, propertyToSet) || hasChanges;
                         }
                     }
                 }
@@ -107,7 +109,7 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.UpdateProper
             return hasChanges;
         }
 
-        protected virtual bool SetCustomProperty(CatalogProduct product, Property propertyToSet, object valueToSet)
+        protected virtual bool SetCustomProperty(CatalogProduct product, web.Property propertyToSet)
         {
             bool result;
 
@@ -117,7 +119,9 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.UpdateProper
 
                 if (!productPropertyValues.IsNullOrEmpty())
                 {
+#pragma warning disable S2259 // Null pointers should not be dereferenced
                     foreach (var productPropertyValue in productPropertyValues)
+#pragma warning restore S2259 // Null pointers should not be dereferenced
                     {
                         product.PropertyValues?.Remove(productPropertyValue);
                     }
@@ -131,7 +135,14 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.UpdateProper
 
                 if (productPropertyValue != null)
                 {
-                    productPropertyValue.Value = valueToSet;
+                    var propertyValueToSet = propertyToSet.Values.FirstOrDefault();
+
+                    productPropertyValue.Value = propertyValueToSet.Value;
+
+                    if (propertyToSet.Dictionary)
+                    {
+                        productPropertyValue.ValueId = propertyValueToSet.ValueId;
+                    }
                     result = true;
                 }
                 else
@@ -142,7 +153,7 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.UpdateProper
             return result;
         }
 
-        private bool AddPropertyValues(CatalogProduct product, Property propertyToSet)
+        private bool AddPropertyValues(CatalogProduct product, web.Property propertyToSet)
         {
             var property = product.Properties.FirstOrDefault(x => x.Id.EqualsInvariant(propertyToSet.Id));
 
@@ -152,7 +163,7 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.UpdateProper
 
                 if (product.PropertyValues == null)
                 {
-                    product.PropertyValues = new List<PropertyValue>();
+                    product.PropertyValues = new List<domain.PropertyValue>();
                 }
 
                 foreach (var propertyValue in propertyToSet.Values.Select(x => x.ToCoreModel()))
@@ -169,10 +180,70 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.UpdateProper
             return result;
         }
 
-        protected virtual bool SetOwnProperty(CatalogProduct product, Web.Model.Property propertyToSet, object valueToSet)
+        protected virtual bool SetOwnProperty(CatalogProduct product, web.Property propertyToSet)
         {
-            var result = true;
-            // Need to find product property by name and assign the value to it
+            var result = false;
+            var propertyValueToSet = propertyToSet.Values.FirstOrDefault();
+            var valueToSet = propertyToSet.Dictionary ? propertyValueToSet?.ValueId : propertyValueToSet?.Value;
+            var setter = GetProductPropertySetter(product, propertyToSet);
+
+            if (setter != null)
+            {
+                var convertedValue = ConvertValue(propertyToSet.ValueType, valueToSet);
+
+                setter.Invoke(product, new object[] { convertedValue });
+                result = true;
+            }
+
+            return result;
+        }
+
+        protected virtual MethodInfo GetProductPropertySetter(CatalogProduct product, web.Property propertyToSet)
+        {
+            MethodInfo result;
+            var propertyName = propertyToSet.Name;
+
+            if (!_productProperties.TryGetValue(propertyName, out result))
+            {
+                var productType = product.GetType();
+                var productProperty = productType.GetProperty(propertyName);
+                result = productProperty?.GetSetMethod();
+
+                _productProperties.Add(propertyName, result);
+            }
+            return result;
+        }
+
+        protected virtual object ConvertValue(PropertyValueType valueType, object value)
+        {
+            object result;
+
+            switch (valueType)
+            {
+                case PropertyValueType.LongText:
+                    result = Convert.ToString(value);
+                    break;
+                case PropertyValueType.ShortText:
+                    result = Convert.ToString(value);
+                    break;
+                case PropertyValueType.Number:
+                    result = Convert.ToDecimal(value, CultureInfo.InvariantCulture);
+                    break;
+                case PropertyValueType.DateTime:
+                    result = Convert.ToDateTime(value, CultureInfo.InvariantCulture);
+                    break;
+                case PropertyValueType.Boolean:
+                    result = Convert.ToBoolean(value);
+                    break;
+                case PropertyValueType.Integer:
+                    result = Convert.ToInt32(value);
+                    break;
+                case PropertyValueType.GeoPoint:
+                    result = Convert.ToString(value);
+                    break;
+                default:
+                    throw new NotSupportedException();
+            }
 
             return result;
         }
