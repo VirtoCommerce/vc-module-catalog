@@ -7,6 +7,8 @@ using VirtoCommerce.CatalogModule.Web.Model;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Platform.Core.Common;
+using Property = VirtoCommerce.CatalogModule.Web.Model.Property;
+using PropertyValue = VirtoCommerce.Domain.Catalog.Model.PropertyValue;
 
 namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.UpdateProperties
 {
@@ -55,7 +57,7 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.UpdateProper
                 throw new ArgumentException($"{GetType().Name} could be applied to product entities only.");
             }
 
-            var productIds = listEntries.Cast<ListEntryProduct>().Select(x => x.Id).ToArray();
+            var productIds = listEntries.Where(x => x.Type.EqualsInvariant(ListEntryProduct.TypeName)).Select(x => x.Id).ToArray();
             var products = _itemService.GetByIds(productIds, ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemProperties);
             var hasChanges = false;
 
@@ -105,26 +107,63 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.UpdateProper
             return hasChanges;
         }
 
-        protected virtual bool SetCustomProperty(CatalogProduct product, Web.Model.Property propertyToSet, object valueToSet)
+        protected virtual bool SetCustomProperty(CatalogProduct product, Property propertyToSet, object valueToSet)
         {
-            var result = false;
+            bool result;
 
-            var productPropertyValue = product.PropertyValues?.FirstOrDefault(x => x.Id.EqualsInvariant(propertyToSet.Id));
-
-            if (productPropertyValue != null)
+            if (propertyToSet.Multivalue)
             {
-                productPropertyValue.Value = valueToSet;
-                result = true;
+                var productPropertyValues = product.PropertyValues?.Where(x => x.Property != null && x.Property.Id.EqualsInvariant(propertyToSet.Id)).ToArray();
+
+                if (!productPropertyValues.IsNullOrEmpty())
+                {
+                    foreach (var productPropertyValue in productPropertyValues)
+                    {
+                        product.PropertyValues?.Remove(productPropertyValue);
+                    }
+                }
+
+                result = AddPropertyValues(product, propertyToSet);
             }
             else
             {
-                var property = product.Properties.FirstOrDefault(x => x.Id.EqualsInvariant(propertyToSet.Id));
+                var productPropertyValue = product.PropertyValues?.FirstOrDefault(x => x.Property != null && x.Property.Id.EqualsInvariant(propertyToSet.Id));
 
-                if (property != null)
+                if (productPropertyValue != null)
                 {
-                    // Need to add product.PropertyValue here for that property
+                    productPropertyValue.Value = valueToSet;
                     result = true;
                 }
+                else
+                {
+                    result = AddPropertyValues(product, propertyToSet);
+                }
+            }
+            return result;
+        }
+
+        private bool AddPropertyValues(CatalogProduct product, Property propertyToSet)
+        {
+            var property = product.Properties.FirstOrDefault(x => x.Id.EqualsInvariant(propertyToSet.Id));
+
+            var result = false;
+            if (property != null)
+            {
+
+                if (product.PropertyValues == null)
+                {
+                    product.PropertyValues = new List<PropertyValue>();
+                }
+
+                foreach (var propertyValue in propertyToSet.Values.Select(x => x.ToCoreModel()))
+                {
+                    propertyValue.Property = property;
+                    propertyValue.PropertyId = property.Id;
+                    propertyValue.PropertyName = property.Name;
+                    product.PropertyValues.Add(propertyValue);
+                }
+
+                result = true;
             }
 
             return result;
@@ -132,7 +171,7 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.UpdateProper
 
         protected virtual bool SetOwnProperty(CatalogProduct product, Web.Model.Property propertyToSet, object valueToSet)
         {
-            var result = false;
+            var result = true;
             // Need to find product property by name and assign the value to it
 
             return result;
