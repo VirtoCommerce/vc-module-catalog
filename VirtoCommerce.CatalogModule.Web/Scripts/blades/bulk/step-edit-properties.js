@@ -9,7 +9,6 @@ angular.module('virtoCommerce.catalogModule')
         function initialize() {
             
             blade.subtitle = 'catalog.blades.property-list.subtitle';
-           // blade.currentEntity = entity;
 
             blade.currentEntities = angular.copy(blade.properties);
             initVendors();
@@ -96,7 +95,7 @@ angular.module('virtoCommerce.catalogModule')
 
         blade.toolbarCommands = [];
         blade.isLoading = false;
-        initialize(blade.currentEntity);
+        initialize();
 
         function initVendors() {
             members.search({ memberType: 'Vendor', sort: 'name:asc', take: 1000 }, function (data) {
