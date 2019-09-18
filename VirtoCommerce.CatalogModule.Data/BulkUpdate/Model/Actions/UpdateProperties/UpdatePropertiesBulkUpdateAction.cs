@@ -22,8 +22,6 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.UpdateProper
 
         public IBulkUpdateActionData GetActionData()
         {
-            //var dataQuery = _context.DataQuery as ProductBulkUpdateDataQuery ?? throw new InvalidCastException($"{nameof(Context)}.{nameof(UpdatePropertiesActionContext.DataQuery)} should be of \"{nameof(ProductBulkUpdateDataQuery)}\" type.");
-
             var properties = _bulkUpdatePropertyManager.GetProperties(_context);
 
             return new UpdatePropertiesActionData()
