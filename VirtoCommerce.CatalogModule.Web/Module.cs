@@ -255,7 +255,6 @@ namespace VirtoCommerce.CatalogModule.Web
                     Name = nameof(ChangeCategoryBulkUpdateAction),
                     AppliableTypes = new[] { nameof(CatalogProduct), },
                     ContextTypeName = nameof(ChangeCategoryActionContext),
-                    DataQueryTypeName = nameof(ProductBulkUpdateDataQuery),
                 })
                 .WithActionFactory(_container.Resolve<IBulkUpdateActionFactory>())
                 .WithDataSourceFactory(_container.Resolve<BulkUpdateModel.IPagedDataSourceFactory>())
@@ -267,7 +266,6 @@ namespace VirtoCommerce.CatalogModule.Web
                     Name = nameof(UpdatePropertiesBulkUpdateAction),
                     AppliableTypes = new string[] { nameof(CatalogProduct), },
                     ContextTypeName = nameof(UpdatePropertiesActionContext),
-                    DataQueryTypeName = nameof(ProductBulkUpdateDataQuery),
                 })
                 .WithActionFactory(_container.Resolve<IBulkUpdateActionFactory>())
                 .WithDataSourceFactory(_container.Resolve<BulkUpdateModel.IPagedDataSourceFactory>())
