@@ -52,14 +52,13 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.ChangeCatego
 
         public BulkUpdateActionResult Execute(IEnumerable<IEntity> entities)
         {
-            var changeCategoryContext = Context as ChangeCategoryActionContext ?? throw new InvalidCastException(nameof(ChangeCategoryActionContext));
             var listEntries = entities.Cast<ListEntry>().ToArray();
 
             var result = BulkUpdateActionResult.Success;
             var moveInfo = new MoveInfo()
             {
-                Catalog = changeCategoryContext.CatalogId,
-                Category = changeCategoryContext.CategoryId,
+                Catalog = _context.CatalogId,
+                Category = _context.CategoryId,
                 ListEntries = listEntries,
             };
 

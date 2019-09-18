@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Data.BulkUpdate.Services;
 using VirtoCommerce.CatalogModule.Web.Converters;
+using VirtoCommerce.CatalogModule.Web.Model;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Platform.Core.Common;
@@ -47,7 +48,33 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.UpdateProper
         {
             var result = BulkUpdateActionResult.Success;
             var propertiesToSet = _context.Properties;
-            var products = entities.Cast<CatalogProduct>().ToArray();
+            var listEntries = entities.Cast<ListEntry>().ToArray();
+
+            if (listEntries.Any(x => !x.Type.EqualsInvariant(ListEntryProduct.TypeName)))
+            {
+                throw new ArgumentException($"{GetType().Name} could be applied to product entities only.");
+            }
+
+            var productIds = listEntries.Cast<ListEntryProduct>().Select(x => x.Id).ToArray();
+            var products = _itemService.GetByIds(productIds, ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemProperties);
+            var hasChanges = false;
+
+            if (!products.IsNullOrEmpty())
+            {
+                hasChanges = ChangesProductPropertyValues(propertiesToSet, products, result);
+            }
+
+            if (hasChanges)
+            {
+                _itemService.Update(products);
+            }
+
+            return result;
+
+        }
+
+        protected virtual bool ChangesProductPropertyValues(Web.Model.Property[] propertiesToSet, CatalogProduct[] products, BulkUpdateActionResult result)
+        {
             var hasChanges = false;
 
             foreach (var product in products)
@@ -75,13 +102,7 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.UpdateProper
                 }
             }
 
-            if (hasChanges)
-            {
-                _itemService.Update(products);
-            }
-
-            return result;
-
+            return hasChanges;
         }
 
         protected virtual bool SetCustomProperty(CatalogProduct product, Web.Model.Property propertyToSet, object valueToSet)
