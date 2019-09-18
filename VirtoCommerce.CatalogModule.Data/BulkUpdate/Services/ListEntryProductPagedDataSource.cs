@@ -26,16 +26,19 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Services
 
             // Find all products inside category list entries
             var categoryIds = listEntries.Where(x => x.Type.EqualsInvariant(ListEntryCategory.TypeName)).Select(x => x.Id).ToArray();
-            var searchResult = SearchProductsInCategories(categoryIds, 0, 0);
-            var productsInCategoriesTotalCount = searchResult.TotalCount;
-
-            categoryProductsSkip = Math.Min(productsInCategoriesTotalCount, skip);
-            categoryProductsTake = Math.Min(take, Math.Max(0, productsInCategoriesTotalCount - skip));
-
-            if (categoryProductsTake > 0)
+            if (!categoryIds.IsNullOrEmpty())
             {
-                searchResult = SearchProductsInCategories(categoryIds, categoryProductsSkip, categoryProductsTake);
-                result.AddRange(searchResult.ListEntries);
+                var searchResult = SearchProductsInCategories(categoryIds, 0, 0);
+                var productsInCategoriesTotalCount = searchResult.TotalCount;
+
+                categoryProductsSkip = Math.Min(productsInCategoriesTotalCount, skip);
+                categoryProductsTake = Math.Min(take, Math.Max(0, productsInCategoriesTotalCount - skip));
+
+                if (productsInCategoriesTotalCount > 0 && categoryProductsTake > 0)
+                {
+                    searchResult = SearchProductsInCategories(categoryIds, categoryProductsSkip, categoryProductsTake);
+                    result.AddRange(searchResult.ListEntries);
+                }
             }
 
             skip -= categoryProductsSkip;
@@ -53,9 +56,15 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Services
         protected override int GetEntitiesCount(IEnumerable<ListEntry> listEntries)
         {
             // Find all products inside category list entries
+            var productsInCategoriesTotalCount = 0;
             var categoryIds = listEntries.Where(x => x.Type.EqualsInvariant(ListEntryCategory.TypeName)).Select(x => x.Id).ToArray();
-            var searchResult = SearchProductsInCategories(categoryIds, 0, 0);
-            var productsInCategoriesTotalCount = searchResult.TotalCount;
+
+            if (!categoryIds.IsNullOrEmpty())
+            {
+                var searchResult = SearchProductsInCategories(categoryIds, 0, 0);
+                productsInCategoriesTotalCount = searchResult.TotalCount;
+            }
+
             // Find product list entry count
             var productCount = listEntries.Count(x => x.Type.EqualsInvariant(ListEntryProduct.TypeName));
 
