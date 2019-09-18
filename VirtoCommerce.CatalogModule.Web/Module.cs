@@ -243,8 +243,6 @@ namespace VirtoCommerce.CatalogModule.Web
             #region Bulk update
 
             AbstractTypeFactory<BulkUpdateActionContext>.RegisterType<ChangeCategoryActionContext>();
-            AbstractTypeFactory<BulkUpdateDataQuery>.RegisterType<ProductBulkUpdateDataQuery>();
-
             AbstractTypeFactory<BulkUpdateActionContext>.RegisterType<UpdatePropertiesActionContext>();
 
             var actionRegistrar = _container.Resolve<IBulkUpdateActionRegistrar>();

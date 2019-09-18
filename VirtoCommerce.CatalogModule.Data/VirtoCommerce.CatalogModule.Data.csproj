@@ -128,7 +128,6 @@
     <Compile Include="BulkUpdate\Model\IBulkUpdateActionFactory.cs" />
     <Compile Include="BulkUpdate\Model\IPagedDataSource.cs" />
     <Compile Include="BulkUpdate\Model\IPagedDataSourceFactory.cs" />
-    <Compile Include="BulkUpdate\Model\ProductBulkUpdateDataQuery.cs" />
     <Compile Include="BulkUpdate\Services\BulkUpdateActionDefinitionBuilder.cs" />
     <Compile Include="BulkUpdate\Services\BulkUpdateActionExecutor.cs" />
     <Compile Include="BulkUpdate\Services\BulkUpdateActionRegistrar.cs" />
@@ -137,7 +136,6 @@
     <Compile Include="BulkUpdate\Services\IBulkUpdateActionRegistrar.cs" />
     <Compile Include="BulkUpdate\Model\BulkUpdateProgressInfo.cs" />
     <Compile Include="BulkUpdate\Services\ListEntryProductPagedDataSource.cs" />
-    <Compile Include="BulkUpdate\Services\ProductDataSource.cs" />
     <Compile Include="CatalogConstants.cs" />
     <Compile Include="ExportImport\CategoryExportPagedDataSource.cs" />
     <Compile Include="ExportImport\CategoryExportDataQuery.cs" />
