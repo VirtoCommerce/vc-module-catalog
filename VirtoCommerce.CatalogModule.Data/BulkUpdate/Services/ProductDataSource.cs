@@ -29,17 +29,21 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Services
         {
             var hasObjectIds = !_dataQuery.ObjectIds.IsNullOrEmpty();
             var searchCriteria = BuildSearchCriteria(_dataQuery);
+            string[] productIds;
 
             if (hasObjectIds)
             {
-                var objectIds = _dataQuery.ObjectIds.Skip(searchCriteria.Skip).Take(searchCriteria.Take).ToArray();
-                Items = _itemService.GetByIds(objectIds, ItemResponseGroup.ItemInfo);
+                productIds = _dataQuery.ObjectIds.Skip(searchCriteria.Skip).Take(searchCriteria.Take).ToArray();
             }
             else
             {
                 var searchResult = _searchService.Search(searchCriteria);
-                Items = searchResult.Products;
+                productIds = searchResult.Products.Select(x => x.Id).ToArray();
             }
+
+            Items = _itemService.GetByIds(productIds, ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemProperties)
+                .OrderBy(x => Array.IndexOf(productIds, x.Id))
+                .ToArray();
 
             CurrentPageNumber++;
 
