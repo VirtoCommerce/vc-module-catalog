@@ -376,7 +376,7 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                 });
 
                 catalogBulkActionService.register({
-                    name: 'EditPropertiesBulkUpdateAction',
+                    name: 'UpdatePropertiesBulkUpdateAction',
                     controller: 'virtoCommerce.catalogModule.editPropertiesActionController',
                     template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/bulk/action-edit-properties.tpl.html',
                 });

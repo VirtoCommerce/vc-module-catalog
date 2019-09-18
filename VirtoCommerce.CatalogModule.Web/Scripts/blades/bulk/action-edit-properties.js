@@ -22,6 +22,20 @@ angular.module('virtoCommerce.catalogModule')
             bulkActions.getActionData(blade.actionDataContext,
                 function(data) {
                     blade.properties = data.properties;
+                    _.each(blade.properties,
+                        function (prop) {
+                            if (!prop.id &&
+                            (prop.name === 'Vendor' ||
+                                prop.name === 'TaxType' ||
+                                prop.name === 'MeasureUnit' ||
+                                prop.name === 'PackageType' ||
+                                prop.name === 'WeightUnit')) {
+                                prop.UseDefaultUIForEdit = false;
+                            } else {
+                                prop.UseDefaultUIForEdit = true;
+                            }
+                            prop.values = [];
+                        });
                 });
         }
 
@@ -65,10 +79,10 @@ angular.module('virtoCommerce.catalogModule')
                 controller: 'virtoCommerce.catalogModule.editPropertiesActionStepController',
                 template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/bulk/step-edit-properties.tpl.html',
                 properties: blade.includedProperties,
-                propGroups: [{ title: 'Product fields', type: 'own' },{ title: 'catalog.properties.product', type: 'Product' }, { title: 'catalog.properties.variation', type: 'Variation' }],
+                propGroups: [{ title: 'catalog.properties.product', type: 'Product' }, { title: 'catalog.properties.variation', type: 'Variation' }],
                 onSelected: function (editedProperties) {
                     blade.canStartProcess = true;
-                    blade.actionDataContext.editedProperties = editedProperties;
+                    blade.actionDataContext.properties = editedProperties;
                 }
             };
             bladeNavigationService.showBlade(newBlade, blade);

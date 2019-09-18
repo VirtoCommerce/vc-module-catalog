@@ -71,7 +71,7 @@ namespace VirtoCommerce.CatalogModule.Web.BulkUpdate.Controllers.Api
         }
 
         /// <summary>
-        /// Starts bulk update task task.
+        /// Starts bulk update background job.
         /// </summary>
         /// <param name="context">Execution context.</param>
         /// <returns>Notification with job id.</returns>
