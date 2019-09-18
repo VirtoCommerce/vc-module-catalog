@@ -23,11 +23,6 @@ angular.module('virtoCommerce.catalogModule')
             } else {
                 newBlade.controller = registrationInfo.controller;
                 newBlade.template = registrationInfo.template;
-                angular.extend(newBlade.actionDataContext.dataQuery, {
-                    categoryIds: _.pluck(blade.selectedCategories, 'id'),
-                    objectIds: _.pluck(blade.selectedProducts, 'id'),
-                    catalogIds: [blade.catalog.id]
-                });
 
                 bladeNavigationService.showBlade(newBlade, blade);
             }
@@ -46,9 +41,7 @@ angular.module('virtoCommerce.catalogModule')
             action.actionDataContext = {
                 actionName: action.name,
                 contextTypeName: action.contextTypeName,
-                dataQuery: {
-                    dataQueryTypeName: action.dataQueryTypeName
-                }
+                dataQuery: blade.dataQuery
             };
         };
 

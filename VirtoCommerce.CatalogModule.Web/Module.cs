@@ -21,6 +21,7 @@ using VirtoCommerce.CatalogModule.Data.Services.Validation;
 using VirtoCommerce.CatalogModule.Web.ExportImport;
 using VirtoCommerce.CatalogModule.Web.JsonConverters;
 using VirtoCommerce.CatalogModule.Web.Security;
+using VirtoCommerce.CatalogModule.Web.Services;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Commerce.Services;
@@ -135,6 +136,10 @@ namespace VirtoCommerce.CatalogModule.Web
 
             #region Bulk update
 
+            _container.RegisterType<IListEntrySearchService, ListEntrySearchService>();
+            _container.RegisterType<IListEntryMover<Category>, CategoryMover>();
+            _container.RegisterType<IListEntryMover<CatalogProduct>, ProductMover>();
+
             _container.RegisterInstance<IBulkUpdateActionRegistrar>(new BulkUpdateActionRegistrar());
             _container.RegisterType<IBulkUpdateActionExecutor, BulkUpdateActionExecutor>();
             _container.RegisterType<IBulkUpdateActionFactory, BulkUpdateActionFactory>();
@@ -154,7 +159,6 @@ namespace VirtoCommerce.CatalogModule.Web
             var httpConfiguration = _container.Resolve<HttpConfiguration>();
             httpConfiguration.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new SearchCriteriaJsonConverter());
             httpConfiguration.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new BulkUpdateActionContextJsonConverter());
-            httpConfiguration.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new BulkUpdateDataQueryJsonConverter());
 
             // This line refreshes Hangfire JsonConverter with the current JsonSerializerSettings - PolymorphicExportDataQueryJsonConverter needs to be included
             JobHelper.SetSerializerSettings(httpConfiguration.Formatters.JsonFormatter.SerializerSettings);
@@ -247,7 +251,6 @@ namespace VirtoCommerce.CatalogModule.Web
                     Name = nameof(ChangeCategoryBulkUpdateAction),
                     AppliableTypes = new[] { nameof(CatalogProduct), },
                     ContextTypeName = nameof(ChangeCategoryActionContext),
-                    DataQueryTypeName = nameof(ProductBulkUpdateDataQuery),
                 })
                 .WithActionFactory(_container.Resolve<IBulkUpdateActionFactory>())
                 .WithDataSourceFactory(_container.Resolve<BulkUpdateModel.IPagedDataSourceFactory>())

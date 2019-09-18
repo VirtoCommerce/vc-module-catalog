@@ -469,8 +469,23 @@ angular.module('virtoCommerce.catalogModule')
                             controller: 'virtoCommerce.catalogModule.actionListController',
                             template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/bulk/action-list.tpl.html',
                             selectedProducts: _.filter($scope.gridApi.selection.getSelectedRows(), function (x) { return x.type == 'product' }),
-                            selectedCategories: _.filter($scope.gridApi.selection.getSelectedRows(), function (x) { return x.type == 'category' })
+                            selectedCategories: _.filter($scope.gridApi.selection.getSelectedRows(), function (x) { return x.type == 'category' }),
+                            dataQuery: {}
                         };
+                        if ($scope.gridApi.selection.getSelectAllState()) {
+                            var searchCriteria = getSearchCriteria();
+                            searchCriteria.skip = undefined;
+                            searchCriteria.take = undefined;
+
+                            angular.extend(newBlade.dataQuery, {
+                                searchCriteria: searchCriteria
+                            });
+                        }
+                        else {
+                            angular.extend(newBlade.dataQuery, {
+                                listEntries: $scope.gridApi.selection.getSelectedRows()
+                            });
+                        }
                         bladeNavigationService.showBlade(newBlade, blade);
                     },
                     canExecuteMethod: isItemsChecked,

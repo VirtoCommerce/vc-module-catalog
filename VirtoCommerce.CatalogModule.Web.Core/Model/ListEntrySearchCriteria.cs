@@ -1,4 +1,4 @@
-﻿namespace VirtoCommerce.CatalogModule.Web.Model
+namespace VirtoCommerce.CatalogModule.Web.Model
 {
     /// <summary>
     /// Search criteria for categories and/or items.

@@ -1,21 +1,30 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using VirtoCommerce.CatalogModule.Web.Model;
+using VirtoCommerce.CatalogModule.Web.Services;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Platform.Core.Common;
+using domain = VirtoCommerce.Domain.Catalog.Model;
 
 namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.ChangeCategory
 {
     public class ChangeCategoryBulkUpdateAction : IBulkUpdateAction
     {
-        private readonly IItemService _itemService;
+        private readonly IListEntryMover<domain.Category> _categoryMover;
+        private readonly IListEntryMover<CatalogProduct> _productMover;
         private readonly ICatalogService _catalogService;
 
-        public ChangeCategoryBulkUpdateAction(IItemService itemService, ICatalogService catalogService, BulkUpdateActionContext context)
+
+        public ChangeCategoryBulkUpdateAction(ICatalogService catalogService,
+            IListEntryMover<domain.Category> categoryMover,
+            IListEntryMover<CatalogProduct> productMover,
+            BulkUpdateActionContext context)
         {
-            _itemService = itemService;
             _catalogService = catalogService;
+            _categoryMover = categoryMover;
+            _productMover = productMover;
             Context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
@@ -46,48 +55,21 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.ChangeCatego
 
         public BulkUpdateActionResult Execute(IEnumerable<IEntity> entities)
         {
-            //TechDebt: Get rid of code duplication at CatalogModuleListEntryController move method 
+            var changeCategoryContext = Context as ChangeCategoryActionContext ?? throw new InvalidCastException(nameof(ChangeCategoryActionContext));
+            var listEntries = entities.Cast<ListEntry>().ToArray();
             var result = BulkUpdateActionResult.Success;
-
-            var changeCategoryContext = Context as ChangeCategoryActionContext;
-
-            if (changeCategoryContext == null)
+            var moveInfo = new MoveInfo()
             {
-                throw new InvalidCastException(nameof(ChangeCategoryActionContext));
-            }
+                Catalog = changeCategoryContext.CatalogId,
+                Category = changeCategoryContext.CategoryId,
+                ListEntries = listEntries,
+            };
 
-            var products = new List<CatalogProduct>();
-            //Move products
-            foreach (var listEntryProduct in entities)
-            {
-                var product = _itemService.GetById(listEntryProduct.Id, ItemResponseGroup.ItemLarge);
-                if (product.CatalogId != changeCategoryContext.CatalogId)
-                {
-                    product.CatalogId = changeCategoryContext.CatalogId;
-                    product.CategoryId = null;
-                    foreach (var variation in product.Variations)
-                    {
-                        variation.CatalogId = changeCategoryContext.CatalogId;
-                        variation.CategoryId = null;
-                    }
+            var categories = _categoryMover.PrepareMove(moveInfo);
+            var products = _productMover.PrepareMove(moveInfo);
 
-                }
-                if (product.CategoryId != changeCategoryContext.CategoryId)
-                {
-                    product.CategoryId = changeCategoryContext.CategoryId;
-                    foreach (var variation in product.Variations)
-                    {
-                        variation.CategoryId = changeCategoryContext.CategoryId;
-                    }
-                }
-                products.Add(product);
-                products.AddRange(product.Variations);
-            }
-
-            if (products.Any())
-            {
-                _itemService.Update(products.ToArray());
-            }
+            _categoryMover.ConfirmMove(categories);
+            _productMover.ConfirmMove(products);
 
             return result;
         }
