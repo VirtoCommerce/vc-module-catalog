@@ -37,7 +37,7 @@ class Build : NukeBuild
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
     readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
-    private static string[] ModuleContentFolders = new[] { "dist", "Localizations", "Scripts" };
+    private static string[] ModuleContentFolders = new[] { "dist", "Localizations", "Scripts", "Content" };
 
     [Solution] readonly Solution Solution;
     [GitRepository] readonly GitRepository GitRepository;
@@ -65,9 +65,10 @@ class Build : NukeBuild
     string ModuleId => XmlTasks.XmlPeek(ModuleManifest, "module/id").FirstOrDefault();
     string ModuleVersion => XmlTasks.XmlPeek(ModuleManifest, "module/version").FirstOrDefault();
     string ModuleVersionTag => XmlTasks.XmlPeek(ModuleManifest, "module/version-tag").FirstOrDefault();
-    AbsolutePath ModuleOutputDirectory => ArtifactsDirectory / (ModuleId + ModuleVersion);
+    string ModuleSemVersion => string.Join("-", ModuleVersion, ModuleVersionTag);
+    AbsolutePath ModuleOutputDirectory => ArtifactsDirectory / (ModuleId + ModuleSemVersion);
 
-    string ModulePackageUrl => $"https://virtocommerce.blob.core.windows.net/modules3/{ModuleId + "_" + string.Join("-", ModuleVersion, ModuleVersionTag) + ".zip"}";
+    string ModulePackageUrl => $"https://virtocommerce.blob.core.windows.net/modules3/{ModuleId + "_" + ModuleSemVersion + ".zip"}";
     GitRepository ModulesRepository => GitRepository.FromUrl("https://github.com/VirtoCommerce/vc-modules.git");
 
     bool IsModule => FileExists(ModuleManifest);
@@ -106,7 +107,7 @@ class Build : NukeBuild
               .EnableIncludeSymbols()
               .SetSymbolPackageFormat(DotNetSymbolPackageFormat.snupkg)
               .SetOutputDirectory(ArtifactsDirectory)
-              .SetVersion(IsModule ? string.Join("-", ModuleVersion, ModuleVersionTag) : GitVersion.NuGetVersionV2));
+              .SetVersion(IsModule ? ModuleSemVersion : GitVersion.NuGetVersionV2));
       });
 
     Target Test => _ => _
@@ -117,8 +118,8 @@ class Build : NukeBuild
                .SetConfiguration(Configuration)
                .EnableNoBuild()
                .SetLogger("trx")
-               .SetResultsDirectory(ArtifactsDirectory)
                .SetFilter("Category!=IntegrationTest")
+               .SetResultsDirectory(ArtifactsDirectory)
                .CombineWith(
                    Solution.GetProjects("*.Tests"), (cs, v) => cs
                        .SetProjectFile(v)));
@@ -143,7 +144,7 @@ class Build : NukeBuild
 
     Target Publish => _ => _
        .DependsOn(Compile)
-       .Before(WebPackBuild)
+       .After(WebPackBuild)
        .Executes(() =>
        {
            DotNetPublish(s => s
@@ -153,7 +154,7 @@ class Build : NukeBuild
                .SetConfiguration(Configuration)
                .SetAssemblyVersion(IsModule ? ModuleVersion : GitVersion.GetNormalizedAssemblyVersion())
                .SetFileVersion(IsModule ? ModuleVersion : GitVersion.GetNormalizedFileVersion())
-               .SetInformationalVersion(IsModule ? ModuleVersion : GitVersion.InformationalVersion));
+               .SetInformationalVersion(IsModule ? ModuleSemVersion : GitVersion.InformationalVersion));
 
        });
 
@@ -180,7 +181,7 @@ class Build : NukeBuild
                 .SetConfiguration(Configuration)
                 .SetAssemblyVersion(IsModule ? ModuleVersion : GitVersion.GetNormalizedAssemblyVersion())
                 .SetFileVersion(IsModule ? ModuleVersion : GitVersion.GetNormalizedFileVersion())
-                .SetInformationalVersion(IsModule ? ModuleVersion : GitVersion.InformationalVersion)
+                .SetInformationalVersion(IsModule ? ModuleSemVersion : GitVersion.InformationalVersion)
                 .EnableNoRestore());
 
         });
@@ -189,7 +190,7 @@ class Build : NukeBuild
      .DependsOn(Clean, WebPackBuild, Test, Publish)
      .Executes(() =>
      {
-       
+
          if (IsModule)
          {
              //Copy module.manifest and all content directories into a module output folder
@@ -210,7 +211,7 @@ class Build : NukeBuild
              }
              ignoredFiles = ignoredFiles.Select(x => x.Trim()).Distinct().ToArray();
 
-             var zipFileName = ArtifactsDirectory / ModuleId + "_" + ModuleVersion + ".zip";
+             var zipFileName = ArtifactsDirectory / ModuleId + "_" + ModuleSemVersion + ".zip";
              DeleteFile(zipFileName);
              CompressionTasks.CompressZip(ModuleOutputDirectory, zipFileName, (x) => !ignoredFiles.Contains(x.Name, StringComparer.OrdinalIgnoreCase));
          }
@@ -254,24 +255,23 @@ class Build : NukeBuild
         });
 
     Target SwaggerValidation => _ => _
-     .DependsOn(Publish)
-     .Requires(() => !IsModule)
-     .Executes(() =>
-     {
-         //dotnet %userprofile%\.nuget\packages\swashbuckle.aspnetcore.cli\4.0.1\lib\netcoreapp2.0\dotnet-swagger.dll tofile --output swagger.json bin/Debug/netcoreapp2.2/VirtoCommerce.Platform.Web.dll VirtoCommerce.Platform
-         //better use in the future a .Net Global Tool https://github.com/domaindrivendev/Swashbuckle.AspNetCore/blob/master/README-v5.md#retrieve-swagger-directly-from-a-startup-assembly
-         var swashbucklePackage = NuGetPackageResolver.GetGlobalInstalledPackage("swashbuckle.aspnetcore.cli", "4.0.1", "dotnet-swagger.dll");
-         var swashbucklePath = swashbucklePackage.Directory / "lib" / "netcoreapp2.0" / "dotnet-swagger.dll";
-         var projectPublishPath = ArtifactsDirectory / "publish" / $"{WebProject.Name}.dll";
-         var swaggerJson = ArtifactsDirectory / "swagger.json";
-         DotNet($"{swashbucklePath} tofile --output {swaggerJson} {projectPublishPath} VirtoCommerce.Platform");
+         .DependsOn(Publish)
+         .Requires(() => !IsModule)
+         .Executes(() =>
+         {
+             //dotnet %userprofile%\.nuget\packages\swashbuckle.aspnetcore.cli\4.0.1\lib\netcoreapp2.0\dotnet-swagger.dll tofile --output swagger.json bin/Debug/netcoreapp2.2/VirtoCommerce.Platform.Web.dll VirtoCommerce.Platform
+             //better use in the future a .Net Global Tool https://github.com/domaindrivendev/Swashbuckle.AspNetCore/blob/master/README-v5.md#retrieve-swagger-directly-from-a-startup-assembly
+             var swashbucklePackage = NuGetPackageResolver.GetGlobalInstalledPackage("swashbuckle.aspnetcore.cli", "4.0.1", "dotnet-swagger.dll");
+             var swashbucklePath = swashbucklePackage.Directory / "lib" / "netcoreapp2.0" / "dotnet-swagger.dll";
+             var projectPublishPath = ArtifactsDirectory / "publish" / $"{WebProject.Name}.dll";
+             var swaggerJson = ArtifactsDirectory / "swagger.json";
+             DotNet($"{swashbucklePath} tofile --output {swaggerJson} {projectPublishPath} VirtoCommerce.Platform");
 
-         NpmTasks.NpmRun(s => s
-            .SetWorkingDirectory(WebProject.Directory)
-            .SetCommand($"swagger-cli")
-            .SetArguments("validate", IsLocalBuild ? "-d" : "", swaggerJson)
-            .SetLogOutput(true)); 
-     });
-
+             NpmTasks.NpmRun(s => s
+                .SetWorkingDirectory(WebProject.Directory)
+                .SetCommand($"swagger-cli")
+                .SetArguments("validate", IsLocalBuild ? "-d" : "", swaggerJson)
+                .SetLogOutput(true));
+         });
 }
 
