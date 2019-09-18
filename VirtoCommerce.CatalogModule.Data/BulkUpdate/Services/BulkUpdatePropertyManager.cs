@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Data.BulkUpdate.Model;
+using VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.UpdateProperties;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Platform.Core.Common;
@@ -19,18 +20,17 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Services
             _itemService = itemService;
         }
 
-        public virtual Property[] GetProperties(ProductBulkUpdateDataQuery dataQuery)
+        public virtual Property[] GetProperties(UpdatePropertiesActionContext context)
         {
             // TechDebt: Should get all product inherited properties faster, by getting all outlines for categories and get all properties with categoryId or CatalogId
-            var dataSource = _dataSourceFactory.Create(dataQuery);
+            var dataSource = _dataSourceFactory.Create(context);
             var result = new List<Property>();
             var propertyIds = new HashSet<string>();
-            var catalogId = dataQuery.CatalogIds?.Length == 1 ? dataQuery.CatalogIds.First() : null;
 
             while (dataSource.Fetch())
             {
                 var productIds = dataSource.Items.Select(x => x.Id).ToArray();
-                var products = _itemService.GetByIds(productIds, ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemProperties, catalogId);
+                var products = _itemService.GetByIds(productIds, ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemProperties);
                 var newProperties = products
                     .SelectMany(x => x.Properties.Where(y => y.IsInherited))
                     .Distinct(AnonymousComparer.Create<Property, string>(x => x.Id))

@@ -1,6 +1,7 @@
 using System;
 using VirtoCommerce.CatalogModule.Data.BulkUpdate.Model;
 using VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.ChangeCategory;
+using VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.UpdateProperties;
 using VirtoCommerce.CatalogModule.Web.Services;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
@@ -16,7 +17,8 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Services
 
         public BulkUpdateActionFactory(ICatalogService catalogService,
             IListEntryMover<Category> categoryMover,
-            IListEntryMover<CatalogProduct> productMover
+            IListEntryMover<CatalogProduct> productMover,
+            IBulkUpdatePropertyManager bulkUpdatePropertyManager
             )
         {
             _catalogService = catalogService;

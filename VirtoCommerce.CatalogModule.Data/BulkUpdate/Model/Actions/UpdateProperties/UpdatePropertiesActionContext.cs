@@ -5,5 +5,6 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.UpdateProper
     public class UpdatePropertiesActionContext : BulkUpdateActionContext
     {
         public Property[] Properties { get; set; }
+        public ListEntryDataQuery DataQuery { get; set; }
     }
 }

@@ -16,5 +16,6 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model
         [JsonIgnore]
         public IPagedDataSourceFactory DataSourceFactory { get; set; }
         public string ContextTypeName { get; set; }
+        public string DataQueryTypeName { get; set; }
     }
 }

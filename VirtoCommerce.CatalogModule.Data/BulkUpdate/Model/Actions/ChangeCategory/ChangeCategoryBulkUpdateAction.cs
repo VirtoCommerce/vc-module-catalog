@@ -22,12 +22,12 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.ChangeCatego
         public ChangeCategoryBulkUpdateAction(ICatalogService catalogService,
             IListEntryMover<domain.Category> categoryMover,
             IListEntryMover<CatalogProduct> productMover,
-            BulkUpdateActionContext context)
+            ChangeCategoryActionContext context)
         {
             _catalogService = catalogService;
             _categoryMover = categoryMover;
             _productMover = productMover;
-            Context = context ?? throw new ArgumentNullException(nameof(context));
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         public BulkUpdateActionContext Context => _context;
