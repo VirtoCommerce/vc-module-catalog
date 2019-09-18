@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
       <noWarn>1591</noWarn>
       <IsPackable>False</IsPackable>
+      <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

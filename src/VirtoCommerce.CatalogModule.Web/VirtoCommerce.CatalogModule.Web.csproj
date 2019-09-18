@@ -5,6 +5,7 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IsPackable>False</IsPackable>
         <noWarn>1591</noWarn>
+        <LangVersion>latest</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
