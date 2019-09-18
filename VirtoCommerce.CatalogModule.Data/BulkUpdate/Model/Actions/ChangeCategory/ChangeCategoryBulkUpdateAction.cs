@@ -57,7 +57,6 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.ChangeCatego
         {
             var changeCategoryContext = Context as ChangeCategoryActionContext ?? throw new InvalidCastException(nameof(ChangeCategoryActionContext));
             var listEntries = entities.Cast<ListEntry>().ToArray();
-
             var result = BulkUpdateActionResult.Success;
             var moveInfo = new MoveInfo()
             {
