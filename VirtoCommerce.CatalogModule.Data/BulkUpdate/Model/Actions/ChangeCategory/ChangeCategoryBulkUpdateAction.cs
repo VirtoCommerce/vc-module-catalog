@@ -18,7 +18,6 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.ChangeCatego
         private readonly ChangeCategoryActionContext _context;
 
 
-
         public ChangeCategoryBulkUpdateAction(ICatalogService catalogService,
             IListEntryMover<domain.Category> categoryMover,
             IListEntryMover<CatalogProduct> productMover,

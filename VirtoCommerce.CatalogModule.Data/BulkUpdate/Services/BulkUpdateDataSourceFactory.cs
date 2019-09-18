@@ -23,7 +23,6 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Services
             {
                 result = new ListEntryPagedDataSource(_searchService, changeCategoryActionContext.DataQuery);
             }
-
             else if (context is UpdatePropertiesActionContext bulkUpdateActionContext)
             {
                 result = new ListEntryProductPagedDataSource(_searchService, bulkUpdateActionContext.DataQuery);
