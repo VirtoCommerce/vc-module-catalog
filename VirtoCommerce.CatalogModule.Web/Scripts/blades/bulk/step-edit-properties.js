@@ -11,6 +11,13 @@ angular.module('virtoCommerce.catalogModule')
             blade.subtitle = 'catalog.blades.property-list.subtitle';
 
             blade.currentEntities = angular.copy(blade.properties);
+            _.each(blade.currentEntities,
+                function(prop) {
+                    if (prop.required) {
+                        $scope.isValid = false;
+                    }
+                });
+
             initVendors();
             blade.taxTypes = settings.getValues({ id: 'VirtoCommerce.Core.General.TaxTypes' });
             blade.weightUnits = settings.getValues({ id: 'VirtoCommerce.Core.General.WeightUnits' });
