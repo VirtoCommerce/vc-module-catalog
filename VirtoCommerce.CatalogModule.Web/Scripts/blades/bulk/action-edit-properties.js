@@ -13,8 +13,6 @@ angular.module('virtoCommerce.catalogModule')
         }, blade.actionDataContext);
 
         function initializeBlade() {
-            blade.isLoading = false;
-
             bulkActions.getActionData(blade.actionDataContext,
                 function(data) {
                     blade.properties = data.properties;
@@ -34,6 +32,7 @@ angular.module('virtoCommerce.catalogModule')
                             prop.values = [];
                             prop.group = 'All properties';
                         });
+                    blade.isLoading = false;
                 });
         }
 
