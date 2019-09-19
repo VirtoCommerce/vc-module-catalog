@@ -137,11 +137,11 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.UpdateProper
                 {
                     var propertyValueToSet = propertyToSet.Values.FirstOrDefault();
 
-                    productPropertyValue.Value = propertyValueToSet.Value;
+                    productPropertyValue.Value = propertyValueToSet?.Value;
 
                     if (propertyToSet.Dictionary)
                     {
-                        productPropertyValue.ValueId = propertyValueToSet.ValueId;
+                        productPropertyValue.ValueId = propertyValueToSet?.ValueId;
                     }
                     result = true;
                 }
@@ -189,7 +189,12 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.UpdateProper
 
             if (setter != null)
             {
-                var convertedValue = ConvertValue(propertyToSet.ValueType, valueToSet);
+                if (valueToSet == null && propertyToSet.Required)
+                {
+                    throw new ArgumentException($"Property value is missing for required property \"{propertyToSet.Name}\".");
+                }
+
+                var convertedValue = valueToSet != null ? ConvertValue(propertyToSet.ValueType, valueToSet) : null;
 
                 setter.Invoke(product, new object[] { convertedValue });
                 result = true;
