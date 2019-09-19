@@ -1,7 +1,7 @@
 angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.editPropertiesActionStepController', ['$scope', 'virtoCommerce.catalogModule.properties', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.propDictItems', 'virtoCommerce.customerModule.members', 'platformWebApp.settings', 'virtoCommerce.coreModule.packageType.packageTypeUtils', function ($scope, properties, bladeNavigationService, propDictItems, members, settings, packageTypeUtils) {
         var blade = $scope.blade;
-        $scope.isValid = false;
+        $scope.isValid = true;
         blade.refresh = function () {
             blade.parentBlade.refresh();
         };
@@ -46,12 +46,12 @@ angular.module('virtoCommerce.catalogModule')
         }
 
         $scope.$watch("blade.currentEntities", function () {
-            $scope.isValid = formScope && formScope.$valid;
+            $scope.isValid = formScope ? formScope.$valid : $scope.isValid;
         }, true);
 
         //Property with own UI 
         $scope.$watch('blade.vendor', function(newValues) {
-            $scope.isValid = formScope && formScope.$valid;
+            $scope.isValid = formScope ? formScope.$valid : $scope.isValid;
             if (blade.currentEntities) {
                 var vendor = _.find(blade.vendors, function(item) { return item.id === newValues });
                 var vendorProp = _.find(blade.currentEntities, function(prop) { return prop.name === 'Vendor' });
@@ -62,22 +62,22 @@ angular.module('virtoCommerce.catalogModule')
         });
 
         $scope.$watch('blade.taxType', function (newValues) {
-            $scope.isValid = formScope && formScope.$valid;
+            $scope.isValid = formScope ? formScope.$valid : $scope.isValid;
             $scope.updatePropertyValue('TaxType', newValues);
         });
 
         $scope.$watch('blade.weightUnit', function (newValues) {
-            $scope.isValid = formScope && formScope.$valid;
+            $scope.isValid = formScope ? formScope.$valid : $scope.isValid;
             $scope.updatePropertyValue('WeightUnit', newValues);
         });
 
         $scope.$watch('blade.packageType', function (newValues) {
-            $scope.isValid = formScope && formScope.$valid;
+            $scope.isValid = formScope ? formScope.$valid : $scope.isValid;
             $scope.updatePropertyValue('PackageType', newValues);
         });
 
         $scope.$watch('blade.measureUnit', function (newValues) {
-            $scope.isValid = formScope && formScope.$valid;
+            $scope.isValid = formScope ? formScope.$valid : $scope.isValid;
             $scope.updatePropertyValue('MeasureUnit', newValues);
         });
 
