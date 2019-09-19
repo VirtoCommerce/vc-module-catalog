@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.BulkUpdateActionContext" Collapsed="true">
+    <Position X="10.75" Y="4" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAA=</HashCode>
+      <FileName>BulkUpdate\Model\BulkUpdateActionContext.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.BulkUpdateActionDefinition">
+    <Position X="8.25" Y="0.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AABAAAgAAACAAAAAIAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>BulkUpdate\Model\BulkUpdateActionDefinition.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Factory" />
+      <Property Name="DataSourceFactory" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.BulkUpdateActionResult" Collapsed="true">
+    <Position X="4" Y="4.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAQAAAAAAAAAAAgAAAAAAAAAAAAAAAIA=</HashCode>
+      <FileName>BulkUpdate\Model\BulkUpdateActionResult.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.IBulkUpdateAction">
+    <Position X="12.25" Y="2" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAgCAAAQAAAAAAAAAAAAAAAEAAAAAAAAAAAA=</HashCode>
+      <FileName>BulkUpdate\Model\IBulkUpdateAction.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Context" />
+    </ShowAsAssociation>
+  </Interface>
+  <Interface Name="VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.IBulkUpdateActionData" Collapsed="true">
+    <Position X="13" Y="4" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>BulkUpdate\Model\IBulkUpdateActionData.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.IBulkUpdateActionFactory">
+    <Position X="12.25" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAA=</HashCode>
+      <FileName>BulkUpdate\Model\IBulkUpdateActionFactory.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.IPagedDataSource" Collapsed="true">
+    <Position X="4.75" Y="1.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAACAAAAAEABAAAAAAAAAAAAAAAEAAAAAA=</HashCode>
+      <FileName>BulkUpdate\Model\IPagedDataSource.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.IPagedDataSourceFactory">
+    <Position X="4.75" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAA=</HashCode>
+      <FileName>BulkUpdate\Model\IPagedDataSourceFactory.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="VirtoCommerce.CatalogModule.Data.BulkUpdate.Services.IBulkUpdateActionExecutor">
+    <Position X="4" Y="3" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>BulkUpdate\Services\IBulkUpdateActionExecutor.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="VirtoCommerce.CatalogModule.Data.BulkUpdate.Services.IBulkUpdateActionRegistrar">
+    <Position X="6.75" Y="3" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAgAAAAAAAAg=</HashCode>
+      <FileName>BulkUpdate\Services\IBulkUpdateActionRegistrar.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

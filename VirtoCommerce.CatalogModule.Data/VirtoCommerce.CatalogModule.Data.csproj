@@ -119,7 +119,6 @@
     <Compile Include="BulkUpdate\Extensions\BulkUpdatePushNotificationExtensions.cs" />
     <Compile Include="BulkUpdate\Model\BulkUpdateActionContext.cs" />
     <Compile Include="BulkUpdate\Model\BulkUpdateActionResult.cs" />
-    <Compile Include="BulkUpdate\Model\BulkUpdateDataQuery.cs" />
     <Compile Include="BulkUpdate\Model\Actions\ChangeCategory\ChangeCategoryBulkUpdateAction.cs" />
     <Compile Include="BulkUpdate\Model\Actions\ChangeCategory\ChangeCategoryActionContext.cs" />
     <Compile Include="BulkUpdate\Model\BulkUpdatePushNotification.cs" />
@@ -358,6 +357,7 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="BulkUpdate\BaseBulkUpdateInterfacesAndClasses.cd" />
     <None Include="entity-data-model.cd" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
