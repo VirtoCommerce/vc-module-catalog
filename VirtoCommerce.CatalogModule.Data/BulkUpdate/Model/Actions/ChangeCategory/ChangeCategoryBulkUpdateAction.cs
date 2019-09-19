@@ -52,7 +52,6 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.ChangeCatego
         public BulkUpdateActionResult Execute(IEnumerable<IEntity> entities)
         {
             var listEntries = entities.Cast<ListEntry>().ToArray();
-
             var result = BulkUpdateActionResult.Success;
             var moveInfo = new MoveInfo()
             {
