@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using CacheManager.Core;
 using VirtoCommerce.CatalogModule.Data.BulkUpdate.Model;
 using VirtoCommerce.Platform.Core.Common;
 
@@ -8,10 +9,12 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Services
     public class BulkUpdateActionExecutor : IBulkUpdateActionExecutor
     {
         private readonly IBulkUpdateActionRegistrar _bulkUpdateActionRegistrar;
+        private readonly ICacheManager<object> _cacheManager;
 
-        public BulkUpdateActionExecutor(IBulkUpdateActionRegistrar bulkUpdateActionRegistrar)
+        public BulkUpdateActionExecutor(IBulkUpdateActionRegistrar bulkUpdateActionRegistrar, ICacheManager<object> cacheManager)
         {
             _bulkUpdateActionRegistrar = bulkUpdateActionRegistrar;
+            _cacheManager = cacheManager;
         }
 
         public virtual void Execute(BulkUpdateActionContext context, Action<BulkUpdateProgressInfo> progressCallback, ICancellationToken token)
@@ -99,7 +102,14 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Services
 
                 progressInfo.Description = $"{completedMessage}: {processedCount} out of {totalCount} have been updated.";
                 progressCallback(progressInfo);
+                ResetCache();
             }
+        }
+
+
+        protected virtual void ResetCache()
+        {
+            _cacheManager.ClearRegion(CatalogConstants.CacheRegion);
         }
     }
 }
