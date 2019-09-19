@@ -748,7 +748,7 @@
         "title": "Change Category",
         "subtitle": "Move products to another category"
       },
-      "EditPropertiesBulkUpdateAction": {
+      "UpdatePropertiesBulkUpdateAction": {
         "title": "Edit Properties",
         "subtitle": "Update one ore more properties"
       }

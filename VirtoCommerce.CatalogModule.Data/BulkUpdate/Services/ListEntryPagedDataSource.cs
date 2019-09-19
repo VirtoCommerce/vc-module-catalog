@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Data.BulkUpdate.Model;
 using VirtoCommerce.CatalogModule.Web.Converters;
+using VirtoCommerce.CatalogModule.Web.Model;
 using VirtoCommerce.CatalogModule.Web.Services;
-using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Platform.Core.Common;
+using domain = VirtoCommerce.Domain.Catalog.Model;
 
 namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Services
 {
@@ -30,7 +31,8 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Services
             if (!DataQuery.ListEntries.IsNullOrEmpty())
             {
                 var (skip, take) = GetSkipTake();
-                Items = DataQuery.ListEntries.Skip(skip).Take(take).ToArray();
+                var entities = GetEntities(DataQuery.ListEntries, skip, take);
+                Items = entities.ToArray();
             }
             else if (DataQuery.SearchCriteria != null)
             {
@@ -54,7 +56,7 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Services
 
             if (!DataQuery.ListEntries.IsNullOrEmpty())
             {
-                result = DataQuery.ListEntries.Length;
+                result = GetEntitiesCount(DataQuery.ListEntries);
             }
             else if (DataQuery.SearchCriteria != null)
             {
@@ -71,6 +73,16 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Services
             return result;
         }
 
+        protected virtual IEnumerable<IEntity> GetEntities(IEnumerable<ListEntry> listEntries, int skip, int take)
+        {
+            return listEntries.Skip(skip).Take(take);
+        }
+
+        protected virtual int GetEntitiesCount(IEnumerable<ListEntry> listEntries)
+        {
+            return listEntries.Count();
+        }
+
         protected (int, int) GetSkipTake()
         {
             var skip = (DataQuery.Skip ?? 0) + CurrentPageNumber * PageSize;
@@ -79,7 +91,7 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Services
             return (skip, take);
         }
 
-        protected virtual SearchCriteria BuildSearchCriteria(ListEntryDataQuery dataQuery)
+        protected virtual domain.SearchCriteria BuildSearchCriteria(ListEntryDataQuery dataQuery)
         {
             var result = dataQuery.SearchCriteria.ToCoreModel();
             var (skip, take) = GetSkipTake();
@@ -98,5 +110,4 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Services
             return result;
         }
     }
-
 }

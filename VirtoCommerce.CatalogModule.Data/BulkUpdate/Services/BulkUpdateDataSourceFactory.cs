@@ -1,6 +1,7 @@
 using System;
 using VirtoCommerce.CatalogModule.Data.BulkUpdate.Model;
 using VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.ChangeCategory;
+using VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.UpdateProperties;
 using VirtoCommerce.CatalogModule.Web.Services;
 
 namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Services
@@ -21,6 +22,10 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Services
             if (context is ChangeCategoryActionContext changeCategoryActionContext)
             {
                 result = new ListEntryPagedDataSource(_searchService, changeCategoryActionContext.DataQuery);
+            }
+            else if (context is UpdatePropertiesActionContext bulkUpdateActionContext)
+            {
+                result = new ListEntryProductPagedDataSource(_searchService, bulkUpdateActionContext.DataQuery);
             }
 
             return result ?? throw new ArgumentException($"Unsupported bulk update query type: {context.GetType().Name}");

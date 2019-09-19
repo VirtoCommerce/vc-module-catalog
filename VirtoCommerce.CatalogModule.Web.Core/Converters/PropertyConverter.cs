@@ -30,13 +30,10 @@ namespace VirtoCommerce.CatalogModule.Web.Converters
             retVal.ValueType = property.ValueType;
             retVal.Type = property.Type;
 
-            if (property.Attributes != null)
-            {
-                retVal.Attributes = property.Attributes.Select(x => x.ToWebModel()).ToList();
-            }
+            retVal.Attributes = property.Attributes?.Select(x => x.ToWebModel()).ToList();
             retVal.DisplayNames = property.DisplayNames;
 
-            retVal.ValidationRule = property.ValidationRules.FirstOrDefault()?.ToWebModel();
+            retVal.ValidationRule = property.ValidationRules?.FirstOrDefault()?.ToWebModel();
 
             return retVal;
         }

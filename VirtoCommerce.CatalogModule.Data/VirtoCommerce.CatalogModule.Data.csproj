@@ -105,6 +105,11 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="BulkUpdate\Extensions\BulkUpdateActionDefinitionBuilderExtensions.cs" />
+    <Compile Include="BulkUpdate\Model\Actions\UpdateProperties\UpdatePropertiesActionData.cs" />
+    <Compile Include="BulkUpdate\Services\BulkUpdatePropertyManager.cs" />
+    <Compile Include="BulkUpdate\Services\IBulkUpdatePropertyManager.cs" />
+    <Compile Include="BulkUpdate\Model\Actions\UpdateProperties\UpdatePropertiesActionContext.cs" />
+    <Compile Include="BulkUpdate\Model\Actions\UpdateProperties\UpdatePropertiesBulkUpdateAction.cs" />
     <Compile Include="BulkUpdate\Model\ListEntryDataQuery.cs" />
     <Compile Include="BulkUpdate\Services\ListEntryPagedDataSource.cs" />
     <Compile Include="BulkUpdate\Services\BulkUpdateActionFactory.cs" />
@@ -123,7 +128,6 @@
     <Compile Include="BulkUpdate\Model\IBulkUpdateActionFactory.cs" />
     <Compile Include="BulkUpdate\Model\IPagedDataSource.cs" />
     <Compile Include="BulkUpdate\Model\IPagedDataSourceFactory.cs" />
-    <Compile Include="BulkUpdate\Model\ProductBulkUpdateDataQuery.cs" />
     <Compile Include="BulkUpdate\Services\BulkUpdateActionDefinitionBuilder.cs" />
     <Compile Include="BulkUpdate\Services\BulkUpdateActionExecutor.cs" />
     <Compile Include="BulkUpdate\Services\BulkUpdateActionRegistrar.cs" />
@@ -131,7 +135,7 @@
     <Compile Include="BulkUpdate\Services\IBulkUpdateActionExecutor.cs" />
     <Compile Include="BulkUpdate\Services\IBulkUpdateActionRegistrar.cs" />
     <Compile Include="BulkUpdate\Model\BulkUpdateProgressInfo.cs" />
-    <Compile Include="BulkUpdate\Services\ProductDataSource.cs" />
+    <Compile Include="BulkUpdate\Services\ListEntryProductPagedDataSource.cs" />
     <Compile Include="CatalogConstants.cs" />
     <Compile Include="ExportImport\CategoryExportPagedDataSource.cs" />
     <Compile Include="ExportImport\CategoryExportDataQuery.cs" />
