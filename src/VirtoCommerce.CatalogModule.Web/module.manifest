@@ -18,6 +18,9 @@
     <owners>
         <owner>Virto Commerce</owner>
     </owners>
+	<groups>
+        <group>commerce</group>
+    </groups>
     <projectUrl>https://virtocommerce.com/apps/extensions/virto-catalog-module</projectUrl>
     <iconUrl>https://github.com/VirtoCommerce/vc-module-catalog/raw/master/VirtoCommerce.CatalogModule.Web/Content/logo.png</iconUrl>
     <releaseNotes>Third version.</releaseNotes>

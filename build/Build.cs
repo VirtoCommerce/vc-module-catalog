@@ -82,10 +82,9 @@ class Build : NukeBuild
             {
                 TestsDirectory.GlobDirectories("**/bin", "**/obj").ForEach(DeleteDirectory);
             }
-            if (DirectoryExists(TestsDirectory))
-            {
-                WebProject.Directory.GlobDirectories("**/node_modules").ForEach(DeleteDirectory);
-            }
+            //if (DirectoryExists(TestsDirectory))
+            //{
+            //}
             EnsureCleanDirectory(ArtifactsDirectory);
         });
 
@@ -126,7 +125,7 @@ class Build : NukeBuild
        });
 
     Target PublishPackages => _ => _
-        .DependsOn(Clean, Compile, Test, Pack)
+        .DependsOn(Pack)
         .Requires(() => ApiKey)
         .Executes(() =>
         {
