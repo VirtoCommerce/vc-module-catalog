@@ -15,18 +15,21 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Services
         private readonly IListEntryMover<CatalogProduct> _productMover;
         private readonly IBulkUpdatePropertyManager _bulkUpdatePropertyManager;
         private readonly IItemService _itemService;
+        private readonly ICategoryService _categoryService;
 
         public BulkUpdateActionFactory(ICatalogService catalogService,
             IListEntryMover<Category> categoryMover,
             IListEntryMover<CatalogProduct> productMover,
             IBulkUpdatePropertyManager bulkUpdatePropertyManager,
-            IItemService itemService)
+            IItemService itemService,
+            ICategoryService categoryService)
         {
             _catalogService = catalogService;
             _categoryMover = categoryMover;
             _productMover = productMover;
             _bulkUpdatePropertyManager = bulkUpdatePropertyManager;
             _itemService = itemService;
+            _categoryService = categoryService;
         }
 
         public IBulkUpdateAction Create(BulkUpdateActionContext context)
@@ -39,7 +42,7 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Services
             }
             else if (context is UpdatePropertiesActionContext updatePropertiesActionContext)
             {
-                result = new UpdatePropertiesBulkUpdateAction(_bulkUpdatePropertyManager, _itemService, updatePropertiesActionContext);
+                result = new UpdatePropertiesBulkUpdateAction(_bulkUpdatePropertyManager, _itemService, _catalogService, _categoryService, updatePropertiesActionContext);
             }
 
             return result ?? throw new ArgumentException($"Unsupported action type: {context.GetType().Name}");

@@ -14,13 +14,21 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.UpdateProper
         private readonly UpdatePropertiesActionContext _context;
         private readonly IBulkUpdatePropertyManager _bulkUpdatePropertyManager;
         private readonly IItemService _itemService;
+        private readonly ICatalogService _catalogService;
+        private readonly ICategoryService _categoryService;
+
+        private readonly Dictionary<string, string> _namesById = new Dictionary<string, string>();
 
         public UpdatePropertiesBulkUpdateAction(IBulkUpdatePropertyManager bulkUpdatePropertyManager,
             IItemService itemService,
+            ICatalogService catalogService,
+            ICategoryService categoryService,
             UpdatePropertiesActionContext context)
         {
             _bulkUpdatePropertyManager = bulkUpdatePropertyManager;
             _itemService = itemService;
+            _catalogService = catalogService;
+            _categoryService = categoryService;
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
@@ -32,7 +40,7 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.UpdateProper
 
             return new UpdatePropertiesActionData()
             {
-                Properties = properties.Select(x => x.ToWebModel()).ToArray(),
+                Properties = properties.Select(x => CreateWebModel(x)).ToArray(),
             };
         }
 
@@ -56,6 +64,39 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.UpdateProper
             var products = _itemService.GetByIds(productIds, ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemProperties);
 
             return _bulkUpdatePropertyManager.UpdateProperties(products, _context.Properties);
+        }
+
+        protected virtual Web.Model.Property CreateWebModel(Domain.Catalog.Model.Property property)
+        {
+            var result = property.ToWebModel();
+            string ownerName = null;
+
+            if (!string.IsNullOrEmpty(property.CategoryId))
+            {
+                if (!_namesById.TryGetValue(property.CategoryId, out ownerName))
+                {
+                    ownerName = $"{_categoryService.GetById(property.CategoryId, CategoryResponseGroup.Info)?.Name} (Category)";
+                    _namesById.Add(property.CategoryId, ownerName);
+                }
+            }
+            else if (!string.IsNullOrEmpty(property.CatalogId))
+            {
+#pragma warning disable S1066 // Collapsible "if" statements should be merged
+                if (!_namesById.TryGetValue(property.CatalogId, out ownerName))
+#pragma warning restore S1066 // Collapsible "if" statements should be merged
+                {
+                    ownerName = $"{_catalogService.GetById(property.CatalogId)?.Name} (Catalog)";
+                    _namesById.Add(property.CatalogId, ownerName);
+                }
+            }
+            else
+            {
+                ownerName = "Native properties";
+            }
+
+            result.Path = ownerName;
+
+            return result;
         }
     }
 }

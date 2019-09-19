@@ -174,5 +174,7 @@ namespace VirtoCommerce.CatalogModule.Web.Model
         /// System flag used to mark that object was inherited from other
         /// </summary>
         public bool IsInherited { get; set; }
+
+        public string Path { get; set; }
     }
 }

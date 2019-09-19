@@ -32,6 +32,8 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.UpdateProper
             var result = new List<Property>();
             var propertyIds = new HashSet<string>();
 
+            result.AddRange(GetStandardProperties());
+
             while (dataSource.Fetch())
             {
                 var productIds = dataSource.Items.Select(x => x.Id).ToArray();
@@ -46,8 +48,6 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.UpdateProper
                 propertyIds.AddRange(newProperties.Select(x => x.Id));
                 result.AddRange(newProperties);
             }
-
-            result.AddRange(GetStandardProperties());
 
             return result.ToArray();
         }
