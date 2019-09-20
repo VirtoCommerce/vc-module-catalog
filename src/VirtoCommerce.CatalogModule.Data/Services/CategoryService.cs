@@ -199,9 +199,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 var allImages = category.GetFlatObjectsListWithInterface<IHasImages>().Where(x => x.Images != null).SelectMany(x => x.Images);
                 foreach (var image in allImages.Where(x => !string.IsNullOrEmpty(x.Url)))
                 {
-                    image.RelativeUrl = image.Url;
+                    image.RelativeUrl = !string.IsNullOrEmpty(image.RelativeUrl) ? image.RelativeUrl : image.Url;
                     image.Url = _blobUrlResolver.GetAbsoluteUrl(image.Url);
-
                 }
             }
         }

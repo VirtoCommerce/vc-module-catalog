@@ -239,7 +239,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var catalogEntries = (await LoadCatalogEntriesAsync<IEntity>(moveRequest.ListEntries.Select(x => x.Id).ToArray())).ToList();
             foreach (var listEntry in moveRequest.ListEntries.ToList())
             {
-                var existEntry = catalogEntries.FirstOrDefault(x => x.Equals(listEntry));
+                var existEntry = catalogEntries.FirstOrDefault(x => x.Id.EqualsInvariant(listEntry.Id));
                 if (existEntry != null)
                 {
                     if (existEntry is Category category)
