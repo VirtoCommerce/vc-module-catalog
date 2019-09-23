@@ -247,6 +247,13 @@ namespace VirtoCommerce.CatalogModule.Web
 
             var actionRegistrar = _container.Resolve<IBulkUpdateActionRegistrar>();
 
+            // TechDebt: IItemService and similar does not decorated with vc-module-cache/CatalogServicesDecorator as it is not registered yet.
+            // Cache decorator registration is in PostInitialize for all used service being inited.
+            // Thus items cache is not invalidated after the changes.
+            // So need to handle this situation here. Possible solutions:
+            // 1. WithActionFactory and WithDataSourceFactory should use registered creation factory (e.g. Func<IBulkUpdateActionFactory>) for defferred factories instantiation (IMHO preffered)
+            // 2. Pass DI container (IUnityContainer) to the factories. (not safe because of potential harmful container usage there)
+            // Workaround - turn off Smart caching in platform UI in Settings/Cache/General.
             actionRegistrar.Register(new BulkUpdateActionDefinitionBuilder(
                 new BulkUpdateActionDefinition()
                 {
