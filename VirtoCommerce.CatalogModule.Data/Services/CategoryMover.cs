@@ -40,9 +40,9 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     throw new ArgumentException("Unable to move category to itself");
                 }
 
-                var ids = targetCategory.Outlines.SelectMany(x => x.Items);
+                var outlinesIds = targetCategory.Outlines.SelectMany(x => x.Items);
 
-                if (ids.Any(x => x.Id == category.Id))
+                if (outlinesIds.Any(x => x.Id == category.Id))
                 {
                     throw new ArgumentException("Unable to move category to its descendant");
                 }
