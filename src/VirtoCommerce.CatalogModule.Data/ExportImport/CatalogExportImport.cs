@@ -85,9 +85,10 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 await writer.SerializeJsonArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
                 {
                     var searchResult = await _categorySearchService.SearchCategoriesAsync(new CategorySearchCriteria { Skip = skip, Take = take });
-                    if (options.HandleBinaryData)
+                    LoadImages(searchResult.Results.OfType<IHasImages>().ToArray(), progressInfo, options.HandleBinaryData);
+                    foreach (var item in searchResult.Results)
                     {
-                        LoadImages(searchResult.Results.OfType<IHasImages>().ToArray(), progressInfo);
+                        ResetRedundantReferences(item);
                     }
 
                     return (GenericSearchResult<Category>)searchResult;
@@ -104,7 +105,14 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 
                 await writer.WritePropertyNameAsync("Properties");
                 await writer.SerializeJsonArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
-                    (GenericSearchResult<Property>)await _propertySearchService.SearchPropertiesAsync(new PropertySearchCriteria { Skip = skip, Take = take })
+                {
+                    var searchResult = await _propertySearchService.SearchPropertiesAsync(new PropertySearchCriteria { Skip = skip, Take = take });
+                    foreach (var item in searchResult.Results)
+                    {
+                        ResetRedundantReferences(item);
+                    }
+                    return (GenericSearchResult<Property>)searchResult;
+                }
                 , (processedCount, totalCount) =>
                 {
                     progressInfo.Description = $"{ processedCount } of { totalCount } properties have been exported";
@@ -133,10 +141,11 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 await writer.WritePropertyNameAsync("Products");
                 await writer.SerializeJsonArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
                 {
-                    var searchResult = await _productSearchService.SearchProductsAsync(new ProductSearchCriteria { Skip = skip, Take = take, ResponseGroup = (ItemResponseGroup.Full & ~ItemResponseGroup.Variations).ToString() });
-                    if (options.HandleBinaryData)
+                    var searchResult = await _productSearchService.SearchProductsAsync(new ProductSearchCriteria { Skip = skip, Take = take, ResponseGroup = ItemResponseGroup.Full.ToString() });
+                    LoadImages(searchResult.Results.OfType<IHasImages>().ToArray(), progressInfo, options.HandleBinaryData);
+                    foreach (var item in searchResult.Results)
                     {
-                        LoadImages(searchResult.Results.OfType<IHasImages>().ToArray(), progressInfo);
+                        ResetRedundantReferences(item);
                     }
                     return (GenericSearchResult<CatalogProduct>)searchResult;
                 }, (processedCount, totalCount) =>
@@ -297,22 +306,111 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             }
         }
 
-        private void LoadImages(IHasImages[] haveImagesObjects, ExportImportProgressInfo progressInfo)
+
+        //Remove redundant references to reduce resulting JSON size
+        private static void ResetRedundantReferences(object entity)
+        {
+            if (entity is PropertyValue propertyValue)
+            {
+                propertyValue.Property = null;
+            }
+
+            if (entity is ProductAssociation asscociation)
+            {
+                asscociation.AssociatedObject = null;
+            }
+
+            if (entity is Catalog catalog)
+            {
+                catalog.Properties = null;
+                foreach (var lang in catalog.Languages)
+                {
+                    lang.Catalog = null;
+                }
+            }
+
+            if (entity is Category category)
+            {
+                category.Catalog = null;
+                category.Children = null;
+                category.Parents = null;
+                category.Outlines = null;
+
+                if (!category.Properties.IsNullOrEmpty())
+                {
+                    foreach (var propvalue in category.Properties)
+                    {
+                        ResetRedundantReferences(propvalue);
+                    }
+                }
+            }
+
+            if (entity is Property property)
+            {
+                property.Catalog = null;
+                property.Category = null;
+            }
+
+            if (entity is CatalogProduct product)
+            {
+                product.Catalog = null;
+                product.Category = null;
+                product.MainProduct = null;
+                product.Outlines = null;
+                product.ReferencedAssociations = null;
+
+                if (!product.Properties.IsNullOrEmpty())
+                {
+                    foreach (var prop in product.Properties)
+                    {
+                        ResetRedundantReferences(prop);
+
+                        foreach (var val in prop.Values)
+                        {
+                            ResetRedundantReferences(val);
+                        }
+                    }
+                }
+
+                if (!product.Associations.IsNullOrEmpty())
+                {
+                    foreach (var association in product.Associations)
+                    {
+                        ResetRedundantReferences(association);
+                    }
+                }
+
+                if (!product.Variations.IsNullOrEmpty())
+                {
+                    foreach (var variation in product.Variations)
+                    {
+                        ResetRedundantReferences(variation);
+                    }
+                }
+            }
+        }
+
+        private void LoadImages(IHasImages[] haveImagesObjects, ExportImportProgressInfo progressInfo, bool handleBinaryData)
         {
             var allImages = haveImagesObjects.SelectMany(x => x.GetFlatObjectsListWithInterface<IHasImages>())
                                              .SelectMany(x => x.Images).ToArray();
             foreach (var image in allImages)
             {
-                try
+                image.Url = image.RelativeUrl;
+
+                if (handleBinaryData)
                 {
-                    using (var stream = _blobStorageProvider.OpenRead(image.Url))
+                    try
                     {
-                        image.BinaryData = stream.ReadFully();
+                        using (var stream = _blobStorageProvider.OpenRead(image.Url))
+                        {
+                            image.BinaryData = stream.ReadFully();
+                        }
                     }
-                }
-                catch (Exception ex)
-                {
-                    progressInfo.Errors.Add(ex.Message);
+                    catch (Exception ex)
+                    {
+                        progressInfo.Errors.Add(ex.Message);
+                    }
                 }
             }
         }
