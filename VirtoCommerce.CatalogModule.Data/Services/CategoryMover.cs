@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Web.Model;
@@ -32,6 +33,20 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             foreach (var listEntryCategory in moveInfo.ListEntries.Where(x => x.Type.EqualsInvariant(ListEntryCategory.TypeName)))
             {
                 var category = _categoryService.GetById(listEntryCategory.Id, domain.CategoryResponseGroup.Info);
+                var targetCategory = _categoryService.GetById(moveInfo.Category, domain.CategoryResponseGroup.WithOutlines);
+
+                if (category.Id == moveInfo.Category)
+                {
+                    throw new ArgumentException("Unable to move category to itself");
+                }
+
+                var ids = targetCategory.Outlines.SelectMany(x => x.Items);
+
+                if (ids.Any(x => x.Id == category.Id))
+                {
+                    throw new ArgumentException("Unable to move category to its descendant");
+                }
+
                 if (category.CatalogId != moveInfo.Catalog)
                 {
                     category.CatalogId = moveInfo.Catalog;
