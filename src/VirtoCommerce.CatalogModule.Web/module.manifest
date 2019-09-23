@@ -8,6 +8,7 @@
         <dependency id="VirtoCommerce.Core" version="3.0.0" />
         <dependency id="VirtoCommerce.Search" version="3.0.0" />
         <dependency id="VirtoCommerce.Export" version="3.0.0" />
+        <dependency id="VirtoCommerce.Store" version="3.0.0" />
     </dependencies>
 
     <title>Catalog module</title>
