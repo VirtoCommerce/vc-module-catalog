@@ -361,7 +361,8 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                             categoryIds: _.pluck(newBlade.selectedCategories, 'id'),
                             objectIds: _.pluck(newBlade.selectedProducts, 'id'),
                             catalogIds: [newBlade.catalog.id],
-                            isAllSelected: true
+                            isAllSelected: newBlade.isAllSelected,
+                            isAnyFilterApplied: (newBlade.selectedCategories.length ? true : false)
                         }
                     };
                     newBlade.exportDataRequest = exportDataRequest;
