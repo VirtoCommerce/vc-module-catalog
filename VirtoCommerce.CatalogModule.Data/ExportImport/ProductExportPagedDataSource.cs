@@ -11,13 +11,12 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.ExportImport
 {
-    public class ProductExportPagedDataSource : ExportPagedDataSource<ProductExportDataQuery, ProductExportSearchCriteria>
+    public class ProductExportPagedDataSource : ExportPagedDataSource<ProductExportDataQuery, ProductExportSearchCriteria>, ISupportPreview
     {
         private readonly IBlobStorageProvider _blobStorageProvider;
         private readonly IItemService _itemService;
         private readonly ICatalogSearchService _catalogSearchService;
         private readonly IBlobUrlResolver _blobUrlResolver;
-
 
         public ProductExportPagedDataSource(IBlobStorageProvider blobStorageProvider, IItemService itemService, ICatalogSearchService catalogSearchService, IBlobUrlResolver blobUrlResolver, ProductExportDataQuery dataQuery) : base(dataQuery)
         {
@@ -61,23 +60,27 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 Results = ToExportable(result).ToList(),
                 TotalCount = totalCount
             };
-
         }
 
         protected virtual IEnumerable<IExportable> ToExportable(IEnumerable<ICloneable> objects)
         {
             var models = objects.Cast<CatalogProduct>();
 
-            var exportableProducts = models.Select(x =>
+            var exportableProducts = ResolveImageUrls(models);
+
+            return exportableProducts;
+        }
+
+        private IEnumerable<ExportableProduct> ResolveImageUrls(IEnumerable<CatalogProduct> models)
+        {
+            return models.Select(x =>
             {
                 var exportableProduct = AbstractTypeFactory<ExportableProduct>.TryCreateInstance().FromModel(x);
                 var imageUrl = x?.Images?.FirstOrDefault()?.Url;
 
                 exportableProduct.ImageUrl = imageUrl != null ? _blobUrlResolver.GetAbsoluteUrl(imageUrl) : null;
                 return exportableProduct;
-            });
-
-            return exportableProducts;
+            }).ToArray();
         }
 
         protected override ProductExportSearchCriteria BuildSearchCriteria(ProductExportDataQuery exportDataQuery)
@@ -142,5 +145,60 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 
             return result;
         }
+
+        #region ISupportPreview
+
+        public virtual bool FetchViewable()
+        {
+            var hasData = true;
+            var searchCriteria = BuildSearchCriteria(DataQuery);
+            var hasObjectIds = !searchCriteria.ObjectIds.IsNullOrEmpty();
+
+            if (hasObjectIds)
+            {
+                searchCriteria.ObjectIds = searchCriteria.ObjectIds.Skip(searchCriteria.Skip).Take(searchCriteria.Take).ToArray();
+            }
+
+            if (hasObjectIds && searchCriteria.ObjectIds.IsNullOrEmpty())
+            {
+                hasData = false;
+            }
+
+            if (hasData)
+            {
+                CurrentPageNumber++;
+                Items = FetchPreviewData(searchCriteria);
+                hasData = Items.Any();
+            }
+            else
+            {
+                Items = Array.Empty<IExportable>();
+            }
+
+            return hasData;
+        }
+
+        protected virtual IEnumerable<IExportable> FetchPreviewData(ProductExportSearchCriteria searchCriteria)
+        {
+            var result = Array.Empty<CatalogProduct>();
+            var productIds = searchCriteria.ObjectIds?.ToArray() ?? Array.Empty<string>();
+
+            if (productIds.IsNullOrEmpty())
+            {
+                var catalogSearchCriteria = searchCriteria.ToCatalogSearchCriteria();
+
+                var productSearchResult = _catalogSearchService.Search(catalogSearchCriteria);
+                productIds = productSearchResult.Products.Select(x => x.Id).ToArray();
+            }
+
+            if (!productIds.IsNullOrEmpty())
+            {
+                result = _itemService.GetByIds(productIds, ItemResponseGroup.ItemInfo);
+            }
+
+            return ResolveImageUrls(result);
+        }
+
+        #endregion ISupportPreview
     }
 }
