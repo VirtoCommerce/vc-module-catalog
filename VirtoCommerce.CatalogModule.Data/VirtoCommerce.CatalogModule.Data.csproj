@@ -87,11 +87,11 @@
     <Reference Include="VirtoCommerce.Domain, Version=2.25.27.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\VirtoCommerce.Domain.2.25.27\lib\net461\VirtoCommerce.Domain.dll</HintPath>
     </Reference>
-    <Reference Include="VirtoCommerce.ExportModule.Core, Version=2.2.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VirtoCommerce.ExportModule.Core.2.2.1\lib\net461\VirtoCommerce.ExportModule.Core.dll</HintPath>
+    <Reference Include="VirtoCommerce.ExportModule.Core, Version=2.2.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VirtoCommerce.ExportModule.Core.2.2.2\lib\net461\VirtoCommerce.ExportModule.Core.dll</HintPath>
     </Reference>
-    <Reference Include="VirtoCommerce.ExportModule.Data, Version=2.2.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VirtoCommerce.ExportModule.Data.2.2.1\lib\net461\VirtoCommerce.ExportModule.Data.dll</HintPath>
+    <Reference Include="VirtoCommerce.ExportModule.Data, Version=2.2.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VirtoCommerce.ExportModule.Data.2.2.2\lib\net461\VirtoCommerce.ExportModule.Data.dll</HintPath>
     </Reference>
     <Reference Include="VirtoCommerce.Platform.Core, Version=2.13.42.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\VirtoCommerce.Platform.Core.2.13.42\lib\net461\VirtoCommerce.Platform.Core.dll</HintPath>

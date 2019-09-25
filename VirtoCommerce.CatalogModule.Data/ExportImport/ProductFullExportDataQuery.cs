@@ -13,6 +13,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         public override CatalogFullExportDataQuery FromOther(CatalogFullExportDataQuery other)
         {
             var result = base.FromOther(other);
+
             if (other.GetType() == typeof(CatalogFullExportDataQuery))
             {
                 SearchInVariations = true;
@@ -35,7 +36,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             result.Skip = Skip;
             result.Sort = Sort;
             result.Take = Take;
-            result.LoadImageBinaries = true;
+            result.IsPreview = IsPreview;
 
             return result;
         }

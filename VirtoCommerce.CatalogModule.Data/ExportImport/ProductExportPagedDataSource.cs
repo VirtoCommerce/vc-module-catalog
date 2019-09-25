@@ -33,7 +33,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             var result = Array.Empty<CatalogProduct>();
             int totalCount = 0;
 
-            var responseGroup = BuildResponseGroup();
+            var responseGroup = DataQuery.IsPreview ? ItemResponseGroup.ItemInfo : BuildResponseGroup();
             var productIds = searchCriteria.ObjectIds?.ToArray() ?? Array.Empty<string>();
 
             if (productIds.IsNullOrEmpty())
@@ -51,7 +51,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 totalCount = result.Length;
             }
 
-            if (DataQuery.LoadImageBinaries == true || DataQuery.IncludedProperties.Any(x => x.FullName.Contains("Images.BinaryData")))
+            if (!DataQuery.IsPreview && DataQuery.IncludedProperties.Any(x => x.FullName.Contains("Images.BinaryData")))
             {
                 result.LoadImages(_blobStorageProvider);
             }
