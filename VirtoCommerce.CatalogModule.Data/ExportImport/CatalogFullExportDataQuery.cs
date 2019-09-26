@@ -15,6 +15,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             }
 
             CatalogIds = other.CatalogIds;
+            IsPreview = other.IsPreview;
             return this;
         }
     }
