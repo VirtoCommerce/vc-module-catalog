@@ -76,6 +76,7 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Services
             var result = base.BuildSearchCriteria(dataQuery);
 
             result.ResponseGroup = domain.SearchResponseGroup.WithProducts;
+            result.SearchInChildren = true;
 
             return result;
         }
