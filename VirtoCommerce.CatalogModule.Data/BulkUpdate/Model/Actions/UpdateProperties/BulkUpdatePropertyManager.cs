@@ -127,7 +127,7 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.UpdateProper
         {
             bool result;
 
-            if (propertyToSet.Multivalue)
+            if (propertyToSet.Multivalue || propertyToSet.Dictionary)
             {
                 var productPropertyValues = product.PropertyValues?.Where(x => x.Property != null && x.Property.Id.EqualsInvariant(propertyToSet.Id)).ToArray();
 
@@ -152,11 +152,6 @@ namespace VirtoCommerce.CatalogModule.Data.BulkUpdate.Model.Actions.UpdateProper
                     var propertyValueToSet = propertyToSet.Values.FirstOrDefault();
 
                     productPropertyValue.Value = propertyValueToSet?.Value;
-
-                    if (propertyToSet.Dictionary)
-                    {
-                        productPropertyValue.ValueId = propertyValueToSet?.ValueId;
-                    }
                     result = true;
                 }
                 else
