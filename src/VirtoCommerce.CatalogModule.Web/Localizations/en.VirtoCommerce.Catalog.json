@@ -358,6 +358,10 @@
                     "language": "Select language"
                 }
             },
+			  "importers-list": {
+				"title": "Import catalog",
+				"subtitle": "Select Data Format & Import"
+			  },
             "images": {
                 "subtitle": "Manage images",
                 "labels": {
@@ -469,7 +473,8 @@
                 }
             },
             "exporter-list": {
-                "title": "Available export modules"
+                "title": "Available export modules",
+				"subtitle": "Data format & start select export"
             },
             "exporter": {
                 "productTitle": "Export catalog products",
