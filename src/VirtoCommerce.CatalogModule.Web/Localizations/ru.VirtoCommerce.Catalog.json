@@ -354,6 +354,14 @@
                     "language": "Выбрать язык"
                 }
             },
+			  "importers-list": {
+				"title": "Импорт каталога",
+				"subtitle": "Выберите формат данных и импортируйте"
+			  },
+			  "exporter-list": {
+				"title": "Export data",
+				"subtitle": "Формат данных и начало выбора экспорта"
+			  },
             "images": {
                 "subtitle": "Управление изображениями",
                 "labels": {
