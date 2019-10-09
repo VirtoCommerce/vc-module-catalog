@@ -36,6 +36,7 @@ namespace VirtoCommerce.CatalogModule.Core
                     ValueType = SettingValueType.ShortText,
                     IsDictionary = true
                 };
+
                 public static SettingDescriptor AssociationGroups = new SettingDescriptor
                 {
                     Name = "Catalog.AssociationGroups",
@@ -62,9 +63,18 @@ namespace VirtoCommerce.CatalogModule.Core
                     ValueType = SettingValueType.Boolean,
                     DefaultValue = false
                 };
+
                 public static SettingDescriptor ExposeAliasInDictionary = new SettingDescriptor
                 {
                     Name = "Catalog.ExposeAliasInDictionary",
+                    GroupName = "Catalog|General",
+                    ValueType = SettingValueType.Boolean,
+                    DefaultValue = false
+                };
+
+                public static SettingDescriptor UseSeoDeduplication = new SettingDescriptor
+                {
+                    Name = "Catalog.UseSeoDeduplication",
                     GroupName = "Catalog|General",
                     ValueType = SettingValueType.Boolean,
                     DefaultValue = false
@@ -79,6 +89,7 @@ namespace VirtoCommerce.CatalogModule.Core
                         yield return EditorialReviewTypes;
                         yield return CodesInOutline;
                         yield return ExposeAliasInDictionary;
+                        yield return UseSeoDeduplication;
                     }
                 }
             }
@@ -128,8 +139,6 @@ namespace VirtoCommerce.CatalogModule.Core
                     }
                 }
             }
-
-
 
             public static IEnumerable<SettingDescriptor> AllSettings
             {
