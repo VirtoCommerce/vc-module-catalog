@@ -63,7 +63,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             {
                 return NoContent();
             }
-            
+
             var allProperties = await GetAllPropertiesAsync(store.Catalog, store.Currencies);
             var selectedProperties = await GetSelectedPropertiesAsync(storeId);
 
@@ -90,7 +90,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             if (store == null)
             {
                 return NoContent();
-            }       
+            }
             // Filter names must be unique
             // Keep the selected properties order.
             var filters = browseFilterProperties
@@ -116,7 +116,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 var catalogPropertiesSearchResult = await _propertySearchService.SearchPropertiesAsync(new PropertySearchCriteria { PropertyNames = new[] { propertyName }, CatalogId = store.Catalog, Take = 1 });
                 var property = catalogPropertiesSearchResult.Results.FirstOrDefault(p => p.Name.EqualsInvariant(propertyName) && p.Dictionary);
                 if (property != null)
-                {                  
+                {
                     var searchResult = await _propDictItemsSearchService.SearchAsync(new PropertyDictionaryItemSearchCriteria { PropertyIds = new[] { property.Id }, Take = int.MaxValue });
                     result = searchResult.Results.Select(x => x.Alias).Distinct().ToArray();
                 }
@@ -133,6 +133,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             result.AddRange(currencies.Select(c => new AggregationProperty { Type = _priceRangeType, Name = $"Price {c}", Currency = c }));
 
+            result.Add(new AggregationProperty { Type = _attributeType, Name = $"__outline" });
             return result;
         }
 

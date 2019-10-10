@@ -63,48 +63,61 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             var cacheKey = CacheKey.With(GetType(), "GetByIdsAsync", string.Join("-", itemIds), itemResponseGroup.ToString(), catalogId);
             var result = await _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async (cacheEntry) =>
             {
-                CatalogProduct[] products;
+                var products = Array.Empty<CatalogProduct>();
 
-                using (var repository = _repositoryFactory())
+                if (!itemIds.IsNullOrEmpty())
                 {
-                    //Optimize performance and CPU usage
-                    repository.DisableChangesTracking();
+                    using (var repository = _repositoryFactory())
+                    {
+                        //Optimize performance and CPU usage
+                        repository.DisableChangesTracking();
 
-                    products = (await repository.GetItemByIdsAsync(itemIds, respGroup))
-                                       .Select(x => x.ToModel(AbstractTypeFactory<CatalogProduct>.TryCreateInstance()))
-                                       .ToArray();
-                }
+                        products = (await repository.GetItemByIdsAsync(itemIds, respGroup))
+                            .Select(x => x.ToModel(AbstractTypeFactory<CatalogProduct>.TryCreateInstance()))
+                            .ToArray();
+                    }
 
-                await LoadDependenciesAsync(products);
+                    if (products.Any())
+                    {
+                        await LoadDependenciesAsync(products);
+                        ApplyInheritanceRules(products);
 
-                var productsWithVariationsList = products.Concat(products.Where(p => p.Variations != null)
-                                           .SelectMany(p => p.Variations)).ToArray();
-                ApplyInheritanceRules(productsWithVariationsList);
+                        var productsWithVariationsList = products.Concat(products.Where(p => p.Variations != null)
+                            .SelectMany(p => p.Variations)).ToArray();
 
+                        // Fill outlines for products and variations
+                        if (itemResponseGroup.HasFlag(ItemResponseGroup.Outlines))
+                        {
+                            _outlineService.FillOutlinesForObjects(productsWithVariationsList, catalogId);
+                        }
 
-                // Fill outlines for products and variations
-                if (itemResponseGroup.HasFlag(ItemResponseGroup.Outlines))
-                {
-                    _outlineService.FillOutlinesForObjects(productsWithVariationsList, catalogId);
-                }
-
-                //Reduce details according to response group
-                foreach (var product in productsWithVariationsList)
-                {
-                    product.ReduceDetails(itemResponseGroup.ToString());
-                    cacheEntry.AddExpirationToken(ItemCacheRegion.CreateChangeToken(product));
-                    cacheEntry.AddExpirationToken(CatalogCacheRegion.CreateChangeToken());
+                        //Reduce details according to response group
+                        foreach (var product in productsWithVariationsList)
+                        {
+                            product.ReduceDetails(itemResponseGroup.ToString());
+                            cacheEntry.AddExpirationToken(ItemCacheRegion.CreateChangeToken(product));
+                            cacheEntry.AddExpirationToken(CatalogCacheRegion.CreateChangeToken());
+                        }
+                    }
                 }
 
                 return products;
             });
+
             return result.Select(x => x.Clone() as CatalogProduct).ToArray();
         }
 
         public virtual async Task<CatalogProduct> GetByIdAsync(string itemId, string responseGroup, string catalogId = null)
         {
-            var items = await GetByIdsAsync(new[] { itemId }, responseGroup, catalogId);
-            return items.FirstOrDefault();
+            CatalogProduct result = null;
+
+            if (!string.IsNullOrEmpty(itemId))
+            {
+                var results = await GetByIdsAsync(new[] { itemId }, responseGroup, catalogId);
+                result = results.Any() ? results.First() : null;
+            }
+
+            return result;
         }
 
         public virtual async Task SaveChangesAsync(CatalogProduct[] products)

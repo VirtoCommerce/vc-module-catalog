@@ -81,7 +81,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         /// <summary>
         /// DownloadType: {Standard Product, Software, Music}
         /// </summary>
-		public string DownloadType { get; set; }
+        public string DownloadType { get; set; }
         public bool? HasUserAgreement { get; set; }
 
         public string ShippingType { get; set; }
@@ -354,21 +354,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
             {
                 Variations = null;
             }
-            if (Variations != null)
-            {
-                //For nested variations leave only variation properties to decrease resulting JSON
-                foreach (var variation in Variations)
-                {
-                    if (variation.Properties != null)
-                    {
-                        variation.Properties = variation.Properties.Where(x => x.Type == PropertyType.Variation).ToList();
-                    }
-                    variation.Outlines = null;
-                    variation.Reviews = null;
-                }
-            }
         }
-
 
         #region ICloneable members
         public virtual object Clone()

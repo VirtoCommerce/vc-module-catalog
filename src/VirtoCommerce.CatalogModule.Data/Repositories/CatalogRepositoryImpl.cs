@@ -110,12 +110,12 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                         //Load category property values by separate query
                         breakingQueriesTasks.Add(PropertyValues.Include(x => x.DictionaryItem.DictionaryItemValues)
                                                                .Where(x => categoriesIds.Contains(x.CategoryId)).LoadAsync());
-                        
+
                         var categoryPropertiesIds = await Properties.Where(x => categoriesIds.Contains(x.CategoryId))
                                                                     .Select(x => x.Id).ToArrayAsync();
                         breakingQueriesTasks.Add(GetPropertiesByIdsAsync(categoryPropertiesIds));
                     }
-                    
+
                     await Task.WhenAll(breakingQueriesTasks);
                 }
             }
@@ -169,9 +169,9 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     if (itemResponseGroup.HasFlag(ItemResponseGroup.Variations))
                     {
                         // TODO: Call GetItemByIds for variations recursively (need to measure performance and data amount first)
-                        IQueryable<ItemEntity> variationsQuery  = Items.Where(x => itemIds.Contains(x.ParentId))
-                                                    .Include(x=> x.Images)
-                                                    .Include(x=> x.ItemPropertyValues);
+                        IQueryable<ItemEntity> variationsQuery = Items.Where(x => itemIds.Contains(x.ParentId))
+                                                    .Include(x => x.Images)
+                                                    .Include(x => x.ItemPropertyValues);
 
                         if (itemResponseGroup.HasFlag(ItemResponseGroup.ItemAssets))
                         {
@@ -179,7 +179,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                         }
                         if (itemResponseGroup.HasFlag(ItemResponseGroup.ItemEditorialReviews))
                         {
-                            variationsQuery = variationsQuery.Include(x=> x.EditorialReviews);
+                            variationsQuery = variationsQuery.Include(x => x.EditorialReviews);
                         }
                         if (itemResponseGroup.HasFlag(ItemResponseGroup.Seo))
                         {
@@ -211,7 +211,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     breakingQueriesTasks.Add(GetItemByIdsAsync(parentIds, responseGroup));
 
                     await Task.WhenAll(breakingQueriesTasks);
-                   
+
                 }
             }
 
@@ -226,9 +226,9 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             {
                 //Used breaking query EF performance concept https://msdn.microsoft.com/en-us/data/hh949853.aspx#8
                 result = await Properties.Where(x => propIds.Contains(x.Id))
-                                         .Include(x=> x.PropertyAttributes)
-                                         .Include(x=> x.DisplayNames)
-                                         .Include(x=> x.ValidationRules)
+                                         .Include(x => x.PropertyAttributes)
+                                         .Include(x => x.DisplayNames)
+                                         .Include(x => x.ValidationRules)
                                          .ToArrayAsync();
 
                 if (result.Any() && loadDictValues)
@@ -315,7 +315,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 ";
 
                 var getAllChildrenCategoriesCommand = CreateCommand(commandTemplate, categoryIds);
-                result = await DbContext.ExecuteArrayAsync<string>(getAllChildrenCategoriesCommand.Text, getAllChildrenCategoriesCommand.Parameters);
+                result = await DbContext.ExecuteArrayAsync<string>(getAllChildrenCategoriesCommand.Text, getAllChildrenCategoriesCommand.Parameters.ToArray());
             }
 
             return result ?? new string[0];
@@ -461,8 +461,9 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     FROM Association
                     WHERE ItemId IN ({0})
                 "
-                                      + (!string.IsNullOrEmpty(criteria.Group) ? $" AND AssociationType = @group" : string.Empty) +
-                                      @"), Category_CTE AS
+                + (!string.IsNullOrEmpty(criteria.Group) ? $" AND AssociationType = @group" : string.Empty)
+                + (!criteria.Tags.IsNullOrEmpty() ? $" AND exists( SELECT value FROM string_split(Tags, ';') WHERE value IN (@tags))" : string.Empty) +
+                @"), Category_CTE AS
                 (
                     SELECT AssociatedCategoryId Id
                     FROM Association_CTE
@@ -502,12 +503,17 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                             ,Quantity
                             ,OuterId
                         FROM Association
-                        WHERE ItemId IN({0})")
-                ;
+                        WHERE ItemId IN({0})"
+            );
 
             if (!string.IsNullOrEmpty(criteria.Group))
             {
                 querySqlCommandText.Append(" AND AssociationType = @group");
+            }
+
+            if (!criteria.Tags.IsNullOrEmpty())
+            {
+                querySqlCommandText.Append("  AND exists( SELECT value FROM string_split(Tags, ';') WHERE value IN (@tags))");
             }
 
             querySqlCommandText.Append(@"), Category_CTE AS
@@ -544,19 +550,26 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                         SELECT * FROM Association_CTE
                     ) 
                     SELECT  * FROM Item_CTE WHERE AssociatedItemId IS NOT NULL ORDER BY Priority ");
-            querySqlCommandText.Append($"OFFSET {criteria.Skip} ROWS FETCH NEXT {criteria.Take} ROWS ONLY");
 
+            querySqlCommandText.Append($"OFFSET {criteria.Skip} ROWS FETCH NEXT {criteria.Take} ROWS ONLY");
 
             var countSqlCommand = CreateCommand(countSqlCommandText, criteria.ObjectIds);
             var querySqlCommand = CreateCommand(querySqlCommandText.ToString(), criteria.ObjectIds);
+
             if (!string.IsNullOrEmpty(criteria.Group))
             {
-                countSqlCommand.Parameters = countSqlCommand.Parameters.Concat(new[] { new SqlParameter($"@group", criteria.Group) }).ToArray();
-                querySqlCommand.Parameters = querySqlCommand.Parameters.Concat(new[] { new SqlParameter($"@group", criteria.Group) }).ToArray();
+                countSqlCommand.Parameters.Add(new SqlParameter($"@group", criteria.Group));
+                querySqlCommand.Parameters.Add(new SqlParameter($"@group", criteria.Group));
             }
 
-            result.TotalCount = await DbContext.ExecuteScalarAsync<int>(countSqlCommand.Text, countSqlCommand.Parameters);
-            result.Results = await Associations.FromSql(querySqlCommand.Text, querySqlCommand.Parameters).ToListAsync();
+            if (!criteria.Tags.IsNullOrEmpty())
+            {
+                AddArrayParameters(countSqlCommand, "@tags", criteria.Tags ?? Array.Empty<string>());
+                AddArrayParameters(querySqlCommand, "@tags", criteria.Tags ?? Array.Empty<string>());
+            }
+
+            result.TotalCount = await DbContext.ExecuteScalarAsync<int>(countSqlCommand.Text, countSqlCommand.Parameters.ToArray());
+            result.Results = await Associations.FromSql(querySqlCommand.Text, querySqlCommand.Parameters.ToArray()).ToListAsync();
 
             return result;
         }
@@ -566,7 +579,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         protected virtual async Task<int> ExecuteStoreQueryAsync(string commandTemplate, IEnumerable<string> parameterValues)
         {
             var command = CreateCommand(commandTemplate, parameterValues);
-            return await DbContext.Database.ExecuteSqlCommandAsync(command.Text, command.Parameters);
+            return await DbContext.Database.ExecuteSqlCommandAsync(command.Text, command.Parameters.ToArray());
         }
 
         protected virtual Command CreateCommand(string commandTemplate, IEnumerable<string> parameterValues)
@@ -577,14 +590,36 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             return new Command
             {
                 Text = string.Format(commandTemplate, parameterNames),
-                Parameters = parameters.OfType<object>().ToArray(),
+                Parameters = parameters.OfType<object>().ToList(),
             };
+        }
+
+        protected SqlParameter[] AddArrayParameters<T>(Command cmd, string paramNameRoot, IEnumerable<T> values)
+        {
+            /* An array cannot be simply added as a parameter to a SqlCommand so we need to loop through things and add it manually. 
+             * Each item in the array will end up being it's own SqlParameter so the return value for this must be used as part of the
+             * IN statement in the CommandText.
+             */
+            var parameters = new List<SqlParameter>();
+            var parameterNames = new List<string>();
+            var paramNbr = 1;
+            foreach (var value in values)
+            {
+                var paramName = $"{paramNameRoot}{paramNbr++}";
+                parameterNames.Add(paramName);
+                var p = new SqlParameter(paramName, value);
+                cmd.Parameters.Add(p);
+                parameters.Add(p);
+            }
+            cmd.Text = cmd.Text.Replace(paramNameRoot, string.Join(",", parameterNames));
+
+            return parameters.ToArray();
         }
 
         protected class Command
         {
             public string Text { get; set; }
-            public object[] Parameters { get; set; }
+            public IList<object> Parameters { get; set; } = new List<object>();
         }
     }
 }

@@ -234,18 +234,20 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return sortInfos;
         }
 
-
         protected virtual IQueryable<CategoryEntity> BuildQuery(IQueryable<CategoryEntity> query, CatalogListEntrySearchCriteria criteria)
         {
             return query;
         }
 
-
         protected virtual IQueryable<ItemEntity> BuildQuery(IQueryable<ItemEntity> query, CatalogListEntrySearchCriteria criteria, string[] searchCategoryIds)
         {
             query = query.Where(x => criteria.WithHidden || x.IsActive);
 
-            if (!criteria.SearchInVariations)
+            if (!string.IsNullOrEmpty(criteria.MainProductId))
+            {
+                query = query.Where(x => x.ParentId == criteria.MainProductId);
+            }
+            else if (!criteria.SearchInVariations)
             {
                 query = query.Where(x => x.ParentId == null);
             }

@@ -41,7 +41,6 @@ angular.module('virtoCommerce.catalogModule').directive('vaProperty2', ['$compil
             scope.$watch('context.currentPropValues', function (newValues) {
                 //reflect only real changes
                 var currentValues = angular.copy(scope.currentEntity.values);
-
                 if (scope.currentEntity.dictionary) {
                     currentValues = _.uniq(_.map(currentValues, function (x) {
                         return {
@@ -85,6 +84,7 @@ angular.module('virtoCommerce.catalogModule').directive('vaProperty2', ['$compil
                             selected: true
                         };
                     }), function (x) { return x.valueId; });
+
                 }
                 if (needAddEmptyValue(scope.currentEntity, scope.context.currentPropValues)) {
                     scope.context.currentPropValues.push({ value: null });
@@ -155,6 +155,7 @@ angular.module('virtoCommerce.catalogModule').directive('vaProperty2', ['$compil
             scope.loadDictionaryValues = function ($select) {
                 $select.page = 0;
                 scope.context.allDictionaryValues = [];
+
                 return scope.loadNextDictionaryValues($select);
             };
 
@@ -163,8 +164,9 @@ angular.module('virtoCommerce.catalogModule').directive('vaProperty2', ['$compil
                 var countToTake = scope.pageSize;
 
                 return scope.getPropValues()(scope.currentEntity.id, $select.search, countToSkip, countToTake).then(function (result) {
-                    populateDictionaryValues(result.results, scope.currentEntity.name);
+                    populateDictionaryValues(result.results);
                     $select.page++;
+
                     // If there are more items to display, let's prepare to handle these items.
                     if (scope.context.allDictionaryValues.length < result.totalCount) {
                         // Reset scrolling for the when-scrolled directive, so it could trigger this method for next page.
@@ -175,7 +177,7 @@ angular.module('virtoCommerce.catalogModule').directive('vaProperty2', ['$compil
                 });
             }
 
-            function populateDictionaryValues(dictItems, propertyName) {
+            function populateDictionaryValues(dictItems) {
                 angular.forEach(dictItems, function (dictItem) {
                     var dictValue = _.find(scope.context.currentPropValues, function (x) {
                         return x && (x.valueId == dictItem.id);
