@@ -8,18 +8,14 @@
 
     <ItemGroup>
         <PackageReference Include="FluentValidation" Version="8.0.101" />
-        <PackageReference Include="GitVersionTask" Version="5.0.2-beta1.58">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
         <PackageReference Include="Hangfire" Version="1.6.22" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.3" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.3" />
-        <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.0.0-beta.2" />
-        <PackageReference Include="VirtoCommerce.ExportModule.Data" Version="3.0.0-beta.1" />
-        <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.0.0-beta0004" />
-        <PackageReference Include="VirtoCommerce.Platform.Data" Version="3.0.0-beta0004" />
-        <PackageReference Include="VirtoCommerce.StoreModule.Core" Version="3.0.0-beta.1" />
+        <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.0.0-rc.1" />
+        <PackageReference Include="VirtoCommerce.ExportModule.Data" Version="3.0.0-rc.1" />
+        <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.0.0-rc0001" />
+        <PackageReference Include="VirtoCommerce.Platform.Data" Version="3.0.0-rc0001" />
+        <PackageReference Include="VirtoCommerce.StoreModule.Core" Version="3.0.0-rc.1" />
     </ItemGroup>
 
     <ItemGroup>
