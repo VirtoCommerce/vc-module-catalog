@@ -24,14 +24,14 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         {
             var products = await GetProducts(documentIds);
 
-            IList<IndexDocument> result = products
-                .Select(CreateDocument)
-                .Where(doc => doc != null)
-                .ToArray();
+            IList<IndexDocument> result = products.Concat(products.Where(x => x.Variations != null)
+                    .SelectMany(x => x.Variations))
+                    .Select(CreateDocument)
+                    .Where(doc => doc != null)
+                    .ToArray();
 
             return result;
         }
-
 
         protected virtual Task<CatalogProduct[]> GetProducts(IList<string> productIds)
         {
@@ -47,7 +47,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
             var statusField = product.IsActive != true || product.MainProductId != null ? "hidden" : "visible";
             IndexIsProperty(document, statusField);
-            IndexIsProperty(document, "product");
+            IndexIsProperty(document, string.IsNullOrEmpty(product.MainProductId) ? "product" : "variation");
             IndexIsProperty(document, product.Code);
 
             document.AddFilterableValue("status", statusField);
@@ -61,6 +61,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             document.AddFilterableValue("priority", product.Priority);
             document.AddFilterableValue("vendor", product.Vendor ?? "");
             document.AddFilterableValue("productType", product.ProductType ?? "");
+            document.AddFilterableValue("mainProductId", product.MainProductId ?? "");
 
             // Add priority in virtual categories to search index
             if (product.Links != null)
