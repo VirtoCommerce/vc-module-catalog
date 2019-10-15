@@ -200,7 +200,9 @@
         "subtitle": "Properties list",
         "labels": {
           "empty-list": "None",
-          "modified": "Modified :"
+          "modified": "Modified:",
+          "add-filter": "Add filter",
+          "reset-filter": "Reset filter"
         },
         "validations": {
           "required": "This field is required",
@@ -209,6 +211,10 @@
           "pattern": "This field doesn't match pattern"
         }
       },
+      "property-selector": {
+        "title": "Select properties for edit"
+      },
+
       "item-property-detail": {
         "title": "Edit item property",
         "title-new": "New item property",
@@ -473,7 +479,7 @@
       "exporter": {
         "productTitle": "Export catalog products",
         "productSubtitle": "Export catalog products to JSON or CSV"
-      } 
+      }
     },
     "widgets": {
       "catalogLanguages": {

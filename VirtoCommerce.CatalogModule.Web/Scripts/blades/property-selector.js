@@ -5,7 +5,7 @@ angular.module('virtoCommerce.catalogModule')
         blade.isLoading = true;
 
         function initializeBlade() {
-            blade.title = 'Select properties for edit';
+            blade.title = 'catalog.blades.property-selector.title';
             blade.headIcon = 'fa-folder';
 
             var allProperties = angular.copy(blade.properties);

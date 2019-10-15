@@ -35,7 +35,7 @@ angular.module('virtoCommerce.catalogModule')
                 });
         };
 
-        $scope.HasChangedProperties = function (properties) {
+        $scope.hasChangedProperties = function (properties) {
             return _.filter(properties,
                 function (prop) {
                     return prop.isChanged;
@@ -101,7 +101,7 @@ angular.module('virtoCommerce.catalogModule')
 		}
 
 		$scope.$watch("blade.currentEntities", function () {
-            $scope.isValid = formScope && formScope.$valid && $scope.HasChangedProperties(blade.currentEntities);
+            $scope.isValid = formScope && formScope.$valid && $scope.hasChangedProperties(blade.currentEntities);
 		}, true);
 
 		blade.headIcon = 'fa-gear';
@@ -131,7 +131,7 @@ angular.module('virtoCommerce.catalogModule')
 				}
             },
             {
-                name: "Add filter", icon: 'fa fa-filter',
+                name: "catalog.blades.property-list.labels.add-filter", icon: 'fa fa-filter',
                 executeMethod: function () {
                     var newBlade = {
                         id: "propertySelector",
@@ -160,7 +160,7 @@ angular.module('virtoCommerce.catalogModule')
                 }
             },
             {
-                name: "clear filter", icon: 'fa fa-undo',
+                name: "catalog.blades.property-list.labels.reset-filter", icon: 'fa fa-undo',
                 executeMethod: function () {
                     $scope.resetFilter();
                 },
