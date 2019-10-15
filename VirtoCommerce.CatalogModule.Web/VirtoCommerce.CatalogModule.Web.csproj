@@ -188,6 +188,8 @@
     <Content Include="Scripts\blades\property-dictionary-details.tpl.html" />
     <Content Include="Scripts\blades\property-dictionary-list.js" />
     <Content Include="Scripts\blades\property-dictionary-list.tpl.html" />
+    <Content Include="Scripts\blades\property-selector.js" />
+    <Content Include="Scripts\blades\property-selector.tpl.html" />
     <Content Include="Scripts\dialogs\deletePropertyDictionaryItem-dialog.tpl.html" />
     <Content Include="Scripts\directives\dictionaryValue.js" />
     <Content Include="Scripts\directives\dictionaryValue.tpl.html" />

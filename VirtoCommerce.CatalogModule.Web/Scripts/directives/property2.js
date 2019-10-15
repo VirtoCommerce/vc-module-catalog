@@ -62,9 +62,11 @@ angular.module('virtoCommerce.catalogModule').directive('vaProperty2', ['$compil
                     _.each(scope.currentEntity.values, function (x) { x.isInherited = false; });
 
                     ngModelController.$setViewValue(scope.currentEntity);
+                    scope.currentEntity.isChanged = true;
                 }
                 if (newValues[0] === undefined) {
                     scope.currentEntity.values = [];
+                    scope.currentEntity.isChanged = true;
                 }
             }, true);
 

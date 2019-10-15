@@ -199,7 +199,8 @@
       "property-list": {
         "subtitle": "Properties list",
         "labels": {
-          "empty-list": "None"
+          "empty-list": "None",
+          "modified": "Modified :"
         },
         "validations": {
           "required": "This field is required",

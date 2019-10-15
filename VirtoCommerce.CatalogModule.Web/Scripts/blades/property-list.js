@@ -14,11 +14,33 @@ angular.module('virtoCommerce.catalogModule')
 		function initialize(entity) {
 			blade.title = entity.name;
 			blade.subtitle = 'catalog.blades.property-list.subtitle';
-			blade.currentEntity = entity;
-
+            blade.currentEntity = entity;
+            blade.filtered = false;
 			blade.currentEntities = angular.copy(entity.properties);
 
-		};
+            _.each(blade.currentEntities,
+                function (prop) {
+                    prop.isChanged = false;
+                    prop.group = 'All properties';
+                });
+
+            $scope.resetFilter();
+        };
+
+        $scope.resetFilter = function () {
+            blade.filtered = false;
+            _.each(blade.currentEntities,
+                function (prop) {
+                    prop.isSelected = true;
+                });
+        };
+
+        $scope.HasChangedProperties = function (properties) {
+            return _.filter(properties,
+                function (prop) {
+                    return prop.isChanged;
+                }).length;
+        };
 
 		$scope.saveChanges = function () {
 			blade.currentEntity.properties = blade.currentEntities;
@@ -79,7 +101,7 @@ angular.module('virtoCommerce.catalogModule')
 		}
 
 		$scope.$watch("blade.currentEntities", function () {
-			$scope.isValid = formScope && formScope.$valid;
+            $scope.isValid = formScope && formScope.$valid && $scope.HasChangedProperties(blade.currentEntities);
 		}, true);
 
 		blade.headIcon = 'fa-gear';
@@ -95,7 +117,9 @@ angular.module('virtoCommerce.catalogModule')
 							origEntity: {
 								type: "Product",
 								valueType: "ShortText",
-								values: []
+                                values: [],
+                                isChanged: true,
+                                isSelected: true
 							}
 						});
 					} else {
@@ -105,8 +129,45 @@ angular.module('virtoCommerce.catalogModule')
 				canExecuteMethod: function () {
 					return true;
 				}
-			},
+            },
+            {
+                name: "Add filter", icon: 'fa fa-filter',
+                executeMethod: function () {
+                    var newBlade = {
+                        id: "propertySelector",
+                        entityType: "product",
+                        properties: blade.currentEntities,
+                        controller: 'virtoCommerce.catalogModule.propertySelectorController',
+                        template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-selector.tpl.html',
+                        onSelected: function (includedProperties) {
+                            blade.filtered = true;
 
+
+                            _.each(blade.currentEntities,
+                                function (property) {
+                                    var foundProperty = _.find(includedProperties,
+                                        function (selectedProperty) {
+                                            return selectedProperty.id === property.id;
+                                        });
+                                    property.isSelected = foundProperty !== undefined ? true : false;
+                                });
+                        }
+                    };
+                    bladeNavigationService.showBlade(newBlade, blade);
+                },
+                canExecuteMethod: function () {
+                    return true;
+                }
+            },
+            {
+                name: "clear filter", icon: 'fa fa-undo',
+                executeMethod: function () {
+                    $scope.resetFilter();
+                },
+                canExecuteMethod: function () {
+                    return blade.filtered;
+                }
+            }
 		];
 		blade.isLoading = false;
 		initialize(blade.currentEntity);
