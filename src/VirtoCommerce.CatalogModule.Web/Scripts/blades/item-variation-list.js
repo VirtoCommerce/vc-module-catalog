@@ -16,6 +16,7 @@ angular.module('virtoCommerce.catalogModule').controller('virtoCommerce.catalogM
         var searchCriteria = {
             mainProductId: blade.item.id,
             responseGroup: 'withProducts',
+            objectType: 'CatalogProduct',
             sort: uiGridHelper.getSortExpression($scope),
             skip: ($scope.pageSettings.currentPage - 1) * $scope.pageSettings.itemsPerPageCount,
             take: $scope.pageSettings.itemsPerPageCount
@@ -25,9 +26,9 @@ angular.module('virtoCommerce.catalogModule').controller('virtoCommerce.catalogM
             searchCriteria,
             function (data) {
                 blade.isLoading = false;
-                $scope.pageSettings.totalItems = data.productsTotalCount;
-                blade.variations = data.products;
-                $scope.hasMore = data.products.length === $scope.pageSettings.itemsPerPageCount;
+                $scope.pageSettings.totalItems = data.totalCount;
+                blade.variations = data.results;
+                $scope.hasMore = data.results.length === $scope.pageSettings.itemsPerPageCount;
             });
     };
 
