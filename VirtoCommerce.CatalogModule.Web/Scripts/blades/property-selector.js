@@ -41,10 +41,10 @@ angular.module('virtoCommerce.catalogModule')
 
         $scope.isValid = function () {
             return _.some(blade.selectedEntities, function (item) { return item.length; })
-                || $scope.HasChangedProperties(blade.properties);
+                || $scope.hasChangedProperties(blade.properties);
         }
 
-        $scope.HasChangedProperties = function (properties) {
+        $scope.hasChangedProperties = function (properties) {
             return _.filter(properties,
                 function (prop) {
                     return prop.isChanged;
