@@ -7,29 +7,17 @@
                     <legend>
                         {{ propGroup.title | translate }}: <span class="count">{{(blade.currentEntities | filter: {type:propGroup.type}).length | number:0}}</span>
                     </legend>
-                    <div class="form-group list __info" ng-repeat="prop in properties = (blade.currentEntities | filter: {type:propGroup.type, isChanged:false})">
-                        <label class="form-label" ng-if="prop.isSelected">
+                    <div class="form-group list __info" ng-repeat="prop in properties = (blade.currentEntities | filter: {type:propGroup.type})">
+                        <label class="form-label" ng-if="prop.isSelected || prop.isChanged">
                             {{prop.name}} {{ getPropertyDisplayName(prop) ? '(' + getPropertyDisplayName(prop) + ')' : '' }}
+                            <span class="alt-description" ng-show="prop.isChanged"> {{'catalog.blades.property-list.labels.modified' | translate }} </span>
                             <a href="" ng-click="editProperty(prop)" class="form-edit">
                                 <i class="form-ico fa fa-pencil"></i>
                             </a>
-
                         </label>
                         <va-property2 ng-model="prop" get-prop-values="getPropValues" ng-if="!prop.isReadOnly && (prop.isSelected || prop.isChanged)" languages="blade.languages" default-language="blade.defaultLanguage"></va-property2>
                     </div>
                     <div class="note" ng-if="properties.length == 0">{{ 'catalog.blades.property-list.labels.empty-list' | translate }}</div>
-                    <legend ng-if="modifiedProperties.length > 0">
-                        <span>{{'catalog.blades.property-list.labels.modified' | translate }}</span>   <span class="count">{{modifiedProperties.length | number:0}}</span>
-                    </legend>
-                    <div class="form-group list __info" ng-repeat="prop in modifiedProperties = (blade.currentEntities | filter: {type:propGroup.type, isChanged:true})">
-                        <label class="form-label">
-                            {{prop.name}} {{ getPropertyDisplayName(prop) ? '(' + getPropertyDisplayName(prop) + ')' : '' }}
-                            <a href="" ng-click="editProperty(prop)" class="form-edit">
-                                <i class="form-ico fa fa-pencil"></i>
-                            </a>
-                        </label>
-                        <va-property2 ng-model="prop" get-prop-values="getPropValues" ng-if="!prop.isReadOnly && (prop.isSelected || prop.isChanged)" languages="blade.languages" default-language="blade.defaultLanguage"></va-property2>
-                    </div>
                 </fieldset>
             </form>
         </div>

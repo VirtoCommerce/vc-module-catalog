@@ -200,7 +200,7 @@
         "subtitle": "Properties list",
         "labels": {
           "empty-list": "None",
-          "modified": "Modified:",
+          "modified": "(modified)",
           "add-filter": "Add filter",
           "reset-filter": "Reset filter"
         },
