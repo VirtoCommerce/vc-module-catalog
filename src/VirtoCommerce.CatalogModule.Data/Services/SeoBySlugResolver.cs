@@ -14,24 +14,30 @@ namespace VirtoCommerce.CatalogModule.Data.Services
     {
         private readonly IPlatformMemoryCache _platformMemoryCache;
         private readonly Func<ICatalogRepository> _repositoryFactory;
+
         public SeoBySlugResolver(Func<ICatalogRepository> repositoryFactory, IPlatformMemoryCache platformMemoryCache)
         {
             _repositoryFactory = repositoryFactory;
             _platformMemoryCache = platformMemoryCache;
         }
+
         #region ISeoBySlugResolver members
         public async Task<SeoInfo[]> FindSeoBySlugAsync(string slug)
         {
-            var result = new List<SeoInfo>();
-            using (var repository = _repositoryFactory())
+            var cacheKey = CacheKey.With(GetType(), nameof(FindSeoBySlugAsync), slug);
+            return await _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async cacheEntry =>
             {
-                // Find seo entries for specified keyword. Also add other seo entries related to found object.
-                //TODO: add caching
-                result = (await repository.SeoInfos.Where(x => x.Keyword == slug)
-                                                           .Join(repository.SeoInfos, x => new { x.ItemId, x.CategoryId }, y => new { y.ItemId, y.CategoryId }, (x, y) => y)
-                                                           .ToArrayAsync()).Select(x => x.ToModel(AbstractTypeFactory<SeoInfo>.TryCreateInstance())).ToList();
-            }
-            return result.ToArray();
+                var result = new List<SeoInfo>();
+                using (var repository = _repositoryFactory())
+                {
+                    // Find seo entries for specified keyword. Also add other seo entries related to found object.
+                    result = (await repository.SeoInfos.Where(x => x.Keyword == slug)
+                        .Join(repository.SeoInfos, x => new { x.ItemId, x.CategoryId }, y => new { y.ItemId, y.CategoryId }, (x, y) => y)
+                        .ToArrayAsync()).Select(x => x.ToModel(AbstractTypeFactory<SeoInfo>.TryCreateInstance())).ToList();
+                }
+
+                return result.ToArray();
+            });
         }
         #endregion
     }
