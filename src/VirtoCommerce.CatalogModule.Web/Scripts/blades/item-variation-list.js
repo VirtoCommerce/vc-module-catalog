@@ -133,8 +133,21 @@ angular.module('virtoCommerce.catalogModule').controller('virtoCommerce.catalogM
     // ui-grid
     $scope.setGridOptions = function (gridOptions) {
         uiGridHelper.initialize($scope, gridOptions, function (gridApi) {
+            gridApi.grid.registerRowsProcessor($scope.singleFilter, 90);
             uiGridHelper.bindRefreshOnSortChanged($scope);
         });
         bladeUtils.initializePagination($scope);
     };
+
+    $scope.singleFilter = function (renderableRows) {
+        var visibleCount = 0;
+        renderableRows.forEach(function (row) {
+            row.visible = _.any(filterFilter([row.entity], blade.searchText));
+            if (row.visible) visibleCount++;
+        });
+
+        $scope.filteredEntitiesCount = visibleCount;
+        return renderableRows;
+    };
+
 }]);
