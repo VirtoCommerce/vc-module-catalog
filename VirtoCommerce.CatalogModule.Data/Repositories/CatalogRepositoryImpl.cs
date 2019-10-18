@@ -580,7 +580,8 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 	                FROM Association
 	                WHERE ItemId IN ({0})
                 "
-                + (!string.IsNullOrEmpty(criteria.Group) ? $" AND AssociationType = @group" : string.Empty) +
+                + (!string.IsNullOrEmpty(criteria.Group) ? $" AND AssociationType = @group" : string.Empty)
+                + (!criteria.Tags.IsNullOrEmpty() ? $" AND exists( SELECT value FROM string_split(Tags, ';') WHERE value IN (@tags))" : string.Empty) +
                 @"), Category_CTE AS
                 (
 	                SELECT AssociatedCategoryId Id
@@ -620,7 +621,8 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 		                    ,Quantity
 	                    FROM Association
 	                    WHERE ItemId IN({0})"
-                    + (!string.IsNullOrEmpty(criteria.Group) ? $" AND AssociationType = @group" : string.Empty) +
+                    + (!string.IsNullOrEmpty(criteria.Group) ? $" AND AssociationType = @group" : string.Empty)
+                    + (!criteria.Tags.IsNullOrEmpty() ? $" AND exists( SELECT value FROM string_split(Tags, ';') WHERE value IN (@tags))" : string.Empty) +
                     @"), Category_CTE AS
                     (
 	                    SELECT AssociatedCategoryId Id, AssociatedCategoryId
@@ -659,14 +661,19 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
             var countSqlCommand = CreateCommand(countSqlCommandText, criteria.ObjectIds);
             var querySqlCommand = CreateCommand(querySqlCommandText, criteria.ObjectIds);
+
             if (!string.IsNullOrEmpty(criteria.Group))
             {
-                countSqlCommand.Parameters = countSqlCommand.Parameters.Concat(new[] { new SqlParameter($"@group", criteria.Group) }).ToArray();
-                querySqlCommand.Parameters = querySqlCommand.Parameters.Concat(new[] { new SqlParameter($"@group", criteria.Group) }).ToArray();
+                countSqlCommand.Parameters.Add(new SqlParameter($"@group", criteria.Group));
+                querySqlCommand.Parameters.Add(new SqlParameter($"@group", criteria.Group));
             }
-
-            result.TotalCount = ObjectContext.ExecuteStoreQuery<int>(countSqlCommand.Text, countSqlCommand.Parameters).FirstOrDefault();
-            result.Results = ObjectContext.ExecuteStoreQuery<dataModel.AssociationEntity>(querySqlCommand.Text, querySqlCommand.Parameters).ToList();
+            if (!criteria.Tags.IsNullOrEmpty())
+            {
+                AddArrayParameters(countSqlCommand, "@tags",  criteria.Tags ?? Array.Empty<string>());
+                AddArrayParameters(querySqlCommand, "@tags", criteria.Tags ?? Array.Empty<string>());                
+            }
+            result.TotalCount = ObjectContext.ExecuteStoreQuery<int>(countSqlCommand.Text, countSqlCommand.Parameters.ToArray()).FirstOrDefault();
+            result.Results = ObjectContext.ExecuteStoreQuery<dataModel.AssociationEntity>(querySqlCommand.Text, querySqlCommand.Parameters.ToArray()).ToList();
 
             return result;
         }
@@ -694,13 +701,13 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         protected virtual ObjectResult<TElement> ExecuteStoreQuery<TElement>(string commandTemplate, IEnumerable<string> parameterValues)
         {
             var command = CreateCommand(commandTemplate, parameterValues);
-            return ObjectContext.ExecuteStoreQuery<TElement>(command.Text, command.Parameters);
+            return ObjectContext.ExecuteStoreQuery<TElement>(command.Text, command.Parameters.ToArray());
         }
 
         protected virtual void ExecuteStoreCommand(string commandTemplate, IEnumerable<string> parameterValues)
         {
             var command = CreateCommand(commandTemplate, parameterValues);
-            ObjectContext.ExecuteStoreCommand(command.Text, command.Parameters);
+            ObjectContext.ExecuteStoreCommand(command.Text, command.Parameters.ToArray());
         }
 
         protected virtual Command CreateCommand(string commandTemplate, IEnumerable<string> parameterValues)
@@ -711,14 +718,36 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             return new Command
             {
                 Text = string.Format(commandTemplate, parameterNames),
-                Parameters = parameters.OfType<object>().ToArray(),
+                Parameters = parameters.OfType<object>().ToList(),
             };
         }
 
+        
+        protected SqlParameter[] AddArrayParameters<T>(Command cmd, string paramNameRoot, IEnumerable<T> values)
+        {
+            /* An array cannot be simply added as a parameter to a SqlCommand so we need to loop through things and add it manually. 
+             * Each item in the array will end up being it's own SqlParameter so the return value for this must be used as part of the
+             * IN statement in the CommandText.
+             */
+            var parameters = new List<SqlParameter>();
+            var parameterNames = new List<string>();
+            var paramNbr = 1;
+            foreach (var value in values)
+            {
+                var paramName = string.Format("{0}{1}", paramNameRoot, paramNbr++);
+                parameterNames.Add(paramName);
+                var p = new SqlParameter(paramName, value);               
+                cmd.Parameters.Add(p);
+                parameters.Add(p);
+            }
+            cmd.Text = cmd.Text.Replace(paramNameRoot, string.Join(",", parameterNames));
+
+            return parameters.ToArray();
+        }
         protected class Command
         {
             public string Text { get; set; }
-            public object[] Parameters { get; set; }
+            public IList<object> Parameters { get; set; } = new List<object>();
         }
     }
 }

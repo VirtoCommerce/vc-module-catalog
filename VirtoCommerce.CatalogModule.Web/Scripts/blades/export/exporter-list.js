@@ -15,6 +15,7 @@ angular.module('virtoCommerce.catalogModule')
 		newBlade.selectedCategories = blade.selectedCategories;
 		newBlade.selectedProducts = blade.selectedProducts;
         newBlade.catalog = blade.catalog;
+        newBlade.isAllSelected = blade.isAllSelected;
 
         if (angular.isFunction(data.onInitialize)) {
             data.onInitialize(newBlade);

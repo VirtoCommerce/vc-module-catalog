@@ -39,13 +39,21 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 .Select(x => x.Id)
                 .ToArray();
 
-            var categories = _categoryService.GetByIds(categoryIds, CategoryResponseGroup.Full);
+            Category[] categories;
 
-            categories.LoadImages(_blobStorageProvider);
-
-            foreach (var category in categories)
+            if (DataQuery.IsPreview)
             {
-                category.ResetRedundantReferences();
+                categories = _categoryService.GetByIds(categoryIds, CategoryResponseGroup.Info);
+            }
+            else
+            {
+                categories = _categoryService.GetByIds(categoryIds, CategoryResponseGroup.Full);
+                categories.LoadImages(_blobStorageProvider);
+
+                foreach (var category in categories)
+                {
+                    category.ResetRedundantReferences();
+                }
             }
 
             return new ExportableSearchResult
