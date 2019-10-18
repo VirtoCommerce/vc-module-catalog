@@ -104,7 +104,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
                 await repository.UnitOfWork.CommitAsync();
                 pkMap.ResolvePrimaryKeys();
-                CatalogCacheRegion.ExpireRegion();
+                ClearCache(categories);
 
                 await _eventPublisher.Publish(new CategoryChangedEvent(changedEntries));
             }
@@ -123,7 +123,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 await repository.RemoveCategoriesAsync(categoryIds);
                 await repository.UnitOfWork.CommitAsync();
 
-                CatalogCacheRegion.ExpireRegion();
+                ClearCache(categories);
                 await _eventPublisher.Publish(new CategoryChangedEvent(changedEntries));
             }
         }
@@ -242,5 +242,12 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 }
             }
         }
+
+        protected virtual void ClearCache(IEnumerable<Category> categories)
+        {
+            CatalogCacheRegion.ExpireRegion();
+            StoreSeoInfoCacheRegion.ExpireRegion();
+        }
+
     }
 }
