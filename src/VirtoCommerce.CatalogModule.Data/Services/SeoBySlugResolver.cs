@@ -29,7 +29,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             var cacheKey = CacheKey.With(GetType(), nameof(FindSeoBySlugAsync), slug);
             return await _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async cacheEntry =>
             {
-                cacheEntry.AddExpirationToken(StoreSeoInfoCacheRegion.CreateChangeToken());
+                cacheEntry.AddExpirationToken(SeoInfoCacheRegion.CreateChangeToken());
                 var result = new List<SeoInfo>();
                 using (var repository = _repositoryFactory())
                 {

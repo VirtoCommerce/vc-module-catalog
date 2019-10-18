@@ -246,7 +246,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         protected virtual void ClearCache(IEnumerable<Category> categories)
         {
             CatalogCacheRegion.ExpireRegion();
-            StoreSeoInfoCacheRegion.ExpireRegion();
+            SeoInfoCacheRegion.ExpireRegion();
         }
 
     }

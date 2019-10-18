@@ -185,7 +185,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         protected virtual void ClearCache(IEnumerable<CatalogProduct> entities)
         {
             AssociationSearchCacheRegion.ExpireRegion();
-            StoreSeoInfoCacheRegion.ExpireRegion();
+            SeoInfoCacheRegion.ExpireRegion();
 
             foreach (var entity in entities)
             {
