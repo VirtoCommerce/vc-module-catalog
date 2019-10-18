@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using VirtoCommerce.CatalogModule.Data.Caching;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Caching;
@@ -27,6 +29,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             var cacheKey = CacheKey.With(GetType(), nameof(FindSeoBySlugAsync), slug);
             return await _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async cacheEntry =>
             {
+                cacheEntry.AddExpirationToken(SeoInfoCacheRegion.CreateChangeToken());
                 var result = new List<SeoInfo>();
                 using (var repository = _repositoryFactory())
                 {
