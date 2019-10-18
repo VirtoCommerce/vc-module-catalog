@@ -1,33 +1,37 @@
-﻿angular.module('virtoCommerce.catalogModule')
-.controller('virtoCommerce.catalogModule.itemVariationListController', ['$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'virtoCommerce.catalogModule.items', 'filterFilter', 'uiGridConstants', 'platformWebApp.uiGridHelper', function ($scope, bladeNavigationService, dialogService, items, filterFilter, uiGridConstants, uiGridHelper) {
+angular.module('virtoCommerce.catalogModule').controller('virtoCommerce.catalogModule.itemVariationListController', ['$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'virtoCommerce.catalogModule.items', 'filterFilter', 'uiGridConstants', 'platformWebApp.uiGridHelper', 'virtoCommerce.catalogModule.search', 'platformWebApp.bladeUtils', function ($scope, bladeNavigationService, dialogService, items, filterFilter, uiGridConstants, uiGridHelper, search, bladeUtils) {
     $scope.uiGridConstants = uiGridConstants;
     var blade = $scope.blade;
+    blade.title = blade.item.name;
+    blade.subtitle = 'catalog.widgets.itemVariation.blade-subtitle';
 
-    //pagination settings
-    $scope.pageSettings = {};
-    $scope.pageSettings.totalItems = 0;
-    $scope.pageSettings.currentPage = 1;
-    $scope.pageSettings.numPages = 5;
-    $scope.pageSettings.itemsPerPageCount = 20;
 
-    blade.isLoading = false;
+    blade.refresh = function (pageNumber) {
 
-    blade.refresh = function (item) {
-    	if (item) {
-    		initialize(item);
-    	}
-    	else {
-    		blade.parentBlade.refresh();
-    	}
+        if (!pageNumber) {
+            blade.parentBlade.refresh();
+            return;
+        }
 
+        blade.isLoading = true;
+        var searchCriteria = {
+            mainProductId: blade.item.id,
+            responseGroup: 'withProducts',
+            objectType: 'CatalogProduct',
+            sort: uiGridHelper.getSortExpression($scope),
+            skip: ($scope.pageSettings.currentPage - 1) * $scope.pageSettings.itemsPerPageCount,
+            take: $scope.pageSettings.itemsPerPageCount
+        };
+
+        search.searchProducts(
+            searchCriteria,
+            function (data) {
+                blade.isLoading = false;
+                $scope.pageSettings.totalItems = data.totalCount;
+                blade.variations = data.results;
+                $scope.hasMore = data.results.length === $scope.pageSettings.itemsPerPageCount;
+            });
     };
 
-    function initialize(item) {
-    	blade.title = item.name;
-    	blade.subtitle = 'catalog.widgets.itemVariation.blade-subtitle';
-    	blade.item = item;
-    	$scope.pageSettings.totalItems = blade.item.variations.length;
-    }
 
     blade.setSelectedItem = function (listItem) {
         $scope.selectedNodeId = listItem.id;
@@ -75,7 +79,7 @@
             {
                 name: "platform.commands.refresh", icon: 'fa fa-refresh',
                 executeMethod: function () {
-                	blade.parentBlade.refresh()
+                    blade.parentBlade.refresh()
                 },
                 canExecuteMethod: function () { return true; }
             },
@@ -98,7 +102,7 @@
                         };
                         bladeNavigationService.showBlade(newBlade, blade);
                     },
-                    function (error) { bladeNavigationService.setError('Error ' + error.status, blade); });
+                        function (error) { bladeNavigationService.setError('Error ' + error.status, blade); });
                 },
                 canExecuteMethod: function () { return true; },
                 permission: 'catalog:create'
@@ -115,17 +119,24 @@
             }
         ];
 
+    // simple and advanced filtering
+    var filter = $scope.filter = {};
+
+    filter.criteriaChanged = function () {
+        if ($scope.pageSettings.currentPage > 1) {
+            $scope.pageSettings.currentPage = 1;
+        } else {
+            blade.refresh();
+        }
+    };
+
     // ui-grid
     $scope.setGridOptions = function (gridOptions) {
-        uiGridHelper.initialize($scope, gridOptions,
-        function (gridApi) {
+        uiGridHelper.initialize($scope, gridOptions, function (gridApi) {
             gridApi.grid.registerRowsProcessor($scope.singleFilter, 90);
-            $scope.$watch('pageSettings.currentPage', gridApi.pagination.seek);
-
-            if (blade.toolbarCommandsAndEvents && blade.toolbarCommandsAndEvents.externalRegisterApiCallback) {
-                blade.toolbarCommandsAndEvents.externalRegisterApiCallback(gridApi);
-            }
+            uiGridHelper.bindRefreshOnSortChanged($scope);
         });
+        bladeUtils.initializePagination($scope);
     };
 
     $scope.singleFilter = function (renderableRows) {
@@ -139,8 +150,4 @@
         return renderableRows;
     };
 
-    //// actions on load
-    //$scope.$watch('blade.parentBlade.item.variations', initializeBlade);
-
-    initialize(blade.item);
 }]);
