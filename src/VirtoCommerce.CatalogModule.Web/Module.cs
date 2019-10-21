@@ -91,7 +91,7 @@ namespace VirtoCommerce.CatalogModule.Web
 
             serviceCollection.AddTransient<LogChangesChangedEventHandler>();
 
-            serviceCollection.AddTransient<ISeoBySlugResolver, SeoBySlugResolver>();
+            serviceCollection.AddTransient<ISeoBySlugResolver, CatalogSeoBySlugResolver>();
 
             PropertyValueValidator PropertyValueValidatorFactory(PropertyValidationRule rule) => new PropertyValueValidator(rule);
             serviceCollection.AddSingleton((Func<PropertyValidationRule, PropertyValueValidator>)PropertyValueValidatorFactory);

@@ -12,12 +12,12 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
-    public class SeoBySlugResolver : ISeoBySlugResolver
+    public class CatalogSeoBySlugResolver : ISeoBySlugResolver
     {
         private readonly IPlatformMemoryCache _platformMemoryCache;
         private readonly Func<ICatalogRepository> _repositoryFactory;
 
-        public SeoBySlugResolver(Func<ICatalogRepository> repositoryFactory, IPlatformMemoryCache platformMemoryCache)
+        public CatalogSeoBySlugResolver(Func<ICatalogRepository> repositoryFactory, IPlatformMemoryCache platformMemoryCache)
         {
             _repositoryFactory = repositoryFactory;
             _platformMemoryCache = platformMemoryCache;
@@ -26,6 +26,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         #region ISeoBySlugResolver members
         public async Task<SeoInfo[]> FindSeoBySlugAsync(string slug)
         {
+            
             var cacheKey = CacheKey.With(GetType(), nameof(FindSeoBySlugAsync), slug);
             return await _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async cacheEntry =>
             {
