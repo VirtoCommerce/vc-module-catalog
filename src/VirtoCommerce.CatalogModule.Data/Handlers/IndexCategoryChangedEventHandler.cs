@@ -36,6 +36,15 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
                 BackgroundJob.Enqueue(() => TryIndexCategoryBackgroundJob(indexCategoryIds));
             }
 
+            var deleteIndexCategoryIds = message.ChangedEntries.Where(x => x.EntryState == EntryState.Deleted && x.OldEntry.Id != null)
+                                                          .Select(x => x.OldEntry.Id)
+                                                          .Distinct().ToArray();
+
+            if (!deleteIndexCategoryIds.IsNullOrEmpty())
+            {
+                BackgroundJob.Enqueue(() => TryDeleteIndexCategoryBackgroundJob(deleteIndexCategoryIds));
+            }
+
             return Task.CompletedTask;
         }
 
@@ -45,10 +54,21 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
             await TryIndexCategory(indexCategoryIds);
         }
 
+        [DisableConcurrentExecution(60 * 60 * 24)]
+        public async Task TryDeleteIndexCategoryBackgroundJob(string[] indexCategoryIds)
+        {
+            await TryDeleteIndexCategory(indexCategoryIds);
+        }
+
 
         protected virtual async Task TryIndexCategory(string[] indexCategoryIds)
         {
             await _indexingManager.IndexDocumentsAsync(KnownDocumentTypes.Category, indexCategoryIds);
+        }
+
+        protected virtual async Task TryDeleteIndexCategory(string[] indexCategoryIds)
+        {
+            await _indexingManager.DeleteDocumentsAsync(KnownDocumentTypes.Category, indexCategoryIds);
         }
     }
 }
