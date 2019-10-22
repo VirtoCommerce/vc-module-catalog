@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>netcoreapp2.2</TargetFramework>
@@ -19,6 +19,7 @@
         <PackageReference Include="VirtoCommerce.ExportModule.Data" Version="3.0.0-rc.1" />
         <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.0.0-rc0001" />
         <PackageReference Include="VirtoCommerce.Platform.Data" Version="3.0.0-rc0001" />
+        <PackageReference Include="VirtoCommerce.SearchModule.Data" Version="3.0.0-rc1-update0001" />
         <PackageReference Include="VirtoCommerce.StoreModule.Core" Version="3.0.0-rc.1" />
     </ItemGroup>
 
