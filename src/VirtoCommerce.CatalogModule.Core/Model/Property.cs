@@ -38,6 +38,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         public string CategoryId { get; set; }
         [JsonIgnore]
         public Category Category { get; set; }
+        public string Code { get; set; }
         public string Name { get; set; }
         public bool Required { get; set; }
         public bool Dictionary { get; set; }
