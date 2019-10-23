@@ -666,7 +666,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         }
         #endregion
 
-        protected virtual void LoadVariationsByParentIds(IEnumerable<string> parentIds, ItemResponseGroup respGroup)
+        protected virtual void LoadVariationsByParentIds(string[] parentIds, ItemResponseGroup respGroup)
         {
             // TODO: Call GetItemByIds for variations recursively (need to measure performance and data amount first)
 
