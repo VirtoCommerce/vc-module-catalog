@@ -279,31 +279,11 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
                     if (respGroup.HasFlag(coreModel.ItemResponseGroup.Variations))
                     {
-                        // TODO: Call GetItemByIds for variations recursively (need to measure performance and data amount first)
-
                         var variationIds = Items.Where(x => itemIds.Contains(x.ParentId)).Select(x => x.Id).ToArray();
 
                         if (!variationIds.IsNullOrEmpty())
                         {
-                            // Always load info, images and property values for variations
-                            var variations = Items.Include(x => x.Images).Where(x => variationIds.Contains(x.Id)).ToArray();
-
-                            if (variations.Any())
-                            {
-                                variationIds = variations.Select(x => x.Id).ToArray();
-
-                                var variationPropertyValues = PropertyValues.Include(x => x.DictionaryItem.DictionaryItemValues).Where(x => variationIds.Contains(x.ItemId)).ToArray();
-
-                                if (respGroup.HasFlag(ItemResponseGroup.ItemAssets))
-                                {
-                                    var variationAssets = Assets.Where(x => variationIds.Contains(x.ItemId)).ToArray();
-                                }
-
-                                if (respGroup.HasFlag(ItemResponseGroup.ItemEditorialReviews))
-                                {
-                                    var variationEditorialReviews = EditorialReviews.Where(x => variationIds.Contains(x.ItemId)).ToArray();
-                                }
-                            }
+                            var variations = GetItemByIds(variationIds, respGroup);
                         }
                     }
 
