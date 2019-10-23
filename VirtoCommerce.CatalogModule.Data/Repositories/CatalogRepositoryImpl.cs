@@ -692,6 +692,11 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     {
                         var variationEditorialReviews = EditorialReviews.Where(x => variationIds.Contains(x.ItemId)).ToArray();
                     }
+
+                    if (respGroup.HasFlag(ItemResponseGroup.Links))
+                    {
+                        var variationLinks = CategoryItemRelations.Where(x => variationIds.Contains(x.ItemId)).ToArray();
+                    }
                 }
             }
         }
