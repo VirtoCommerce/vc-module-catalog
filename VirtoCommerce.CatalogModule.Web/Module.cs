@@ -4,7 +4,6 @@ using System.Web.Http;
 using FluentValidation;
 using Microsoft.Practices.Unity;
 using VirtoCommerce.CatalogModule.Data.ExportImport;
-using VirtoCommerce.CatalogModule.Data.Handlers;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Data.Search;
@@ -17,7 +16,6 @@ using VirtoCommerce.CatalogModule.Data.Services.Validation;
 using VirtoCommerce.CatalogModule.Web.ExportImport;
 using VirtoCommerce.CatalogModule.Web.JsonConverters;
 using VirtoCommerce.CatalogModule.Web.Security;
-using VirtoCommerce.Domain.Catalog.Events;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Commerce.Services;
@@ -27,7 +25,6 @@ using VirtoCommerce.ExportModule.Core.Model;
 using VirtoCommerce.ExportModule.Core.Services;
 using VirtoCommerce.ExportModule.Data.Extensions;
 using VirtoCommerce.ExportModule.Data.Services;
-using VirtoCommerce.Platform.Core.Bus;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.DynamicProperties;
 using VirtoCommerce.Platform.Core.ExportImport;
@@ -128,10 +125,6 @@ namespace VirtoCommerce.CatalogModule.Web
             _container.RegisterType<AbstractValidator<IHasProperties>, HasPropertiesValidator>();
 
             #endregion
-
-            var eventHandlerRegistrar = _container.Resolve<IHandlerRegistrar>();
-            eventHandlerRegistrar.RegisterHandler<ProductChangedEvent>(async (message, token) => await _container.Resolve<IndexProductChangedEventHandler>().Handle(message));
-            eventHandlerRegistrar.RegisterHandler<CategoryChangedEvent>(async (message, token) => await _container.Resolve<IndexCategoryChangedEventHandler>().Handle(message));
         }
 
         public override void PostInitialize()
