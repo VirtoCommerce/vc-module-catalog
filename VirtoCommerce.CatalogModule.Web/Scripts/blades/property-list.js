@@ -1,8 +1,8 @@
 angular.module('virtoCommerce.catalogModule')
-    .controller('virtoCommerce.catalogModule.propertyListController', ['$scope', 'virtoCommerce.catalogModule.properties', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.propDictItems', function ($scope, properties, bladeNavigationService, propDictItems) {
+    .controller('virtoCommerce.catalogModule.propertyListController', ['$scope', 'virtoCommerce.catalogModule.properties', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.propDictItems', '$localStorage', 'platformWebApp.authService', function ($scope, properties, bladeNavigationService, propDictItems, $localStorage, authService) {
 		var blade = $scope.blade;
 		$scope.isValid = false;
-		blade.refresh = function (entity) {
+        blade.refresh = function (entity) {
 			if (entity) {
 				initialize(entity);
 			}
@@ -25,6 +25,31 @@ angular.module('virtoCommerce.catalogModule')
                 });
 
             $scope.resetFilter();
+
+            if ($localStorage.entryPropertyFilters) {
+                var savedFilteredProperties = $localStorage.entryPropertyFilters[authService.id];
+                if (savedFilteredProperties && savedFilteredProperties.length > 0) {
+                    blade.filtered = true;
+                    _.each(blade.currentEntities,
+                        function (prop) {
+                            prop.isSelected = false;
+                        });
+                    _.each(savedFilteredProperties,
+                        function (propertyName) {
+                            var filteredProperties = _.filter(blade.currentEntities,
+                                function(property) {
+                                    return property.name.toLocaleLowerCase() === propertyName.toLocaleLowerCase();
+                                });
+
+                            if (filteredProperties.length) {
+                                _.each(filteredProperties,
+                                    function(prop) {
+                                        prop.isSelected = true;
+                                    });
+                            }
+                        });
+                }
+            }
         };
 
         $scope.resetFilter = function () {
@@ -162,6 +187,9 @@ angular.module('virtoCommerce.catalogModule')
             {
                 name: "catalog.blades.property-list.labels.reset-filter", icon: 'fa fa-undo',
                 executeMethod: function () {
+                    if ($localStorage.entryPropertyFilters) {
+                        $localStorage.entryPropertyFilters[authService.id] = [];
+                    }
                     $scope.resetFilter();
                 },
                 canExecuteMethod: function () {
