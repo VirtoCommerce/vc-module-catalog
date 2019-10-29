@@ -171,14 +171,7 @@
     <Compile Include="Model\AggregationProperty.cs" />
     <Compile Include="Model\ProductAssociationSearchResult.cs" />
     <Compile Include="Model\PushNotifications\JobNotificationBase.cs" />
-    <Compile Include="Model\PasteInfo.cs" />
-    <Compile Include="Model\ListEntryCategory.cs" />
-    <Compile Include="Model\ListEntry.cs" />
     <Compile Include="Model\ItemsSearchResult.cs" />
-    <Compile Include="Model\ListEntrySearchResult.cs" />
-    <Compile Include="Model\ListEntryProduct.cs" />
-    <Compile Include="Model\ResponseGroup.cs" />
-    <Compile Include="Model\ListEntrySearchCriteria.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="Scripts\blades\aggregation-properties-details.js" />
