@@ -6,11 +6,11 @@ using VirtoCommerce.CatalogModule.Web.Services;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Platform.Core.Common;
 
-using VC = VirtoCommerce.Domain.Catalog.Model;
+using domain = VirtoCommerce.Domain.Catalog.Model;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
-    public class CategoryMover : ListEntryMover<VC.Category>
+    public class CategoryMover : ListEntryMover<domain.Category>
     {
         private readonly ICategoryService _categoryService;
 
@@ -25,27 +25,27 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _categoryService = categoryService;
         }
 
-        public override void ConfirmMove(IEnumerable<VC.Category> entities)
+        public override void ConfirmMove(IEnumerable<domain.Category> entities)
         {
             _categoryService.Update(entities.ToArray());
         }
 
-        public override List<VC.Category> PrepareMove(MoveContext moveContext)
+        public override List<domain.Category> PrepareMove(MoveInfo moveInfo)
         {
-            var result = new List<VC.Category>();
+            var result = new List<domain.Category>();
 
-            foreach (var listEntryCategory in moveContext.ListEntries.Where(
+            foreach (var listEntryCategory in moveInfo.ListEntries.Where(
                 listEntry => listEntry.Type.EqualsInvariant(ListEntryCategory.TypeName)))
             {
-                var category = _categoryService.GetById(listEntryCategory.Id, VC.CategoryResponseGroup.Info);
-                if (category.CatalogId != moveContext.Catalog)
+                var category = _categoryService.GetById(listEntryCategory.Id, domain.CategoryResponseGroup.Info);
+                if (category.CatalogId != moveInfo.Catalog)
                 {
-                    category.CatalogId = moveContext.Catalog;
+                    category.CatalogId = moveInfo.Catalog;
                 }
 
-                if (category.ParentId != moveContext.Category)
+                if (category.ParentId != moveInfo.Category)
                 {
-                    category.ParentId = moveContext.Category;
+                    category.ParentId = moveInfo.Category;
                 }
 
                 result.Add(category);

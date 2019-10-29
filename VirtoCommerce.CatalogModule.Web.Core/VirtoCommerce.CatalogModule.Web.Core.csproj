@@ -95,7 +95,7 @@
     <Compile Include="Model\ListEntryProduct.cs" />
     <Compile Include="Model\ListEntrySearchCriteria.cs" />
     <Compile Include="Model\ListEntrySearchResult.cs" />
-    <Compile Include="Model\MoveContext.cs" />
+    <Compile Include="Model\MoveInfo.cs" />
     <Compile Include="Model\Product.cs" />
     <Compile Include="Model\ProductAssociation.cs" />
     <Compile Include="Model\PropertyValidationRule.cs" />

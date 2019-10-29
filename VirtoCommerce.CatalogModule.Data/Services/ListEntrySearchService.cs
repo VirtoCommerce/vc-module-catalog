@@ -45,7 +45,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 var totalCount = searchResult.Categories.Count;
                 skip = GetSkip(criteria, totalCount);
                 take = GetTake(criteria, totalCount);
-                var pagedCategories = GetPaged(searchResult.Categories, skip, take);
+                var pagedCategories = searchResult.Categories.Skip(skip).Take(take);
                 var categories = pagedCategories.Select(
                     category => new ListEntryCategory(category.ToWebModel(_blobUrlResolver)));
                 result.TotalCount = totalCount;
@@ -71,11 +71,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
 
             return result;
-        }
-
-        private static IEnumerable<T> GetPaged<T>(IEnumerable<T> collection, int skip, int take)
-        {
-            return collection.Skip(skip).Take(take);
         }
 
         private static int GetSkip(SearchCriteria criteria, int totalCount)

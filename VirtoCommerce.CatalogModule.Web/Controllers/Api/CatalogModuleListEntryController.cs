@@ -192,20 +192,20 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <summary>
         /// Move categories or products to another location.
         /// </summary>
-        /// <param name="moveContext">Move operation details</param>
+        /// <param name="moveInfo">Move operation details</param>
         [HttpPost]
         [Route("move")]
         [ResponseType(typeof(void))]
-        public IHttpActionResult Move(webModel.MoveContext moveContext)
+        public IHttpActionResult Move(webModel.MoveInfo moveInfo)
         {
-            var dstCatalog = _catalogService.GetById(moveContext.Catalog);
+            var dstCatalog = _catalogService.GetById(moveInfo.Catalog);
             if (dstCatalog.IsVirtual)
             {
                 throw new InvalidOperationException("Unable to move in virtual catalog");
             }
 
-            var categories = _categoryMover.PrepareMove(moveContext);
-            var products = _productMover.PrepareMove(moveContext);
+            var categories = _categoryMover.PrepareMove(moveInfo);
+            var products = _productMover.PrepareMove(moveInfo);
 
             //Scope bound security check
             CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Create, categories);

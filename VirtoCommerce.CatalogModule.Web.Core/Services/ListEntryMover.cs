@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 using VirtoCommerce.CatalogModule.Web.Model;
@@ -13,7 +13,7 @@ namespace VirtoCommerce.CatalogModule.Web.Services
         {
         }
 
-        public virtual List<T> PrepareMove(MoveContext moveContext)
+        public virtual List<T> PrepareMove(MoveInfo moveInfo)
         {
             return Enumerable.Empty<T>().ToList();
         }

@@ -5,11 +5,11 @@ using VirtoCommerce.CatalogModule.Web.Model;
 using VirtoCommerce.CatalogModule.Web.Services;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Platform.Core.Common;
-using VC = VirtoCommerce.Domain.Catalog.Model;
+using domain = VirtoCommerce.Domain.Catalog.Model;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
-    public class ProductMover : ListEntryMover<VC.CatalogProduct>
+    public class ProductMover : ListEntryMover<domain.CatalogProduct>
     {
         private readonly IItemService _itemService;
 
@@ -24,44 +24,44 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _itemService = itemService;
         }
 
-        public override void ConfirmMove(IEnumerable<VC.CatalogProduct> entities)
+        public override void ConfirmMove(IEnumerable<domain.CatalogProduct> entities)
         {
             _itemService.Update(entities.ToArray());
         }
 
-        public override List<VC.CatalogProduct> PrepareMove(MoveContext moveContext)
+        public override List<domain.CatalogProduct> PrepareMove(MoveInfo moveInfo)
         {
-            var result = new List<VC.CatalogProduct>();
+            var result = new List<domain.CatalogProduct>();
 
-            foreach (var listEntryProduct in moveContext.ListEntries.Where(
+            foreach (var listEntryProduct in moveInfo.ListEntries.Where(
                 listEntry => listEntry.Type.EqualsInvariant(ListEntryProduct.TypeName)))
             {
-                var product = _itemService.GetById(listEntryProduct.Id, VC.ItemResponseGroup.ItemLarge);
-                if (product.CatalogId == moveContext.Catalog)
+                var product = _itemService.GetById(listEntryProduct.Id, domain.ItemResponseGroup.ItemLarge);
+                if (product.CatalogId == moveInfo.Catalog)
                 {
                     // idle
                 }
                 else
                 {
-                    product.CatalogId = moveContext.Catalog;
+                    product.CatalogId = moveInfo.Catalog;
                     product.CategoryId = null;
                     foreach (var variation in product.Variations)
                     {
-                        variation.CatalogId = moveContext.Catalog;
+                        variation.CatalogId = moveInfo.Catalog;
                         variation.CategoryId = null;
                     }
                 }
 
-                if (product.CategoryId == moveContext.Category)
+                if (product.CategoryId == moveInfo.Category)
                 {
                     // idle
                 }
                 else
                 {
-                    product.CategoryId = moveContext.Category;
+                    product.CategoryId = moveInfo.Category;
                     foreach (var variation in product.Variations)
                     {
-                        variation.CategoryId = moveContext.Category;
+                        variation.CategoryId = moveInfo.Category;
                     }
                 }
 

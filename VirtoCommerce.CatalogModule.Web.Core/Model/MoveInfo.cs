@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace VirtoCommerce.CatalogModule.Web.Model
 {
-    public class MoveContext
+    public class MoveInfo
     {
         public string Catalog { get; set; }
 
