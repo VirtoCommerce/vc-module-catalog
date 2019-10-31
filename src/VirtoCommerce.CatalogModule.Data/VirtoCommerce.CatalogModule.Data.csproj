@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netcoreapp2.2</TargetFramework>
+        <TargetFramework>netcoreapp3.0</TargetFramework>
         <noWarn>1591</noWarn>
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
@@ -12,15 +12,23 @@
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Hangfire" Version="1.6.22" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.3" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.3" />
-        <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.0.0-rc.1" />
-        <PackageReference Include="VirtoCommerce.ExportModule.Data" Version="3.0.0-rc.1" />
-        <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.0.0-rc0001" />
-        <PackageReference Include="VirtoCommerce.Platform.Data" Version="3.0.0-rc0001" />
-        <PackageReference Include="VirtoCommerce.SearchModule.Data" Version="3.0.0-rc1-update0001" />
-        <PackageReference Include="VirtoCommerce.StoreModule.Core" Version="3.0.0-rc.1" />
+        <PackageReference Include="Hangfire" Version="1.7.7" />
+        <PackageReference Include="EntityFrameworkCore.Triggers" Version="1.2.1" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.0.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.0-preview1.19506.2" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.0-preview1.19506.2">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.0-preview1.19506.2" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.0-preview1.19506.2" />
+        <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="2.25.26-3-0-0-core3-0001" />
+        <PackageReference Include="VirtoCommerce.ExportModule.Data" Version="3.0.0-3-0-0-vp-837-co-0001" />
+        <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.0.0-v3-feature-vp-7-0001" />
+        <PackageReference Include="VirtoCommerce.Platform.Data" Version="3.0.0-v3-feature-vp-7-0001" />
+        <PackageReference Include="VirtoCommerce.SearchModule.Data" Version="3.0.0-3-0-0-vp-836-co-0001" />
+        <PackageReference Include="VirtoCommerce.StoreModule.Core" Version="3.0.0-3-0-0-vp-835-co-0001" />
+        
     </ItemGroup>
 
     <ItemGroup>
