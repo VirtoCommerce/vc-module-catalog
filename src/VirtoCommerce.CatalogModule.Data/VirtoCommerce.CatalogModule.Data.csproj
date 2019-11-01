@@ -4,6 +4,7 @@
         <TargetFramework>netcoreapp3.0</TargetFramework>
         <noWarn>1591</noWarn>
         <LangVersion>latest</LangVersion>
+		<IsPackable>True</IsPackable>
     </PropertyGroup>
 
     <ItemGroup>
