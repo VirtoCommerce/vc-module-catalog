@@ -6,7 +6,7 @@
         <IsPackable>False</IsPackable>
         <noWarn>1591</noWarn>
         <LangVersion>latest</LangVersion>
-		<OutputType>Library</OutputType>
+        <OutputType>Library</OutputType>
     </PropertyGroup>
 
     <ItemGroup>
