@@ -23,7 +23,7 @@
         </PackageReference>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.0-preview2.19525.5" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.0-preview2.19525.5" />
-        <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="2.25.26-3-0-0-core3-0001" />
+        <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.0.0-3-0-0-core3-0001" />
         <PackageReference Include="VirtoCommerce.ExportModule.Data" Version="3.0.0-3-0-0-vp-837-co-0001" />
         <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.0.0-v3-feature-vp-7-0001" />
         <PackageReference Include="VirtoCommerce.Platform.Data" Version="3.0.0-v3-feature-vp-7-0001" />
