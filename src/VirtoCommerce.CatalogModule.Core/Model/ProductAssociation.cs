@@ -4,7 +4,7 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Core.Model
 {
-    public class ProductAssociation : ValueObject, IHasOuterId
+    public class ProductAssociation : ValueObject, IHasOuterId, IHasImages
     {
         /// <summary>
         /// Association type (Accessories, Up-Sales, Cross-Sales, Related etc)
@@ -43,6 +43,25 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         public virtual string AssociatedObjectImg => (AssociatedObject is IHasImages hasImages) ? hasImages.ImgSrc : null;
 
         public string[] Tags { get; set; }
+
+        #region IHasImages members
+        public string ImgSrc => AssociatedObjectImg;
+
+        public IList<Image> Images
+        {
+            get
+            {
+                return (AssociatedObject is IHasImages hasImages) ? hasImages.Images : null;
+            }
+            set
+            {
+                if (AssociatedObject is IHasImages hasImages)
+                {
+                    hasImages.Images = value;
+                }
+            }
+        } 
+        #endregion
 
         protected override IEnumerable<object> GetEqualityComponents()
         {
