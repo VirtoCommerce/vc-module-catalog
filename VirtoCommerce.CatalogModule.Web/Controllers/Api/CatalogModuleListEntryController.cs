@@ -12,6 +12,7 @@ using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Security;
 using coreModel = VirtoCommerce.Domain.Catalog.Model;
 using webModel = VirtoCommerce.CatalogModule.Web.Model;
+using VirtoCommerce.CatalogModule.Web.Services;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
@@ -22,7 +23,9 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly ICategoryService _categoryService;
         private readonly ICatalogService _catalogService;
         private readonly IItemService _itemService;
-        private readonly IBlobUrlResolver _blobUrlResolver;
+        private readonly IListEntrySearchService _listEntrySearchService;
+        private readonly ListEntryMover<coreModel.Category> _categoryMover;
+        private readonly ListEntryMover<coreModel.CatalogProduct> _productMover;
 
         public CatalogModuleListEntryController(
             ICatalogSearchService searchService,
@@ -31,15 +34,19 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             IBlobUrlResolver blobUrlResolver,
             ISecurityService securityService,
             IPermissionScopeService permissionScopeService,
-            ICatalogService catalogService
-            )
+            ICatalogService catalogService,
+            IListEntrySearchService listEntrySearchService,
+            ListEntryMover<coreModel.Category> categoryMover,
+            ListEntryMover<coreModel.CatalogProduct> productMover)
             : base(securityService, permissionScopeService)
         {
             _searchService = searchService;
             _categoryService = categoryService;
             _itemService = itemService;
-            _blobUrlResolver = blobUrlResolver;
             _catalogService = catalogService;
+            _listEntrySearchService = listEntrySearchService;
+            _categoryMover = categoryMover;
+            _productMover = productMover;
         }
 
         /// <summary>
@@ -56,51 +63,17 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             ApplyRestrictionsForCurrentUser(coreModelCriteria);
 
             coreModelCriteria.WithHidden = true;
-            //Need search in children categories if user specify keyword
+
+            // need search in children categories if user specify keyword
             if (!string.IsNullOrEmpty(coreModelCriteria.Keyword))
             {
                 coreModelCriteria.SearchInChildren = true;
                 coreModelCriteria.SearchInVariations = true;
             }
 
-            var retVal = new webModel.ListEntrySearchResult();
+            var result = _listEntrySearchService.Search(coreModelCriteria);
 
-            int categorySkip = 0;
-            int categoryTake = 0;
-            //Because products and categories represent in search result as two separated collections for handle paging request 
-            //we should join two resulting collection artificially
-            //search categories
-            var copyRespGroup = coreModelCriteria.ResponseGroup;
-            if ((coreModelCriteria.ResponseGroup & coreModel.SearchResponseGroup.WithCategories) == coreModel.SearchResponseGroup.WithCategories)
-            {
-                coreModelCriteria.ResponseGroup = coreModelCriteria.ResponseGroup & ~coreModel.SearchResponseGroup.WithProducts;
-                var categoriesSearchResult = _searchService.Search(coreModelCriteria);
-                var categoriesTotalCount = categoriesSearchResult.Categories.Count();
-
-                categorySkip = Math.Min(categoriesTotalCount, coreModelCriteria.Skip);
-                categoryTake = Math.Min(coreModelCriteria.Take, Math.Max(0, categoriesTotalCount - coreModelCriteria.Skip));
-                var categories = categoriesSearchResult.Categories.Skip(categorySkip).Take(categoryTake).Select(x => new webModel.ListEntryCategory(x.ToWebModel(_blobUrlResolver))).ToList();
-
-                retVal.TotalCount = categoriesTotalCount;
-                retVal.ListEntries.AddRange(categories);
-            }
-            coreModelCriteria.ResponseGroup = copyRespGroup;
-            //search products
-            if ((coreModelCriteria.ResponseGroup & coreModel.SearchResponseGroup.WithProducts) == coreModel.SearchResponseGroup.WithProducts)
-            {
-                coreModelCriteria.ResponseGroup = coreModelCriteria.ResponseGroup & ~coreModel.SearchResponseGroup.WithCategories;
-                coreModelCriteria.Skip = coreModelCriteria.Skip - categorySkip;
-                coreModelCriteria.Take = coreModelCriteria.Take - categoryTake;
-                var productsSearchResult = _searchService.Search(coreModelCriteria);
-
-                var products = productsSearchResult.Products.Select(x => new webModel.ListEntryProduct(x.ToWebModel(_blobUrlResolver)));
-
-                retVal.TotalCount += productsSearchResult.ProductsTotalCount;
-                retVal.ListEntries.AddRange(products);
-            }
-
-
-            return Ok(retVal);
+            return Ok(result);
         }
 
         /// <summary>
@@ -225,68 +198,22 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [ResponseType(typeof(void))]
         public IHttpActionResult Move(webModel.MoveInfo moveInfo)
         {
-            var categories = new List<coreModel.Category>();
             var dstCatalog = _catalogService.GetById(moveInfo.Catalog);
             if (dstCatalog.IsVirtual)
             {
                 throw new InvalidOperationException("Unable to move in virtual catalog");
             }
 
-            //Move  categories
-            foreach (var listEntryCategory in moveInfo.ListEntries.Where(x => x.Type.EqualsInvariant(webModel.ListEntryCategory.TypeName)))
-            {
-                var category = _categoryService.GetById(listEntryCategory.Id, coreModel.CategoryResponseGroup.Info);
-                if (category.CatalogId != moveInfo.Catalog)
-                {
-                    category.CatalogId = moveInfo.Catalog;
-                }
-                if (category.ParentId != moveInfo.Category)
-                {
-                    category.ParentId = moveInfo.Category;
-                }
-                categories.Add(category);
-            }
-
-            var products = new List<coreModel.CatalogProduct>();
-            //Move products
-            foreach (var listEntryProduct in moveInfo.ListEntries.Where(x => x.Type.EqualsInvariant(webModel.ListEntryProduct.TypeName)))
-            {
-                var product = _itemService.GetById(listEntryProduct.Id, Domain.Catalog.Model.ItemResponseGroup.ItemLarge);
-                if (product.CatalogId != moveInfo.Catalog)
-                {
-                    product.CatalogId = moveInfo.Catalog;
-                    product.CategoryId = null;
-                    foreach (var variation in product.Variations)
-                    {
-                        variation.CatalogId = moveInfo.Catalog;
-                        variation.CategoryId = null;
-                    }
-
-                }
-                if (product.CategoryId != moveInfo.Category)
-                {
-                    product.CategoryId = moveInfo.Category;
-                    foreach (var variation in product.Variations)
-                    {
-                        variation.CategoryId = moveInfo.Category;
-                    }
-                }
-                products.Add(product);
-                products.AddRange(product.Variations);
-            }
+            var categories = _categoryMover.PrepareMove(moveInfo);
+            var products = _productMover.PrepareMove(moveInfo);
 
             //Scope bound security check
             CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Create, categories);
             CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Create, products);
 
-            if (categories.Any())
-            {
-                _categoryService.Update(categories.ToArray());
-            }
-            if (products.Any())
-            {
-                _itemService.Update(products.ToArray());
-            }
+            _categoryMover.ConfirmMove(categories);
+            _productMover.ConfirmMove(products);
+
             return Ok();
         }
 
