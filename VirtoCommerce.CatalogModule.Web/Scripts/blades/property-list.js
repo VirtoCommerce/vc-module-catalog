@@ -50,7 +50,7 @@ angular.module('virtoCommerce.catalogModule')
                         });
                 }
             }
-        };
+        }
 
         $scope.resetFilter = function () {
             blade.filtered = false;
@@ -60,8 +60,8 @@ angular.module('virtoCommerce.catalogModule')
                 });
         };
 
-        $scope.hasChangedProperties = function (properties) {
-            return _.filter(properties,
+        $scope.hasChangedProperties = function (propertyList) {
+            return _.filter(propertyList,
                 function (prop) {
                     return prop.isChanged;
                 }).length;
@@ -121,9 +121,9 @@ angular.module('virtoCommerce.catalogModule')
         };
 
 		var formScope;
-		$scope.setForm = function (form) {
-			formScope = form;
-		}
+        $scope.setForm = function(form) {
+            formScope = form;
+        };
 
 		$scope.$watch("blade.currentEntities", function () {
             $scope.isValid = formScope && formScope.$valid && $scope.hasChangedProperties(blade.currentEntities);
@@ -149,7 +149,7 @@ angular.module('virtoCommerce.catalogModule')
 						});
 					} else {
 						$scope.editProperty({ isManageable: true });
-					};
+					}
 				},
 				canExecuteMethod: function () {
 					return true;
