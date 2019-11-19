@@ -119,7 +119,7 @@
                 <name>Catalog.Search.EventBasedIndexation.Enable</name>
                 <valueType>boolean</valueType>
                 <defaultValue>false</defaultValue>
-                <title>Set to True to enable event-based indexation for catalog entities (Restart required)</title>
+                <title>Enable event-based indexation for catalog entities (Restart required)</title>
                 <description>Any changes to the catalog entity will trigger a background task that will apply these changes in the search index.</description>
             </setting>
         </group>
