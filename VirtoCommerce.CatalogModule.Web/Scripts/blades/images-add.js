@@ -14,6 +14,8 @@ angular.module('virtoCommerce.catalogModule')
 
             blade.isLoading = false;
 
+            blade.useExternalUrl = false;
+
             blade.refresh = function (item) {
                 initialize(item);
             }
@@ -60,6 +62,13 @@ angular.module('virtoCommerce.catalogModule')
                     };
                 }
                 blade.currentEntities = [];
+            };
+
+            $scope.addImageFromUrlHandler = function () {
+                if (blade.useExternalUrl) {
+                    $scope.addImageDirectlyFromUrl()
+                }
+                $scope.addImageFromUrl()
             };
 
             $scope.addImageFromUrl = function () {
