@@ -30,7 +30,7 @@
         <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
         <PackageReference Include="Microsoft.AspNetCore.App" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.2.0" />
-        <PackageReference Include="VirtoCommerce.Platform.Security" Version="3.0.0-rc0001" />
+        <PackageReference Include="VirtoCommerce.Platform.Security" Version="3.0.0-rc1-update0001" />
     </ItemGroup>
 
     <ItemGroup>
