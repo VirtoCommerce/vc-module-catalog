@@ -75,6 +75,20 @@ angular.module('virtoCommerce.catalogModule')
                 }
             };
 
+            $scope.addImageDirectlyFromUrl = function () {
+                if (blade.newExternalImageUrl) {
+                    var image = {
+                        isImage: true,
+                        group: blade.imageType,
+                        url: blade.newExternalImageUrl,
+                        name: blade.newExternalImageUrl.split('/').pop(),
+                        relativeUrl: blade.newExternalImageUrl
+                    };
+                    blade.currentEntities.push(image);
+                    blade.newExternalImageUrl = undefined;
+                }
+            };
+
             $scope.saveChanges = function () {
                 if (blade.onSelect) {
                     _.each(blade.currentEntities, function (entity) {
