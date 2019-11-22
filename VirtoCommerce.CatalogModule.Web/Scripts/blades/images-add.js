@@ -66,9 +66,10 @@ angular.module('virtoCommerce.catalogModule')
 
             $scope.addImageFromUrlHandler = function () {
                 if (blade.useExternalUrl) {
-                    $scope.addImageDirectlyFromUrl()
-                }
-                $scope.addImageFromUrl()
+                    $scope.addImageDirectlyFromUrl();
+                } else {
+                    $scope.addImageFromUrl();
+                }                
             };
 
             $scope.addImageFromUrl = function () {
