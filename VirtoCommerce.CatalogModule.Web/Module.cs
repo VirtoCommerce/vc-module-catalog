@@ -132,11 +132,7 @@ namespace VirtoCommerce.CatalogModule.Web
 
             _container.RegisterType<IListEntrySearchService, ListEntrySearchService>();
             _container.RegisterType<ListEntryMover<Category>, CategoryMover>();
-            _container.RegisterType<ListEntryMover<CatalogProduct>, ProductMover>();
-
-            var eventHandlerRegistrar = _container.Resolve<IHandlerRegistrar>();
-            eventHandlerRegistrar.RegisterHandler<ProductChangedEvent>(async (message, token) => await _container.Resolve<IndexProductChangedEventHandler>().Handle(message));
-            eventHandlerRegistrar.RegisterHandler<CategoryChangedEvent>(async (message, token) => await _container.Resolve<IndexCategoryChangedEventHandler>().Handle(message));
+            _container.RegisterType<ListEntryMover<CatalogProduct>, ProductMover>();       
         }
 
         public override void PostInitialize()
@@ -189,6 +185,13 @@ namespace VirtoCommerce.CatalogModule.Web
 
             _container.RegisterInstance(categoryIndexingConfiguration.DocumentType, categoryIndexingConfiguration);
 
+            var settingsManager = _container.Resolve<ISettingsManager>();
+            if (settingsManager.GetValue("Catalog.Search.EventBasedIndexation.Enable", false))
+            {
+                var eventHandlerRegistrar = _container.Resolve<IHandlerRegistrar>();
+                eventHandlerRegistrar.RegisterHandler<ProductChangedEvent>(async (message, token) => await _container.Resolve<IndexProductChangedEventHandler>().Handle(message));
+                eventHandlerRegistrar.RegisterHandler<CategoryChangedEvent>(async (message, token) => await _container.Resolve<IndexCategoryChangedEventHandler>().Handle(message));
+            }
 
             #region Register types for generic Export
 
