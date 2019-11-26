@@ -82,7 +82,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                         }
                         else
                         {
-                            result.Add(new SortingField("price", sortingField.IsDescending));
+                            result.Add(new SortingField($"price_{criteria.Currency}".ToLowerInvariant(), sortingField.IsDescending));
                         }
                         break;
                     case "priority":
