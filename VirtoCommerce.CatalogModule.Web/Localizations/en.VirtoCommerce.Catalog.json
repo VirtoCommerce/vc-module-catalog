@@ -379,97 +379,111 @@
           "progress": "Progress",
           "make-default-image": "Drag and drop an image to top left corner of images area to make it the default image.",
           "language": "Language",
-          "preview": "Preview"
+          "preview": "Preview",
+          "external-link": "External link"
         },
         "placeholders": {
           "image-url": "Paste image URL here",
           "image-category": "Select...",
           "language": "Select language"
+        },
+        "descr": {
+          "external-link": "Use external image URL instead of uploading it to assets",
+          "external-link-warning": "\"Example: scheme://your_resource.png\". For security reasons for external image you must use only images that support the URL scheme of the Storefront."
         }
-      },
-      "item-asset-detail": {
-        "subtitle": "item assets",
-        "labels": {
-          "copy-url-prompt": "Copy to clipboard: Ctrl+C, Enter",
-          "select-files": "Select files",
-          "drag-drop-comment": "Drag and drop files here",
-          "name": "Name",
-          "progress": "Progress",
-          "type": "Type",
-          "actions": "Actions",
-          "remove": "Remove",
-          "copy-link": "Copy link"
-        }
-      },
-      "item-associations-list": {
-        "subtitle": "Associations",
-        "labels": {
-          "sorting-prompt": "Set the order how associated items appear sorted in web store. Drag and drop the products to change the order.",
-          "picture": "Img",
-          "name": "Name",
-          "priority": "Priority",
-          "group": "Group",
-          "quantity": "Quantity"
-        }
-      },
-      "item-association-detail": {
-        "subtitle": "Association details",
-        "labels": {
-          "group": "Group",
-          "quantity": "Quantity",
-          "tags": "Tags"
         },
-        "placeholders": {
-          "group": "Select...",
-          "quantity": "Enter quantity...",
-          "tags": "Enter tags..."
-        }
-      },
-      "advanced-search-results": {
-        "title": "Search results"
-      },
-      "item-dimensions": {
-        "title": "Item dimensions",
-        "subtitle": "change product size & weight here"
-      },
-      "asset-select": {
-        "title": "Link images"
-      },
-      "images-select": {
-        "title": "Link assets"
-      },
-      "asset-upload": {
-        "title": "Add assets"
-      },
-      "image-upload": {
-        "title": "Upload images"
-      },
-      "aggregation-properties-details": {
-        "name": {
-          "label": "Property name"
+        "item-asset-detail": {
+          "subtitle": "item assets",
+          "labels": {
+            "copy-url-prompt": "Copy to clipboard: Ctrl+C, Enter",
+            "select-files": "Select files",
+            "drag-drop-comment": "Drag and drop files here",
+            "name": "Name",
+            "progress": "Progress",
+            "type": "Type",
+            "actions": "Actions",
+            "remove": "Remove",
+            "copy-link": "Copy link"
+          }
         },
-        "type": {
-          "label": "Aggregation type"
+        "item-associations-list": {
+          "subtitle": "Associations",
+          "labels": {
+            "sorting-prompt": "Set the order how associated items appear sorted in web store. Drag and drop the products to change the order.",
+            "picture": "Img",
+            "name": "Name",
+            "priority": "Priority",
+            "group": "Group",
+            "quantity": "Quantity"
+          }
         },
-        "size": {
-          "label": "Aggregation size",
-          "placeholder": "Enter aggregation size",
-          "description": "Maximum number of aggregation values in search results. 0 = unlimited"
+        "item-association-detail": {
+          "subtitle": "Association details",
+          "labels": {
+            "group": "Group",
+            "quantity": "Quantity",
+            "tags": "Tags"
+          },
+          "placeholders": {
+            "group": "Select...",
+            "quantity": "Enter quantity...",
+            "tags": "Enter tags..."
+          }
         },
-        "values-Attribute": {
-          "label": "Allowed values",
-          "placeholder": "Enter allowed values",
-          "description": "Enter aggregation values allowed in search results. Leave empty to allow any value."
+        "advanced-search-results": {
+          "title": "Search results"
         },
-        "values-Range": {
-          "label": "Range bounds",
-          "placeholder": "Add number",
-          "description": "Bounds will be sorted automatically before saving. Ranges are constructed as follows: Under [bound 1], [bound 1] to [bound 2], ... , Over [bound N]"
+        "item-dimensions": {
+          "title": "Item dimensions",
+          "subtitle": "change product size & weight here"
         },
-        "values-PriceRange": {
-          "label": "Price range bounds",
-          "placeholder": "Add number",
-          "description": "Bounds will be sorted automatically before saving. Price ranges are constructed as follows: Under [bound 1], [bound 1] to [bound 2], ... , Over [bound N]"
+        "asset-select": {
+          "title": "Link images"
+        },
+        "images-select": {
+          "title": "Link assets"
+        },
+        "asset-upload": {
+          "title": "Add assets"
+        },
+        "image-upload": {
+          "title": "Upload images"
+        },
+        "aggregation-properties-details": {
+          "name": {
+            "label": "Property name"
+          },
+          "type": {
+            "label": "Aggregation type"
+          },
+          "size": {
+            "label": "Aggregation size",
+            "placeholder": "Enter aggregation size",
+            "description": "Maximum number of aggregation values in search results. 0 = unlimited"
+          },
+          "values-Attribute": {
+            "label": "Allowed values",
+            "placeholder": "Enter allowed values",
+            "description": "Enter aggregation values allowed in search results. Leave empty to allow any value."
+          },
+          "values-Range": {
+            "label": "Range bounds",
+            "placeholder": "Add number",
+            "description": "Bounds will be sorted automatically before saving. Ranges are constructed as follows: Under [bound 1], [bound 1] to [bound 2], ... , Over [bound N]"
+          },
+          "values-PriceRange": {
+            "label": "Price range bounds",
+            "placeholder": "Add number",
+            "description": "Bounds will be sorted automatically before saving. Price ranges are constructed as follows: Under [bound 1], [bound 1] to [bound 2], ... , Over [bound N]"
+          }
+        },
+        "exporter-list": {
+          "title": "Available exporters",
+          "subtitle": "Select exporter for catalog products"
+        },
+        "exporter": {
+          "productTitle": "Export catalog products",
+          "productSubtitle": "Export catalog products to JSON or CSV"
         }
       },
       "exporter-list": {
