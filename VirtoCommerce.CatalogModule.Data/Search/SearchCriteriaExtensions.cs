@@ -24,7 +24,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
         {
             var result = criteria
                 .GetRawOutlines()
-                .Select(outline => StringsHelper.JoinNonEmptyStrings("/", criteria.CatalogId, outline).ToLowerInvariant())
+                .Select(outline => StringsHelper.JoinNonEmptyStrings("/", criteria.CatalogId, outline).ToLowerInvariant().Replace("//", "/"))                
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .ToArray();
 

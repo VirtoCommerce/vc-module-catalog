@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <module>
     <id>VirtoCommerce.Catalog</id>
-    <version>2.23.28</version>
+    <version>2.23.30</version>
     <platformVersion>2.13.42</platformVersion>
     <dependencies>
         <dependency id="VirtoCommerce.Core" version="2.25.27" />
@@ -114,6 +114,13 @@
                 <defaultValue>false</defaultValue>
                 <title>Store serialized catalog objects in the index</title>
                 <description>Store serialized catalog objects in the index and return them in search results</description>
+            </setting>
+            <setting>
+                <name>Catalog.Search.EventBasedIndexation.Enable</name>
+                <valueType>boolean</valueType>
+                <defaultValue>false</defaultValue>
+                <title>Enable event-based indexation for catalog entities (Restart required)</title>
+                <description>Any changes to the catalog entity will trigger a background task that will apply these changes in the search index.</description>
             </setting>
         </group>
     </settings>
