@@ -27,7 +27,7 @@ angular.module('virtoCommerce.catalogModule')
             $scope.resetFilter();
 
             if ($localStorage.entryPropertyFilters) {
-                var savedFilteredProperties = $localStorage.entryPropertyFilters[authService.id];
+                var savedFilteredProperties = $localStorage.entryPropertyFilters[authService.id][blade.currentEntity.categoryId];
                 if (savedFilteredProperties && savedFilteredProperties.length > 0) {
                     blade.filtered = true;
                     _.each(blade.currentEntities,
@@ -46,6 +46,8 @@ angular.module('virtoCommerce.catalogModule')
                                     function(prop) {
                                         prop.isSelected = true;
                                     });
+                            } else {
+                                $scope.resetFilter();
                             }
                         });
                 }
@@ -162,6 +164,7 @@ angular.module('virtoCommerce.catalogModule')
                         id: "propertySelector",
                         entityType: "product",
                         properties: blade.currentEntities,
+                        categoryId: blade.currentEntity.categoryId,
                         controller: 'virtoCommerce.catalogModule.propertySelectorController',
                         template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-selector.tpl.html',
                         onSelected: function (includedProperties) {
@@ -188,7 +191,11 @@ angular.module('virtoCommerce.catalogModule')
                 name: "catalog.blades.property-list.labels.reset-filter", icon: 'fa fa-undo',
                 executeMethod: function () {
                     if ($localStorage.entryPropertyFilters) {
-                        $localStorage.entryPropertyFilters[authService.id] = [];
+                        
+                        if ($localStorage.entryPropertyFilters[authService.id][blade.currentEntity.categoryId]) {
+                            $localStorage.entryPropertyFilters[authService.id][blade.currentEntity.categoryId] = [];
+                        }
+                            
                     }
                     $scope.resetFilter();
                 },
@@ -196,7 +203,24 @@ angular.module('virtoCommerce.catalogModule')
                     return blade.filtered;
                 }
             }
-		];
+        ];
+
+        $scope.$watch('blade.currentEntities', function (changedProperties, oldProperties) {
+            _.each(changedProperties,
+                function(changedItem) {
+                    var oldItem = _.find(oldProperties, function (item) { return item.id === changedItem.id; });
+                    _.each(changedItem.values,
+                        function(newValue) {
+                            var oldValue = _.find(oldItem.values, function (value) {
+                                return angular.equals(value, newValue);
+                            });
+                            if (!oldValue) {
+                                changedItem.isChanged = true;
+                            }
+                        });
+                });
+        }, true);
+
 		blade.isLoading = false;
 		initialize(blade.currentEntity);
 	}]);

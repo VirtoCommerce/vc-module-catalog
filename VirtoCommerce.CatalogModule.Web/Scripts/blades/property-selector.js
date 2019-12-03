@@ -56,12 +56,15 @@ angular.module('virtoCommerce.catalogModule')
 
             if (blade.onSelected) {
 
+                var selectedProperties = _.map(includedProperties, function (item) { return item.name; });
                 var currentFilter = {};
-                currentFilter[authService.id] = _.map(includedProperties, function (item) { return item.name; });
-                if ($localStorage.entryPropertyFilters) {
-                    angular.extend($localStorage.entryPropertyFilters, currentFilter);
+                currentFilter[blade.categoryId] = selectedProperties;
+
+                if ($localStorage.entryPropertyFilters && $localStorage.entryPropertyFilters[authService.id]) {
+                    angular.extend($localStorage.entryPropertyFilters[authService.id], currentFilter);
                 } else {
-                    $localStorage.entryPropertyFilters = currentFilter;
+                    $localStorage.entryPropertyFilters = {};
+                    $localStorage.entryPropertyFilters[authService.id] = currentFilter;
                 }
 
                 blade.onSelected(includedProperties);
