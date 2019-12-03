@@ -751,8 +751,7 @@
           "select-categories": "Select categories…"
         }
       }
-    }
-  },
+    },
   "export": {
     "types": {
       "VirtoCommerce.CatalogModule.Data.ExportImport.ExportableProduct": {
