@@ -57,12 +57,12 @@ angular.module('virtoCommerce.catalogModule')
                         bladeNavigationService.setError(null, blade);
                     };
 
-                    uploader.onErrorItem = function (item, response, status, headers) {
-                        bladeNavigationService.setError(item._file.name + ' failed: ' + (response.message ? response.message : status), blade);
+                    uploader.onErrorItem = function (element, response, status, headers) {
+                        bladeNavigationService.setError(element._file.name + ' failed: ' + (response.message ? response.message : status), blade);
                     };
                 }
                 blade.currentEntities = [];
-            };
+            }
 
             $scope.addImageFromUrlHandler = function () {
                 if (blade.useExternalUrl) {
@@ -149,7 +149,7 @@ angular.module('virtoCommerce.catalogModule')
                 var folderUrl = 'catalog/' + (path + (imageType ? '/' + imageType : ''));
 
                 return { folderUrl: + folderUrl, relative: 'api/platform/assets?folderUrl=' + folderUrl };
-            };
+            }
 
             initialize(blade.item);
 
