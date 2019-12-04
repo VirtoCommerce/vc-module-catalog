@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Model;
@@ -191,6 +192,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <param name="links">The links.</param>
         [HttpPost]
         [Route("~/api/catalog/listentrylinks/delete")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         public async Task<ActionResult> DeleteLinks([FromBody]CategoryLink[] links)
         {
             var entryIds = links.Select(x => x.EntryId).ToArray();
@@ -223,6 +225,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <param name="moveRequest">Move operation request</param>
         [HttpPost]
         [Route("move")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         public async Task<ActionResult> Move([FromBody]ListEntriesMoveRequest moveRequest)
         {
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, moveRequest, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
