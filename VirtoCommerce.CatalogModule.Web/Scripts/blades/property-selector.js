@@ -1,7 +1,7 @@
 angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.propertySelectorController', ['$scope', 'platformWebApp.bladeNavigationService', '$localStorage', 'platformWebApp.authService', function ($scope, bladeNavigationService, $localStorage, authService) {
         var blade = $scope.blade;
-
+        blade.existingFilteredProperties = [];
         blade.isLoading = true;
 
         function initializeBlade() {
@@ -15,6 +15,15 @@ angular.module('virtoCommerce.catalogModule')
             selectedProperties = _.sortBy(selectedProperties, 'name');
             blade.allEntities = _.groupBy(allProperties, 'group');
             blade.selectedEntities = _.groupBy(selectedProperties, 'group');
+
+            if ($localStorage.entryPropertyFilters) {
+                if ($localStorage.entryPropertyFilters[authService.id].length > 10) {
+                    blade.existingFilteredProperties = $localStorage.entryPropertyFilters[authService.id].slice(1, 10);
+                } else {
+                    blade.existingFilteredProperties = $localStorage.entryPropertyFilters[authService.id];
+                }
+            }
+
             blade.isLoading = false;
             $scope.addSelected('All properties');
         }
@@ -56,15 +65,12 @@ angular.module('virtoCommerce.catalogModule')
 
             if (blade.onSelected) {
 
-                var selectedProperties = _.map(includedProperties, function (item) { return item.name; });
                 var currentFilter = {};
-                currentFilter[blade.categoryId] = selectedProperties;
-
-                if ($localStorage.entryPropertyFilters && $localStorage.entryPropertyFilters[authService.id]) {
-                    angular.extend($localStorage.entryPropertyFilters[authService.id], currentFilter);
+                currentFilter[authService.id] = _.map(includedProperties, function (item) { return item.name; });
+                if ($localStorage.entryPropertyFilters) {
+                    angular.extend($localStorage.entryPropertyFilters, currentFilter);
                 } else {
-                    $localStorage.entryPropertyFilters = {};
-                    $localStorage.entryPropertyFilters[authService.id] = currentFilter;
+                    $localStorage.entryPropertyFilters = currentFilter;
                 }
 
                 blade.onSelected(includedProperties);

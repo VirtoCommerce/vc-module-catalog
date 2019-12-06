@@ -2,11 +2,18 @@
 <div class="blade-content">
     <div class="blade-inner">
         <div class="inner-block">
+            <div class="form-group" ng-if="blade.existingFilteredProperties.length > 0">
+                <label class="form-label">{{'catalog.blades.property-selector.labels.applied-filter' | translate}}</label>
+                <ui-select multiple ng-model="blade.existingFilteredProperties" ng-disabled="true">
+                    <ui-select-match placeholder="{{'export.blades.export-settings.labels.exported-properties-group' | translate}}">{{$item}}</ui-select-match>
+                    <ui-select-choices group-by="'path'" repeat="x as x in values | filter: { name: $select.search }">
+                        <span ng-bind-html="x | highlight: $select.search"></span>
+                    </ui-select-choices>
+                </ui-select>
+            </div>
             <div ng-repeat-start="(key,values) in blade.allEntities">
                 <div class="form-group">
-                    <label class="form-label">
-                        {{key}}
-                    </label>
+                    <label class="form-label">{{'catalog.blades.property-selector.labels.new-filter' | translate}}</label>
                     <a class="btn-ico fa fa-check-circle" ng-click="selectAllInGroup(key)"></a>
                     <a class="btn-ico fa fa-times-circle" ng-click="clearAllInGroup(key)"></a>
                     <ui-select multiple ng-model="blade.selectedEntities[key]" on-select="sortSelected(key)">
