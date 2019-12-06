@@ -1,0 +1,8 @@
+<Project>
+  <!-- These properties will be shared for all projects -->
+  <PropertyGroup>
+    <VersionPrefix>3.0.0</VersionPrefix>
+    <VersionSuffix>rc2</VersionSuffix>
+    <VersionSuffix Condition=" '$(VersionSuffix)' != '' AND '$(BuildNumber)' != '' ">$(VersionSuffix)-$(BuildNumber)</VersionSuffix>
+  </PropertyGroup>
+</Project>
