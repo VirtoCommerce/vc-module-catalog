@@ -5,7 +5,6 @@ namespace VirtoCommerce.CatalogModule.Data.Validation
 {
     public class PropertyValidator : AbstractValidator<Property>
     {
-        private static readonly char[] _illegalCodeChars = { '$', '+', ';', '=', '%', '{', '}', '[', ']', '|', '\\', '/', '@', '~', '!', '^', '*', '&', '(', ')', ':', '<', '>' };
         public PropertyValidator()
         {
 
