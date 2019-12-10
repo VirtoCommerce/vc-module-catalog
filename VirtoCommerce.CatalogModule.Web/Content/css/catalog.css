@@ -277,4 +277,5 @@ vc-item-search {
     border-radius: 2px;
     font-size: 12px;
     padding: .15em 4px;
+    vertical-align: super;
 }

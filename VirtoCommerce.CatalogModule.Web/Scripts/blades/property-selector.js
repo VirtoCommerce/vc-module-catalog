@@ -3,6 +3,7 @@ angular.module('virtoCommerce.catalogModule')
         var blade = $scope.blade;
         blade.existingFilteredProperties = [];
         blade.isLoading = true;
+        const maxPreviewFiltersCount = 10;
 
         function initializeBlade() {
             blade.title = 'catalog.blades.property-selector.title';
@@ -17,8 +18,11 @@ angular.module('virtoCommerce.catalogModule')
             blade.selectedEntities = _.groupBy(selectedProperties, 'group');
 
             if ($localStorage.entryPropertyFilters) {
-                if ($localStorage.entryPropertyFilters[authService.id].length > 10) {
-                    blade.existingFilteredProperties = $localStorage.entryPropertyFilters[authService.id].slice(1, 10);
+                if ($localStorage.entryPropertyFilters[authService.id].length > maxPreviewFiltersCount) {
+                    blade.existingFilteredProperties = $localStorage.entryPropertyFilters[authService.id].slice(0, maxPreviewFiltersCount - 1);
+                    blade.existingFilteredProperties.push('...');
+
+
                 } else {
                     blade.existingFilteredProperties = $localStorage.entryPropertyFilters[authService.id];
                 }

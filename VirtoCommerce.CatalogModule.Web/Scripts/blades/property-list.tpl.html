@@ -9,7 +9,7 @@
                         <span ng-show="(blade.currentEntities | filter: {type:propGroup.type, isSelected:true}).length  === (blade.currentEntities | filter: {type:propGroup.type}).length" class="count">{{(blade.currentEntities | filter: {type:propGroup.type}).length | number:0}} </span>
                         <span ng-show="(blade.currentEntities | filter: {type:propGroup.type, isSelected:true}).length  !== (blade.currentEntities | filter: {type:propGroup.type}).length">
                             <span class="count">{{(blade.currentEntities | filter: {type:propGroup.type, isSelected:true}).length | number:0}}/{{(blade.currentEntities | filter: {type:propGroup.type}).length | number:0}} </span>
-                            <span class="list-name filtered-label">filtered</span>
+                            <span class="filtered-label">filtered</span>
                         </span>
                     </legend>
                     <div class="form-group list __info" ng-repeat="prop in properties = (blade.currentEntities | filter: {type:propGroup.type})">
