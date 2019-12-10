@@ -105,11 +105,11 @@ angular.module('virtoCommerce.catalogModule').directive('vaProperty2', ['$compil
 
                 return (elementCountIsDifferent || elementsNotEqual) &&
                     (_.any(currentValues) || (newValues[0] && newValues[0].value)); //Prevent reflecting the change when null value was added to empty initial values
-            }
+            };
 
             function needAddEmptyValue(property, values) {
                 return !property.multivalue && !property.dictionary && values.length == 0;
-            }
+            };
 
 
             function initLanguagesValuesMap() {
@@ -140,9 +140,9 @@ angular.module('virtoCommerce.catalogModule').directive('vaProperty2', ['$compil
                         scope.context.langValuesMap[language] = langValuesGroup;
                     });
                 }
-            }
+            };
 
-            scope.isLanguageVisible = function(language) {
+            scope.isLanguageVisible = function (language) {
                 if (scope.hiddenLanguages) {
                     if (_.contains(scope.hiddenLanguages, language)) {
                         return false;
@@ -150,7 +150,7 @@ angular.module('virtoCommerce.catalogModule').directive('vaProperty2', ['$compil
                 }
 
                 return true;
-            };
+            }
 
             scope.loadDictionaryValues = function ($select) {
                 $select.page = 0;
@@ -207,7 +207,7 @@ angular.module('virtoCommerce.catalogModule').directive('vaProperty2', ['$compil
                 }
                 result += '.html';
                 return result;
-            }
+            };
 
             function chageValueTemplate(valueType) {
                 var templateName = getTemplateName(scope.currentEntity);
@@ -230,7 +230,7 @@ angular.module('virtoCommerce.catalogModule').directive('vaProperty2', ['$compil
                     var newScope = scope.$new();
                     $compile(result)(newScope);
                 });
-            }
+            };
 
             /* Datepicker */
             scope.datepickers = {
