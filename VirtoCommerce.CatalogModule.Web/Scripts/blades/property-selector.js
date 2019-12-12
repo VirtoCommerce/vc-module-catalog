@@ -12,7 +12,7 @@ angular.module('virtoCommerce.catalogModule')
             var allProperties = angular.copy(blade.properties);
 
             allProperties = _.sortBy(allProperties, 'group', 'name');
-            var selectedProperties = angular.copy(blade.includedProperties);
+            var selectedProperties = blade.selectedProperties;
             selectedProperties = _.sortBy(selectedProperties, 'name');
             blade.allEntities = _.groupBy(allProperties, 'group');
             blade.selectedEntities = _.groupBy(selectedProperties, 'group');
@@ -29,11 +29,7 @@ angular.module('virtoCommerce.catalogModule')
             }
 
             blade.isLoading = false;
-            $scope.addSelected('All properties');
-        }
-
-        $scope.addSelected = function (groupKey) {
-            blade.selectedEntities[groupKey] = _.filter(blade.allEntities[groupKey], function (item) { return item.isSelected });
+            
         }
 
         $scope.selectAllInGroup = function (groupKey) {

@@ -16,37 +16,22 @@ angular.module('virtoCommerce.catalogModule')
 			blade.subtitle = 'catalog.blades.property-list.subtitle';
             blade.currentEntity = entity;
             blade.filtered = false;
-			blade.currentEntities = angular.copy(entity.properties);
+            blade.currentEntities = angular.copy(entity.properties);
+            blade.originalEntities = angular.copy(entity.properties);
 
             _.each(blade.currentEntities,
                 function (prop) {
                     prop.isChanged = false;
-                    prop.group = 'All properties';
                 });
-
-            $scope.resetFilter();
 
             if ($localStorage.entryPropertyFilters) {
                 var savedFilteredProperties = $localStorage.entryPropertyFilters[authService.id];
                 if (savedFilteredProperties && savedFilteredProperties.length > 0) {
+                    savedFilteredProperties = savedFilteredProperties.map(function(x) { return x.toLowerCase(); });
                     blade.filtered = true;
-                    _.each(blade.currentEntities,
-                        function (prop) {
-                            prop.isSelected = false;
-                        });
-                    _.each(savedFilteredProperties,
-                        function (propertyName) {
-                            var filteredProperties = _.filter(blade.currentEntities,
-                                function (property) {
-                                    return property.name.toLocaleLowerCase() === propertyName.toLocaleLowerCase();
-                                });
-
-                            if (filteredProperties.length) {
-                                _.each(filteredProperties,
-                                    function (prop) {
-                                        prop.isSelected = true;
-                                    });
-                            }
+                    blade.currentEntities = _.filter(blade.currentEntities,
+                        function (property) {
+                            return savedFilteredProperties.includes(property.name.toLowerCase());
                         });
                 }
             }
@@ -54,10 +39,7 @@ angular.module('virtoCommerce.catalogModule')
 
         $scope.resetFilter = function () {
             blade.filtered = false;
-            _.each(blade.currentEntities,
-                function (prop) {
-                    prop.isSelected = true;
-                });
+            blade.currentEntities = angular.copy(blade.originalEntities);
         };
 
         $scope.hasChangedProperties = function (propertyList) {
@@ -67,8 +49,14 @@ angular.module('virtoCommerce.catalogModule')
                 }).length;
         };
 
-		$scope.saveChanges = function () {
-			blade.currentEntity.properties = blade.currentEntities;
+        $scope.saveChanges = function () {
+            _.each(blade.currentEntities,
+                function(currentItem) {
+                    var idx = _.findIndex(blade.currentEntity.properties,
+                        function (x) { return x.id === currentItem.id });
+                    blade.currentEntity.properties[idx] = angular.copy(currentItem);
+                });
+            
 			$scope.bladeClose();
 		};
 
@@ -125,10 +113,6 @@ angular.module('virtoCommerce.catalogModule')
             formScope = form;
         };
 
-		$scope.$watch("blade.currentEntities", function () {
-            $scope.isValid = formScope && formScope.$valid && $scope.hasChangedProperties(blade.currentEntities);
-		}, true);
-
 		blade.headIcon = 'fa-gear';
 
 		blade.toolbarCommands = [
@@ -161,18 +145,16 @@ angular.module('virtoCommerce.catalogModule')
                     var newBlade = {
                         id: "propertySelector",
                         entityType: "product",
-                        properties: blade.currentEntities,
+                        properties: blade.originalEntities,
+                        selectedProperties : blade.currentEntities,
                         controller: 'virtoCommerce.catalogModule.propertySelectorController',
                         template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-selector.tpl.html',
                         onSelected: function (includedProperties) {
                             blade.filtered = true;
-                            _.each(blade.currentEntities,
+                            var includedPropertiesIds = includedProperties.map(function (x) { return x.id; });
+                            blade.currentEntities = _.filter(blade.originalEntities,
                                 function (property) {
-                                    var foundProperty = _.find(includedProperties,
-                                        function (selectedProperty) {
-                                            return selectedProperty.id === property.id;
-                                        });
-                                    property.isSelected = foundProperty !== undefined ? true : false;
+                                    return includedPropertiesIds.includes(property.id);
                                 });
                         }
                     };
@@ -197,18 +179,21 @@ angular.module('virtoCommerce.catalogModule')
         ];
 
         $scope.$watch('blade.currentEntities', function (changedProperties, oldProperties) {
+            $scope.isValid = formScope && formScope.$valid && $scope.hasChangedProperties(blade.currentEntities);
             _.each(changedProperties,
-                function(changedItem) {
+                function (changedItem) {
                     var oldItem = _.find(oldProperties, function (item) { return item.id === changedItem.id; });
-                    _.each(changedItem.values,
-                        function(newValue) {
-                            var oldValue = _.find(oldItem.values, function (value) {
-                                return angular.equals(value, newValue);
+                    if (oldItem) {
+                        _.each(changedItem.values,
+                            function (newValue) {
+                                var oldValue = _.find(oldItem.values, function (value) {
+                                    return angular.equals(value, newValue);
+                                });
+                                if (!oldValue) {
+                                    changedItem.isChanged = true;
+                                }
                             });
-                            if (!oldValue) {
-                                changedItem.isChanged = true;
-                            }
-                        });
+                    }
                 });
         }, true);
 
