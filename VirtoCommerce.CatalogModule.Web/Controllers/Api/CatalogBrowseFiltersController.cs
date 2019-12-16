@@ -6,8 +6,9 @@ using System.Net;
 using System.Web.Http;
 using System.Web.Http.Description;
 using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
-using VirtoCommerce.CatalogModule.Web.Model;
+using VirtoCommerce.CatalogModule.Web.Core.Model;
 using VirtoCommerce.CatalogModule.Web.Security;
+using VirtoCommerce.CatalogModule.Web.Services;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Store.Services;
 using VirtoCommerce.Platform.Core.Common;
@@ -27,15 +28,23 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly IPropertyService _propertyService;
         private readonly IBrowseFilterService _browseFilterService;
         private readonly IProperyDictionaryItemSearchService _propDictItemsSearchService;
+        private readonly IAggregationPropertyService _aggregationPropertyService;
 
 
-        public CatalogBrowseFiltersController(ISecurityService securityService, IPermissionScopeService permissionScopeService, IStoreService storeService, IPropertyService propertyService, IBrowseFilterService browseFilterService, IProperyDictionaryItemSearchService propDictItemsSearchService)
+        public CatalogBrowseFiltersController(ISecurityService securityService,
+            IPermissionScopeService permissionScopeService,
+            IStoreService storeService,
+            IPropertyService propertyService,
+            IBrowseFilterService browseFilterService,
+            IProperyDictionaryItemSearchService propDictItemsSearchService,
+            IAggregationPropertyService aggregationPropertyService)
             : base(securityService, permissionScopeService)
         {
             _storeService = storeService;
             _propertyService = propertyService;
             _browseFilterService = browseFilterService;
             _propDictItemsSearchService = propDictItemsSearchService;
+            _aggregationPropertyService = aggregationPropertyService;
         }
 
         /// <summary>
@@ -58,7 +67,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.ReadBrowseFilters, store);
 
-            var allProperties = GetAllProperties(store.Catalog, store.Currencies);
+            var allProperties = _aggregationPropertyService.GetAllCatalogProperties(store.Catalog, store.Currencies);
             var selectedProperties = GetSelectedProperties(storeId);
 
             // Remove duplicates and keep selected properties order
@@ -116,7 +125,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.ReadBrowseFilters, store);
 
-            var property = _propertyService.GetAllCatalogProperties(store.Catalog).Where(p => p.Name.EqualsInvariant(propertyName) && p.Dictionary).FirstOrDefault();
+            var property = _propertyService.GetAllCatalogProperties(store.Catalog).FirstOrDefault(p => p.Name.EqualsInvariant(propertyName) && p.Dictionary);
             if (property != null)
             {
                 result = _propDictItemsSearchService.Search(new Domain.Catalog.Model.Search.PropertyDictionaryItemSearchCriteria { PropertyIds = new[] { property.Id }, Take = int.MaxValue }).Results.Select(x => x.Alias).Distinct().ToArray();
@@ -124,18 +133,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return Ok(result);
         }
 
-
-        private IList<AggregationProperty> GetAllProperties(string catalogId, IEnumerable<string> currencies)
-        {
-            var result = _propertyService.GetAllCatalogProperties(catalogId)
-                .Select(p => new AggregationProperty { Type = _attributeType, Name = p.Name })
-                .ToList();
-
-            result.AddRange(currencies.Select(c => new AggregationProperty { Type = _priceRangeType, Name = $"Price {c}", Currency = c }));
-
-            result.Add(new AggregationProperty { Type = _attributeType, Name = $"__outline" });
-            return result;
-        }
 
         private IList<AggregationProperty> GetSelectedProperties(string storeId)
         {

@@ -307,6 +307,7 @@
     <Compile Include="Search\StringsHelper.cs" />
     <Compile Include="Search\TermFilterBuilder.cs" />
     <Compile Include="Security\CatalogExportSecurityHandler.cs" />
+    <Compile Include="Services\AggregationPropertyService.cs" />
     <Compile Include="Services\AssociationServiceImpl.cs" />
     <Compile Include="Services\CatalogSearchServiceDecorator.cs" />
     <Compile Include="Services\CatalogSearchServiceImpl.cs" />

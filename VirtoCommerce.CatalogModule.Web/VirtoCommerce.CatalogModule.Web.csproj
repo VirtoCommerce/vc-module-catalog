@@ -168,7 +168,6 @@
     <Compile Include="Converters\ImportMappingItemConverter.cs" />
     <Compile Include="ExportImport\CatalogExportImport.cs" />
     <Compile Include="JsonConverters\SearchCriteriaJsonConverter.cs" />
-    <Compile Include="Model\AggregationProperty.cs" />
     <Compile Include="Model\ProductAssociationSearchResult.cs" />
     <Compile Include="Model\PushNotifications\JobNotificationBase.cs" />
     <Compile Include="Model\ItemsSearchResult.cs" />

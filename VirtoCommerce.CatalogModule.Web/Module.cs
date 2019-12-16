@@ -17,6 +17,7 @@ using VirtoCommerce.CatalogModule.Data.Services.Validation;
 using VirtoCommerce.CatalogModule.Web.ExportImport;
 using VirtoCommerce.CatalogModule.Web.JsonConverters;
 using VirtoCommerce.CatalogModule.Web.Security;
+using VirtoCommerce.CatalogModule.Web.Services;
 using VirtoCommerce.Domain.Catalog.Events;
 using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
@@ -37,7 +38,6 @@ using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.Platform.Data.Infrastructure;
 using VirtoCommerce.Platform.Data.Infrastructure.Interceptors;
 using VirtoCommerce.Platform.Data.Repositories;
-using VirtoCommerce.CatalogModule.Web.Services;
 
 namespace VirtoCommerce.CatalogModule.Web
 {
@@ -132,7 +132,8 @@ namespace VirtoCommerce.CatalogModule.Web
 
             _container.RegisterType<IListEntrySearchService, ListEntrySearchService>();
             _container.RegisterType<ListEntryMover<Category>, CategoryMover>();
-            _container.RegisterType<ListEntryMover<CatalogProduct>, ProductMover>();       
+            _container.RegisterType<ListEntryMover<CatalogProduct>, ProductMover>();
+            _container.RegisterType<IAggregationPropertyService, AggregationPropertyService>();
         }
 
         public override void PostInitialize()

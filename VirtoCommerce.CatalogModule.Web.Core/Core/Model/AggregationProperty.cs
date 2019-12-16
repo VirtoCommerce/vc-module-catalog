@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace VirtoCommerce.CatalogModule.Web.Model
+namespace VirtoCommerce.CatalogModule.Web.Core.Model
 {
     public class AggregationProperty
     {
