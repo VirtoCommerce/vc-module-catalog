@@ -12,9 +12,10 @@
                 <div class="form-group">
                     <label class="form-label" for="">{{ 'catalog.blades.property-detail.labels.display-name' | translate }}</label>
                     <div class="form-input __langs" ng-repeat="data in blade.currentEntity.displayNames">
-                        <span ng-if="data.languageCode.length>2" class="flag flag-{{data.languageCode.substr(3).toLowerCase()}}"></span>
-                        <span ng-if="data.languageCode.length<=2" class="langCode">{{data.languageCode.toUpperCase()}}</span>
-                        <input ng-model="data.name" placeholder="{{ 'catalog.blades.property-detail.placeholders.display-name' | translate }}" class="form-control" />
+                        <div class="localized-name">
+                            <label class="lang-code">{{data.languageCode}}</label>
+                            <input ng-model="data.name" placeholder="{{ 'catalog.blades.property-detail.placeholders.display-name' | translate }}" class="form-control" />
+                        </div>
                     </div>
                 </div>
 
@@ -53,7 +54,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="columns clearfix">
                     <div class="column">
                         <div class="form-group">
@@ -79,7 +79,7 @@
                         </ui-select>
                     </div>
                 </div>
-                
+
                 <div class="form-group">
                     <label class="form-label">{{ 'catalog.blades.property-detail.labels.value-type' | translate }}</label>
                     <div class="form-input">

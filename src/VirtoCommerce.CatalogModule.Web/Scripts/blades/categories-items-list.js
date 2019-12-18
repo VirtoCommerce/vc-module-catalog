@@ -420,7 +420,8 @@ angular.module('virtoCommerce.catalogModule')
                             controller: 'virtoCommerce.catalogModule.exporterListController',
                             template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/export/exporter-list.tpl.html',
                             selectedProducts: _.filter($scope.gridApi.selection.getSelectedRows(), function (x) { return x.type == 'product' }),
-                            selectedCategories: _.filter($scope.gridApi.selection.getSelectedRows(), function (x) { return x.type == 'category' })
+                            selectedCategories: _.filter($scope.gridApi.selection.getSelectedRows(), function (x) { return x.type == 'category' }),
+                            isAllSelected: $scope.gridApi.selection.getSelectAllState()
                         };
                         bladeNavigationService.showBlade(newBlade, blade);
                     },
