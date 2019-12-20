@@ -1,7 +1,7 @@
 angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.propertyListController', ['$scope', 'virtoCommerce.catalogModule.properties', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.propDictItems', '$localStorage', 'platformWebApp.authService', function ($scope, properties, bladeNavigationService, propDictItems, $localStorage, authService) {
         var blade = $scope.blade;
-		$scope.isValid = false;
+        $scope.isValid = false;
         blade.refresh = function (entity) {
 			if (entity) {
 				initialize(entity);
@@ -17,8 +17,7 @@ angular.module('virtoCommerce.catalogModule')
             blade.currentEntity = entity;
             blade.filtered = false;
             blade.currentEntities = angular.copy(entity.properties);
-            blade.originalEntities = angular.copy(entity.properties);
-
+            blade.filteredProperties = angular.copy(entity.properties);
             _.each(blade.currentEntities,
                 function (prop) {
                     prop.isChanged = false;
@@ -29,7 +28,7 @@ angular.module('virtoCommerce.catalogModule')
                 if (savedFilteredProperties && savedFilteredProperties.length > 0) {
                     savedFilteredProperties = savedFilteredProperties.map(function(x) { return x.toLowerCase(); });
                     blade.filtered = true;
-                    blade.currentEntities = _.filter(blade.currentEntities,
+                    blade.filteredProperties = _.filter(blade.currentEntities,
                         function (property) {
                             return savedFilteredProperties.includes(property.name.toLowerCase());
                         });
@@ -39,7 +38,7 @@ angular.module('virtoCommerce.catalogModule')
 
         $scope.resetFilter = function () {
             blade.filtered = false;
-            blade.currentEntities = angular.copy(blade.originalEntities);
+            blade.filteredProperties = angular.copy(blade.currentEntities);
         };
 
         $scope.hasChangedProperties = function (propertyList) {
@@ -50,19 +49,21 @@ angular.module('virtoCommerce.catalogModule')
         };
 
         $scope.saveChanges = function () {
-            _.each(blade.currentEntities,
-                function(currentItem) {
-                    var idx = _.findIndex(blade.currentEntity.properties,
-                        function (x) { return x.id === currentItem.id });
-                    blade.currentEntity.properties[idx] = angular.copy(currentItem);
-                });
-            
+            blade.currentEntity.properties = blade.currentEntities;
 			$scope.bladeClose();
 		};
 
 		$scope.getPropertyDisplayName = function (prop) {
 			return _.first(_.map(_.filter(prop.displayNames, function (x) { return x && x.languageCode.startsWith(blade.defaultLanguage); }), function (x) { return x.name; }));
-		};
+        };
+
+        $scope.propertySearch = function(row) {
+            var filteredPropertiesNames = blade.filteredProperties.map(function (x) { return x.name });
+            if (filteredPropertiesNames.includes(row.name)) {
+                return true;
+            }
+            return false;
+        };
 
 		$scope.editProperty = function (prop) {
 			if (prop.isManageable) {
@@ -145,14 +146,14 @@ angular.module('virtoCommerce.catalogModule')
                     var newBlade = {
                         id: "propertySelector",
                         entityType: "product",
-                        properties: blade.originalEntities,
-                        selectedProperties : blade.currentEntities,
+                        properties: blade.currentEntities,
+                        selectedProperties : blade.filteredProperties,
                         controller: 'virtoCommerce.catalogModule.propertySelectorController',
                         template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-selector.tpl.html',
                         onSelected: function (includedProperties) {
                             blade.filtered = true;
                             var includedPropertiesIds = includedProperties.map(function (x) { return x.id; });
-                            blade.currentEntities = _.filter(blade.originalEntities,
+                            blade.filteredProperties = _.filter(blade.currentEntities,
                                 function (property) {
                                     return includedPropertiesIds.includes(property.id);
                                 });
