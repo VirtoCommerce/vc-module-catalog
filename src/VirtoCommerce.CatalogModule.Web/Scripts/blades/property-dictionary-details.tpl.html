@@ -14,8 +14,8 @@
                     </div>
                 </div>
                 <br>
-                <div class="form-group" ng-repeat="language in blade.languages">
-                    <label class="form-label" for="">{{ language }} </label>
+                <div class="form-group form-input __langs" ng-repeat="language in blade.languages">
+                    <label class="lang-code" for="">{{ language }} </label>
                     <va-dictionary-value name="language" form="pdForm" required="true" validation-rules="validationRules" ng-model="blade.currentEntity[language]"></va-dictionary-value>
                 </div>
             </form>
