@@ -179,8 +179,7 @@
 
     <script type="text/ng-template" id="ShortText-multilang.html">
         <div class="form-group" ng-repeat="(language, langValuesGroup) in context.langValuesMap" ng-if="isLanguageVisible(language)">
-            <div class="form-input __langs">
-                <div class="localized-name">
+            <div class="form-input __langs">                
                     <label class="lang-code">{{language}}</label>
                     <input ng-disabled="currentEntity.isReadOnly"
                            ng-required="currentEntity.required && !currentEntity.isReadOnly"
@@ -190,8 +189,7 @@
                            type="text"
                            ng-maxlength="currentEntity.validationRule.charCountMax"
                            ng-minlength="currentEntity.validationRule.charCountMin"
-                           ng-pattern="currentEntity.validationRule.regExp">
-                </div>
+                           ng-pattern="currentEntity.validationRule.regExp">                
                 <va-property-messages></va-property-messages>
             </div>
         </div>
@@ -199,17 +197,15 @@
 
     <script type="text/ng-template" id="LongText-multilang.html">
         <div class="form-group" ng-repeat="(language, langValuesGroup) in context.langValuesMap" ng-if="isLanguageVisible(language)">
-            <div class="form-input __langs">
-                <div class="localized-name">
-                    <label class="lang-code">{{language}}</label>
+            <div class="form-input __langs">                
+                    <label>{{language}}</label>
                     <textarea ng-disabled="currentEntity.isReadOnly"
                               ng-required="currentEntity.required && !currentEntity.isReadOnly"
                               ng-model="langValuesGroup.currentPropValues[0].value"
                               name="{{currentEntity.name}}"
                               ng-maxlength="currentEntity.validationRule.charCountMax"
                               ng-minlength="currentEntity.validationRule.charCountMin"
-                              ng-pattern="currentEntity.validationRule.regExp" />
-                </div>
+                              ng-pattern="currentEntity.validationRule.regExp" />                
                 <va-property-messages></va-property-messages>
             </div>
         </div>
@@ -226,29 +222,10 @@
             </div>
         </div>
     </script>
-    <script type="text/ng-template" id="DateTime-multilang.html">
-        <div class="form-group" ng-repeat="(language, langValuesGroup) in context.langValuesMap" ng-if="isLanguageVisible(language)">
-            <div class="form-input __langs __calendar">
-                <div class="localized-name">
-                    <label class="lang-code">{{language}}</label>
-                    <input ng-disabled="currentEntity.isReadOnly"
-                           ng-required="currentEntity.required && !currentEntity.isReadOnly"
-                           datepicker-popup is-open="datepickers[language]"
-                           placeholder="{{ 'platform.genericValueInput.placeholders.date-time' | translate}}"
-                           ng-model="langValuesGroup.currentPropValues[0].value">
-                    <button ng-click="open($event, language)" type="button" class="btn">
-                        <i class="btn-ico fa fa-calendar"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </script>
-
 
     <script type="text/ng-template" id="ShortText-multivalue-multilang.html">
         <div class="form-group" ng-repeat="(language, langValuesGroup) in context.langValuesMap" ng-if="isLanguageVisible(language)">
-            <div class="form-input __langs">
-                <div class="localized-name">
+            <div class="form-input __langs">                
                     <label class="lang-code">{{language}}</label>
                     <tags-input ng-model="langValuesGroup.currentPropValues"
                                 ng-disabled="currentEntity.isReadOnly"
@@ -263,15 +240,13 @@
                                 on-tag-removed="tagsDeleted($tag, currentEntity.name, currentEntity.required)"
                                 on-invalid-tag="addederror($tag, currentEntity.name, currentEntity.validationRule.charCountMin, currentEntity.validationRule.charCountMax, currentEntity.validationRule.regExp)">
                     </tags-input>
-                    <va-property-messages></va-property-messages>
-                </div>
+                    <va-property-messages></va-property-messages>                
             </div>
         </div>
     </script>
     <script type="text/ng-template" id="LongText-multivalue-multilang.html">
         <div class="form-group" ng-repeat="(language, langValuesGroup) in context.langValuesMap" ng-if="isLanguageVisible(language)">
-            <div class="form-input __langs" ng-repeat="val in langValuesGroup.currentPropValues track by $index">
-                <div class="localized-name">
+            <div class="form-input __langs" ng-repeat="val in langValuesGroup.currentPropValues track by $index">                
                     <label class="lang-code">{{language}}</label>
                     <textarea ng-disabled="currentEntity.isReadOnly"
                               ng-required="currentEntity.required && !currentEntity.isReadOnly"
@@ -281,16 +256,14 @@
                               ng-minlength="currentEntity.validationRule.charCountMin"
                               ng-pattern="currentEntity.validationRule.regExp" />
                     <va-property-messages></va-property-messages>
-                    <a ng-if="!currentEntity.isReadOnly" ng-click="langValuesGroup.currentPropValues.splice(langValuesGroup.currentPropValues.indexOf(val),1)">remove</a>
-                </div>
+                    <a ng-if="!currentEntity.isReadOnly" ng-click="langValuesGroup.currentPropValues.splice(langValuesGroup.currentPropValues.indexOf(val),1)">remove</a>                
                 <a ng-if="!currentEntity.isReadOnly" ng-click="langValuesGroup.currentPropValues.push({value:'', languageCode:language})" style="cursor:pointer;">add value</a>
             </div>
         </div>
     </script>
     <script type="text/ng-template" id="Number-multivalue-multilang.html">
         <div class="form-group" ng-repeat="(language, langValuesGroup) in context.langValuesMap" ng-if="isLanguageVisible(language)">
-            <div class="form-input __langs">
-                <div class="localized-name">
+            <div class="form-input __langs">                
                     <label class="lang-code">{{language}}</label>
                     <tags-input ng-model="langValuesGroup.currentPropValues"
                                 ng-disabled="currentEntity.isReadOnly"
@@ -300,8 +273,7 @@
                                 name="{{currentEntity.valueType}}"
                                 display-property="value"
                                 placeholder="Add number">
-                    </tags-input>
-                </div>
+                    </tags-input>                
             </div>
         </div>
     </script>
