@@ -18,8 +18,8 @@ angular.module('virtoCommerce.catalogModule')
             blade.currentEntities = angular.copy(entity.properties);
             blade.filteredProperties = [];
             //Apply stored filters
-            if ($localStorage.entryPropertyFilters) {
-                applyFilter($localStorage.entryPropertyFilters[authService.id]);
+            if ($localStorage.propertyFilter) {
+                applyFilter($localStorage.propertyFilter[authService.userName]);
             }
 
         }
@@ -44,13 +44,12 @@ angular.module('virtoCommerce.catalogModule')
         function applyFilter(filteredProperties)
         {
             if (filteredProperties && filteredProperties.length > 0) {
-                filteredProperties = filteredProperties.map(function (x) { return x.toLowerCase(); });             
+                blade.filteredProperties = filteredProperties.map(function (x) { return x.toLowerCase(); });
             }
-            blade.filteredProperties = filteredProperties;
         }
 
         $scope.resetFilter = function () {
-            $localStorage.entryPropertyFilters[authService.id] = [];
+            saveFilter([]);
             blade.filteredProperties = [];
         };
 
@@ -143,20 +142,7 @@ angular.module('virtoCommerce.catalogModule')
             {
                 name: "catalog.blades.property-list.labels.add-filter", icon: 'fa fa-filter',
                 executeMethod: function () {
-                    var newBlade = {
-                        id: "propertySelector",
-                        entityType: "product",
-                        properties: blade.currentEntities,
-                        selectedProperties : blade.filteredProperties,
-                        controller: 'virtoCommerce.catalogModule.propertySelectorController',
-                        template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-selector.tpl.html',
-                        onSelected: function (filteredProperties) {
-                            var filteredPropertiesNames = filteredProperties.map(function (x) { return x.name; });
-                            saveFilter(filteredPropertiesNames);
-                            applyFilter(filteredPropertiesNames);
-                        }
-                    };
-                    bladeNavigationService.showBlade(newBlade, blade);
+                    $scope.editPropertyFilter();             
                 },
                 canExecuteMethod: function () {
                     return true;
@@ -173,16 +159,30 @@ angular.module('virtoCommerce.catalogModule')
             }
         ];
 
-    
-
+        $scope.editPropertyFilter = function () {
+            var newBlade = {
+                id: "propertySelector",
+                entityType: "product",
+                properties: blade.currentEntities,
+                selectedProperties: blade.filteredProperties,
+                controller: 'virtoCommerce.catalogModule.propertySelectorController',
+                template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-selector.tpl.html',
+                onSelected: function (filteredProperties) {
+                    var filteredPropertiesNames = filteredProperties.map(function (x) { return x.name; });
+                    saveFilter(filteredPropertiesNames);
+                    applyFilter(filteredPropertiesNames);
+                }
+            };
+            bladeNavigationService.showBlade(newBlade, blade);
+        }
         //save filters to localStorage
         function saveFilter(filteredPropertiesNames) {
-            var currentFilter = {};
-            currentFilter[authService.id] = filteredPropertiesNames;
-            if ($localStorage.entryPropertyFilters) {
-                angular.extend($localStorage.entryPropertyFilters, currentFilter);
+            var filter = [];
+            filter[authService.userName] = filteredPropertiesNames;
+            if ($localStorage.propertyFilter) {
+                angular.extend($localStorage.propertyFilter, filter);
             } else {
-                $localStorage.entryPropertyFilters = currentFilter;
+                $localStorage.propertyFilter = filter;
             }
         }
 

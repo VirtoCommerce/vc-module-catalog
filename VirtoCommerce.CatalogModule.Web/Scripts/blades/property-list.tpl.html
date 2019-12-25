@@ -8,9 +8,12 @@
                         {{ propGroup.title | translate }}:
                         <span class="count" ng-if="blade.filteredProperties.length">{{(blade.currentEntities | filter: isPropertyVisible | filter: {type:propGroup.type}).length |  number:0}}/</span>
                         <span class="count">{{(blade.currentEntity.properties | filter: {type:propGroup.type}).length | number:0}}</span>
-                        <span class="filtered-label" ng-if="blade.filteredProperties.length">displayed</span>
-                        <a class="btn-ico fa fa-times-circle filter-reset" ng-if="blade.filteredProperties.length" ng-click="resetFilter()"></a>
-                     
+                        <span ng-if="blade.filteredProperties.length">
+                            <span class="filtered-label">filtered</span>
+                            <a class="form-ico fa fa-pencil filter-quickaction" ng-click="editPropertyFilter()"></a>
+                            <a class="btn-ico fa fa-times-circle filter-quickaction" ng-click="resetFilter()"></a>
+                        </span>
+
                     </legend>
                     <div class="form-group list __info" ng-repeat="prop in properties = (blade.currentEntities | filter: {type:propGroup.type} | filter: isPropertyVisible)">
                         <label class="form-label">
