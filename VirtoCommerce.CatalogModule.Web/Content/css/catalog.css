@@ -279,3 +279,9 @@ vc-item-search {
     padding: .15em 4px;
     vertical-align: super;
 }
+
+.vc-catalog .filter-reset {
+    font-size: 12px;
+    padding: .15em 4px;
+    vertical-align: super;
+}

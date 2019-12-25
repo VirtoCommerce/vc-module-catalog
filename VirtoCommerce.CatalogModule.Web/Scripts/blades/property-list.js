@@ -3,49 +3,55 @@ angular.module('virtoCommerce.catalogModule')
         var blade = $scope.blade;
         $scope.isValid = false;
         blade.refresh = function (entity) {
-			if (entity) {
-				initialize(entity);
-			}
-			else {
-				blade.parentBlade.refresh();
-			}
-		};
+            if (entity) {
+                initialize(entity);
+            }
+            else {
+                blade.parentBlade.refresh();
+            }
+        };
 
-		function initialize(entity) {
-			blade.title = entity.name;
-			blade.subtitle = 'catalog.blades.property-list.subtitle';
+        function initialize(entity) {
+            blade.title = entity.name;
+            blade.subtitle = 'catalog.blades.property-list.subtitle';
             blade.currentEntity = entity;
-            blade.filtered = false;
             blade.currentEntities = angular.copy(entity.properties);
-            blade.filteredProperties = angular.copy(entity.properties);
-            _.each(blade.currentEntities,
-                function (prop) {
-                    prop.isChanged = false;
-                });
-
+            blade.filteredProperties = [];
+            //Apply stored filters
             if ($localStorage.entryPropertyFilters) {
-                var savedFilteredProperties = $localStorage.entryPropertyFilters[authService.id];
-                if (savedFilteredProperties && savedFilteredProperties.length > 0) {
-                    savedFilteredProperties = savedFilteredProperties.map(function(x) { return x.toLowerCase(); });
-                    blade.filtered = true;
-                    blade.filteredProperties = _.filter(blade.currentEntities,
-                        function (property) {
-                            return savedFilteredProperties.includes(property.name.toLowerCase());
-                        });
+                applyFilter($localStorage.entryPropertyFilters[authService.id]);
+            }
+
+        }
+
+        $scope.isPropertyChanged = function (property) {
+            if (property) {
+                var oldItem = _.find(blade.currentEntity.properties, function (x) { return x.id === property.id; });
+                if (oldItem) {
+                    return !angular.equals(property, oldItem);
                 }
             }
+            return false;
+        }
+
+        $scope.isPropertyVisible = function (property) {
+            if (blade.filteredProperties && blade.filteredProperties.length > 0) {
+                return blade.filteredProperties.includes(property.name.toLowerCase());
+            }
+            return true;
+        }
+
+        function applyFilter(filteredProperties)
+        {
+            if (filteredProperties && filteredProperties.length > 0) {
+                filteredProperties = filteredProperties.map(function (x) { return x.toLowerCase(); });             
+            }
+            blade.filteredProperties = filteredProperties;
         }
 
         $scope.resetFilter = function () {
-            blade.filtered = false;
-            blade.filteredProperties = angular.copy(blade.currentEntities);
-        };
-
-        $scope.hasChangedProperties = function (propertyList) {
-            return _.filter(propertyList,
-                function (prop) {
-                    return prop.isChanged;
-                }).length;
+            $localStorage.entryPropertyFilters[authService.id] = [];
+            blade.filteredProperties = [];
         };
 
         $scope.saveChanges = function () {
@@ -55,14 +61,6 @@ angular.module('virtoCommerce.catalogModule')
 
 		$scope.getPropertyDisplayName = function (prop) {
 			return _.first(_.map(_.filter(prop.displayNames, function (x) { return x && x.languageCode.startsWith(blade.defaultLanguage); }), function (x) { return x.name; }));
-        };
-
-        $scope.propertySearch = function(row) {
-            var filteredPropertiesNames = blade.filteredProperties.map(function (x) { return x.name });
-            if (filteredPropertiesNames.includes(row.name)) {
-                return true;
-            }
-            return false;
         };
 
 		$scope.editProperty = function (prop) {
@@ -150,13 +148,8 @@ angular.module('virtoCommerce.catalogModule')
                         selectedProperties : blade.filteredProperties,
                         controller: 'virtoCommerce.catalogModule.propertySelectorController',
                         template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-selector.tpl.html',
-                        onSelected: function (includedProperties) {
-                            blade.filtered = true;
-                            var includedPropertiesIds = includedProperties.map(function (x) { return x.id; });
-                            blade.filteredProperties = _.filter(blade.currentEntities,
-                                function (property) {
-                                    return includedPropertiesIds.includes(property.id);
-                                });
+                        onSelected: function (filteredProperties) {
+                            applyFilter(filteredProperties.map(function (x) { return x.name; }));
                         }
                     };
                     bladeNavigationService.showBlade(newBlade, blade);
@@ -167,35 +160,17 @@ angular.module('virtoCommerce.catalogModule')
             },
             {
                 name: "catalog.blades.property-list.labels.reset-filter", icon: 'fa fa-undo',
-                executeMethod: function () {
-                    if ($localStorage.entryPropertyFilters) {
-                        $localStorage.entryPropertyFilters[authService.id] = [];
-                    }
+                executeMethod: function () {                   
                     $scope.resetFilter();
                 },
                 canExecuteMethod: function () {
-                    return blade.filtered;
+                    return blade.filteredProperties.length > 0;
                 }
             }
         ];
 
-        $scope.$watch('blade.currentEntities', function (changedProperties, oldProperties) {
-            $scope.isValid = formScope && formScope.$valid && $scope.hasChangedProperties(blade.currentEntities);
-            _.each(changedProperties,
-                function (changedItem) {
-                    var oldItem = _.find(oldProperties, function (item) { return item.id === changedItem.id; });
-                    if (oldItem) {
-                        _.each(changedItem.values,
-                            function (newValue) {
-                                var oldValue = _.find(oldItem.values, function (value) {
-                                    return angular.equals(value, newValue);
-                                });
-                                if (!oldValue) {
-                                    changedItem.isChanged = true;
-                                }
-                            });
-                    }
-                });
+        $scope.$watch('blade.currentEntities', function () {
+            $scope.isValid = formScope && formScope.$valid;         
         }, true);
 
 		blade.isLoading = false;

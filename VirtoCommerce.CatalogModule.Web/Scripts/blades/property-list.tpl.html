@@ -6,16 +6,16 @@
                 <fieldset ng-repeat="propGroup in blade.propGroups" ng-init="setForm(propertiesForm)">
                     <legend>
                         {{ propGroup.title | translate }}:
-                        <span ng-show="(blade.filteredProperties | filter: {type:propGroup.type}).length  === (blade.currentEntities | filter: {type:propGroup.type}).length" class="count">{{(blade.currentEntities | filter: {type:propGroup.type}).length | number:0}} </span>
-                        <span ng-show="(blade.filteredProperties | filter: {type:propGroup.type}).length  !== (blade.currentEntities | filter: {type:propGroup.type}).length">
-                            <span class="count">{{(blade.filteredProperties | filter: {type:propGroup.type}).length | number:0}}/{{(blade.currentEntities | filter: {type:propGroup.type}).length | number:0}} </span>
-                            <span class="filtered-label">filtered</span>
-                        </span>
+                        <span class="count" ng-if="blade.filteredProperties.length">{{(blade.currentEntities | filter: isPropertyVisible | filter: {type:propGroup.type}).length |  number:0}}/</span>
+                        <span class="count">{{(blade.currentEntity.properties | filter: {type:propGroup.type}).length | number:0}}</span>
+                        <span class="filtered-label" ng-if="blade.filteredProperties.length">displayed</span>
+                        <a class="btn-ico fa fa-times-circle filter-reset" ng-if="blade.filteredProperties.length" ng-click="resetFilter()"></a>
+                     
                     </legend>
-                    <div class="form-group list __info" ng-repeat="prop in properties = (blade.currentEntities | filter: {type:propGroup.type} | filter: propertySearch)">
+                    <div class="form-group list __info" ng-repeat="prop in properties = (blade.currentEntities | filter: {type:propGroup.type} | filter: isPropertyVisible)">
                         <label class="form-label">
                             {{prop.name}} {{ getPropertyDisplayName(prop) ? '(' + getPropertyDisplayName(prop) + ')' : '' }}
-                            <span class="alt-description" ng-show="prop.isChanged"> {{'catalog.blades.property-list.labels.modified' | translate }} </span>
+                            <span class="alt-description" ng-if="isPropertyChanged(prop)"> {{'catalog.blades.property-list.labels.modified' | translate }} </span>
                             <a href="" ng-click="editProperty(prop)" class="form-edit">
                                 <i class="form-ico fa fa-pencil"></i>
                             </a>
