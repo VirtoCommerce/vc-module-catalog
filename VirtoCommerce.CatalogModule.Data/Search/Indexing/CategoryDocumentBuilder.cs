@@ -7,6 +7,7 @@ using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Search;
 using VirtoCommerce.Platform.Core.Assets;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Settings;
 
 namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
@@ -100,6 +101,16 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 // Index serialized category
                 var itemDto = category.ToWebModel(_blobUrlResolver);
                 document.AddObjectFieldValue(itemDto);
+            }
+
+            document.Add(new IndexDocumentField("parent", category.ParentId ?? category.CatalogId) { IsRetrievable = true, IsSearchable = true, IsFilterable = true });
+
+            if (!category.Parents.IsNullOrEmpty())
+            {
+                foreach (var parent in category.Parents)
+                {
+                    document.Add(new IndexDocumentField("parent", parent.Id) { IsRetrievable = true, IsSearchable = true, IsFilterable = true });
+                }
             }
 
             return document;
