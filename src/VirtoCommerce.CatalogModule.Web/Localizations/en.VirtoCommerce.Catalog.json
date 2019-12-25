@@ -782,6 +782,12 @@
           "UseFullObjectIndexStoring": {
             "description": "Store serialized catalog objects in the index and return them in search results",
             "title": "Store serialized catalog objects in the index"
+          },
+          "EventBasedIndexation": {
+            "Enable": {
+              "title": "Enable event-based indexation for catalog entities (Restart required)",
+              "description": "Any changes to the catalog entity will trigger a background task that will apply these changes in the search index."
+            }
           }
         }
       },

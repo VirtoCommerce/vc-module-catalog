@@ -80,16 +80,27 @@ namespace VirtoCommerce.CatalogModule.Core
                     DefaultValue = false
                 };
 
+                public static SettingDescriptor EventBasedIndexation = new SettingDescriptor
+                {
+                    Name = "Catalog.Search.EventBasedIndexation.Enable",
+                    GroupName = "Catalog|General",
+                    ValueType = SettingValueType.Boolean,
+                    DefaultValue = false
+                };
+
                 public static IEnumerable<SettingDescriptor> AllSettings
                 {
                     get
                     {
-                        yield return ImageCategories;
-                        yield return AssociationGroups;
-                        yield return EditorialReviewTypes;
-                        yield return CodesInOutline;
-                        yield return ExposeAliasInDictionary;
-                        yield return UseSeoDeduplication;
+                        return new List<SettingDescriptor>
+                               {
+                                   ImageCategories,
+                                   AssociationGroups,
+                                   EditorialReviewTypes,
+                                   CodesInOutline,
+                                   ExposeAliasInDictionary,
+                                   UseSeoDeduplication
+                               };
                     }
                 }
             }
