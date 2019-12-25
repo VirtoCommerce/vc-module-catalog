@@ -112,6 +112,10 @@ angular.module('virtoCommerce.catalogModule')
             formScope = form;
         };
 
+        $scope.$watch('blade.currentEntities', function () {
+            $scope.isValid = formScope && formScope.$valid;
+        }, true);
+
 		blade.headIcon = 'fa-gear';
 
 		blade.toolbarCommands = [
@@ -125,9 +129,7 @@ angular.module('virtoCommerce.catalogModule')
 							origEntity: {
 								type: "Product",
 								valueType: "ShortText",
-                                values: [],
-                                isChanged: true,
-                                isSelected: true
+                                values: []                             
 							}
 						});
 					} else {
@@ -169,9 +171,7 @@ angular.module('virtoCommerce.catalogModule')
             }
         ];
 
-        $scope.$watch('blade.currentEntities', function () {
-            $scope.isValid = formScope && formScope.$valid;         
-        }, true);
+    
 
 		blade.isLoading = false;
 		initialize(blade.currentEntity);
