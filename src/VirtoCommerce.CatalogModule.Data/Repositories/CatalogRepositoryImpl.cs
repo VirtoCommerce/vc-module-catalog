@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Microsoft.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
@@ -55,8 +55,6 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 if (result.Any())
                 {
                     //https://docs.microsoft.com/en-us/ef/core/querying/async
-                    //EF Core doesn't support multiple parallel operations being run on the same context instance. 
-                    //var breakingQueriesTasks = new List<Task>();
 
                     await PropertyValues.Include(x => x.DictionaryItem.DictionaryItemValues)
                                                            .Where(x => catalogIds.Contains(x.CatalogId) && x.CategoryId == null).LoadAsync();
@@ -64,9 +62,6 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                         .Select(x => x.Id)
                         .ToArrayAsync();
                     await GetPropertiesByIdsAsync(catalogPropertiesIds);
-                    //breakingQueriesTasks.Add(GetPropertiesByIdsAsync(catalogPropertiesIds));
-
-                    //await Task.WhenAll(breakingQueriesTasks);
                 }
             }
             return result;
@@ -478,7 +473,6 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 ) 
                 SELECT COUNT(Id) FROM Item_CTE";
 
-            //var groupString = "";
             var querySqlCommandText = new StringBuilder();
             querySqlCommandText.Append(@"
                     ;WITH Association_CTE AS

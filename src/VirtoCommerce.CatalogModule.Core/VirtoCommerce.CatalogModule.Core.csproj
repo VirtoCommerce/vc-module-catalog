@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netcoreapp3.0</TargetFramework>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <noWarn>1591</noWarn>
         <LangVersion>latest</LangVersion>
@@ -15,10 +15,10 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.0.0-3-0-0-core3-0001" />
-      <PackageReference Include="VirtoCommerce.ExportModule.Core" Version="3.0.0-3-0-0-vp-837-co-0001" />
+      <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.0.0-rc.2" />
+      <PackageReference Include="VirtoCommerce.ExportModule.Core" Version="3.0.0-rc.2" />
       <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.0.0-v3-feature-vp-7-0001" />
-      <PackageReference Include="VirtoCommerce.SearchModule.Core" Version="3.0.0-3-0-0-vp-836-co-0001" />
+      <PackageReference Include="VirtoCommerce.SearchModule.Core" Version="3.0.0-rc.2" />
     </ItemGroup>
 
 </Project>
