@@ -75,10 +75,14 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 switch (sortingField.FieldName)
                 {
                     case "price":
-                        if (criteria.Pricelists != null)
+                        if (!criteria.Pricelists.IsNullOrEmpty())
                         {
                             result.AddRange(
                                 criteria.Pricelists.Select(priceList => new SortingField($"price_{criteria.Currency}_{priceList}".ToLowerInvariant(), sortingField.IsDescending)));
+                        }
+                        else
+                        {
+                            result.Add(new SortingField($"price_{criteria.Currency}".ToLowerInvariant(), sortingField.IsDescending));
                         }
                         break;
                     case "priority":

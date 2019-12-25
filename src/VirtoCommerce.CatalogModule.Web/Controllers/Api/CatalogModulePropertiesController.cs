@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Model;
@@ -135,6 +136,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <param name="property">The property.</param>
         [HttpPost]
         [Route("")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         public async Task<ActionResult> SaveProperty([FromBody]Property property)
         {
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, property, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
@@ -157,6 +159,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <returns></returns>
         [HttpDelete]
         [Route("")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         public async Task<ActionResult> DeleteProperty(string id, bool doDeleteValues = false)
         {
             var property = await _propertyService.GetByIdsAsync(new[] { id });

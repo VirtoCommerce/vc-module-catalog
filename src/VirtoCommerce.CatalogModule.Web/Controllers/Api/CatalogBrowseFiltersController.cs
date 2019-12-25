@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
@@ -56,6 +57,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [HttpGet]
         [Route("{storeId}/properties")]
         [Authorize(ModuleConstants.Security.Permissions.CatalogBrowseFiltersRead)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         public async Task<ActionResult<AggregationProperty[]>> GetAggregationProperties(string storeId)
         {
             var store = await _storeService.GetByIdAsync(storeId, StoreResponseGroup.StoreInfo.ToString());
@@ -84,6 +87,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [HttpPut]
         [Route("{storeId}/properties")]
         [Authorize(ModuleConstants.Security.Permissions.CatalogBrowseFiltersUpdate)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         public async Task<ActionResult> SetAggregationProperties(string storeId, [FromBody]AggregationProperty[] browseFilterProperties)
         {
             var store = await _storeService.GetByIdAsync(storeId, StoreResponseGroup.StoreInfo.ToString());
