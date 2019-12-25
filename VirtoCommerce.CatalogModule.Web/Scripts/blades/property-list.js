@@ -151,7 +151,9 @@ angular.module('virtoCommerce.catalogModule')
                         controller: 'virtoCommerce.catalogModule.propertySelectorController',
                         template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-selector.tpl.html',
                         onSelected: function (filteredProperties) {
-                            applyFilter(filteredProperties.map(function (x) { return x.name; }));
+                            var filteredPropertiesNames = filteredProperties.map(function (x) { return x.name; });
+                            saveFilter(filteredPropertiesNames);
+                            applyFilter(filteredPropertiesNames);
                         }
                     };
                     bladeNavigationService.showBlade(newBlade, blade);
@@ -172,6 +174,17 @@ angular.module('virtoCommerce.catalogModule')
         ];
 
     
+
+        //save filters to localStorage
+        function saveFilter(filteredPropertiesNames) {
+            var currentFilter = {};
+            currentFilter[authService.id] = filteredPropertiesNames;
+            if ($localStorage.entryPropertyFilters) {
+                angular.extend($localStorage.entryPropertyFilters, currentFilter);
+            } else {
+                $localStorage.entryPropertyFilters = currentFilter;
+            }
+        }
 
 		blade.isLoading = false;
 		initialize(blade.currentEntity);

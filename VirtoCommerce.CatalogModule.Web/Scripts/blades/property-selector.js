@@ -1,5 +1,5 @@
 angular.module('virtoCommerce.catalogModule')
-    .controller('virtoCommerce.catalogModule.propertySelectorController', ['$scope', 'platformWebApp.bladeNavigationService', '$localStorage', 'platformWebApp.authService', function ($scope, bladeNavigationService, $localStorage, authService) {
+    .controller('virtoCommerce.catalogModule.propertySelectorController', ['$scope', 'platformWebApp.bladeNavigationService', function ($scope, bladeNavigationService) {
         var blade = $scope.blade;
         blade.existingFilteredProperties = [];
         blade.isLoading = true;
@@ -12,21 +12,18 @@ angular.module('virtoCommerce.catalogModule')
             var allProperties = angular.copy(blade.properties);
 
             allProperties = _.sortBy(allProperties, 'group', 'name');
-            var selectedProperties = blade.selectedProperties;
-            selectedProperties = _.sortBy(selectedProperties, 'name');
+
+            blade.existingFilteredProperties = _.first(blade.selectedProperties, maxPreviewFiltersCount);
+            if (blade.existingFilteredProperties.length >= maxPreviewFiltersCount) {
+                blade.existingFilteredProperties.push('...');
+            }
+
+            var selectedProperties = _.sortBy(_.filter(allProperties,
+                function (property) { return blade.selectedProperties.includes(property.name.toLowerCase()); }), 'name');
+
+
             blade.allEntities = _.groupBy(allProperties, 'group');
             blade.selectedEntities = _.groupBy(selectedProperties, 'group');
-
-            if ($localStorage.entryPropertyFilters) {
-                if ($localStorage.entryPropertyFilters[authService.id].length > maxPreviewFiltersCount) {
-                    blade.existingFilteredProperties = $localStorage.entryPropertyFilters[authService.id].slice(0, maxPreviewFiltersCount - 1);
-                    blade.existingFilteredProperties.push('...');
-
-
-                } else {
-                    blade.existingFilteredProperties = $localStorage.entryPropertyFilters[authService.id];
-                }
-            }
 
             blade.isLoading = false;
             
@@ -64,15 +61,6 @@ angular.module('virtoCommerce.catalogModule')
             var includedProperties = _.flatten(_.map(blade.selectedEntities, _.values));
 
             if (blade.onSelected) {
-
-                var currentFilter = {};
-                currentFilter[authService.id] = _.map(includedProperties, function (item) { return item.name; });
-                if ($localStorage.entryPropertyFilters) {
-                    angular.extend($localStorage.entryPropertyFilters, currentFilter);
-                } else {
-                    $localStorage.entryPropertyFilters = currentFilter;
-                }
-
                 blade.onSelected(includedProperties);
                 bladeNavigationService.closeBlade(blade);
             }
