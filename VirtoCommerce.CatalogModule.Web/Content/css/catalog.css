@@ -270,3 +270,18 @@ vc-item-search {
     font-size: 12px;
     padding: .15em 4px;
 }
+
+.vc-catalog .filtered-label {
+    background-color: #43b0e6;
+    color: #ffffff;
+    border-radius: 2px;
+    font-size: 12px;
+    padding: .15em 4px;
+    vertical-align: super;
+}
+
+.vc-catalog .filter-quickaction {
+    font-size: 12px;
+    padding: .15em 4px;
+    vertical-align: super;
+}
