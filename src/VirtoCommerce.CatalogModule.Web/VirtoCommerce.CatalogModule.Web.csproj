@@ -4,6 +4,7 @@
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <noWarn>1591</noWarn>
+        <IsPackable>False</IsPackable>
         <LangVersion>latest</LangVersion>
         <OutputType>Library</OutputType>
     </PropertyGroup>

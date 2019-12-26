@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netcoreapp3.0</TargetFramework>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
         <noWarn>1591</noWarn>
         <LangVersion>latest</LangVersion>
         <IsPackable>True</IsPackable>
@@ -9,10 +9,6 @@
 
     <ItemGroup>
         <PackageReference Include="FluentValidation" Version="8.0.101" />
-        <PackageReference Include="GitVersionTask" Version="5.0.1">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
         <PackageReference Include="Hangfire" Version="1.7.8" />
         <PackageReference Include="EntityFrameworkCore.Triggers" Version="1.2.2" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.0" />
