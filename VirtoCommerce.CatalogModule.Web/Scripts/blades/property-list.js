@@ -159,7 +159,7 @@ angular.module('virtoCommerce.catalogModule')
             }
         ];
 
-        $scope.editPropertyFilter = function () {
+        $scope.editPropertyFilter = function() {
             var newBlade = {
                 id: "propertySelector",
                 entityType: "product",
@@ -167,17 +167,18 @@ angular.module('virtoCommerce.catalogModule')
                 selectedProperties: blade.filteredProperties,
                 controller: 'virtoCommerce.catalogModule.propertySelectorController',
                 template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-selector.tpl.html',
-                onSelected: function (filteredProperties) {
-                    var filteredPropertiesNames = filteredProperties.map(function (x) { return x.name; });
+                onSelected: function(filteredProperties) {
+                    var filteredPropertiesNames = filteredProperties.map(function(x) { return x.name; });
                     saveFilter(filteredPropertiesNames);
                     applyFilter(filteredPropertiesNames);
                 }
             };
             bladeNavigationService.showBlade(newBlade, blade);
-        }
+        };
+
         //save filters to localStorage
         function saveFilter(filteredPropertiesNames) {
-            var filter = [];
+            var filter = {};
             filter[authService.userName] = filteredPropertiesNames;
             if ($localStorage.propertyFilter) {
                 angular.extend($localStorage.propertyFilter, filter);
