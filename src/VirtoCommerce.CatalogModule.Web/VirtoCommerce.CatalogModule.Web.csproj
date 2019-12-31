@@ -24,9 +24,9 @@
 
     <ItemGroup>
         <PackageReference Include="FluentValidation" Version="8.0.101" />
-        <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.0.0-v3-feature-vp-7-0001" />
-        <PackageReference Include="VirtoCommerce.Platform.Data" Version="3.0.0-v3-feature-vp-7-0001" />
-        <PackageReference Include="VirtoCommerce.Platform.Security" Version="3.0.0-v3-feature-vp-7-0001" />
+        <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.0.0-rc2-0128" />
+        <PackageReference Include="VirtoCommerce.Platform.Data" Version="3.0.0-rc2-0128" />
+        <PackageReference Include="VirtoCommerce.Platform.Security" Version="3.0.0-rc2-0128" />
     </ItemGroup>
 
     <ItemGroup>
