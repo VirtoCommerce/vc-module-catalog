@@ -271,6 +271,18 @@ vc-item-search {
     padding: .15em 4px;
 }
 
+.form-input.__langs input.vc-catalog {
+    padding-right: 60px;
+}
+
+.vc-catalog.form-input.__langs label.lang-code {
+    position: absolute;
+    right: 0;
+    z-index: 100;
+    line-height: 34px;
+    padding-right: 15px;
+}
+
 .vc-catalog .filtered-label {
     background-color: #43b0e6;
     color: #ffffff;
