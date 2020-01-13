@@ -24,8 +24,8 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
 
     public sealed class CatalogAuthorizationHandler : PermissionAuthorizationHandlerBase<CatalogAuthorizationRequirement>
     {
-        private readonly MvcJsonOptions _jsonOptions;
-        public CatalogAuthorizationHandler(IOptions<MvcJsonOptions> jsonOptions)
+        private readonly MvcNewtonsoftJsonOptions _jsonOptions;
+        public CatalogAuthorizationHandler(IOptions<MvcNewtonsoftJsonOptions> jsonOptions)
         {
             _jsonOptions = jsonOptions.Value;
         }

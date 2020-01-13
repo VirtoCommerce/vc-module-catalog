@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
@@ -54,14 +54,13 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
                 if (result.Any())
                 {
-                    await PropertyValues.Include(x => x.DictionaryItem.DictionaryItemValues)
-                                        .Where(x => catalogIds.Contains(x.CatalogId) && x.CategoryId == null)
-                                        .LoadAsync();
+                    //https://docs.microsoft.com/en-us/ef/core/querying/async
 
+                    await PropertyValues.Include(x => x.DictionaryItem.DictionaryItemValues)
+                                                           .Where(x => catalogIds.Contains(x.CatalogId) && x.CategoryId == null).LoadAsync();
                     var catalogPropertiesIds = await Properties.Where(x => catalogIds.Contains(x.CatalogId) && x.CategoryId == null)
                         .Select(x => x.Id)
                         .ToArrayAsync();
-
                     await GetPropertiesByIdsAsync(catalogPropertiesIds);
                 }
             }
@@ -103,6 +102,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     //Load all properties meta information and information for inheritance
                     if (categoryResponseGroup.HasFlag(CategoryResponseGroup.WithProperties))
                     {
+                        await PropertyValues.Include(x => x.DictionaryItem.DictionaryItemValues).Where(x => categoriesIds.Contains(x.CategoryId)).LoadAsync();
                         //Load category property values by separate query
                         await PropertyValues.Include(x => x.DictionaryItem.DictionaryItemValues)
                                                                .Where(x => categoriesIds.Contains(x.CategoryId)).LoadAsync();
@@ -426,17 +426,17 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             if (catalogProperty != null)
             {
                 commandText = $"DELETE PV FROM PropertyValue PV INNER JOIN Catalog C ON C.Id = PV.CatalogId AND C.Id = '{catalogProperty.CatalogId}' WHERE PV.Name = '{catalogProperty.Name}'";
-                await DbContext.Database.ExecuteSqlCommandAsync(commandText);
+                var res = await DbContext.Database.ExecuteSqlRawAsync(commandText);
             }
             if (categoryProperty != null)
             {
                 commandText = $"DELETE PV FROM PropertyValue PV INNER JOIN Category C ON C.Id = PV.CategoryId AND C.CatalogId = '{categoryProperty.CatalogId}' WHERE PV.Name = '{categoryProperty.Name}'";
-                await DbContext.Database.ExecuteSqlCommandAsync(commandText);
+                await DbContext.Database.ExecuteSqlRawAsync(commandText);
             }
             if (itemProperty != null)
             {
                 commandText = $"DELETE PV FROM PropertyValue PV INNER JOIN Item I ON I.Id = PV.ItemId AND I.CatalogId = '{itemProperty.CatalogId}' WHERE PV.Name = '{itemProperty.Name}'";
-                await DbContext.Database.ExecuteSqlCommandAsync(commandText);
+                await DbContext.Database.ExecuteSqlRawAsync(commandText);
             }
         }
 
@@ -473,7 +473,6 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 ) 
                 SELECT COUNT(Id) FROM Item_CTE";
 
-            //var groupString = "";
             var querySqlCommandText = new StringBuilder();
             querySqlCommandText.Append(@"
                     ;WITH Association_CTE AS
@@ -559,7 +558,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             }
 
             result.TotalCount = await DbContext.ExecuteScalarAsync<int>(countSqlCommand.Text, countSqlCommand.Parameters.ToArray());
-            result.Results = await Associations.FromSql(querySqlCommand.Text, querySqlCommand.Parameters.ToArray()).ToListAsync();
+            result.Results = await (DbContext.Set<AssociationEntity>().FromSqlRaw(querySqlCommand.Text, querySqlCommand.Parameters.ToArray())).ToListAsync();
 
             return result;
         }
@@ -569,7 +568,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         protected virtual async Task<int> ExecuteStoreQueryAsync(string commandTemplate, IEnumerable<string> parameterValues)
         {
             var command = CreateCommand(commandTemplate, parameterValues);
-            return await DbContext.Database.ExecuteSqlCommandAsync(command.Text, command.Parameters.ToArray());
+            return await DbContext.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray());
         }
 
         protected virtual Command CreateCommand(string commandTemplate, IEnumerable<string> parameterValues)

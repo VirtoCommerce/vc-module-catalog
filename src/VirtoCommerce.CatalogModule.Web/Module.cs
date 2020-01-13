@@ -188,7 +188,7 @@ namespace VirtoCommerce.CatalogModule.Web
                                                                         ModuleConstants.Security.Permissions.Delete,
                                                                          }, new SelectedCatalogScope());
 
-            var mvcJsonOptions = appBuilder.ApplicationServices.GetService<IOptions<MvcJsonOptions>>();
+            var mvcJsonOptions = appBuilder.ApplicationServices.GetService<IOptions<MvcNewtonsoftJsonOptions>>();
             mvcJsonOptions.Value.SerializerSettings.Converters.Add(new SearchCriteriaJsonConverter());
 
             var inProcessBus = appBuilder.ApplicationServices.GetService<IHandlerRegistrar>();
