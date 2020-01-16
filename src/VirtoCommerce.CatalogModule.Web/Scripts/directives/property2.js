@@ -154,8 +154,6 @@ angular.module('virtoCommerce.catalogModule').directive('vaProperty2', ['$compil
 
             scope.loadDictionaryValues = function ($select) {
                 $select.page = 0;
-                scope.context.allDictionaryValues = [];
-
                 return scope.loadNextDictionaryValues($select);
             };
 
@@ -164,6 +162,7 @@ angular.module('virtoCommerce.catalogModule').directive('vaProperty2', ['$compil
                 var countToTake = scope.pageSize;
 
                 return scope.getPropValues()(scope.currentEntity.id, $select.search, countToSkip, countToTake).then(function (result) {
+                    if (!$select.page) scope.context.allDictionaryValues = []; 
                     populateDictionaryValues(result.results);
                     $select.page++;
 
