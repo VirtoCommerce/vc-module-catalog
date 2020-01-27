@@ -25,7 +25,7 @@
     <projectUrl>https://virtocommerce.com/apps/extensions/virto-catalog-module</projectUrl>
     <iconUrl>https://github.com/VirtoCommerce/vc-module-catalog/raw/master/VirtoCommerce.CatalogModule.Web/Content/logo.png</iconUrl>
     <releaseNotes>Third version.</releaseNotes>
-    <copyright>Copyright © 2011-2019 Virto Commerce. All rights reserved</copyright>
+    <copyright>Copyright © 2011-2020 Virto Commerce. All rights reserved</copyright>
     <tags>catalog</tags>
 
     <assemblyFile>VirtoCommerce.CatalogModule.Web.dll</assemblyFile>
