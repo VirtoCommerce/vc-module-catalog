@@ -17,9 +17,9 @@
                     <label class="form-label">{{ 'catalog.blades.editorialReview-detail.labels.language' | translate }}</label>
                     <div class="form-input">
                         <ui-select ng-model="blade.currentEntity.languageCode" ng-disabled="disabled">
-                            <ui-select-match allow-clear="true" placeholder="{{'catalog.blades.editorialReview-detail.placeholders.language' | translate}}">{{$select.selected.displayName}}</ui-select-match>
-                            <ui-select-choices repeat="lang.languageCode as lang in blade.languages | filter: {displayName: $select.search}">
-                                <span ng-bind-html="lang.displayName | highlight: $select.search"></span>
+                            <ui-select-match allow-clear="true" placeholder="{{'catalog.blades.editorialReview-detail.placeholders.language' | translate}}">{{$select.selected.languageCode}}</ui-select-match>
+                            <ui-select-choices repeat="lang.languageCode as lang in blade.languages | filter: {languageCode: $select.search}">
+                                <span ng-bind-html="lang.languageCode | highlight: $select.search"></span>
                             </ui-select-choices>
                         </ui-select>
                     </div>
