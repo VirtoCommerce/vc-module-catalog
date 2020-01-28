@@ -135,8 +135,8 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
             result.Values = Values?.Select(x => x.Clone()).OfType<PropertyValue>().ToList();
             result.Attributes = Attributes?.Select(x => x.Clone()).OfType<PropertyAttribute>().ToList();
-            result.DisplayNames = Values?.Select(x => x.Clone()).OfType<PropertyDisplayName>().ToList();
-            result.ValidationRules = Values?.Select(x => x.Clone()).OfType<PropertyValidationRule>().ToList();
+            result.DisplayNames = DisplayNames?.Select(x => x.Clone()).OfType<PropertyDisplayName>().ToList();
+            result.ValidationRules = ValidationRules?.Select(x => x.Clone()).OfType<PropertyValidationRule>().ToList();
 
             return result;
         }
