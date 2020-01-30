@@ -148,7 +148,7 @@ angular.module('virtoCommerce.catalogModule')
 
                     var folderUrl = 'catalog/' + (path + (imageType ? '/' + imageType : ''));
 
-                    return { folderUrl: + folderUrl, relative: 'api/platform/assets?folderUrl=' + folderUrl };
+                    return { folderUrl: folderUrl, relative: 'api/platform/assets?folderUrl=' + folderUrl };
                 }
 
                 initialize(blade.item);
