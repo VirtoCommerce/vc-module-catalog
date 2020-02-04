@@ -11,9 +11,9 @@
 
                 <div class="form-group">
                     <label class="form-label" for="">{{ 'catalog.blades.property-detail.labels.display-name' | translate }}</label>
-                    <div class="form-input __langs" ng-repeat="data in blade.currentEntity.displayNames">                        
-                            <label class="lang-code">{{data.languageCode}}</label>
-                            <input ng-model="data.name" placeholder="{{ 'catalog.blades.property-detail.placeholders.display-name' | translate }}" class="form-control" />                       
+                    <div class="vc-catalog form-input __langs" ng-repeat="data in blade.currentEntity.displayNames">
+                        <label class="lang-code">{{data.languageCode}}</label>
+                        <input ng-model="data.name" placeholder="{{ 'catalog.blades.property-detail.placeholders.display-name' | translate }}" class="vc-catalog form-control" />
                     </div>
                 </div>
 
