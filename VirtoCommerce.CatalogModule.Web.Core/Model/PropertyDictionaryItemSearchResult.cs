@@ -8,7 +8,7 @@ using VirtoCommerce.Domain.Commerce.Model.Search;
 
 namespace VirtoCommerce.CatalogModule.Web.Model
 {
-	public class PropertyDictionaryItemSearchResult: GenericSearchResult<PropertyDictionaryItem>
+    public class PropertyDictionaryItemSearchResult : GenericSearchResult<PropertyDictionaryItem>
     {
     }
 }
