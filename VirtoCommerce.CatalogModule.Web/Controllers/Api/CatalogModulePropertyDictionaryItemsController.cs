@@ -40,7 +40,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var result = _propertyDictionarySearchService.Search(criteria);
             var retVal = new webModel.PropertyDictionaryItemSearchResult
             {
-                PropertyDictionaryItems = result.Results,
+                Results = result.Results,
                 TotalCount = result.TotalCount
             };
             return Ok(retVal);
