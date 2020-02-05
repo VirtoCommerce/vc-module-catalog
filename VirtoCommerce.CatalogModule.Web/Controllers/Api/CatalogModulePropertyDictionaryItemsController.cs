@@ -8,6 +8,7 @@ using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.Platform.Core.Web.Security;
 using moduleModel = VirtoCommerce.Domain.Catalog.Model;
+using webModel = VirtoCommerce.CatalogModule.Web.Model;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
@@ -32,12 +33,17 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <returns></returns>
         [HttpPost]
         [Route("search")]
-        [ResponseType(typeof(moduleModel.PropertyDictionaryItem[]))]
+        [ResponseType(typeof(webModel.PropertyDictionaryItemSearchResult))]
         [CheckPermission(Permission = CatalogPredefinedPermissions.Read)]
         public IHttpActionResult SearchPropertyDictionaryItems(PropertyDictionaryItemSearchCriteria criteria)
         {
             var result = _propertyDictionarySearchService.Search(criteria);
-            return Ok(result);
+            var retVal = new webModel.PropertyDictionaryItemSearchResult
+            {
+                PropertyDictionaryItems = result.Results,
+                TotalCount = result.TotalCount
+            };
+            return Ok(retVal);
         }
 
         /// <summary>
