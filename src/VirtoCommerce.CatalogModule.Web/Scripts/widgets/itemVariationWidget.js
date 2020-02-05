@@ -9,7 +9,8 @@ angular.module('virtoCommerce.catalogModule')
                 mainProductId: blade.currentEntityId,
                 objectType: "CatalogProduct",
                 responseGroup: "withProducts",
-                take: 0
+                take: 0,
+                withHidden: true
             };
             search.searchProducts(searchCriteria, function (data) {
                 $scope.variartionCount = data.totalCount;

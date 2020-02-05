@@ -98,6 +98,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 document.AddObjectFieldValue(category);
             }
 
+            document.Add(new IndexDocumentField("parent", category.ParentId ?? category.CatalogId) { IsRetrievable = true, IsSearchable = true, IsFilterable = true });
+
             return document;
         }
 

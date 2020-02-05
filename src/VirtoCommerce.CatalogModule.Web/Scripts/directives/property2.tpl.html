@@ -179,7 +179,7 @@
 
     <script type="text/ng-template" id="ShortText-multilang.html">
         <div class="form-group" ng-repeat="(language, langValuesGroup) in context.langValuesMap" ng-if="isLanguageVisible(language)">
-            <div class="form-input __langs">
+            <div class="vc-catalog form-input __langs">
                 <label class="lang-code">{{language}}</label>
                 <input ng-disabled="currentEntity.isReadOnly"
                        ng-required="currentEntity.required && !currentEntity.isReadOnly"
@@ -189,7 +189,8 @@
                        type="text"
                        ng-maxlength="currentEntity.validationRule.charCountMax"
                        ng-minlength="currentEntity.validationRule.charCountMin"
-                       ng-pattern="currentEntity.validationRule.regExp">
+                       ng-pattern="currentEntity.validationRule.regExp"
+                       class="vc-catalog">
                 <va-property-messages></va-property-messages>
             </div>
         </div>
@@ -212,11 +213,12 @@
     </script>
     <script type="text/ng-template" id="Number-multilang.html">
         <div class="form-group" ng-repeat="(language, langValuesGroup) in context.langValuesMap" ng-if="isLanguageVisible(language)">
-            <div class="form-input __number">
+            <div class="form-input __langs __number">
                 <input ng-disabled="currentEntity.isReadOnly"
                        ng-required="currentEntity.required && !currentEntity.isReadOnly"
                        ng-model="langValuesGroup.currentPropValues[0].value"
                        name="{{currentEntity.valueType}}"
+                       class="vc-catalog"
                        placeholder="Please enter number value"
                        type="text">
             </div>
@@ -225,7 +227,7 @@
 
     <script type="text/ng-template" id="ShortText-multivalue-multilang.html">
         <div class="form-group" ng-repeat="(language, langValuesGroup) in context.langValuesMap" ng-if="isLanguageVisible(language)">
-            <div class="form-input __langs">
+            <div class="vc-catalog form-input __langs">
                 <label class="lang-code">{{language}}</label>
                 <tags-input ng-model="langValuesGroup.currentPropValues"
                             ng-disabled="currentEntity.isReadOnly"
@@ -246,7 +248,7 @@
     </script>
     <script type="text/ng-template" id="LongText-multivalue-multilang.html">
         <div class="form-group" ng-repeat="(language, langValuesGroup) in context.langValuesMap" ng-if="isLanguageVisible(language)">
-            <div class="form-input __langs" ng-repeat="val in langValuesGroup.currentPropValues track by $index">                                
+            <div class="vc-catalog form-input __langs" ng-repeat="val in langValuesGroup.currentPropValues track by $index">                                
                     <label class="lang-code">{{language}}</label>
                     <textarea ng-disabled="currentEntity.isReadOnly"
                               ng-required="currentEntity.required && !currentEntity.isReadOnly"
@@ -263,7 +265,7 @@
     </script>
     <script type="text/ng-template" id="Number-multivalue-multilang.html">
         <div class="form-group" ng-repeat="(language, langValuesGroup) in context.langValuesMap" ng-if="isLanguageVisible(language)">
-            <div class="form-input __langs">
+            <div class="vc-catalog form-input __langs">
                 <label class="lang-code">{{language}}</label>
                 <tags-input ng-model="langValuesGroup.currentPropValues"
                             ng-disabled="currentEntity.isReadOnly"
