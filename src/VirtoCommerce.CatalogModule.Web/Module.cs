@@ -78,8 +78,7 @@ namespace VirtoCommerce.CatalogModule.Web
             serviceCollection.AddTransient<IBrowseFilterService, BrowseFilterService>();
             serviceCollection.AddTransient<ITermFilterBuilder, TermFilterBuilder>();
 
-            serviceCollection.AddTransient<ISearchRequestBuilder, ProductSearchRequestBuilder>();
-            serviceCollection.AddTransient<ISearchRequestBuilder, CategorySearchRequestBuilder>();
+            serviceCollection.AddSingleton<ISearchRequestBuilderRegistrar, SearchRequestBuilderRegistrar>();
 
             serviceCollection.AddTransient<IPropertyService, PropertyService>();
             serviceCollection.AddTransient<IPropertySearchService, PropertySearchService>();
@@ -210,6 +209,23 @@ namespace VirtoCommerce.CatalogModule.Web
                 catalogDbContext.Database.EnsureCreated();
                 catalogDbContext.Database.Migrate();
             }
+
+            var searchRequestBuilderRegistrar = appBuilder.ApplicationServices.GetService<ISearchRequestBuilderRegistrar>();
+            searchRequestBuilderRegistrar.Register(KnownDocumentTypes.Product, () =>
+            {
+                var searchPhraseParser = appBuilder.ApplicationServices.GetService<ISearchPhraseParser>();
+                var termFilterBuilder = appBuilder.ApplicationServices.GetService<ITermFilterBuilder>();
+                var aggregationConverter = appBuilder.ApplicationServices.GetService<IAggregationConverter>();
+
+                return new ProductSearchRequestBuilder(searchPhraseParser, termFilterBuilder, aggregationConverter);
+            });
+
+            searchRequestBuilderRegistrar.Register(KnownDocumentTypes.Category, () =>
+            {
+                var searchPhraseParser = appBuilder.ApplicationServices.GetService<ISearchPhraseParser>();
+
+                return new CategorySearchRequestBuilder(searchPhraseParser);
+            });
 
             #region Register types for generic Export
 
