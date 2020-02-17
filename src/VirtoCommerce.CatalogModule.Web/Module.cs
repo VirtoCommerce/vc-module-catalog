@@ -211,6 +211,23 @@ namespace VirtoCommerce.CatalogModule.Web
                 catalogDbContext.Database.Migrate();
             }
 
+            var searchRequestBuilderRegistrar = appBuilder.ApplicationServices.GetService<ISearchRequestBuilderRegistrar>();
+            searchRequestBuilderRegistrar.Register(KnownDocumentTypes.Product, () =>
+            {
+                var searchPhraseParser = appBuilder.ApplicationServices.GetService<ISearchPhraseParser>();
+                var termFilterBuilder = appBuilder.ApplicationServices.GetService<ITermFilterBuilder>();
+                var aggregationConverter = appBuilder.ApplicationServices.GetService<IAggregationConverter>();
+
+                return new ProductSearchRequestBuilder(searchPhraseParser, termFilterBuilder, aggregationConverter);
+            });
+
+            searchRequestBuilderRegistrar.Register(KnownDocumentTypes.Category, () =>
+            {
+                var searchPhraseParser = appBuilder.ApplicationServices.GetService<ISearchPhraseParser>();
+
+                return new CategorySearchRequestBuilder(searchPhraseParser);
+            });
+
             #region Register types for generic Export
 
             var registrar = appBuilder.ApplicationServices.GetService<IKnownExportTypesRegistrar>();
