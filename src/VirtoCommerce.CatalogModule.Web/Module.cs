@@ -141,6 +141,9 @@ namespace VirtoCommerce.CatalogModule.Web
                 },
             });
 
+            serviceCollection.AddTransient<ProductSearchRequestBuilder>();
+            serviceCollection.AddTransient<CategorySearchRequestBuilder>();
+
             serviceCollection.AddTransient<IAuthorizationHandler, CatalogAuthorizationHandler>();
 
             serviceCollection.AddTransient<ICatalogExportPagedDataSourceFactory, CatalogExportPagedDataSourceFactory>();
