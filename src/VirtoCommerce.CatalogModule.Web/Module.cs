@@ -211,22 +211,15 @@ namespace VirtoCommerce.CatalogModule.Web
                 catalogDbContext.Database.Migrate();
             }
 
+            AbstractTypeFactory<ProductSearchRequestBuilder>.RegisterType<ProductSearchRequestBuilder>()
+                .WithFactory(() => appBuilder.ApplicationServices.GetService<ProductSearchRequestBuilder>());
+            AbstractTypeFactory<CategorySearchRequestBuilder>.RegisterType<CategorySearchRequestBuilder>()
+                .WithFactory(() => appBuilder.ApplicationServices.GetService<CategorySearchRequestBuilder>());
+
             var searchRequestBuilderRegistrar = appBuilder.ApplicationServices.GetService<ISearchRequestBuilderRegistrar>();
-            searchRequestBuilderRegistrar.Register(KnownDocumentTypes.Product, () =>
-            {
-                var searchPhraseParser = appBuilder.ApplicationServices.GetService<ISearchPhraseParser>();
-                var termFilterBuilder = appBuilder.ApplicationServices.GetService<ITermFilterBuilder>();
-                var aggregationConverter = appBuilder.ApplicationServices.GetService<IAggregationConverter>();
 
-                return new ProductSearchRequestBuilder(searchPhraseParser, termFilterBuilder, aggregationConverter);
-            });
-
-            searchRequestBuilderRegistrar.Register(KnownDocumentTypes.Category, () =>
-            {
-                var searchPhraseParser = appBuilder.ApplicationServices.GetService<ISearchPhraseParser>();
-
-                return new CategorySearchRequestBuilder(searchPhraseParser);
-            });
+            searchRequestBuilderRegistrar.Register(KnownDocumentTypes.Product, () => AbstractTypeFactory.TryCreateInstance<ProductSearchRequestBuilder>());
+            searchRequestBuilderRegistrar.Register(KnownDocumentTypes.Category, () => AbstractTypeFactory.TryCreateInstance<CategorySearchRequestBuilder>());
 
             #region Register types for generic Export
 
