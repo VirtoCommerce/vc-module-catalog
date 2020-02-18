@@ -16,8 +16,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
     {
         private readonly ICategoryService _categoryService;
 
-        public CategoryIndexedSearchService(IEnumerable<ISearchRequestBuilder> searchRequestBuilders, ISearchProvider searchProvider, ISettingsManager settingsManager, ICategoryService categoryService)
-            : base(searchRequestBuilders, searchProvider, settingsManager)
+        public CategoryIndexedSearchService(ISearchRequestBuilderRegistrar searchRequestBuilderRegistrar , ISearchProvider searchProvider, ISettingsManager settingsManager, ICategoryService categoryService)
+            : base(searchRequestBuilderRegistrar, searchProvider, settingsManager)
         {
             _categoryService = categoryService;
         }

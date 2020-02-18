@@ -41,6 +41,7 @@ using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.Platform.Data.Extensions;
 using VirtoCommerce.Platform.Security.Authorization;
 using VirtoCommerce.SearchModule.Core.Model;
+using VirtoCommerce.SearchModule.Core.Services;
 using AuthorizationOptions = Microsoft.AspNetCore.Authorization.AuthorizationOptions;
 
 namespace VirtoCommerce.CatalogModule.Web
@@ -217,8 +218,8 @@ namespace VirtoCommerce.CatalogModule.Web
 
             var searchRequestBuilderRegistrar = appBuilder.ApplicationServices.GetService<ISearchRequestBuilderRegistrar>();
 
-            searchRequestBuilderRegistrar.Register(KnownDocumentTypes.Product, () => AbstractTypeFactory.TryCreateInstance<ProductSearchRequestBuilder>());
-            searchRequestBuilderRegistrar.Register(KnownDocumentTypes.Category, () => AbstractTypeFactory.TryCreateInstance<CategorySearchRequestBuilder>());
+            searchRequestBuilderRegistrar.Register(KnownDocumentTypes.Product, AbstractTypeFactory<ProductSearchRequestBuilder>.TryCreateInstance);
+            searchRequestBuilderRegistrar.Register(KnownDocumentTypes.Category, AbstractTypeFactory<CategorySearchRequestBuilder>.TryCreateInstance);
 
             #region Register types for generic Export
 
