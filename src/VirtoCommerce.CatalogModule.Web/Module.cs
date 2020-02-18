@@ -41,7 +41,6 @@ using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.Platform.Data.Extensions;
 using VirtoCommerce.Platform.Security.Authorization;
 using VirtoCommerce.SearchModule.Core.Model;
-using VirtoCommerce.SearchModule.Core.Services;
 using AuthorizationOptions = Microsoft.AspNetCore.Authorization.AuthorizationOptions;
 
 namespace VirtoCommerce.CatalogModule.Web
@@ -77,9 +76,6 @@ namespace VirtoCommerce.CatalogModule.Web
             serviceCollection.AddTransient<IAggregationConverter, AggregationConverter>();
             serviceCollection.AddTransient<IBrowseFilterService, BrowseFilterService>();
             serviceCollection.AddTransient<ITermFilterBuilder, TermFilterBuilder>();
-
-            serviceCollection.AddTransient<ISearchRequestBuilder, ProductSearchRequestBuilder>();
-            serviceCollection.AddTransient<ISearchRequestBuilder, CategorySearchRequestBuilder>();
 
             serviceCollection.AddTransient<IPropertyService, PropertyService>();
             serviceCollection.AddTransient<IPropertySearchService, PropertySearchService>();
