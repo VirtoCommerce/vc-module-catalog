@@ -116,28 +116,6 @@ namespace VirtoCommerce.CatalogModule.Web
             serviceCollection.AddTransient<CategoryDocumentChangesProvider>();
             serviceCollection.AddTransient<CategoryDocumentBuilder>();
 
-            // Product indexing configuration
-            serviceCollection.AddSingleton(provider => new IndexDocumentConfiguration
-            {
-                DocumentType = KnownDocumentTypes.Product,
-                DocumentSource = new IndexDocumentSource
-                {
-                    ChangesProvider = provider.GetService<ProductDocumentChangesProvider>(),
-                    DocumentBuilder = provider.GetService<ProductDocumentBuilder>(),
-                },
-            });
-
-            // Category indexing configuration
-            serviceCollection.AddSingleton(provider => new IndexDocumentConfiguration
-            {
-                DocumentType = KnownDocumentTypes.Category,
-                DocumentSource = new IndexDocumentSource
-                {
-                    ChangesProvider = provider.GetService<CategoryDocumentChangesProvider>(),
-                    DocumentBuilder = provider.GetService<CategoryDocumentBuilder>(),
-                },
-            });
-
             serviceCollection.AddTransient<ProductSearchRequestBuilder>();
             serviceCollection.AddTransient<CategorySearchRequestBuilder>();
 
@@ -201,6 +179,20 @@ namespace VirtoCommerce.CatalogModule.Web
                 inProcessBus.RegisterHandler<CategoryChangedEvent>(async (message, token) => await appBuilder.ApplicationServices.GetService<IndexCategoryChangedEventHandler>().Handle(message));
                 inProcessBus.RegisterHandler<ProductChangedEvent>(async (message, token) => await appBuilder.ApplicationServices.GetService<IndexProductChangedEventHandler>().Handle(message));
             }
+
+            var indexDocumentRegistrar = appBuilder.ApplicationServices.GetService<IIndexDocumentRegistrar>();
+
+            indexDocumentRegistrar.RegisterIndexDocumentConfiguration(KnownDocumentTypes.Product, new IndexDocumentSource
+            {
+                ChangesProvider = appBuilder.ApplicationServices.GetService<ProductDocumentChangesProvider>(),
+                DocumentBuilder = appBuilder.ApplicationServices.GetService<ProductDocumentBuilder>(),
+            });
+
+            indexDocumentRegistrar.RegisterIndexDocumentConfiguration(KnownDocumentTypes.Category, new IndexDocumentSource
+            {
+                ChangesProvider = appBuilder.ApplicationServices.GetService<CategoryDocumentChangesProvider>(),
+                DocumentBuilder = appBuilder.ApplicationServices.GetService<CategoryDocumentBuilder>(),
+            });
 
             //Force migrations
             using (var serviceScope = appBuilder.ApplicationServices.CreateScope())
