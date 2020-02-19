@@ -211,15 +211,10 @@ namespace VirtoCommerce.CatalogModule.Web
                 catalogDbContext.Database.Migrate();
             }
 
-            AbstractTypeFactory<ProductSearchRequestBuilder>.RegisterType<ProductSearchRequestBuilder>()
-                .WithFactory(() => appBuilder.ApplicationServices.GetService<ProductSearchRequestBuilder>());
-            AbstractTypeFactory<CategorySearchRequestBuilder>.RegisterType<CategorySearchRequestBuilder>()
-                .WithFactory(() => appBuilder.ApplicationServices.GetService<CategorySearchRequestBuilder>());
-
             var searchRequestBuilderRegistrar = appBuilder.ApplicationServices.GetService<ISearchRequestBuilderRegistrar>();
 
-            searchRequestBuilderRegistrar.Register(KnownDocumentTypes.Product, AbstractTypeFactory<ProductSearchRequestBuilder>.TryCreateInstance);
-            searchRequestBuilderRegistrar.Register(KnownDocumentTypes.Category, AbstractTypeFactory<CategorySearchRequestBuilder>.TryCreateInstance);
+            searchRequestBuilderRegistrar.Register(KnownDocumentTypes.Product, appBuilder.ApplicationServices.GetService<ProductSearchRequestBuilder>);
+            searchRequestBuilderRegistrar.Register(KnownDocumentTypes.Category, appBuilder.ApplicationServices.GetService<CategorySearchRequestBuilder>);
 
             #region Register types for generic Export
 
