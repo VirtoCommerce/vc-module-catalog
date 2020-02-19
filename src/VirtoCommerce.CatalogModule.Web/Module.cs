@@ -78,9 +78,6 @@ namespace VirtoCommerce.CatalogModule.Web
             serviceCollection.AddTransient<IBrowseFilterService, BrowseFilterService>();
             serviceCollection.AddTransient<ITermFilterBuilder, TermFilterBuilder>();
 
-            serviceCollection.AddTransient<ISearchRequestBuilder, ProductSearchRequestBuilder>();
-            serviceCollection.AddTransient<ISearchRequestBuilder, CategorySearchRequestBuilder>();
-
             serviceCollection.AddTransient<IPropertyService, PropertyService>();
             serviceCollection.AddTransient<IPropertySearchService, PropertySearchService>();
             serviceCollection.AddTransient<IPropertyDictionaryItemService, PropertyDictionaryItemService>();
@@ -140,6 +137,9 @@ namespace VirtoCommerce.CatalogModule.Web
                     DocumentBuilder = provider.GetService<CategoryDocumentBuilder>(),
                 },
             });
+
+            serviceCollection.AddTransient<ProductSearchRequestBuilder>();
+            serviceCollection.AddTransient<CategorySearchRequestBuilder>();
 
             serviceCollection.AddTransient<IAuthorizationHandler, CatalogAuthorizationHandler>();
 
@@ -210,6 +210,11 @@ namespace VirtoCommerce.CatalogModule.Web
                 catalogDbContext.Database.EnsureCreated();
                 catalogDbContext.Database.Migrate();
             }
+
+            var searchRequestBuilderRegistrar = appBuilder.ApplicationServices.GetService<ISearchRequestBuilderRegistrar>();
+
+            searchRequestBuilderRegistrar.Register(KnownDocumentTypes.Product, appBuilder.ApplicationServices.GetService<ProductSearchRequestBuilder>);
+            searchRequestBuilderRegistrar.Register(KnownDocumentTypes.Category, appBuilder.ApplicationServices.GetService<CategorySearchRequestBuilder>);
 
             #region Register types for generic Export
 

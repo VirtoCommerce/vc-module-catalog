@@ -17,13 +17,13 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         where TCriteria : SearchCriteriaBase
         where TResult : CatalogIndexedSearchResult<TItem>
     {
-        private readonly IEnumerable<ISearchRequestBuilder> _searchRequestBuilders;
+        private readonly ISearchRequestBuilderRegistrar _searchRequestBuilderRegistrar;
         private readonly ISearchProvider _searchProvider;
         private readonly ISettingsManager _settingsManager;
 
-        protected CatalogIndexedSearchService(IEnumerable<ISearchRequestBuilder> searchRequestBuilders, ISearchProvider searchProvider, ISettingsManager settingsManager)
+        protected CatalogIndexedSearchService(ISearchRequestBuilderRegistrar searchRequestBuilderRegistrar, ISearchProvider searchProvider, ISettingsManager settingsManager)
         {
-            _searchRequestBuilders = searchRequestBuilders.ToArray();
+            _searchRequestBuilderRegistrar = searchRequestBuilderRegistrar;
             _searchProvider = searchProvider;
             _settingsManager = settingsManager;
         }
@@ -59,13 +59,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         protected virtual ISearchRequestBuilder GetRequestBuilder(TCriteria criteria)
         {
-            if (_searchRequestBuilders == null)
-                throw new InvalidOperationException("No query builders defined");
-
-            var queryBuilder = _searchRequestBuilders.SingleOrDefault(b => b.DocumentType.Equals(criteria.ObjectType)) ??
-                               _searchRequestBuilders.First(b => b.DocumentType.Equals(string.Empty));
-
-            return queryBuilder;
+            return _searchRequestBuilderRegistrar.GetRequestBuilderByDocumentType(criteria.ObjectType);
         }
 
         protected virtual async Task<TItem[]> ConvertDocuments(IList<SearchDocument> documents, TCriteria criteria)

@@ -19,8 +19,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         private readonly IBlobUrlResolver _blobUrlResolver;
         private readonly IAggregationConverter _aggregationConverter;
 
-        public ProductIndexedSearchService(IEnumerable<ISearchRequestBuilder> searchRequestBuilders, ISearchProvider searchProvider, ISettingsManager settingsManager, IItemService itemService, IBlobUrlResolver blobUrlResolver, IAggregationConverter aggregationConverter)
-            : base(searchRequestBuilders, searchProvider, settingsManager)
+        public ProductIndexedSearchService(ISearchRequestBuilderRegistrar searchRequestBuilderRegistrar, ISearchProvider searchProvider, ISettingsManager settingsManager, IItemService itemService, IBlobUrlResolver blobUrlResolver, IAggregationConverter aggregationConverter)
+            : base(searchRequestBuilderRegistrar, searchProvider, settingsManager)
         {
             _itemService = itemService;
             _blobUrlResolver = blobUrlResolver;
