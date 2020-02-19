@@ -390,7 +390,8 @@
             "Drag and drop an image to top left corner of images area to make it the default image.",
           "language": "Language",
           "preview": "Preview",
-          "external-link": "External link"
+          "external-link": "External link",
+          "name": "Name"
         },
         "placeholders": {
           "image-url": "Paste image URL here",

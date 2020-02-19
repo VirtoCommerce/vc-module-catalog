@@ -328,7 +328,8 @@
           "image-category": "Bild Kategorie",
           "drag-drop-comment": "Bilder hier ziehen und loslassen",
           "progress": "Fortschritt",
-          "make-default-image": "Ein Bild ziehen und loslassen im Bilder Bereich links nach oben zu den default Bild zu machen."
+          "make-default-image": "Ein Bild ziehen und loslassen im Bilder Bereich links nach oben zu den default Bild zu machen.",
+          "name": "Name"
         },
         "placeholders": {
           "image-url": "Bild-URL hier einfügen",
