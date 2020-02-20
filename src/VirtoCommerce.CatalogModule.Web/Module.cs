@@ -182,17 +182,16 @@ namespace VirtoCommerce.CatalogModule.Web
 
             var indexDocumentRegistrar = appBuilder.ApplicationServices.GetService<IIndexDocumentRegistrar>();
 
-            indexDocumentRegistrar.RegisterIndexDocumentConfiguration(KnownDocumentTypes.Product, new IndexDocumentSource
-            {
-                ChangesProvider = appBuilder.ApplicationServices.GetService<ProductDocumentChangesProvider>(),
-                DocumentBuilder = appBuilder.ApplicationServices.GetService<ProductDocumentBuilder>(),
-            });
+            var productDocumentSourceBuilder = IndexDocumentSourceBuilder.Build(appBuilder.ApplicationServices.GetService<ProductDocumentBuilder>())
+                .WithChangesProvider(appBuilder.ApplicationServices.GetService<ProductDocumentChangesProvider>());
 
-            indexDocumentRegistrar.RegisterIndexDocumentConfiguration(KnownDocumentTypes.Category, new IndexDocumentSource
-            {
-                ChangesProvider = appBuilder.ApplicationServices.GetService<CategoryDocumentChangesProvider>(),
-                DocumentBuilder = appBuilder.ApplicationServices.GetService<CategoryDocumentBuilder>(),
-            });
+            var categoryDocumentSourceBuilder = IndexDocumentSourceBuilder.Build(appBuilder.ApplicationServices.GetService<CategoryDocumentBuilder>())
+                .WithChangesProvider(appBuilder.ApplicationServices.GetService<CategoryDocumentChangesProvider>());
+
+
+            indexDocumentRegistrar.RegisterIndexDocumentConfiguration(IndexDocumentConfigurationBuilder.Build(KnownDocumentTypes.Product, productDocumentSourceBuilder));
+
+            indexDocumentRegistrar.RegisterIndexDocumentConfiguration(IndexDocumentConfigurationBuilder.Build(KnownDocumentTypes.Category, categoryDocumentSourceBuilder));
 
             //Force migrations
             using (var serviceScope = appBuilder.ApplicationServices.CreateScope())
