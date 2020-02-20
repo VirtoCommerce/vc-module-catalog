@@ -98,6 +98,7 @@
     <Compile Include="Model\MoveInfo.cs" />
     <Compile Include="Model\Product.cs" />
     <Compile Include="Model\ProductAssociation.cs" />
+    <Compile Include="Model\PropertyDictionaryItemSearchResult.cs" />
     <Compile Include="Model\PropertyValidationRule.cs" />
     <Compile Include="Model\PropertyValue.cs" />
     <Compile Include="Model\ResponseGroup.cs" />
