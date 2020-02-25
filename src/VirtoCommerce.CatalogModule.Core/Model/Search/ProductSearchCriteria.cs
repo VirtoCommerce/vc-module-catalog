@@ -34,6 +34,12 @@ namespace VirtoCommerce.CatalogModule.Core.Model.Search
             set => _categoriesIds = value;
         }
         public IList<string> Skus { get; set; }
+
+        /// <summary>
+        /// Search within variations of specified main product
+        /// </summary>
+        public string MainProductId { get; set; }
+
         /// <summary>
         /// Include product variations in result
         /// </summary>

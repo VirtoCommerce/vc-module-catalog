@@ -8,8 +8,8 @@ angular.module('virtoCommerce.catalogModule')
 
     blade.refresh = function (parentRefresh) {
         blade.isLoading = true;
-
-        return items.get({ id: blade.itemId }, function (data) {
+        //2015 = Full ~& Variations do not load product variations
+        return items.get({ id: blade.itemId, respGroup: 2015  }, function (data) {
             if (!blade.catalog) {
                 blade.catalog = catalogs.get({ id: data.catalogId });
             }
