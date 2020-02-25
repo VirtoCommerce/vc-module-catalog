@@ -252,10 +252,15 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
             foreach (var product in products)
             {
-                product.TryInheritFrom(product.Category ?? (IEntity)product.Catalog);
                 if (product.MainProduct != null)
                 {
+                    //need to apply inheritance rules for main product first.
+                    product.MainProduct.TryInheritFrom(product.Category ?? (IEntity)product.Catalog);
                     product.TryInheritFrom(product.MainProduct);
+                }
+                else
+                {
+                    product.TryInheritFrom(product.Category ?? (IEntity)product.Catalog);
                 }
             }
         }
