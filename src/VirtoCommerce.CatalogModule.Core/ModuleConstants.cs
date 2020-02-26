@@ -21,7 +21,7 @@ namespace VirtoCommerce.CatalogModule.Core
                   CatalogBrowseFiltersRead = "catalog:BrowseFilters:Read",
                   CatalogBrowseFiltersUpdate = "atalog:BrowseFilters:Update";
 
-                public static string[] AllPermissions = new[] { Access, Create, Read, Update, Delete, Export, Import, CatalogBrowseFiltersRead, CatalogBrowseFiltersUpdate };
+                public static string[] AllPermissions { get; } = new[] { Access, Create, Read, Update, Delete, Export, Import, CatalogBrowseFiltersRead, CatalogBrowseFiltersUpdate };
             }
         }
 
@@ -29,7 +29,7 @@ namespace VirtoCommerce.CatalogModule.Core
         {
             public static class General
             {
-                public static SettingDescriptor ImageCategories = new SettingDescriptor
+                public static SettingDescriptor ImageCategories { get; } = new SettingDescriptor
                 {
                     Name = "Catalog.ImageCategories",
                     GroupName = "Catalog|General",
@@ -37,7 +37,7 @@ namespace VirtoCommerce.CatalogModule.Core
                     IsDictionary = true
                 };
 
-                public static SettingDescriptor AssociationGroups = new SettingDescriptor
+                public static SettingDescriptor AssociationGroups { get; } = new SettingDescriptor
                 {
                     Name = "Catalog.AssociationGroups",
                     ValueType = SettingValueType.ShortText,
@@ -46,7 +46,7 @@ namespace VirtoCommerce.CatalogModule.Core
                     AllowedValues = new string[] { "Accessories", "Related Items" }
                 };
 
-                public static SettingDescriptor EditorialReviewTypes = new SettingDescriptor
+                public static SettingDescriptor EditorialReviewTypes { get; } = new SettingDescriptor
                 {
                     Name = "Catalog.EditorialReviewTypes",
                     ValueType = SettingValueType.ShortText,
@@ -56,7 +56,7 @@ namespace VirtoCommerce.CatalogModule.Core
                     AllowedValues = new string[] { "QuickReview", "FullReview" }
                 };
 
-                public static SettingDescriptor CodesInOutline = new SettingDescriptor
+                public static SettingDescriptor CodesInOutline { get; } = new SettingDescriptor
                 {
                     Name = "Catalog.CodesInOutline",
                     GroupName = "Catalog|General",
@@ -64,7 +64,7 @@ namespace VirtoCommerce.CatalogModule.Core
                     DefaultValue = false
                 };
 
-                public static SettingDescriptor ExposeAliasInDictionary = new SettingDescriptor
+                public static SettingDescriptor ExposeAliasInDictionary { get; } = new SettingDescriptor
                 {
                     Name = "Catalog.ExposeAliasInDictionary",
                     GroupName = "Catalog|General",
@@ -72,7 +72,7 @@ namespace VirtoCommerce.CatalogModule.Core
                     DefaultValue = false
                 };
 
-                public static SettingDescriptor UseSeoDeduplication = new SettingDescriptor
+                public static SettingDescriptor UseSeoDeduplication { get; } = new SettingDescriptor
                 {
                     Name = "Catalog.UseSeoDeduplication",
                     GroupName = "Catalog|General",
@@ -80,7 +80,7 @@ namespace VirtoCommerce.CatalogModule.Core
                     DefaultValue = false
                 };
 
-                public static SettingDescriptor EventBasedIndexation = new SettingDescriptor
+                public static SettingDescriptor EventBasedIndexation { get; } = new SettingDescriptor
                 {
                     Name = "Catalog.Search.EventBasedIndexation.Enable",
                     GroupName = "Catalog|General",
@@ -107,7 +107,7 @@ namespace VirtoCommerce.CatalogModule.Core
 
             public static class Search
             {
-                public static SettingDescriptor UseCatalogIndexedSearchInManager = new SettingDescriptor
+                public static SettingDescriptor UseCatalogIndexedSearchInManager { get; } = new SettingDescriptor
                 {
                     Name = "Catalog.Search.UseCatalogIndexedSearchInManager",
                     GroupName = "Catalog|Search",
@@ -115,7 +115,7 @@ namespace VirtoCommerce.CatalogModule.Core
                     DefaultValue = true
                 };
 
-                public static SettingDescriptor UseFullObjectIndexStoring = new SettingDescriptor
+                public static SettingDescriptor UseFullObjectIndexStoring { get; } = new SettingDescriptor
                 {
                     Name = "Catalog.Search.UseFullObjectIndexStoring",
                     GroupName = "Catalog|Search",
@@ -123,7 +123,7 @@ namespace VirtoCommerce.CatalogModule.Core
                     DefaultValue = false
                 };
 
-                public static SettingDescriptor IndexationDateProduct = new SettingDescriptor
+                public static SettingDescriptor IndexationDateProduct { get; } = new SettingDescriptor
                 {
                     Name = "VirtoCommerce.Search.IndexingJobs.IndexationDate.Product",
                     GroupName = "Catalog|Search",
@@ -131,7 +131,7 @@ namespace VirtoCommerce.CatalogModule.Core
                     DefaultValue = default(DateTime)
                 };
 
-                public static SettingDescriptor IndexationDateCategory = new SettingDescriptor
+                public static SettingDescriptor IndexationDateCategory { get; } = new SettingDescriptor
                 {
                     Name = "VirtoCommerce.Search.IndexingJobs.IndexationDate.Category",
                     GroupName = "Catalog|Search",
