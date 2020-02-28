@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 using VirtoCommerce.Platform.Core.Common;
 
@@ -60,7 +61,18 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                     hasImages.Images = value;
                 }
             }
-        } 
+        }
+        #endregion
+
+        #region ICloneable
+        public override object Clone()
+        {
+            var result = base.Clone() as ProductAssociation;
+
+            result.Images = Images?.Select(x => x.Clone()).OfType<Image>().ToList();
+
+            return result;
+        }
         #endregion
 
         protected override IEnumerable<object> GetEqualityComponents()

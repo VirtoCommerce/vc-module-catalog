@@ -139,7 +139,16 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         #region ICloneable
         public virtual object Clone()
         {
-            return MemberwiseClone();
+            var result = MemberwiseClone() as Category;
+
+            result.SeoInfos = SeoInfos?.Select(x => x.Clone()).OfType<SeoInfo>().ToList();
+            result.Children = Children?.Select(x => x.Clone()).OfType<Category>().ToList();
+            result.Outlines = Outlines?.Select(x => x.Clone()).OfType<Outline>().ToList();
+            result.Parents = Parents?.Select(x => x.Clone()).OfType<Category>().ToArray();
+            result.Properties = Properties?.Select(x => x.Clone()).OfType<Property>().ToList();
+            result.Links = Links?.Select(x => x.Clone()).OfType<CategoryLink>().ToList();
+
+            return result;
         }
         #endregion
 
