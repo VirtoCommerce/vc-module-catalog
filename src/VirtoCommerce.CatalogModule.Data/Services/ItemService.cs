@@ -226,7 +226,11 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 foreach (var link in product.Links ?? Array.Empty<CategoryLink>())
                 {
                     link.Catalog = catalogsByIdDict.GetValueOrThrow(link.CatalogId, $"link catalog with key {link.CatalogId} doesn't exist");
-                    link.Category = productLinksCategoriesByIdDict.GetValueOrThrow(link.CategoryId, $"link category with key {link.CategoryId} doesn't exist");
+
+                    if (!string.IsNullOrEmpty(link.CategoryId))
+                    {
+                        link.Category = productLinksCategoriesByIdDict.GetValueOrThrow(link.CategoryId, $"link category with key {link.CategoryId} doesn't exist");
+                    }
                 }
 
                 if (product.MainProduct != null)
