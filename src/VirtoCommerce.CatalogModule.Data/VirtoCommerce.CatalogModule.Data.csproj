@@ -23,12 +23,12 @@
         </PackageReference>
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.2" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.2" />
-        <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.0.0-rc.2" />
-        <PackageReference Include="VirtoCommerce.ExportModule.Data" Version="3.0.0-rc.2" />
-        <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.0.0-rc2-0138" />
-        <PackageReference Include="VirtoCommerce.Platform.Data" Version="3.0.0-rc2-0138" />
-        <PackageReference Include="VirtoCommerce.SearchModule.Data" Version="3.0.0-rc.3-001" />
-        <PackageReference Include="VirtoCommerce.StoreModule.Core" Version="3.0.0-rc.2" />
+        <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.0.0-rc.4" />
+        <PackageReference Include="VirtoCommerce.ExportModule.Data" Version="3.0.0-rc.4" />
+        <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.0.0-rc4" />
+        <PackageReference Include="VirtoCommerce.Platform.Data" Version="3.0.0-rc4" />
+        <PackageReference Include="VirtoCommerce.SearchModule.Data" Version="3.0.0-rc.4" />
+        <PackageReference Include="VirtoCommerce.StoreModule.Core" Version="3.0.0-rc.4" />
         
     </ItemGroup>
 
