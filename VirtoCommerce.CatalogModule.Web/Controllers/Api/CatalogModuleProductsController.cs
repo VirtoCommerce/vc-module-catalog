@@ -1,10 +1,10 @@
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Web.Http;
 using System.Web.Http.Description;
-using VirtoCommerce.CatalogModule.Data.Search;
 using VirtoCommerce.CatalogModule.Web.Converters;
 using VirtoCommerce.CatalogModule.Web.Security;
 using VirtoCommerce.Domain.Catalog.Model.Search;
@@ -137,7 +137,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             retVal.CategoryId = categoryId;
             retVal.CatalogId = catalogId;
             retVal.IsActive = true;
-            retVal.SeoInfos = Array.Empty<SeoInfo>();            
+            retVal.SeoInfos = Array.Empty<SeoInfo>();
 
             CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Create, retVal.ToModuleModel(_blobUrlResolver));
 
@@ -194,7 +194,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             newVariation.CatalogId = product.CatalogId;
             newVariation.TitularItemId = product.MainProductId ?? productId;
             newVariation.Properties = mainWebProduct.Properties.Where(x => x.Type == coreModel.PropertyType.Variation).ToList();
- 
+
             foreach (var property in newVariation.Properties)
             {
                 // Mark variation property as required
@@ -289,6 +289,23 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("")]
         [ResponseType(typeof(void))]
         public IHttpActionResult Delete([FromUri] string[] ids)
+        {
+            var products = _itemsService.GetByIds(ids, coreModel.ItemResponseGroup.ItemInfo);
+            CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Delete, products);
+
+            _itemsService.Delete(ids);
+            return StatusCode(HttpStatusCode.NoContent);
+        }
+
+
+        /// <summary>
+        /// Bulk deletes the specified items by ids.
+        /// </summary>
+        /// <param name="ids">The items ids.</param>
+        [HttpPost]
+        [Route("delete")]
+        [ResponseType(typeof(void))]
+        public IHttpActionResult BulkDelete(string[] ids)
         {
             var products = _itemsService.GetByIds(ids, coreModel.ItemResponseGroup.ItemInfo);
             CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Delete, products);

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net;
 using System.Web.Http;
 using System.Web.Http.Description;
-using System.Web.Http.ModelBinding;
 using System.Web.Http.Results;
 using VirtoCommerce.CatalogModule.Web.Converters;
 using VirtoCommerce.CatalogModule.Web.Security;
@@ -165,6 +164,22 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         public IHttpActionResult Delete([FromUri]string[] ids)
         {
             var categories = _categoryService.GetByIds(ids, Domain.Catalog.Model.CategoryResponseGroup.WithParents);
+            CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Delete, categories);
+
+            _categoryService.Delete(ids);
+            return StatusCode(HttpStatusCode.NoContent);
+        }
+
+        /// <summary>
+        /// Bulk deletes the specified categories by id.
+        /// </summary>
+        /// <param name="ids">The categories ids.</param>
+        [HttpPost]
+        [Route("delete")]
+        [ResponseType(typeof(void))]
+        public IHttpActionResult BulkDelete(string[] ids)
+        {
+            var categories = _categoryService.GetByIds(ids, coreModel.CategoryResponseGroup.WithParents);
             CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Delete, categories);
 
             _categoryService.Delete(ids);
