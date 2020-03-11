@@ -5,8 +5,7 @@ angular.module('virtoCommerce.catalogModule')
         newCategory: { method: 'GET', url: 'api/catalog/:catalogId/categories/newcategory', params: { catalogId: '@catalogId' } },
         update: { method: 'POST', url: 'api/catalog/categories/' },
         remove: { method: 'DELETE', url: 'api/catalog/categories' },
-        plenty: { method: 'POST', url: 'api/catalog/categories/plenty', isArray: true },
-        bulkRemove: { method: 'POST', url: 'api/catalog/categories/delete' }
+        plenty: { method: 'POST', url: 'api/catalog/categories/plenty', isArray: true }
     });
 
 }]);

@@ -7,7 +7,6 @@ angular.module('virtoCommerce.catalogModule')
         newVariation: { method: 'GET', url: 'api/catalog/products/:itemId/getnewvariation' },
         cloneItem: { method: 'GET', url: 'api/catalog/products/:itemId/clone' },
         update: { method: 'POST' },
-        plenty: { method: 'POST', url: 'api/catalog/products/plenty', isArray: true },
-        bulkRemove: { method: 'POST', url: 'api/catalog/products/delete' }
+        plenty: { method: 'POST', url: 'api/catalog/products/plenty', isArray: true }
     });
 }]);
