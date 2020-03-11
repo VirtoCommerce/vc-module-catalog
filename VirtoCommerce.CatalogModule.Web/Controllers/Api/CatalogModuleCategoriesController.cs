@@ -1,12 +1,16 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using System.Web.Http.Results;
+using Microsoft.Practices.ObjectBuilder2;
+using VirtoCommerce.CatalogModule.Data.Search;
 using VirtoCommerce.CatalogModule.Web.Converters;
 using VirtoCommerce.CatalogModule.Web.Security;
+using VirtoCommerce.Domain.Catalog.Model.Search;
 using VirtoCommerce.Domain.Catalog.Services;
 using VirtoCommerce.Domain.Commerce.Model;
 using VirtoCommerce.Platform.Core.Assets;
@@ -23,13 +27,15 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly ICategoryService _categoryService;
         private readonly ICatalogService _catalogService;
         private readonly IBlobUrlResolver _blobUrlResolver;
+        private readonly ICategorySearchService _categorySearchService;
 
-        public CatalogModuleCategoriesController(ICategoryService categoryService, ICatalogService catalogService, IBlobUrlResolver blobUrlResolver, ISecurityService securityService, IPermissionScopeService permissionScopeService)
+        public CatalogModuleCategoriesController(ICategoryService categoryService, ICatalogService catalogService, IBlobUrlResolver blobUrlResolver, ISecurityService securityService, IPermissionScopeService permissionScopeService, ICategorySearchService categorySearchService)
             : base(securityService, permissionScopeService)
         {
             _categoryService = categoryService;
             _catalogService = catalogService;
             _blobUrlResolver = blobUrlResolver;
+            _categorySearchService = categorySearchService;
         }
 
 
@@ -173,16 +179,34 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <summary>
         /// Bulk deletes the specified categories by id.
         /// </summary>
-        /// <param name="ids">The categories ids.</param>
+        /// <param name="searchCriteria"></param>
         [HttpPost]
         [Route("delete")]
         [ResponseType(typeof(void))]
-        public IHttpActionResult BulkDelete(string[] ids)
+        public async Task<IHttpActionResult> BulkDelete(CategorySearchCriteria searchCriteria)
         {
-            var categories = _categoryService.GetByIds(ids, coreModel.CategoryResponseGroup.WithParents);
-            CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Delete, categories);
+            bool hasSearchCriteria;
+            var listIds = new List<string>();
+            do
+            {
+                var searchResult = await _categorySearchService.SearchAsync(searchCriteria);
 
-            _categoryService.Delete(ids);
+                hasSearchCriteria = searchResult.Items != null;
+                if (hasSearchCriteria)
+                {
+                    CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Delete, searchResult.Items);
+                    searchResult.Items.ForEach(res => listIds.Add(res.Id));
+                    searchCriteria.Skip += searchCriteria.Take;
+
+                }
+            }
+            while (hasSearchCriteria);
+
+            listIds.ProcessWithPaging(searchCriteria.Take, (ids, currentItem, totalCount) =>
+            {
+                _categoryService.Delete(ids.ToArray());
+            });
+
             return StatusCode(HttpStatusCode.NoContent);
         }
     }

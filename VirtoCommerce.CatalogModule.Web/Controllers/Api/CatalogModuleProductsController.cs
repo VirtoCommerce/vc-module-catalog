@@ -3,8 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
+using Microsoft.Practices.ObjectBuilder2;
+using VirtoCommerce.CatalogModule.Data.Search;
 using VirtoCommerce.CatalogModule.Web.Converters;
 using VirtoCommerce.CatalogModule.Web.Security;
 using VirtoCommerce.Domain.Catalog.Model.Search;
@@ -27,9 +30,12 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly ICategoryService _categoryService;
         private readonly ISkuGenerator _skuGenerator;
         private readonly IProductAssociationSearchService _productAssociationSearchService;
+        private readonly IProductSearchService _productSearchService;
+
 
         public CatalogModuleProductsController(IItemService itemsService, IBlobUrlResolver blobUrlResolver, ICatalogService catalogService, ICategoryService categoryService,
-                                               ISkuGenerator skuGenerator, ISecurityService securityService, IPermissionScopeService permissionScopeService, IProductAssociationSearchService productAssociationSearchService)
+                                               ISkuGenerator skuGenerator, ISecurityService securityService, IPermissionScopeService permissionScopeService, IProductAssociationSearchService productAssociationSearchService,
+                                               IProductSearchService productSearchService)
             : base(securityService, permissionScopeService)
         {
             _itemsService = itemsService;
@@ -38,6 +44,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             _catalogService = catalogService;
             _skuGenerator = skuGenerator;
             _productAssociationSearchService = productAssociationSearchService;
+            _productSearchService = productSearchService;
+
         }
 
 
@@ -301,16 +309,34 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <summary>
         /// Bulk deletes the specified items by ids.
         /// </summary>
-        /// <param name="ids">The items ids.</param>
+        /// <param name="searchCriteria"></param>
         [HttpPost]
         [Route("delete")]
         [ResponseType(typeof(void))]
-        public IHttpActionResult BulkDelete(string[] ids)
+        public async Task<IHttpActionResult> BulkDelete(ProductSearchCriteria searchCriteria)
         {
-            var products = _itemsService.GetByIds(ids, coreModel.ItemResponseGroup.ItemInfo);
-            CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Delete, products);
+            bool hasSearchCriteria;
+            var listIds = new List<string>();
+            do
+            {
+                var searchResult = await _productSearchService.SearchAsync(searchCriteria);
 
-            _itemsService.Delete(ids);
+                hasSearchCriteria = searchResult.Items != null;
+                if (hasSearchCriteria)
+                {
+                    CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Delete, searchResult.Items);
+                    searchResult.Items.ForEach(res => listIds.Add(res.Id));
+                    searchCriteria.Skip += searchCriteria.Take;
+
+                }
+            }
+            while (hasSearchCriteria);
+
+            listIds.ProcessWithPaging(searchCriteria.Take, (ids, currentItem, totalCount) =>
+            {
+                _itemsService.Delete(ids.ToArray());
+            });
+
             return StatusCode(HttpStatusCode.NoContent);
         }
 
