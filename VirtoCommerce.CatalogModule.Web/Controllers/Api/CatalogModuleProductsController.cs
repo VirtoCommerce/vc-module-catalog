@@ -29,13 +29,12 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly ICategoryService _categoryService;
         private readonly ISkuGenerator _skuGenerator;
         private readonly IProductAssociationSearchService _productAssociationSearchService;
-        private readonly IProductSearchService _productSearchService;
         private readonly ICatalogSearchService _catalogSearchService;
 
 
         public CatalogModuleProductsController(IItemService itemsService, IBlobUrlResolver blobUrlResolver, ICatalogService catalogService, ICategoryService categoryService,
                                                ISkuGenerator skuGenerator, ISecurityService securityService, IPermissionScopeService permissionScopeService, IProductAssociationSearchService productAssociationSearchService,
-                                               IProductSearchService productSearchService, ICatalogSearchService catalogSearchService)
+                                               ICatalogSearchService catalogSearchService)
             : base(securityService, permissionScopeService)
         {
             _itemsService = itemsService;
@@ -44,7 +43,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             _catalogService = catalogService;
             _skuGenerator = skuGenerator;
             _productAssociationSearchService = productAssociationSearchService;
-            _productSearchService = productSearchService;
             _catalogSearchService = catalogSearchService;
         }
 
