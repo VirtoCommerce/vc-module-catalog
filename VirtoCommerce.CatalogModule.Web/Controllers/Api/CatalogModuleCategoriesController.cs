@@ -2,11 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using System.Web.Http.Results;
-using Microsoft.Practices.ObjectBuilder2;
 using VirtoCommerce.CatalogModule.Data.Search;
 using VirtoCommerce.CatalogModule.Web.Converters;
 using VirtoCommerce.CatalogModule.Web.Security;
@@ -27,15 +25,15 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly ICategoryService _categoryService;
         private readonly ICatalogService _catalogService;
         private readonly IBlobUrlResolver _blobUrlResolver;
-        private readonly ICategorySearchService _categorySearchService;
+        private readonly ICatalogSearchService _catalogSearchService;
 
-        public CatalogModuleCategoriesController(ICategoryService categoryService, ICatalogService catalogService, IBlobUrlResolver blobUrlResolver, ISecurityService securityService, IPermissionScopeService permissionScopeService, ICategorySearchService categorySearchService)
+        public CatalogModuleCategoriesController(ICategoryService categoryService, ICatalogService catalogService, IBlobUrlResolver blobUrlResolver, ISecurityService securityService, IPermissionScopeService permissionScopeService, ICatalogSearchService catalogSearchService)
             : base(securityService, permissionScopeService)
         {
             _categoryService = categoryService;
             _catalogService = catalogService;
             _blobUrlResolver = blobUrlResolver;
-            _categorySearchService = categorySearchService;
+            _catalogSearchService = catalogSearchService;
         }
 
 
@@ -179,35 +177,61 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <summary>
         /// Bulk deletes the specified categories by id.
         /// </summary>
-        /// <param name="searchCriteria"></param>
+        /// <param name="categorySearchCriteria"></param>
         [HttpPost]
         [Route("delete")]
         [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> BulkDelete(CategorySearchCriteria searchCriteria)
+        public IHttpActionResult BulkDelete(CategorySearchCriteria categorySearchCriteria)
         {
-            bool hasSearchCriteria;
-            var listIds = new List<string>();
-            do
+            const int deleteBatchSize = 50;
+
+            var idsToDelete = categorySearchCriteria.ObjectIds?.ToList() ?? new List<string>();
+
+            if (idsToDelete.IsNullOrEmpty())
             {
-                var searchResult = await _categorySearchService.SearchAsync(searchCriteria);
+                var searchCriteria = categorySearchCriteria.ToSearchCriteria();
+                // Any pagination for deleting should be managed at back-end. 
+                searchCriteria.Take = deleteBatchSize;
+                searchCriteria.Skip = 0;
 
-                hasSearchCriteria = searchResult.Items != null;
-                if (hasSearchCriteria)
-                {
-                    CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Delete, searchResult.Items);
-                    searchResult.Items.ForEach(res => listIds.Add(res.Id));
-                    searchCriteria.Skip += searchCriteria.Take;
-
-                }
+                idsToDelete = GetDeletingIdsWithPaging(searchCriteria);
             }
-            while (hasSearchCriteria);
+            else
+            {
+                idsToDelete.ProcessWithPaging(deleteBatchSize, (ids, currentItem, totalCount) =>
+                {
+                    var searchResult = _categoryService.GetByIds(ids.ToArray(), coreModel.CategoryResponseGroup.Info);
+                    CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Delete, searchResult);
+                });
+            }
 
-            listIds.ProcessWithPaging(searchCriteria.Take, (ids, currentItem, totalCount) =>
+            idsToDelete.ProcessWithPaging(deleteBatchSize, (ids, currentItem, totalCount) =>
             {
                 _categoryService.Delete(ids.ToArray());
             });
 
             return StatusCode(HttpStatusCode.NoContent);
+        }
+
+        private List<string> GetDeletingIdsWithPaging(coreModel.SearchCriteria searchCriteria)
+        {
+            var result = new List<string>();
+            bool hasItems;
+            do
+            {
+                var searchResult = _catalogSearchService.Search(searchCriteria);
+
+                hasItems = searchResult.Categories.Any();
+                if (hasItems)
+                {
+                    CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Delete, searchResult.Categories);
+                    result.AddRange(searchResult.Categories.Select(x => x.Id));
+                    searchCriteria.Skip += searchCriteria.Take;
+                }
+            }
+            while (hasItems);
+
+            return result;
         }
     }
 }

@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using VirtoCommerce.Domain.Catalog.Model;
 using VirtoCommerce.Domain.Catalog.Model.Search;
+using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.Search
 {
@@ -24,7 +26,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
         {
             var result = criteria
                 .GetRawOutlines()
-                .Select(outline => StringsHelper.JoinNonEmptyStrings("/", criteria.CatalogId, outline).ToLowerInvariant().Replace("//", "/"))                
+                .Select(outline => StringsHelper.JoinNonEmptyStrings("/", criteria.CatalogId, outline).ToLowerInvariant().Replace("//", "/"))
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .ToArray();
 
@@ -66,15 +68,47 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 result.AddRange(criteria.Terms
                     .Select(item => item.Split(nameValueDelimeter, 2))
                     .Where(item => item.Length == 2)
-                    .Select(item => new StringKeyValues {
+                    .Select(item => new StringKeyValues
+                    {
                         Key = item[0],
                         Values = item[1].Split(valuesDelimeter, StringSplitOptions.RemoveEmptyEntries)
-                                        .Select(x=> x?.Replace(commaEscapeString, ","))
+                                        .Select(x => x?.Replace(commaEscapeString, ","))
                                         .ToArray()
                     }));
             }
 
             return result;
+        }
+
+        public static SearchCriteria ToSearchCriteria(this ProductSearchCriteria productSearchCriteria)
+        {
+            var searchCriteria = AbstractTypeFactory<SearchCriteria>.TryCreateInstance();
+
+            searchCriteria.ResponseGroup = SearchResponseGroup.WithProducts;
+            searchCriteria.CatalogIds = productSearchCriteria.CatalogIds;
+            searchCriteria.CategoryIds = productSearchCriteria.CategoryIds;
+            searchCriteria.Keyword = productSearchCriteria.SearchPhrase;
+            searchCriteria.SearchInVariations = productSearchCriteria.SearchInVariations;
+            searchCriteria.Sort = productSearchCriteria.Sort;
+            searchCriteria.StartDateFrom = productSearchCriteria.StartDateFrom;
+            searchCriteria.PricelistIds = productSearchCriteria.Pricelists;
+            searchCriteria.WithHidden = productSearchCriteria.WithHidden;
+            searchCriteria.Currency = productSearchCriteria.Currency;
+            searchCriteria.Skip = productSearchCriteria.Skip;
+            searchCriteria.Take = productSearchCriteria.Take;
+            return searchCriteria;
+        }
+
+        public static SearchCriteria ToSearchCriteria(this CategorySearchCriteria categorySearchCriteria)
+        {
+            var searchCriteria = AbstractTypeFactory<SearchCriteria>.TryCreateInstance();
+
+            searchCriteria.ResponseGroup = SearchResponseGroup.WithCategories;
+            searchCriteria.CatalogId = categorySearchCriteria.CatalogId;
+            searchCriteria.Sort = categorySearchCriteria.Sort;
+            searchCriteria.Skip = categorySearchCriteria.Skip;
+            searchCriteria.Take = categorySearchCriteria.Take;
+            return searchCriteria;
         }
     }
 
