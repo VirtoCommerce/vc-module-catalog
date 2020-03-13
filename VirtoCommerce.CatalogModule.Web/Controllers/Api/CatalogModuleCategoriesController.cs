@@ -194,7 +194,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 searchCriteria.Take = deleteBatchSize;
                 searchCriteria.Skip = 0;
 
-                idsToDelete = GetDeletingIdsWithPaging(searchCriteria);
+                idsToDelete = GetIdsToDelete(searchCriteria);
             }
             else
             {
@@ -213,7 +213,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        private List<string> GetDeletingIdsWithPaging(coreModel.SearchCriteria searchCriteria)
+        private List<string> GetIdsToDelete(coreModel.SearchCriteria searchCriteria)
         {
             var result = new List<string>();
             bool hasItems;
