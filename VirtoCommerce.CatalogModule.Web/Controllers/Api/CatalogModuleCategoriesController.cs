@@ -26,6 +26,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly ICatalogService _catalogService;
         private readonly IBlobUrlResolver _blobUrlResolver;
         private readonly ICatalogSearchService _catalogSearchService;
+        private const int DeleteBatchSize = 50;
 
         public CatalogModuleCategoriesController(ICategoryService categoryService, ICatalogService catalogService, IBlobUrlResolver blobUrlResolver, ISecurityService securityService, IPermissionScopeService permissionScopeService, ICatalogSearchService catalogSearchService)
             : base(securityService, permissionScopeService)
@@ -183,29 +184,22 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [ResponseType(typeof(void))]
         public IHttpActionResult BulkDelete(CategorySearchCriteria categorySearchCriteria)
         {
-            const int deleteBatchSize = 50;
-
             var idsToDelete = categorySearchCriteria.ObjectIds?.ToList() ?? new List<string>();
 
             if (idsToDelete.IsNullOrEmpty())
             {
-                var searchCriteria = categorySearchCriteria.ToSearchCriteria();
-                // Any pagination for deleting should be managed at back-end. 
-                searchCriteria.Take = deleteBatchSize;
-                searchCriteria.Skip = 0;
-
-                idsToDelete = GetIdsToDelete(searchCriteria);
+                idsToDelete = GetIdsToDelete(categorySearchCriteria);
             }
             else
             {
-                idsToDelete.ProcessWithPaging(deleteBatchSize, (ids, currentItem, totalCount) =>
+                idsToDelete.ProcessWithPaging(DeleteBatchSize, (ids, currentItem, totalCount) =>
                 {
                     var searchResult = _categoryService.GetByIds(ids.ToArray(), coreModel.CategoryResponseGroup.Info);
                     CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Delete, searchResult);
                 });
             }
 
-            idsToDelete.ProcessWithPaging(deleteBatchSize, (ids, currentItem, totalCount) =>
+            idsToDelete.ProcessWithPaging(DeleteBatchSize, (ids, currentItem, totalCount) =>
             {
                 _categoryService.Delete(ids.ToArray());
             });
@@ -213,8 +207,13 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        private List<string> GetIdsToDelete(coreModel.SearchCriteria searchCriteria)
+        private List<string> GetIdsToDelete(CategorySearchCriteria categorySearchCriteria)
         {
+            var searchCriteria = categorySearchCriteria.ToSearchCriteria();
+            // Any pagination for deleting should be managed at back-end. 
+            searchCriteria.Take = DeleteBatchSize;
+            searchCriteria.Skip = 0;
+
             var result = new List<string>();
             bool hasItems;
             do
