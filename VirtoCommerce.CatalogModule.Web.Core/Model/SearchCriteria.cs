@@ -1,8 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VirtoCommerce.Domain.Catalog.Model;
 
 namespace VirtoCommerce.CatalogModule.Web.Model
@@ -73,7 +69,7 @@ namespace VirtoCommerce.CatalogModule.Web.Model
         public DateTime? IndexDate { get; set; }
 
         public string PricelistId { get; set; }
-   
+
         public string[] PricelistIds { get; set; }
 
         /// <summary>
@@ -123,6 +119,8 @@ namespace VirtoCommerce.CatalogModule.Web.Model
         public string[] VendorIds { get; set; }
 
         public DateTime? StartDateFrom { get; set; }
-      
+
+        public string[] ObjectIds { get; set; }
+
     }
 }
