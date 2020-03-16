@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,13 +27,9 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly ICategoryService _categoryService;
         private readonly ISkuGenerator _skuGenerator;
         private readonly IProductAssociationSearchService _productAssociationSearchService;
-        private readonly ICatalogSearchService _catalogSearchService;
-        private const int DeleteBatchSize = 50;
-
 
         public CatalogModuleProductsController(IItemService itemsService, IBlobUrlResolver blobUrlResolver, ICatalogService catalogService, ICategoryService categoryService,
-                                               ISkuGenerator skuGenerator, ISecurityService securityService, IPermissionScopeService permissionScopeService, IProductAssociationSearchService productAssociationSearchService,
-                                               ICatalogSearchService catalogSearchService)
+                                               ISkuGenerator skuGenerator, ISecurityService securityService, IPermissionScopeService permissionScopeService, IProductAssociationSearchService productAssociationSearchService)
             : base(securityService, permissionScopeService)
         {
             _itemsService = itemsService;
@@ -43,7 +38,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             _catalogService = catalogService;
             _skuGenerator = skuGenerator;
             _productAssociationSearchService = productAssociationSearchService;
-            _catalogSearchService = catalogSearchService;
         }
 
 
@@ -143,7 +137,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             retVal.CategoryId = categoryId;
             retVal.CatalogId = catalogId;
             retVal.IsActive = true;
-            retVal.SeoInfos = Array.Empty<SeoInfo>();
+            retVal.SeoInfos = Array.Empty<SeoInfo>();            
 
             CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Create, retVal.ToModuleModel(_blobUrlResolver));
 
@@ -200,7 +194,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             newVariation.CatalogId = product.CatalogId;
             newVariation.TitularItemId = product.MainProductId ?? productId;
             newVariation.Properties = mainWebProduct.Properties.Where(x => x.Type == coreModel.PropertyType.Variation).ToList();
-
+ 
             foreach (var property in newVariation.Properties)
             {
                 // Mark variation property as required
@@ -303,39 +297,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-
-        /// <summary>
-        /// Bulk deletes the specified items by ids.
-        /// </summary>
-        /// <param name="productSearchCriteria"></param>
-        [HttpPost]
-        [Route("delete")]
-        [ResponseType(typeof(void))]
-        public IHttpActionResult BulkDelete(ProductSearchCriteria productSearchCriteria)
-        {
-            var idsToDelete = productSearchCriteria.ObjectIds?.ToList() ?? new List<string>();
-
-            if (idsToDelete.IsNullOrEmpty())
-            {
-                idsToDelete = GetIdsToDelete(productSearchCriteria);
-            }
-            else
-            {
-                idsToDelete.ProcessWithPaging(DeleteBatchSize, (ids, currentItem, totalCount) =>
-                {
-                    var searchResult = _itemsService.GetByIds(ids.ToArray(), coreModel.ItemResponseGroup.None);
-                    CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Delete, searchResult);
-                });
-            }
-
-            idsToDelete.ProcessWithPaging(DeleteBatchSize, (ids, currentItem, totalCount) =>
-            {
-                _itemsService.Delete(ids.ToArray());
-            });
-
-            return StatusCode(HttpStatusCode.NoContent);
-        }
-
         /// <summary>
         /// Return product and product's associations products
         /// </summary>
@@ -415,32 +376,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 }
             }
             return string.Join(" ", retVal).GenerateSlug();
-        }
-
-        private List<string> GetIdsToDelete(ProductSearchCriteria productSearchCriteria)
-        {
-            var searchCriteria = productSearchCriteria.ToSearchCriteria();
-            // Any pagination for deleting should be managed at back-end. 
-            searchCriteria.Take = DeleteBatchSize;
-            searchCriteria.Skip = 0;
-
-            var result = new List<string>();
-            bool hasItems;
-            do
-            {
-                var searchResult = _catalogSearchService.Search(searchCriteria);
-
-                hasItems = searchResult.Products.Any();
-                if (hasItems)
-                {
-                    CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Delete, searchResult.Products);
-                    result.AddRange(searchResult.Products.Select(x => x.Id));
-                    searchCriteria.Skip += searchCriteria.Take;
-                }
-            }
-            while (hasItems);
-
-            return result;
         }
     }
 }
