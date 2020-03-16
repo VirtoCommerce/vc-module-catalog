@@ -63,7 +63,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         public IHttpActionResult ListItemsSearch(webModel.SearchCriteria criteria)
         {
 
-            var result = _listEntrySearchService.Search(PrepareSearchCriteria(criteria));
+            var result = SearchListEntries(criteria);
 
             return Ok(result);
         }
@@ -177,7 +177,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             //Scope bound security check
             CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Delete, links);
 
-            InnerUpdateLinks(links, (x, y) => x.Links = x.Links.Where(l => String.Join(":", l.CatalogId, l.CategoryId) != String.Join(":", y.CatalogId, y.CategoryId)).ToList());
+            InnerUpdateLinks(links, (x, y) => x.Links = x.Links.Where(l => string.Join(":", l.CatalogId, l.CategoryId) != string.Join(":", y.CatalogId, y.CategoryId)).ToList());
             return StatusCode(HttpStatusCode.NoContent);
         }
 
@@ -214,7 +214,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// </summary>
         /// <param name="searchCriteria"></param>
         [HttpPost]
-        [Route("delete")]
+        [Route("bulkdelete")]
         [ResponseType(typeof(void))]
         public IHttpActionResult BulkDelete(webModel.SearchCriteria searchCriteria)
         {
@@ -256,7 +256,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         }
 
 
-        private coreModel.SearchCriteria PrepareSearchCriteria(webModel.SearchCriteria criteria)
+        private webModel.ListEntrySearchResult SearchListEntries(webModel.SearchCriteria criteria)
         {
             var coreModelCriteria = criteria.ToCoreModel();
             ApplyRestrictionsForCurrentUser(coreModelCriteria);
@@ -270,9 +270,9 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 coreModelCriteria.SearchInVariations = true;
             }
 
-            return coreModelCriteria;
-        }
+            return _listEntrySearchService.Search(coreModelCriteria);
 
+        }
         private List<string> GetIdsToDelete(webModel.SearchCriteria searchCriteria)
         {
             // Any pagination for deleting should be managed at back-end. 
@@ -284,9 +284,9 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             do
             {
-                var searchResult = _listEntrySearchService.Search(PrepareSearchCriteria(searchCriteria));
-                var listEntriesIds = searchResult.ListEntries.Where(x => string.Equals(x.Type, KnownDocumentTypes.Product, StringComparison.InvariantCultureIgnoreCase) ||
-                                                             string.Equals(x.Type, KnownDocumentTypes.Category, StringComparison.InvariantCultureIgnoreCase))
+                var searchResult = SearchListEntries(searchCriteria);
+                var listEntriesIds = searchResult.ListEntries
+                    .Where(x => x.Type.EqualsInvariant(KnownDocumentTypes.Product) || x.Type.EqualsInvariant(KnownDocumentTypes.Category))
                     .Select(x => x.Id)
                     .ToArray();
 
