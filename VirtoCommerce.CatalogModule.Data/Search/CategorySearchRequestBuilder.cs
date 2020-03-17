@@ -65,6 +65,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 result.Add(FiltersHelper.CreateTermFilter("catalog", criteria.CatalogId.ToLowerInvariant()));
             }
 
+            if (!criteria.WithHidden)
+            {
+                result.Add(FiltersHelper.CreateTermFilter("status", "visible"));
+            }
+
             result.Add(FiltersHelper.CreateOutlineFilter(criteria));
 
             var terms = criteria.GetTerms();
