@@ -210,13 +210,13 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         }
 
         /// <summary>
-        /// Bulk deletes the specified items by ids.
+        /// Bulk delete by the search criteria.
         /// </summary>
         /// <param name="searchCriteria"></param>
         [HttpPost]
         [Route("delete")]
         [ResponseType(typeof(void))]
-        public IHttpActionResult BulkDelete(webModel.SearchCriteria searchCriteria)
+        public IHttpActionResult Delete(webModel.SearchCriteria searchCriteria)
         {
             var idsToDelete = searchCriteria.ObjectIds?.ToList() ?? new List<string>();
             var productIds = new List<string>();
