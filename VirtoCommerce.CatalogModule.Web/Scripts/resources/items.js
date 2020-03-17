@@ -1,4 +1,4 @@
-﻿angular.module('virtoCommerce.catalogModule')
+angular.module('virtoCommerce.catalogModule')
 .factory('virtoCommerce.catalogModule.items', ['$resource', function ($resource) {
     return $resource('api/catalog/products/:id', null, {
         remove: { method: 'DELETE', url: 'api/catalog/products' },

@@ -6,13 +6,14 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using VirtoCommerce.CatalogModule.Web.Converters;
 using VirtoCommerce.CatalogModule.Web.Security;
+using VirtoCommerce.CatalogModule.Web.Services;
 using VirtoCommerce.Domain.Catalog.Services;
+using VirtoCommerce.Domain.Search;
 using VirtoCommerce.Platform.Core.Assets;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Security;
 using coreModel = VirtoCommerce.Domain.Catalog.Model;
 using webModel = VirtoCommerce.CatalogModule.Web.Model;
-using VirtoCommerce.CatalogModule.Web.Services;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
@@ -26,6 +27,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly IListEntrySearchService _listEntrySearchService;
         private readonly ListEntryMover<coreModel.Category> _categoryMover;
         private readonly ListEntryMover<coreModel.CatalogProduct> _productMover;
+
+        private const int DeleteBatchSize = 50;
 
         public CatalogModuleListEntryController(
             ICatalogSearchService searchService,
@@ -59,19 +62,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [ResponseType(typeof(webModel.ListEntrySearchResult))]
         public IHttpActionResult ListItemsSearch(webModel.SearchCriteria criteria)
         {
-            var coreModelCriteria = criteria.ToCoreModel();
-            ApplyRestrictionsForCurrentUser(coreModelCriteria);
 
-            coreModelCriteria.WithHidden = true;
-
-            // need search in children categories if user specify keyword
-            if (!string.IsNullOrEmpty(coreModelCriteria.Keyword))
-            {
-                coreModelCriteria.SearchInChildren = true;
-                coreModelCriteria.SearchInVariations = true;
-            }
-
-            var result = _listEntrySearchService.Search(coreModelCriteria);
+            var result = SearchListEntries(criteria);
 
             return Ok(result);
         }
@@ -215,6 +207,100 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             _productMover.ConfirmMove(products);
 
             return Ok();
+        }
+
+        /// <summary>
+        /// Bulk delete by the search criteria.
+        /// </summary>
+        /// <param name="searchCriteria"></param>
+        [HttpPost]
+        [Route("delete")]
+        [ResponseType(typeof(void))]
+        public IHttpActionResult Delete(webModel.SearchCriteria searchCriteria)
+        {
+            var idsToDelete = searchCriteria.ObjectIds?.ToList() ?? new List<string>();
+            var productIds = new List<string>();
+            var categoryIds = new List<string>();
+
+            if (idsToDelete.IsNullOrEmpty())
+            {
+                idsToDelete = GetIdsToDelete(searchCriteria);
+            }
+
+            if (!idsToDelete.IsNullOrEmpty())
+            {
+                idsToDelete.ProcessWithPaging(DeleteBatchSize, (ids, currentItem, totalCount) =>
+                {
+                    var commonIds = ids.ToArray();
+                    var searchProductResult = _itemService.GetByIds(commonIds, coreModel.ItemResponseGroup.None);
+                    CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Delete, searchProductResult);
+                    productIds.AddRange(searchProductResult.Select(x => x.Id));
+
+                    var searchCategoryResult = _categoryService.GetByIds(commonIds.ToArray(), coreModel.CategoryResponseGroup.None);
+                    CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.Delete, searchCategoryResult);
+                    categoryIds.AddRange(searchCategoryResult.Select(x => x.Id));
+                });
+
+                productIds.ProcessWithPaging(DeleteBatchSize, (ids, currentItem, totalCount) =>
+                {
+                    _itemService.Delete(ids.ToArray());
+                });
+
+                categoryIds.ProcessWithPaging(DeleteBatchSize, (ids, currentItem, totalCount) =>
+                {
+                    _categoryService.Delete(ids.ToArray());
+                });
+            }
+
+            return StatusCode(HttpStatusCode.NoContent);
+        }
+
+
+        private webModel.ListEntrySearchResult SearchListEntries(webModel.SearchCriteria criteria)
+        {
+            var coreModelCriteria = criteria.ToCoreModel();
+            ApplyRestrictionsForCurrentUser(coreModelCriteria);
+
+            coreModelCriteria.WithHidden = true;
+
+            // need search in children categories if user specify keyword
+            if (!string.IsNullOrEmpty(coreModelCriteria.Keyword))
+            {
+                coreModelCriteria.SearchInChildren = true;
+                coreModelCriteria.SearchInVariations = true;
+            }
+
+            return _listEntrySearchService.Search(coreModelCriteria);
+
+        }
+        private List<string> GetIdsToDelete(webModel.SearchCriteria searchCriteria)
+        {
+            // Any pagination for deleting should be managed at back-end. 
+            searchCriteria.Take = DeleteBatchSize;
+            searchCriteria.Skip = 0;
+
+            var itemIds = new List<string>();
+            bool hasItems;
+
+            do
+            {
+                var searchResult = SearchListEntries(searchCriteria);
+                var listEntriesIds = searchResult.ListEntries
+                    .Where(x => x.Type.EqualsInvariant(KnownDocumentTypes.Product) || x.Type.EqualsInvariant(KnownDocumentTypes.Category))
+                    .Select(x => x.Id)
+                    .ToArray();
+
+                hasItems = !listEntriesIds.IsNullOrEmpty();
+
+                if (hasItems)
+                {
+                    itemIds.AddRange(listEntriesIds);
+                    searchCriteria.Skip += searchCriteria.Take;
+                }
+            }
+            while (hasItems);
+
+            return itemIds;
         }
 
         private void InnerUpdateLinks(webModel.ListEntryLink[] links, Action<coreModel.ILinkSupport, coreModel.CategoryLink> action)
