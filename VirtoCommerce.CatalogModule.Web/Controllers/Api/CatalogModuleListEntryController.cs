@@ -214,7 +214,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// </summary>
         /// <param name="searchCriteria"></param>
         [HttpPost]
-        [Route("bulkdelete")]
+        [Route("delete")]
         [ResponseType(typeof(void))]
         public IHttpActionResult BulkDelete(webModel.SearchCriteria searchCriteria)
         {
