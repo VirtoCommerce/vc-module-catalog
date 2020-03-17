@@ -1,5 +1,7 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.SearchModule.Core.Model;
@@ -22,6 +24,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
         [HttpPost]
         [Route("products")]
+        [Authorize(ModuleConstants.Security.Permissions.Read)]
         public async Task<ActionResult<ProductIndexedSearchResult>> SearchProducts([FromBody]ProductIndexedSearchCriteria criteria)
         {
             criteria.ObjectType = KnownDocumentTypes.Product;
@@ -31,6 +34,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
         [HttpPost]
         [Route("categories")]
+        [Authorize(ModuleConstants.Security.Permissions.Read)]
         public async Task<ActionResult<CategoryIndexedSearchResult>> SearchCategories([FromBody]CategoryIndexedSearchCriteria criteria)
         {
             criteria.ObjectType = KnownDocumentTypes.Category;

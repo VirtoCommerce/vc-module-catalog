@@ -54,6 +54,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <returns></returns>
         [HttpPost]
         [Route("")]
+        [Authorize(ModuleConstants.Security.Permissions.Access)]
         public async Task<ActionResult<ListEntrySearchResult>> ListItemsSearchAsync([FromBody]CatalogListEntrySearchCriteria criteria)
         {
             var result = new ListEntrySearchResult();
@@ -102,6 +103,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <param name="links">The links.</param>
         [HttpPost]
         [Route("~/api/catalog/listentrylinks")]
+        [Authorize(ModuleConstants.Security.Permissions.Create)]
         public async Task<ActionResult> CreateLinks([FromBody] CategoryLink[] links)
         {
 
@@ -136,6 +138,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <returns></returns>
         [HttpPost]
         [Route("~/api/catalog/listentrylinks/bulkcreate")]
+        [Authorize(ModuleConstants.Security.Permissions.Create)]
         public async Task<ActionResult> BulkCreateLinks([FromBody]BulkLinkCreationRequest creationRequest)
         {
             if (creationRequest.CatalogId.IsNullOrEmpty())
@@ -181,6 +184,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [ApiExplorerSettings(IgnoreApi = true)]
         [HttpGet]
         [Route("~/api/catalog/getslug")]
+        [Authorize(ModuleConstants.Security.Permissions.Read)]
         public ActionResult<string> GetSlug(string text)
         {
             return Ok(text.GenerateSlug());
@@ -193,6 +197,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [HttpPost]
         [Route("~/api/catalog/listentrylinks/delete")]
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+        [Authorize(ModuleConstants.Security.Permissions.Delete)]
         public async Task<ActionResult> DeleteLinks([FromBody]CategoryLink[] links)
         {
             var entryIds = links.Select(x => x.EntryId).ToArray();
@@ -226,6 +231,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [HttpPost]
         [Route("move")]
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+        [Authorize(ModuleConstants.Security.Permissions.Update)]
         public async Task<ActionResult> Move([FromBody]ListEntriesMoveRequest moveRequest)
         {
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, moveRequest, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));

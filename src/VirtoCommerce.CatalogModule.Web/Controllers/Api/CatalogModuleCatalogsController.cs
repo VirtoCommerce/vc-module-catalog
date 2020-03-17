@@ -38,6 +38,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <remarks>Get common and virtual Catalogs list with minimal information included. Returns array of Catalog</remarks>
 		[HttpGet]
         [Route("")]
+        [Authorize(ModuleConstants.Security.Permissions.Access)]
         public async Task<ActionResult<Catalog[]>> GetCatalogs(string sort = null, int skip = 0, int take = 20)
         {
             var criteria = AbstractTypeFactory<CatalogSearchCriteria>.TryCreateInstance();
@@ -57,6 +58,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
         [HttpPost]
         [Route("search")]
+        [Authorize(ModuleConstants.Security.Permissions.Access)]
         public async Task<ActionResult<CatalogSearchResult>> SearchCatalogs([FromBody] CatalogSearchCriteria criteria)
         {
             var result = await _catalogSearchService.SearchCatalogsAsync(criteria);
@@ -75,6 +77,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <param name="id">The Catalog id.</param>
 		[HttpGet]
         [Route("{id}")]
+        [Authorize(ModuleConstants.Security.Permissions.Read)]
         public async Task<ActionResult<Catalog>> GetCatalog(string id)
         {
             var catalog = (await _catalogService.GetByIdsAsync(new[] { id }, CatalogResponseGroup.Full.ToString())).FirstOrDefault();

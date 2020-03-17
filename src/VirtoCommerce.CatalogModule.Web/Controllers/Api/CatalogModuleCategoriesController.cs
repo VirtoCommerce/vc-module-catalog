@@ -39,6 +39,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <param name="id">Category id.</param>
         [HttpGet]
         [Route("{id}")]
+        [Authorize(ModuleConstants.Security.Permissions.Read)]
         public async Task<ActionResult<Category>> GetCategory(string id)
         {
             var category = (await _categoryService.GetByIdsAsync(new[] { id }, null)).FirstOrDefault();
@@ -64,6 +65,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         ///<param name="respGroup">Response group.</param>
         [HttpGet]
         [Route("")]
+        [Authorize(ModuleConstants.Security.Permissions.Read)]
         public async Task<ActionResult<Category[]>> GetCategoriesByIdsAsync([FromQuery] string[] ids, [FromQuery] string respGroup = null)
         {
             var categories = await _categoryService.GetByIdsAsync(ids, respGroup);
@@ -85,6 +87,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <returns></returns>
         [HttpPost]
         [Route("plenty")]
+        [Authorize(ModuleConstants.Security.Permissions.Read)]
         public Task<ActionResult<Category[]>> GetCategoriesByPlentyIds([FromBody] string[] ids, [FromQuery] string respGroup = null)
         {
             return GetCategoriesByIdsAsync(ids, respGroup);
@@ -97,6 +100,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <param name="parentCategoryId">The parent category id. (Optional)</param>
         [HttpGet]
         [Route("~/api/catalog/{catalogId}/categories/newcategory")]
+        [Authorize(ModuleConstants.Security.Permissions.Read)]
         public ActionResult<Category> GetNewCategory(string catalogId, [FromQuery]string parentCategoryId = null)
         {
             var retVal = new Category
@@ -119,6 +123,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <param name="category">The category.</param>
         [HttpPost]
         [Route("")]
+        [Authorize(ModuleConstants.Security.Permissions.Create)]
         public async Task<ActionResult> CreateOrUpdateCategory([FromBody]Category category)
         {           
             if (category.Id == null)
@@ -155,6 +160,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [HttpDelete]
         [Route("")]
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+        [Authorize(ModuleConstants.Security.Permissions.Delete)]
         public async Task<ActionResult> DeleteCategory([FromQuery]string[] ids)
         {
             var categories = await _categoryService.GetByIdsAsync(ids, CategoryResponseGroup.Info.ToString());

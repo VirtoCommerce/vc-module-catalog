@@ -111,6 +111,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
         [HttpGet]
         [Route("{storeId}/properties/{propertyName}/values")]
+        [Authorize(ModuleConstants.Security.Permissions.Read)]
         public async Task<ActionResult<string[]>> GetPropertyValues(string storeId, string propertyName)
         {
             var result = Array.Empty<string>();

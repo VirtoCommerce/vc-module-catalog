@@ -50,6 +50,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         ///<param name="respGroup">Response group.</param>
         [HttpGet]
         [Route("{id}")]
+        [Authorize(ModuleConstants.Security.Permissions.Read)]
         public async Task<ActionResult<CatalogProduct>> GetProductById(string id, [FromQuery] string respGroup = null)
         {
           
@@ -73,6 +74,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         ///<param name="respGroup">Response group.</param>
         [HttpGet]
         [Route("")]
+        [Authorize(ModuleConstants.Security.Permissions.Read)]
         public async Task<ActionResult<CatalogProduct[]>> GetProductByIds([FromQuery] string[] ids, [FromQuery] string respGroup = null)
         {
             var items = await _itemsService.GetByIdsAsync(ids, respGroup);
@@ -97,6 +99,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <returns></returns>
         [HttpPost]
         [Route("plenty")]
+        [Authorize(ModuleConstants.Security.Permissions.Read)]
         public async Task<ActionResult<CatalogProduct[]>> GetProductByPlentyIds([FromBody] string[] ids, [FromQuery] string respGroup = null)
         {
             return await GetProductByIds(ids, respGroup);
@@ -110,6 +113,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <param name="catalogId">The catalog id.</param>
         [HttpGet]
         [Route("~/api/catalog/{catalogId}/products/getnew")]
+        [Authorize(ModuleConstants.Security.Permissions.Read)]
         public async Task<ActionResult<CatalogProduct>> GetNewProductByCatalog(string catalogId)
         {
             return await GetNewProductByCatalogAndCategory(catalogId, null);
@@ -124,6 +128,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <param name="categoryId">The category id.</param>
         [HttpGet]
         [Route("~/api/catalog/{catalogId}/categories/{categoryId}/products/getnew")]
+        [Authorize(ModuleConstants.Security.Permissions.Read)]
         public async Task<ActionResult<CatalogProduct>> GetNewProductByCatalogAndCategory(string catalogId, string categoryId)
         {
             var result = AbstractTypeFactory<CatalogProduct>.TryCreateInstance();
@@ -166,6 +171,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <param name="productId">The parent product id.</param>
         [HttpGet]
         [Route("{productId}/getnewvariation")]
+        [Authorize(ModuleConstants.Security.Permissions.Read)]
         public async Task<ActionResult<CatalogProduct>> GetNewVariation(string productId)
         {
             var product = await _itemsService.GetByIdAsync(productId, null);
@@ -198,6 +204,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
         [HttpGet]
         [Route("{productId}/clone")]
+        [Authorize(ModuleConstants.Security.Permissions.Update)]
         public async Task<ActionResult<CatalogProduct>> CloneProduct(string productId)
         {
             var product = await _itemsService.GetByIdAsync(productId, null);
@@ -238,6 +245,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("")]
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [Authorize(ModuleConstants.Security.Permissions.Update)]
         public async Task<ActionResult<CatalogProduct>> SaveProduct([FromBody] CatalogProduct product)
         {
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, product, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
@@ -260,6 +268,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <param name="products">The products.</param>
         [HttpPost]
         [Route("batch")]
+        [Authorize(ModuleConstants.Security.Permissions.Update)]
         public async Task<ActionResult> SaveProducts([FromBody] CatalogProduct[] products)
         {
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, products, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
@@ -279,6 +288,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <param name="ids">The items ids.</param>
         [HttpDelete]
         [Route("")]
+        [Authorize(ModuleConstants.Security.Permissions.Delete)]
         public async Task<ActionResult> DeleteProduct([FromQuery] string[] ids)
         {
             var products = await _itemsService.GetByIdsAsync(ids, ItemResponseGroup.ItemInfo.ToString());
@@ -297,6 +307,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <returns></returns>
         [HttpPost]
         [Route("associations/search")]
+        [Authorize(ModuleConstants.Security.Permissions.Access)]
         public async Task<ActionResult<ProductAssociationSearchResult>> SearchProductAssociations([FromBody] ProductAssociationSearchCriteria criteria)
         {       
             var searchResult = await _productAssociationSearchService.SearchProductAssociationsAsync(criteria);
