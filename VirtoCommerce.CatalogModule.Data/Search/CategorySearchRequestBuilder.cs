@@ -104,7 +104,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 }
             }
 
-            if (!result.Any())
+            if (!result.Any() && !criteria.UseRelevanceSorting)
             {
                 result.AddRange(priorityFields.Select(priorityField => new SortingField(priorityField, true)));
                 result.Add(new SortingField("__sort"));
