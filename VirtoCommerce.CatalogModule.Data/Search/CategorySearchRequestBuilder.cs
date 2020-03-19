@@ -81,6 +81,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search
         protected virtual IList<SortingField> GetSorting(CategorySearchCriteria criteria)
         {
             var result = new List<SortingField>();
+            //For sorting by relevance have to keep sortInfo clear
+            var needClearSortInfo = false;
 
             var priorityFields = criteria.GetPriorityFields();
 
@@ -91,6 +93,9 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
                 switch (fieldName)
                 {
+                    case "relevance":
+                        needClearSortInfo = true;
+                        break;
                     case "priority":
                         result.AddRange(priorityFields.Select(priorityField => new SortingField(priorityField, isDescending)));
                         break;
@@ -110,6 +115,10 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 result.Add(new SortingField("__sort"));
             }
 
+            if (needClearSortInfo)
+            {
+                result.Clear();
+            }
             return result;
         }
     }
