@@ -36,7 +36,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         public object Clone()
         {
             var retVal = base.MemberwiseClone() as PropertyValidationRule;
-            retVal.Property = Property != null ? Property.Clone() as Property : null;
+            retVal.Property = Property; // Never call property.Clone() there. It will cause stack overflow.
             return retVal;
         }
     }
