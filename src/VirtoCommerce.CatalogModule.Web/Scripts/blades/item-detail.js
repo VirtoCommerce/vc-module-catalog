@@ -11,39 +11,45 @@ angular.module('virtoCommerce.catalogModule')
         //2015 = Full ~& Variations do not load product variations
         return items.get({ id: blade.itemId, respGroup: 2015  }, function (data) {
             if (!blade.catalog) {
-                blade.catalog = catalogs.get({ id: data.catalogId });
-            }
-
-            blade.itemId = data.id;
-            blade.title = data.code;
-            blade.securityScopes = data.securityScopes;
-            if (!data.productType) {
-                data.productType = 'Physical';
-            }
-            blade.subtitle = data.productType + ' item details';
-
-            var linkWithPriority = getLinkWithPriority(data);
-            data._priority = (linkWithPriority ? linkWithPriority.priority : data.priority) || 0;
-
-            blade.item = angular.copy(data);
-            blade.currentEntity = blade.item;
-            blade.origItem = data;
-            blade.isLoading = false;
-
-            if (parentRefresh && blade.parentBlade.refresh) {
-                blade.parentBlade.refresh();
-            }
-            if (blade.childrenBlades) {
-                _.each(blade.childrenBlades, function (x) {
-                    if (x.refresh) {
-                        x.refresh(blade.item);
-                    }
+                catalogs.get({ id: data.catalogId }, function(catalogResult) {
+                    blade.catalog = catalogResult;
+                    fillItem(data, parentRefresh);
                 });
+            } else {
+                fillItem(data, parentRefresh);
             }
         },
         function (error) { bladeNavigationService.setError('Error ' + error.status, blade); });
     }
 
+    function fillItem(data, parentRefresh) {
+        blade.itemId = data.id;
+        blade.title = data.code;
+        blade.securityScopes = data.securityScopes;
+        if (!data.productType) {
+            data.productType = 'Physical';
+        }
+        blade.subtitle = data.productType + ' item details';
+
+        var linkWithPriority = getLinkWithPriority(data);
+        data._priority = (linkWithPriority ? linkWithPriority.priority : data.priority) || 0;
+
+        blade.item = angular.copy(data);
+        blade.currentEntity = blade.item;
+        blade.origItem = data;
+        blade.isLoading = false;
+
+        if (parentRefresh && blade.parentBlade.refresh) {
+            blade.parentBlade.refresh();
+        }
+        if (blade.childrenBlades) {
+            _.each(blade.childrenBlades, function (x) {
+                if (x.refresh) {
+                    x.refresh(blade.item);
+                }
+            });
+        }
+    }
 
     blade.codeValidator = function (value) {
         var pattern = /[$+;=%{}[\]|@~!^*&()?'<>,]/;
