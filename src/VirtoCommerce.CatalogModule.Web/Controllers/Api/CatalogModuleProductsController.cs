@@ -124,7 +124,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <param name="catalogId">The catalog id.</param>
         /// <param name="categoryId">The category id.</param>
         [HttpGet]
-        [Authorize(ModuleConstants.Security.Permissions.Read)]
+        [Route("~/api/catalog/{catalogId}/products/getnew")]
         public async Task<ActionResult<CatalogProduct>> GetNewProductByCatalogAndCategory(string catalogId, string categoryId)
         {
             var result = AbstractTypeFactory<CatalogProduct>.TryCreateInstance();
