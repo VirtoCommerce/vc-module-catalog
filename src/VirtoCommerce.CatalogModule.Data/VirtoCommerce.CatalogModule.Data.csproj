@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -27,10 +27,10 @@
         <PackageReference Include="VirtoCommerce.ExportModule.Data" Version="3.0.0-rc.4" />
         <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.0.0-rc4" />
         <PackageReference Include="VirtoCommerce.Platform.Data" Version="3.0.0-rc4" />
+        <PackageReference Include="VirtoCommerce.Platform.Security" Version="3.0.0-rc4" />
         <PackageReference Include="VirtoCommerce.SearchModule.Data" Version="3.0.0-rc.4" />
         <PackageReference Include="VirtoCommerce.StoreModule.Core" Version="3.0.0-rc.4" />
-        
-    </ItemGroup>
+   </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\VirtoCommerce.CatalogModule.Core\VirtoCommerce.CatalogModule.Core.csproj" />
