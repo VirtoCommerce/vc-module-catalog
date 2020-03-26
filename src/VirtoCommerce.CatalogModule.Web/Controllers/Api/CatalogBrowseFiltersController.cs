@@ -11,7 +11,6 @@ using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
-using VirtoCommerce.CatalogModule.Web.Authorization;
 using VirtoCommerce.CatalogModule.Web.Model;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.StoreModule.Core.Model;
@@ -21,6 +20,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
     [Route("api/catalog/aggregationproperties")]
     [ApiExplorerSettings(IgnoreApi = true)]
+    [Authorize]
     public class CatalogBrowseFiltersController : Controller
     {
         private const string _attributeType = "Attribute";
@@ -111,7 +111,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
         [HttpGet]
         [Route("{storeId}/properties/{propertyName}/values")]
-        [Authorize(ModuleConstants.Security.Permissions.Read)]
         public async Task<ActionResult<string[]>> GetPropertyValues(string storeId, string propertyName)
         {
             var result = Array.Empty<string>();
