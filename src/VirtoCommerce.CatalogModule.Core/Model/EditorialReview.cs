@@ -5,7 +5,7 @@ using VirtoCommerce.Platform.Core.Domain;
 
 namespace VirtoCommerce.CatalogModule.Core.Model
 {
-    public class EditorialReview : AuditableEntity, IHasLanguage, ICloneable, IInheritable
+    public class EditorialReview : AuditableEntity, IHasLanguage, ICloneable, IInheritable, ICopyable
     {
         public string Content { get; set; }
         public string ReviewType { get; set; }
@@ -33,6 +33,15 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         public virtual object Clone()
         {
             return MemberwiseClone();
+        }
+        #endregion
+
+        #region ICopyable
+        public virtual object GetCopy()
+        {
+            var result = Clone() as EditorialReview;
+            result.Id = null;
+            return result;
         }
         #endregion
 
