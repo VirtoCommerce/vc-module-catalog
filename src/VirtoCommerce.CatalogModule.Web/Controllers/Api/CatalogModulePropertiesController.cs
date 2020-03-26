@@ -15,6 +15,7 @@ using VirtoCommerce.CatalogModule.Data.Authorization;
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
     [Route("api/catalog/properties")]
+    [Authorize]
     public class CatalogModulePropertiesController : Controller
     {
         private readonly IPropertyService _propertyService;
@@ -47,7 +48,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [HttpGet]
         [Route("{propertyId}/values")]
         [Obsolete("Use POST api/catalog/properties/dictionaryitems/search instead")]
-        [Authorize(ModuleConstants.Security.Permissions.Read)]
         public async Task<ActionResult<PropertyDictionaryItem[]>> GetPropertyValues(string propertyId, [FromQuery]string keyword = null)
         {
             var dictValues = await _propertyDictionarySearchService.SearchAsync(new PropertyDictionaryItemSearchCriteria { Keyword = keyword, PropertyIds = new[] { propertyId }, Take = int.MaxValue });
@@ -62,7 +62,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <param name="propertyId">The property id.</param>
 		[HttpGet]
         [Route("{propertyId}")]
-        [Authorize(ModuleConstants.Security.Permissions.Read)]
         public async Task<ActionResult<Property>> GetProperty(string propertyId)
         {
             var property = (await _propertyService.GetByIdsAsync(new[] { propertyId })).FirstOrDefault();
@@ -86,7 +85,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <param name="catalogId">The catalog id.</param>
         [HttpGet]
         [Route("~/api/catalog/{catalogId}/properties/getnew")]
-        [Authorize(ModuleConstants.Security.Permissions.Read)]
         public async Task<ActionResult<Property>> GetNewCatalogProperty(string catalogId)
         {
             var catalog = (await _catalogService.GetByIdsAsync(new[] { catalogId })).FirstOrDefault();
@@ -112,7 +110,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <param name="categoryId">The category id.</param>
         [HttpGet]
         [Route("~/api/catalog/categories/{categoryId}/properties/getnew")]
-        [Authorize(ModuleConstants.Security.Permissions.Read)]
         public async Task<ActionResult<Property>> GetNewCategoryProperty(string categoryId)
         {
             var category = (await _categoryService.GetByIdsAsync(new[] { categoryId }, CategoryResponseGroup.Info.ToString())).FirstOrDefault();
@@ -141,7 +138,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [HttpPost]
         [Route("")]
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
-        [Authorize(ModuleConstants.Security.Permissions.Update)]
         public async Task<ActionResult> SaveProperty([FromBody]Property property)
         {
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, property, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
@@ -165,7 +161,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [HttpDelete]
         [Route("")]
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
-        [Authorize(ModuleConstants.Security.Permissions.Delete)]
         public async Task<ActionResult> DeleteProperty(string id, bool doDeleteValues = false)
         {
             var property = await _propertyService.GetByIdsAsync(new[] { id });

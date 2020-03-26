@@ -10,6 +10,7 @@ using VirtoCommerce.CatalogModule.Core.Services;
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
     [Route("api/catalog/dictionaryitems")]
+    [Authorize]
     public class CatalogModulePropertyDictionaryItemsController : Controller
     {
         private readonly IPropertyDictionaryItemSearchService _propertyDictionarySearchService;
