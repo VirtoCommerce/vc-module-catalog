@@ -11,9 +11,9 @@ namespace VirtoCommerce.CatalogModule.Core.Model
     /// <summary>
     /// Base class for assets.
     /// </summary>
-    public abstract class AssetBase : AuditableEntity, IHasLanguage, IInheritable, ICloneable, ISeoSupport, IHasOuterId
+    public abstract class AssetBase : AuditableEntity, IHasLanguage, IInheritable, ICloneable, ISeoSupport, IHasOuterId, ICopyable
     {
-        public AssetBase()
+        protected AssetBase()
         {
             TypeId = GetType().Name;
         }
@@ -84,6 +84,15 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         #region ISeoSupport members
         public string SeoObjectType { get { return GetType().Name; } }
         public IList<SeoInfo> SeoInfos { get; set; }
+        #endregion
+
+        #region ICopyable members
+        public virtual object GetCopy()
+        {
+            var result = Clone() as AssetBase;
+            result.Id = null;
+            return result;
+        }
         #endregion
 
         #region ICloneable members

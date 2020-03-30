@@ -8,7 +8,7 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Core.Model
 {
-    public class Property : AuditableEntity, IInheritable, ICloneable, IHasOuterId, IHasCatalogId, IExportable
+    public class Property : AuditableEntity, IInheritable, IHasOuterId, IHasCatalogId, IExportable, ICopyable
     {
         /// <summary>
         /// Gets or sets a value indicating whether user can change property value.
@@ -140,6 +140,18 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
             return result;
         }
+        #endregion
+
+
+        #region ICopyable
+        public virtual object GetCopy()
+        {
+            var result = Clone() as Property;
+            //Get copy only for property values, other members clone only
+            result.Values = Values?.Select(x => x.GetCopy()).OfType<PropertyValue>().ToList();
+            //Do not reset Id for property! Need to use the same Id for copies
+            return result;
+        } 
         #endregion
 
         #region Conditional JSON serialization for properties declared in base type
