@@ -207,7 +207,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         protected virtual void ApplyInheritanceRules(IEnumerable<Category> categories)
         {
-            foreach (var category in categories)
+            foreach (var category in categories.OrderBy(x => x.Level))
             {
                 category.TryInheritFrom(category.Parent ?? (IEntity)category.Catalog);
             }
