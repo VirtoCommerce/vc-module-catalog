@@ -19,6 +19,7 @@ using VirtoCommerce.SearchModule.Core.Model;
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
     [Route("api/catalog/listentries")]
+    [Authorize]
     public class CatalogModuleListEntryController : Controller
     {
         private readonly IProductIndexedSearchService _productIndexedSearchService;

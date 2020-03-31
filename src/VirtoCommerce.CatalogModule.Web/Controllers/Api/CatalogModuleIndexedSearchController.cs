@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
@@ -7,6 +8,7 @@ using VirtoCommerce.SearchModule.Core.Model;
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
     [Route("api/catalog/search")]
+    [Authorize]
     public class CatalogModuleIndexedSearchController : Controller
     {
         private readonly IProductIndexedSearchService _productIndexedSearchService;

@@ -17,6 +17,7 @@ using VirtoCommerce.Platform.Core.Common;
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
     [Route("api/catalog/products")]
+    [Authorize]
     public class CatalogModuleProductsController : Controller
     {
         private readonly IItemService _itemsService;
