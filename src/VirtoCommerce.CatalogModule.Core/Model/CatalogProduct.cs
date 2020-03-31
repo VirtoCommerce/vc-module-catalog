@@ -199,6 +199,14 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                 }
             }
 
+            if (!Variations.IsNullOrEmpty())
+            {
+                foreach (var variation in Variations)
+                {
+                    variation.TryInheritFrom(this);
+                }
+            }
+
             if (parent is CatalogProduct parentProduct)
             {
                 var isVariation = GetType().IsAssignableFrom(typeof(Variation));
@@ -271,15 +279,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                 MeasureUnit = parentProduct.MeasureUnit ?? MeasureUnit;
                 Weight = parentProduct.Weight ?? Weight;
                 WeightUnit = parentProduct.WeightUnit ?? WeightUnit;
-                PackageType = parentProduct.PackageType ?? PackageType;
-
-                if (!Variations.IsNullOrEmpty())
-                {
-                    foreach (var variation in Variations)
-                    {
-                        variation.TryInheritFrom(this);
-                    }
-                }
+                PackageType = parentProduct.PackageType ?? PackageType;              
             }
         }
         #endregion
