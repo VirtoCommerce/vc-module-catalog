@@ -156,7 +156,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 {
                     query = query.OrderBySortInfos(sortInfos).ThenBy(x => x.Id);
 
-                    var categoryIds = query.Select(x => x.Id).ToList();
+                    var categoryIds = query.Select(x => x.Id).AsNoTracking().ToList();
                     var essentialResponseGroup = CategoryResponseGroup.Info | CategoryResponseGroup.WithImages | CategoryResponseGroup.WithSeo | CategoryResponseGroup.WithLinks | CategoryResponseGroup.WithParents | CategoryResponseGroup.WithProperties | CategoryResponseGroup.WithOutlines;
                     criteria.ResponseGroup = string.Concat(criteria.ResponseGroup, ",", essentialResponseGroup.ToString());
                     result.Results = (await _categoryService.GetByIdsAsync(categoryIds.ToArray(), criteria.ResponseGroup, criteria.CatalogId)).OrderBy(x => categoryIds.IndexOf(x.Id)).ToList();
@@ -209,6 +209,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                     var itemIds = query.Skip(criteria.Skip)
                                        .Take(criteria.Take)
                                        .Select(x => x.Id)
+                                       .AsNoTracking()
                                        .ToList();
 
                     var essentialResponseGroup = ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemAssets | ItemResponseGroup.Links | ItemResponseGroup.Seo | ItemResponseGroup.Outlines;

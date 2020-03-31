@@ -69,5 +69,17 @@ namespace VirtoCommerce.CatalogModule.Core.Model.Search
         /// Override base SortInfo property to support GeoSortInfo sorting types
         /// </summary>
         public override IList<SortInfo> SortInfos => GeoSortInfo.TryParse(Sort).ToList();
+
+        public override CatalogIndexedSearchCriteria FromListEntryCriteria(CatalogListEntrySearchCriteria listEntryCriteria)
+        {
+            if(listEntryCriteria == null)
+            {
+                throw new ArgumentNullException(nameof(listEntryCriteria));
+            }
+            
+            WithHidden = !listEntryCriteria.HideDirectLinkedCategories;
+         
+            return base.FromListEntryCriteria(listEntryCriteria);
+        }
     }
 }
