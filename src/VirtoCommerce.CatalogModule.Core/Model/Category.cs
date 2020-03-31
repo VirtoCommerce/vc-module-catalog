@@ -32,8 +32,19 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         /// <summary>
         /// Category path in physical catalog (all parent categories names concatenated. E.g. (parent1/parent2))
         /// </summary>
-        public string Path => Parent != null ? $"{Parent.Path}/{Name}" : Name;
+        public string Path
+        {
+            get
+            {
+                return _path ?? (Parent != null ? $"{Parent.Path}/{Name}" : Name);
+            }
+            set
+            {
+                _path = value;
+            }
+        }
 
+        protected string _path;
 
         public bool IsVirtual { get; set; }
         public int Level { get; set; }

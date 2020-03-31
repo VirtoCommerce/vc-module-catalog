@@ -17,6 +17,7 @@ using VirtoCommerce.Platform.Core.Common;
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
     [Route("api/catalog/products")]
+    [Authorize]
     public class CatalogModuleProductsController : Controller
     {
         private readonly IItemService _itemsService;
@@ -206,28 +207,19 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return NotFound();
             }
 
-            // Generate new SKUs and remove SEO records for product and its variations
-            product.Code = _skuGenerator.GenerateSku(product);
-            product.SeoInfos.Clear();
+            var copyProduct = product.GetCopy() as CatalogProduct;
 
-            foreach (var variation in product.Variations)
+            // Generate new SKUs and remove SEO records for product and its variations
+            copyProduct.Code = _skuGenerator.GenerateSku(product);
+            copyProduct.SeoInfos.Clear();
+
+            foreach (var variation in copyProduct.Variations)
             {
                 variation.Code = _skuGenerator.GenerateSku(variation);
                 variation.SeoInfos.Clear();
-            }
+            }                  
 
-            // Clear ID for all related entities except properties
-            var allEntities = product.GetFlatObjectsListWithInterface<IEntity>();
-            foreach (var entity in allEntities)
-            {
-                var property = entity as Property;
-                if (property == null)
-                {
-                    entity.Id = null;
-                }
-            }
-
-            return Ok(product);
+            return Ok(copyProduct);
         }
 
         /// <summary>

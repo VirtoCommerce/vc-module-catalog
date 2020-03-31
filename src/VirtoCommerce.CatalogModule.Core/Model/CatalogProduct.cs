@@ -11,7 +11,7 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Core.Model
 {
-    public class CatalogProduct : AuditableEntity, IHasLinks, ISeoSupport, IHasOutlines, IHasDimension, IHasAssociations, IHasProperties, IHasImages, IHasAssets, IInheritable, IHasTaxType, IHasName, ICloneable, IHasOuterId, IHasCatalogId, IExportable
+    public class CatalogProduct : AuditableEntity, IHasLinks, ISeoSupport, IHasOutlines, IHasDimension, IHasAssociations, IHasProperties, IHasImages, IHasAssets, IInheritable, IHasTaxType, IHasName, IHasOuterId, IExportable, ICopyable
     {
         /// <summary>
         /// SKU code
@@ -284,21 +284,23 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         }
         #endregion
 
-        public virtual CatalogProduct GetCopy()
+        public virtual object GetCopy()
         {
             var result = Clone() as CatalogProduct;
 
+            result.Id = null;
+
+            result.Images = Images?.Select(x => x.GetCopy()).OfType<Image>().ToList();
+            result.Assets = Assets?.Select(x => x.GetCopy()).OfType<Asset>().ToList();
+            result.Properties = Properties?.Select(x => x.GetCopy()).OfType<Property>().ToList();
+            result.Variations = Variations?.Select(x => x.GetCopy()).OfType<Variation>().ToList();
+            result.Reviews = Reviews?.Select(x => x.GetCopy()).OfType<EditorialReview>().ToList();
             // Clear ID for all related entities except properties
-            var allEntities = this.GetFlatObjectsListWithInterface<ISeoSupport>();
-            foreach (var entity in allEntities)
+            var allSeoSupportEntities = result.GetFlatObjectsListWithInterface<ISeoSupport>();
+            foreach (var seoSuportEntity in allSeoSupportEntities)
             {
-                var property = entity as Property;
-                if (property is null)
-                {
-                    entity.SeoInfos.Clear();
-                    entity.Id = null;
-                }
-            }
+                seoSuportEntity.SeoInfos?.Clear();
+            }            
             return result;
         }
 

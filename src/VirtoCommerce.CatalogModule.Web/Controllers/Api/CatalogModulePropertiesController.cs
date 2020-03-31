@@ -15,6 +15,7 @@ using VirtoCommerce.CatalogModule.Data.Authorization;
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
     [Route("api/catalog/properties")]
+    [Authorize]
     public class CatalogModulePropertiesController : Controller
     {
         private readonly IPropertyService _propertyService;
