@@ -68,9 +68,13 @@ angular.module('virtoCommerce.catalogModule')
         });
 
         $scope.openDictionarySettingManagement = function () {
-            var newBlade = new DictionarySettingDetailBlade('Catalog.EditorialReviewTypes');
-            newBlade.parentRefresh = function (data) {
-                $scope.types = data;
+            var newBlade = {
+                id: 'settingDetailChild',
+                isApiSave: true,
+                currentEntityId: 'Catalog.EditorialReviewTypes',
+                parentRefresh: function (data) { $scope.types = data; },
+                controller: 'platformWebApp.settingDictionaryController',
+                template: '$(Platform)/Scripts/app/settings/blades/setting-dictionary.tpl.html'
             };
             bladeNavigationService.showBlade(newBlade, blade);
         };
