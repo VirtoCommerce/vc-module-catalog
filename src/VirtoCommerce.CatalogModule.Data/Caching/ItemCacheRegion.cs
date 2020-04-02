@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Microsoft.Extensions.Primitives;
 using VirtoCommerce.CatalogModule.Core.Model;
@@ -11,14 +13,27 @@ namespace VirtoCommerce.CatalogModule.Data.Caching
     {
         private static readonly ConcurrentDictionary<string, CancellationTokenSource> _entityRegionTokenLookup = new ConcurrentDictionary<string, CancellationTokenSource>();
 
-        public static IChangeToken CreateChangeToken(CatalogProduct entity)
+        public static IChangeToken CreateChangeToken(CatalogProduct[] products)
         {
-            if (entity == null)
+            if (products == null)
             {
-                throw new ArgumentNullException(nameof(entity));
+                throw new ArgumentNullException(nameof(products));
             }
-            var cancellationTokenSource = _entityRegionTokenLookup.GetOrAdd(entity.Id, new CancellationTokenSource());
-            return new CompositeChangeToken(new[] { CreateChangeToken(), new CancellationChangeToken(cancellationTokenSource.Token) });
+            return CreateChangeToken(products.Select(x => x.Id).ToArray());
+        }
+
+        public static IChangeToken CreateChangeToken(string[] productIds)
+        {
+            if (productIds == null)
+            {
+                throw new ArgumentNullException(nameof(productIds));
+            }
+            var changeTokens = new List<IChangeToken>() { CreateChangeToken() };
+            foreach (var productId in productIds)
+            {
+                changeTokens.Add(new CancellationChangeToken(_entityRegionTokenLookup.GetOrAdd(productId, new CancellationTokenSource()).Token));
+            }
+            return new CompositeChangeToken(changeTokens);
         }
 
         public static void ExpireEntity(CatalogProduct entity)
@@ -32,13 +47,10 @@ namespace VirtoCommerce.CatalogModule.Data.Caching
                 token.Cancel();
             }
             //need to also evict from cache a main product if given product is variation
-            if (entity.MainProductId != null)
+            if (entity.MainProductId != null && _entityRegionTokenLookup.TryRemove(entity.MainProductId, out var token2))
             {
-                if (_entityRegionTokenLookup.TryRemove(entity.MainProductId, out var token2))
-                {
-                    token2.Cancel();
-                }
+                token2.Cancel();
             }
         }
-    }
+    }    
 }

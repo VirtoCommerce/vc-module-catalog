@@ -60,7 +60,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
             var itemResponseGroup = EnumUtility.SafeParseFlags(respGroup, ItemResponseGroup.ItemLarge);
 
-            var cacheKey = CacheKey.With(GetType(), "GetByIdsAsync", string.Join("-", itemIds), itemResponseGroup.ToString(), catalogId);
+            var cacheKey = CacheKey.With(GetType(), nameof(GetByIdsAsync), string.Join("-", itemIds), itemResponseGroup.ToString(), catalogId);
             var result = await _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async (cacheEntry) =>
             {
                 var products = Array.Empty<CatalogProduct>();
@@ -71,6 +71,12 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     {
                         //Optimize performance and CPU usage
                         repository.DisableChangesTracking();
+
+                        //It is so important to generate change tokens for all ids even for not existing objects to prevent an issue
+                        //with caching of empty results for non - existing objects that have the infinitive lifetime in the cache
+                        //and future unavailability to create objects with these ids.
+                        cacheEntry.AddExpirationToken(ItemCacheRegion.CreateChangeToken(itemIds));
+                        cacheEntry.AddExpirationToken(CatalogCacheRegion.CreateChangeToken());
 
                         products = (await repository.GetItemByIdsAsync(itemIds, respGroup))
                             .Select(x => x.ToModel(AbstractTypeFactory<CatalogProduct>.TryCreateInstance()))
@@ -90,13 +96,13 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                         {
                             _outlineService.FillOutlinesForObjects(productsWithVariationsList, catalogId);
                         }
+                        //Add change tokens for products with variations
+                        cacheEntry.AddExpirationToken(ItemCacheRegion.CreateChangeToken(productsWithVariationsList));
 
                         //Reduce details according to response group
                         foreach (var product in productsWithVariationsList)
-                        {
+                        {                         
                             product.ReduceDetails(itemResponseGroup.ToString());
-                            cacheEntry.AddExpirationToken(ItemCacheRegion.CreateChangeToken(product));
-                            cacheEntry.AddExpirationToken(CatalogCacheRegion.CreateChangeToken());
                         }
                     }
                 }
