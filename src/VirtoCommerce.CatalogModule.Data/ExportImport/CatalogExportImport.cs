@@ -69,7 +69,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 
                 await writer.WritePropertyNameAsync("Catalogs");
                 await writer.SerializeJsonArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
-                    (GenericSearchResult<Catalog>)await _catalogSearchService.SearchCatalogsAsync(new CatalogSearchCriteria { Skip = skip, Take = take })             
+                    (GenericSearchResult<Catalog>)await _catalogSearchService.SearchCatalogsAsync(new CatalogSearchCriteria { Skip = skip, Take = take })
                 , (processedCount, totalCount) =>
                 {
                     progressInfo.Description = $"{ processedCount } of { totalCount } catalogs have been exported";
@@ -398,7 +398,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             {
                 image.Url = image.RelativeUrl;
 
-                if (handleBinaryData)
+                if (handleBinaryData && !image.HasExternalUrl)
                 {
                     try
                     {
