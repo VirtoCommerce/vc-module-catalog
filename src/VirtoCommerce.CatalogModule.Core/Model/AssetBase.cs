@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
@@ -19,6 +20,16 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         }
         public string RelativeUrl { get; set; }
         public string Url { get; set; }
+
+        [JsonIgnore]
+        public bool HasExternalUrl
+        {
+            get
+            {
+                //These URLs are equal for external links. 
+                return string.IsNullOrEmpty(RelativeUrl) || Uri.IsWellFormedUriString(RelativeUrl, UriKind.Absolute);
+            }
+        }
 
         /// <summary>
         /// Gets or sets the asset type identifier.

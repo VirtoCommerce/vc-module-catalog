@@ -95,9 +95,9 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             var allImages = hasImagesObjects.SelectMany(x => x.Images).ToArray();
             foreach (var image in allImages)
             {
-                using (var stream = _blobStorageProvider.OpenRead(image.Url))
+                if (!image.HasExternalUrl) // Skip external links.
                 {
-                    if (image.RelativeUrl != image.Url) // These URLs are equal for external links. Therefore, skip external links.
+                    using (var stream = _blobStorageProvider.OpenRead(image.Url))
                     {
                         image.BinaryData = stream.ReadFully();
                     }
