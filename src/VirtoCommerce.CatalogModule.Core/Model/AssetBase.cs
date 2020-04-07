@@ -13,9 +13,9 @@ namespace VirtoCommerce.CatalogModule.Core.Model
     /// </summary>
     public abstract class AssetBase : AuditableEntity, IHasLanguage, IInheritable, ICloneable, ISeoSupport, IHasOuterId, ICopyable
     {
-        protected AssetBase()
+        protected AssetBase(string typeName)
         {
-            TypeId = GetType().Name;
+            TypeId = typeName;
         }
         public string RelativeUrl { get; set; }
         public string Url { get; set; }

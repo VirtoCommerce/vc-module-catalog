@@ -4,6 +4,9 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 {
     public class Image : AssetBase
     {
+        public Image() : base(nameof(Image))
+        {
+        }
         public int SortOrder { get; set; }
         public byte[] BinaryData { get; set; }
 
