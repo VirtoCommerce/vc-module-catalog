@@ -75,7 +75,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                 Group = parentAssetBase.Group;
                 TypeId = parentAssetBase.TypeId;
                 Url = parentAssetBase.Url;
-                Url = parentAssetBase.RelativeUrl;
+                RelativeUrl = !string.IsNullOrEmpty(parentAssetBase.RelativeUrl) ? parentAssetBase.RelativeUrl : parentAssetBase.Url;
             }
         }
         #endregion
