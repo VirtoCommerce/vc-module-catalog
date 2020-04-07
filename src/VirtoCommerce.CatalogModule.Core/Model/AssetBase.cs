@@ -26,7 +26,6 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         {
             get
             {
-                //These URLs are equal for external links. 
                 return string.IsNullOrEmpty(RelativeUrl) || Uri.IsWellFormedUriString(RelativeUrl, UriKind.Absolute);
             }
         }
