@@ -15,7 +15,6 @@ using VirtoCommerce.CatalogModule.Data.Authorization;
 using VirtoCommerce.CatalogModule.Web.Model;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Settings;
-using VirtoCommerce.SearchModule.Core.Model;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
@@ -216,10 +215,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             foreach (var link in links)
             {
                 var hasLinkEntry = hasLinkEntries.FirstOrDefault(x => x.Id.Equals(link.EntryId));
-                if (hasLinkEntry != null)
-                {
-                    hasLinkEntry.Links.Remove(link);
-                }
+                hasLinkEntry?.Links.Remove(link);
             }
             if (!hasLinkEntries.IsNullOrEmpty())
             {
