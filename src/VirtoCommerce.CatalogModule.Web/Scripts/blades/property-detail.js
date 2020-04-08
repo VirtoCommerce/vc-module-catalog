@@ -7,8 +7,20 @@ angular.module('virtoCommerce.catalogModule')
         blade.title = "catalog.blades.property-detail.title";
         blade.subtitle = "catalog.blades.property-detail.subtitle";
         blade.availableValueTypes = valueTypes.get();
+        blade.isBoolean = false;
 
         blade.availablePropertyTypes = blade.catalogId ? ['Product', 'Variation', 'Category', 'Catalog'] : ['Product', 'Variation', 'Category'];
+
+        $scope.$watch('blade.currentEntity.valueType', function (newValue, oldValue) {
+            if (newValue === 'Boolean') {
+                blade.isBoolean = true;
+                blade.currentEntity.multivalue = false;
+                blade.currentEntity.dictionary = false;
+                blade.currentEntity.multilanguage = false;
+            } else {
+                blade.isBoolean = false;
+            }
+        });
 
         blade.refresh = function (parentRefresh) {
             if (blade.currentEntityId) {
@@ -33,41 +45,47 @@ angular.module('virtoCommerce.catalogModule')
             }
         };
 
-        $scope.openChild = function (childType) {
+        $scope.openChild = function(childType) {
             var newBlade = { id: "propertyChild" };
             newBlade.property = blade.currentEntity;
             newBlade.languages = blade.languages;
             newBlade.defaultLanguage = blade.defaultLanguage;
             switch (childType) {
-                case 'attr':
-                    newBlade.title = 'catalog.blades.property-attributes.title';
-                    newBlade.titleValues = { name: blade.origEntity.name ? blade.origEntity.name : blade.currentEntity.name };
-                    newBlade.subtitle = 'catalog.blades.property-attributes.subtitle';
-                    newBlade.controller = 'virtoCommerce.catalogModule.propertyAttributesController';
-                    newBlade.template = 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-attributes.tpl.html';
-                    break;
-                case 'rules':
-                    newBlade.title = 'catalog.blades.property-validationRule.title';
-                    newBlade.titleValues = { name: blade.origEntity.name ? blade.origEntity.name : blade.currentEntity.name };
-                    newBlade.subtitle = 'catalog.blades.property-validationRule.subtitle';
-                    newBlade.controller = 'virtoCommerce.catalogModule.propertyValidationRulesController';
-                    newBlade.template = 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-validationRules.tpl.html';
-                    break;
-                case 'dict':
-                    newBlade.title = 'catalog.blades.property-dictionary.title';
-                    newBlade.titleValues = { name: blade.origEntity.name ? blade.origEntity.name : blade.currentEntity.name };
-                    newBlade.subtitle = 'catalog.blades.property-dictionary.subtitle';
-                    newBlade.controller = 'virtoCommerce.catalogModule.propertyDictionaryListController';
-                    newBlade.template = 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-dictionary-list.tpl.html';
-                    break;
+            case 'attr':
+                newBlade.title = 'catalog.blades.property-attributes.title';
+                newBlade.titleValues =
+                    { name: blade.origEntity.name ? blade.origEntity.name : blade.currentEntity.name };
+                newBlade.subtitle = 'catalog.blades.property-attributes.subtitle';
+                newBlade.controller = 'virtoCommerce.catalogModule.propertyAttributesController';
+                newBlade.template = 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-attributes.tpl.html';
+                break;
+            case 'rules':
+                newBlade.title = 'catalog.blades.property-validationRule.title';
+                newBlade.titleValues =
+                    { name: blade.origEntity.name ? blade.origEntity.name : blade.currentEntity.name };
+                newBlade.subtitle = 'catalog.blades.property-validationRule.subtitle';
+                newBlade.controller = 'virtoCommerce.catalogModule.propertyValidationRulesController';
+                newBlade.template = 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-validationRules.tpl.html';
+                break;
+            case 'dict':
+                newBlade.title = 'catalog.blades.property-dictionary.title';
+                newBlade.titleValues =
+                    { name: blade.origEntity.name ? blade.origEntity.name : blade.currentEntity.name };
+                newBlade.subtitle = 'catalog.blades.property-dictionary.subtitle';
+                newBlade.controller = 'virtoCommerce.catalogModule.propertyDictionaryListController';
+                newBlade.template = 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-dictionary-list.tpl.html';
+                break;
             }
             bladeNavigationService.showBlade(newBlade, blade);
             $scope.currentChild = childType;
-        }
+        };
 
         function initializeBlade(data) {
             properties.values({ propertyId: data.id }, function (response) {
                 data.dictionaryValues = response;
+                if (data.valueType === 'Boolean') {
+                    blade.isBoolean = true;
+                }
                 if (data.valueType === 'Number' && data.dictionaryValues) {
                     _.forEach(data.dictionaryValues, function (entry) {
                         entry.value = parseFloat(entry.value);
@@ -78,7 +96,7 @@ angular.module('virtoCommerce.catalogModule')
                 blade.origEntity = data;
                 blade.isLoading = false;
             });
-        };
+        }
 
         function isDirty() {
             return !angular.equals(blade.currentEntity, blade.origEntity) && blade.hasUpdatePermission();

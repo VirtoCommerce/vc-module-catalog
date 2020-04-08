@@ -297,3 +297,7 @@ vc-item-search {
     padding: .15em 4px;
     vertical-align: super;
 }
+
+.disabled {
+    opacity: 0.5
+}
