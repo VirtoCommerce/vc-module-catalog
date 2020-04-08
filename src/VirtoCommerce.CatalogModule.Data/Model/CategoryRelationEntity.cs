@@ -24,6 +24,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             if (link == null)
                 throw new ArgumentNullException(nameof(link));
 
+            link.ListEntryId = SourceCategoryId;
             link.CategoryId = TargetCategoryId;
             link.CatalogId = TargetCatalogId;
 
@@ -35,6 +36,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             if (link == null)
                 throw new ArgumentNullException(nameof(link));
 
+            SourceCategoryId = link.EntryId;
             TargetCategoryId = link.CategoryId;
             TargetCatalogId = link.CatalogId;
 
