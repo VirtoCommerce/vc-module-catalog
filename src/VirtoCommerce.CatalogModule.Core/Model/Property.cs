@@ -108,6 +108,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                 ValidationRules = parentProperty.ValidationRules;
                 CatalogId = parentProperty.CatalogId;
                 CategoryId = parentProperty.CategoryId;
+                Hidden = parentProperty.Hidden;
 
                 foreach (var propValue in Values ?? Array.Empty<PropertyValue>())
                 {
@@ -151,7 +152,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
             result.Values = Values?.Select(x => x.GetCopy()).OfType<PropertyValue>().ToList();
             //Do not reset Id for property! Need to use the same Id for copies
             return result;
-        } 
+        }
         #endregion
 
         #region Conditional JSON serialization for properties declared in base type
