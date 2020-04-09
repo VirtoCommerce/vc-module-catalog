@@ -7,18 +7,33 @@ angular.module('virtoCommerce.catalogModule')
         blade.title = "catalog.blades.property-detail.title";
         blade.subtitle = "catalog.blades.property-detail.subtitle";
         blade.availableValueTypes = valueTypes.get();
-        blade.isBoolean = false;
+
+        blade.hasMultivalue = true;
+        blade.hasDictionary = true;
+        blade.hasMultilanguage = true;
 
         blade.availablePropertyTypes = blade.catalogId ? ['Product', 'Variation', 'Category', 'Catalog'] : ['Product', 'Variation', 'Category'];
 
         $scope.$watch('blade.currentEntity.valueType', function (newValue, oldValue) {
-            if (newValue === 'Boolean') {
-                blade.isBoolean = true;
-                blade.currentEntity.multivalue = false;
-                blade.currentEntity.dictionary = false;
-                blade.currentEntity.multilanguage = false;
-            } else {
-                blade.isBoolean = false;
+
+            blade.hasMultivalue = true;
+            blade.hasDictionary = true;
+            blade.hasMultilanguage = true;
+            switch (newValue) {
+                case 'DateTime':
+                case 'Boolean':
+                    blade.hasMultivalue = blade.currentEntity.multivalue = false;
+                    blade.hasDictionary = blade.currentEntity.dictionary = false;
+                    blade.hasMultilanguage = blade.currentEntity.multilanguage = false;
+                    break;
+                case 'Integer':
+                    blade.hasMultivalue = blade.currentEntity.multivalue = false;
+                    blade.hasDictionary = blade.currentEntity.dictionary = false;
+                    break;
+                case 'GeoPoint':
+                    blade.hasDictionary = blade.currentEntity.dictionary = false;
+                    blade.hasMultilanguage = blade.currentEntity.multilanguage = false;
+                    break;
             }
         });
 
@@ -83,9 +98,6 @@ angular.module('virtoCommerce.catalogModule')
         function initializeBlade(data) {
             properties.values({ propertyId: data.id }, function (response) {
                 data.dictionaryValues = response;
-                if (data.valueType === 'Boolean') {
-                    blade.isBoolean = true;
-                }
                 if (data.valueType === 'Number' && data.dictionaryValues) {
                     _.forEach(data.dictionaryValues, function (entry) {
                         entry.value = parseFloat(entry.value);
