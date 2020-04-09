@@ -18,34 +18,34 @@
                 </div>
 
                 <div class="columns clearfix">
-                    <div class="column">
+                    <div class="column" ng-class="{disabled : !blade.hasDictionary}">
                         <div class="form-group">
                             <label class="form-label">{{ 'catalog.blades.property-detail.labels.dictionary' | translate }}</label>
                             <div class="form-input">
                                 <label class="form-label __switch">
-                                    <input type="checkbox" ng-model="blade.currentEntity.dictionary" />
+                                    <input type="checkbox" ng-model="blade.currentEntity.dictionary" ng-disabled="!blade.hasDictionary"/>
                                     <span class="switch"></span>
                                 </label>
                             </div>
                         </div>
                     </div>
-                    <div class="column">
+                    <div class="column" ng-class="{disabled : !blade.hasMultivalue}">
                         <div class="form-group">
                             <label class="form-label">{{ 'catalog.blades.property-detail.labels.multivalue' | translate }}</label>
                             <div class="form-input">
                                 <label class="form-label __switch">
-                                    <input type="checkbox" ng-model="blade.currentEntity.multivalue" />
+                                    <input type="checkbox" ng-model="blade.currentEntity.multivalue" ng-disabled="!blade.hasMultivalue"/>
                                     <span class="switch"></span>
                                 </label>
                             </div>
                         </div>
                     </div>
-                    <div class="column">
+                    <div class="column" ng-class="{disabled : !blade.hasMultilanguage}">
                         <div class="form-group">
                             <label class="form-label">{{ 'catalog.blades.property-detail.labels.multi-language' | translate }}</label>
                             <div class="form-input">
                                 <label class="form-label __switch">
-                                    <input type="checkbox" ng-model="blade.currentEntity.multilanguage" />
+                                    <input type="checkbox" ng-model="blade.currentEntity.multilanguage" ng-disabled="!blade.hasMultilanguage"/>
                                     <span class="switch"></span>
                                 </label>
                             </div>
