@@ -130,7 +130,7 @@ angular.module('virtoCommerce.catalogModule')
                 blade.currentEntityId = data.id;
                 blade.refresh(true);
             });
-        };
+        }
 
         function removeProperty(prop) {
             var dialog = {
