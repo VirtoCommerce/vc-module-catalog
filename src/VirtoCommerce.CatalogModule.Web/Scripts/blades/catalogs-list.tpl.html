@@ -1,10 +1,11 @@
-﻿<div class="blade-static" ng-if="blade.currentEntities.length">
+<div class="blade-static" ng-if="blade.currentEntities.length">
     <div class="form-group">
         <vc-item-search blade="blade"></vc-item-search>
         
         <p class="form-count">{{'platform.list.count' | translate}}: <span class="count">{{pageSettings.totalItems | number:0}}</span></p>
     </div>
 </div>
+<div class="blade-static __bottom" ng-if="pageSettings.itemsPerPageCount < pageSettings.totalItems" ng-include="'pagerTemplate.html'"></div>
 <div class="blade-content __medium-wide">
     <div class="blade-inner">
         <div class="inner-block" ng-init="setGridOptions({

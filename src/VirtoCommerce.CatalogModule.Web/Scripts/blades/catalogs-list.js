@@ -1,4 +1,4 @@
-﻿angular.module('virtoCommerce.catalogModule')
+angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.catalogsListController', ['$scope', 'virtoCommerce.catalogModule.catalogs', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'platformWebApp.authService', 'platformWebApp.uiGridHelper', 'platformWebApp.bladeUtils',
         function ($scope, catalogs, bladeNavigationService, dialogService, authService, uiGridHelper, bladeUtils) {
     $scope.uiGridConstants = uiGridHelper.uiGridConstants;
@@ -8,15 +8,15 @@
     blade.refresh = function () {
         blade.isLoading = true;
 
-        catalogs.getCatalogs({
+        catalogs.search({
             sort: uiGridHelper.getSortExpression($scope),
             skip: ($scope.pageSettings.currentPage - 1) * $scope.pageSettings.itemsPerPageCount,
             take: $scope.pageSettings.itemsPerPageCount
         }, function (results) {
             blade.isLoading = false;
-            $scope.pageSettings.totalItems = results.length;
+            $scope.pageSettings.totalItems = results.totalCount;
             //filter the catalogs in which we not have access
-            blade.currentEntities = results;
+            blade.currentEntities = results.results;
 
             if (selectedNode) {
                 //select the node in the new list
@@ -173,6 +173,7 @@
 
     // ui-grid
     $scope.setGridOptions = function (gridOptions) {
+        $scope.gridOptions = gridOptions;
         uiGridHelper.initialize($scope, gridOptions, function (gridApi) {
             //update gridApi for current grid
             $scope.gridApi = gridApi;
@@ -180,6 +181,7 @@
             uiGridHelper.bindRefreshOnSortChanged($scope);
         });
         bladeUtils.initializePagination($scope);
+        return gridOptions;
     };
 
     // actions on load
