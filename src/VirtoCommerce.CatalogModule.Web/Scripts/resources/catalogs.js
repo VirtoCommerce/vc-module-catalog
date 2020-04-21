@@ -6,6 +6,7 @@ angular.module('virtoCommerce.catalogModule')
         getCatalogs: { method: 'GET', isArray: true },
         search: { method: 'POST', url: 'api/catalog/catalogs/search'},
         newCatalog: { method: 'GET', url: 'api/catalog/catalogs/getnew' },
+        search: { method: 'POST', url: 'api/catalog/catalogs/search' },
         newVirtualCatalog: { method: 'GET', url: 'api/catalog/catalogs/getnewvirtual' },
         update: { method: 'PUT' },
         //getCatalogLanguages: { method: 'GET', url: 'api/catalog/catalogs/:id/languages', isArray: true },
