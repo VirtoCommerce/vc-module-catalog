@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <module>
   <id>VirtoCommerce.Catalog</id>
   <version>3.0.0</version>
@@ -6,7 +6,7 @@
   <platformVersion>3.0.0</platformVersion>
   <dependencies>
     <dependency id="VirtoCommerce.Core" version="3.0.0" />
-    <dependency id="VirtoCommerce.Search" version="3.0.0" />
+    <dependency id="VirtoCommerce.Search" version="3.0.2" />
     <dependency id="VirtoCommerce.Export" version="3.0.0" />
     <dependency id="VirtoCommerce.Store" version="3.0.0" />
   </dependencies>

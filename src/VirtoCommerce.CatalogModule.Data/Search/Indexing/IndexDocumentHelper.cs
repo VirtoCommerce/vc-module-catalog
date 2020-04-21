@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -12,7 +13,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         public static void AddObjectFieldValue<T>(this IndexDocument document, T value)
         {
-            document.Add(new IndexDocumentField(ObjectFieldName, SerializeObject(value)) { IsRetrievable = true });
+            document.Add(new IndexDocumentField(ObjectFieldName, value) { IsRetrievable = false, IsFilterable = false, IsSearchable = false });
         }
 
         public static T GetObjectFieldValue<T>(this SearchDocument document)
@@ -23,21 +24,20 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             if (document.ContainsKey(ObjectFieldName))
             {
                 var obj = document[ObjectFieldName];
-
+                var objType = AbstractTypeFactory<T>.TryCreateInstance().GetType();
                 result = obj as T;
                 if (result == null)
                 {
-                    var jobj = obj as JObject;
-                    if (jobj != null)
+                    if (obj is JObject jobj)
                     {
-                        result = jobj.ToObject<T>();
+                        result = jobj.ToObject(objType) as T;
                     }
                     else
                     {
                         var productString = obj as string;
                         if (!string.IsNullOrEmpty(productString))
                         {
-                            result = DeserializeObject<T>(productString);
+                            result = DeserializeObject(productString, objType) as T;
                         }
                     }
                 }
@@ -55,6 +55,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             TypeNameHandling = TypeNameHandling.None,
         };
 
+
         public static string SerializeObject(object obj)
         {
             using (var memStream = new MemoryStream())
@@ -69,10 +70,15 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         public static T DeserializeObject<T>(string str)
         {
+            return (T)DeserializeObject(str, typeof(T));
+        }
+
+        public static object DeserializeObject(string str, Type type)
+        {
             using (var stringReader = new StringReader(str))
             using (var jsonTextReader = new JsonTextReader(stringReader))
             {
-                var result = ObjectSerializer.Deserialize<T>(jsonTextReader);
+                var result = ObjectSerializer.Deserialize(jsonTextReader, type);
                 return result;
             }
         }

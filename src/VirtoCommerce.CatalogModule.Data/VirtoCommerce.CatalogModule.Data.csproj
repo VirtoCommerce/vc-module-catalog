@@ -26,7 +26,7 @@
     <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.0.0-rc5" />
     <PackageReference Include="VirtoCommerce.Platform.Data" Version="3.0.0-rc5" />
     <PackageReference Include="VirtoCommerce.Platform.Security" Version="3.0.0-rc5" />
-    <PackageReference Include="VirtoCommerce.SearchModule.Data" Version="3.0.0-rc.5" />
+    <PackageReference Include="VirtoCommerce.SearchModule.Data" Version="3.0.2" />
     <PackageReference Include="VirtoCommerce.StoreModule.Core" Version="3.0.0-rc.5" />
   </ItemGroup>
   <ItemGroup>

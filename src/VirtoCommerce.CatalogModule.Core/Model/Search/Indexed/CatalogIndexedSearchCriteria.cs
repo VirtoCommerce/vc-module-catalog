@@ -41,6 +41,11 @@ namespace VirtoCommerce.CatalogModule.Core.Model.Search
         /// </summary>
         public string RawQuery { get; set; }
 
+        /// <summary>
+        /// Allows to retrieve only a specific set of fields in the result hits
+        /// </summary>
+        public IList<string> IncludeFields { get; set; }
+
         [JsonProperty("searchPhrase")]
         public new string Keyword { get; set; }
 
