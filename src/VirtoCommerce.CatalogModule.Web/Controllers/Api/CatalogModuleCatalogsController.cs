@@ -39,12 +39,13 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <remarks>Get common and virtual Catalogs list with minimal information included. Returns array of Catalog</remarks>
 		[HttpGet]
         [Route("")]
-        public async Task<ActionResult<Catalog[]>> GetCatalogs(string sort = null, int skip = 0, int take = 20)
+        public async Task<ActionResult<Catalog[]>> GetCatalogs(string sort = null, int skip = 0, int take = 1000)
         {
             var criteria = AbstractTypeFactory<CatalogSearchCriteria>.TryCreateInstance();
             criteria.Sort = sort;
             criteria.Skip = skip;
             criteria.Take = take;
+            criteria.ResponseGroup = CatalogResponseGroup.Info.ToString();
 
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, criteria, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
             if (!authorizationResult.Succeeded)
