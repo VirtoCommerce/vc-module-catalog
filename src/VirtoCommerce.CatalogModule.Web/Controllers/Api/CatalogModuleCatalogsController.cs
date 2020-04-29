@@ -60,12 +60,13 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("search")]
         public async Task<ActionResult<CatalogSearchResult>> SearchCatalogs([FromBody] CatalogSearchCriteria criteria)
         {
-            var result = await _catalogSearchService.SearchCatalogsAsync(criteria);
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, criteria, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
             if (!authorizationResult.Succeeded)
             {
                 return Unauthorized();
             }
+
+            var result = await _catalogSearchService.SearchCatalogsAsync(criteria);
             return Ok(result);
         }
 
