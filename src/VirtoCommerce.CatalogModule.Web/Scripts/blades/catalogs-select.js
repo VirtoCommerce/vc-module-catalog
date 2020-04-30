@@ -4,7 +4,7 @@ angular.module('virtoCommerce.catalogModule')
 
     blade.refresh = function () {
         blade.isLoading = true;
-
+        //ToDo: Apply Infinite scrolling
         catalogs.search({take: 1000}, function (data) {
             if (blade.doShowAllCatalogs) {
                 $scope.objects = data.results;

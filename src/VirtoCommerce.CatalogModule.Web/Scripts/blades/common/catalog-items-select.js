@@ -46,6 +46,7 @@ angular.module('virtoCommerce.catalogModule')
             });
         }
         else {
+            //ToDo: Apply Infinite scrolling
             catalogs.search({take: 1000}, function (data) {
                 blade.isLoading = false;
 
