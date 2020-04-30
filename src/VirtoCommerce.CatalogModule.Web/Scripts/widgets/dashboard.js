@@ -1,4 +1,4 @@
-﻿angular.module('virtoCommerce.catalogModule')
+angular.module('virtoCommerce.catalogModule')
 .controller('virtoCommerce.catalogModule.dashboard.catalogsWidgetController', ['$scope', '$state', 'virtoCommerce.catalogModule.catalogs', function ($scope, $state, catalogs) {
     $scope.data = { count: '', descr: 'Catalogs' };
 
@@ -6,8 +6,8 @@
         $state.go('workspace.catalog');
     };
 
-    catalogs.getCatalogs({}, function (data) {
-        $scope.data.count = data.length;
+    catalogs.search({take:1000}, function (data) {
+        $scope.data.results.count = data.length;
     },
     function (error) { });
 }])
