@@ -6,8 +6,8 @@ angular.module('virtoCommerce.catalogModule')
         $state.go('workspace.catalog');
     };
 
-    catalogs.search({take:1000}, function (data) {
-        $scope.data.results.count = data.length;
+    catalogs.search({take:0}, function (data) {
+        $scope.data.count = data.totalCount;
     },
     function (error) { });
 }])
