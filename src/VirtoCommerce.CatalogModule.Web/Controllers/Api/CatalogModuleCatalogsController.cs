@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -37,8 +38,9 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// Get Catalogs list
         /// </summary>
         /// <remarks>Get common and virtual Catalogs list with minimal information included. Returns array of Catalog</remarks>
-		[HttpGet]
+        [HttpGet]
         [Route("")]
+        [Obsolete("use POST api/catalog/catalogs/search instead")]
         public async Task<ActionResult<Catalog[]>> GetCatalogs(string sort = null, int skip = 0, int take = 20)
         {
             var criteria = AbstractTypeFactory<CatalogSearchCriteria>.TryCreateInstance();
@@ -75,7 +77,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// </summary>
         /// <remarks>Gets Catalog by id with full information loaded</remarks>
         /// <param name="id">The Catalog id.</param>
-		[HttpGet]
+        [HttpGet]
         [Route("{id}")]
         public async Task<ActionResult<Catalog>> GetCatalog(string id)
         {
@@ -147,7 +149,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <remarks>Creates the specified catalog</remarks>
         /// <param name="catalog">The catalog to create</param>
         /// <exception cref="System.UnauthorizedAccessException"></exception>
-		[HttpPost]
+        [HttpPost]
         [Route("")]
         [Authorize(ModuleConstants.Security.Permissions.Create)]
         public async Task<ActionResult<Catalog>> CreateCatalog([FromBody]Catalog catalog)

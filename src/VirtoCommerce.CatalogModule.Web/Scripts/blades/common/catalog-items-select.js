@@ -46,16 +46,17 @@ angular.module('virtoCommerce.catalogModule')
             });
         }
         else {
-            catalogs.getCatalogs({}, function (results) {
+            //ToDo: Apply Infinite scrolling
+            catalogs.search({take: 1000}, function (data) {
                 blade.isLoading = false;
 
-                $scope.items = results;
+                $scope.items = data.results;
                 //Set navigation breadcrumbs
                 setBreadcrumbs();
 
             });
         }
-    }
+    };
 
     //Breadcrumbs
     function setBreadcrumbs() {
