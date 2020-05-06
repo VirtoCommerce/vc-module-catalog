@@ -81,6 +81,18 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
                         }
                         context.Succeed(requirement);
                     }
+                    else if (context.Resource is PropertyDictionaryItemSearchCriteria propertyDictionaryItemSearchCriteria)
+                    {
+                        if (propertyDictionaryItemSearchCriteria.CatalogIds.IsNullOrEmpty())
+                        {
+                            propertyDictionaryItemSearchCriteria.CatalogIds = allowedCatalogIds;
+                        }
+                        else
+                        {
+                            propertyDictionaryItemSearchCriteria.CatalogIds = propertyDictionaryItemSearchCriteria.CatalogIds.Intersect(allowedCatalogIds).ToArray();
+                        }
+                        context.Succeed(requirement);
+                    }
                 }
             }
         }
