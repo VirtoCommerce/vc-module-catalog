@@ -1,6 +1,6 @@
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 
-namespace VirtoCommerce.CatalogModule.Web.Model
+namespace VirtoCommerce.CatalogModule.BulkActions.Models
 {
     /// <summary>
     /// Information to search and create links to categories and items
