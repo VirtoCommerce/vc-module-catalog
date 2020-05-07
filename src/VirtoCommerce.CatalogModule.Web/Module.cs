@@ -10,6 +10,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using VirtoCommerce.BulkActionsModule.Core.Services;
+using VirtoCommerce.CatalogModule.BulkActions.DataSources;
+using VirtoCommerce.CatalogModule.BulkActions.Services;
 using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Events;
 using VirtoCommerce.CatalogModule.Core.Model;
@@ -165,6 +168,16 @@ namespace VirtoCommerce.CatalogModule.Web
                 configure.AddPolicy(typeof(ExportableProduct).FullName + "ExportDataPolicy", exportPolicy);
                 configure.AddPolicy(typeof(ExportableCatalogFull).FullName + "ExportDataPolicy", exportPolicy);
             });
+
+            #endregion
+
+            #region BulkActions
+
+            serviceCollection.AddTransient<ListEntryMover<Category>, CategoryMover>();
+            serviceCollection.AddTransient<ListEntryMover<CatalogProduct>, ProductMover>();
+            serviceCollection.AddTransient<IBulkPropertyUpdateManager, BulkPropertyUpdateManager>();
+            serviceCollection.AddTransient<IDataSourceFactory, DataSourceFactory>();
+            serviceCollection.AddTransient<IBulkActionFactory, CatalogBulkActionFactory>();
 
             #endregion
         }
