@@ -10,8 +10,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using VirtoCommerce.BulkActionsModule.Core.Models.BulkActions;
 using VirtoCommerce.BulkActionsModule.Core.Services;
+using VirtoCommerce.CatalogModule.BulkActions.Actions.CategoryChange;
+using VirtoCommerce.CatalogModule.BulkActions.Actions.PropertiesUpdate;
 using VirtoCommerce.CatalogModule.BulkActions.DataSources;
+using VirtoCommerce.CatalogModule.BulkActions.Models;
 using VirtoCommerce.CatalogModule.BulkActions.Services;
 using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Events;
@@ -259,6 +263,16 @@ namespace VirtoCommerce.CatalogModule.Web
                     .WithMetadata(new ExportedTypeMetadata { PropertyInfos = Array.Empty<ExportedTypePropertyInfo>() }));
 
             #endregion
+
+            #region BulkActions
+
+            AbstractTypeFactory<BulkActionContext>.RegisterType<CategoryChangeBulkActionContext>();
+            AbstractTypeFactory<BulkActionContext>.RegisterType<PropertiesUpdateBulkActionContext>();
+
+            RegisterBulkAction(nameof(CategoryChangeBulkAction), nameof(CategoryChangeBulkActionContext));
+            RegisterBulkAction(nameof(PropertiesUpdateBulkAction), nameof(PropertiesUpdateBulkActionContext));
+
+            #endregion
         }
 
         public void Uninstall()
@@ -277,6 +291,26 @@ namespace VirtoCommerce.CatalogModule.Web
         {
             await _appBuilder.ApplicationServices.GetRequiredService<CatalogExportImport>().DoImportAsync(inputStream, options,
                 progressCallback, cancellationToken);
+        }
+
+
+        private void RegisterBulkAction(string name, string contextTypeName)
+        {
+            var dataSourceFactory = _appBuilder.ApplicationServices.GetService<IDataSourceFactory>();
+            var actionFactory = _appBuilder.ApplicationServices.GetService<IBulkActionFactory>();
+            var permissions = new[] { ModuleConstants.Security.Permissions.CategoryChange, ModuleConstants.Security.Permissions.PropertiesUpdate };
+            var applicableTypes = new[] { nameof(CatalogProduct) };
+
+            var provider = new BulkActionProvider(
+                name,
+                contextTypeName,
+                applicableTypes,
+                dataSourceFactory,
+                actionFactory,
+                permissions);
+
+            var actionProviderStorage = _appBuilder.ApplicationServices.GetService<IBulkActionProviderStorage>();
+            actionProviderStorage.Add(provider);
         }
     }
 }
