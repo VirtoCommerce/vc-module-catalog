@@ -37,5 +37,6 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         Task RemoveCategoriesAsync(string[] ids);
         Task RemoveCatalogsAsync(string[] ids);
         Task RemoveAllPropertyValuesAsync(string propertyId);
+        Task RemoveAssociationsAsync(string[] ids);
     }
 }

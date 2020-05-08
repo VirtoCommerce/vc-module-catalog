@@ -164,7 +164,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                         // TODO: Call GetItemByIds for variations recursively (need to measure performance and data amount first)
                         IQueryable<ItemEntity> variationsQuery = Items.Where(x => itemIds.Contains(x.ParentId))
                                                     .Include(x => x.Images)
-                                                    .Include(x => x.ItemPropertyValues).ThenInclude(x=>x.DictionaryItem.DictionaryItemValues);
+                                                    .Include(x => x.ItemPropertyValues).ThenInclude(x => x.DictionaryItem.DictionaryItemValues);
 
                         if (itemResponseGroup.HasFlag(ItemResponseGroup.ItemAssets))
                         {
@@ -438,6 +438,13 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 commandText = $"DELETE PV FROM PropertyValue PV INNER JOIN Item I ON I.Id = PV.ItemId AND I.CatalogId = '{itemProperty.CatalogId}' WHERE PV.Name = '{itemProperty.Name}'";
                 await DbContext.Database.ExecuteSqlRawAsync(commandText);
             }
+        }
+
+        public async Task RemoveAssociationsAsync(string[] ids)
+        {
+            var itemsForRemove = DbContext.Set<AssociationEntity>().Where(c => ids.Contains(c.Id));
+            DbContext.RemoveRange(itemsForRemove);
+            await DbContext.SaveChangesAsync();
         }
 
         public async Task<GenericSearchResult<AssociationEntity>> SearchAssociations(ProductAssociationSearchCriteria criteria)
