@@ -23,6 +23,11 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             _productAssociationSearchService = productAssociationSearchService;
         }
 
+        /// <summary>
+        /// Returns list of associations for specified product
+        /// </summary>
+        /// <remarks>Returns list of associations for specified product</remarks>
+        /// <param name="productid">Owner product id</param>
         [HttpGet]
         [Route("")]
         [Authorize(ModuleConstants.Security.Permissions.Read)]
@@ -62,6 +67,12 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return Ok();
         }
 
+        /// <summary>
+        /// Deletes specified associations
+        /// </summary>
+        /// <remarks>Updates the specified association</remarks>
+        /// <param name="productid">Owner product id</param>
+        /// <param name="ids">associations to delete ids</param>
         [HttpDelete]
         [Route("")]
         [Authorize(ModuleConstants.Security.Permissions.Delete)]
@@ -71,6 +82,11 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return Ok(HttpStatusCode.NoContent);
         }
 
+        /// <summary>
+        /// Returns associations by search criteria
+        /// </summary>
+        /// <remarks>Returns associations by search criteria</remarks>
+        /// <param name="productid">Owner product id</param>
         [HttpPost]
         [Route("search")]
         [Authorize(ModuleConstants.Security.Permissions.Read)]

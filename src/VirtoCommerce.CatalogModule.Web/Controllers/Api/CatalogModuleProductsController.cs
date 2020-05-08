@@ -289,6 +289,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <returns></returns>
         [HttpPost]
         [Route("associations/search")]
+        [Obsolete("use POST api/catalog/products/{productid}/associations/search instead")]
         public async Task<ActionResult<ProductAssociationSearchResult>> SearchProductAssociations([FromBody] ProductAssociationSearchCriteria criteria)
         {
             var searchResult = await _productAssociationSearchService.SearchProductAssociationsAsync(criteria);
