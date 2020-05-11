@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using VirtoCommerce.BulkActionsModule.Core.Models.BulkActions;
 using VirtoCommerce.BulkActionsModule.Core.Services;
+using VirtoCommerce.CatalogModule.Core.Extensions;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
@@ -85,19 +86,20 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
         private static bool AddPropertyValues(IHasProperties product, Property property)
         {
             bool result;
-            var defaultProperty = product.Properties.FirstOrDefault(p => p.Id.EqualsInvariant(property.Id));
-            if (defaultProperty == null)
+            var foundProperty = product.Properties.FirstOrDefault(p => p.Id.EqualsInvariant(property.Id));
+            if (foundProperty == null)
             {
                 result = false;
             }
             else
             {
-                if (product.Properties == null)
+                foreach (var propertyValue in property.Values)
                 {
-                    product.Properties = new List<Property>();
+                    propertyValue.Property = foundProperty;
+                    propertyValue.PropertyId = foundProperty.Id;
+                    propertyValue.PropertyName = foundProperty.Name;
+                    foundProperty.Values.Add(propertyValue);
                 }
-
-                product.Properties.Add(property);
 
                 result = true;
             }
@@ -109,48 +111,6 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
         {
             return product =>
                 product.Properties.Where(property => property.IsInherited && property.Type != PropertyType.Category);
-        }
-
-        private static object ConvertValue(PropertyValueType valueType, object value)
-        {
-            object result;
-
-            switch (valueType)
-            {
-                case PropertyValueType.LongText:
-                    result = Convert.ToString(value);
-                    break;
-                case PropertyValueType.ShortText:
-                    result = Convert.ToString(value);
-                    break;
-                case PropertyValueType.Number:
-                    try
-                    {
-                        result = Convert.ToDecimal(value, CultureInfo.InvariantCulture);
-                    }
-                    catch
-                    {
-                        result = Convert.ToString(value, CultureInfo.InstalledUICulture);
-                    }
-
-                    break;
-                case PropertyValueType.DateTime:
-                    result = Convert.ToDateTime(value, CultureInfo.InvariantCulture);
-                    break;
-                case PropertyValueType.Boolean:
-                    result = Convert.ToBoolean(value);
-                    break;
-                case PropertyValueType.Integer:
-                    result = Convert.ToInt32(value);
-                    break;
-                case PropertyValueType.GeoPoint:
-                    result = Convert.ToString(value);
-                    break;
-                default:
-                    throw new NotSupportedException();
-            }
-
-            return result;
         }
 
         private static bool TrySetCustomProperty(IHasProperties product, Property property)
@@ -175,7 +135,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
                     {
                         foreach (var productProperty in properties)
                         {
-                            product.Properties?.Remove(productProperty);
+                            productProperty.Values = new List<PropertyValue>();
                         }
                     }
                 }
@@ -184,11 +144,11 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
             }
             else
             {
-                var productPropertyValue = product.Properties?.FirstOrDefault(prop => prop.Id.EqualsInvariant(property.Id));
+                var productProperty = product.Properties?.FirstOrDefault(prop => prop.Id.EqualsInvariant(property.Id));
 
-                if (productPropertyValue != null)
+                if (productProperty != null)
                 {
-                    productPropertyValue.Values = property.Values;
+                    productProperty.Values = property.Values;
 
                     result = true;
                 }
@@ -412,7 +372,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
                     throw new ArgumentException(message);
                 }
 
-                var convertedValue = value != null ? ConvertValue(property.ValueType, value) : null;
+                var convertedValue = value != null ? property.ValueType.ConvertValue(value) : null;
 
                 setter.Invoke(product, new[] { convertedValue });
                 result = true;
