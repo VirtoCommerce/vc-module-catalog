@@ -10,8 +10,7 @@
       "geoPoint": {
         "title": "Geo-point",
         "placeholder": "Please enter Lat/Long Coordinates",
-        "description":
-          "Enter Lat/Long Coordinates (one per line in format: lat,long [no spaces], e.g. 41.40338, 2.17403"
+        "description": "Enter Lat/Long Coordinates (one per line in format: lat,long [no spaces], e.g. 41.40338, 2.17403"
       }
     },
     "blades": {
@@ -29,8 +28,7 @@
         "menu": {
           "catalog": {
             "title": "Catalog",
-            "description":
-              "A central location to manage your store merchandise, create catalog for a brand, product line or a particular supplier."
+            "description": "A central location to manage your store merchandise, create catalog for a brand, product line or a particular supplier."
           },
           "virtual-catalog": {
             "title": "Virtual catalog",
@@ -121,18 +119,15 @@
           },
           "physical-product": {
             "title": "Physical Product",
-            "description":
-              "Represents orderable item of merchandise for sale, can be used for targeted promotions, etc. Requires physical shipping."
+            "description": "Represents orderable item of merchandise for sale, can be used for targeted promotions, etc. Requires physical shipping."
           },
           "digital-product": {
             "title": "Digital Product",
-            "description":
-              "Represents orderable item of merchandise for sale, can be used for targeted promotions, etc. Is digital product, thus is downloaded on purchase, not shipped."
+            "description": "Represents orderable item of merchandise for sale, can be used for targeted promotions, etc. Is digital product, thus is downloaded on purchase, not shipped."
           }
         },
         "catalog-item-name": "Catalog",
-        "catalog-item-description":
-          "A central location to manage your store merchandise, create catalog for a brand, product line or a particular supplier.",
+        "catalog-item-description": "A central location to manage your store merchandise, create catalog for a brand, product line or a particular supplier.",
         "virtual-catalog-item-name": "Virtual catalog",
         "virtual-catalog-item-description": "A subset of products and categories found in master catalogs."
       },
@@ -386,8 +381,7 @@
           "image-category": "Image category",
           "drag-drop-comment": "Drag and drop images here",
           "progress": "Progress",
-          "make-default-image":
-            "Drag and drop an image to top left corner of images area to make it the default image.",
+          "make-default-image": "Drag and drop an image to top left corner of images area to make it the default image.",
           "language": "Language",
           "preview": "Preview",
           "external-link": "External link"
@@ -399,8 +393,7 @@
         },
         "descr": {
           "external-link": "Use external image URL instead of uploading it to assets",
-          "external-link-warning":
-            "\"Example: scheme://your_resource.png\". For security reasons for external image you must use only images that support the URL scheme of the Storefront."
+          "external-link-warning": "\"Example: scheme://your_resource.png\". For security reasons for external image you must use only images that support the URL scheme of the Storefront."
         }
       },
       "item-asset-detail": {
@@ -420,8 +413,7 @@
       "item-associations-list": {
         "subtitle": "Associations",
         "labels": {
-          "sorting-prompt":
-            "Set the order how associated items appear sorted in web store. Drag and drop the products to change the order.",
+          "sorting-prompt": "Set the order how associated items appear sorted in web store. Drag and drop the products to change the order.",
           "picture": "Img",
           "name": "Name",
           "priority": "Priority",
@@ -481,14 +473,12 @@
         "values-Range": {
           "label": "Range bounds",
           "placeholder": "Add number",
-          "description":
-            "Bounds will be sorted automatically before saving. Ranges are constructed as follows: Under [bound 1], [bound 1] to [bound 2], ... , Over [bound N]"
+          "description": "Bounds will be sorted automatically before saving. Ranges are constructed as follows: Under [bound 1], [bound 1] to [bound 2], ... , Over [bound N]"
         },
         "values-PriceRange": {
           "label": "Price range bounds",
           "placeholder": "Add number",
-          "description":
-            "Bounds will be sorted automatically before saving. Price ranges are constructed as follows: Under [bound 1], [bound 1] to [bound 2], ... , Over [bound N]"
+          "description": "Bounds will be sorted automatically before saving. Price ranges are constructed as follows: Under [bound 1], [bound 1] to [bound 2], ... , Over [bound N]"
         }
       },
       "exporter-list": {
@@ -767,96 +757,92 @@
       }
     }
   },
-	"permissions": {
-		"catalog:access": "Open catalogs menu",
-		"catalog:create": "Create catalog related data",
-		"catalog:read": "View catalog related data",
-		"catalog:update": "Update catalog related data",
-		"catalog:delete": "Delete catalog related data",
-		"catalog:export": "Export catalog data",
-		"catalog:import": "Import catalog data"
-	},
-	"settings": {
-	  "Catalog": {
-		"ImageCategories": {
-		  "description": "Dictionary of possible categories that item's Images can have",
-		  "title": "Image categories"
-		},
-		"AssociationGroups": {
-		  "description": "Catalog product association groups",
-		  "title": "Association Group names"
-		},
-		"EditorialReviewTypes": {
-		  "description": "The dictionary of possible types that item's Descriptions can have",
-		  "title": "Item description types"
-		},
-		"CodesInOutline": {
-		  "description": "Enable or disable using codes instead of ids in outlines",
-		  "title": "Use catalog and product codes in outlines"
-		},
-		"ExposeAliasInDictionary": {
-		  "description": "Enable or disable exposing the Alias for dictionary values",
-		  "title": "Expose Alias In Dictionary"
-		},
-		"UseSeoDeduplication": {
-		  "description": "Enable or disable detecting seo duplications",
-		  "title": "Seo duplication detection"
-		},
-		"Search": {
-		  "UseCatalogIndexedSearchInManager": {
-			"description": "Enable or disable indexed search for catalog module with advanced syntax",
-			"title": "Use indexed search for catalog"
-		  },
-		  "UseFullObjectIndexStoring": {
-			"description": "Store serialized catalog objects in the index and return them in search results",
-			"title": "Store serialized catalog objects in the index"
-		  },
-		  "EventBasedIndexation": {
-			"Enable": {
-			  "title": "Enable event-based indexation for catalog entities (Restart required)",
-			  "description": "Any changes to the catalog entity will trigger a background task that will apply these changes in the search index."
-			}
-		  }
-		}
-	  },
-		"VirtoCommerce": {
-			"Search": {
-				"IndexingJobs": {
-					"IndexationDate": {
-						"Product": {
-							"title": "Product indexation date and time",
-							"description": "Date and time of the product indexation task to start"
-						},
-						"Category": {
-							"title": "Category indexation date and time",
-							"description": "Date and time of the category indexation task to start"
-						}
-					}
-				}
-			}
-		}
-	},
-	"module": {
-		"VirtoCommerce.Catalog": {
-			"description": "Export/Import catalogs, categories, products, properties with images binary if you check binary flag"
-		}
-	},
-	"export": {
-		"types": {
-			"VirtoCommerce.CatalogModule.Core.Model.Export.ExportableProduct": {
-				"name": "Products",
-				"description": "Catalog products data with related objects. Supports JSON and CSV"
-			},
-			"VirtoCommerce.CatalogModule.Core.Model.Export.ExportableCatalogFull": {
-				"name": "Catalog",
-				"description": "Catalog data with related objects. Supports JSON"
-			}
-		},
-		"groups": {
-			"VirtoCommerce.CatalogModule.Core.Model.Export": {
-				"name": "Catalog",
-				"description": "Catalogs, Categories, Products"
-			}
-		}
-	}
+  "permissions": {
+    "catalog:access": "Open catalogs menu",
+    "catalog:create": "Create catalog related data",
+    "catalog:read": "View catalog related data",
+    "catalog:update": "Update catalog related data",
+    "catalog:delete": "Delete catalog related data",
+    "catalog:export": "Export catalog data",
+    "catalog:import": "Import catalog data"
+  },
+  "settings": {
+    "Catalog": {
+      "ImageCategories": {
+        "description": "Dictionary of possible categories that item's Images can have",
+        "title": "Image categories"
+      },
+      "AssociationGroups": {
+        "description": "Catalog product association groups",
+        "title": "Association Group names"
+      },
+      "EditorialReviewTypes": {
+        "description": "The dictionary of possible types that item's Descriptions can have",
+        "title": "Item description types"
+      },
+      "CodesInOutline": {
+        "description": "Enable or disable using codes instead of ids in outlines",
+        "title": "Use catalog and product codes in outlines"
+      },
+      "UseSeoDeduplication": {
+        "description": "Enable or disable detecting seo duplications",
+        "title": "Seo duplication detection"
+      },
+      "Search": {
+        "UseCatalogIndexedSearchInManager": {
+          "description": "Enable or disable indexed search for catalog module with advanced syntax",
+          "title": "Use indexed search for catalog"
+        },
+        "UseFullObjectIndexStoring": {
+          "description": "Store serialized catalog objects in the index and return them in search results",
+          "title": "Store serialized catalog objects in the index"
+        },
+        "EventBasedIndexation": {
+          "Enable": {
+            "title": "Enable event-based indexation for catalog entities (Restart required)",
+            "description": "Any changes to the catalog entity will trigger a background task that will apply these changes in the search index."
+          }
+        }
+      }
+    },
+    "VirtoCommerce": {
+      "Search": {
+        "IndexingJobs": {
+          "IndexationDate": {
+            "Product": {
+              "title": "Product indexation date and time",
+              "description": "Date and time of the product indexation task to start"
+            },
+            "Category": {
+              "title": "Category indexation date and time",
+              "description": "Date and time of the category indexation task to start"
+            }
+          }
+        }
+      }
+    }
+  },
+  "module": {
+    "VirtoCommerce.Catalog": {
+      "description": "Export/Import catalogs, categories, products, properties with images binary if you check binary flag"
+    }
+  },
+  "export": {
+    "types": {
+      "VirtoCommerce.CatalogModule.Core.Model.Export.ExportableProduct": {
+        "name": "Products",
+        "description": "Catalog products data with related objects. Supports JSON and CSV"
+      },
+      "VirtoCommerce.CatalogModule.Core.Model.Export.ExportableCatalogFull": {
+        "name": "Catalog",
+        "description": "Catalog data with related objects. Supports JSON"
+      }
+    },
+    "groups": {
+      "VirtoCommerce.CatalogModule.Core.Model.Export": {
+        "name": "Catalog",
+        "description": "Catalogs, Categories, Products"
+      }
+    }
+  }
 }

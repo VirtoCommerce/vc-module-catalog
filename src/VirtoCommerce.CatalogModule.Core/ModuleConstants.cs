@@ -64,14 +64,6 @@ namespace VirtoCommerce.CatalogModule.Core
                     DefaultValue = false
                 };
 
-                public static SettingDescriptor ExposeAliasInDictionary { get; } = new SettingDescriptor
-                {
-                    Name = "Catalog.ExposeAliasInDictionary",
-                    GroupName = "Catalog|General",
-                    ValueType = SettingValueType.Boolean,
-                    DefaultValue = false
-                };
-
                 public static SettingDescriptor UseSeoDeduplication { get; } = new SettingDescriptor
                 {
                     Name = "Catalog.UseSeoDeduplication",
@@ -98,7 +90,7 @@ namespace VirtoCommerce.CatalogModule.Core
                                    AssociationGroups,
                                    EditorialReviewTypes,
                                    CodesInOutline,
-                                   ExposeAliasInDictionary,
+                                   EventBasedIndexation,
                                    UseSeoDeduplication
                                };
                     }

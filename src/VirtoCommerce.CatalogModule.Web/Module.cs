@@ -250,6 +250,7 @@ namespace VirtoCommerce.CatalogModule.Web
 
         public void Uninstall()
         {
+            // Method intentionally left empty.
         }
 
         public async Task ExportAsync(Stream outStream, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback,
