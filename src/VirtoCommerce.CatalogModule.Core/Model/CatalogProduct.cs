@@ -376,5 +376,10 @@ namespace VirtoCommerce.CatalogModule.Core.Model
             return result;
         }
         #endregion
+
+        public override string ToString()
+        {
+            return $"{Name}, Id: {Id}, Code: {Code}";
+        }
     }
 }
