@@ -13,10 +13,10 @@
 
     <ItemGroup>
       <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.2" />
+      <PackageReference Include="VirtoCommerce.BulkActionsModule.Core" Version="3.0.0" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\vc-module-bulk-actions\src\VirtoCommerce.BulkActionsModule.Core\VirtoCommerce.BulkActionsModule.Core.csproj" />
       <ProjectReference Include="..\VirtoCommerce.CatalogModule.Core\VirtoCommerce.CatalogModule.Core.csproj" />
       <ProjectReference Include="..\VirtoCommerce.CatalogModule.Data\VirtoCommerce.CatalogModule.Data.csproj" />
     </ItemGroup>
