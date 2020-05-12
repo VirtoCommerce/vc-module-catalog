@@ -55,7 +55,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 repository.DisableChangesTracking();
 
                 var productEntities = await repository.GetItemByIdsAsync(ownerIds, ItemResponseGroup.ItemAssociations.ToString());
-                return productEntities.SelectMany(c => c.Associations)
+                return productEntities.SelectMany(x => x.Associations)
                     .Select(x => x.ToModel(AbstractTypeFactory<ProductAssociation>.TryCreateInstance())).ToArray();
             }
         }
