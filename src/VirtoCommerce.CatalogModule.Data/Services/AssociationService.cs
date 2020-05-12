@@ -92,58 +92,46 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 source.Associations.Patch(target.Associations, associationComparer, (sourceAssociation, targetAssociation) => sourceAssociation.Patch(targetAssociation));
 
                 await repository.UnitOfWork.CommitAsync();
-                //Reset cached catalogs and catalogs
-                CatalogCacheRegion.ExpireRegion();
+                //Reset cached associations
+                ItemCacheRegion.ExpireRegion();
+                AssociationSearchCacheRegion.ExpireRegion();
             }
 
         }
 
-        public async Task UpdateAssociationSetAsync(string ownerId, ProductAssociation[] associations)
+        public async Task UpdateAssociationsAsync(ProductAssociation[] associations)
         {
             var changedEntities = new List<AssociationEntity>();
 
             var dbAssociations = associations.Select(x => AbstractTypeFactory<AssociationEntity>.TryCreateInstance().FromModel(x)).ToArray();
-            foreach (var dbAssociation in dbAssociations)
-            {
-                dbAssociation.ItemId = ownerId;
-            }
+
             changedEntities.AddRange(dbAssociations);
 
-
             using (var repository = _repositoryFactory())
             {
-                var existEntities = await repository.Associations.Where(x => ownerId == x.ItemId).ToArrayAsync();
+                var changedProducts = new List<CatalogProduct>();
+                foreach (var changedEntity in changedEntities)
+                {
+                    var existEntity = repository.Associations.FirstOrDefault(x => changedEntity.ItemId == x.ItemId && changedEntity.AssociatedItemId == x.AssociatedItemId);
 
-                var target = new { Associations = new ObservableCollection<AssociationEntity>(existEntities) };
-                var source = new { Associations = new ObservableCollection<AssociationEntity>(changedEntities) };
+                    var products = await repository.GetItemByIdsAsync(new[] { changedEntity.ItemId });
+                    var product = products.Select(x => x.ToModel(AbstractTypeFactory<CatalogProduct>.TryCreateInstance(), false, false)).First();
+                    changedProducts.AddDistinct(product);
 
-                var associationComparer = AnonymousComparer.Create((AssociationEntity x) => x.ItemId + ":" + x.AssociationType + ":" + x.AssociatedItemId + ":" + x.AssociatedCategoryId);
-                source.Associations.Patch(target.Associations, associationComparer, (sourceAssociation, targetAssociation) => sourceAssociation.Patch(targetAssociation));
+                    if (existEntity == null)
+                        repository.Add(changedEntity);
+                    else
+                        changedEntity.Patch(existEntity);
 
-                var forRemove = existEntities.Where(c => !target.Associations.Any(t => t.Id == c.Id));
-                await repository.RemoveAssociationsAsync(forRemove.Select(c => c.Id).ToArray());
+                }
                 await repository.UnitOfWork.CommitAsync();
-                //Reset cached catalogs and catalogs
-                CatalogCacheRegion.ExpireRegion();
-            }
-        }
 
-        public async Task UpdateAssociationAsync(string ownerId, ProductAssociation association)
-        {
-            var changedEntity = AbstractTypeFactory<AssociationEntity>.TryCreateInstance().FromModel(association);
-            changedEntity.ItemId = ownerId;
-            using (var repository = _repositoryFactory())
-            {
-                var existEntity = repository.Associations.FirstOrDefault(x => ownerId == x.ItemId && association.AssociatedObjectId == x.AssociatedItemId);
+                //Reset cached associations
 
-                if (existEntity == null)
-                    repository.Add(changedEntity);
-                else
-                    changedEntity.Patch(existEntity);
+                foreach (var product in changedProducts)
+                    ItemCacheRegion.ExpireEntity(product);
 
-                await repository.UnitOfWork.CommitAsync();
-                //Reset cached catalogs and catalogs
-                CatalogCacheRegion.ExpireRegion();
+                AssociationSearchCacheRegion.ExpireRegion();
             }
         }
 
@@ -152,8 +140,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             using (var repository = _repositoryFactory())
             {
                 await repository.RemoveAssociationsAsync(ids);
-                //Reset cached catalogs and catalogs
-                CatalogCacheRegion.ExpireRegion();
+                //Reset cached associations
+                AssociationSearchCacheRegion.ExpireRegion();
             }
         }
         #endregion

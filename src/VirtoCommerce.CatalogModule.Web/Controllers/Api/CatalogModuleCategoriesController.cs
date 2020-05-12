@@ -121,7 +121,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [HttpPost]
         [Route("")]
         public async Task<ActionResult> CreateOrUpdateCategory([FromBody]Category category)
-        {
+        {           
             if (category.Id == null)
             {
                 //Ensure that new category has SeoInfo
@@ -135,7 +135,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                         category.SeoInfos = new[] { new SeoInfo { LanguageCode = defaultLanguage, SemanticUrl = slugUrl } };
                     }
                 }
-            }
+            }                     
 
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, category, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
             if (!authorizationResult.Succeeded)

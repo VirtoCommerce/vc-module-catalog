@@ -10,7 +10,7 @@ using VirtoCommerce.CatalogModule.Core.Services;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
-    [Route("api/catalog/products/{productid}/associations")]
+    [Route("api/catalog/products/associations")]
     [Authorize]
     public class CatalogModuleAssociationsController : Controller
     {
@@ -27,13 +27,13 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// Returns list of associations for specified product
         /// </summary>
         /// <remarks>Returns list of associations for specified product</remarks>
-        /// <param name="productid">Owner product id</param>
+        /// <param name="productId">Owner product id</param>
         [HttpGet]
-        [Route("")]
+        [Route("{productId}")]
         [Authorize(ModuleConstants.Security.Permissions.Read)]
-        public async Task<ActionResult<ProductAssociation[]>> GetAllAssociations(string productid)
+        public async Task<ActionResult<ProductAssociation[]>> GetAllAssociations(string productId)
         {
-            var result = await _associationService.GetAssociationsAsync(new string[] { productid });
+            var result = await _associationService.GetAssociationsAsync(new string[] { productId });
             return Ok(result);
         }
 
@@ -41,29 +41,13 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// Updates the specified association
         /// </summary>
         /// <remarks>Updates the specified association</remarks>
-        /// <param name="productid">Owner product id</param>
-        /// <param name="association">The association</param>
+        /// <param name="associations">The association</param>
         [HttpPost]
         [Route("")]
         [Authorize(ModuleConstants.Security.Permissions.Update)]
-        public async Task<ActionResult> UpdateAssociation(string productid, [FromBody] ProductAssociation association)
+        public async Task<ActionResult> UpdateAssociation([FromBody] ProductAssociation[] associations)
         {
-            await _associationService.UpdateAssociationAsync(productid, association);
-            return Ok();
-        }
-
-        /// <summary>
-        /// Updates set of associations for specified product
-        /// </summary>
-        /// <remarks>Updates the specified association</remarks>
-        /// <param name="productid">Owner product id</param>
-        /// <param name="associations">Associations</param>
-        [HttpPost]
-        [Route("set")]
-        [Authorize(ModuleConstants.Security.Permissions.Update)]
-        public async Task<ActionResult> UpdateAssociationSet(string productid, [FromBody] ProductAssociation[] associations)
-        {
-            await _associationService.UpdateAssociationSetAsync(productid, associations);
+            await _associationService.UpdateAssociationsAsync(associations);
             return Ok();
         }
 
@@ -71,12 +55,11 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// Deletes specified associations
         /// </summary>
         /// <remarks>Updates the specified association</remarks>
-        /// <param name="productid">Owner product id</param>
         /// <param name="ids">associations to delete ids</param>
         [HttpDelete]
         [Route("")]
         [Authorize(ModuleConstants.Security.Permissions.Delete)]
-        public async Task<ActionResult> Delete(string productid, [FromBody]string[] ids)
+        public async Task<ActionResult> Delete([FromBody]string[] ids)
         {
             await _associationService.DeleteAssociationAsync(ids);
             return Ok(HttpStatusCode.NoContent);
@@ -86,11 +69,10 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// Returns associations by search criteria
         /// </summary>
         /// <remarks>Returns associations by search criteria</remarks>
-        /// <param name="productid">Owner product id</param>
         [HttpPost]
         [Route("search")]
         [Authorize(ModuleConstants.Security.Permissions.Read)]
-        public async Task<ActionResult<ProductAssociation[]>> Search(string productid, [FromBody]ProductAssociationSearchCriteria criteria)
+        public async Task<ActionResult<ProductAssociation[]>> Search([FromBody]ProductAssociationSearchCriteria criteria)
         {
             var result = await _productAssociationSearchService.SearchProductAssociationsAsync(criteria);
             return Ok(result);

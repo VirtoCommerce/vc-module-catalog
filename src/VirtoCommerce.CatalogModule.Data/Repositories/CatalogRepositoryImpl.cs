@@ -442,7 +442,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
         public async Task RemoveAssociationsAsync(string[] ids)
         {
-            var itemsForRemove = DbContext.Set<AssociationEntity>().Where(c => ids.Contains(c.Id));
+            var itemsForRemove = DbContext.Set<AssociationEntity>().Where(x => ids.Contains(x.Id));
             DbContext.RemoveRange(itemsForRemove);
             await DbContext.SaveChangesAsync();
         }
