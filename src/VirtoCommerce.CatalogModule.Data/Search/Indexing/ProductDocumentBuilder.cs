@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.SearchModule.Core.Extenstions;
 using VirtoCommerce.SearchModule.Core.Model;
@@ -127,6 +128,12 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
             if (StoreObjectsInIndex)
             {
+                //Do not store the product variations in the index, they can be able to load by separate query
+                if (!product.Variations.IsNullOrEmpty())
+                {
+                    product = product.Clone() as CatalogProduct;
+                    product.ReduceDetails((ItemResponseGroup.Full & ~ItemResponseGroup.Variations).ToString());
+                }
                 // Index serialized product
                 document.AddObjectFieldValue(product);
             }
