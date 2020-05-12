@@ -1,9 +1,9 @@
 angular.module('virtoCommerce.catalogModule')
 .controller('virtoCommerce.catalogModule.imagesController',
-    ['$scope', '$filter', '$translate', 'platformWebApp.dialogService',
+    ['$scope', '$translate', 'platformWebApp.dialogService',
         'platformWebApp.bladeNavigationService', 'platformWebApp.authService',
-        'platformWebApp.assets.api', 'platformWebApp.settings', 'platformWebApp.bladeUtils', 'platformWebApp.uiGridHelper', '$timeout',
-        function ($scope, $filter, $translate, dialogService, bladeNavigationService, authService, assets, settings, bladeUtils, uiGridHelper, $timeout) {
+        'platformWebApp.settings', 'platformWebApp.bladeUtils', 'platformWebApp.uiGridHelper', '$timeout',
+        function ($scope, $translate, dialogService, bladeNavigationService, authService, settings, bladeUtils, uiGridHelper, $timeout) {
             var blade = $scope.blade;
             blade.headIcon = 'fa-image';
             var languages = blade.parentBlade.catalog.languages;
@@ -12,9 +12,9 @@ angular.module('virtoCommerce.catalogModule')
 
             blade.isLoading = false;
 
-            blade.refresh = function (item) {
+            blade.refresh = function(item) {
                 initialize(item);
-            }
+            };
 
             function initialize(item) {
                 blade.item = item;
@@ -23,15 +23,15 @@ angular.module('virtoCommerce.catalogModule')
                 $scope.imageTypes = settings.getValues({ id: 'Catalog.ImageCategories' });
 
                 blade.currentEntities = item.images ? angular.copy(item.images) : [];
-            };
+            }
 
             $scope.saveChanges = function () {
                 blade.item.images = blade.currentEntities;
                 $scope.bladeClose();
             };
 
-            $scope.toggleImageSelect = function (e, image) {
-                if (e.ctrlKey == 1) {
+            $scope.toggleImageSelect = function(e, image) {
+                if (e.ctrlKey === 1) {
                     image.$selected = !image.$selected;
                 } else {
                     if (image.$selected) {
@@ -40,7 +40,7 @@ angular.module('virtoCommerce.catalogModule')
                         image.$selected = true;
                     }
                 }
-            }
+            };
 
             $scope.removeItem = function (image) {
                 var idx = blade.currentEntities.indexOf(image);
@@ -49,18 +49,18 @@ angular.module('virtoCommerce.catalogModule')
                 }
             };
 
-            $scope.copyUrl = function (data) {
-                $translate('catalog.blades.images.labels.copy-url-prompt').then(function (promptMessage) {
+            $scope.copyUrl = function(data) {
+                $translate('catalog.blades.images.labels.copy-url-prompt').then(function(promptMessage) {
                     window.prompt(promptMessage, data.url);
                 });
-            }
+            };
 
-            $scope.downloadUrl = function (image) {
+            $scope.downloadUrl = function(image) {
                 window.open(image.url, '_blank');
-            }
+            };
 
             $scope.removeAction = function (selectedImages) {
-                if (selectedImages == undefined) {
+                if (selectedImages === undefined) {
                     selectedImages = $scope.gridApi.selection.getSelectedRows();
                 }
 
@@ -137,7 +137,7 @@ angular.module('virtoCommerce.catalogModule')
                         };
                         bladeNavigationService.showBlade(newBlade, blade);
                     },
-                    canExecuteMethod: function () { return true; }
+                    canExecuteMethod: function () { return authService.checkPermission('platform:asset:read'); }
                 }
             ];
 
@@ -186,12 +186,12 @@ angular.module('virtoCommerce.catalogModule')
                 return index;
             }
 
-            var priorityChanged = function (data) {
+            var priorityChanged = function(data) {
                 var newIndex = getEntityGridIndex(data.rowEntity, data.gridApi);
                 if (newIndex !== data.index) {
                     data.gridApi.cellNav.scrollToFocus(data.rowEntity, data.colDef);
                 }
-            }
+            };
             blade.selectedImages = [];
             $scope.setGridOptions = function (gridOptions) {
                 gridOptions.enableCellEditOnFocus = false;
@@ -218,7 +218,7 @@ angular.module('virtoCommerce.catalogModule')
 
             $scope.$watch("blade.currentEntities", function (data) {
                 var result = _.all(blade.currentEntities, $scope.priorityValid);
-                return $scope.isValid = result;;
+                return $scope.isValid = result;
             }, true);
 
             bladeUtils.initializePagination($scope, true);

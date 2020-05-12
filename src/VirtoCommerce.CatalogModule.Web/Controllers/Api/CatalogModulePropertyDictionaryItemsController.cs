@@ -6,6 +6,7 @@ using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
+using VirtoCommerce.CatalogModule.Data.Authorization;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
@@ -15,12 +16,15 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
     {
         private readonly IPropertyDictionaryItemSearchService _propertyDictionarySearchService;
         private readonly IPropertyDictionaryItemService _propertyDictionaryService;
+        private readonly IAuthorizationService _authorizationService;
 
         public CatalogModulePropertyDictionaryItemsController(IPropertyDictionaryItemSearchService propertyDictionarySearchService,
-                                                             IPropertyDictionaryItemService propertyDictionaryService)
+                                                             IPropertyDictionaryItemService propertyDictionaryService,
+                                                             IAuthorizationService authorizationService)
         {
             _propertyDictionarySearchService = propertyDictionarySearchService;
             _propertyDictionaryService = propertyDictionaryService;
+            _authorizationService = authorizationService;
         }
 
         /// <summary>
@@ -30,9 +34,14 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <returns></returns>
         [HttpPost]
         [Route("search")]
-        [Authorize(ModuleConstants.Security.Permissions.Read)]
+        [Authorize]
         public async Task<ActionResult<PropertyDictionaryItem[]>> SearchPropertyDictionaryItems([FromBody]PropertyDictionaryItemSearchCriteria criteria)
         {
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, criteria, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
+            if (!authorizationResult.Succeeded)
+            {
+                return Unauthorized();
+            }
             var result = await _propertyDictionarySearchService.SearchAsync(criteria);
             return Ok(result);
         }

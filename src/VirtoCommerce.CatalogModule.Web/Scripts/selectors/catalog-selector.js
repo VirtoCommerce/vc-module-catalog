@@ -1,6 +1,7 @@
 angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.catalogSelectorController', ['$scope', 'virtoCommerce.catalogModule.catalogs', function ($scope, catalogs) {
-        catalogs.getCatalogs({ take: 1000 }, function (result) {
-            $scope.catalogs = angular.copy(result);
+        //ToDo: Apply Infinite scrolling
+        catalogs.search({ take: 1000 }, function (data) {
+            $scope.catalogs = angular.copy(data.results);
         });
     }]);

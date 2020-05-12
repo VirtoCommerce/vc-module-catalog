@@ -1,15 +1,15 @@
-﻿angular.module('virtoCommerce.catalogModule')
+angular.module('virtoCommerce.catalogModule')
 .controller('virtoCommerce.catalogModule.catalogsSelectController', ['$scope', 'virtoCommerce.catalogModule.catalogs', 'platformWebApp.bladeNavigationService', function ($scope, catalogs, bladeNavigationService) {
     var blade = $scope.blade;
 
     blade.refresh = function () {
         blade.isLoading = true;
-
-        catalogs.getCatalogs({}, function (results) {
+        //ToDo: Apply Infinite scrolling
+        catalogs.search({take: 1000}, function (data) {
             if (blade.doShowAllCatalogs) {
-                $scope.objects = results;
+                $scope.objects = data.results;
             } else {
-                $scope.objects = _.where(results, { isVirtual: false });
+                $scope.objects = _.where(data.results, { isVirtual: false });
             }
 
             blade.isLoading = false;

@@ -1,4 +1,4 @@
-﻿angular.module('virtoCommerce.catalogModule')
+angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.itemAssociationsListController', ['$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'filterFilter', 'uiGridConstants', 'platformWebApp.uiGridHelper', 'virtoCommerce.catalogModule.catalogs', 'virtoCommerce.catalogModule.items', 'virtoCommerce.catalogModule.categories', function ($scope, bladeNavigationService, dialogService, filterFilter, uiGridConstants, uiGridHelper, catalogs, items, categories) {
     $scope.uiGridConstants = uiGridConstants;
     var allCatalogIds = [];
@@ -6,15 +6,15 @@
 
     blade.isLoading = false;
     blade.refresh = function (item) {
-    	initialize(item);
+        initialize(item);
     };
 
     function initialize(item) {
-    	blade.title = item.name;
+        blade.title = item.name;
         blade.subtitle = 'catalog.widgets.itemAssociations.blade-subtitle';
         blade.item = item;
         populateProductCatalogs(blade.item.associations);
-    };
+    }
    
     function populateProductCatalogs(associations) {
         if (!associations || !associations.length) {
@@ -47,13 +47,13 @@
 
     function findCatalogs() {
         var uniqueCatalogIds = _.uniq(allCatalogIds);
-        return catalogs.getCatalogs({
+        return catalogs.search({
             skip: 0,
             take: uniqueCatalogIds.length,
             catalogIds: uniqueCatalogIds
         }, function (data) {
             _.each(blade.item.associations, function (association) {
-                association.$$catalog = _.find(data, function (x) { return x.id == association.$$catalogId; });
+                association.$$catalog = _.find(data.results, function (x) { return x.id === association.$$catalogId; });
             });
             blade.isLoading = false;
         }).$promise;
@@ -61,38 +61,39 @@
 
     function addAssociationCatalogId(associations, data) {
         _.each(associations, function (x) {
-            var item = _.find(data, function (d) { return d.id == x.associatedObjectId; });
+            var item = _.find(data, function (d) { return d.id === x.associatedObjectId; });
             if (item) {
                 x.$$catalogId = item.catalogId;
             }
         });
-        allCatalogIds.push.apply(allCatalogIds, _.pluck(associations, '$$catalogId'))
+        allCatalogIds.push.apply(allCatalogIds, _.pluck(associations, '$$catalogId'));
     }
 
     $scope.selectNode = function (listItem) {
-    	$scope.selectedNodeId = listItem.associatedObjectId;
-    	var newBlade = {
-    		id: 'associationDetail',
-    		itemId: listItem.associatedObjectId,
+        $scope.selectedNodeId = listItem.associatedObjectId;
+        var newBlade = {
+            id: 'associationDetail',
+            itemId: listItem.associatedObjectId,
             catalog: blade.catalog,
-    		controller: 'virtoCommerce.catalogModule.itemDetailController',
-    		template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/item-detail.tpl.html'
-    	};
+            controller: 'virtoCommerce.catalogModule.itemDetailController',
+            template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/item-detail.tpl.html'
+        };
         if (listItem.associatedObjectType == 'category')
         {
-        	newBlade.currentEntityId = listItem.associatedObjectId;
-        	newBlade.controller = 'virtoCommerce.catalogModule.categoryDetailController';
-			newBlade.template = 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/category-detail.tpl.html';
+            newBlade.currentEntityId = listItem.associatedObjectId;
+            newBlade.controller = 'virtoCommerce.catalogModule.categoryDetailController';
+            newBlade.template = 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/category-detail.tpl.html';
         }        
         bladeNavigationService.showBlade(newBlade, blade);
     };
 
-    $scope.deleteList = function (list) {
-        bladeNavigationService.closeChildrenBlades(blade, function () {
-            var undeletedEntries = _.difference(blade.item.associations, list);
-            blade.item.associations = undeletedEntries;
-    	});
-    }
+    $scope.deleteList = function(list) {
+        bladeNavigationService.closeChildrenBlades(blade,
+            function() {
+                var undeletedEntries = _.difference(blade.item.associations, list);
+                blade.item.associations = undeletedEntries;
+            });
+    };
 
     $scope.edit = function(listItem) {
         var newBlade = {
@@ -105,7 +106,7 @@
             template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/item-association-detail.tpl.html'
         };
         bladeNavigationService.showBlade(newBlade, blade);
-    }
+    };
 
     function openAddEntityWizard() {
         var newBlade = {
