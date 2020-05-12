@@ -82,7 +82,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         public async Task<ActionResult<Catalog>> GetCatalog(string id)
         {
             var catalog = (await _catalogService.GetByIdsAsync(new[] { id }, CatalogResponseGroup.Full.ToString())).FirstOrDefault();
-
+         
             if (catalog == null)
             {
                 return NotFound();
@@ -189,7 +189,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         public async Task<ActionResult> DeleteCatalog(string id)
         {
-            var catalog = (await _catalogService.GetByIdsAsync(new[] { id })).FirstOrDefault();
+            var catalog = (await _catalogService.GetByIdsAsync(new [] { id})).FirstOrDefault();
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, catalog, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Delete));
             if (!authorizationResult.Succeeded)
             {
