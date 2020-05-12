@@ -45,7 +45,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [HttpPost]
         [Route("")]
         [Authorize(ModuleConstants.Security.Permissions.Update)]
-        public async Task<ActionResult> UpdateAssociation([FromBody] ProductAssociation[] associations)
+        public async Task<ActionResult> UpdateAssociations([FromBody] ProductAssociation[] associations)
         {
             await _associationService.UpdateAssociationsAsync(associations);
             return Ok();

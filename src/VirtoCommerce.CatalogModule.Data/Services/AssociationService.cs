@@ -93,7 +93,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
                 await repository.UnitOfWork.CommitAsync();
                 //Reset cached associations
-                ItemCacheRegion.ExpireRegion();
+                ItemCacheRegion.ExpireProducts(changedEntities.Select(c => c.ItemId).ToArray());
                 AssociationSearchCacheRegion.ExpireRegion();
             }
 
@@ -109,14 +109,9 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
             using (var repository = _repositoryFactory())
             {
-                var changedProducts = new List<CatalogProduct>();
                 foreach (var changedEntity in changedEntities)
                 {
                     var existEntity = repository.Associations.FirstOrDefault(x => changedEntity.ItemId == x.ItemId && changedEntity.AssociatedItemId == x.AssociatedItemId);
-
-                    var products = await repository.GetItemByIdsAsync(new[] { changedEntity.ItemId });
-                    var product = products.Select(x => x.ToModel(AbstractTypeFactory<CatalogProduct>.TryCreateInstance(), false, false)).First();
-                    changedProducts.AddDistinct(product);
 
                     if (existEntity == null)
                         repository.Add(changedEntity);
@@ -128,9 +123,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
                 //Reset cached associations
 
-                foreach (var product in changedProducts)
-                    ItemCacheRegion.ExpireEntity(product);
-
+                ItemCacheRegion.ExpireProducts(changedEntities.Select(c => c.ItemId).ToArray());
                 AssociationSearchCacheRegion.ExpireRegion();
             }
         }
@@ -139,7 +132,12 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
             using (var repository = _repositoryFactory())
             {
+                var associationItemIds = repository.Associations.Where(x => ids.Contains(x.Id)).Select(c => c.ItemId);
+
                 await repository.RemoveAssociationsAsync(ids);
+
+                ItemCacheRegion.ExpireProducts(associationItemIds.ToArray());
+
                 //Reset cached associations
                 AssociationSearchCacheRegion.ExpireRegion();
             }
