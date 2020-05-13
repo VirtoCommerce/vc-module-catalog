@@ -87,14 +87,12 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 var target = new { Associations = new ObservableCollection<AssociationEntity>(existEntities) };
                 var source = new { Associations = new ObservableCollection<AssociationEntity>(changedEntities) };
 
-                //changeTracker.Attach(target);
                 var associationComparer = AnonymousComparer.Create((AssociationEntity x) => x.ItemId + ":" + x.AssociationType + ":" + x.AssociatedItemId + ":" + x.AssociatedCategoryId);
                 source.Associations.Patch(target.Associations, associationComparer, (sourceAssociation, targetAssociation) => sourceAssociation.Patch(targetAssociation));
 
                 await repository.UnitOfWork.CommitAsync();
                 //Reset cached associations
-                ItemCacheRegion.ExpireProducts(changedEntities.Select(c => c.ItemId).ToArray());
-                AssociationSearchCacheRegion.ExpireRegion();
+                ClearCache(changedEntities.Select(c => c.ItemId).ToArray());
             }
 
         }
@@ -123,8 +121,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
                 //Reset cached associations
 
-                ItemCacheRegion.ExpireProducts(changedEntities.Select(x => x.ItemId).ToArray());
-                AssociationSearchCacheRegion.ExpireRegion();
+                ClearCache(changedEntities.Select(x => x.ItemId).ToArray());
             }
         }
 
@@ -140,13 +137,16 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 }
                 await repository.UnitOfWork.CommitAsync();
 
-                ItemCacheRegion.ExpireProducts(associations.Select(x => x.ItemId).ToArray());
-
-                //Reset cached associations
-                AssociationSearchCacheRegion.ExpireRegion();
+                ClearCache(associations.Select(x => x.ItemId).ToArray());
             }
         }
         #endregion
+
+        private void ClearCache(string[] ids)
+        {
+            ItemCacheRegion.ExpireProducts(ids);
+            AssociationSearchCacheRegion.ExpireRegion();
+        }
 
     }
 }
