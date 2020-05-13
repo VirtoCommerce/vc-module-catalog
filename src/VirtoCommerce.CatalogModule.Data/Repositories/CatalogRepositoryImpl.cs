@@ -440,13 +440,6 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             }
         }
 
-        public async Task RemoveAssociationsAsync(string[] ids)
-        {
-            var itemsForRemove = DbContext.Set<AssociationEntity>().Where(x => ids.Contains(x.Id));
-            DbContext.RemoveRange(itemsForRemove);
-            await DbContext.SaveChangesAsync();
-        }
-
         public async Task<GenericSearchResult<AssociationEntity>> SearchAssociations(ProductAssociationSearchCriteria criteria)
         {
             var result = new GenericSearchResult<AssociationEntity>();

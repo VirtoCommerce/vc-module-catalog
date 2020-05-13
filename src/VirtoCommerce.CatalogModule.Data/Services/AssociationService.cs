@@ -123,7 +123,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
                 //Reset cached associations
 
-                ItemCacheRegion.ExpireProducts(changedEntities.Select(c => c.ItemId).ToArray());
+                ItemCacheRegion.ExpireProducts(changedEntities.Select(x => x.ItemId).ToArray());
                 AssociationSearchCacheRegion.ExpireRegion();
             }
         }
@@ -132,11 +132,15 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
             using (var repository = _repositoryFactory())
             {
-                var associationItemIds = repository.Associations.Where(x => ids.Contains(x.Id)).Select(c => c.ItemId);
+                var associations = repository.Associations.Where(x => ids.Contains(x.Id));
 
-                await repository.RemoveAssociationsAsync(ids);
+                foreach (var association in associations)
+                {
+                    repository.Remove(association);
+                }
+                await repository.UnitOfWork.CommitAsync();
 
-                ItemCacheRegion.ExpireProducts(associationItemIds.ToArray());
+                ItemCacheRegion.ExpireProducts(associations.Select(x => x.ItemId).ToArray());
 
                 //Reset cached associations
                 AssociationSearchCacheRegion.ExpireRegion();
