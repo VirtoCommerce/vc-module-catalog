@@ -45,29 +45,19 @@ namespace VirtoCommerce.CatalogModule.Test
                 if (!IsPrimitive(typeOfOriginal) && !visited.Contains(original))
                 {
                     visited.Add(original);
-                    if (object.ReferenceEquals(original, expected))
+                    if (ReferenceEquals(original, expected))
                     {
                         throw new MemberAccessException(@$"Deep clone check failed: objects at path {memberPath} are reference equal.");
                     }
                     if (original is IEnumerable)
                     {
-                        try
+                        var originalEnumerator = ((IEnumerable)original).GetEnumerator();
+                        var expectedEnumerator = ((IEnumerable)expected).GetEnumerator();
+                        var iIdx = 0;
+                        while (originalEnumerator.MoveNext())
                         {
-                            var originalEnumerator = ((IEnumerable)original).GetEnumerator();
-                            originalEnumerator.Reset();
-                            var expectedEnumerator = ((IEnumerable)expected).GetEnumerator();
-                            expectedEnumerator.Reset();
-                            var iIdx = 0;
-                            while (originalEnumerator.MoveNext())
-                            {
-                                expectedEnumerator.MoveNext();
-                                IsDeepCloneOf(originalEnumerator.Current, expectedEnumerator.Current, visited, $@"{memberPath}[{iIdx}]");
-                                iIdx++;
-                            }
-                        }
-                        catch (Exception exc)
-                        {
-                            throw new MemberAccessException(@$"Deep clone check failed: unexpected error while accessing IEnumerable member at path {memberPath}.", exc);
+                            expectedEnumerator.MoveNext();
+                            IsDeepCloneOf(originalEnumerator.Current, expectedEnumerator.Current, visited, $@"{memberPath}[{iIdx++}]");
                         }
                     }
                     else
