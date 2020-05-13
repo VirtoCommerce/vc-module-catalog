@@ -16,6 +16,10 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
         public int? Quantity { get; set; }
         /// <summary>
+        /// Is a primary key of associating object
+        /// </summary>
+        public string ItemId { get; set; }
+        /// <summary>
         /// Each link element can have an associated object like Product, Category, etc.
         /// Is a primary key of associated object
         /// </summary>

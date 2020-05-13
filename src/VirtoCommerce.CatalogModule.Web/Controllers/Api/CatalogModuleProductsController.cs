@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Model;
-using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Authorization;
@@ -282,24 +281,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             await _itemsService.DeleteAsync(ids);
             return Ok();
         }
-
-        /// <summary>
-        /// Return product and product's associations products
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost]
-        [Route("associations/search")]
-        public async Task<ActionResult<ProductAssociationSearchResult>> SearchProductAssociations([FromBody] ProductAssociationSearchCriteria criteria)
-        {
-            var searchResult = await _productAssociationSearchService.SearchProductAssociationsAsync(criteria);
-            var result = new ProductAssociationSearchResult
-            {
-                Results = searchResult.Results,
-                TotalCount = searchResult.TotalCount
-            };
-            return Ok(result);
-        }
-
 
         private async Task<CatalogProduct[]> InnerSaveProducts(CatalogProduct[] products)
         {

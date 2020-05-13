@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
+using VirtoCommerce.CatalogModule.Data.Caching;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Platform.Core.Common;
@@ -46,6 +47,19 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
         }
 
+        public async Task<ProductAssociation[]> GetAssociationsAsync(string[] ownerIds)
+        {
+            using (var repository = _repositoryFactory())
+            {
+                //Optimize performance and CPU usage
+                repository.DisableChangesTracking();
+
+                var productEntities = await repository.GetItemByIdsAsync(ownerIds, ItemResponseGroup.ItemAssociations.ToString());
+                return productEntities.SelectMany(x => x.Associations)
+                    .Select(x => x.ToModel(AbstractTypeFactory<ProductAssociation>.TryCreateInstance())).ToArray();
+            }
+        }
+
         public async Task SaveChangesAsync(IHasAssociations[] owners)
         {
             var changedEntities = new List<AssociationEntity>();
@@ -73,15 +87,66 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 var target = new { Associations = new ObservableCollection<AssociationEntity>(existEntities) };
                 var source = new { Associations = new ObservableCollection<AssociationEntity>(changedEntities) };
 
-                //changeTracker.Attach(target);
                 var associationComparer = AnonymousComparer.Create((AssociationEntity x) => x.ItemId + ":" + x.AssociationType + ":" + x.AssociatedItemId + ":" + x.AssociatedCategoryId);
                 source.Associations.Patch(target.Associations, associationComparer, (sourceAssociation, targetAssociation) => sourceAssociation.Patch(targetAssociation));
 
                 await repository.UnitOfWork.CommitAsync();
+                //Reset cached associations
+                ClearCache(changedEntities.Select(c => c.ItemId).ToArray());
             }
 
         }
+
+        public async Task UpdateAssociationsAsync(ProductAssociation[] associations)
+        {
+            var changedEntities = new List<AssociationEntity>();
+
+            var dbAssociations = associations.Select(x => AbstractTypeFactory<AssociationEntity>.TryCreateInstance().FromModel(x)).ToArray();
+
+            changedEntities.AddRange(dbAssociations);
+
+            using (var repository = _repositoryFactory())
+            {
+                foreach (var changedEntity in changedEntities)
+                {
+                    var existEntity = repository.Associations.FirstOrDefault(x => changedEntity.ItemId == x.ItemId && changedEntity.AssociatedItemId == x.AssociatedItemId);
+
+                    if (existEntity == null)
+                        repository.Add(changedEntity);
+                    else
+                        changedEntity.Patch(existEntity);
+
+                }
+                await repository.UnitOfWork.CommitAsync();
+
+                //Reset cached associations
+
+                ClearCache(changedEntities.Select(x => x.ItemId).ToArray());
+            }
+        }
+
+        public async Task DeleteAssociationAsync(string[] ids)
+        {
+            using (var repository = _repositoryFactory())
+            {
+                var associations = repository.Associations.Where(x => ids.Contains(x.Id));
+
+                foreach (var association in associations)
+                {
+                    repository.Remove(association);
+                }
+                await repository.UnitOfWork.CommitAsync();
+
+                ClearCache(associations.Select(x => x.ItemId).ToArray());
+            }
+        }
         #endregion
+
+        private void ClearCache(string[] ids)
+        {
+            ItemCacheRegion.ExpireProducts(ids);
+            AssociationSearchCacheRegion.ExpireRegion();
+        }
 
     }
 }
