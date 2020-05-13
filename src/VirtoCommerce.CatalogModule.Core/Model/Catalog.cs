@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.ExportModule.Core.Model;
@@ -6,7 +5,7 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Core.Model
 {
-    public class Catalog : AuditableEntity, IHasProperties, ICloneable, IHasOuterId, IExportable
+    public class Catalog : AuditableEntity, IHasProperties, IHasOuterId, IExportable
     {
         public string Name { get; set; }
         public bool IsVirtual { get; set; }

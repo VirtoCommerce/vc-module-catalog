@@ -189,14 +189,11 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                 }
             }
 
-            if (parent is IHasTaxType hasTaxType)
+            //TODO: prevent saving the inherited simple values
+            //TaxType  inheritance
+            if (parent is IHasTaxType hasTaxType && TaxType == null)
             {
-                //TODO: prevent saving the inherited simple values
-                //TaxType  inheritance
-                if (TaxType == null)
-                {
-                    TaxType = hasTaxType.TaxType;
-                }
+                TaxType = hasTaxType.TaxType;
             }
 
             if (!Variations.IsNullOrEmpty())
@@ -258,17 +255,14 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                     existProperty.IsReadOnly = existProperty.Type != PropertyType.Variation && existProperty.Type != PropertyType.Product;
 
                     //Inherit only parent Product properties  values if own values aren't set
-                    if (parentProductProperty.Type == PropertyType.Product)
+                    if (parentProductProperty.Type == PropertyType.Product && existProperty.Values.IsNullOrEmpty() && !parentProductProperty.Values.IsNullOrEmpty())
                     {
-                        if (existProperty.Values.IsNullOrEmpty() && !parentProductProperty.Values.IsNullOrEmpty())
+                        existProperty.Values = new List<PropertyValue>();
+                        foreach (var parentPropValue in parentProductProperty.Values)
                         {
-                            existProperty.Values = new List<PropertyValue>();
-                            foreach (var parentPropValue in parentProductProperty.Values)
-                            {
-                                var propValue = AbstractTypeFactory<PropertyValue>.TryCreateInstance();
-                                propValue.TryInheritFrom(parentPropValue);
-                                existProperty.Values.Add(propValue);
-                            }
+                            var propValue = AbstractTypeFactory<PropertyValue>.TryCreateInstance();
+                            propValue.TryInheritFrom(parentPropValue);
+                            existProperty.Values.Add(propValue);
                         }
                     }
                 }
@@ -279,7 +273,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                 MeasureUnit = parentProduct.MeasureUnit ?? MeasureUnit;
                 Weight = parentProduct.Weight ?? Weight;
                 WeightUnit = parentProduct.WeightUnit ?? WeightUnit;
-                PackageType = parentProduct.PackageType ?? PackageType;              
+                PackageType = parentProduct.PackageType ?? PackageType;
             }
         }
         #endregion
@@ -300,7 +294,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
             foreach (var seoSuportEntity in allSeoSupportEntities)
             {
                 seoSuportEntity.SeoInfos?.Clear();
-            }            
+            }
             return result;
         }
 

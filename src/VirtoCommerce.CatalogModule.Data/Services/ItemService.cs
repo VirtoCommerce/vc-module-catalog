@@ -101,7 +101,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
                         //Reduce details according to response group
                         foreach (var product in productsWithVariationsList)
-                        {                         
+                        {
                             product.ReduceDetails(itemResponseGroup.ToString());
                         }
                     }
@@ -126,17 +126,17 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return result;
         }
 
-        public virtual async Task SaveChangesAsync(CatalogProduct[] products)
+        public virtual async Task SaveChangesAsync(CatalogProduct[] items)
         {
             var pkMap = new PrimaryKeyResolvingMap();
             var changedEntries = new List<GenericChangedEntry<CatalogProduct>>();
 
-            await ValidateProductsAsync(products);
+            await ValidateProductsAsync(items);
 
             using (var repository = _repositoryFactory())
             {
-                var dbExistProducts = await repository.GetItemByIdsAsync(products.Where(x => !x.IsTransient()).Select(x => x.Id).ToArray());
-                foreach (var product in products)
+                var dbExistProducts = await repository.GetItemByIdsAsync(items.Where(x => !x.IsTransient()).Select(x => x.Id).ToArray());
+                foreach (var product in items)
                 {
                     var modifiedEntity = AbstractTypeFactory<ItemEntity>.TryCreateInstance().FromModel(product, pkMap);
                     var originalEntity = dbExistProducts.FirstOrDefault(x => x.Id == product.Id);
@@ -163,7 +163,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 await _eventPublisher.Publish(new ProductChangedEvent(changedEntries));
             }
 
-            ClearCache(products);
+            ClearCache(items);
         }
 
         public virtual async Task DeleteAsync(string[] itemIds)
