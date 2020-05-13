@@ -1,3 +1,7 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
 using GenFu;
@@ -8,6 +12,80 @@ using Xunit;
 
 namespace VirtoCommerce.CatalogModule.Test
 {
+    public static class DeepCloneCheckerExtensions
+    {
+        public static bool IsPrimitive(this Type type)
+        {
+            if (type == typeof(string)) return true;
+            return (type.IsValueType & type.IsPrimitive);
+        }
+
+        public static async Task AssertClone(this ICloneable original)
+        {
+            await Task.Run(() =>
+            {
+                var clone = original.Clone();
+                var sOriginal = JsonSerializer.Serialize((object)original, new JsonSerializerOptions() { WriteIndented = true });
+                var sClone = JsonSerializer.Serialize(clone, new JsonSerializerOptions() { WriteIndented = true });
+                Assert.Equal(sOriginal, sClone); // Ensure data in objects is equal
+                original.IsDeepCloneOf(clone); // Ensure no shared references between objects (each object is a fully independent)
+            });
+        }
+
+        public static void IsDeepCloneOf(this object original, object expected)
+        {
+            IsDeepCloneOf(original, expected, new List<object>(), original.GetType().Name);
+        }
+
+        private static void IsDeepCloneOf(object original, object expected, List<object> visited, string memberPath)
+        {
+            if (original != null && expected != null)
+            {
+                var typeOfOriginal = original.GetType();
+                if (!IsPrimitive(typeOfOriginal) && !visited.Contains(original))
+                {
+                    visited.Add(original);
+                    if (object.ReferenceEquals(original, expected))
+                    {
+                        throw new MemberAccessException(@$"Deep clone check failed: objects at path {memberPath} are reference equal.");
+                    }
+                    if (original is IEnumerable)
+                    {
+                        try
+                        {
+                            var originalEnumerator = ((IEnumerable)original).GetEnumerator();
+                            originalEnumerator.Reset();
+                            var expectedEnumerator = ((IEnumerable)expected).GetEnumerator();
+                            expectedEnumerator.Reset();
+                            var iIdx = 0;
+                            while (originalEnumerator.MoveNext())
+                            {
+                                expectedEnumerator.MoveNext();
+                                IsDeepCloneOf(originalEnumerator.Current, expectedEnumerator.Current, visited, $@"{memberPath}[{iIdx}]");
+                                iIdx++;
+                            }
+                        }
+                        catch (Exception exc)
+                        {
+                            throw new MemberAccessException(@$"Deep clone check failed: unexpected error while accessing IEnumerable member at path {memberPath}.", exc);
+                        }
+                    }
+                    else
+                    {
+                        foreach (var propInfo in typeOfOriginal.GetProperties(BindingFlags.Instance | BindingFlags.Public))
+                        {
+                            IsDeepCloneOf(propInfo.GetValue(original), propInfo.GetValue(expected), visited, $@"{memberPath}.{propInfo.Name}");
+                        }
+                    }
+                }
+            }
+            else if ((original == null && expected != null) || (original != null && expected == null))
+            {
+                throw new MemberAccessException(@$"Deep clone check failed: one of objects at path {memberPath} is null.");
+            }
+        }
+    }
+
     [Trait("Category", "Unit")]
     public class EntityCloningTests
     {
@@ -52,12 +130,7 @@ namespace VirtoCommerce.CatalogModule.Test
             catalogProduct.SeoInfos = A.ListOf<SeoInfo>(10);
             catalogProduct.Variations = A.ListOf<Variation>(10);
 
-            await Task.Run(() =>
-            {
-                var sCatalogProduct1st = JsonSerializer.Serialize(catalogProduct, new JsonSerializerOptions() { WriteIndented = true });
-                var sCatalogProduct2nd = JsonSerializer.Serialize(catalogProduct.Clone(), new JsonSerializerOptions() { WriteIndented = true });
-                Assert.Equal(sCatalogProduct1st, sCatalogProduct2nd);
-            });
+            await catalogProduct.AssertClone();
         }
 
         [Fact]
@@ -68,12 +141,7 @@ namespace VirtoCommerce.CatalogModule.Test
                 .Fill(x => x.Properties, A.ListOf<Property>(10));
             var catalog = A.New<Catalog>();
 
-            await Task.Run(() =>
-            {
-                var sCatalog1st = JsonSerializer.Serialize(catalog, new JsonSerializerOptions() { WriteIndented = true });
-                var sCatalog2nd = JsonSerializer.Serialize(catalog.Clone(), new JsonSerializerOptions() { WriteIndented = true });
-                Assert.Equal(sCatalog1st, sCatalog2nd);
-            });
+            await catalog.AssertClone();
         }
 
         [Fact]
@@ -105,12 +173,7 @@ namespace VirtoCommerce.CatalogModule.Test
             var category = A.New<Category>();
             category.Parents = A.ListOf<Category>(1).ToArray();
 
-            await Task.Run(() =>
-            {
-                var sCategory1st = JsonSerializer.Serialize(category, new JsonSerializerOptions() { WriteIndented = true });
-                var sCategory2st = JsonSerializer.Serialize(category.Clone(), new JsonSerializerOptions() { WriteIndented = true });
-                Assert.Equal(sCategory1st, sCategory2st);
-            });
+            await category.AssertClone();
         }
     }
 }

@@ -357,6 +357,8 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         {
             var result = MemberwiseClone() as CatalogProduct;
 
+            result.Catalog = (Catalog)Catalog?.Clone();
+            result.Category = (Category)Category?.Clone();
             result.SeoInfos = SeoInfos?.Select(x => x.Clone()).OfType<SeoInfo>().ToList();
             result.Images = Images?.Select(x => x.Clone()).OfType<Image>().ToList();
             result.Assets = Assets?.Select(x => x.Clone()).OfType<Asset>().ToList();
@@ -366,6 +368,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
             result.Reviews = Reviews?.Select(x => x.Clone()).OfType<EditorialReview>().ToList();
             result.Links = Links?.Select(x => x.Clone()).OfType<CategoryLink>().ToList();
             result.Variations = Variations?.Select(x => x.Clone()).OfType<Variation>().ToList();
+            result.Outlines = Outlines?.Select(x => x.Clone()).OfType<Outline>().ToList();
 
             return result;
         }
