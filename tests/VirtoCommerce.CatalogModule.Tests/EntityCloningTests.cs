@@ -14,13 +14,14 @@ namespace VirtoCommerce.CatalogModule.Test
 {
     public static class DeepCloneCheckerExtensions
     {
-        public static bool IsPrimitive(this Type type)
-        {
-            if (type == typeof(string)) return true;
-            return (type.IsValueType & type.IsPrimitive);
-        }
-
-        public static async Task AssertClone(this ICloneable original)
+        /// <summary>
+        /// Check object clone immutability and independency:
+        /// Ensures the data in object clone equial to original.
+        /// Ensures no shared references between original and cloned objects (each object is a fully independent).
+        /// </summary>
+        /// <param name="original"></param>
+        /// <returns></returns>
+        public static async Task AssertCloneIndependency(this ICloneable original)
         {
             await Task.Run(() =>
             {
@@ -28,16 +29,16 @@ namespace VirtoCommerce.CatalogModule.Test
                 var sOriginal = JsonSerializer.Serialize((object)original, new JsonSerializerOptions() { WriteIndented = true });
                 var sClone = JsonSerializer.Serialize(clone, new JsonSerializerOptions() { WriteIndented = true });
                 Assert.Equal(sOriginal, sClone); // Ensure data in objects is equal
-                original.IsDeepCloneOf(clone); // Ensure no shared references between objects (each object is a fully independent)
+                original.AssertNoSharedRefsWith(clone); // Ensure no shared references between objects (each object is a fully independent)
             });
         }
 
-        public static void IsDeepCloneOf(this object original, object expected)
+        public static void AssertNoSharedRefsWith(this object original, object expected)
         {
-            IsDeepCloneOf(original, expected, new List<object>(), original.GetType().Name);
+            AssertNoSharedRefsWith(original, expected, new List<object>(), original.GetType().Name);
         }
 
-        private static void IsDeepCloneOf(object original, object expected, List<object> visited, string memberPath)
+        private static void AssertNoSharedRefsWith(object original, object expected, List<object> visited, string memberPath)
         {
             if (original != null && expected != null)
             {
@@ -57,14 +58,14 @@ namespace VirtoCommerce.CatalogModule.Test
                         while (originalEnumerator.MoveNext())
                         {
                             expectedEnumerator.MoveNext();
-                            IsDeepCloneOf(originalEnumerator.Current, expectedEnumerator.Current, visited, $@"{memberPath}[{iIdx++}]");
+                            AssertNoSharedRefsWith(originalEnumerator.Current, expectedEnumerator.Current, visited, $@"{memberPath}[{iIdx++}]");
                         }
                     }
                     else
                     {
                         foreach (var propInfo in typeOfOriginal.GetProperties(BindingFlags.Instance | BindingFlags.Public))
                         {
-                            IsDeepCloneOf(propInfo.GetValue(original), propInfo.GetValue(expected), visited, $@"{memberPath}.{propInfo.Name}");
+                            AssertNoSharedRefsWith(propInfo.GetValue(original), propInfo.GetValue(expected), visited, $@"{memberPath}.{propInfo.Name}");
                         }
                     }
                 }
@@ -73,6 +74,11 @@ namespace VirtoCommerce.CatalogModule.Test
             {
                 throw new MemberAccessException(@$"Deep clone check failed: one of objects at path {memberPath} is null.");
             }
+        }
+        private static bool IsPrimitive(this Type type)
+        {
+            if (type == typeof(string)) return true;
+            return (type.IsValueType & type.IsPrimitive);
         }
     }
 
@@ -120,7 +126,7 @@ namespace VirtoCommerce.CatalogModule.Test
             catalogProduct.SeoInfos = A.ListOf<SeoInfo>(10);
             catalogProduct.Variations = A.ListOf<Variation>(10);
 
-            await catalogProduct.AssertClone();
+            await catalogProduct.AssertCloneIndependency();
         }
 
         [Fact]
@@ -131,7 +137,7 @@ namespace VirtoCommerce.CatalogModule.Test
                 .Fill(x => x.Properties, A.ListOf<Property>(10));
             var catalog = A.New<Catalog>();
 
-            await catalog.AssertClone();
+            await catalog.AssertCloneIndependency();
         }
 
         [Fact]
@@ -163,7 +169,7 @@ namespace VirtoCommerce.CatalogModule.Test
             var category = A.New<Category>();
             category.Parents = A.ListOf<Category>(1).ToArray();
 
-            await category.AssertClone();
+            await category.AssertCloneIndependency();
         }
     }
 }
