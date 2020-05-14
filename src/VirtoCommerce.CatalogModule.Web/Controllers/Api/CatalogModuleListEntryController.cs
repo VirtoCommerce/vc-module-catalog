@@ -13,6 +13,7 @@ using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Authorization;
+using VirtoCommerce.CatalogModule.Web.Model;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Settings;
 
