@@ -13,6 +13,7 @@ using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Authorization;
+using VirtoCommerce.CatalogModule.Data.Services;
 using VirtoCommerce.CatalogModule.Web.Model;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Settings;
@@ -31,6 +32,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly IListEntrySearchService _listEntrySearchService;
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthorizationService _authorizationService;
+        private readonly ListEntryMover<Category> _categoryMover;
+        private readonly ListEntryMover<CatalogProduct> _productMover;
 
         public CatalogModuleListEntryController(
             IProductIndexedSearchService productIndexedSearchService
@@ -40,7 +43,9 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             , IItemService itemService
             , ICatalogService catalogService
             , IAuthorizationService authorizationService
-            , ISettingsManager settingsManager)
+            , ISettingsManager settingsManager
+            , ListEntryMover<Category> categoryMover
+            , ListEntryMover<CatalogProduct> productMover)
         {
             _productIndexedSearchService = productIndexedSearchService;
             _categoryIndexedSearchService = categoryIndexedSearchService;
@@ -50,6 +55,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             _catalogService = catalogService;
             _listEntrySearchService = listEntrySearchService;
             _settingsManager = settingsManager;
+            _categoryMover = categoryMover;
+            _productMover = productMover;
         }
 
         /// <summary>
@@ -246,27 +253,13 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             {
                 return BadRequest("Unable to move to a virtual catalog");
             }
-            var catalogEntries = (await LoadCatalogEntriesAsync<IEntity>(moveRequest.ListEntries.Select(x => x.Id).ToArray())).ToList();
-            foreach (var listEntry in moveRequest.ListEntries.ToList())
-            {
-                var existEntry = catalogEntries.FirstOrDefault(x => x.Id.EqualsInvariant(listEntry.Id));
-                if (existEntry != null)
-                {
-                    if (existEntry is Category category)
-                    {
-                        category.Move(moveRequest.Catalog, moveRequest.Category);
-                    }
-                    if (existEntry is CatalogProduct product)
-                    {
-                        product.Move(moveRequest.Catalog, moveRequest.Category);
-                        if (!product.Variations.IsNullOrEmpty())
-                        {
-                            catalogEntries.AddRange(product.Variations);
-                        }
-                    }
-                }
-            }
-            await SaveListCatalogEntitiesAsync(catalogEntries.ToArray());
+
+            var categories = await _categoryMover.PrepareMoveAsync(moveRequest);
+            var products = await _productMover.PrepareMoveAsync(moveRequest);
+
+            await _categoryMover.ConfirmMoveAsync(categories);
+            await _productMover.ConfirmMoveAsync(products);
+            
             return NoContent();
         }
 
