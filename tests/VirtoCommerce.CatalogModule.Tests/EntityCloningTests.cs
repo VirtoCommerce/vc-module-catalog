@@ -1,87 +1,13 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Text.Json;
 using System.Threading.Tasks;
 using GenFu;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Outlines;
 using VirtoCommerce.CoreModule.Core.Seo;
+using VirtoCommerce.Testing;
 using Xunit;
 
 namespace VirtoCommerce.CatalogModule.Test
 {
-    public static class DeepCloneCheckerExtensions
-    {
-        /// <summary>
-        /// Check object clone immutability and independency:
-        /// Ensures the data in object clone equial to original.
-        /// Ensures no shared references between original and cloned objects (each object is a fully independent).
-        /// </summary>
-        /// <param name="original"></param>
-        /// <returns></returns>
-        public static async Task AssertCloneIndependency(this ICloneable original)
-        {
-            await Task.Run(() =>
-            {
-                var clone = original.Clone();
-                var sOriginal = JsonSerializer.Serialize((object)original, new JsonSerializerOptions() { WriteIndented = true });
-                var sClone = JsonSerializer.Serialize(clone, new JsonSerializerOptions() { WriteIndented = true });
-                Assert.Equal(sOriginal, sClone); // Ensure data in objects is equal
-                original.AssertNoSharedRefsWith(clone); // Ensure no shared references between objects (each object is a fully independent)
-            });
-        }
-
-        public static void AssertNoSharedRefsWith(this object original, object expected)
-        {
-            AssertNoSharedRefsWith(original, expected, new List<object>(), original.GetType().Name);
-        }
-
-        private static void AssertNoSharedRefsWith(object original, object expected, List<object> visited, string memberPath)
-        {
-            if (original != null && expected != null)
-            {
-                var typeOfOriginal = original.GetType();
-                if (!IsPrimitive(typeOfOriginal) && !visited.Contains(original))
-                {
-                    visited.Add(original);
-                    if (ReferenceEquals(original, expected))
-                    {
-                        throw new MemberAccessException(@$"Deep clone check failed: objects at path {memberPath} are reference equal.");
-                    }
-                    if (original is IEnumerable)
-                    {
-                        var originalEnumerator = ((IEnumerable)original).GetEnumerator();
-                        var expectedEnumerator = ((IEnumerable)expected).GetEnumerator();
-                        var iIdx = 0;
-                        while (originalEnumerator.MoveNext())
-                        {
-                            expectedEnumerator.MoveNext();
-                            AssertNoSharedRefsWith(originalEnumerator.Current, expectedEnumerator.Current, visited, $@"{memberPath}[{iIdx++}]");
-                        }
-                    }
-                    else
-                    {
-                        foreach (var propInfo in typeOfOriginal.GetProperties(BindingFlags.Instance | BindingFlags.Public))
-                        {
-                            AssertNoSharedRefsWith(propInfo.GetValue(original), propInfo.GetValue(expected), visited, $@"{memberPath}.{propInfo.Name}");
-                        }
-                    }
-                }
-            }
-            else if ((original == null && expected != null) || (original != null && expected == null))
-            {
-                throw new MemberAccessException(@$"Deep clone check failed: one of objects at path {memberPath} is null.");
-            }
-        }
-        private static bool IsPrimitive(this Type type)
-        {
-            if (type == typeof(string)) return true;
-            return (type.IsValueType & type.IsPrimitive);
-        }
-    }
-
     [Trait("Category", "Unit")]
     public class EntityCloningTests
     {
@@ -89,28 +15,27 @@ namespace VirtoCommerce.CatalogModule.Test
         public async Task CloneCatalogProduct()
         {
             A.Configure<Property>()
-                .Fill(x => x.Attributes, A.ListOf<PropertyAttribute>(5))
-                .Fill(x => x.DisplayNames, A.ListOf<PropertyDisplayName>(5))
-                .Fill(x => x.ValidationRules, A.ListOf<PropertyValidationRule>(5))
-                .Fill(x => x.Values, A.ListOf<PropertyValue>(5));
+                .Fill(x => x.Attributes, x => A.ListOf<PropertyAttribute>(5))
+                .Fill(x => x.DisplayNames, x => A.ListOf<PropertyDisplayName>(5))
+                .Fill(x => x.ValidationRules, x => A.ListOf<PropertyValidationRule>(5))
+                .Fill(x => x.Values, x => A.ListOf<PropertyValue>(5));
 
             A.Configure<OutlineItem>()
-                .Fill(x => x.SeoInfos, A.ListOf<SeoInfo>(5));
+                .Fill(x => x.SeoInfos, x => A.ListOf<SeoInfo>(5));
 
             A.Configure<Outline>()
-                .Fill(x => x.Items, A.ListOf<OutlineItem>(5));
+                .Fill(x => x.Items, x => A.ListOf<OutlineItem>(5));
 
             A.Configure<Catalog>()
-                .Fill(x => x.Languages, A.ListOf<CatalogLanguage>(3))
-                .Fill(x => x.Properties, A.ListOf<Property>(10));
+                .Fill(x => x.Languages, x => A.ListOf<CatalogLanguage>(3))
+                .Fill(x => x.Properties, x => A.ListOf<Property>(10));
 
             A.Configure<Category>()
-                .Fill(x => x.Images, A.ListOf<Image>(10))
-                .Fill(x => x.Links, A.ListOf<CategoryLink>(10))
-                .Fill(x => x.Outlines, A.ListOf<Outline>(5))
-                .Fill(x => x.Properties, A.ListOf<Property>(10))
-                .Fill(x => x.SeoInfos, A.ListOf<SeoInfo>(10));
-
+                .Fill(x => x.Images, x => A.ListOf<Image>(10))
+                .Fill(x => x.Links, x => A.ListOf<CategoryLink>(10))
+                .Fill(x => x.Outlines, x => A.ListOf<Outline>(5))
+                .Fill(x => x.Properties, x => A.ListOf<Property>(10))
+                .Fill(x => x.SeoInfos, x => A.ListOf<SeoInfo>(10));
 
             var catalogProduct = A.New<CatalogProduct>();
             catalogProduct.Assets = A.ListOf<Asset>(10);
@@ -133,8 +58,8 @@ namespace VirtoCommerce.CatalogModule.Test
         public async Task CloneCatalog()
         {
             A.Configure<Catalog>()
-                .Fill(x => x.Languages, A.ListOf<CatalogLanguage>(3))
-                .Fill(x => x.Properties, A.ListOf<Property>(10));
+                .Fill(x => x.Languages, x => A.ListOf<CatalogLanguage>(3))
+                .Fill(x => x.Properties, x => A.ListOf<Property>(10));
             var catalog = A.New<Catalog>();
 
             await catalog.AssertCloneIndependency();
@@ -144,27 +69,27 @@ namespace VirtoCommerce.CatalogModule.Test
         public async Task CloneCategory()
         {
             A.Configure<Category>()
-                .Fill(x => x.Images, A.ListOf<Image>(10))
-                .Fill(x => x.Links, A.ListOf<CategoryLink>(10))
-                .Fill(x => x.Outlines, A.ListOf<Outline>(5))
-                .Fill(x => x.Properties, A.ListOf<Property>(10))
-                .Fill(x => x.SeoInfos, A.ListOf<SeoInfo>(10));
+                .Fill(x => x.Images, x => A.ListOf<Image>(10))
+                .Fill(x => x.Links, x => A.ListOf<CategoryLink>(10))
+                .Fill(x => x.Outlines, x => A.ListOf<Outline>(5))
+                .Fill(x => x.Properties, x => A.ListOf<Property>(10))
+                .Fill(x => x.SeoInfos, x => A.ListOf<SeoInfo>(10));
 
             A.Configure<Catalog>()
-                .Fill(x => x.Languages, A.ListOf<CatalogLanguage>(3))
-                .Fill(x => x.Properties, A.ListOf<Property>(10));
+                .Fill(x => x.Languages, x => A.ListOf<CatalogLanguage>(3))
+                .Fill(x => x.Properties, x => A.ListOf<Property>(10));
 
             A.Configure<OutlineItem>()
-                .Fill(x => x.SeoInfos, A.ListOf<SeoInfo>(5));
+                .Fill(x => x.SeoInfos, x => A.ListOf<SeoInfo>(5));
 
             A.Configure<Outline>()
-                .Fill(x => x.Items, A.ListOf<OutlineItem>(5));
+                .Fill(x => x.Items, x => A.ListOf<OutlineItem>(5));
 
             A.Configure<Property>()
-                .Fill(x => x.Attributes, A.ListOf<PropertyAttribute>(5))
-                .Fill(x => x.DisplayNames, A.ListOf<PropertyDisplayName>(5))
-                .Fill(x => x.ValidationRules, A.ListOf<PropertyValidationRule>(5))
-                .Fill(x => x.Values, A.ListOf<PropertyValue>(5));
+                .Fill(x => x.Attributes, x => A.ListOf<PropertyAttribute>(5))
+                .Fill(x => x.DisplayNames, x => A.ListOf<PropertyDisplayName>(5))
+                .Fill(x => x.ValidationRules, x => A.ListOf<PropertyValidationRule>(5))
+                .Fill(x => x.Values, x => A.ListOf<PropertyValue>(5));
 
             var category = A.New<Category>();
             category.Parents = A.ListOf<Category>(1).ToArray();
