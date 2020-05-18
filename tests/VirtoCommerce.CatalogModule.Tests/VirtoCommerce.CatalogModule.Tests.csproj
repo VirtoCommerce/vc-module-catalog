@@ -4,7 +4,6 @@
     <noWarn>1591</noWarn>
     <LangVersion>latest</LangVersion>
     <IsPackable>False</IsPackable>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="GenFu" Version="1.6.0" />
