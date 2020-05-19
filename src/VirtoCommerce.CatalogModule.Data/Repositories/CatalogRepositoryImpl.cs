@@ -426,7 +426,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             if (catalogProperty != null)
             {
                 commandText = $"DELETE PV FROM PropertyValue PV INNER JOIN Catalog C ON C.Id = PV.CatalogId AND C.Id = '{catalogProperty.CatalogId}' WHERE PV.Name = '{catalogProperty.Name}'";
-                var res = await DbContext.Database.ExecuteSqlRawAsync(commandText);
+                await DbContext.Database.ExecuteSqlRawAsync(commandText);
             }
             if (categoryProperty != null)
             {
