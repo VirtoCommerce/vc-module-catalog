@@ -31,7 +31,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         private readonly IBlobStorageProvider _blobStorageProvider;
         private readonly IAssociationService _associationService;
 
-        private int _batchSize = 50;
+        private readonly int _batchSize = 50;
 
         public CatalogExportImport(ICatalogService catalogService, ICatalogSearchService catalogSearchService, IProductSearchService productSearchService, ICategorySearchService categorySearchService, ICategoryService categoryService,
                                   IItemService itemService, IPropertyService propertyService, IPropertySearchService propertySearchService, IPropertyDictionaryItemSearchService propertyDictionarySearchService,
@@ -194,10 +194,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                             {
                                 var itemsArray = items.ToArray();
                                 await _categoryService.SaveChangesAsync(itemsArray);
-                                //if (options.HandleBinaryData)
-                                {
-                                    ImportImages(itemsArray.OfType<IHasImages>().ToArray(), progressInfo);
-                                }
+                                ImportImages(itemsArray.OfType<IHasImages>().ToArray(), progressInfo);
 
                             }, processedCount =>
                             {

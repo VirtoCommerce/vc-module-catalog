@@ -53,8 +53,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     result.Add(catalog);
                 }
             }
-            return result.ToArray();        
-        }     
+            return result.ToArray();
+        }
 
         public virtual async Task SaveChangesAsync(Catalog[] catalogs)
         {
@@ -169,7 +169,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 var validatioResult = await _hasPropertyValidator.ValidateAsync(catalog);
                 if (!validatioResult.IsValid)
                 {
-                    throw new Exception($"Catalog properties has validation error: {string.Join(Environment.NewLine, validatioResult.Errors.Select(x => x.ToString()))}");
+                    throw new ArgumentException($"Catalog properties has validation error: {string.Join(Environment.NewLine, validatioResult.Errors.Select(x => x.ToString()))}");
                 }
             }
         }
