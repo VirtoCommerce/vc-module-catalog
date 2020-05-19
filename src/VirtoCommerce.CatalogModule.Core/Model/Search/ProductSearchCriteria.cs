@@ -5,7 +5,8 @@ namespace VirtoCommerce.CatalogModule.Core.Model.Search
 {
     public class ProductSearchCriteria : SearchCriteriaBase
     {
-        public string CatalogId;
+        public string CatalogId { get; set; }
+
         private string[] _catalogIds;
         public string[] CatalogIds
         {

@@ -6,6 +6,7 @@ using System.Threading;
 using Microsoft.Extensions.Primitives;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.Platform.Core.Caching;
+using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.Caching
 {
@@ -52,5 +53,21 @@ namespace VirtoCommerce.CatalogModule.Data.Caching
                 token2.Cancel();
             }
         }
-    }    
+
+        public static void ExpireProducts(string[] productIds)
+        {
+            if (!productIds.IsNullOrEmpty())
+            {
+                foreach (var id in productIds)
+                {
+                    if (_entityRegionTokenLookup.TryRemove(id, out var token))
+                    {
+                        token.Cancel();
+                    }
+                }
+            }
+        }
+
+
+    }
 }

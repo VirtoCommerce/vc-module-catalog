@@ -101,7 +101,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
                         //Reduce details according to response group
                         foreach (var product in productsWithVariationsList)
-                        {                         
+                        {
                             product.ReduceDetails(itemResponseGroup.ToString());
                         }
                     }
@@ -126,23 +126,28 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return result;
         }
 
-        public virtual async Task SaveChangesAsync(CatalogProduct[] products)
+        public virtual async Task SaveChangesAsync(CatalogProduct[] items)
         {
             var pkMap = new PrimaryKeyResolvingMap();
             var changedEntries = new List<GenericChangedEntry<CatalogProduct>>();
 
-            await ValidateProductsAsync(products);
+            await ValidateProductsAsync(items);
 
             using (var repository = _repositoryFactory())
             {
-                var dbExistProducts = await repository.GetItemByIdsAsync(products.Where(x => !x.IsTransient()).Select(x => x.Id).ToArray());
-                foreach (var product in products)
+                var dbExistProducts = await repository.GetItemByIdsAsync(items.Where(x => !x.IsTransient()).Select(x => x.Id).ToArray());
+                foreach (var product in items)
                 {
                     var modifiedEntity = AbstractTypeFactory<ItemEntity>.TryCreateInstance().FromModel(product, pkMap);
                     var originalEntity = dbExistProducts.FirstOrDefault(x => x.Id == product.Id);
 
                     if (originalEntity != null)
                     {
+                        /// This extension is allow to get around breaking changes is introduced in EF Core 3.0 that leads to throw
+                        /// Database operation expected to affect 1 row(s) but actually affected 0 row(s) exception when trying to add the new children entities with manually set keys
+                        /// https://docs.microsoft.com/en-us/ef/core/what-is-new/ef-core-3.0/breaking-changes#detectchanges-honors-store-generated-key-values
+                        repository.TrackModifiedAsAddedForNewChildEntities(originalEntity);
+
                         changedEntries.Add(new GenericChangedEntry<CatalogProduct>(product, originalEntity.ToModel(AbstractTypeFactory<CatalogProduct>.TryCreateInstance()), EntryState.Modified));
                         modifiedEntity.Patch(originalEntity);
                         //Force set ModifiedDate property to mark a product changed. Special for  partial update cases when product table not have changes
@@ -163,7 +168,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 await _eventPublisher.Publish(new ProductChangedEvent(changedEntries));
             }
 
-            ClearCache(products);
+            ClearCache(items);
         }
 
         public virtual async Task DeleteAsync(string[] itemIds)

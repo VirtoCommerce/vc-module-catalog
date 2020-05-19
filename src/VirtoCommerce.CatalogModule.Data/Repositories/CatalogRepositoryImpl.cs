@@ -164,7 +164,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                         // TODO: Call GetItemByIds for variations recursively (need to measure performance and data amount first)
                         IQueryable<ItemEntity> variationsQuery = Items.Where(x => itemIds.Contains(x.ParentId))
                                                     .Include(x => x.Images)
-                                                    .Include(x => x.ItemPropertyValues).ThenInclude(x=>x.DictionaryItem.DictionaryItemValues);
+                                                    .Include(x => x.ItemPropertyValues).ThenInclude(x => x.DictionaryItem.DictionaryItemValues);
 
                         if (itemResponseGroup.HasFlag(ItemResponseGroup.ItemAssets))
                         {
@@ -426,7 +426,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             if (catalogProperty != null)
             {
                 commandText = $"DELETE PV FROM PropertyValue PV INNER JOIN Catalog C ON C.Id = PV.CatalogId AND C.Id = '{catalogProperty.CatalogId}' WHERE PV.Name = '{catalogProperty.Name}'";
-                var res = await DbContext.Database.ExecuteSqlRawAsync(commandText);
+                await DbContext.Database.ExecuteSqlRawAsync(commandText);
             }
             if (categoryProperty != null)
             {

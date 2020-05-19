@@ -844,5 +844,27 @@
         "description": "Catalogs, Categories, Products"
       }
     }
+  },
+  "virtoCommerce.catalogBulkActionsModule": {
+    "blades": {
+      "hello-world": {
+        "title": "Hello world blade"
+      },
+      "action-progress": {
+        "title": "Execution progress"
+      }
+    },
+    "actions": {
+      "types": {
+        "CategoryChangeBulkAction": {
+          "title": "Change Category",
+          "subtitle": "Move products to another category"
+        },
+        "PropertiesUpdateBulkAction": {
+          "title": "Edit Properties",
+          "subtitle": "Update one ore more properties"
+        }
+      }
+    }
   }
 }

@@ -1,0 +1,32 @@
+<div class="blade-static __bottom">
+    <button class="btn" ng-click="startAction()" ng-disabled="!blade.canStartProcess">
+        <span>Execute</span>
+    </button>
+</div>
+<div class="blade-content">
+    <div class="blade-inner">
+        <div class="inner-block">
+            <form class="form" name="exportForm">
+                <div class="form-group">
+                    <ul class="list __items">
+                        <!--<li class="list-item" ng-click="selectExportedData()">
+        <i class="list-ico fa fa-cogs"></i>
+        <span class="list-t">{{ 'export.blades.export-settings.labels.exported-data' | translate }}</span>
+        <span class="list-descr">{{ 'export.blades.export-settings.labels.selected' | translate: {count: blade.dataSelected, total: blade.dataTotal} }}</span>
+    </li>-->
+                        <li class="list-item" ng-click="selectProperties()">
+                            <i class="list-ico fa fa-cogs"></i>
+                            <span class="list-t">{{ 'Select properties' | translate }}</span>
+                            <span class="list-descr">{{ 'export.blades.export-settings.labels.selected' | translate: {count: blade.propertySelected, total: blade.propertyTotal} }}</span>
+                        </li>
+                        <li class="list-item" ng-click="editProperties()" ng-class="{'__disabled': !blade.isPropertiesSelected  }">
+                            <i class="list-ico fa fa-cogs"></i>
+                            <span class="list-t">{{ 'Set value to selected properties' | translate }}</span>
+                            <span class="list-descr">{{ 'export.blades.export-settings.labels.selected' | translate: {count: blade.propertySelected, total: blade.propertyTotal} }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

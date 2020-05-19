@@ -75,7 +75,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             association.Priority = Priority;
             association.AssociatedObjectId = AssociatedItemId ?? AssociatedCategoryId;
             association.Quantity = Quantity;
-
+            association.ItemId = ItemId;
             if (AssociatedCategory != null)
             {
                 association.AssociatedObject = AssociatedCategory.ToModel(AbstractTypeFactory<Category>.TryCreateInstance());
@@ -104,6 +104,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             Priority = association.Priority;
             AssociationType = association.Type;
             Quantity = association.Quantity;
+            ItemId = association.ItemId;
 
             if (association.AssociatedObjectType.EqualsInvariant("product"))
             {
