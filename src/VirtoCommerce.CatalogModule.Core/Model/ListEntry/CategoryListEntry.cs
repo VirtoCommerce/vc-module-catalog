@@ -8,6 +8,8 @@ namespace VirtoCommerce.CatalogModule.Core.Model.ListEntry
     /// </summary>
     public class CategoryListEntry : ListEntryBase
     {
+        public const string TypeName = "category";
+
         public override ListEntryBase FromModel(AuditableEntity entity)
         {
             base.FromModel(entity);
