@@ -357,8 +357,8 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         {
             var result = MemberwiseClone() as CatalogProduct;
 
-            result.Catalog = (Catalog)Catalog?.Clone();
-            result.Category = (Category)Category?.Clone();
+            // result.Catalog = (Catalog)Catalog?.Clone(); // Intentionally temporary disabled due to memory overhead
+            // result.Category = (Category)Category?.Clone(); // Intentionally temporary disabled due to memory overhead
             result.SeoInfos = SeoInfos?.Select(x => x.Clone()).OfType<SeoInfo>().ToList();
             result.Images = Images?.Select(x => x.Clone()).OfType<Image>().ToList();
             result.Assets = Assets?.Select(x => x.Clone()).OfType<Asset>().ToList();
@@ -368,7 +368,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
             result.Reviews = Reviews?.Select(x => x.Clone()).OfType<EditorialReview>().ToList();
             result.Links = Links?.Select(x => x.Clone()).OfType<CategoryLink>().ToList();
             result.Variations = Variations?.Select(x => x.Clone()).OfType<Variation>().ToList();
-            result.Outlines = Outlines?.Select(x => x.Clone()).OfType<Outline>().ToList();
+            // result.Outlines = Outlines?.Select(x => x.Clone()).OfType<Outline>().ToList(); // Intentionally temporary disabled due to memory overhead
 
             return result;
         }

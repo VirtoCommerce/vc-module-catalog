@@ -1,9 +1,3 @@
-using System.Threading.Tasks;
-using GenFu;
-using VirtoCommerce.CatalogModule.Core.Model;
-using VirtoCommerce.CoreModule.Core.Outlines;
-using VirtoCommerce.CoreModule.Core.Seo;
-using VirtoCommerce.Testing;
 using Xunit;
 
 namespace VirtoCommerce.CatalogModule.Test
@@ -11,6 +5,7 @@ namespace VirtoCommerce.CatalogModule.Test
     [Trait("Category", "Unit")]
     public class EntityCloningTests
     {
+        /* // Intentionally temporary disabled due to memory overhead with cloning.
         [Fact]
         public async Task CloneCatalogProduct()
         {
@@ -96,5 +91,6 @@ namespace VirtoCommerce.CatalogModule.Test
 
             await category.AssertCloneIndependency();
         }
+        */
     }
 }
