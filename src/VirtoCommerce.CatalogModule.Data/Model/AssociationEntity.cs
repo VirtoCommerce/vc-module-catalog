@@ -70,6 +70,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             if (association == null)
                 throw new ArgumentNullException(nameof(association));
 
+            association.Id = Id;
             association.OuterId = OuterId;
             association.Type = AssociationType;
             association.Priority = Priority;
@@ -101,6 +102,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             if (association == null)
                 throw new ArgumentNullException(nameof(association));
 
+            Id = association.Id;
             Priority = association.Priority;
             AssociationType = association.Type;
             Quantity = association.Quantity;
@@ -128,6 +130,9 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             target.Tags = Tags;
             target.AssociationType = AssociationType;
             target.Quantity = Quantity;
+            target.ItemId = ItemId;
+            target.AssociatedItemId = AssociatedItemId;
+            target.AssociatedCategoryId = AssociatedCategoryId;
         }
     }
 }

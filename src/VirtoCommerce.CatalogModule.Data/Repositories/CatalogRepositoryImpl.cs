@@ -289,6 +289,18 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             return result;
         }
 
+        public async Task<AssociationEntity[]> GetAssociationsByIdsAsync(string[] associationIds)
+        {
+            var result = Array.Empty<AssociationEntity>();
+
+            if (!associationIds.IsNullOrEmpty())
+            {
+                result = await Associations.Where(x => associationIds.Contains(x.Id)).ToArrayAsync();
+            }
+
+            return result;
+        }
+
         public async Task<string[]> GetAllChildrenCategoriesIdsAsync(string[] categoryIds)
         {
             string[] result = null;
