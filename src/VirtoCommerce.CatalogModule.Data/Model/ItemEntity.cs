@@ -434,9 +434,10 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             #region Association
             if (!Associations.IsNullCollection())
             {
-                var associationComparer = AnonymousComparer.Create((AssociationEntity x) => x.AssociationType + ":" + x.AssociatedItemId + ":" + x.AssociatedCategoryId);
-                Associations.Patch(target.Associations, associationComparer,
-                                             (sourceAssociation, targetAssociation) => sourceAssociation.Patch(targetAssociation));
+                //var associationComparer = AnonymousComparer.Create((AssociationEntity x) => x.AssociationType + ":" + x.AssociatedItemId + ":" + x.AssociatedCategoryId);
+                //Associations.Patch(target.Associations, associationComparer,(sourceAssociation, targetAssociation) => sourceAssociation.Patch(targetAssociation));
+
+                Associations.Patch(target.Associations, (sourcePropValue, targetPropValue) => sourcePropValue.Patch(targetPropValue));
             }
             #endregion
 
