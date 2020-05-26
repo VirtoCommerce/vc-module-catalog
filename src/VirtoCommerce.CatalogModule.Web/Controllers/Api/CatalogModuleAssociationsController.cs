@@ -55,13 +55,13 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// Deletes specified associations
         /// </summary>
         /// <remarks>Updates the specified association</remarks>
-        /// <param name="id">association id to delete</param>
+        /// <param name="ids">associations to delete ids</param>
         [HttpDelete]
-        [Route("{id}")]
+        [Route("")]
         [Authorize(ModuleConstants.Security.Permissions.Delete)]
-        public async Task<ActionResult> Delete(string id)
+        public async Task<ActionResult> Delete([FromBody]string[] ids)
         {
-            await _associationService.DeleteAssociationAsync(new[]{id});
+            await _associationService.DeleteAssociationAsync(ids);
             return Ok(HttpStatusCode.NoContent);
         }
 
