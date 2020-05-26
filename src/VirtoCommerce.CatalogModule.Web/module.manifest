@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <module>
   <id>VirtoCommerce.Catalog</id>
-  <version>3.0.3</version>
+  <version>3.1.0</version>
   <version-tag>
   </version-tag>
   <platformVersion>3.0.0</platformVersion>
@@ -25,7 +25,7 @@
   <projectUrl>https://virtocommerce.com/apps/extensions/virto-catalog-module</projectUrl>
   <iconUrl>https://github.com/VirtoCommerce/vc-module-catalog/raw/master/VirtoCommerce.CatalogModule.Web/Content/logo.png</iconUrl>
   <releaseNotes>Third version.</releaseNotes>
-  <copyright>Copyright В© 2011-2020 Virto Commerce. All rights reserved</copyright>
+  <copyright>Copyright Р’В© 2011-2020 Virto Commerce. All rights reserved</copyright>
   <tags>catalog</tags>
   <assemblyFile>VirtoCommerce.CatalogModule.Web.dll</assemblyFile>
   <moduleType>VirtoCommerce.CatalogModule.Web.Module, VirtoCommerce.CatalogModule.Web</moduleType>
