@@ -87,8 +87,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 var target = new { Associations = new ObservableCollection<AssociationEntity>(existEntities) };
                 var source = new { Associations = new ObservableCollection<AssociationEntity>(changedEntities) };
 
-                var associationComparer = AnonymousComparer.Create((AssociationEntity x) => x.ItemId + ":" + x.AssociationType + ":" + x.AssociatedItemId + ":" + x.AssociatedCategoryId);
-                source.Associations.Patch(target.Associations, associationComparer, (sourceAssociation, targetAssociation) => sourceAssociation.Patch(targetAssociation));
+                source.Associations.Patch(target.Associations, (sourcePropValue, targetPropValue) => sourcePropValue.Patch(targetPropValue));
 
                 await repository.UnitOfWork.CommitAsync();
                 //Reset cached associations
