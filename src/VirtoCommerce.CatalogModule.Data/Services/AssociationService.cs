@@ -82,9 +82,9 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 repository.DisableChangesTracking();
 
                 var itemIds = owners.Where(x => x.Id != null).Select(x => x.Id).ToArray();
-                var existEntities = await repository.Associations.Where(x => itemIds.Contains(x.ItemId)).ToArrayAsync();
+                var existentEntities = await repository.Associations.Where(x => itemIds.Contains(x.ItemId)).ToArrayAsync();
 
-                var target = new { Associations = new ObservableCollection<AssociationEntity>(existEntities) };
+                var target = new { Associations = new ObservableCollection<AssociationEntity>(existentEntities) };
                 var source = new { Associations = new ObservableCollection<AssociationEntity>(changedEntities) };
 
                 source.Associations.Patch(target.Associations, (sourcePropValue, targetPropValue) => sourcePropValue.Patch(targetPropValue));
@@ -100,11 +100,11 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
             using (var repository = _repositoryFactory())
             {
-                var dbExistEntities = await repository.GetAssociationsByIdsAsync(associations.Where(x => !x.IsTransient()).Select(x => x.Id).ToArray());
+                var dbExistentEntities = await repository.GetAssociationsByIdsAsync(associations.Where(x => !x.IsTransient()).Select(x => x.Id).ToArray());
                 foreach (var association in associations)
                 {
 
-                    var originalEntity = dbExistEntities.FirstOrDefault(x => x.Id == association.Id);
+                    var originalEntity = dbExistentEntities.FirstOrDefault(x => x.Id == association.Id);
                     var modifiedEntity = AbstractTypeFactory<AssociationEntity>.TryCreateInstance().FromModel(association);
                     if (originalEntity != null)
                     {
@@ -120,7 +120,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
                 //Reset cached associations
 
-                ClearCache(dbExistEntities.Select(x => x.Id).ToArray());
+                ClearCache(dbExistentEntities.Select(x => x.Id).ToArray());
             }
         }
 
