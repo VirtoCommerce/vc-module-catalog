@@ -8,7 +8,7 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Core.Model
 {
-    public class Property : AuditableEntity, IInheritable, IHasOuterId, IHasCatalogId, IExportable, ICopyable
+    public class Property : AuditableEntity, IInheritable, IHasOuterId, IHasCatalogId, IExportable, ICopyable, IHasCategoryId
     {
         /// <summary>
         /// Gets or sets a value indicating whether user can change property value.

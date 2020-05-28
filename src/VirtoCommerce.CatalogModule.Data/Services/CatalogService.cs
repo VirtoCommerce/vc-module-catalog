@@ -115,7 +115,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         protected virtual Task<IDictionary<string, Catalog>> PreloadCatalogsAsync()
         {
-            var cacheKey = CacheKey.With(GetType(), "AllCatalogs");
+            var cacheKey = CacheKey.With(GetType(), nameof(PreloadCatalogsAsync));
             return _platformMemoryCache.GetOrCreateExclusive(cacheKey, async (cacheEntry) =>
             {
                 cacheEntry.AddExpirationToken(CatalogCacheRegion.CreateChangeToken());
