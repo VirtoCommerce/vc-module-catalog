@@ -134,6 +134,11 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 .HasForeignKey(a => a.AssociatedCategoryId).OnDelete(DeleteBehavior.Restrict);
             #endregion
 
+            #region DynamicAssociation
+            modelBuilder.Entity<DynamicAssociationEntity>().ToTable("DynamicAssociation").HasKey(x => x.Id);
+            modelBuilder.Entity<DynamicAssociationEntity>().Property(x => x.Id).HasMaxLength(128).ValueGeneratedOnAdd();
+            #endregion
+
             #region Asset
             modelBuilder.Entity<AssetEntity>().ToTable("CatalogAsset").HasKey(x => x.Id);
             modelBuilder.Entity<AssetEntity>().Property(x => x.Id).HasMaxLength(128).ValueGeneratedOnAdd();

@@ -20,6 +20,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         IQueryable<PropertyDictionaryItemEntity> PropertyDictionaryItems { get; }
         IQueryable<CategoryItemRelationEntity> CategoryItemRelations { get; }
         IQueryable<AssociationEntity> Associations { get; }
+        IQueryable<DynamicAssociationEntity> DynamicAssociations { get; }
         IQueryable<CategoryRelationEntity> CategoryLinks { get; }
         IQueryable<SeoInfoEntity> SeoInfos { get; }
 
