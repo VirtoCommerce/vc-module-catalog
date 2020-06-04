@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace VirtoCommerce.CatalogModule.Data.Migrations
@@ -24,12 +24,18 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                     IsActive = table.Column<bool>(nullable: false),
                     StoreId = table.Column<string>(maxLength: 128, nullable: false),
                     Priority = table.Column<int>(nullable: false),
-                    ExpressionTreeSerialized = table.Column<string>(nullable: false)
+                    ExpressionTreeSerialized = table.Column<string>(nullable: false),
+                    OuterId = table.Column<string>(maxLength: 128, nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_DynamicAssociation", x => x.Id);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StoreId_AssociationType",
+                table: "DynamicAssociation",
+                columns: new[] { "StoreId", "AssociationType" });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

@@ -5,7 +5,7 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.Model
 {
-    public class DynamicAssociationEntity : AuditableEntity
+    public class DynamicAssociationEntity : AuditableEntity, IHasOuterId
     {
         [Required]
         [StringLength(128)]
@@ -32,6 +32,9 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
         [Required]
         public string ExpressionTreeSerialized { get; set; }
+
+        [StringLength(128)]
+        public string OuterId { get; set; }
 
         public virtual DynamicAssociation ToModel(DynamicAssociation dynamicAssociation)
         {

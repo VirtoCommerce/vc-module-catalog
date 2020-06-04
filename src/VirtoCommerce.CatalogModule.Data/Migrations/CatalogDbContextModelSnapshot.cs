@@ -379,6 +379,10 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasColumnType("nvarchar(128)")
                         .HasMaxLength(128);
 
+                    b.Property<string>("OuterId")
+                        .HasColumnType("nvarchar(128)")
+                        .HasMaxLength(128);
+
                     b.Property<int>("Priority")
                         .HasColumnType("int");
 
@@ -391,6 +395,9 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasMaxLength(128);
 
                     b.HasKey("Id");
+
+                    b.HasIndex("StoreId", "AssociationType")
+                        .HasName("IX_StoreId_AssociationType");
 
                     b.ToTable("DynamicAssociation");
                 });

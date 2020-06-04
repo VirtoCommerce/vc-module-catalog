@@ -10,7 +10,7 @@ using VirtoCommerce.CatalogModule.Data.Repositories;
 namespace VirtoCommerce.CatalogModule.Data.Migrations
 {
     [DbContext(typeof(CatalogDbContext))]
-    [Migration("20200603182726_AddDynamicAssociation")]
+    [Migration("20200604101813_AddDynamicAssociation")]
     partial class AddDynamicAssociation
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -381,6 +381,10 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasColumnType("nvarchar(128)")
                         .HasMaxLength(128);
 
+                    b.Property<string>("OuterId")
+                        .HasColumnType("nvarchar(128)")
+                        .HasMaxLength(128);
+
                     b.Property<int>("Priority")
                         .HasColumnType("int");
 
@@ -393,6 +397,9 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasMaxLength(128);
 
                     b.HasKey("Id");
+
+                    b.HasIndex("StoreId", "AssociationType")
+                        .HasName("IX_StoreId_AssociationType");
 
                     b.ToTable("DynamicAssociation");
                 });
