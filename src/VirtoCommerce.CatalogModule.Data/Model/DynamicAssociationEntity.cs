@@ -49,6 +49,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             dynamicAssociation.ModifiedBy = ModifiedBy;
             dynamicAssociation.ModifiedDate = ModifiedDate;
 
+            dynamicAssociation.OuterId = OuterId;
             dynamicAssociation.AssociationType = AssociationType;
             dynamicAssociation.IsActive = IsActive;
             dynamicAssociation.Description = Description;
@@ -77,6 +78,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             ModifiedBy = dynamicAssociation.ModifiedBy;
             ModifiedDate = dynamicAssociation.ModifiedDate;
 
+            OuterId = dynamicAssociation.OuterId;
             AssociationType = dynamicAssociation.AssociationType;
             Name = dynamicAssociation.Name;
             Description = dynamicAssociation.Description;

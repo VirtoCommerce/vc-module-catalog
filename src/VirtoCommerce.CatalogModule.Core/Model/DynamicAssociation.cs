@@ -3,7 +3,7 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Core.Model
 {
-    public class DynamicAssociation : AuditableEntity
+    public class DynamicAssociation : AuditableEntity, IHasOuterId
     {
         public string AssociationType { get; set; }
 
@@ -20,6 +20,8 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         public string StoreId { get; set; }
 
         public int Priority { get; set; }
+
+        public string OuterId { get; set; }
 
         public string ExpressionTreeSerialized { get; set; }
     }
