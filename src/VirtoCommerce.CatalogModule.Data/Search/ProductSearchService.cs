@@ -36,7 +36,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 var query = BuildQuery(repository, criteria);
 
                 result.TotalCount = await query.CountAsync();
-                if (criteria.Take > 0)
+                if (criteria.Take > 0 && result.TotalCount > 0)
                 {
                     var ids = await query.OrderBySortInfos(sortInfos).ThenBy(x => x.Id)
                                         .Select(x => x.Id)

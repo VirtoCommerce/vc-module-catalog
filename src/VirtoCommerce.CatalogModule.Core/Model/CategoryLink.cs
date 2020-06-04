@@ -5,7 +5,7 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Core.Model
 {
-    public class CategoryLink : ValueObject
+    public class CategoryLink : ValueObject, IHasCategoryId, IHasCatalogId
     {
         /// <summary>
         /// Entry identifier which this link belongs to
