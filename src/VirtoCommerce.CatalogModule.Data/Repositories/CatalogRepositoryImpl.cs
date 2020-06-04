@@ -37,6 +37,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         public IQueryable<PropertyAttributeEntity> PropertyAttributes => DbContext.Set<PropertyAttributeEntity>();
         public IQueryable<CategoryItemRelationEntity> CategoryItemRelations => DbContext.Set<CategoryItemRelationEntity>();
         public IQueryable<AssociationEntity> Associations => DbContext.Set<AssociationEntity>();
+        public IQueryable<DynamicAssociationEntity> DynamicAssociations => DbContext.Set<DynamicAssociationEntity>();
         public IQueryable<CategoryRelationEntity> CategoryLinks => DbContext.Set<CategoryRelationEntity>();
         public IQueryable<PropertyValidationRuleEntity> PropertyValidationRules => DbContext.Set<PropertyValidationRuleEntity>();
         public IQueryable<SeoInfoEntity> SeoInfos => DbContext.Set<SeoInfoEntity>();
