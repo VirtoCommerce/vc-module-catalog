@@ -9,6 +9,7 @@ using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Authorization;
+using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
@@ -46,24 +47,25 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         }
 
         /// <summary>
-        /// Create/Update the specified association.
+        /// Create/Update the array of association.
         /// </summary>
-        /// <param name="association">The dynamic association rule.</param>
+        /// <param name="associations">The dynamic association rules.</param>
         [HttpPost]
         [Route("")]
-        [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
-        public async Task<ActionResult<CatalogProduct>> SaveAssociations([FromBody] DynamicAssociation association)
+        public async Task<ActionResult<DynamicAssociation[]>> SaveAssociations([FromBody] DynamicAssociation[] associations)
         {
-            var authorizationResult = await _authorizationService.AuthorizeAsync(User, association, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, associations, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
             if (!authorizationResult.Succeeded)
             {
                 return Unauthorized();
             }
 
-            await _service.SaveChangesAsync(new[] { association });
-                
-            return NoContent();
+            if (!associations.IsNullOrEmpty())
+            {
+                await _service.SaveChangesAsync(associations);
+            }
+            return Ok(associations);
         }
 
         /// <summary>
