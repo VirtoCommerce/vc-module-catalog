@@ -78,7 +78,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 query = query.Where(x => x.Name.Contains(criteria.Keyword));
             }
 
-            if (!string.IsNullOrEmpty(criteria.StoreIds))
+            if (!criteria.StoreIds.IsNullOrEmpty())
             {
                 query = query.Where(x => criteria.StoreIds.Contains(x.StoreId));
             }
