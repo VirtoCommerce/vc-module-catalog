@@ -92,6 +92,9 @@ namespace VirtoCommerce.CatalogModule.Web
             serviceCollection.AddTransient<IPropertyDictionaryItemSearchService, PropertyDictionaryItemSearchService>();
             serviceCollection.AddTransient<IProductAssociationSearchService, ProductAssociationSearchService>();
             serviceCollection.AddTransient<IOutlineService, OutlineService>();
+
+            serviceCollection.AddTransient<IDynamicAssociationService, DynamicAssociationService>();
+            serviceCollection.AddTransient<IDynamicAssociationSearchService, DynamicAssociationSearchService>();
             serviceCollection.AddTransient<ISkuGenerator, DefaultSkuGenerator>();
 
             serviceCollection.AddTransient<LogChangesChangedEventHandler>();
