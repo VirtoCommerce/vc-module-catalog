@@ -78,6 +78,16 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 query = query.Where(x => x.Name.Contains(criteria.Keyword));
             }
 
+            if (!string.IsNullOrEmpty(criteria.StoreIds))
+            {
+                query = query.Where(x => criteria.StoreIds.Contains(x.StoreId));
+            }
+
+            if (!string.IsNullOrEmpty(criteria.Groups))
+            {
+                query = query.Where(x => criteria.Groups.Contains(x.AssociationType));
+            }
+
             return query;
         }
 
@@ -86,7 +96,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             var sortInfos = criteria.SortInfos;
             if (sortInfos.IsNullOrEmpty())
             {
-                sortInfos = new[] {new SortInfo {SortColumn = nameof(ItemEntity.Name)}};
+                sortInfos = new[] {new SortInfo {SortColumn = nameof(DynamicAssociation.Name)}};
             }
 
             return sortInfos;
