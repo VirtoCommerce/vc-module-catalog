@@ -47,12 +47,11 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         }
 
         /// <summary>
-        /// Create/Update the array of association.
+        /// Create/Update associations.
         /// </summary>
         /// <param name="associations">The dynamic association rules.</param>
         [HttpPost]
         [Route("")]
-        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         public async Task<ActionResult<DynamicAssociation[]>> SaveAssociations([FromBody] DynamicAssociation[] associations)
         {
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, associations, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
