@@ -1,41 +1,71 @@
 angular.module('virtoCommerce.catalogModule')
-    .controller('virtoCommerce.catalogModule.dynamicAssociationsListController', ['$scope', '$localStorage', 'virtoCommerce.catalogModule.dynamicAssociations', 'platformWebApp.dialogService', 'platformWebApp.bladeUtils', 'platformWebApp.uiGridHelper',
-        function ($scope, $localStorage, associations, dialogService, bladeUtils, uiGridHelper) {
+    .controller('virtoCommerce.catalogModule.dynamicAssociationsListController', ['$scope', 'virtoCommerce.catalogModule.dynamicAssociations', 'platformWebApp.dialogService', 'platformWebApp.bladeUtils', 'platformWebApp.uiGridHelper', '$timeout', 
+        function ($scope, associations, dialogService, bladeUtils, uiGridHelper, $timeout) {
             var blade = $scope.blade;
             var bladeNavigationService = bladeUtils.bladeNavigationService;
+            var selectedNode = null;
 
             blade.refresh = function () {
                 blade.isLoading = true;
 
-                var criteria = {
+                if ($scope.pageSettings.currentPage !== 1) {
+                    $scope.pageSettings.currentPage = 1;
+                }
+
+                associations.search(getSearchCriteria(), function (data) {
+                    blade.isLoading = false;
+                    $scope.pageSettings.totalItems = data.totalCount;
+                    blade.currentEntities = data.results;
+                    $scope.hasMore = data.results.length === $scope.pageSettings.itemsPerPageCount;
+
+                    if (selectedNode) {
+                        //select the node in the new list
+                        selectedNode = _.findWhere(data.results, { id: selectedNode.id });
+                    }
+                    if ($scope.gridApi) {
+                        $scope.gridApi.infiniteScroll.resetScroll(true, true);
+                        $scope.gridApi.infiniteScroll.dataLoaded();
+                    }
+                });
+            };
+
+            function showMore() {
+                if ($scope.hasMore) {
+                    ++$scope.pageSettings.currentPage;
+                    $scope.gridApi.infiniteScroll.saveScrollPercentage();
+                    blade.isLoading = true;
+
+                    associations.search(getSearchCriteria(), function (data) {
+                        blade.isLoading = false;
+                        $scope.pageSettings.totalItems = data.totalCount;
+                        blade.currentEntities = blade.currentEntities.concat(data.results);
+                        $scope.hasMore = data.results.length === $scope.pageSettings.itemsPerPageCount;
+                        $scope.gridApi.infiniteScroll.dataLoaded();
+                    });
+                }
+            }
+
+            function getSearchCriteria() {
+                return {
                     keyword: filter.keyword,
                     sort: uiGridHelper.getSortExpression($scope),
                     skip: ($scope.pageSettings.currentPage - 1) * $scope.pageSettings.itemsPerPageCount,
                     take: $scope.pageSettings.itemsPerPageCount
                 };
-                if (filter.current) {
-                    angular.extend(criteria, filter.current);
-                }
+            }
 
-                associations.search(criteria, function (data) {
-                    blade.isLoading = false;
-
-                    $scope.pageSettings.totalItems = data.totalCount;
-                    blade.currentEntities = data.results;
-                });
-            };
 
             $scope.selectNode = function (node) {
                 $scope.selectedNodeId = node.id;
 
-                //var newBlade = {
-                //    id: 'listItemChild',
-                //    currentEntityId: node.id,
-                //    title: node.name,
-                //    subtitle: blade.subtitle,
-                //    controller: 'virtoCommerce.marketingModule.promotionDetailController',
-                //    template: 'Modules/$(VirtoCommerce.Marketing)/Scripts/promotion/blades/promotion-detail.tpl.html'
-                //};
+                var newBlade = {
+                    id: 'listItemChild',
+                    currentEntityId: node.id,
+                    title: node.name,
+                    subtitle: blade.subtitle,
+                    controller: 'virtoCommerce.catalogModule.dynamicAssociationDetailController',
+                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/dynamicAssociations/dynamicAssociations-detail.tpl.html'
+                };
 
                 bladeNavigationService.showBlade(newBlade, blade);
             };
@@ -43,8 +73,8 @@ angular.module('virtoCommerce.catalogModule')
             $scope.deleteList = function (list) {
                 var dialog = {
                     id: "confirmDeleteItem",
-                    title: "marketing.dialogs.associations-delete.title",
-                    message: "marketing.dialogs.associations-delete.message",
+                    title: "catalog.dialogs.associations-delete.title",
+                    message: "catalog.dialogs.associations-delete.message",
                     callback: function (remove) {
                         if (remove) {
                             bladeNavigationService.closeChildrenBlades(blade, function () {
@@ -75,17 +105,17 @@ angular.module('virtoCommerce.catalogModule')
                         bladeNavigationService.closeChildrenBlades(blade, function () {
                             var newBlade = {
                                 id: 'listItemChild',
-                                title: 'marketing.blades.associations-detail.title-new',
+                                title: 'catalog.blades.associations-detail.title-new',
                                 subtitle: blade.subtitle,
                                 isNew: true,
-                                controller: 'virtoCommerce.marketingModule.associationDetailController',
-                                template: 'Modules/$(VirtoCommerce.Marketing)/Scripts/association/blades/association-detail.tpl.html'
+                                controller: 'virtoCommerce.catalogModule.dynamicAssociationDetailController',
+                                template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/dynamicAssociations/dynamicAssociations-detail.tpl.html'
                             };
                             bladeNavigationService.showBlade(newBlade, blade);
                         });
                     },
                     canExecuteMethod: function () { return true; },
-                    permission: 'marketing:create'
+                    permission: 'catalog:create'
                 },
                 {
                     name: "platform.commands.delete", icon: 'fa fa-trash-o',
@@ -99,61 +129,34 @@ angular.module('virtoCommerce.catalogModule')
                 }
             ];
 
-            // simple and advanced filtering
-            var filter = blade.filter = $scope.filter = {};
-            $scope.$localStorage = $localStorage;
-            if (!$localStorage.associationSearchFilters) {
-                $localStorage.associationSearchFilters = [{ name: 'marketing.blades.association-list.new-filter' }];
-            }
-            if ($localStorage.associationSearchFilterId) {
-                filter.current = _.findWhere($localStorage.associationSearchFilters, { id: $localStorage.associationSearchFilterId });
-            }
 
-            filter.change = function () {
-                $localStorage.associationSearchFilterId = filter.current ? filter.current.id : null;
-                if (filter.current && !filter.current.id) {
-                    filter.current = null;
-                    showFilterDetailBlade({ isNew: true });
-                } else {
-                    bladeNavigationService.closeBlade({ id: 'filterDetail' });
-                    filter.criteriaChanged();
-                }
-            };
-
-            filter.edit = function () {
-                if (filter.current) {
-                    showFilterDetailBlade({ data: filter.current });
-                }
-            };
-
-            function showFilterDetailBlade(bladeData) {
-                var newBlade = {
-                    id: 'filterDetail',
-                    controller: 'virtoCommerce.marketingModule.filterDetailController',
-                    template: 'Modules/$(VirtoCommerce.Marketing)/Scripts/association/blades/filter-detail.tpl.html'
-                };
-                angular.extend(newBlade, bladeData);
-                bladeNavigationService.showBlade(newBlade, blade);
-            }
+            var filter = blade.filter = { keyword: null };
 
             filter.criteriaChanged = function () {
-                if ($scope.pageSettings.currentPage > 1) {
-                    $scope.pageSettings.currentPage = 1;
-                } else {
-                    blade.refresh();
-                }
+                if (filter.keyword) {
+                    openItemsBlade({});
+                } else
+                    bladeNavigationService.closeChildrenBlades(blade);
+
+                selectedNode = null;
+                $scope.selectedNodeId = null;
+                bladeNavigationService.catalogsSelectedCatalog = undefined;
+                bladeNavigationService.catalogsSelectedCategoryId = undefined;
             };
 
             // ui-grid
             $scope.setGridOptions = function (gridOptions) {
+                bladeUtils.initializePagination($scope, true);
+                $scope.pageSettings.itemsPerPageCount = 20;
+
                 uiGridHelper.initialize($scope, gridOptions, function (gridApi) {
+                    //update gridApi for current grid
+                    $scope.gridApi = gridApi;
                     uiGridHelper.bindRefreshOnSortChanged($scope);
+                    $scope.gridApi.infiniteScroll.on.needLoadMoreData($scope, showMore);
+
                 });
 
-                bladeUtils.initializePagination($scope);
+                $timeout(function () {  blade.refresh(); });
             };
-
-            // actions on load
-            //No need to call this because page 'pageSettings.currentPage' is watched!!! It would trigger subsequent duplicated req...
-            //blade.refresh();
         }]);
