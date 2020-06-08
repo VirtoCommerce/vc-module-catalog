@@ -58,7 +58,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 return rules.Any() ? rules : null;
             }, false);
 
-            return result;
+            return result ?? new DynamicAssociation[0];
         }
 
         public async Task SaveChangesAsync(DynamicAssociation[] items)
