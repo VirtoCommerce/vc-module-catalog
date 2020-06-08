@@ -14,6 +14,7 @@ using VirtoCommerce.Platform.Core.Common;
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
     [Route("api/catalog/products/dynamicassociations")]
+    [Authorize]
     public class CatalogModuleDynamicAssociationsController : Controller
     {
         private readonly IDynamicAssociationSearchService _dynamicAssociationSearchService;
@@ -55,7 +56,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <param name="associations">The dynamic association rules.</param>
         [HttpPost]
         [Route("")]
-        [Authorize(ModuleConstants.Security.Permissions.Update)]
         public async Task<ActionResult<DynamicAssociation[]>> SaveAssociations([FromBody] DynamicAssociation[] associations)
         {
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, associations, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
