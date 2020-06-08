@@ -14,25 +14,28 @@ using VirtoCommerce.Platform.Core.Common;
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
     [Route("api/catalog/products/dynamicassociations")]
-    [Authorize]
     public class CatalogModuleDynamicAssociationsController : Controller
     {
-        private readonly IDynamicAssociationSearchService _searchService;
-        private readonly IDynamicAssociationService _service;
+        private readonly IDynamicAssociationSearchService _dynamicAssociationSearchService;
+        private readonly IDynamicAssociationService _dynamicAssociationService;
         private readonly IAuthorizationService _authorizationService;
 
-        public CatalogModuleDynamicAssociationsController(IDynamicAssociationSearchService searchService, IDynamicAssociationService service, IAuthorizationService authorizationService)
+        public CatalogModuleDynamicAssociationsController(
+            IDynamicAssociationSearchService dynamicAssociationSearchService,
+            IDynamicAssociationService dynamicAssociationService,
+            IAuthorizationService authorizationService)
         {
-            _searchService = searchService;
-            _service = service;
+            _dynamicAssociationSearchService = dynamicAssociationSearchService;
+            _dynamicAssociationService = dynamicAssociationService;
             _authorizationService = authorizationService;
         }
 
         [HttpPost]
         [Route("search")]
+        [Authorize(ModuleConstants.Security.Permissions.Read)]
         public async Task<ActionResult<DynamicAssociationSearchResult>> SearchAssociation([FromBody] DynamicAssociationSearchCriteria criteria)
         {
-            var result = await _searchService.SearchDynamicAssociationsAsync(criteria);
+            var result = await _dynamicAssociationSearchService.SearchDynamicAssociationsAsync(criteria);
 
             return Ok(result);
         }
@@ -42,7 +45,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Authorize(ModuleConstants.Security.Permissions.Read)]
         public async Task<ActionResult<DynamicAssociation>> GetAssociationById(string id)
         {
-            var result = await _service.GetByIdsAsync(new []{id});
+            var result = await _dynamicAssociationService.GetByIdsAsync(new []{id});
             return Ok(result);
         }
 
@@ -52,6 +55,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <param name="associations">The dynamic association rules.</param>
         [HttpPost]
         [Route("")]
+        [Authorize(ModuleConstants.Security.Permissions.Update)]
         public async Task<ActionResult<DynamicAssociation[]>> SaveAssociations([FromBody] DynamicAssociation[] associations)
         {
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, associations, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
@@ -62,7 +66,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             if (!associations.IsNullOrEmpty())
             {
-                await _service.SaveChangesAsync(associations);
+                await _dynamicAssociationService.SaveChangesAsync(associations);
             }
             return Ok(associations);
         }
@@ -79,14 +83,14 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         public async Task<ActionResult> DeleteAssociation([FromQuery]string[] ids)
         {
-            var associations = (await _service.GetByIdsAsync(ids)).FirstOrDefault();
+            var associations = (await _dynamicAssociationService.GetByIdsAsync(ids)).FirstOrDefault();
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, associations, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Delete));
             if (!authorizationResult.Succeeded)
             {
                 return Unauthorized();
             }
 
-            await _service.DeleteAsync(ids);
+            await _dynamicAssociationService.DeleteAsync(ids);
             return NoContent();
         }
     }
