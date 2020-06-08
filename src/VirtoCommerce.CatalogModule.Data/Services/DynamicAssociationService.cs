@@ -36,10 +36,11 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         public async Task<DynamicAssociation[]> GetByIdsAsync(string[] itemIds)
         {
             var cacheKey = CacheKey.With(GetType(), nameof(GetByIdsAsync), string.Join("-", itemIds.OrderBy(x => x)));
-            var rules = Array.Empty<DynamicAssociation>();
 
             var result = await _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async cacheEntry =>
             {
+                var rules = Array.Empty<DynamicAssociation>();
+
                 if (!itemIds.IsNullOrEmpty())
                 {
                     var catalogRepository = _catalogRepositoryFactory();
