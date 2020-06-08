@@ -20,7 +20,9 @@ namespace VirtoCommerce.CatalogModule.Core.Model.DynamicAssociations
 
         public static bool AreItemPropertyValuesEqual(this DynamicAssociationEvaluationContext context, Dictionary<string, string> propertyValues)
         {
-            throw new NotImplementedException();
+            var result = context.Products.WithPropertyValues(propertyValues).Any();
+
+            return result;
         }
 
         #endregion DynamicAssociationEvaluationContext extensions
@@ -59,6 +61,27 @@ namespace VirtoCommerce.CatalogModule.Core.Model.DynamicAssociations
         public static bool ProductInProducts(this CatalogProduct product, IEnumerable<string> productIds)
         {
             return productIds.Contains(product.Id, StringComparer.OrdinalIgnoreCase);
+        }
+
+        public static IEnumerable<CatalogProduct> WithPropertyValues(this IEnumerable<CatalogProduct> products, Dictionary<string, string> propertyValues)
+        {
+            var productArray = products as CatalogProduct[] ?? products.ToArray();
+            return propertyValues.Any() ? productArray.Where(x => x.ProductHasPropertyValues(propertyValues)) : productArray;
+        }
+
+        public static bool ProductHasPropertyValues(this CatalogProduct product, Dictionary<string, string> propertyValues)
+        {
+            var result = propertyValues.Where(x => x.Key != null).All(property =>
+            {
+                var result = false;
+                var productProperty = product.Properties.FirstOrDefault(x => x.Name.EqualsInvariant(property.Key));
+
+                result = productProperty != null && productProperty.Values.Any(x => x.Value?.ToString().EqualsInvariant(property.Value) ?? false);
+
+                return result;
+            });
+
+            return result;
         }
 
         #endregion CatalogProduct extensions
