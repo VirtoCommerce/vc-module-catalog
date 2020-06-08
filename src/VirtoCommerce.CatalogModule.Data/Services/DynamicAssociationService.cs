@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using VirtoCommerce.CatalogModule.Core.Events;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
+using VirtoCommerce.CatalogModule.Data.Caching;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
+using VirtoCommerce.Platform.Core.Caching;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Events;
 using VirtoCommerce.Platform.Data.Infrastructure;
@@ -16,31 +20,45 @@ namespace VirtoCommerce.CatalogModule.Data.Services
     public class DynamicAssociationService : IDynamicAssociationService
     {
         private readonly Func<ICatalogRepository> _catalogRepositoryFactory;
+        private readonly IPlatformMemoryCache _platformMemoryCache;
+        private readonly IEventPublisher _eventPublisher;
 
-        public DynamicAssociationService(Func<ICatalogRepository> catalogRepositoryFactory)
+        public DynamicAssociationService(
+            Func<ICatalogRepository> catalogRepositoryFactory,
+            IPlatformMemoryCache platformMemoryCache,
+            IEventPublisher eventPublisher)
         {
             _catalogRepositoryFactory = catalogRepositoryFactory;
+            _platformMemoryCache = platformMemoryCache;
+            _eventPublisher = eventPublisher;
         }
 
         public async Task<DynamicAssociation[]> GetByIdsAsync(string[] itemIds)
         {
-            //ToDo: Use Cache
+            var cacheKey = CacheKey.With(GetType(), nameof(GetByIdsAsync), string.Join("-", itemIds.OrderBy(x => x)));
             var rules = Array.Empty<DynamicAssociation>();
 
-            if (!itemIds.IsNullOrEmpty())
+            var result = await _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async cacheEntry =>
             {
-                var catalogRepository = _catalogRepositoryFactory();
-                //Optimize performance and CPU usage
-                catalogRepository.DisableChangesTracking();
+                if (!itemIds.IsNullOrEmpty())
+                {
+                    var catalogRepository = _catalogRepositoryFactory();
+                    //Optimize performance and CPU usage
+                    catalogRepository.DisableChangesTracking();
 
-                var entities = await catalogRepository.DynamicAssociations.Where(x => itemIds.Contains(x.Id)).ToArrayAsync();
+                    var entities = await catalogRepository.DynamicAssociations.Where(x => itemIds.Contains(x.Id)).ToArrayAsync();
 
-                rules = entities
-                    .Select(x => x.ToModel(AbstractTypeFactory<DynamicAssociation>.TryCreateInstance()))
-                    .ToArray();
-            }
+                    rules = entities
+                        .Select(x => x.ToModel(AbstractTypeFactory<DynamicAssociation>.TryCreateInstance()))
+                        .ToArray();
 
-            return rules;
+                    cacheEntry.AddExpirationToken(DynamicAssociationCacheRegion.CreateChangeToken(rules));
+                }
+
+                return rules.Any() ? rules : null;
+            }, false);
+
+            return result;
         }
 
         public async Task SaveChangesAsync(DynamicAssociation[] items)
@@ -72,17 +90,42 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 }
             }
 
+            await _eventPublisher.Publish(new DynamicAssociationChangingEvent(changedEntries));
+
             await catalogRepository.UnitOfWork.CommitAsync();
             pkMap.ResolvePrimaryKeys();
 
-            //ToDo: Event publish
+            await _eventPublisher.Publish(new DynamicAssociationChangedEvent(changedEntries));
 
-            //ToDo: Clear cache
+            ClearCache(items);
         }
 
-        public Task DeleteAsync(string[] itemIds)
+        public async Task DeleteAsync(string[] itemIds)
         {
-            return Task.CompletedTask;
+            var items = await GetByIdsAsync(itemIds);
+            var changedEntries = items
+                .Select(x => new GenericChangedEntry<DynamicAssociation>(x, EntryState.Deleted))
+                .ToArray();
+
+            using var catalogRepository = _catalogRepositoryFactory();
+
+            await _eventPublisher.Publish(new DynamicAssociationChangingEvent(changedEntries));
+
+            await catalogRepository.RemoveDynamicAssociationsAsync(itemIds);
+            await catalogRepository.UnitOfWork.CommitAsync();
+
+            await _eventPublisher.Publish(new DynamicAssociationChangedEvent(changedEntries));
+
+            ClearCache(items);
+        }
+
+
+        protected virtual void ClearCache(IEnumerable<DynamicAssociation> dynamicAssociations)
+        {
+            foreach (var dynamicAssociation in dynamicAssociations)
+            {
+                DynamicAssociationCacheRegion.ExpireEntity(dynamicAssociation);
+            }
         }
     }
 }
