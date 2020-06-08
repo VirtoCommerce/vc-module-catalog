@@ -79,7 +79,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <returns></returns>
         [HttpDelete]
         [Route("{id}")]
-        [Authorize(ModuleConstants.Security.Permissions.Delete)]
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         public async Task<ActionResult> DeleteAssociation([FromQuery]string[] ids)
         {
