@@ -441,6 +441,16 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             }
         }
 
+        public async Task RemoveDynamicAssociationsAsync(string[] dynamicAssociationIds)
+        {
+            var dynamicAssociations = await DynamicAssociations.Where(x => dynamicAssociationIds.Contains(x.Id)).ToListAsync();
+
+            foreach (var dynamicAssociationEntity in dynamicAssociations)
+            {
+                Remove(dynamicAssociationEntity);
+            }
+        }
+
         public async Task<GenericSearchResult<AssociationEntity>> SearchAssociations(ProductAssociationSearchCriteria criteria)
         {
             var result = new GenericSearchResult<AssociationEntity>();
