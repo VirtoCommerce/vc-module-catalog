@@ -13,9 +13,6 @@ namespace VirtoCommerce.CatalogModule.Core.Model.DynamicAssociations.Conditions
         public string[] CategoryIds { get; set; }
         public string[] CategoryNames { get; set; }
 
-        /// <summary>
-        /// ((PromotionEvaluationContext)x).IsItemInCategory(CategoryId, ExcludingCategoryIds, ExcludingProductIds)
-        /// </summary>
         public override bool IsSatisfiedBy(IEvaluationContext context)
         {
             var result = false;
