@@ -59,13 +59,15 @@ angular.module('virtoCommerce.catalogModule')
             blade.currentEntity.ExpressionTreeSerialized = 'ToDo';
 
             associations.save({}, [blade.currentEntity], (data) => {
-                //close main parameters blade
-                parametersBlade && bladeNavigationService.closeBlade(parametersBlade);
-                blade.isNew = undefined;
-                blade.currentEntityId = data[0].id;
-                initializeBlade(data[0]);
-                initializeToolbar();
-                blade.refresh(true);
+                if (data && data.length > 0) {
+                    //close main parameters blade
+                    parametersBlade && bladeNavigationService.closeBlade(parametersBlade);
+                    blade.isNew = undefined;
+                    blade.currentEntityId = data[0].id;
+                    initializeBlade(data[0]);
+                    initializeToolbar();
+                    blade.refresh(true);
+                }
             });
         };
 
@@ -108,7 +110,6 @@ angular.module('virtoCommerce.catalogModule')
                 $scope.filledPropertiesCount += blade.currentEntity.priority ? 1 : 0;
             }
         }, true);
-
 
         initializeToolbar();
         blade.refresh(false);
