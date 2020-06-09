@@ -3,11 +3,17 @@ angular.module('virtoCommerce.catalogModule')
         var blade = $scope.blade;
         blade.isLoading = true;
         blade.headIcon = 'fa-area-chart';
+        var formScope;
+        $scope.setForm = (form) => { formScope = form; };
+
+        blade.isValid = function() {
+            return formScope && formScope.$valid;
+        };
 
         blade.refresh = (parentRefresh) => {
             $scope.associationGroups = settings.getValues({ id: 'Catalog.AssociationGroups' }, data => {
                 if (data && data.length > 0) {
-                    blade.groupName = data[0];
+                    blade.associationType = data[0];
                 }
             });
 
@@ -43,8 +49,6 @@ angular.module('virtoCommerce.catalogModule')
             };
             bladeNavigationService.showBlade(newBlade, blade);
         };
-
-
 
         blade.refresh(false);
     }]);

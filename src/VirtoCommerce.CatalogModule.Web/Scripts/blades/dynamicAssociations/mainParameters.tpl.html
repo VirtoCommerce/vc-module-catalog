@@ -1,6 +1,3 @@
-<div class="blade-static __bottom" ng-if="blade.isNew">
-    <button class="btn" ng-click="saveChanges()" ng-disabled="!isValid()">{{ 'platform.commands.create' | translate }}</button>
-</div>
 <div class="blade-content __medium-wide">
     <div class="blade-inner">
         <div class="inner-block">
@@ -72,7 +69,7 @@
                                 </a>
                             </label>
                             <div class="form-input">
-                                <ui-select ng-model="blade.currentEntity.groupName" required>
+                                <ui-select ng-model="blade.currentEntity.associationType" required>
                                     <ui-select-match placeholder="{{ 'catalog.wizards.association.placeholders.group-name' | translate }}">{{$select.selected}}</ui-select-match>
                                     <ui-select-choices repeat="x in associationGroups | filter: $select.search">
                                         <span ng-bind-html="x | highlight: $select.search"></span>
