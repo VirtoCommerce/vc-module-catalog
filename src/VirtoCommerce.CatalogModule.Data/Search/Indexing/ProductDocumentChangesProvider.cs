@@ -39,6 +39,12 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             }
             else
             {
+                // Get added and modified products count
+                using (var repository = _catalogRepositoryFactory())
+                {
+                    result = await repository.Items.CountAsync(i => i.ParentId == null && ((i.ModifiedDate >= startDate && i.ModifiedDate <= endDate) || (i.CreatedDate >= startDate && i.CreatedDate <= endDate)));
+                }
+
                 var criteria = new ChangeLogSearchCriteria
                 {
                     ObjectType = ChangeLogObjectType,
@@ -46,8 +52,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                     EndDate = endDate,
                     Take = 0
                 };
-                // Get changes count from operation log
-                result = (await _changeLogSearchService.SearchAsync(criteria)).TotalCount;
+
+                //TODO: extend search criteria with OperationType
+                var deletedOperations = (await _changeLogSearchService.SearchAsync(criteria)).Results;
+                var deletedCount = deletedOperations.Count(o => o.OperationType == EntryState.Deleted);
+                result += deletedCount;
             }
 
             return result;
@@ -56,53 +65,72 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         public virtual async Task<IList<IndexDocumentChange>> GetChangesAsync(DateTime? startDate, DateTime? endDate, long skip, long take)
         {
             IList<IndexDocumentChange> result;
-
-            if (startDate == null && endDate == null)
+            // Get documents from repository and return them as changes
+            using (var repository = _catalogRepositoryFactory())
             {
-                // Get documents from repository and return them as changes
-                using (var repository = _catalogRepositoryFactory())
+
+                if (startDate == null && endDate == null)
                 {
-                    var productIds = await repository.Items
+                    var changedProductsInfos = await repository.Items
                         .Where(i => i.ParentId == null)
                         .OrderBy(i => i.CreatedDate)
-                        .Select(i => i.Id)
+                        .Select(i => new { i.Id, i.CreatedDate, i.ModifiedDate })
                         .Skip((int)skip)
                         .Take((int)take)
                         .ToArrayAsync();
 
-                    result = productIds.Select(id =>
+                    result = changedProductsInfos.Select(itemInfo =>
                         new IndexDocumentChange
                         {
-                            DocumentId = id,
+                            DocumentId = itemInfo.Id,
                             ChangeType = IndexDocumentChangeType.Modified,
-                            ChangeDate = DateTime.UtcNow
+                            ChangeDate = itemInfo.ModifiedDate ?? itemInfo.CreatedDate
                         }
                     ).ToArray();
                 }
-            }
-            else
-            {
-                // Get changes from operation log
-                var criteria = new ChangeLogSearchCriteria
+                else
                 {
-                    ObjectType = ChangeLogObjectType,
-                    StartDate = startDate,
-                    EndDate = endDate,
-                    Skip = (int)skip,
-                    Take = (int)take
-                };
+                    var changedProductsInfos = await repository.Items
+                       .Where(i => i.ParentId == null && ((i.ModifiedDate >= startDate && i.ModifiedDate <= endDate) || (i.CreatedDate >= startDate && i.CreatedDate <= endDate)))
+                       .OrderBy(i => i.CreatedDate)
+                       .Select(i => new { i.Id, i.CreatedDate, i.ModifiedDate })
+                       .Skip((int)skip)
+                       .Take((int)take)
+                       .ToArrayAsync();
 
-                // Get changes from operation log
-                var operations = (await _changeLogSearchService.SearchAsync(criteria)).Results;
+                    var changedProductIdsList = changedProductsInfos.Select(itemInfo =>
+                        new IndexDocumentChange
+                        {
+                            DocumentId = itemInfo.Id,
+                            ChangeType = IndexDocumentChangeType.Modified,
+                            ChangeDate = itemInfo.ModifiedDate ?? itemInfo.CreatedDate
+                        }
+                    ).ToList();
 
-                result = operations.Select(o =>
-                    new IndexDocumentChange
+                    // Get changes from operation log for deleted items
+                    var criteria = new ChangeLogSearchCriteria
                     {
-                        DocumentId = o.ObjectId,
-                        ChangeType = o.OperationType == EntryState.Deleted ? IndexDocumentChangeType.Deleted : IndexDocumentChangeType.Modified,
-                        ChangeDate = o.ModifiedDate ?? o.CreatedDate,
-                    }
-                ).ToArray();
+                        ObjectType = ChangeLogObjectType,
+                        StartDate = startDate,
+                        EndDate = endDate,
+                        Skip = (int)skip,
+                        Take = (int)take
+                    };
+
+                    var operations = (await _changeLogSearchService.SearchAsync(criteria)).Results;
+
+                    var deletedProductIndexDocumentChanges = operations.Where(o => o.OperationType == EntryState.Deleted).Select(o =>
+                        new IndexDocumentChange
+                        {
+                            DocumentId = o.ObjectId,
+                            ChangeType = IndexDocumentChangeType.Deleted,
+                            ChangeDate = o.ModifiedDate ?? o.CreatedDate,
+                        }
+                    ).ToArray();
+
+                    changedProductIdsList.AddRange(deletedProductIndexDocumentChanges);
+                    result = changedProductIdsList.ToArray();
+                }
             }
 
             return result;
