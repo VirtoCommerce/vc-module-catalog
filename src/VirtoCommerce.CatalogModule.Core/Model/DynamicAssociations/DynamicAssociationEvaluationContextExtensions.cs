@@ -7,7 +7,6 @@ namespace VirtoCommerce.CatalogModule.Core.Model.DynamicAssociations
 {
     public static class DynamicAssociationEvaluationContextExtensions
     {
-        #region DynamicAssociationEvaluationContext extensions
 
         public static bool IsItemInCategory(this DynamicAssociationEvaluationContext context, string[] categoryIds, string[] excludingCategoryIds, string[] excludingProductIds)
         {
@@ -24,10 +23,6 @@ namespace VirtoCommerce.CatalogModule.Core.Model.DynamicAssociations
 
             return result;
         }
-
-        #endregion DynamicAssociationEvaluationContext extensions
-
-        #region CatalogProduct extensions
 
         public static IEnumerable<CatalogProduct> ExcludeCategories(this IEnumerable<CatalogProduct> products, string[] categoryIds)
         {
@@ -89,6 +84,5 @@ namespace VirtoCommerce.CatalogModule.Core.Model.DynamicAssociations
             return result;
         }
 
-        #endregion CatalogProduct extensions
     }
 }
