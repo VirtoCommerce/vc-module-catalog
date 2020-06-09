@@ -290,6 +290,20 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             return result;
         }
 
+        public async Task<DynamicAssociationEntity[]> GetDynamicAssociationsByIdsAsync(string[] dynamicAssociationIds)
+        {
+            var result = Array.Empty<DynamicAssociationEntity>();
+
+            if (!dynamicAssociationIds.IsNullOrEmpty())
+            {
+                result = await DynamicAssociations
+                    .Where(x => dynamicAssociationIds.Contains(x.Id))
+                    .ToArrayAsync();
+            }
+            
+            return result;
+        }
+
         public async Task<string[]> GetAllChildrenCategoriesIdsAsync(string[] categoryIds)
         {
             string[] result = null;
@@ -438,16 +452,6 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             {
                 commandText = $"DELETE PV FROM PropertyValue PV INNER JOIN Item I ON I.Id = PV.ItemId AND I.CatalogId = '{itemProperty.CatalogId}' WHERE PV.Name = '{itemProperty.Name}'";
                 await DbContext.Database.ExecuteSqlRawAsync(commandText);
-            }
-        }
-
-        public async Task RemoveDynamicAssociationsAsync(string[] dynamicAssociationIds)
-        {
-            var dynamicAssociations = await DynamicAssociations.Where(x => dynamicAssociationIds.Contains(x.Id)).ToListAsync();
-
-            foreach (var dynamicAssociationEntity in dynamicAssociations)
-            {
-                Remove(dynamicAssociationEntity);
             }
         }
 
