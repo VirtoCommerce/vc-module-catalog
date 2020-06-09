@@ -33,9 +33,19 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
         [HttpPost]
         [Route("search")]
-        [Authorize(ModuleConstants.Security.Permissions.Read)]
         public async Task<ActionResult<DynamicAssociationSearchResult>> SearchAssociation([FromBody] DynamicAssociationSearchCriteria criteria)
         {
+            var authorizationResult = await _authorizationService.AuthorizeAsync(
+                User,
+                criteria,
+                new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read)
+                );
+
+            if (!authorizationResult.Succeeded)
+            {
+                return Unauthorized();
+            }
+
             var result = await _dynamicAssociationSearchService.SearchDynamicAssociationsAsync(criteria);
 
             return Ok(result);
@@ -43,10 +53,21 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
         [HttpGet]
         [Route("{id}")]
-        [Authorize(ModuleConstants.Security.Permissions.Read)]
         public async Task<ActionResult<DynamicAssociation>> GetAssociationById(string id)
         {
-            var result = (await _service.GetByIdsAsync(new []{id})).FirstOrDefault();
+            var result = (await _dynamicAssociationService.GetByIdsAsync(new [] { id })).FirstOrDefault();
+
+            var authorizationResult = await _authorizationService.AuthorizeAsync(
+                User,
+                result,
+                new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read)
+                );
+
+            if (!authorizationResult.Succeeded)
+            {
+                return Unauthorized();
+            }
+
             return Ok(result);
         }
 
@@ -59,6 +80,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         public async Task<ActionResult<DynamicAssociation[]>> SaveAssociations([FromBody] DynamicAssociation[] associations)
         {
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, associations, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
+
             if (!authorizationResult.Succeeded)
             {
                 return Unauthorized();
@@ -68,6 +90,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             {
                 await _dynamicAssociationService.SaveChangesAsync(associations);
             }
+
             return Ok(associations);
         }
 
@@ -82,14 +105,16 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         public async Task<ActionResult> DeleteAssociation([FromQuery]string[] ids)
         {
-            var associations = (await _dynamicAssociationService.GetByIdsAsync(ids)).FirstOrDefault();
-            var authorizationResult = await _authorizationService.AuthorizeAsync(User, associations, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Delete));
+            var dynamicAssociations = await _dynamicAssociationService.GetByIdsAsync(ids);
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, dynamicAssociations, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Delete));
+
             if (!authorizationResult.Succeeded)
             {
                 return Unauthorized();
             }
 
             await _dynamicAssociationService.DeleteAsync(ids);
+
             return NoContent();
         }
     }
