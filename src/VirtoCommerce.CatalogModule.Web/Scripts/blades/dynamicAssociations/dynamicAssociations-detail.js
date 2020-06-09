@@ -67,6 +67,8 @@ angular.module('virtoCommerce.catalogModule')
                     initializeBlade(data[0]);
                     initializeToolbar();
                     blade.refresh(true);
+                } else {
+                    bladeNavigationService.setError('Error while saving association rule' , blade);
                 }
             });
         };
