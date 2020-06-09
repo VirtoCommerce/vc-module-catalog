@@ -488,7 +488,59 @@
       "exporter": {
         "productTitle": "Export catalog products",
         "productSubtitle": "Export catalog products to JSON or CSV"
+      },
+      "dynamicAssociation-list": {
+        "title": "Dynamic product association rules",
+        "subtitle": "Select dynamic association rule",
+        "labels": {
+          "name": "Name",
+          "group": "Group",
+          "priority": "Priority",
+          "isActive": "isActive",
+          "last-modified": "modified"
+        }
+      },
+      "dynamicAssociation-detail": {
+        "labels": {
+          "name": "Association name",
+          "description": "Description",
+          "main-parameters": "Main parameters",
+          "productsToMatch": "Products to match",
+          "productsToDisplay": "Products to display",
+          "outputTuning": "Output tuning"
+        },
+        "descriptions": {
+          "name": "Type a name that uniquely identifies the association.",
+          "main-parameters": "{{count}} of {{total}} properties filled",
+          "productsToMatch": "{{count}} products in the current filter",
+          "productsToDisplay": "{{count}} products in the current filter",
+          "outputTuning": "Output sorting, limits, rule priority"
+        },
+        "placeholders": {
+          "name": "Dynamic association name"
+        }
+      },
+      "dynamicAssociation-parameters": {
+        "title": "Parameters for rule",
+        "subtitle": "Edit main parameters for association rule",
+        "labels": {
+          "is-active": "is Active",
+          "start-date": "Start date",
+          "expiration-date": "Expiration date",
+          "store": "Store",
+          "priority": "Priority"
+        },
+        "descriptions": {
+          "is-active": "Flag controls Active/Inactive the rule",
+          "store": "Store in which this promotion will be active"
+        },
+        "placeholders": {
+          "start-date": "Please choose date...",
+          "expiration-date": "Please choose date...",
+          "store": "Please select store..." 
+        }
       }
+
     },
     "exporter-list": {
       "title": "Available exporters",
@@ -498,6 +550,7 @@
       "productTitle": "Export catalog products",
       "productSubtitle": "Export catalog products to JSON or CSV"
     },
+    
 
     "widgets": {
       "catalogLanguages": {

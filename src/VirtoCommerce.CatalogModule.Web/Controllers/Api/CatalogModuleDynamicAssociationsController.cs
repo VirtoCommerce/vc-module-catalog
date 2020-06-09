@@ -46,7 +46,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Authorize(ModuleConstants.Security.Permissions.Read)]
         public async Task<ActionResult<DynamicAssociation>> GetAssociationById(string id)
         {
-            var result = await _dynamicAssociationService.GetByIdsAsync(new []{id});
+            var result = (await _service.GetByIdsAsync(new []{id})).FirstOrDefault();
             return Ok(result);
         }
 
