@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using VirtoCommerce.CatalogModule.Core.Events;
 using VirtoCommerce.CatalogModule.Core.Model;
@@ -48,7 +47,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                         //Optimize performance and CPU usage
                         catalogRepository.DisableChangesTracking();
 
-                        var entities = await catalogRepository.DynamicAssociations.Where(x => itemIds.Contains(x.Id)).ToArrayAsync();
+                        var entities = await catalogRepository.GetDynamicAssociationsByIdsAsync(itemIds);
 
                         rules = entities
                             .Select(x => x.ToModel(AbstractTypeFactory<DynamicAssociation>.TryCreateInstance()))
