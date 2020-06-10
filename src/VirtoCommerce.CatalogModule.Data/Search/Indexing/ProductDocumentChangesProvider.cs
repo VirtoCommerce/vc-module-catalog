@@ -27,6 +27,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         public virtual async Task<long> GetTotalChangesCountAsync(DateTime? startDate, DateTime? endDate)
         {
+            ValidateDates(startDate, endDate);
+
             long result;
 
             if (startDate == null && endDate == null)
@@ -52,8 +54,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                     EndDate = endDate,
                     Take = 0
                 };
-
-                //TODO: extend search criteria with OperationType
+                
                 var deletedOperations = (await _changeLogSearchService.SearchAsync(criteria)).Results;
                 var deletedCount = deletedOperations.Count(o => o.OperationType == EntryState.Deleted);
                 result += deletedCount;
@@ -64,10 +65,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         public virtual async Task<IList<IndexDocumentChange>> GetChangesAsync(DateTime? startDate, DateTime? endDate, long skip, long take)
         {
-            if(startDate.HasValue ^ endDate.HasValue)
-            {
-                throw new ArgumentException("The startDate and endDate must have either both null value or both not null value");
-            }
+            ValidateDates(startDate, endDate);
+
             IList<IndexDocumentChange> result;
             // Get documents from repository and return them as changes
             using (var repository = _catalogRepositoryFactory())
@@ -138,6 +137,14 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             }
 
             return result;
+        }
+
+        private static void ValidateDates(DateTime? startDate, DateTime? endDate)
+        {
+            if (startDate.HasValue ^ endDate.HasValue)
+            {
+                throw new ArgumentException("The startDate and endDate must have either both null value or both not null value");
+            }
         }
     }
 }
