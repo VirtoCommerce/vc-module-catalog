@@ -99,32 +99,22 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
                     }
                     else if (context.Resource is DynamicAssociation[] dynamicAssociations)
                     {
-                        if (allowedCatalogIds.Any())
-                        {
-                            var storeIds = dynamicAssociations.Select(x => x.StoreId).Distinct();
-                            var stores = await _storeService.GetByIdsAsync(storeIds.ToArray());
-                            var catalogIds = stores.Select(x => x.Catalog);
+                        var storeIds = dynamicAssociations.Select(x => x.StoreId).Distinct();
+                        var stores = await _storeService.GetByIdsAsync(storeIds.ToArray());
+                        var catalogIds = stores.Select(x => x.Catalog);
 
-                            if (catalogIds.All(x => allowedCatalogIds.Contains(x)))
-                            {
-                                context.Succeed(requirement);
-                            }
-                        }
-                        else 
+                        if (catalogIds.All(x => allowedCatalogIds.Contains(x)))
                         {
                             context.Succeed(requirement);
                         }
                     }
                     else if (context.Resource is DynamicAssociationSearchCriteria dynamicAssociationSearchCriteria)
                     {
-                        if (allowedCatalogIds.Any())
-                        {
-                            var storeIds = dynamicAssociationSearchCriteria.StoreIds?.Distinct() ?? Array.Empty<string>();
-                            var stores = await _storeService.GetByIdsAsync(storeIds.ToArray());
-                            var availableStores = stores.Where(x => allowedCatalogIds.Contains(x.Catalog));
+                        var storeIds = dynamicAssociationSearchCriteria.StoreIds?.Distinct() ?? Array.Empty<string>();
+                        var stores = await _storeService.GetByIdsAsync(storeIds.ToArray());
+                        var availableStores = stores.Where(x => allowedCatalogIds.Contains(x.Catalog));
 
-                            dynamicAssociationSearchCriteria.StoreIds = availableStores.Select(x => x.Id).ToArray();
-                        }
+                        dynamicAssociationSearchCriteria.StoreIds = availableStores.Select(x => x.Id).ToArray();
 
                         context.Succeed(requirement);
                         
@@ -134,7 +124,7 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
                         var storeId = dynamicAssociation.StoreId;
                         var store = await _storeService.GetByIdAsync(storeId);
 
-                        if (!allowedCatalogIds.Any() || allowedCatalogIds.Contains(store.Catalog))
+                        if (allowedCatalogIds.Contains(store.Catalog))
                         {
                             context.Succeed(requirement);
                         }
