@@ -48,7 +48,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                         //Optimize performance and CPU usage
                         catalogRepository.DisableChangesTracking();
 
-                        var entities = await catalogRepository.DynamicAssociations.Where(x => itemIds.Contains(x.Id)).ToArrayAsync();
+                        var entities = await catalogRepository.GetDynamicAssociationsByIdsAsync(itemIds);
 
                         rules = entities
                             .Select(x => x.ToModel(AbstractTypeFactory<DynamicAssociation>.TryCreateInstance()))
