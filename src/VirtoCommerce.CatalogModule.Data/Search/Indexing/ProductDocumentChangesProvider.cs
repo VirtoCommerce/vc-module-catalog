@@ -64,6 +64,10 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         public virtual async Task<IList<IndexDocumentChange>> GetChangesAsync(DateTime? startDate, DateTime? endDate, long skip, long take)
         {
+            if(startDate.HasValue ^ endDate.HasValue)
+            {
+                throw new ArgumentException("The startDate and endDate must have either both null value or both not null value");
+            }
             IList<IndexDocumentChange> result;
             // Get documents from repository and return them as changes
             using (var repository = _catalogRepositoryFactory())
