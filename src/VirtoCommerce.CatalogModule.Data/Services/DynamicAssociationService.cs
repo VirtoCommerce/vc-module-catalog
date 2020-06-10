@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using VirtoCommerce.CatalogModule.Core.Events;
 using VirtoCommerce.CatalogModule.Core.Model;
@@ -134,6 +135,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             {
                 DynamicAssociationCacheRegion.ExpireEntity(dynamicAssociation);
             }
+
+            DynamicAssociationSearchCacheRegion.ExpireRegion();
         }
     }
 }
