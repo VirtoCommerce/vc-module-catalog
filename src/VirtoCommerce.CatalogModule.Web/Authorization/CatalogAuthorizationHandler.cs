@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -118,7 +119,7 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
                     {
                         if (allowedCatalogIds.Any())
                         {
-                            var storeIds = dynamicAssociationSearchCriteria.StoreIds.Distinct();
+                            var storeIds = dynamicAssociationSearchCriteria.StoreIds?.Distinct() ?? Array.Empty<string>();
                             var stores = await _storeService.GetByIdsAsync(storeIds.ToArray());
                             var availableStores = stores.Where(x => allowedCatalogIds.Contains(x.Catalog));
 
