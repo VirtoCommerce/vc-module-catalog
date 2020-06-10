@@ -31,6 +31,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         Task<PropertyEntity[]> GetAllCatalogPropertiesAsync(string catalogId);
         Task<PropertyEntity[]> GetPropertiesByIdsAsync(string[] propIds, bool loadDictValues = false);
         Task<PropertyDictionaryItemEntity[]> GetPropertyDictionaryItemsByIdsAsync(string[] dictItemIds);
+        Task<DynamicAssociationEntity[]> GetDynamicAssociationsByIdsAsync(string[] dynamicAssociationIds);
 
         Task<GenericSearchResult<AssociationEntity>> SearchAssociations(ProductAssociationSearchCriteria criteria);
 

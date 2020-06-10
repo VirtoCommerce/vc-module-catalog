@@ -31,5 +31,6 @@
     <ProjectReference Include="..\..\src\VirtoCommerce.CatalogModule.BulkActions\VirtoCommerce.CatalogModule.BulkActions.csproj" />
     <ProjectReference Include="..\..\src\VirtoCommerce.CatalogModule.Core\VirtoCommerce.CatalogModule.Core.csproj" />
     <ProjectReference Include="..\..\src\VirtoCommerce.CatalogModule.Data\VirtoCommerce.CatalogModule.Data.csproj" />
+    <ProjectReference Include="..\..\src\VirtoCommerce.CatalogModule.Web\VirtoCommerce.CatalogModule.Web.csproj" />
   </ItemGroup>
 </Project>
