@@ -37,21 +37,22 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 throw new ArgumentNullException(nameof(criteria));
             }
 
-            var cacheKey = CacheKey.With(GetType(), "SearchDynamicAssociationsAsync", criteria.GetCacheKey());
-            return await _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async (cacheEntry) =>
+            var cacheKey = CacheKey.With(GetType(), nameof(SearchDynamicAssociationsAsync), criteria.GetCacheKey());
+
+            return await _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async cacheEntry =>
             {
-                cacheEntry.AddExpirationToken(AssociationSearchCacheRegion.CreateChangeToken());
+                cacheEntry.AddExpirationToken(DynamicAssociationSearchCacheRegion.CreateChangeToken());
+
                 var result = AbstractTypeFactory<DynamicAssociationSearchResult>.TryCreateInstance();
-                using (var repository = _catalogRepositoryFactory())
+
+                using (var catalogRepository = _catalogRepositoryFactory())
                 {
                     //Optimize performance and CPU usage
-                    repository.DisableChangesTracking();
+                    catalogRepository.DisableChangesTracking();
                     var sortInfos = BuildSortExpression(criteria);
-
-                    var query = BuildQuery(repository, criteria);
+                    var query = BuildQuery(catalogRepository, criteria);
 
                     result.TotalCount = await query.CountAsync();
-
 
                     if (criteria.Take > 0 && result.TotalCount > 0)
                     {
@@ -94,9 +95,10 @@ namespace VirtoCommerce.CatalogModule.Data.Search
         protected virtual IList<SortInfo> BuildSortExpression(DynamicAssociationSearchCriteria criteria)
         {
             var sortInfos = criteria.SortInfos;
+
             if (sortInfos.IsNullOrEmpty())
             {
-                sortInfos = new[] {new SortInfo {SortColumn = nameof(DynamicAssociation.Name)}};
+                sortInfos = new[] { new SortInfo { SortColumn = nameof(DynamicAssociation.Name) }};
             }
 
             return sortInfos;
