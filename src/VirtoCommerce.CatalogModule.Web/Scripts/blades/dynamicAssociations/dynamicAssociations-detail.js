@@ -72,7 +72,7 @@ angular.module('virtoCommerce.catalogModule')
         };
         $scope.saveChanges = function () {
             blade.isLoading = true;
-            blade.currentEntity.ExpressionTreeSerialized = 'ToDo';
+            blade.currentEntity.ExpressionTreeSerialized = null;        //TODO
 
             associations.save({}, [blade.currentEntity], (data) => {
                 if (data && data.length > 0) {

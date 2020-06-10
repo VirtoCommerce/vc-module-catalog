@@ -1,5 +1,4 @@
 using System;
-using Newtonsoft.Json;
 using VirtoCommerce.CatalogModule.Core.Model.DynamicAssociations;
 using VirtoCommerce.Platform.Core.Common;
 
@@ -25,9 +24,6 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
         public string OuterId { get; set; }
 
-        public string ExpressionTreeSerialized { get; set; }
-
-        [JsonIgnore]
         public DynamicAssociationRuleTree ExpressionTree { get; set; }
     }
 }
