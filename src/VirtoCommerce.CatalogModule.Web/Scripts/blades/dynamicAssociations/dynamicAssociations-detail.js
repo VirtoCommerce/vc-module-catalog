@@ -14,9 +14,7 @@ angular.module('virtoCommerce.catalogModule')
         blade.editedPropertiesToMatch = [];
         blade.editedPropertiesToDisplay = [];
 
-        //Need to pre filter catalog-category selector
-        blade.catalogId = null;
-
+        blade.toMatchIsActive = true;
 
         blade.updatePermission = 'catalog:update';
 
@@ -31,12 +29,10 @@ angular.module('virtoCommerce.catalogModule')
                          blade.parentBlade.refresh();
                      }
 
-                     if (blade.currentEntity.storeId) {
-                         stores.get({ id: blade.currentEntity.storeId }, data => {
-                             blade.catalogId = data.catalog;
-                         });
+                    if (blade.currentEntity.storeId) {
+                        //Need to pre filter catalog-category selector
+                         stores.get({ id: blade.currentEntity.storeId }, data => blade.currentEntity.catalogId = data.catalog);
                      }
-
                 });
             }
         };
@@ -134,7 +130,8 @@ angular.module('virtoCommerce.catalogModule')
         }, true);
 
         /////
-        $scope.createProductFilter = function (categoryIds, filteredProperties, editedProperties) {
+        $scope.createProductFilter = function (categoryIds, toMatchIsActive) {
+            blade.toMatchIsActive = toMatchIsActive;
             var allProperties = [];
             var options = {
                 showCheckingMultiple: false,
@@ -161,7 +158,7 @@ angular.module('virtoCommerce.catalogModule')
                 title: 'catalog.selectors.blades.titles.select-categories',
                 options: options,
                 breadcrumbs: [],
-                catalogId: blade.catalogId,
+                catalogId: blade.currentEntity.catalogId,
                 toolbarCommands: [
                     {
                         name: "platform.commands.confirm", icon: 'fa fa-check',
@@ -177,7 +174,7 @@ angular.module('virtoCommerce.catalogModule')
                                         prop.values = [];
                                         prop.isReadOnly = false;
                                     });
-                                    $scope.selectProperties(allProperties, filteredProperties, editedProperties);
+                                    $scope.selectProperties(allProperties);
                                 });
                         },
                         canExecuteMethod: () => _.any(categoryIds)
@@ -197,34 +194,59 @@ angular.module('virtoCommerce.catalogModule')
 
         }; 
 
-        $scope.selectProperties = function (allProperties, filteredProperties, editedProperties) {
+        $scope.selectProperties = function (allProperties) {
+            let filteredProps = blade.toMatchIsActive
+                ? blade.filteredPropertiesToMatch
+                : blade.filteredPropertiesToDisplay;
             var newBlade = {
                 id: 'propertiesSelector',
                 controller: 'virtoCommerce.catalogModule.propertiesSelectorController',
                 template: 'Modules/$(virtoCommerce.catalog)/Scripts/blades/step-select-properties.tpl.html',
                 properties: allProperties,
-                includedProperties: filteredProperties,
+                includedProperties: filteredProps,
                 onSelected: function (includedProperties) {
-                    filteredProperties = includedProperties;
+                    if (blade.toMatchIsActive) {
+                        blade.filteredPropertiesToMatch = includedProperties;
+                    } else {
+                        blade.filteredPropertiesToDisplay = includedProperties;
+                    }
                     blade.isPropertiesSelected = true;
-                    $scope.editProperties(filteredProperties, editedProperties);
+                    $scope.editProperties();
                 }
             };
 
             bladeNavigationService.showBlade(newBlade, blade);
         };
 
-        $scope.editProperties = function (filteredProperties, editedProperties) {
+        $scope.editProperties = function () {
+            let filteredProps = blade.toMatchIsActive
+                ? blade.filteredPropertiesToMatch
+                : blade.filteredPropertiesToDisplay;
+
             var newBlade = {
                 id: 'propertiesEditor',
                 controller: 'virtoCommerce.catalogModule.editPropertiesActionStepController',
                 template: 'Modules/$(virtoCommerce.catalog)/Scripts/blades/step-edit-properties.tpl.html',
-                properties: filteredProperties,
+                properties: filteredProps,
                 propGroups: [{ title: 'catalog.properties.product', type: 'Product' }, { title: 'catalog.properties.variation', type: 'Variation' }],
                 onSelected: function (editedProps) {
-                    blade.canStartProcess = true;
-                    editedProperties = editedProps;
-                }
+                    if (blade.toMatchIsActive) {
+                        blade.editedPropertiesToMatch = editedProps;
+                    } else {
+                        blade.editedPropertiesToDisplay = editedProps;
+                    }
+
+                },
+                toolbarCommands: [
+                    {
+                        name: "platform.commands.preview", icon: 'fa fa-filter',
+                        executeMethod: (pickingBlade) => {
+                            //ToDo: show blade with filtered products
+                            bladeNavigationService.closeBlade(pickingBlade);
+                        },
+                        canExecuteMethod: () => true
+                    }]
+
             };
             bladeNavigationService.showBlade(newBlade, blade);
         };
