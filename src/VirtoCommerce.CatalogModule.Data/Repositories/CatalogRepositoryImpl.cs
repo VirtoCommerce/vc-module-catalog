@@ -290,6 +290,20 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             return result;
         }
 
+        public async Task<DynamicAssociationEntity[]> GetDynamicAssociationsByIdsAsync(string[] dynamicAssociationIds)
+        {
+            var result = Array.Empty<DynamicAssociationEntity>();
+
+            if (!dynamicAssociationIds.IsNullOrEmpty())
+            {
+                result = await DynamicAssociations
+                    .Where(x => dynamicAssociationIds.Contains(x.Id))
+                    .ToArrayAsync();
+            }
+            
+            return result;
+        }
+
         public async Task<string[]> GetAllChildrenCategoriesIdsAsync(string[] categoryIds)
         {
             string[] result = null;
