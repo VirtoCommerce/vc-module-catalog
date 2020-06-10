@@ -48,7 +48,7 @@
                             <div class="form-group __info list">
                                 <label class="form-label">{{ 'catalog.blades.dynamicAssociation-parameters.labels.store' | translate }}</label>
                                 <div class="form-input">
-                                    <ui-select ng-model="blade.currentEntity.storeId" required>
+                                    <ui-select ng-model="blade.currentEntity.storeId" required on-select="onStoreSelected($item)">
                                         <ui-select-match placeholder="{{'catalog.blades.dynamicAssociation-parameters.placeholders.store' | translate}}">{{$select.selected.name}}</ui-select-match>
                                         <ui-select-choices repeat="x.id as x in stores">
                                             <span ng-bind-html="x.name | highlight: $select.search"></span>

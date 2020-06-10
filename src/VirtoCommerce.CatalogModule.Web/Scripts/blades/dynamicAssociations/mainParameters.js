@@ -26,6 +26,8 @@ angular.module('virtoCommerce.catalogModule')
             });
         };
 
+        $scope.onStoreSelected = ($item) => blade.currentEntity.catalogId = $item.catalog;
+        
         // datepicker 
         $scope.datepickers = {
             str: false,
