@@ -79,7 +79,6 @@ angular.module('virtoCommerce.catalogModule')
                         if (remove) {
                             bladeNavigationService.closeChildrenBlades(blade, function () {
                                 blade.isLoading = true;
-
                                 var itemIds = _.pluck(list, 'id');
                                 associations.remove({ ids: itemIds }, function () {
                                     blade.refresh();
