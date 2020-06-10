@@ -30,8 +30,9 @@ namespace VirtoCommerce.CatalogModule.Tests
         }
 
         [Fact]
-        public async Task GetByIdsAsync_GetThenSaveDynamicAssociation()
+        public async Task GetByIdsAsync_GetThenSaveDynamicAssociation_AreNotEquals()
         {
+            // Arrange
             var id = Guid.NewGuid().ToString();
             var dynamicAssociation = new DynamicAssociation { Id = id, };
             var dynamicAssociationEntity = AbstractTypeFactory<DynamicAssociationEntity>.TryCreateInstance().FromModel(dynamicAssociation, new PrimaryKeyResolvingMap());
@@ -44,10 +45,12 @@ namespace VirtoCommerce.CatalogModule.Tests
                     .ReturnsAsync(new[] {dynamicAssociationEntity});
             });
 
+            // Act
             var nullDynamicAssociation = await dynamicAssociationService.GetByIdsAsync(new[] { id });
             await dynamicAssociationService.SaveChangesAsync(new[] { dynamicAssociation });
             var dynamicAssociationFromService = await dynamicAssociationService.GetByIdsAsync(new [] { id });
 
+            // Assert
             Assert.NotEqual(nullDynamicAssociation, dynamicAssociationFromService);
         }
 

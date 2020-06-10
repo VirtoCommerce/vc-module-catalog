@@ -36,8 +36,9 @@ namespace VirtoCommerce.CatalogModule.Tests
         }
 
         [Fact]
-        public async Task Handle_Permission_With_Correct_Scope_Catalog()
+        public async Task Handle_Permission_With_Correct_Scope_Catalog_Succeded()
         {
+            // Arrange
             var storeMock = CreateStoreServiceMock();
 
             storeMock
@@ -57,14 +58,17 @@ namespace VirtoCommerce.CatalogModule.Tests
                 $"{_permission}|[{{\"catalogId\":\"testCatalog\",\"type\":\"SelectedCatalogScope\",\"label\":\"Electronics\",\"scope\":\"testCatalog\"}}]",
                 dynamicAssociation);
 
+            // Act
             await catalogAuthorizationHandler.HandleAsync(context);
 
+            // Assert
             Assert.True(context.HasSucceeded);
         }
 
         [Fact]
-        public async Task Handle_Permission_With_Incorrect_Scope_Catalog()
+        public async Task Handle_Permission_With_Incorrect_Scope_Catalog_Unsecceded()
         {
+            // Arrange
             var storeMock = CreateStoreServiceMock();
 
             storeMock
@@ -84,14 +88,17 @@ namespace VirtoCommerce.CatalogModule.Tests
                 $"{_permission}|[{{\"catalogId\":\"testCatalog\",\"type\":\"SelectedCatalogScope\",\"label\":\"Electronics\",\"scope\":\"testCatalog\"}}]",
                 dynamicAssociation);
 
+            // Act
             await catalogAuthorizationHandler.HandleAsync(context);
 
+            // Assert
             Assert.False(context.HasSucceeded);
         }
 
         [Fact]
-        public async Task Handle_Permission_Without_Scope()
+        public async Task Handle_Permission_Without_Scope_Succeded()
         {
+            // Arrange
             var storeMock = CreateStoreServiceMock();
 
             storeMock
@@ -111,14 +118,17 @@ namespace VirtoCommerce.CatalogModule.Tests
                 $"{_permission}",
                 dynamicAssociation);
 
+            // Act
             await catalogAuthorizationHandler.HandleAsync(context);
 
+            // Assert
             Assert.True(context.HasSucceeded);
         }
 
         [Fact]
-        public async Task Handle_DynamicAssociationSearchCriteria_With_Allowed_Catalog()
+        public async Task Handle_DynamicAssociationSearchCriteria_With_Allowed_Catalog_Succeded()
         {
+            // Arrange
             var storeMock = CreateStoreServiceMock();
 
             storeMock
@@ -148,15 +158,18 @@ namespace VirtoCommerce.CatalogModule.Tests
                 $"{_permission}|[{{\"catalogId\":\"testCatalog\",\"type\":\"SelectedCatalogScope\",\"label\":\"Electronics\",\"scope\":\"testCatalog\"}}]",
                 dynamicAssociationSearchCriteria);
 
+            // Act
             await catalogAuthorizationHandler.HandleAsync(context);
 
+            // Assert
             Assert.Equal(new[] { "testStore1" }, dynamicAssociationSearchCriteria.StoreIds);
             Assert.True(context.HasSucceeded);
         }
 
         [Fact]
-        public async Task Handle_DynamicAssociationSearchCriteria_With_Null_StoreIds()
+        public async Task Handle_DynamicAssociationSearchCriteria_With_Null_StoreIds_Succeded()
         {
+            // Arrange
             var storeMock = CreateStoreServiceMock();
 
             storeMock
@@ -171,15 +184,18 @@ namespace VirtoCommerce.CatalogModule.Tests
                 $"{_permission}|[{{\"catalogId\":\"testCatalog\",\"type\":\"SelectedCatalogScope\",\"label\":\"Electronics\",\"scope\":\"testCatalog\"}}]",
                 dynamicAssociationSearchCriteria);
 
+            // Act
             await catalogAuthorizationHandler.HandleAsync(context);
 
+            // Assert
             Assert.Equal(new string[0], dynamicAssociationSearchCriteria.StoreIds);
             Assert.True(context.HasSucceeded);
         }
 
         [Fact]
-        public async Task Handle_DynamicAssociationSearchCriteria_Without_Scope()
+        public async Task Handle_DynamicAssociationSearchCriteria_Without_Scope_Succeded()
         {
+            // Arrange
             var storeMock = CreateStoreServiceMock();
 
             storeMock
@@ -197,15 +213,18 @@ namespace VirtoCommerce.CatalogModule.Tests
                 $"{_permission}",
                 dynamicAssociationSearchCriteria);
 
+            // Act
             await catalogAuthorizationHandler.HandleAsync(context);
 
+            // Assert
             Assert.Equal(new [] { "testStore1", "testStore2" }, dynamicAssociationSearchCriteria.StoreIds);
             Assert.True(context.HasSucceeded);
         }
 
         [Fact]
-        public async Task Handle_DynamicAssociationCollection_Without_Scope()
+        public async Task Handle_DynamicAssociationCollection_Without_Scope_Succeded()
         {
+            // Arrange
             var storeMock = CreateStoreServiceMock();
 
             var catalogAuthorizationHandler = CreateCatalogAuthorizationHandler(storeMock.Object);
@@ -216,14 +235,17 @@ namespace VirtoCommerce.CatalogModule.Tests
                 $"{_permission}",
                 dynamicAssociations);
 
+            // Act
             await catalogAuthorizationHandler.HandleAsync(context);
 
+            // Assert
             Assert.True(context.HasSucceeded);
         }
 
         [Fact]
-        public async Task Handle_DynamicAssociationCollection_Incorrect_With_Scope()
+        public async Task Handle_DynamicAssociationCollection_Incorrect_With_Scope_Unsucceded()
         {
+            // Arrange
             var storeMock = CreateStoreServiceMock();
 
             storeMock
@@ -248,14 +270,17 @@ namespace VirtoCommerce.CatalogModule.Tests
                 $"{_permission}|[{{\"catalogId\":\"testCatalog1\",\"type\":\"SelectedCatalogScope\",\"label\":\"Electronics\",\"scope\":\"testCatalog1\"}}]",
                 dynamicAssociations);
 
+            // Act
             await catalogAuthorizationHandler.HandleAsync(context);
 
+            // Assert
             Assert.False(context.HasSucceeded);
         }
 
         [Fact]
-        public async Task Handle_DynamicAssociationCollection_Correct_With_Scope()
+        public async Task Handle_DynamicAssociationCollection_Correct_With_Scope_Succeded()
         {
+            // Arrange
             var storeMock = CreateStoreServiceMock();
 
             storeMock
@@ -283,8 +308,10 @@ namespace VirtoCommerce.CatalogModule.Tests
                 "]",
                 dynamicAssociations);
 
+            // Act
             await catalogAuthorizationHandler.HandleAsync(context);
 
+            // Assert
             Assert.True(context.HasSucceeded);
         }
 
