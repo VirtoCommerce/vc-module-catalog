@@ -10,6 +10,7 @@ using Moq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Data.Authorization;
 using VirtoCommerce.CatalogModule.Web.Authorization;
 using VirtoCommerce.Platform.Core.Common;
@@ -25,6 +26,7 @@ namespace VirtoCommerce.CatalogModule.Tests
     public class CatalogAuthorizationHandlerTests
     {
         private readonly IOptions<MvcNewtonsoftJsonOptions> _jsonOptions;
+        private const string _permission = "test:permission";
 
         public CatalogAuthorizationHandlerTests()
         {
@@ -51,8 +53,8 @@ namespace VirtoCommerce.CatalogModule.Tests
             var dynamicAssociation = new DynamicAssociation();
 
             var context = CreateAuthorizationHandlerContext(
-                "test:permission",
-                "test:permission|[{\"catalogId\":\"testCatalog\",\"type\":\"SelectedCatalogScope\",\"label\":\"Electronics\",\"scope\":\"testCatalog\"}]",
+                _permission,
+                $"{_permission}|[{{\"catalogId\":\"testCatalog\",\"type\":\"SelectedCatalogScope\",\"label\":\"Electronics\",\"scope\":\"testCatalog\"}}]",
                 dynamicAssociation);
 
             await catalogAuthorizationHandler.HandleAsync(context);
@@ -78,13 +80,212 @@ namespace VirtoCommerce.CatalogModule.Tests
             var dynamicAssociation = new DynamicAssociation();
 
             var context = CreateAuthorizationHandlerContext(
-                "test:permission",
-                "test:permission|[{\"catalogId\":\"testCatalog\",\"type\":\"SelectedCatalogScope\",\"label\":\"Electronics\",\"scope\":\"testCatalog\"}]",
+                _permission,
+                $"{_permission}|[{{\"catalogId\":\"testCatalog\",\"type\":\"SelectedCatalogScope\",\"label\":\"Electronics\",\"scope\":\"testCatalog\"}}]",
                 dynamicAssociation);
 
             await catalogAuthorizationHandler.HandleAsync(context);
 
             Assert.False(context.HasSucceeded);
+        }
+
+        [Fact]
+        public async Task Handle_Permission_Without_Scope()
+        {
+            var storeMock = CreateStoreServiceMock();
+
+            storeMock
+                .Setup(x => x.GetByIdAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(new Store
+                {
+                    Id = "testStore",
+                    Catalog = "testCatalog"
+                });
+
+            var catalogAuthorizationHandler = CreateCatalogAuthorizationHandler(storeMock.Object);
+
+            var dynamicAssociation = new DynamicAssociation();
+
+            var context = CreateAuthorizationHandlerContext(
+                $"{_permission}",
+                $"{_permission}",
+                dynamicAssociation);
+
+            await catalogAuthorizationHandler.HandleAsync(context);
+
+            Assert.True(context.HasSucceeded);
+        }
+
+        [Fact]
+        public async Task Handle_DynamicAssociationSearchCriteria_With_Allowed_Catalog()
+        {
+            var storeMock = CreateStoreServiceMock();
+
+            storeMock
+                .Setup(x => x.GetByIdsAsync(It.IsAny<string[]>(), It.IsAny<string>()))
+                .ReturnsAsync(new []
+                {
+                    new Store
+                    {
+                        Catalog = "testCatalog",
+                        Id = "testStore1",
+                    },
+                    new Store
+                    {
+                        Catalog = "testCatalog2",
+                        Id = "testStore2",
+                    },
+                });
+
+            var catalogAuthorizationHandler = CreateCatalogAuthorizationHandler(storeMock.Object);
+            var dynamicAssociationSearchCriteria = new DynamicAssociationSearchCriteria
+            {
+                StoreIds = Array.Empty<string>(),
+            };
+
+            var context = CreateAuthorizationHandlerContext(
+                $"{_permission}",
+                $"{_permission}|[{{\"catalogId\":\"testCatalog\",\"type\":\"SelectedCatalogScope\",\"label\":\"Electronics\",\"scope\":\"testCatalog\"}}]",
+                dynamicAssociationSearchCriteria);
+
+            await catalogAuthorizationHandler.HandleAsync(context);
+
+            Assert.Equal(new[] { "testStore1" }, dynamicAssociationSearchCriteria.StoreIds);
+            Assert.True(context.HasSucceeded);
+        }
+
+        [Fact]
+        public async Task Handle_DynamicAssociationSearchCriteria_With_Null_StoreIds()
+        {
+            var storeMock = CreateStoreServiceMock();
+
+            storeMock
+                .Setup(x => x.GetByIdsAsync(It.IsAny<string[]>(), It.IsAny<string>()))
+                .ReturnsAsync(new Store[0]);
+
+            var catalogAuthorizationHandler = CreateCatalogAuthorizationHandler(storeMock.Object);
+            var dynamicAssociationSearchCriteria = new DynamicAssociationSearchCriteria();
+
+            var context = CreateAuthorizationHandlerContext(
+                $"{_permission}",
+                $"{_permission}|[{{\"catalogId\":\"testCatalog\",\"type\":\"SelectedCatalogScope\",\"label\":\"Electronics\",\"scope\":\"testCatalog\"}}]",
+                dynamicAssociationSearchCriteria);
+
+            await catalogAuthorizationHandler.HandleAsync(context);
+
+            Assert.Equal(new string[0], dynamicAssociationSearchCriteria.StoreIds);
+            Assert.True(context.HasSucceeded);
+        }
+
+        [Fact]
+        public async Task Handle_DynamicAssociationSearchCriteria_Without_Scope()
+        {
+            var storeMock = CreateStoreServiceMock();
+
+            storeMock
+                .Setup(x => x.GetByIdsAsync(It.IsAny<string[]>(), It.IsAny<string>()))
+                .ReturnsAsync(new Store[0]);
+
+            var catalogAuthorizationHandler = CreateCatalogAuthorizationHandler(storeMock.Object);
+            var dynamicAssociationSearchCriteria = new DynamicAssociationSearchCriteria
+            {
+                StoreIds = new [] { "testStore1", "testStore2" },
+            };
+
+            var context = CreateAuthorizationHandlerContext(
+                $"{_permission}",
+                $"{_permission}",
+                dynamicAssociationSearchCriteria);
+
+            await catalogAuthorizationHandler.HandleAsync(context);
+
+            Assert.Equal(new [] { "testStore1", "testStore2" }, dynamicAssociationSearchCriteria.StoreIds);
+            Assert.True(context.HasSucceeded);
+        }
+
+        [Fact]
+        public async Task Handle_DynamicAssociationCollection_Without_Scope()
+        {
+            var storeMock = CreateStoreServiceMock();
+
+            var catalogAuthorizationHandler = CreateCatalogAuthorizationHandler(storeMock.Object);
+            var dynamicAssociations = new DynamicAssociation[0];
+
+            var context = CreateAuthorizationHandlerContext(
+                $"{_permission}",
+                $"{_permission}",
+                dynamicAssociations);
+
+            await catalogAuthorizationHandler.HandleAsync(context);
+
+            Assert.True(context.HasSucceeded);
+        }
+
+        [Fact]
+        public async Task Handle_DynamicAssociationCollection_Incorrect_With_Scope()
+        {
+            var storeMock = CreateStoreServiceMock();
+
+            storeMock
+                .Setup(x => x.GetByIdsAsync(It.IsAny<string[]>(), It.IsAny<string>()))
+                .ReturnsAsync(new []
+                {
+                    new Store
+                    {
+                        Catalog = "testCatalog1",
+                    },
+                    new Store
+                    {
+                        Catalog = "testCatalog2",
+                    },
+                });
+
+            var catalogAuthorizationHandler = CreateCatalogAuthorizationHandler(storeMock.Object);
+            var dynamicAssociations = new DynamicAssociation[0];
+
+            var context = CreateAuthorizationHandlerContext(
+                $"{_permission}",
+                $"{_permission}|[{{\"catalogId\":\"testCatalog1\",\"type\":\"SelectedCatalogScope\",\"label\":\"Electronics\",\"scope\":\"testCatalog1\"}}]",
+                dynamicAssociations);
+
+            await catalogAuthorizationHandler.HandleAsync(context);
+
+            Assert.False(context.HasSucceeded);
+        }
+
+        [Fact]
+        public async Task Handle_DynamicAssociationCollection_Correct_With_Scope()
+        {
+            var storeMock = CreateStoreServiceMock();
+
+            storeMock
+                .Setup(x => x.GetByIdsAsync(It.IsAny<string[]>(), It.IsAny<string>()))
+                .ReturnsAsync(new[]
+                {
+                    new Store
+                    {
+                        Catalog = "testCatalog1",
+                    },
+                    new Store
+                    {
+                        Catalog = "testCatalog2",
+                    },
+                });
+
+            var catalogAuthorizationHandler = CreateCatalogAuthorizationHandler(storeMock.Object);
+            var dynamicAssociations = new DynamicAssociation[0];
+
+            var context = CreateAuthorizationHandlerContext(
+                $"{_permission}",
+                $"{_permission}|[" +
+                "{\"catalogId\":\"testCatalog1\",\"type\":\"SelectedCatalogScope\",\"label\":\"Electronics\",\"scope\":\"testCatalog1\"}," +
+                "{\"catalogId\":\"testCatalog2\",\"type\":\"SelectedCatalogScope\",\"label\":\"Electronics\",\"scope\":\"testCatalog2\"}" +
+                "]",
+                dynamicAssociations);
+
+            await catalogAuthorizationHandler.HandleAsync(context);
+
+            Assert.True(context.HasSucceeded);
         }
 
 
