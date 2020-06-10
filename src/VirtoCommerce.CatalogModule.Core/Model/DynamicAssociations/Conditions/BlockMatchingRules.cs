@@ -4,5 +4,9 @@ namespace VirtoCommerce.CatalogModule.Core.Model.DynamicAssociations.Conditions
 {
     public class BlockMatchingRules : BlockConditionAndOr
     {
+        public BlockMatchingRules()
+        {
+            All = true;
+        }
     }
 }
