@@ -20,6 +20,7 @@ using VirtoCommerce.CatalogModule.BulkActions.Services;
 using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Events;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CatalogModule.Core.Model.DynamicAssociations;
 using VirtoCommerce.CatalogModule.Core.Model.Export;
 using VirtoCommerce.CatalogModule.Core.Model.OutlinePart;
 using VirtoCommerce.CatalogModule.Core.Search;
@@ -35,6 +36,7 @@ using VirtoCommerce.CatalogModule.Data.Services;
 using VirtoCommerce.CatalogModule.Data.Validation;
 using VirtoCommerce.CatalogModule.Web.Authorization;
 using VirtoCommerce.CatalogModule.Web.JsonConverters;
+using VirtoCommerce.CoreModule.Core.Conditions;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.ExportModule.Core.Model;
 using VirtoCommerce.ExportModule.Core.Services;
@@ -211,6 +213,7 @@ namespace VirtoCommerce.CatalogModule.Web
 
             var mvcJsonOptions = appBuilder.ApplicationServices.GetService<IOptions<MvcNewtonsoftJsonOptions>>();
             mvcJsonOptions.Value.SerializerSettings.Converters.Add(new SearchCriteriaJsonConverter());
+            mvcJsonOptions.Value.SerializerSettings.Converters.Add(new PolymorphicDynamicAssociationsJsonConverter());
 
             var inProcessBus = appBuilder.ApplicationServices.GetService<IHandlerRegistrar>();
             inProcessBus.RegisterHandler<ProductChangedEvent>(async (message, token) => await appBuilder.ApplicationServices.GetService<LogChangesChangedEventHandler>().Handle(message));
@@ -271,6 +274,15 @@ namespace VirtoCommerce.CatalogModule.Web
             RegisterBulkAction(nameof(PropertiesUpdateBulkAction), nameof(PropertiesUpdateBulkActionContext));
 
             #endregion
+
+            #region DynamicAssociations
+
+            //Register the resulting trees expressions into the AbstractFactory<IConditionTree> 
+            foreach (var conditionTree in AbstractTypeFactory<DynamicAssociationRuleTreePrototype>.TryCreateInstance().Traverse<IConditionTree>(x => x.AvailableChildren))
+            {
+                AbstractTypeFactory<IConditionTree>.RegisterType(conditionTree.GetType());
+            }
+            #endregion DynamicAssociations
         }
 
         public void Uninstall()

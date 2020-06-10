@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -5,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CatalogModule.Core.Model.DynamicAssociations;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
@@ -55,7 +57,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("{id}")]
         public async Task<ActionResult<DynamicAssociation>> GetAssociationById(string id)
         {
-            var result = (await _dynamicAssociationService.GetByIdsAsync(new [] { id })).FirstOrDefault();
+            var result = (await _dynamicAssociationService.GetByIdsAsync(new[] { id })).FirstOrDefault();
 
             var authorizationResult = await _authorizationService.AuthorizeAsync(
                 User,
@@ -103,7 +105,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [HttpDelete]
         [Route("")]
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
-        public async Task<ActionResult> DeleteAssociation([FromQuery]string[] ids)
+        public async Task<ActionResult> DeleteAssociation([FromQuery] string[] ids)
         {
             var dynamicAssociations = await _dynamicAssociationService.GetByIdsAsync(ids);
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, dynamicAssociations, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Delete));
@@ -116,6 +118,18 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             await _dynamicAssociationService.DeleteAsync(ids);
 
             return NoContent();
+        }
+
+        /// <summary>
+        /// Evaluate dynamic associations.
+        /// </summary>
+        /// <param name="context">Evaluation context.</param>
+        /// <returns>Associated products ids.</returns>
+        [HttpPost]
+        [Route("evaluate")]
+        public Task<ActionResult<string[]>> EvaluateDynamicAssociations([FromBody] DynamicAssociationEvaluationContext context)
+        {
+            throw new NotImplementedException();
         }
     }
 }
