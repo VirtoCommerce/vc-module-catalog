@@ -135,6 +135,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             {
                 DynamicAssociationCacheRegion.ExpireEntity(dynamicAssociation);
             }
+
+            DynamicAssociationSearchCacheRegion.ExpireRegion();
         }
     }
 }
