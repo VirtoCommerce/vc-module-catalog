@@ -1,6 +1,9 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CatalogModule.Core.Model.DynamicAssociations;
+using VirtoCommerce.CoreModule.Core.Conditions;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.Model
@@ -58,7 +61,12 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             dynamicAssociation.Name = Name;
             dynamicAssociation.Priority = Priority;
             dynamicAssociation.StoreId = StoreId;
-            dynamicAssociation.ExpressionTreeSerialized = ExpressionTreeSerialized;
+
+            dynamicAssociation.ExpressionTree = AbstractTypeFactory<DynamicAssociationRuleTree>.TryCreateInstance();
+            if (ExpressionTreeSerialized != null)
+            {
+                dynamicAssociation.ExpressionTree = JsonConvert.DeserializeObject<DynamicAssociationRuleTree>(ExpressionTreeSerialized, new ConditionJsonConverter());
+            }
 
             return dynamicAssociation;
         }
@@ -87,7 +95,11 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             IsActive = dynamicAssociation.IsActive;
             StoreId = dynamicAssociation.StoreId;
             Priority = dynamicAssociation.Priority;
-            ExpressionTreeSerialized = dynamicAssociation.ExpressionTreeSerialized;
+
+            if (dynamicAssociation.ExpressionTree != null)
+            {
+                ExpressionTreeSerialized = JsonConvert.SerializeObject(dynamicAssociation.ExpressionTree, new ConditionJsonConverter(doNotSerializeAvailCondition: true));
+            }
 
             return this;
         }

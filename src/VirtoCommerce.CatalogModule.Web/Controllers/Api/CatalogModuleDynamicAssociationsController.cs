@@ -53,6 +53,11 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return Ok(result);
         }
 
+        /// <summary>
+        /// Gets the dynamic association by Id
+        /// </summary>
+        /// <param name="id">Association id</param>
+        /// <returns></returns>
         [HttpGet]
         [Route("{id}")]
         public async Task<ActionResult<DynamicAssociation>> GetAssociationById(string id)
@@ -69,6 +74,29 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             {
                 return Unauthorized();
             }
+
+            if (result is DynamicAssociation dynamicAssociation)
+            {
+                dynamicAssociation.ExpressionTree?.MergeFromPrototype(AbstractTypeFactory<DynamicAssociationRuleTreePrototype>.TryCreateInstance());
+            }
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Get new dynamic association object 
+        /// </summary>
+        /// <remarks>Return a new dynamic association object with populated dynamic expression tree</remarks>
+        [HttpGet]
+        [Route("new")]
+        [Authorize(ModuleConstants.Security.Permissions.Create)]
+        public ActionResult<DynamicAssociation> GetNewDynamicPromotion()
+        {
+            var result = AbstractTypeFactory<DynamicAssociation>.TryCreateInstance();
+
+            result.ExpressionTree = AbstractTypeFactory<DynamicAssociationRuleTree>.TryCreateInstance();
+            result.ExpressionTree.MergeFromPrototype(AbstractTypeFactory<DynamicAssociationRuleTreePrototype>.TryCreateInstance());
+            result.IsActive = true;
 
             return Ok(result);
         }
