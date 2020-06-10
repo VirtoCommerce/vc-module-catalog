@@ -101,7 +101,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <param name="ids">association ids.</param>
         /// <returns></returns>
         [HttpDelete]
-        [Route("{id}")]
+        [Route("")]
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         public async Task<ActionResult> DeleteAssociation([FromQuery]string[] ids)
         {

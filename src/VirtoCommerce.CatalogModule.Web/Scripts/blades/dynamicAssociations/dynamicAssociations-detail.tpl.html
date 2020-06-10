@@ -28,12 +28,12 @@
                             <span class="list-t">{{ 'catalog.blades.dynamicAssociation-detail.labels.main-parameters' | translate }}</span>
                             <span class="list-descr">{{ 'catalog.blades.dynamicAssociation-detail.descriptions.main-parameters' | translate: {count: filledPropertiesCount, total: totalPropertiesCount} }}</span>
                         </li>
-                        <li class="list-item" ng-click="selectProductsToMatch()">
+                        <li class="list-item" ng-click="createProductFilter(blade.selectedCategoryToMatchIds, blade.filteredPropertiesToMatch, blade.editedPropertiesToMatch)">
                             <i class="list-ico fa fa-file-text"></i>
                             <span class="list-t">{{ 'catalog.blades.dynamicAssociation-detail.labels.productsToMatch' | translate }}</span>
                             <span class="list-descr">{{ 'catalog.blades.dynamicAssociation-detail.descriptions.productsToMatch' | translate: {count: blade.propertySelected} }}</span>
                         </li>
-                        <li class="list-item" ng-click="selectProductsToDisplay()">
+                        <li class="list-item" ng-click="createProductFilter(blade.selectedCategoryToDisplayIds, blade.filteredPropertiesToDisplay, blade.editedPropertiesToDisplay)">
                             <i class="list-ico fa fa-file-text"></i>
                             <span class="list-t">{{ 'catalog.blades.dynamicAssociation-detail.labels.productsToDisplay' | translate }}</span>
                             <span class="list-descr">{{ 'catalog.blades.dynamicAssociation-detail.descriptions.productsToDisplay' | translate: {count: blade.propertySelected} }}</span>
