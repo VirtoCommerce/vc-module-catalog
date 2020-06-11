@@ -33,7 +33,6 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
         public int Priority { get; set; }
 
-        [Required]
         public string ExpressionTreeSerialized { get; set; }
 
         [StringLength(128)]
