@@ -15,6 +15,7 @@ angular.module('virtoCommerce.catalogModule')
         blade.editedPropertiesToDisplay = [];
 
         blade.toMatchIsActive = true;
+        blade.currentEntity = {};
 
         blade.updatePermission = 'catalog:update';
 
@@ -31,7 +32,9 @@ angular.module('virtoCommerce.catalogModule')
 
                     if (blade.currentEntity.storeId) {
                         //Need to pre filter catalog-category selector
-                         stores.get({ id: blade.currentEntity.storeId }, data => blade.currentEntity.catalogId = data.catalog);
+                        stores.get({ id: blade.currentEntity.storeId }, data => {
+                            blade.currentEntity.catalogId = blade.origEntity.catalogId = data.catalog;
+                        });
                      }
                 });
             }
@@ -46,12 +49,12 @@ angular.module('virtoCommerce.catalogModule')
             blade.isLoading = false;
         }
 
-        function isDirty() {
+        $scope.isDirty = () => {
             return !angular.equals(blade.currentEntity, blade.origEntity) && blade.hasUpdatePermission();
-        }
+        };
 
-        $scope.canSave = function () {
-            return isDirty() && formScope && formScope.$valid && parametersBlade && parametersBlade.isValid();
+        $scope.canSave = () => {
+            return $scope.isDirty() && formScope && formScope.$valid && parametersBlade && angular.isFunction(parametersBlade.isValid) && parametersBlade.isValid();
         };
 
         $scope.mainParameters = function() {
@@ -90,7 +93,7 @@ angular.module('virtoCommerce.catalogModule')
         };
 
         blade.onClose = function (closeCallback) {
-            bladeNavigationService.showConfirmationIfNeeded(isDirty(), $scope.canSave(), blade, $scope.saveChanges, closeCallback, "catalog.dialogs.catalog-save.title", "catalog.dialogs.catalog-save.message");
+            bladeNavigationService.showConfirmationIfNeeded($scope.isDirty(), $scope.canSave(), blade, $scope.saveChanges, closeCallback, "catalog.dialogs.catalog-save.title", "catalog.dialogs.catalog-save.message");
         };
 
         function initializeToolbar() {
@@ -109,7 +112,7 @@ angular.module('virtoCommerce.catalogModule')
                         executeMethod: function () {
                             angular.copy(blade.origEntity, blade.currentEntity);
                         },
-                        canExecuteMethod: isDirty,
+                        canExecuteMethod: $scope.isDirty,
                         permission: blade.updatePermission
                     }
                 ];
@@ -124,7 +127,7 @@ angular.module('virtoCommerce.catalogModule')
                 $scope.filledPropertiesCount += blade.currentEntity.startDate ? 1 : 0;
                 $scope.filledPropertiesCount += blade.currentEntity.endDate ? 1 : 0;
                 $scope.filledPropertiesCount += blade.currentEntity.storeId ? 1 : 0;
-                $scope.filledPropertiesCount += blade.currentEntity.groupName ? 1 : 0;
+                $scope.filledPropertiesCount += blade.currentEntity.associationType ? 1 : 0;
                 $scope.filledPropertiesCount += blade.currentEntity.priority ? 1 : 0;
             }
         }, true);

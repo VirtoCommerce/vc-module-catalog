@@ -501,6 +501,7 @@
         }
       },
       "dynamicAssociation-detail": {
+        "title-new": "Create new dynamic association rule",
         "labels": {
           "name": "Association name",
           "description": "Description",
