@@ -75,10 +75,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return Unauthorized();
             }
 
-            if (result is DynamicAssociation dynamicAssociation)
-            {
-                dynamicAssociation.ExpressionTree?.MergeFromPrototype(AbstractTypeFactory<DynamicAssociationRuleTreePrototype>.TryCreateInstance());
-            }
+            result?.ExpressionTree?.MergeFromPrototype(AbstractTypeFactory<DynamicAssociationRuleTreePrototype>.TryCreateInstance());
 
             return Ok(result);
         }
