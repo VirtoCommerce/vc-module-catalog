@@ -109,16 +109,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("")]
         public async Task<ActionResult<DynamicAssociation[]>> SaveAssociations([FromBody] DynamicAssociation[] associations)
         {
-            // TODO: Remove later, to prevent exception when no expression from UI side
-            foreach (var association in associations)
-            {
-                if (association.ExpressionTree == null)
-                {
-                    association.ExpressionTree = AbstractTypeFactory<DynamicAssociationRuleTree>.TryCreateInstance();
-                    association.ExpressionTree.MergeFromPrototype(AbstractTypeFactory<DynamicAssociationRuleTreePrototype>.TryCreateInstance());
-                }
-            }
-
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, associations, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
 
             if (!authorizationResult.Succeeded)
