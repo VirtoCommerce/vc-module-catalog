@@ -104,7 +104,7 @@ angular.module('virtoCommerce.catalogModule')
                         bladeNavigationService.closeChildrenBlades(blade, function () {
                             var newBlade = {
                                 id: 'listItemChild',
-                                title: 'catalog.blades.associations-detail.title-new',
+                                title: 'catalog.blades.dynamicAssociation-detail.title-new',
                                 subtitle: blade.subtitle,
                                 isNew: true,
                                 controller: 'virtoCommerce.catalogModule.dynamicAssociationDetailController',
