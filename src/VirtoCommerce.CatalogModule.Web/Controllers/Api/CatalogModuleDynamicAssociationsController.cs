@@ -22,15 +22,18 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly IDynamicAssociationSearchService _dynamicAssociationSearchService;
         private readonly IDynamicAssociationService _dynamicAssociationService;
         private readonly IAuthorizationService _authorizationService;
+        private readonly IDynamicAssociationEvaluator _dynamicAssociationEvaluator;
 
         public CatalogModuleDynamicAssociationsController(
             IDynamicAssociationSearchService dynamicAssociationSearchService,
             IDynamicAssociationService dynamicAssociationService,
-            IAuthorizationService authorizationService)
+            IAuthorizationService authorizationService,
+            IDynamicAssociationEvaluator dynamicAssociationEvaluator)
         {
             _dynamicAssociationSearchService = dynamicAssociationSearchService;
             _dynamicAssociationService = dynamicAssociationService;
             _authorizationService = authorizationService;
+            _dynamicAssociationEvaluator = dynamicAssociationEvaluator;
         }
 
         [HttpPost]
@@ -148,13 +151,27 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <summary>
         /// Evaluate dynamic associations.
         /// </summary>
-        /// <param name="context">Evaluation context.</param>
+        /// <param name="context">Search criteria</param>
         /// <returns>Associated products ids.</returns>
         [HttpPost]
         [Route("evaluate")]
-        public Task<ActionResult<string[]>> EvaluateDynamicAssociations([FromBody] DynamicAssociationEvaluationContext context)
+        public async Task<ActionResult<string[]>> EvaluateDynamicAssociations([FromBody] ProductsToMatchSearchContext context)
         {
-            throw new NotImplementedException();
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, context, ModuleConstants.Security.Permissions.Read);
+
+            if (!authorizationResult.Succeeded)
+            {
+                return Unauthorized();
+            }
+
+            var result = await _dynamicAssociationEvaluator.EvaluateDynamicAssociationsAsync(context);
+
+            return Ok(result);
         }
     }
 }

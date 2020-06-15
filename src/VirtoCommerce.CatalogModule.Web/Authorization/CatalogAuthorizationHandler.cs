@@ -129,6 +129,16 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
                             context.Succeed(requirement);
                         }
                     }
+                    else if (context.Resource is ProductsToMatchSearchContext productsToMatchSearchContext)
+                    {
+                        var storeId = productsToMatchSearchContext.StoreId;
+                        var store = await _storeService.GetByIdAsync(storeId);
+
+                        if (allowedCatalogIds.Contains(store.Catalog))
+                        {
+                            context.Succeed(requirement);
+                        }
+                    }
                 }
             }
         }

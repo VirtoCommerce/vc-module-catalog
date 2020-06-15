@@ -315,6 +315,54 @@ namespace VirtoCommerce.CatalogModule.Tests
             Assert.True(context.HasSucceeded);
         }
 
+        [Fact]
+        public async Task Handle_ProductsToMatch_Correct_With_Scope_Succeded()
+        {
+            // Arrange
+            var storeMock = CreateStoreServiceMock();
+            storeMock
+                .Setup(x => x.GetByIdAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(new Store { Catalog = "testCatalog1", });
+
+            var catalogAuthorizationHandler = CreateCatalogAuthorizationHandler(storeMock.Object);
+            var productsToMatchCriteria = new ProductsToMatchSearchContext();
+
+            var context = CreateAuthorizationHandlerContext(
+                _permission,
+                $"{_permission}|[{{\"catalogId\":\"testCatalog1\",\"type\":\"SelectedCatalogScope\",\"label\":\"Electronics\",\"scope\":\"testCatalog1\"}}]",
+                productsToMatchCriteria);
+
+            // Act
+            await catalogAuthorizationHandler.HandleAsync(context);
+
+            // Assert
+            Assert.True(context.HasSucceeded);
+        }
+
+        [Fact]
+        public async Task Handle_ProductsToMatch_Incorrect_With_Scope_UnSucceded()
+        {
+            // Arrange
+            var storeMock = CreateStoreServiceMock();
+            storeMock
+                .Setup(x => x.GetByIdAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(new Store { Catalog = "testCatalog", });
+
+            var catalogAuthorizationHandler = CreateCatalogAuthorizationHandler(storeMock.Object);
+            var productsToMatchCriteria = new ProductsToMatchSearchContext();
+
+            var context = CreateAuthorizationHandlerContext(
+                _permission,
+                $"{_permission}|[{{\"catalogId\":\"testCatalog1\",\"type\":\"SelectedCatalogScope\",\"label\":\"Electronics\",\"scope\":\"testCatalog1\"}}]",
+                productsToMatchCriteria);
+
+            // Act
+            await catalogAuthorizationHandler.HandleAsync(context);
+
+            // Assert
+            Assert.False(context.HasSucceeded);
+        }
+
 
         private IOptions<MvcNewtonsoftJsonOptions> CreateJsonConverterWrapper()
         {

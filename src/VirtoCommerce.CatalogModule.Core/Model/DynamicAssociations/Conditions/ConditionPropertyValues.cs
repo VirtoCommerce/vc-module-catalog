@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Conditions;
+using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Core.Model.DynamicAssociations.Conditions
 {
@@ -19,9 +21,19 @@ namespace VirtoCommerce.CatalogModule.Core.Model.DynamicAssociations.Conditions
             return result;
         }
 
-        public Dictionary<string, string> GetPropertiesValues()
+        public virtual Dictionary<string, string> GetPropertiesValues()
         {
-            return new Dictionary<string, string>();
+            var result = new Dictionary<string, string>();
+
+            if (!Properties.IsNullOrEmpty())
+            {
+                foreach (var property in Properties)
+                {
+                    result.Add(property.Name, string.Join(',', property.Values.Select(x => x.Value)));
+                }
+            }
+
+            return result;
         }
     }
 }
