@@ -11,7 +11,7 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Core.Model
 {
-    public class CatalogProduct : AuditableEntity, IHasLinks, ISeoSupport, IHasOutlines, IHasDimension, IHasAssociations, IHasProperties, IHasImages, IHasAssets, IInheritable, IHasTaxType, IHasName, IHasOuterId, IExportable, ICopyable
+    public class CatalogProduct : AuditableEntity, IHasLinks, ISeoSupport, IHasOutlines, IHasDimension, IHasAssociations, IHasProperties, IHasImages, IHasAssets, IInheritable, IHasTaxType, IHasName, IHasOuterId, IExportable, ICopyable, IHasCategoryId
     {
         /// <summary>
         /// SKU code
@@ -160,7 +160,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         /// System flag used to mark that object was inherited from other
         /// </summary>
         public bool IsInherited { get; private set; }
-
+       
         public virtual void TryInheritFrom(IEntity parent)
         {
             if (parent is IHasProperties hasProperties)

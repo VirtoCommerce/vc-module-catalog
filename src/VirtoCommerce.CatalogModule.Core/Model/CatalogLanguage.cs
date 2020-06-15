@@ -5,7 +5,7 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Core.Model
 {
-    public class CatalogLanguage : Entity, IHasLanguageCode, ICloneable
+    public class CatalogLanguage : Entity, IHasLanguageCode, ICloneable, IHasCatalogId
     {
         public string CatalogId { get; set; }
         [JsonIgnore]
