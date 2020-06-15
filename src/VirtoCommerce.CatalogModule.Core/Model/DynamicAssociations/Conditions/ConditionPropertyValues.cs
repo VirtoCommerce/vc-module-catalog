@@ -6,17 +6,22 @@ namespace VirtoCommerce.CatalogModule.Core.Model.DynamicAssociations.Conditions
 {
     public class ConditionPropertyValues : ConditionTree
     {
-        public Dictionary<string, string> PropertyNameValues { get; set; }
+        public Property[] Properties { get; set; }
 
         public override bool IsSatisfiedBy(IEvaluationContext context)
         {
             var result = false;
             if (context is DynamicAssociationEvaluationContext evaluationContext)
             {
-                result = evaluationContext.AreItemPropertyValuesEqual(PropertyNameValues);
+                result = evaluationContext.AreItemPropertyValuesEqual(GetPropertiesValues());
             }
 
             return result;
+        }
+
+        public Dictionary<string, string> GetPropertiesValues()
+        {
+            return new Dictionary<string, string>();
         }
     }
 }
