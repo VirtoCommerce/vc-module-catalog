@@ -19,9 +19,24 @@ angular.module('virtoCommerce.catalogModule')
 
         blade.updatePermission = 'catalog:update';
 
+        blade.conditionPropertyValues = {
+            id: 'ConditionPropertyValues',
+            propertyNameValues: {}
+        };
+
+        blade.conditionCategoryIs = {
+            id: 'ConditionCategoryIs',
+            categoryIds: [],
+            categoryNames: []
+        };
+
         blade.refresh = function(parentRefresh) {
             if (blade.isNew) {
-                initializeBlade(blade.currentEntity);
+                associations.new({},
+                    data => {
+                        blade.currentEntity = data;
+                        initializeBlade(blade.currentEntity);
+                    });
             } else {
                 associations.get({ id: blade.currentEntityId }, (data) => {
                     initializeBlade(data);
@@ -75,7 +90,16 @@ angular.module('virtoCommerce.catalogModule')
         };
         $scope.saveChanges = function () {
             blade.isLoading = true;
-            blade.currentEntity.ExpressionTreeSerialized = null;        //TODO
+
+            blade.conditionCategoryIs.categoryIds.push(blade.selectedCategoryToMatchIds);
+            blade.conditionPropertyValues.properties.push(blade.editedPropertiesToMatch);
+
+
+            let blockMatchingRules = _.find(blade.currentEntity.expressionTree.children, x => x.id === 'BlockMatchingRules');
+            if (blockMatchingRules) {
+                blockMatchingRules.children.push(blade.conditionCategoryIs);
+                blockMatchingRules.children.push(blade.conditionPropertyValues);
+            }
 
             associations.save({}, [blade.currentEntity], (data) => {
                 if (data && data.length > 0) {
