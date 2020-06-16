@@ -1,10 +1,13 @@
-using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
-using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
+using VirtoCommerce.CatalogModule.Data.Search.Indexing;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.SearchModule.Core.Model;
+using VirtoCommerce.SearchModule.Core.Services;
 using VirtoCommerce.StoreModule.Core.Services;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
@@ -12,18 +15,21 @@ namespace VirtoCommerce.CatalogModule.Data.Services
     public class DynamicAssociationEvaluator : IDynamicAssociationEvaluator
     {
         private readonly IStoreService _storeService;
-        private readonly IProductSearchService _productSearchService;
         private readonly IDynamicAssociationsValueFetcher _dynamicAssociationsValueFetcher;
+        private readonly IItemService _itemService;
+        private readonly ISearchProvider _searchProvider;
 
         public DynamicAssociationEvaluator(
             IStoreService storeService,
-            IProductSearchService productSearchService,
-            IDynamicAssociationsValueFetcher dynamicAssociationsValueFetcher
+            IDynamicAssociationsValueFetcher dynamicAssociationsValueFetcher,
+            IItemService itemService,
+            ISearchProvider searchProvider
             )
         {
             _storeService = storeService;
-            _productSearchService = productSearchService;
             _dynamicAssociationsValueFetcher = dynamicAssociationsValueFetcher;
+            _itemService = itemService;
+            _searchProvider = searchProvider;
         }
 
         public async Task<string[]> EvaluateDynamicAssociationsAsync(ProductsToMatchSearchContext context)
@@ -35,21 +41,26 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
             var store = await _storeService.GetByIdAsync(context.StoreId);
 
-            var products = (await _productSearchService.SearchProductsAsync(new ProductSearchCriteria
-            {
-                ObjectIds = context.ProductsToMatch,
-                CatalogId = store.Catalog,
-                Take = int.MaxValue,
-                ResponseGroup = ItemResponseGroup.WithProperties.ToString(),
-            })).Results;
+            var products = await _itemService.GetByIdsAsync(context.ProductsToMatch,
+                $"{ItemResponseGroup.WithProperties|ItemResponseGroup.WithOutlines}", store.Catalog);
+
+            var result = new HashSet<string>();
 
             foreach (var product in products)
             {
                 var dynamicAssociationValue = await _dynamicAssociationsValueFetcher.GetDynamicAssociationValueAsync(context.Group, context.StoreId, product);
 
-                // TODO: query to Elasticsearch
+                var searchRequestBuilder = AbstractTypeFactory<DynamicAssociationSearchRequestBuilder>.TryCreateInstance();
+                    searchRequestBuilder
+                        .AddPropertySearch(dynamicAssociationValue.PropertyValues)
+                        .AddOutletSearch(dynamicAssociationValue.CategoryIds)
+                        .WithPaging(context.Skip, context.Take);
+                
+                var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Product, searchRequestBuilder.Build());
+                result.AddRange(searchResult.Documents.Select(x => x.Id));
             }
-            throw new NotImplementedException();
+
+            return result.Distinct().ToArray();
         }
     }
 }
