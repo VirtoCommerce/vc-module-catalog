@@ -5,30 +5,10 @@ angular.module('virtoCommerce.catalogModule')
         var formScope;
         $scope.setForm = (form) => { formScope = form; };
 
-        blade.selectedCategoryToMatchIds = [];
-        blade.selectedCategoryToDisplayIds = [];
-
-        blade.filteredPropertiesToMatch = [];
-        blade.filteredPropertiesToDisplay = [];
-
-        blade.editedPropertiesToMatch = [];
-        blade.editedPropertiesToDisplay = [];
-
         blade.toMatchIsActive = true;
         blade.currentEntity = {};
 
         blade.updatePermission = 'catalog:update';
-
-        blade.conditionPropertyValues = {
-            id: 'ConditionPropertyValues',
-            propertyNameValues: {}
-        };
-
-        blade.conditionCategoryIs = {
-            id: 'ConditionCategoryIs',
-            categoryIds: [],
-            categoryNames: []
-        };
 
         blade.refresh = function(parentRefresh) {
             if (blade.isNew) {
@@ -91,16 +71,6 @@ angular.module('virtoCommerce.catalogModule')
         $scope.saveChanges = function () {
             blade.isLoading = true;
 
-            blade.conditionCategoryIs.categoryIds.push(blade.selectedCategoryToMatchIds);
-            blade.conditionPropertyValues.properties.push(blade.editedPropertiesToMatch);
-
-
-            let blockMatchingRules = _.find(blade.currentEntity.expressionTree.children, x => x.id === 'BlockMatchingRules');
-            if (blockMatchingRules) {
-                blockMatchingRules.children.push(blade.conditionCategoryIs);
-                blockMatchingRules.children.push(blade.conditionPropertyValues);
-            }
-
             associations.save({}, [blade.currentEntity], (data) => {
                 if (data && data.length > 0) {
                     //close main parameters blade
@@ -157,27 +127,34 @@ angular.module('virtoCommerce.catalogModule')
         }, true);
 
         /////
-        $scope.createProductFilter = function (categoryIds, toMatchIsActive) {
+        $scope.createProductFilter = function (toMatchIsActive) {
             blade.toMatchIsActive = toMatchIsActive;
             var allProperties = [];
+
+            const rulesBlock = _.find(blade.currentEntity.expressionTree.children, x => x.id === blade.toMatchIsActive ? 'BlockMatchingRules' : 'BlockDisplayRules');
+            let categoryCondition = _.find(rulesBlock.children, x => x.id === 'ConditionCategoryIs');
+            if (!categoryCondition) {
+                rulesBlock.children.push({ id: 'ConditionCategoryIs', categoryIds: [], categoryNames: [] });
+            }
+            categoryCondition = _.find(rulesBlock.children, x => x.id === 'ConditionCategoryIs');
+
             var options = {
                 showCheckingMultiple: false,
                 allowCheckingCategory: true,
                 allowCheckingItem: false,
-                selectedItemIds: categoryIds,
+                selectedItemIds: categoryCondition.categoryIds,
                 checkItemFn: (listItem, isSelected) => {
                     if (isSelected) {
-                        if (!_.find(categoryIds, (x) =>  x === listItem.id )) {
-                            categoryIds.push(listItem.id);
+                        if (!_.find(categoryCondition.categoryIds, (x) =>  x === listItem.id )) {
+                            categoryCondition.categoryIds.push(listItem.id);
                         }
                     }
                     else {
-                        categoryIds = _.reject(categoryIds, (x) => x === listItem.id);
+                        categoryCondition.categoryIds = _.reject(categoryCondition.categoryIds, (x) => x === listItem.id);
                     }
                 }
             };
             
-
             var newBlade = {
                 id: "CatalogItemsSelect",
                 controller: 'virtoCommerce.catalogModule.catalogItemSelectController',
@@ -192,7 +169,7 @@ angular.module('virtoCommerce.catalogModule')
                         executeMethod: function (pickingBlade) {
                             bladeNavigationService.closeBlade(pickingBlade);
 
-                            categories.getByIds({ ids: categoryIds },
+                            categories.getByIds({ ids: categoryCondition.categoryIds },
                                 data => {
                                     allProperties = _.unique(_.first(data.map(x => x.properties)));
                                     _.each(allProperties, prop => {
@@ -204,16 +181,16 @@ angular.module('virtoCommerce.catalogModule')
                                     $scope.selectProperties(allProperties);
                                 });
                         },
-                        canExecuteMethod: () => _.any(categoryIds)
+                        canExecuteMethod: () => _.any(categoryCondition.categoryIds)
                     },
                     {
                         name: "platform.commands.reset", icon: 'fa fa-undo',
                         executeMethod: function (pickingBlade) {
-                            categoryIds = [];
+                            categoryCondition.categoryIds = [];
                             $scope.selectedCount = 0;
                             bladeNavigationService.closeBlade(pickingBlade);
                         },
-                        canExecuteMethod: () => _.any(categoryIds)
+                        canExecuteMethod: () => _.any(categoryCondition.categoryIds)
                         
                     }]
             };
@@ -222,21 +199,29 @@ angular.module('virtoCommerce.catalogModule')
         }; 
 
         $scope.selectProperties = function (allProperties) {
-            let filteredProps = blade.toMatchIsActive
-                ? blade.filteredPropertiesToMatch
-                : blade.filteredPropertiesToDisplay;
+            const rulesBlock = _.find(blade.currentEntity.expressionTree.children, x => x.id === blade.toMatchIsActive ? 'BlockMatchingRules' : 'BlockDisplayRules');
+            let propertyCondition = _.find(rulesBlock.children, x => x.id === 'ConditionPropertyValues');
+            if (!propertyCondition) {
+                rulesBlock.children.push({ id: 'ConditionPropertyValues', properties: [] });
+            }
+            propertyCondition = _.find(rulesBlock.children, x => x.id === 'ConditionPropertyValues');
+
+            let selectedProperties = [];
+            angular.copy(propertyCondition.properties, selectedProperties);
+            _.each(selectedProperties, prop => {
+                prop.group = 'All properties';
+                prop.UseDefaultUIForEdit = true;
+                prop.isReadOnly = false;
+            });
+
             var newBlade = {
                 id: 'propertiesSelector',
                 controller: 'virtoCommerce.catalogModule.propertiesSelectorController',
                 template: 'Modules/$(virtoCommerce.catalog)/Scripts/blades/step-select-properties.tpl.html',
                 properties: allProperties,
-                includedProperties: filteredProps,
+                includedProperties: selectedProperties,
                 onSelected: function (includedProperties) {
-                    if (blade.toMatchIsActive) {
-                        blade.filteredPropertiesToMatch = includedProperties;
-                    } else {
-                        blade.filteredPropertiesToDisplay = includedProperties;
-                    }
+                    propertyCondition.properties = includedProperties;
                     blade.isPropertiesSelected = true;
                     $scope.editProperties();
                 }
@@ -246,23 +231,17 @@ angular.module('virtoCommerce.catalogModule')
         };
 
         $scope.editProperties = function () {
-            let filteredProps = blade.toMatchIsActive
-                ? blade.filteredPropertiesToMatch
-                : blade.filteredPropertiesToDisplay;
+            const rulesBlock = _.find(blade.currentEntity.expressionTree.children, x => x.id === blade.toMatchIsActive ? 'BlockMatchingRules' : 'BlockDisplayRules');
+            let propertyCondition = _.find(rulesBlock.children, x => x.id === 'ConditionPropertyValues');
 
             var newBlade = {
                 id: 'propertiesEditor',
                 controller: 'virtoCommerce.catalogModule.editPropertiesActionStepController',
                 template: 'Modules/$(virtoCommerce.catalog)/Scripts/blades/step-edit-properties.tpl.html',
-                properties: filteredProps,
+                properties: propertyCondition.properties,
                 propGroups: [{ title: 'catalog.properties.product', type: 'Product' }, { title: 'catalog.properties.variation', type: 'Variation' }],
                 onSelected: function (editedProps) {
-                    if (blade.toMatchIsActive) {
-                        blade.editedPropertiesToMatch = editedProps;
-                    } else {
-                        blade.editedPropertiesToDisplay = editedProps;
-                    }
-
+                    propertyCondition.properties = editedProps;
                 },
                 toolbarCommands: [
                     {
