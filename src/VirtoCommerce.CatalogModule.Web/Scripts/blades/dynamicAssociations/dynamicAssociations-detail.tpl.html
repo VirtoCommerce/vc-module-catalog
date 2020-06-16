@@ -37,14 +37,14 @@
                         </li>
                         <li class="list-item"
                             ng-click="createProductFilter(false)"
-                            ng-class="{'__disabled': blade.editedPropertiesToMatch.length === 0}">
+                            ng-class="{'__disabled': !blade.isMatchingRulesExist}">
                             <i class="list-ico fa fa-file-text"></i>
                             <span class="list-t">{{ 'catalog.blades.dynamicAssociation-detail.labels.productsToDisplay' | translate }}</span>
                             <span class="list-descr">{{ 'catalog.blades.dynamicAssociation-detail.descriptions.productsToDisplay' | translate: {count: blade.propertySelected} }}</span>
                         </li>
                         <li class="list-item"
                             ng-click="outputTuning()"
-                            ng-class="{'__disabled': blade.editedPropertiesToMatch.length === 0 || blade.editedPropertiesToDisplay.length === 0}">
+                            ng-class="{'__disabled': !blade.isResultingRulesEsist || !blade.isMatchingRulesExist}">
                             <i class="list-ico fa fa-cogs"></i>
                             <span class="list-t">{{ 'catalog.blades.dynamicAssociation-detail.labels.outputTuning' | translate }}</span>
                             <span class="list-descr">{{ 'catalog.blades.dynamicAssociation-detail.descriptions.outputTuning' | translate }}</span>

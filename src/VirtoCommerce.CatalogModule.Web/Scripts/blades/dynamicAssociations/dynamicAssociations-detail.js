@@ -9,6 +9,8 @@ angular.module('virtoCommerce.catalogModule')
         blade.currentEntity = {};
 
         blade.updatePermission = 'catalog:update';
+        blade.isMatchingRulesExist = false;
+        blade.isResultingRulesEsist = false;
 
         blade.refresh = function(parentRefresh) {
             if (blade.isNew) {
@@ -41,6 +43,13 @@ angular.module('virtoCommerce.catalogModule')
             }
             blade.currentEntity = angular.copy(data);
             blade.origEntity = data;
+
+            const matchingRules = _.find(blade.currentEntity.expressionTree.children, x => x.id === 'BlockMatchingRules');
+            const resultingRules = _.find(blade.currentEntity.expressionTree.children, x => x.id === 'BlockResultingRules');
+
+            blade.isMatchingRulesExist = !!_.find(matchingRules.children, x => x.id === 'ConditionPropertyValues');
+            blade.isResultingRulesEsist = !!_.find(resultingRules.children, x => x.id === 'ConditionPropertyValues');
+
             blade.isLoading = false;
         }
 
