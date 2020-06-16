@@ -31,7 +31,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     Take = int.MaxValue,
                     SortInfos = { new SortInfo
                     {
-                        SortColumn = "Priority",
+                        SortColumn = nameof(DynamicAssociation.Priority),
                         SortDirection = SortDirection.Ascending,
                     }},
                 }))
