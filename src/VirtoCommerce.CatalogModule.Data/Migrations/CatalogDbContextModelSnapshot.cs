@@ -1073,8 +1073,7 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                     b.HasOne("VirtoCommerce.CatalogModule.Data.Model.ItemEntity", "Item")
                         .WithMany("Associations")
                         .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.CatalogLanguageEntity", b =>
