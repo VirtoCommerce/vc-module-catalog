@@ -49,7 +49,7 @@ angular.module('virtoCommerce.catalogModule')
         };
 
         $scope.canSave = () => {
-            return $scope.isDirty() && formScope && formScope.$valid && parametersBlade && angular.isFunction(parametersBlade.isValid) && parametersBlade.isValid();
+            return $scope.isDirty() && formScope && formScope.$valid && blade.currentEntity.storeId && blade.currentEntity.associationType && blade.currentEntity.priority;
         };
 
         $scope.mainParameters = function() {
@@ -59,7 +59,11 @@ angular.module('virtoCommerce.catalogModule')
                 subtitle: 'catalog.blades.dynamicAssociation-parameters.subtitle',
                 controller: 'virtoCommerce.catalogModule.dynamicAssociationParametersController',
                 template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/dynamicAssociations/mainParameters.tpl.html',
-                currentEntity: blade.currentEntity
+                originalEntity: blade.currentEntity,
+                onSelected: function (entity) {
+                    blade.currentEntity = entity;
+                }
+
         };
             bladeNavigationService.showBlade(parametersBlade, blade);
         };
