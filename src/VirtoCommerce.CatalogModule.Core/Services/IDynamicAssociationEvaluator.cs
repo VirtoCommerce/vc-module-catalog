@@ -5,6 +5,6 @@ namespace VirtoCommerce.CatalogModule.Core.Services
 {
     public interface IDynamicAssociationEvaluator
     {
-        public Task<string[]> EvaluateDynamicAssociationsAsync(ProductsToMatchSearchContext context);
+        Task<string[]> EvaluateDynamicAssociationsAsync(ProductsToMatchSearchContext context);
     }
 }
