@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Model;
 
 namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
@@ -9,17 +11,50 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         public DynamicAssociationSearchRequestBuilder()
         {
-            _searchRequest = new SearchRequest
+            _searchRequest = AbstractTypeFactory<SearchRequest>.TryCreateInstance();
+
+            _searchRequest.Filter = new AndFilter {ChildFilters = new List<IFilter>(),};
+            _searchRequest.Sorting = new List<SortingField> {new SortingField("__sort")};
+            _searchRequest.Skip = 0;
+            _searchRequest.Take = 20;
+        }
+
+        public virtual SearchRequest Build()
+        {
+            return _searchRequest;
+        }
+
+        public virtual DynamicAssociationSearchRequestBuilder AddPropertySearch(IDictionary<string, string> propertyValues)
+        {
+            foreach (var propertyValue in propertyValues)
             {
-                Filter = new AndFilter
+                ((AndFilter)_searchRequest.Filter).ChildFilters.Add(new TermFilter
                 {
-                    ChildFilters = new List<IFilter>(),
-                },
-                SearchFields = new List<string> { "__content" },
-                Sorting = new List<SortingField> { new SortingField("__sort") },
-                Skip = 0,
-                Take = 20,
-            };
+                    FieldName = propertyValue.Key,
+                    Values = propertyValue.Value.Split(',')
+                });
+            }
+
+            return this;
+        }
+
+        public virtual DynamicAssociationSearchRequestBuilder AddOutletSearch(ICollection<string> categoryIds)
+        {
+            ((AndFilter)_searchRequest.Filter).ChildFilters.Add(new WildCardTermFilter
+            {
+                FieldName = "__outline",
+                Value = string.Join(',', categoryIds.Select(x => $"*{x}")),
+            });
+
+            return this;
+        }
+
+        public virtual DynamicAssociationSearchRequestBuilder WithPaging(int skip, int take)
+        {
+            _searchRequest.Skip = skip;
+            _searchRequest.Take = take;
+
+            return this;
         }
     }
 }
