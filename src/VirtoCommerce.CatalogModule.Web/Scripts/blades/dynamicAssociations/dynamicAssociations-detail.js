@@ -131,7 +131,7 @@ angular.module('virtoCommerce.catalogModule')
             blade.toMatchIsActive = toMatchIsActive;
             var allProperties = [];
 
-            const rulesBlock = _.find(blade.currentEntity.expressionTree.children, x => x.id === blade.toMatchIsActive ? 'BlockMatchingRules' : 'BlockDisplayRules');
+            const rulesBlock = _.find(blade.currentEntity.expressionTree.children, x => x.id === (blade.toMatchIsActive ? 'BlockMatchingRules' : 'BlockResultingRules'));
             let categoryCondition = _.find(rulesBlock.children, x => x.id === 'ConditionCategoryIs');
             if (!categoryCondition) {
                 rulesBlock.children.push({ id: 'ConditionCategoryIs', categoryIds: [], categoryNames: [] });
@@ -199,7 +199,7 @@ angular.module('virtoCommerce.catalogModule')
         }; 
 
         $scope.selectProperties = function (allProperties) {
-            const rulesBlock = _.find(blade.currentEntity.expressionTree.children, x => x.id === blade.toMatchIsActive ? 'BlockMatchingRules' : 'BlockDisplayRules');
+            const rulesBlock = _.find(blade.currentEntity.expressionTree.children, x => x.id === (blade.toMatchIsActive ? 'BlockMatchingRules' : 'BlockResultingRules'));
             let propertyCondition = _.find(rulesBlock.children, x => x.id === 'ConditionPropertyValues');
             if (!propertyCondition) {
                 rulesBlock.children.push({ id: 'ConditionPropertyValues', properties: [] });
@@ -231,7 +231,7 @@ angular.module('virtoCommerce.catalogModule')
         };
 
         $scope.editProperties = function () {
-            const rulesBlock = _.find(blade.currentEntity.expressionTree.children, x => x.id === blade.toMatchIsActive ? 'BlockMatchingRules' : 'BlockDisplayRules');
+            const rulesBlock = _.find(blade.currentEntity.expressionTree.children, x => x.id === (blade.toMatchIsActive ? 'BlockMatchingRules' : 'BlockResultingRules'));
             let propertyCondition = _.find(rulesBlock.children, x => x.id === 'ConditionPropertyValues');
 
             var newBlade = {
