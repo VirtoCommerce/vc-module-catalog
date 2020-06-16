@@ -128,19 +128,13 @@ angular.module('virtoCommerce.catalogModule')
                 }
             ];
 
-
-            var filter = blade.filter = { keyword: null };
-
+            var filter = blade.filter = $scope.filter = {};
             filter.criteriaChanged = function () {
-                if (filter.keyword) {
-                    openItemsBlade({});
-                } else
-                    bladeNavigationService.closeChildrenBlades(blade);
-
-                selectedNode = null;
-                $scope.selectedNodeId = null;
-                bladeNavigationService.catalogsSelectedCatalog = undefined;
-                bladeNavigationService.catalogsSelectedCategoryId = undefined;
+                if ($scope.pageSettings.currentPage > 1) {
+                    $scope.pageSettings.currentPage = 1;
+                } else {
+                    blade.refresh();
+                }
             };
 
             // ui-grid
