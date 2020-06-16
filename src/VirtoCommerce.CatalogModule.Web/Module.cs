@@ -189,6 +189,9 @@ namespace VirtoCommerce.CatalogModule.Web
             serviceCollection.AddTransient<IBulkActionFactory, CatalogBulkActionFactory>();
 
             #endregion
+
+            serviceCollection.AddTransient<IDynamicAssociationEvaluator, DynamicAssociationEvaluator>();
+            serviceCollection.AddTransient<IDynamicAssociationsValueFetcher, DynamicAssociationsValueFetcher>();
         }
 
         public void PostInitialize(IApplicationBuilder appBuilder)
