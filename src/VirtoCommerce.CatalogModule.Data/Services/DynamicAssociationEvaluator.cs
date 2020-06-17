@@ -18,18 +18,21 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private readonly IDynamicAssociationsValueFetcher _dynamicAssociationsValueFetcher;
         private readonly IItemService _itemService;
         private readonly ISearchProvider _searchProvider;
+        private readonly DynamicAssociationSearchRequestBuilder _requestBuilder;
 
         public DynamicAssociationEvaluator(
             IStoreService storeService,
             IDynamicAssociationsValueFetcher dynamicAssociationsValueFetcher,
             IItemService itemService,
-            ISearchProvider searchProvider
+            ISearchProvider searchProvider,
+            DynamicAssociationSearchRequestBuilder requestBuilder
             )
         {
             _storeService = storeService;
             _dynamicAssociationsValueFetcher = dynamicAssociationsValueFetcher;
             _itemService = itemService;
             _searchProvider = searchProvider;
+            _requestBuilder = requestBuilder;
         }
 
         public async Task<string[]> EvaluateDynamicAssociationsAsync(ProductsToMatchSearchContext context)
@@ -50,13 +53,12 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             {
                 var dynamicAssociationValue = await _dynamicAssociationsValueFetcher.GetDynamicAssociationValueAsync(context.Group, context.StoreId, product);
 
-                var searchRequestBuilder = AbstractTypeFactory<DynamicAssociationSearchRequestBuilder>.TryCreateInstance();
-                    searchRequestBuilder
-                        .AddPropertySearch(dynamicAssociationValue.PropertyValues)
-                        .AddOutletSearch(dynamicAssociationValue.CategoryIds)
-                        .WithPaging(context.Skip, context.Take);
+                _requestBuilder
+                    .AddPropertySearch(dynamicAssociationValue.PropertyValues)
+                    .AddOutlineSearch(dynamicAssociationValue.CategoryIds)
+                    .WithPaging(context.Skip, context.Take);
                 
-                var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Product, searchRequestBuilder.Build());
+                var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Product, _requestBuilder.Build());
                 result.AddRange(searchResult.Documents.Select(x => x.Id));
             }
 

@@ -38,7 +38,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             return this;
         }
 
-        public virtual DynamicAssociationSearchRequestBuilder AddOutletSearch(ICollection<string> categoryIds)
+        public virtual DynamicAssociationSearchRequestBuilder AddOutlineSearch(ICollection<string> categoryIds)
         {
             ((AndFilter)_searchRequest.Filter).ChildFilters.Add(new WildCardTermFilter
             {
