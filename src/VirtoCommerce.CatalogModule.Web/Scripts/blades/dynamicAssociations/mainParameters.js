@@ -6,9 +6,11 @@ angular.module('virtoCommerce.catalogModule')
         var formScope;
         $scope.setForm = (form) => { formScope = form; };
 
-        blade.isValid = function() {
+        $scope.isValid = function() {
             return formScope && formScope.$valid;
         };
+
+        blade.currentEntity = {};
 
         blade.refresh = (parentRefresh) => {
             $scope.associationGroups = settings.getValues({ id: 'Catalog.AssociationGroups' }, data => {
@@ -24,6 +26,8 @@ angular.module('virtoCommerce.catalogModule')
                 }
                 blade.isLoading = false;
             });
+
+            blade.currentEntity = angular.copy(blade.originalEntity);
         };
 
         $scope.onStoreSelected = ($item) => blade.currentEntity.catalogId = $item.catalog;
@@ -50,6 +54,20 @@ angular.module('virtoCommerce.catalogModule')
                 template: '$(Platform)/Scripts/app/settings/blades/setting-dictionary.tpl.html'
             };
             bladeNavigationService.showBlade(newBlade, blade);
+        };
+
+
+        $scope.cancelChanges = function() {
+            bladeNavigationService.closeBlade(blade);
+        };
+
+        $scope.saveChanges = function () {
+            if (blade.onSelected) {
+                blade.onSelected(blade.currentEntity);
+                bladeNavigationService.closeBlade(blade);
+            }
+
+            bladeNavigationService.closeBlade(blade);
         };
 
         blade.refresh(false);

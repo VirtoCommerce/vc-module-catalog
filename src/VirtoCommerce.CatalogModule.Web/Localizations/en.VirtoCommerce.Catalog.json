@@ -533,7 +533,8 @@
         },
         "descriptions": {
           "is-active": "Flag controls Active/Inactive the rule",
-          "store": "Store in which this promotion will be active"
+          "store": "Store in which this promotion will be active",
+          "priority": "The association rule with the highest priority will be applied."
         },
         "placeholders": {
           "start-date": "Please choose date...",
@@ -687,6 +688,10 @@
       "language-save": {
         "title": "Save changes",
         "message": "The Languages has been modified. Do you want to save changes?"
+      },
+      "dynamic-association-delete": {
+        "title": "Delete confirmation",
+        "message": "Are you sure you want to delete selected Dynamic association rules?"
       }
     },
     "wizards": {

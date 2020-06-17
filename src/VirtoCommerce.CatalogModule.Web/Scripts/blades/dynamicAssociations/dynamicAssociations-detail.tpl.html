@@ -29,22 +29,22 @@
                             <span class="list-descr">{{ 'catalog.blades.dynamicAssociation-detail.descriptions.main-parameters' | translate: {count: filledPropertiesCount, total: totalPropertiesCount} }}</span>
                         </li>
                         <li class="list-item"
-                            ng-click="createProductFilter(true)"
+                            ng-click="createProductFilter(BlockMatchingRules)"
                             ng-class="{'__disabled': blade.currentEntity.catalogId == null}">
                             <i class="list-ico fa fa-file-text"></i>
                             <span class="list-t">{{ 'catalog.blades.dynamicAssociation-detail.labels.productsToMatch' | translate }}</span>
                             <span class="list-descr">{{ 'catalog.blades.dynamicAssociation-detail.descriptions.productsToMatch' | translate: {count: blade.propertySelected} }}</span>
                         </li>
                         <li class="list-item"
-                            ng-click="createProductFilter(false)"
-                            ng-class="{'__disabled': blade.editedPropertiesToMatch.length === 0}">
+                            ng-click="createProductFilter(BlockResultingRules)"
+                            ng-class="{'__disabled': !blade.isMatchingRulesExist}">
                             <i class="list-ico fa fa-file-text"></i>
                             <span class="list-t">{{ 'catalog.blades.dynamicAssociation-detail.labels.productsToDisplay' | translate }}</span>
                             <span class="list-descr">{{ 'catalog.blades.dynamicAssociation-detail.descriptions.productsToDisplay' | translate: {count: blade.propertySelected} }}</span>
                         </li>
                         <li class="list-item"
                             ng-click="outputTuning()"
-                            ng-class="{'__disabled': blade.editedPropertiesToMatch.length === 0 || blade.editedPropertiesToDisplay.length === 0}">
+                            ng-class="{'__disabled': !blade.isResultingRulesExist || !blade.isMatchingRulesExist}">
                             <i class="list-ico fa fa-cogs"></i>
                             <span class="list-t">{{ 'catalog.blades.dynamicAssociation-detail.labels.outputTuning' | translate }}</span>
                             <span class="list-descr">{{ 'catalog.blades.dynamicAssociation-detail.descriptions.outputTuning' | translate }}</span>
