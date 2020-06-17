@@ -9,12 +9,12 @@ using VirtoCommerce.SearchModule.Core.Services;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
-    public class DynamicAssociationsConditionEvaluator : IDynamicAssociationsConditionEvaluator
+    public class DynamicAssociationConditionEvaluator : IDynamicAssociationConditionEvaluator
     {
         private readonly DynamicAssociationSearchRequestBuilder _requestBuilder;
         private readonly ISearchProvider _searchProvider;
 
-        public DynamicAssociationsConditionEvaluator(
+        public DynamicAssociationConditionEvaluator(
             DynamicAssociationSearchRequestBuilder requestBuilder,
             ISearchProvider searchProvider
             )

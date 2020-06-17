@@ -4,7 +4,7 @@ using VirtoCommerce.CatalogModule.Core.Model.Search;
 
 namespace VirtoCommerce.CatalogModule.Core.Services
 {
-    public interface IDynamicAssociationsConditionEvaluator
+    public interface IDynamicAssociationConditionEvaluator
     {
         Task<string[]> EvaluateDynamicAssociationConditionAsync(DynamicAssociationsRuleEvaluationContext searchContext, DynamicAssociationCondition dynamicAssociationCondition);
     }

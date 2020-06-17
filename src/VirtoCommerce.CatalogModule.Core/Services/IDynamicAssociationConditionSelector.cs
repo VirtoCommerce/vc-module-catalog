@@ -5,7 +5,7 @@ using VirtoCommerce.CatalogModule.Core.Model.Search;
 
 namespace VirtoCommerce.CatalogModule.Core.Services
 {
-    public interface IDynamicAssociationsConditionSelector
+    public interface IDynamicAssociationConditionSelector
     {
         Task<DynamicAssociationCondition> GetDynamicAssociationConditionAsync(DynamicAssociationsRuleEvaluationContext evaluationContext, CatalogProduct product);
     }

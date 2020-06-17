@@ -191,9 +191,9 @@ namespace VirtoCommerce.CatalogModule.Web
             #endregion
 
             serviceCollection.AddTransient<IDynamicAssociationEvaluator, DynamicAssociationEvaluator>();
-            serviceCollection.AddTransient<IDynamicAssociationsConditionSelector, DynamicAssociationsConditionsSelector>();
+            serviceCollection.AddTransient<IDynamicAssociationConditionSelector, DynamicAssociationConditionsSelector>();
             serviceCollection.AddTransient<DynamicAssociationSearchRequestBuilder>();
-            serviceCollection.AddTransient<IDynamicAssociationsConditionEvaluator, DynamicAssociationsConditionEvaluator>();
+            serviceCollection.AddTransient<IDynamicAssociationConditionEvaluator, DynamicAssociationConditionEvaluator>();
         }
 
         public void PostInitialize(IApplicationBuilder appBuilder)

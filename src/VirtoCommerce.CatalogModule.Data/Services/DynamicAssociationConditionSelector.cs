@@ -11,16 +11,16 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
-    public class DynamicAssociationsConditionsSelector : IDynamicAssociationsConditionSelector
+    public class DynamicAssociationConditionsSelector : IDynamicAssociationConditionSelector
     {
         private readonly IDynamicAssociationSearchService _dynamicAssociationSearchService;
 
-        public DynamicAssociationsConditionsSelector(IDynamicAssociationSearchService dynamicAssociationSearchService)
+        public DynamicAssociationConditionsSelector(IDynamicAssociationSearchService dynamicAssociationSearchService)
         {
             _dynamicAssociationSearchService = dynamicAssociationSearchService;
         }
 
-        public virtual async Task<DynamicAssociationCondition> GetDynamicAssociationConditionAsync(DynamicAssociationsRuleEvaluationContext searchContext, CatalogProduct product)
+        public async Task<DynamicAssociationCondition> GetDynamicAssociationConditionAsync(DynamicAssociationsRuleEvaluationContext searchContext, CatalogProduct product)
         {
             var result = AbstractTypeFactory<DynamicAssociationCondition>.TryCreateInstance();
 

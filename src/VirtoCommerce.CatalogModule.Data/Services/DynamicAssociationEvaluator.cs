@@ -13,15 +13,15 @@ namespace VirtoCommerce.CatalogModule.Data.Services
     public class DynamicAssociationEvaluator : IDynamicAssociationEvaluator
     {
         private readonly IStoreService _storeService;
-        private readonly IDynamicAssociationsConditionSelector _dynamicAssociationsConditionSelector;
+        private readonly IDynamicAssociationConditionSelector _dynamicAssociationsConditionSelector;
         private readonly IItemService _itemService;
-        private readonly IDynamicAssociationsConditionEvaluator _dynamicAssociationsConditionEvaluator;
+        private readonly IDynamicAssociationConditionEvaluator _dynamicAssociationsConditionEvaluator;
 
         public DynamicAssociationEvaluator(
             IStoreService storeService,
-            IDynamicAssociationsConditionSelector dynamicAssociationsConditionSelector,
+            IDynamicAssociationConditionSelector dynamicAssociationsConditionSelector,
             IItemService itemService,
-            IDynamicAssociationsConditionEvaluator dynamicAssociationsConditionEvaluator
+            IDynamicAssociationConditionEvaluator dynamicAssociationsConditionEvaluator
             )
         {
             _storeService = storeService;
@@ -30,7 +30,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _dynamicAssociationsConditionEvaluator = dynamicAssociationsConditionEvaluator;
         }
 
-        public async Task<string[]> EvaluateDynamicAssociationsAsync(DynamicRuleAssociationsEvaluationContext context)
+        public async Task<string[]> EvaluateDynamicAssociationsAsync(DynamicAssociationsRuleEvaluationContext context)
         {
             if (context.ProductsToMatch.IsNullOrEmpty())
             {

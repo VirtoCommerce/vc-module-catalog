@@ -155,7 +155,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <returns>Associated products ids.</returns>
         [HttpPost]
         [Route("evaluate")]
-        public async Task<ActionResult<string[]>> EvaluateDynamicAssociations([FromBody] DynamicRuleAssociationsEvaluationContext context)
+        public async Task<ActionResult<string[]>> EvaluateDynamicAssociations([FromBody] DynamicAssociationsRuleEvaluationContext context)
         {
             if (context == null)
             {
