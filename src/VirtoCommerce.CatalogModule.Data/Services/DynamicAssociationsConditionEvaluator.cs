@@ -23,7 +23,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _searchProvider = searchProvider;
         }
 
-        public async Task<string[]> EvaluateDynamicAssociationConditionAsync(DynamicRuleAssociationsEvaluationContext searchContext, DynamicAssociationCondition dynamicAssociationCondition)
+        public async Task<string[]> EvaluateDynamicAssociationConditionAsync(DynamicAssociationsRuleEvaluationContext searchContext, DynamicAssociationCondition dynamicAssociationCondition)
         {
             _requestBuilder
                 .AddOutlineSearch(dynamicAssociationCondition.CategoryIds)

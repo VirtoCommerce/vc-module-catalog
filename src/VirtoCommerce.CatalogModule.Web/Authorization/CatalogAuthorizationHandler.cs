@@ -129,7 +129,7 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
                             context.Succeed(requirement);
                         }
                     }
-                    else if (context.Resource is DynamicRuleAssociationsEvaluationContext productsToMatchSearchContext)
+                    else if (context.Resource is DynamicAssociationsRuleEvaluationContext productsToMatchSearchContext)
                     {
                         var storeId = productsToMatchSearchContext.StoreId;
                         var store = await _storeService.GetByIdAsync(storeId);

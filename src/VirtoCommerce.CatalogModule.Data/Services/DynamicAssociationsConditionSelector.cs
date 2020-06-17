@@ -20,7 +20,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _dynamicAssociationSearchService = dynamicAssociationSearchService;
         }
 
-        public virtual async Task<DynamicAssociationCondition> GetDynamicAssociationConditionAsync(DynamicRuleAssociationsEvaluationContext searchContext, CatalogProduct product)
+        public virtual async Task<DynamicAssociationCondition> GetDynamicAssociationConditionAsync(DynamicAssociationsRuleEvaluationContext searchContext, CatalogProduct product)
         {
             var result = AbstractTypeFactory<DynamicAssociationCondition>.TryCreateInstance();
 

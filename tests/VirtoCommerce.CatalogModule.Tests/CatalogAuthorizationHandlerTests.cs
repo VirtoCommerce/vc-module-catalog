@@ -325,7 +325,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                 .ReturnsAsync(new Store { Catalog = "testCatalog1", });
 
             var catalogAuthorizationHandler = CreateCatalogAuthorizationHandler(storeMock.Object);
-            var productsToMatchCriteria = new DynamicRuleAssociationsEvaluationContext();
+            var productsToMatchCriteria = new DynamicAssociationsRuleEvaluationContext();
 
             var context = CreateAuthorizationHandlerContext(
                 _permission,
@@ -349,7 +349,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                 .ReturnsAsync(new Store { Catalog = "testCatalog", });
 
             var catalogAuthorizationHandler = CreateCatalogAuthorizationHandler(storeMock.Object);
-            var productsToMatchCriteria = new DynamicRuleAssociationsEvaluationContext();
+            var productsToMatchCriteria = new DynamicAssociationsRuleEvaluationContext();
 
             var context = CreateAuthorizationHandlerContext(
                 _permission,
