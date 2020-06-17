@@ -20,13 +20,17 @@ namespace VirtoCommerce.CatalogModule.Core.Model.DynamicAssociations
                     new ConditionCategoryIs(),
                     new ConditionPropertyValues()
                 );
+            var outputTuning = new BlockOutputTuning();
+
             WithAvailConditions(
                 matchingRules,
-                resultingRules
+                resultingRules,
+                outputTuning
             );
             WithChildrens(
                 matchingRules,
-                resultingRules
+                resultingRules,
+                outputTuning
             );
         }
     }
