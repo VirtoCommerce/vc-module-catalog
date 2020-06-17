@@ -47,8 +47,17 @@ angular.module('virtoCommerce.catalogModule')
             const matchingRules = _.find(blade.currentEntity.expressionTree.children, x => x.id === 'BlockMatchingRules');
             const resultingRules = _.find(blade.currentEntity.expressionTree.children, x => x.id === 'BlockResultingRules');
 
-            blade.isMatchingRulesExist = !!_.find(matchingRules.children, x => x.id === 'ConditionPropertyValues');
-            blade.isResultingRulesEsist = !!_.find(resultingRules.children, x => x.id === 'ConditionPropertyValues');
+            const matchingCondition = _.find(matchingRules.children, x => x.id === 'ConditionPropertyValues');
+            const resultingCondition = _.find(resultingRules.children, x => x.id === 'ConditionPropertyValues');
+
+            if (matchingCondition && matchingCondition.properties.length > 0) {
+                blade.isMatchingRulesExist = true;
+            }
+
+
+            if (resultingCondition && resultingCondition.properties.length > 0) {
+                blade.isResultingRulesEsist = true;
+            }
 
             blade.isLoading = false;
         }
@@ -255,6 +264,7 @@ angular.module('virtoCommerce.catalogModule')
                 propGroups: [{ title: 'catalog.properties.product', type: 'Product' }, { title: 'catalog.properties.variation', type: 'Variation' }],
                 onSelected: function (editedProps) {
                     propertyCondition.properties = editedProps;
+                    blade.isMatchingRulesExist = propertyCondition.properties.length > 0;
                 },
                 toolbarCommands: [
                     {
