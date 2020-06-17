@@ -1,16 +1,20 @@
 angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.dynamicAssociationDetailController', ['$scope', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.dynamicAssociations', 'virtoCommerce.catalogModule.categories', 'virtoCommerce.storeModule.stores', function ($scope, bladeNavigationService, associations, categories, stores) {
         var blade = $scope.blade;
-        var parametersBlade = null;
         var formScope;
         $scope.setForm = (form) => { formScope = form; };
 
-        blade.toMatchIsActive = true;
+        $scope.BlockMatchingRules = 'BlockMatchingRules';
+        $scope.BlockResultingRules = 'BlockResultingRules';
+        $scope.ConditionPropertyValues = 'ConditionPropertyValues';
+        $scope.ConditionCategoryIs = 'ConditionCategoryIs';
+
         blade.currentEntity = {};
 
         blade.updatePermission = 'catalog:update';
         blade.isMatchingRulesExist = false;
-        blade.isResultingRulesEsist = false;
+        blade.isResultingRulesExist = false;
+
 
         blade.refresh = function(parentRefresh) {
             if (blade.isNew) {
@@ -44,34 +48,30 @@ angular.module('virtoCommerce.catalogModule')
             blade.currentEntity = angular.copy(data);
             blade.origEntity = data;
 
-            const matchingRules = _.find(blade.currentEntity.expressionTree.children, x => x.id === 'BlockMatchingRules');
-            const resultingRules = _.find(blade.currentEntity.expressionTree.children, x => x.id === 'BlockResultingRules');
-
-            const matchingCondition = _.find(matchingRules.children, x => x.id === 'ConditionPropertyValues');
-            const resultingCondition = _.find(resultingRules.children, x => x.id === 'ConditionPropertyValues');
-
-            if (matchingCondition && matchingCondition.properties.length > 0) {
-                blade.isMatchingRulesExist = true;
-            }
-
-
-            if (resultingCondition && resultingCondition.properties.length > 0) {
-                blade.isResultingRulesEsist = true;
-            }
-
+            $scope.checkExistingRules();
             blade.isLoading = false;
         }
+
+        $scope.checkExistingRules = function() {
+            const matchingRules = _.find(blade.currentEntity.expressionTree.children, x => x.id === $scope.BlockMatchingRules);
+            const matchingCondition = $scope.getCondition(matchingRules, $scope.ConditionPropertyValues);
+            blade.isMatchingRulesExist = matchingCondition.properties.length > 0;
+
+            const resultingRules = _.find(blade.currentEntity.expressionTree.children, x => x.id === $scope.BlockResultingRules);
+            const resultingCondition = $scope.getCondition(resultingRules, $scope.ConditionPropertyValues);
+            blade.isResultingRulesExist = resultingCondition.properties.length > 0;
+        };
 
         $scope.isDirty = () => {
             return !angular.equals(blade.currentEntity, blade.origEntity) && blade.hasUpdatePermission();
         };
 
         $scope.canSave = () => {
-            return $scope.isDirty() && formScope && formScope.$valid && blade.currentEntity.storeId && blade.currentEntity.associationType && blade.currentEntity.priority;
+            return $scope.isDirty() && formScope && formScope.$valid && blade.currentEntity.storeId && blade.currentEntity.associationType && blade.currentEntity.priority && blade.isMatchingRulesExist && blade.isResultingRulesExist;
         };
 
         $scope.mainParameters = function() {
-            parametersBlade = {
+            const parametersBlade = {
                 id: "mainParameters",
                 title: "catalog.blades.dynamicAssociation-parameters.title",
                 subtitle: 'catalog.blades.dynamicAssociation-parameters.subtitle',
@@ -90,13 +90,12 @@ angular.module('virtoCommerce.catalogModule')
             angular.copy(blade.origEntity, blade.currentEntity);
             $scope.bladeClose();
         };
+
         $scope.saveChanges = function () {
             blade.isLoading = true;
 
             associations.save({}, [blade.currentEntity], (data) => {
                 if (data && data.length > 0) {
-                    //close main parameters blade
-                    parametersBlade && bladeNavigationService.closeBlade(parametersBlade);
                     blade.isNew = undefined;
                     blade.currentEntityId = data[0].id;
                     initializeBlade(data[0]);
@@ -149,16 +148,33 @@ angular.module('virtoCommerce.catalogModule')
         }, true);
 
         /////
-        $scope.createProductFilter = function (toMatchIsActive) {
-            blade.toMatchIsActive = toMatchIsActive;
+        $scope.getCondition = function(rulesBlock, conditionName) {
+            const conditionCategoryIs = { id: $scope.ConditionCategoryIs, categoryIds: [], categoryNames: [] };
+            const conditionPropertyValues = { id: $scope.ConditionPropertyValues, properties: [] };
+
+            let categoryCondition = _.find(rulesBlock.children, x => x.id === conditionName);
+            if (!categoryCondition) {
+                switch (conditionName) {
+                    case $scope.ConditionCategoryIs:
+                        rulesBlock.children.push(conditionCategoryIs);
+                        break;
+
+                    case $scope.ConditionPropertyValues:
+                        rulesBlock.children.push(conditionPropertyValues);
+                        break;
+                }
+                
+            }
+            categoryCondition = _.find(rulesBlock.children, x => x.id === conditionName);
+            return categoryCondition;
+        };
+
+
+        $scope.createProductFilter = function (rulesBlockName) {
             var allProperties = [];
 
-            const rulesBlock = _.find(blade.currentEntity.expressionTree.children, x => x.id === (blade.toMatchIsActive ? 'BlockMatchingRules' : 'BlockResultingRules'));
-            let categoryCondition = _.find(rulesBlock.children, x => x.id === 'ConditionCategoryIs');
-            if (!categoryCondition) {
-                rulesBlock.children.push({ id: 'ConditionCategoryIs', categoryIds: [], categoryNames: [] });
-            }
-            categoryCondition = _.find(rulesBlock.children, x => x.id === 'ConditionCategoryIs');
+            const rulesBlock = _.find(blade.currentEntity.expressionTree.children, x => x.id === rulesBlockName);
+            let categoryCondition = $scope.getCondition(rulesBlock, $scope.ConditionCategoryIs);
 
             var options = {
                 showCheckingMultiple: false,
@@ -200,7 +216,7 @@ angular.module('virtoCommerce.catalogModule')
                                         prop.values = [];
                                         prop.isReadOnly = false;
                                     });
-                                    $scope.selectProperties(allProperties);
+                                    $scope.selectProperties(allProperties, rulesBlock);
                                 });
                         },
                         canExecuteMethod: () => _.any(categoryCondition.categoryIds)
@@ -220,13 +236,8 @@ angular.module('virtoCommerce.catalogModule')
 
         }; 
 
-        $scope.selectProperties = function (allProperties) {
-            const rulesBlock = _.find(blade.currentEntity.expressionTree.children, x => x.id === (blade.toMatchIsActive ? 'BlockMatchingRules' : 'BlockResultingRules'));
-            let propertyCondition = _.find(rulesBlock.children, x => x.id === 'ConditionPropertyValues');
-            if (!propertyCondition) {
-                rulesBlock.children.push({ id: 'ConditionPropertyValues', properties: [] });
-            }
-            propertyCondition = _.find(rulesBlock.children, x => x.id === 'ConditionPropertyValues');
+        $scope.selectProperties = function (allProperties, rulesBlock) {
+            let propertyCondition = $scope.getCondition(rulesBlock, $scope.ConditionPropertyValues);
 
             let selectedProperties = [];
             angular.copy(propertyCondition.properties, selectedProperties);
@@ -245,16 +256,15 @@ angular.module('virtoCommerce.catalogModule')
                 onSelected: function (includedProperties) {
                     propertyCondition.properties = includedProperties;
                     blade.isPropertiesSelected = true;
-                    $scope.editProperties();
+                    $scope.editProperties(rulesBlock);
                 }
             };
 
             bladeNavigationService.showBlade(newBlade, blade);
         };
 
-        $scope.editProperties = function () {
-            const rulesBlock = _.find(blade.currentEntity.expressionTree.children, x => x.id === (blade.toMatchIsActive ? 'BlockMatchingRules' : 'BlockResultingRules'));
-            let propertyCondition = _.find(rulesBlock.children, x => x.id === 'ConditionPropertyValues');
+        $scope.editProperties = function (rulesBlock) {
+            let propertyCondition = $scope.getCondition(rulesBlock, $scope.ConditionPropertyValues);
 
             var newBlade = {
                 id: 'propertiesEditor',
@@ -264,7 +274,7 @@ angular.module('virtoCommerce.catalogModule')
                 propGroups: [{ title: 'catalog.properties.product', type: 'Product' }, { title: 'catalog.properties.variation', type: 'Variation' }],
                 onSelected: function (editedProps) {
                     propertyCondition.properties = editedProps;
-                    blade.isMatchingRulesExist = propertyCondition.properties.length > 0;
+                    $scope.checkExistingRules();
                 },
                 toolbarCommands: [
                     {
