@@ -6,5 +6,6 @@ namespace VirtoCommerce.CatalogModule.Core.Model.Search
     {
         public string[] StoreIds { get; set; }
         public string[] Groups { get; set; }
+        public bool? IsActive { get; set; }
     }
 }

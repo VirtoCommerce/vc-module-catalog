@@ -89,6 +89,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 query = query.Where(x => criteria.Groups.Contains(x.AssociationType));
             }
 
+            if (criteria.IsActive != null)
+            {
+                query = query.Where(x => x.IsActive == criteria.IsActive);
+            }
+            
             return query;
         }
 

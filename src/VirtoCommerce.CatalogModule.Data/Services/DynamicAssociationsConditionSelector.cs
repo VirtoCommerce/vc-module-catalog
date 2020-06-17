@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core.Model;
@@ -10,30 +11,31 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
-    public class DynamicAssociationsValueFetcher : IDynamicAssociationsValueFetcher
+    public class DynamicAssociationsConditionsSelector : IDynamicAssociationsConditionSelector
     {
         private readonly IDynamicAssociationSearchService _dynamicAssociationSearchService;
 
-        public DynamicAssociationsValueFetcher(IDynamicAssociationSearchService dynamicAssociationSearchService)
+        public DynamicAssociationsConditionsSelector(IDynamicAssociationSearchService dynamicAssociationSearchService)
         {
             _dynamicAssociationSearchService = dynamicAssociationSearchService;
         }
 
-        public virtual async Task<DynamicAssociationValue> GetDynamicAssociationValueAsync(string group, string storeId, CatalogProduct product)
+        public virtual async Task<DynamicAssociationCondition> GetDynamicAssociationConditionAsync(DynamicRuleAssociationsEvaluationContext searchContext, CatalogProduct product)
         {
-            var result = AbstractTypeFactory<DynamicAssociationValue>.TryCreateInstance();
+            var result = AbstractTypeFactory<DynamicAssociationCondition>.TryCreateInstance();
 
             var dynamicAssociationRules = (await _dynamicAssociationSearchService
                 .SearchDynamicAssociationsAsync(new DynamicAssociationSearchCriteria
                 {
-                    Groups = new[] { group },
-                    StoreIds = new[] { storeId },
+                    Groups = new[] { searchContext.Group },
+                    StoreIds = new[] { searchContext.StoreId },
                     Take = int.MaxValue,
                     SortInfos = { new SortInfo
                     {
                         SortColumn = nameof(DynamicAssociation.Priority),
                         SortDirection = SortDirection.Ascending,
                     }},
+                    IsActive = true,
                 }))
                 .Results;
 
@@ -42,11 +44,16 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
             foreach (var dynamicAssociationRule in dynamicAssociationRules)
             {
-                var matchingRule = dynamicAssociationRule.ExpressionTree.Children.OfType<BlockMatchingRules>().First();
+                var matchingRule = dynamicAssociationRule
+                    .ExpressionTree.Children.OfType<BlockMatchingRules>().FirstOrDefault()
+                    ?? throw new InvalidOperationException($"Block matching rules for dynamic association rule expression: {dynamicAssociationRule.Id}");
 
                 if (matchingRule.IsSatisfiedBy(evaluationContext))
                 {
-                    var resultRule = dynamicAssociationRule.ExpressionTree.Children.OfType<BlockResultingRules>().First();
+                    var resultRule = dynamicAssociationRule
+                        .ExpressionTree.Children.OfType<BlockResultingRules>().FirstOrDefault()
+                        ?? throw new InvalidOperationException($"Block resulting rules for dynamic association rule expression: {dynamicAssociationRule.Id}");
+
                     result.PropertyValues = resultRule.GetPropertyValues();
                     result.CategoryIds = resultRule.GetCategoryIds();
 

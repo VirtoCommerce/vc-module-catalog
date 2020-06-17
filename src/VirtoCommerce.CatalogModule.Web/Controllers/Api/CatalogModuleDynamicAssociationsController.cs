@@ -151,11 +151,11 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <summary>
         /// Evaluate dynamic associations.
         /// </summary>
-        /// <param name="context">Search criteria</param>
+        /// <param name="context">Search context</param>
         /// <returns>Associated products ids.</returns>
         [HttpPost]
         [Route("evaluate")]
-        public async Task<ActionResult<string[]>> EvaluateDynamicAssociations([FromBody] ProductsToMatchSearchContext context)
+        public async Task<ActionResult<string[]>> EvaluateDynamicAssociations([FromBody] DynamicRuleAssociationsEvaluationContext context)
         {
             if (context == null)
             {

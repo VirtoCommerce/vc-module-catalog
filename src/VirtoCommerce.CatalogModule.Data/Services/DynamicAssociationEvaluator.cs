@@ -1,13 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
-using VirtoCommerce.CatalogModule.Data.Search.Indexing;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.SearchModule.Core.Model;
-using VirtoCommerce.SearchModule.Core.Services;
 using VirtoCommerce.StoreModule.Core.Services;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
@@ -15,31 +13,28 @@ namespace VirtoCommerce.CatalogModule.Data.Services
     public class DynamicAssociationEvaluator : IDynamicAssociationEvaluator
     {
         private readonly IStoreService _storeService;
-        private readonly IDynamicAssociationsValueFetcher _dynamicAssociationsValueFetcher;
+        private readonly IDynamicAssociationsConditionSelector _dynamicAssociationsConditionSelector;
         private readonly IItemService _itemService;
-        private readonly ISearchProvider _searchProvider;
-        private readonly DynamicAssociationSearchRequestBuilder _requestBuilder;
+        private readonly IDynamicAssociationsConditionEvaluator _dynamicAssociationsConditionEvaluator;
 
         public DynamicAssociationEvaluator(
             IStoreService storeService,
-            IDynamicAssociationsValueFetcher dynamicAssociationsValueFetcher,
+            IDynamicAssociationsConditionSelector dynamicAssociationsConditionSelector,
             IItemService itemService,
-            ISearchProvider searchProvider,
-            DynamicAssociationSearchRequestBuilder requestBuilder
+            IDynamicAssociationsConditionEvaluator dynamicAssociationsConditionEvaluator
             )
         {
             _storeService = storeService;
-            _dynamicAssociationsValueFetcher = dynamicAssociationsValueFetcher;
+            _dynamicAssociationsConditionSelector = dynamicAssociationsConditionSelector;
             _itemService = itemService;
-            _searchProvider = searchProvider;
-            _requestBuilder = requestBuilder;
+            _dynamicAssociationsConditionEvaluator = dynamicAssociationsConditionEvaluator;
         }
 
-        public async Task<string[]> EvaluateDynamicAssociationsAsync(ProductsToMatchSearchContext context)
+        public async Task<string[]> EvaluateDynamicAssociationsAsync(DynamicRuleAssociationsEvaluationContext context)
         {
             if (context.ProductsToMatch.IsNullOrEmpty())
             {
-                return new string[0];
+                return Array.Empty<string>();
             }
 
             var store = await _storeService.GetByIdAsync(context.StoreId);
@@ -51,15 +46,12 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
             foreach (var product in products)
             {
-                var dynamicAssociationValue = await _dynamicAssociationsValueFetcher.GetDynamicAssociationValueAsync(context.Group, context.StoreId, product);
-
-                _requestBuilder
-                    .AddPropertySearch(dynamicAssociationValue.PropertyValues)
-                    .AddOutlineSearch(dynamicAssociationValue.CategoryIds)
-                    .WithPaging(context.Skip, context.Take);
                 
-                var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Product, _requestBuilder.Build());
-                result.AddRange(searchResult.Documents.Select(x => x.Id));
+                var dynamicAssociationCondition = await _dynamicAssociationsConditionSelector.GetDynamicAssociationConditionAsync(context, product);
+                var searchResult = await _dynamicAssociationsConditionEvaluator.EvaluateDynamicAssociationConditionAsync(context, dynamicAssociationCondition);
+
+                result.AddRange(searchResult);
+
             }
 
             return result.Distinct().ToArray();
