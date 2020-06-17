@@ -192,6 +192,7 @@ namespace VirtoCommerce.CatalogModule.Web
 
             serviceCollection.AddTransient<IDynamicAssociationEvaluator, DynamicAssociationEvaluator>();
             serviceCollection.AddTransient<IDynamicAssociationsValueFetcher, DynamicAssociationsValueFetcher>();
+            serviceCollection.AddTransient<DynamicAssociationSearchRequestBuilder>();
         }
 
         public void PostInitialize(IApplicationBuilder appBuilder)
