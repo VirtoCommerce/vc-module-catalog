@@ -22,17 +22,20 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly IDynamicAssociationService _dynamicAssociationService;
         private readonly IAuthorizationService _authorizationService;
         private readonly IDynamicAssociationEvaluator _dynamicAssociationEvaluator;
+        private readonly IDynamicAssociationConditionEvaluator _dynamicAssociationConditionEvaluator;
 
         public CatalogModuleDynamicAssociationsController(
             IDynamicAssociationSearchService dynamicAssociationSearchService,
             IDynamicAssociationService dynamicAssociationService,
             IAuthorizationService authorizationService,
-            IDynamicAssociationEvaluator dynamicAssociationEvaluator)
+            IDynamicAssociationEvaluator dynamicAssociationEvaluator,
+            IDynamicAssociationConditionEvaluator dynamicAssociationConditionEvaluator)
         {
             _dynamicAssociationSearchService = dynamicAssociationSearchService;
             _dynamicAssociationService = dynamicAssociationService;
             _authorizationService = authorizationService;
             _dynamicAssociationEvaluator = dynamicAssociationEvaluator;
+            _dynamicAssociationConditionEvaluator = dynamicAssociationConditionEvaluator;
         }
 
         [HttpPost]
@@ -172,9 +175,16 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
         [HttpPost]
         [Route("preview")]
-        public Task<ActionResult<string[]>> PreviewDynamicAssociations([FromBody] DynamicAssociationConditionEvaluationRequest conditionRequest)
+        public async Task<ActionResult<string[]>> PreviewDynamicAssociations([FromBody] DynamicAssociationConditionEvaluationRequest conditionRequest)
         {
-            throw new NotImplementedException();
+            if (conditionRequest == null)
+            {
+                throw new ArgumentNullException(nameof(conditionRequest));
+            }
+
+            var result = await _dynamicAssociationConditionEvaluator.EvaluateDynamicAssociationConditionAsync(conditionRequest);
+
+            return Ok(result);
         }
 
 
