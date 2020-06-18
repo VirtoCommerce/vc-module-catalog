@@ -4,7 +4,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
-using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CatalogModule.Core.Model.DynamicAssociations;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Data.Services;
@@ -41,14 +41,14 @@ namespace VirtoCommerce.CatalogModule.Tests
             _catalogRepositoryMock.Setup(x => x.Add(dynamicAssociationEntity)).Callback(() =>
             {
                 _catalogRepositoryMock
-                    .Setup(x => x.GetDynamicAssociationsByIdsAsync(new[] {id}))
-                    .ReturnsAsync(new[] {dynamicAssociationEntity});
+                    .Setup(x => x.GetDynamicAssociationsByIdsAsync(new[] { id }))
+                    .ReturnsAsync(new[] { dynamicAssociationEntity });
             });
 
             // Act
             var nullDynamicAssociation = await dynamicAssociationService.GetByIdsAsync(new[] { id });
             await dynamicAssociationService.SaveChangesAsync(new[] { dynamicAssociation });
-            var dynamicAssociationFromService = await dynamicAssociationService.GetByIdsAsync(new [] { id });
+            var dynamicAssociationFromService = await dynamicAssociationService.GetByIdsAsync(new[] { id });
 
             // Assert
             Assert.NotEqual(nullDynamicAssociation, dynamicAssociationFromService);

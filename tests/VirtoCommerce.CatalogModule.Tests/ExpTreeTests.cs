@@ -56,7 +56,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             //    }
             //});
 
-            var context = new DynamicAssociationEvaluationContext
+            var context = new DynamicAssociationExpressionEvaluationContext
             {
                 Products = new List<CatalogProduct>
                 {

@@ -8,7 +8,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model.DynamicAssociations
     public static class DynamicAssociationEvaluationContextExtensions
     {
 
-        public static bool IsItemInCategory(this DynamicAssociationEvaluationContext context, string[] categoryIds, string[] excludingCategoryIds, string[] excludingProductIds)
+        public static bool IsItemInCategory(this DynamicAssociationExpressionEvaluationContext context, string[] categoryIds, string[] excludingCategoryIds, string[] excludingProductIds)
         {
             var result = context.Products.InCategories(categoryIds)
                                .ExcludeCategories(excludingCategoryIds)
@@ -17,7 +17,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model.DynamicAssociations
             return result;
         }
 
-        public static bool AreItemPropertyValuesEqual(this DynamicAssociationEvaluationContext context, Dictionary<string, string> propertyValues)
+        public static bool AreItemPropertyValuesEqual(this DynamicAssociationExpressionEvaluationContext context, Dictionary<string, string> propertyValues)
         {
             var result = context.Products.WithPropertyValues(propertyValues).Any();
 

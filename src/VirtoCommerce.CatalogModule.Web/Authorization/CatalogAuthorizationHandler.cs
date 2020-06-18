@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CatalogModule.Core.Model.DynamicAssociations;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Data.Authorization;
 using VirtoCommerce.CatalogModule.Data.ExportImport;
@@ -129,7 +130,7 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
                             context.Succeed(requirement);
                         }
                     }
-                    else if (context.Resource is DynamicAssociationsRuleEvaluationContext productsToMatchSearchContext)
+                    else if (context.Resource is DynamicAssociationEvaluationContext productsToMatchSearchContext)
                     {
                         var storeId = productsToMatchSearchContext.StoreId;
                         var store = await _storeService.GetByIdAsync(storeId);

@@ -20,15 +20,15 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _dynamicAssociationSearchService = dynamicAssociationSearchService;
         }
 
-        public async Task<DynamicAssociationCondition> GetDynamicAssociationConditionAsync(DynamicAssociationsRuleEvaluationContext searchContext, CatalogProduct product)
+        public async Task<DynamicAssociationCondition> GetDynamicAssociationConditionAsync(DynamicAssociationEvaluationContext context, CatalogProduct product)
         {
             var result = AbstractTypeFactory<DynamicAssociationCondition>.TryCreateInstance();
 
             var dynamicAssociationRules = (await _dynamicAssociationSearchService
                 .SearchDynamicAssociationsAsync(new DynamicAssociationSearchCriteria
                 {
-                    Groups = new[] { searchContext.Group },
-                    StoreIds = new[] { searchContext.StoreId },
+                    Groups = new[] { context.Group },
+                    StoreIds = new[] { context.StoreId },
                     Take = int.MaxValue,
                     SortInfos = { new SortInfo
                     {
@@ -39,20 +39,18 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 }))
                 .Results;
 
-            var evaluationContext = AbstractTypeFactory<DynamicAssociationEvaluationContext>.TryCreateInstance();
-            evaluationContext.Products.Add(product);
+            var expressionContext = AbstractTypeFactory<DynamicAssociationExpressionEvaluationContext>.TryCreateInstance();
+            expressionContext.Products.Add(product);
 
             foreach (var dynamicAssociationRule in dynamicAssociationRules)
             {
-                var matchingRule = dynamicAssociationRule
-                    .ExpressionTree.Children.OfType<BlockMatchingRules>().FirstOrDefault()
-                    ?? throw new InvalidOperationException($"Block matching rules for dynamic association rule expression: {dynamicAssociationRule.Id}");
+                var matchingRule = dynamicAssociationRule.ExpressionTree.Children.OfType<BlockMatchingRules>().FirstOrDefault()
+                    ?? throw new InvalidOperationException($"Matching rules block for \"{dynamicAssociationRule.Name}\" dynamic association rule is missing");
 
-                if (matchingRule.IsSatisfiedBy(evaluationContext))
+                if (matchingRule.IsSatisfiedBy(expressionContext))
                 {
-                    var resultRule = dynamicAssociationRule
-                        .ExpressionTree.Children.OfType<BlockResultingRules>().FirstOrDefault()
-                        ?? throw new InvalidOperationException($"Block resulting rules for dynamic association rule expression: {dynamicAssociationRule.Id}");
+                    var resultRule = dynamicAssociationRule.ExpressionTree.Children.OfType<BlockResultingRules>().FirstOrDefault()
+                        ?? throw new InvalidOperationException($"Resulting rules block for \"{dynamicAssociationRule.Name}\" dynamic association rule is missing");
 
                     result.PropertyValues = resultRule.GetPropertyValues();
                     result.CategoryIds = resultRule.GetCategoryIds();

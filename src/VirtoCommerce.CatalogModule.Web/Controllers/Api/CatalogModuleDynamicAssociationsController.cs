@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using VirtoCommerce.CatalogModule.Core;
-using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.DynamicAssociations;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
@@ -155,12 +154,9 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <returns>Associated products ids.</returns>
         [HttpPost]
         [Route("evaluate")]
-        public async Task<ActionResult<string[]>> EvaluateDynamicAssociations([FromBody] DynamicAssociationsRuleEvaluationContext context)
+        public async Task<ActionResult<string[]>> EvaluateDynamicAssociations([FromBody] DynamicAssociationEvaluationContext context)
         {
-            if (context == null)
-            {
-                throw new ArgumentNullException(nameof(context));
-            }
+            ValidateParameters(context);
 
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, context, ModuleConstants.Security.Permissions.Read);
 
@@ -172,6 +168,14 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var result = await _dynamicAssociationEvaluator.EvaluateDynamicAssociationsAsync(context);
 
             return Ok(result);
+        }
+
+        private static void ValidateParameters(DynamicAssociationEvaluationContext context)
+        {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
         }
     }
 }

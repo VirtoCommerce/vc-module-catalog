@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core.Model;
-using VirtoCommerce.CatalogModule.Core.Model.Search;
+using VirtoCommerce.CatalogModule.Core.Model.DynamicAssociations;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.StoreModule.Core.Services;
@@ -30,7 +30,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _dynamicAssociationsConditionEvaluator = dynamicAssociationsConditionEvaluator;
         }
 
-        public async Task<string[]> EvaluateDynamicAssociationsAsync(DynamicAssociationsRuleEvaluationContext context)
+        public async Task<string[]> EvaluateDynamicAssociationsAsync(DynamicAssociationEvaluationContext context)
         {
             if (context.ProductsToMatch.IsNullOrEmpty())
             {
@@ -40,13 +40,13 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             var store = await _storeService.GetByIdAsync(context.StoreId);
 
             var products = await _itemService.GetByIdsAsync(context.ProductsToMatch,
-                $"{ItemResponseGroup.WithProperties|ItemResponseGroup.WithOutlines}", store.Catalog);
+                $"{ItemResponseGroup.WithProperties | ItemResponseGroup.WithOutlines}", store.Catalog);
 
             var result = new HashSet<string>();
 
             foreach (var product in products)
             {
-                
+
                 var dynamicAssociationCondition = await _dynamicAssociationsConditionSelector.GetDynamicAssociationConditionAsync(context, product);
                 var searchResult = await _dynamicAssociationsConditionEvaluator.EvaluateDynamicAssociationConditionAsync(context, dynamicAssociationCondition);
 

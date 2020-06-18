@@ -23,12 +23,12 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _searchProvider = searchProvider;
         }
 
-        public async Task<string[]> EvaluateDynamicAssociationConditionAsync(DynamicAssociationsRuleEvaluationContext searchContext, DynamicAssociationCondition dynamicAssociationCondition)
+        public async Task<string[]> EvaluateDynamicAssociationConditionAsync(DynamicAssociationEvaluationContext context, DynamicAssociationCondition dynamicAssociationCondition)
         {
             _requestBuilder
                 .AddOutlineSearch(dynamicAssociationCondition.CategoryIds)
                 .AddPropertySearch(dynamicAssociationCondition.PropertyValues)
-                .WithPaging(searchContext.Skip, searchContext.Take);
+                .WithPaging(context.Skip, context.Take);
 
             var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Product, _requestBuilder.Build());
 

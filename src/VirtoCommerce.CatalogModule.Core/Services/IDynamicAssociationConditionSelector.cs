@@ -7,6 +7,6 @@ namespace VirtoCommerce.CatalogModule.Core.Services
 {
     public interface IDynamicAssociationConditionSelector
     {
-        Task<DynamicAssociationCondition> GetDynamicAssociationConditionAsync(DynamicAssociationsRuleEvaluationContext evaluationContext, CatalogProduct product);
+        Task<DynamicAssociationCondition> GetDynamicAssociationConditionAsync(DynamicAssociationEvaluationContext context, CatalogProduct product);
     }
 }
