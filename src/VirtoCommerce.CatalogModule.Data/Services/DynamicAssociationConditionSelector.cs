@@ -55,8 +55,14 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     var resultRule = dynamicAssociationRule.ExpressionTree.Children.OfType<BlockResultingRules>().FirstOrDefault()
                         ?? throw new InvalidOperationException($"Resulting rules block for \"{dynamicAssociationRule.Name}\" dynamic association rule is missing");
 
+                    var outputTuningBlock = dynamicAssociationRule.ExpressionTree.Children.OfType<BlockOutputTuning>().FirstOrDefault()
+                        ?? throw new InvalidOperationException($"Output tuning block for \"{dynamicAssociationRule.Name}\" dynamic association rule is missing");
+
                     result.PropertyValues = resultRule.GetPropertyValues();
                     result.CategoryIds = resultRule.GetCategoryIds();
+                    result.SortInfoString = outputTuningBlock.SortInfos;
+                    result.Skip = context.Skip;
+                    result.Take = Math.Min(Math.Max(outputTuningBlock.OutputLimit - context.Skip, 0), context.Take);
 
                     break;
                 }

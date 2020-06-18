@@ -38,6 +38,18 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             return this;
         }
 
+        public virtual DynamicAssociationSearchRequestBuilder AddSortInfo(string sortInfoString)
+        {
+            var softInfos = SortInfo.Parse(sortInfoString);
+
+            if (!softInfos.IsNullOrEmpty())
+            {
+                _searchRequest.Sorting = softInfos.Select(x => new SortingField(x.SortColumn, x.SortDirection == SortDirection.Descending)).ToList();
+            }
+
+            return this;
+        }
+
         public virtual DynamicAssociationSearchRequestBuilder AddOutlineSearch(ICollection<string> categoryIds)
         {
             ((AndFilter)_searchRequest.Filter).ChildFilters.Add(new WildCardTermFilter
@@ -56,7 +68,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 _searchRequest.SearchKeywords = keyword;
                 _searchRequest.SearchFields = new[] { "__content" };
             }
-            
+
             return this;
         }
 
