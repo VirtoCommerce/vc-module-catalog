@@ -1,7 +1,11 @@
 name: Sync
 'on':
-  schedule:
-    - cron: '1 * * * *'
+  push:
+    branches:
+      - dev
+  pull_request:
+    branches:
+      - dev
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
