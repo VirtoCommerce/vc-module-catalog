@@ -539,8 +539,20 @@
         "placeholders": {
           "start-date": "Please choose date...",
           "expiration-date": "Please choose date...",
-          "store": "Please select store..." 
+          "store": "Please select store..."
         }
+      },
+      "dynamicAssociation-outputTuning": {
+        "title": "Output tuning",
+        "subtitle": "Select properties for sorting",
+        "labels": {
+          "sortByProperty": "Sort by property",
+          "direction": "Direction",
+          "limit":  "Output limit" 
+        },
+        "placeholders": {
+          "selectProperty": "Select property..." 
+        } 
       }
 
     },

@@ -6,6 +6,7 @@ angular.module('virtoCommerce.catalogModule')
 
         $scope.BlockMatchingRules = 'BlockMatchingRules';
         $scope.BlockResultingRules = 'BlockResultingRules';
+        $scope.BlockOutputTuning = 'BlockOutputTuning';
         $scope.ConditionPropertyValues = 'ConditionPropertyValues';
         $scope.ConditionCategoryIs = 'ConditionCategoryIs';
 
@@ -70,6 +71,25 @@ angular.module('virtoCommerce.catalogModule')
             return $scope.isDirty() && formScope && formScope.$valid && blade.currentEntity.storeId && blade.currentEntity.associationType && blade.currentEntity.priority && blade.isMatchingRulesExist && blade.isResultingRulesExist;
         };
 
+        $scope.outputTuning = function () {
+            const newBlade = {
+                id: "outputTuning",
+                title: "catalog.blades.dynamicAssociation-outputTuning.title",
+                subtitle: 'catalog.blades.dynamicAssociation-outputTuning.subtitle',
+                controller: 'virtoCommerce.catalogModule.outputTuningController',
+                template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/dynamicAssociations/outputTuning.tpl.html',
+                originalEntity: blade.currentEntity,
+                onSelected: function (newSortingRules) {
+                    let sortingRules = _.find(blade.currentEntity.expressionTree.children, x => x.id === $scope.BlockOutputTuning);
+                    if (sortingRules) {
+                        sortingRules.sortInfos = newSortingRules.sortInfos;
+                        sortingRules.outputLimit = newSortingRules.outputLimit;
+                    }
+                }
+            };
+            bladeNavigationService.showBlade(newBlade, blade);
+        };
+
         $scope.mainParameters = function() {
             const parametersBlade = {
                 id: "mainParameters",
@@ -81,8 +101,7 @@ angular.module('virtoCommerce.catalogModule')
                 onSelected: function (entity) {
                     blade.currentEntity = entity;
                 }
-
-        };
+            };
             bladeNavigationService.showBlade(parametersBlade, blade);
         };
 
