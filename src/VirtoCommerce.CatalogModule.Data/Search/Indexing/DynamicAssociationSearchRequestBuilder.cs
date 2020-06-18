@@ -13,8 +13,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         {
             _searchRequest = AbstractTypeFactory<SearchRequest>.TryCreateInstance();
 
-            _searchRequest.Filter = new AndFilter {ChildFilters = new List<IFilter>(),};
-            _searchRequest.Sorting = new List<SortingField> {new SortingField("__sort")};
+            _searchRequest.Filter = new AndFilter { ChildFilters = new List<IFilter>(), };
+            _searchRequest.Sorting = new List<SortingField> { new SortingField("__sort") };
             _searchRequest.Skip = 0;
             _searchRequest.Take = 20;
         }
@@ -24,14 +24,14 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             return _searchRequest;
         }
 
-        public virtual DynamicAssociationSearchRequestBuilder AddPropertySearch(IDictionary<string, string> propertyValues)
+        public virtual DynamicAssociationSearchRequestBuilder AddPropertySearch(IDictionary<string, string[]> propertyValues)
         {
             foreach (var propertyValue in propertyValues)
             {
                 ((AndFilter)_searchRequest.Filter).ChildFilters.Add(new TermFilter
                 {
                     FieldName = propertyValue.Key,
-                    Values = propertyValue.Value.Split(',')
+                    Values = propertyValue.Value
                 });
             }
 

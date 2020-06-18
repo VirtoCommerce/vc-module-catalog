@@ -21,15 +21,19 @@ namespace VirtoCommerce.CatalogModule.Core.Model.DynamicAssociations.Conditions
             return result;
         }
 
-        public virtual Dictionary<string, string> GetPropertiesValues()
+        public virtual Dictionary<string, string[]> GetPropertiesValues()
         {
-            var result = new Dictionary<string, string>();
+            var result = new Dictionary<string, string[]>();
 
             if (!Properties.IsNullOrEmpty())
             {
                 foreach (var property in Properties)
                 {
-                    result.Add(property.Name, string.Join(',', property.Values.Select(x => x.Value)));
+                    result.Add(property.Name,
+                        property.Values
+                            .Where(x => x != null)
+                            .Select(x => x.Value.ToString())
+                            .ToArray());
                 }
             }
 

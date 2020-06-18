@@ -12,9 +12,9 @@ namespace VirtoCommerce.CatalogModule.Core.Model.DynamicAssociations.Conditions
             All = true;
         }
 
-        public virtual Dictionary<string, string> GetPropertyValues()
+        public virtual Dictionary<string, string[]> GetPropertyValues()
         {
-            var result = new Dictionary<string, string>();
+            var result = new Dictionary<string, string[]>();
 
             if (!Children.IsNullOrEmpty())
             {
