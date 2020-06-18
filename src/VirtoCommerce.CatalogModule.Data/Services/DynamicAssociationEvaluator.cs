@@ -54,7 +54,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
             }
 
-            return result.Distinct().ToArray();
+            return result.ToArray();
         }
     }
 }
