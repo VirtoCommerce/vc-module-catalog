@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CatalogModule.Core.Model.DynamicAssociations;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
@@ -32,10 +32,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
         public async Task<DynamicAssociationSearchResult> SearchDynamicAssociationsAsync(DynamicAssociationSearchCriteria criteria)
         {
-            if (criteria == null)
-            {
-                throw new ArgumentNullException(nameof(criteria));
-            }
+            ValidateParameters(criteria);
 
             var cacheKey = CacheKey.With(GetType(), nameof(SearchDynamicAssociationsAsync), criteria.GetCacheKey());
 
@@ -89,6 +86,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 query = query.Where(x => criteria.Groups.Contains(x.AssociationType));
             }
 
+            if (criteria.IsActive != null)
+            {
+                query = query.Where(x => x.IsActive == criteria.IsActive);
+            }
+
             return query;
         }
 
@@ -98,10 +100,18 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
             if (sortInfos.IsNullOrEmpty())
             {
-                sortInfos = new[] { new SortInfo { SortColumn = nameof(DynamicAssociation.Name) }};
+                sortInfos = new[] { new SortInfo { SortColumn = nameof(DynamicAssociation.Name) } };
             }
 
             return sortInfos;
+        }
+
+        private static void ValidateParameters(DynamicAssociationSearchCriteria criteria)
+        {
+            if (criteria == null)
+            {
+                throw new ArgumentNullException(nameof(criteria));
+            }
         }
     }
 }

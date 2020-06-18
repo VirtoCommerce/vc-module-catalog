@@ -9,7 +9,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CatalogModule.Core.Model.DynamicAssociations;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Data.Authorization;
 using VirtoCommerce.CatalogModule.Web.Authorization;
@@ -133,7 +133,7 @@ namespace VirtoCommerce.CatalogModule.Tests
 
             storeMock
                 .Setup(x => x.GetByIdsAsync(It.IsAny<string[]>(), It.IsAny<string>()))
-                .ReturnsAsync(new []
+                .ReturnsAsync(new[]
                 {
                     new Store
                     {
@@ -205,7 +205,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             var catalogAuthorizationHandler = CreateCatalogAuthorizationHandler(storeMock.Object);
             var dynamicAssociationSearchCriteria = new DynamicAssociationSearchCriteria
             {
-                StoreIds = new [] { "testStore1", "testStore2" },
+                StoreIds = new[] { "testStore1", "testStore2" },
             };
 
             var context = CreateAuthorizationHandlerContext(
@@ -217,7 +217,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             await catalogAuthorizationHandler.HandleAsync(context);
 
             // Assert
-            Assert.Equal(new [] { "testStore1", "testStore2" }, dynamicAssociationSearchCriteria.StoreIds);
+            Assert.Equal(new[] { "testStore1", "testStore2" }, dynamicAssociationSearchCriteria.StoreIds);
             Assert.True(context.HasSucceeded);
         }
 
@@ -250,7 +250,7 @@ namespace VirtoCommerce.CatalogModule.Tests
 
             storeMock
                 .Setup(x => x.GetByIdsAsync(It.IsAny<string[]>(), It.IsAny<string>()))
-                .ReturnsAsync(new []
+                .ReturnsAsync(new[]
                 {
                     new Store
                     {
@@ -313,6 +313,54 @@ namespace VirtoCommerce.CatalogModule.Tests
 
             // Assert
             Assert.True(context.HasSucceeded);
+        }
+
+        [Fact]
+        public async Task Handle_ProductsToMatch_Correct_With_Scope_Succeded()
+        {
+            // Arrange
+            var storeMock = CreateStoreServiceMock();
+            storeMock
+                .Setup(x => x.GetByIdAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(new Store { Catalog = "testCatalog1", });
+
+            var catalogAuthorizationHandler = CreateCatalogAuthorizationHandler(storeMock.Object);
+            var productsToMatchCriteria = new DynamicAssociationEvaluationContext();
+
+            var context = CreateAuthorizationHandlerContext(
+                _permission,
+                $"{_permission}|[{{\"catalogId\":\"testCatalog1\",\"type\":\"SelectedCatalogScope\",\"label\":\"Electronics\",\"scope\":\"testCatalog1\"}}]",
+                productsToMatchCriteria);
+
+            // Act
+            await catalogAuthorizationHandler.HandleAsync(context);
+
+            // Assert
+            Assert.True(context.HasSucceeded);
+        }
+
+        [Fact]
+        public async Task Handle_ProductsToMatch_Incorrect_With_Scope_UnSucceded()
+        {
+            // Arrange
+            var storeMock = CreateStoreServiceMock();
+            storeMock
+                .Setup(x => x.GetByIdAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(new Store { Catalog = "testCatalog", });
+
+            var catalogAuthorizationHandler = CreateCatalogAuthorizationHandler(storeMock.Object);
+            var productsToMatchCriteria = new DynamicAssociationEvaluationContext();
+
+            var context = CreateAuthorizationHandlerContext(
+                _permission,
+                $"{_permission}|[{{\"catalogId\":\"testCatalog1\",\"type\":\"SelectedCatalogScope\",\"label\":\"Electronics\",\"scope\":\"testCatalog1\"}}]",
+                productsToMatchCriteria);
+
+            // Act
+            await catalogAuthorizationHandler.HandleAsync(context);
+
+            // Assert
+            Assert.False(context.HasSucceeded);
         }
 
 

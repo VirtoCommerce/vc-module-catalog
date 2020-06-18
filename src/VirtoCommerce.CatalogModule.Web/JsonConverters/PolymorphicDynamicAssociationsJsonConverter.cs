@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.DynamicAssociations;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.Platform.Core.Common;
@@ -11,7 +10,7 @@ namespace VirtoCommerce.CatalogModule.Web.JsonConverters
 {
     public class PolymorphicDynamicAssociationsJsonConverter : JsonConverter
     {
-        private static Type[] _knownTypes = { typeof(DynamicAssociation), typeof(DynamicAssociationSearchCriteria), typeof(DynamicAssociationEvaluationContext) };
+        private static Type[] _knownTypes = { typeof(DynamicAssociation), typeof(DynamicAssociationSearchCriteria), typeof(DynamicAssociationExpressionEvaluationContext) };
 
         public override bool CanWrite => false;
         public override bool CanRead => true;

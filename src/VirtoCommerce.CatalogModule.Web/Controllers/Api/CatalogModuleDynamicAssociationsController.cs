@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using VirtoCommerce.CatalogModule.Core;
-using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.DynamicAssociations;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
@@ -22,15 +21,18 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly IDynamicAssociationSearchService _dynamicAssociationSearchService;
         private readonly IDynamicAssociationService _dynamicAssociationService;
         private readonly IAuthorizationService _authorizationService;
+        private readonly IDynamicAssociationEvaluator _dynamicAssociationEvaluator;
 
         public CatalogModuleDynamicAssociationsController(
             IDynamicAssociationSearchService dynamicAssociationSearchService,
             IDynamicAssociationService dynamicAssociationService,
-            IAuthorizationService authorizationService)
+            IAuthorizationService authorizationService,
+            IDynamicAssociationEvaluator dynamicAssociationEvaluator)
         {
             _dynamicAssociationSearchService = dynamicAssociationSearchService;
             _dynamicAssociationService = dynamicAssociationService;
             _authorizationService = authorizationService;
+            _dynamicAssociationEvaluator = dynamicAssociationEvaluator;
         }
 
         [HttpPost]
@@ -148,13 +150,32 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <summary>
         /// Evaluate dynamic associations.
         /// </summary>
-        /// <param name="context">Evaluation context.</param>
+        /// <param name="context">Search context</param>
         /// <returns>Associated products ids.</returns>
         [HttpPost]
         [Route("evaluate")]
-        public Task<ActionResult<string[]>> EvaluateDynamicAssociations([FromBody] DynamicAssociationEvaluationContext context)
+        public async Task<ActionResult<string[]>> EvaluateDynamicAssociations([FromBody] DynamicAssociationEvaluationContext context)
         {
-            throw new NotImplementedException();
+            ValidateParameters(context);
+
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, context, ModuleConstants.Security.Permissions.Read);
+
+            if (!authorizationResult.Succeeded)
+            {
+                return Unauthorized();
+            }
+
+            var result = await _dynamicAssociationEvaluator.EvaluateDynamicAssociationsAsync(context);
+
+            return Ok(result);
+        }
+
+        private static void ValidateParameters(DynamicAssociationEvaluationContext context)
+        {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
         }
     }
 }

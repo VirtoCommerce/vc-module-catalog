@@ -1,8 +1,7 @@
 using System;
-using VirtoCommerce.CatalogModule.Core.Model.DynamicAssociations;
 using VirtoCommerce.Platform.Core.Common;
 
-namespace VirtoCommerce.CatalogModule.Core.Model
+namespace VirtoCommerce.CatalogModule.Core.Model.DynamicAssociations
 {
     public class DynamicAssociation : AuditableEntity, IHasOuterId
     {

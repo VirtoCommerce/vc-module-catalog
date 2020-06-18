@@ -1,10 +1,17 @@
-using System.Collections.Generic;
-using VirtoCommerce.CoreModule.Core.Common;
+using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Core.Model.DynamicAssociations
 {
-    public class DynamicAssociationEvaluationContext : IEvaluationContext
+    public class DynamicAssociationEvaluationContext : ValueObject
     {
-        public ICollection<CatalogProduct> Products { get; set; } = new List<CatalogProduct>();
+        public string StoreId { get; set; }
+
+        public string[] ProductsToMatch { get; set; }
+
+        public string Group { get; set; }
+
+        public int Take { get; set; } = 20;
+
+        public int Skip { get; set; } = 0;
     }
 }

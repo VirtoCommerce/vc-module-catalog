@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Conditions;
+using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Core.Model.DynamicAssociations.Conditions
 {
@@ -11,7 +13,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model.DynamicAssociations.Conditions
         public override bool IsSatisfiedBy(IEvaluationContext context)
         {
             var result = false;
-            if (context is DynamicAssociationEvaluationContext evaluationContext)
+            if (context is DynamicAssociationExpressionEvaluationContext evaluationContext)
             {
                 result = evaluationContext.AreItemPropertyValuesEqual(GetPropertiesValues());
             }
@@ -19,9 +21,23 @@ namespace VirtoCommerce.CatalogModule.Core.Model.DynamicAssociations.Conditions
             return result;
         }
 
-        public Dictionary<string, string> GetPropertiesValues()
+        public virtual Dictionary<string, string[]> GetPropertiesValues()
         {
-            return new Dictionary<string, string>();
+            var result = new Dictionary<string, string[]>();
+
+            if (!Properties.IsNullOrEmpty())
+            {
+                foreach (var property in Properties)
+                {
+                    result.Add(property.Name,
+                        property.Values
+                            .Where(x => x != null)
+                            .Select(x => x.Value.ToString())
+                            .ToArray());
+                }
+            }
+
+            return result;
         }
     }
 }
