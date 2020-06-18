@@ -1,0 +1,69 @@
+angular.module('virtoCommerce.catalogModule')
+    .controller('virtoCommerce.catalogModule.outputTuningController', ['$scope', 'platformWebApp.bladeNavigationService', 'virtoCommerce.storeModule.stores', 'virtoCommerce.catalogModule.items', 'platformWebApp.settings', function ($scope, bladeNavigationService, stores, items, settings) {
+        var blade = $scope.blade;
+        blade.isLoading = true;
+        blade.headIcon = 'fa-area-chart';
+        blade.properties = [];
+        blade.outputTuningBlock = {};
+
+        $scope.BlockResultingRules = 'BlockResultingRules';
+        $scope.ConditionPropertyValues = 'ConditionPropertyValues';
+        $scope.BlockOutputTuning = 'BlockOutputTuning';
+
+        blade.sortFields = ['',''];
+        blade.sortDirections = ['asc', 'asc'];
+
+        var formScope;
+        $scope.setForm = (form) => { formScope = form; };
+
+        $scope.isValid = function () {
+            return formScope && formScope.$valid;
+        };
+
+        blade.currentEntity = {};
+
+        function initializeBlade() {
+            blade.currentEntity = angular.copy(blade.originalEntity);
+
+            const resultingRules = _.find(blade.currentEntity.expressionTree.children, x => x.id === $scope.BlockResultingRules);
+            const categoryCondition = _.find(resultingRules.children, x => x.id === $scope.ConditionPropertyValues);
+            blade.properties = categoryCondition.properties.map(x => x.name);
+
+            blade.outputTuningBlock = _.find(blade.currentEntity.expressionTree.children, x => x.id === $scope.BlockOutputTuning);
+
+            if (blade.outputTuningBlock.sortInfos) {
+                let sortPairs = blade.outputTuningBlock.sortInfos.split(';');
+                _.each(sortPairs,
+                    (item, index) => {
+                        let pair = item.split(':');
+                        blade.sortFields[index] = _.first(pair);
+                        blade.sortDirections[index] = _.last(pair);
+                    });
+            }
+            blade.isLoading = false;
+        }
+
+        $scope.onStoreSelected = ($item) => blade.currentEntity.catalogId = $item.catalog;
+
+        $scope.cancelChanges = function () {
+            bladeNavigationService.closeBlade(blade);
+        };
+
+        $scope.saveChanges = function () {
+            if (blade.onSelected) {
+                blade.outputTuningBlock.sortInfos = [];
+                for (let i = 0; i < blade.sortFields.length; i++) {
+                    if (blade.sortFields[i].length > 0) {
+                        blade.outputTuningBlock.sortInfos += blade.sortFields[i] + ':' + blade.sortDirections[i] + ';';
+                    }
+                }
+
+                blade.onSelected(blade.outputTuningBlock);
+                bladeNavigationService.closeBlade(blade);
+            }
+
+            bladeNavigationService.closeBlade(blade);
+        };
+
+        initializeBlade();
+    }]);

@@ -1,0 +1,79 @@
+<div class="blade-static __bottom" ng-include="'$(Platform)/Scripts/common/templates/ok-cancel.tpl.html'"></div>
+<div class="blade-content __medium-wide">
+    <div class="blade-inner">
+        <div class="inner-block">
+            <form class="form" name="formScope">
+                <fieldset ng-init="setForm(formScope)">
+                    <div class="form-group clearfix">
+                        <div class="column">
+                            <div class="form-group __info list">
+                                <label class="form-label">{{ 'catalog.blades.dynamicAssociation-outputTuning.labels.sortByProperty' | translate }}</label>
+                                <div class="form-input">
+                                    <ui-select ng-model="blade.sortFields[0]">
+                                        <ui-select-match placeholder="{{'catalog.blades.dynamicAssociation-outputTuning.placeholders.selectProperty' | translate}}">{{$select.selected}}</ui-select-match>
+                                        <ui-select-choices repeat="x in blade.properties">
+                                            <span ng-bind-html="x | highlight: $select.search"></span>
+                                        </ui-select-choices>
+                                    </ui-select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="column">
+                            <div class="form-group __info list">
+                                <label class="form-label">{{ 'catalog.blades.dynamicAssociation-outputTuning.labels.direction' | translate }}</label>
+                                <div class="form-input">
+                                    <ui-select ng-model="blade.sortDirections[0]">
+                                        <ui-select-match>{{$select.selected}}</ui-select-match>
+                                        <ui-select-choices repeat="x in ['asc', 'desc']">
+                                            <span ng-bind-html="x"></span>
+                                        </ui-select-choices>
+                                    </ui-select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group clearfix">
+                        <div class="column">
+                            <div class="form-group __info list">
+                                <label class="form-label">{{ 'catalog.blades.dynamicAssociation-outputTuning.labels.sortByProperty' | translate }}</label>
+                                <div class="form-input">
+                                    <ui-select ng-model="blade.sortFields[1]" ng-disabled="!blade.sortFields[0]">
+                                        <ui-select-match placeholder="{{'catalog.blades.dynamicAssociation-outputTuning.placeholders.selectProperty' | translate}}">{{$select.selected}}</ui-select-match>
+                                        <ui-select-choices repeat="x in blade.properties">
+                                            <span ng-bind-html="x | highlight: $select.search"></span>
+                                        </ui-select-choices>
+                                    </ui-select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="column">
+                            <div class="form-group __info list">
+                                <label class="form-label">{{ 'catalog.blades.dynamicAssociation-outputTuning.labels.direction' | translate }}</label>
+                                <div class="form-input">
+                                    <ui-select ng-model="blade.sortDirections[1]" ng-disabled="!blade.sortFields[0]">
+                                        <ui-select-match>{{$select.selected}}</ui-select-match>
+                                        <ui-select-choices repeat="x in ['asc', 'desc']">
+                                            <span ng-bind-html="x"></span>
+                                        </ui-select-choices>
+                                    </ui-select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group clearfix">
+                        <div class="column">
+                            <label class="form-label">{{ 'catalog.blades.dynamicAssociation-outputTuning.labels.limit' | translate }}</label>
+                            <div class="form-group __info list">
+                                <div class="form-input __number">
+                                    <input smart-float num-type="integer" required ng-model="blade.outputTuningBlock.outputLimit" type="text" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</div>
