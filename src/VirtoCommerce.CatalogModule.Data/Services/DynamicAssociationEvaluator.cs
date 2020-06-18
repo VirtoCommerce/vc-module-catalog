@@ -48,7 +48,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             {
 
                 var dynamicAssociationCondition = await _dynamicAssociationsConditionSelector.GetDynamicAssociationConditionAsync(context, product);
-                var searchResult = await _dynamicAssociationsConditionEvaluator.EvaluateDynamicAssociationConditionAsync(context, dynamicAssociationCondition);
+                var searchResult = await _dynamicAssociationsConditionEvaluator.EvaluateDynamicAssociationConditionAsync(dynamicAssociationCondition);
 
                 result.AddRange(searchResult);
 
