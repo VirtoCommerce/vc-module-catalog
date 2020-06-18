@@ -49,6 +49,20 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             return this;
         }
 
+        public virtual DynamicAssociationSearchRequestBuilder AddKeywordSearch(string keyword)
+        {
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                ((AndFilter)_searchRequest.Filter).ChildFilters.Add(new TermFilter
+                {
+                    FieldName = "__content",
+                    Values = new List<string> { keyword },
+                });
+            }
+            
+            return this;
+        }
+
         public virtual DynamicAssociationSearchRequestBuilder WithPaging(int skip, int take)
         {
             _searchRequest.Skip = skip;

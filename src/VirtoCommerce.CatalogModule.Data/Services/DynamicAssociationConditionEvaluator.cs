@@ -27,6 +27,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _requestBuilder
                 .AddOutlineSearch(conditionRequest.CategoryIds)
                 .AddPropertySearch(conditionRequest.PropertyValues)
+                .AddKeywordSearch(conditionRequest.Keyword)
                 .WithPaging(conditionRequest.Skip, conditionRequest.Take);
 
             var searchResult = await _searchProvider.SearchAsync(KnownDocumentTypes.Product, _requestBuilder.Build());
