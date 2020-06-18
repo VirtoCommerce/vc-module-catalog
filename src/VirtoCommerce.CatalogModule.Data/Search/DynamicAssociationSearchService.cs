@@ -32,10 +32,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
         public async Task<DynamicAssociationSearchResult> SearchDynamicAssociationsAsync(DynamicAssociationSearchCriteria criteria)
         {
-            if (criteria == null)
-            {
-                throw new ArgumentNullException(nameof(criteria));
-            }
+            ValidateParameters(criteria);
 
             var cacheKey = CacheKey.With(GetType(), nameof(SearchDynamicAssociationsAsync), criteria.GetCacheKey());
 
@@ -107,6 +104,14 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             }
 
             return sortInfos;
+        }
+
+        private static void ValidateParameters(DynamicAssociationSearchCriteria criteria)
+        {
+            if (criteria == null)
+            {
+                throw new ArgumentNullException(nameof(criteria));
+            }
         }
     }
 }

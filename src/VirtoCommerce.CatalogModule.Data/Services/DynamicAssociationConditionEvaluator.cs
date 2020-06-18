@@ -1,7 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core.Model.DynamicAssociations;
-using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Search.Indexing;
 using VirtoCommerce.SearchModule.Core.Model;
