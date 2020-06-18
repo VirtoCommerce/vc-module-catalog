@@ -5,7 +5,7 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Core.Model.DynamicAssociations
 {
-    public static class DynamicAssociationEvaluationContextExtensions
+    public static class DynamicAssociationExpressionEvaluationContextExtensions
     {
 
         public static bool IsItemInCategory(this DynamicAssociationExpressionEvaluationContext context, string[] categoryIds, string[] excludingCategoryIds, string[] excludingProductIds)
