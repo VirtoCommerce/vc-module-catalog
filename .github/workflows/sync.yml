@@ -18,4 +18,4 @@ jobs:
     - name: Sync
       uses: VirtoCommerce/vc-github-actions/sync-module-cicd@feature/vp-3187-initial-ci
       with:
-        github_token: ${ secrets.REPO_GITHUB_WORKFLOW_TOKEN }
+        github_token: ${{ secrets.REPO_GITHUB_WORKFLOW_TOKEN }}
