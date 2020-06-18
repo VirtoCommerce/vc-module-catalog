@@ -7,6 +7,7 @@ using VirtoCommerce.CatalogModule.Core.Model.DynamicAssociations.Conditions;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
+using VirtoCommerce.CatalogModule.Data.Extensions;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
@@ -20,9 +21,11 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _dynamicAssociationSearchService = dynamicAssociationSearchService;
         }
 
-        public async Task<DynamicAssociationCondition> GetDynamicAssociationConditionAsync(DynamicAssociationEvaluationContext context, CatalogProduct product)
+        public async Task<DynamicAssociationConditionEvaluationRequest> GetDynamicAssociationConditionAsync(DynamicAssociationEvaluationContext context, CatalogProduct product)
         {
-            var result = AbstractTypeFactory<DynamicAssociationCondition>.TryCreateInstance();
+            var result = AbstractTypeFactory<DynamicAssociationConditionEvaluationRequest>
+                .TryCreateInstance()
+                .PopulatePaging(context);
 
             var dynamicAssociationRules = (await _dynamicAssociationSearchService
                 .SearchDynamicAssociationsAsync(new DynamicAssociationSearchCriteria

@@ -10,7 +10,13 @@ namespace VirtoCommerce.CatalogModule.Web.JsonConverters
 {
     public class PolymorphicDynamicAssociationsJsonConverter : JsonConverter
     {
-        private static Type[] _knownTypes = { typeof(DynamicAssociation), typeof(DynamicAssociationSearchCriteria), typeof(DynamicAssociationExpressionEvaluationContext) };
+        private static Type[] _knownTypes =
+        {
+            typeof(DynamicAssociation),
+            typeof(DynamicAssociationSearchCriteria),
+            typeof(DynamicAssociationExpressionEvaluationContext),
+            typeof(DynamicAssociationConditionEvaluationRequest)
+        };
 
         public override bool CanWrite => false;
         public override bool CanRead => true;
