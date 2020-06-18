@@ -175,6 +175,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
         [HttpPost]
         [Route("preview")]
+        [Authorize(ModuleConstants.Security.Permissions.Read)]
         public async Task<ActionResult<string[]>> PreviewDynamicAssociations([FromBody] DynamicAssociationConditionEvaluationRequest conditionRequest)
         {
             if (conditionRequest == null)
