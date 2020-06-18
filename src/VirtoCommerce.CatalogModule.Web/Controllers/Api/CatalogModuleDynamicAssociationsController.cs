@@ -170,6 +170,14 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return Ok(result);
         }
 
+        [HttpPost]
+        [Route("preview")]
+        public Task<ActionResult<string[]>> PreviewDynamicAssociations([FromBody] DynamicAssociationConditionEvaluationRequest conditionRequest)
+        {
+            throw new NotImplementedException();
+        }
+
+
         private static void ValidateParameters(DynamicAssociationEvaluationContext context)
         {
             if (context == null)
