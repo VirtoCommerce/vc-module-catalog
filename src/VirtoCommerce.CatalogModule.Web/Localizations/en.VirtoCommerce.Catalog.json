@@ -548,13 +548,19 @@
         "labels": {
           "sortByProperty": "Sort by property",
           "direction": "Direction",
-          "limit":  "Output limit" 
+          "limit": "Output limit"
         },
         "placeholders": {
-          "selectProperty": "Select property..." 
-        } 
+          "selectProperty": "Select property..."
+        }
+      },
+      "dynamicAssociation-preview": {
+        "title": "Products preview",
+        "labels": {
+          "picture": "Pic",
+          "name": "Name"
+        }
       }
-
     },
     "exporter-list": {
       "title": "Available exporters",

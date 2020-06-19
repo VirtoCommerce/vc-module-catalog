@@ -34,8 +34,8 @@ angular.module('virtoCommerce.catalogModule')
 
                     if (blade.currentEntity.storeId) {
                         //Need to pre filter catalog-category selector
-                        stores.get({ id: blade.currentEntity.storeId }, data => {
-                            blade.currentEntity.catalogId = blade.origEntity.catalogId = data.catalog;
+                        stores.get({ id: blade.currentEntity.storeId }, response => {
+                            blade.currentEntity.catalogId = blade.origEntity.catalogId = response.catalog;
                         });
                      }
                 });
@@ -72,12 +72,15 @@ angular.module('virtoCommerce.catalogModule')
         };
 
         $scope.outputTuning = function () {
+            const rulesBlock = _.find(blade.currentEntity.expressionTree.children, x => x.id === $scope.BlockResultingRules);
+            const categoryCondition = $scope.getCondition(rulesBlock, $scope.ConditionCategoryIs);
             const newBlade = {
                 id: "outputTuning",
                 title: "catalog.blades.dynamicAssociation-outputTuning.title",
                 subtitle: 'catalog.blades.dynamicAssociation-outputTuning.subtitle',
                 controller: 'virtoCommerce.catalogModule.outputTuningController',
                 template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/dynamicAssociations/outputTuning.tpl.html',
+                categoryIds: categoryCondition.categoryIds,
                 originalEntity: blade.currentEntity,
                 onSelected: function (newSortingRules) {
                     let sortingRules = _.find(blade.currentEntity.expressionTree.children, x => x.id === $scope.BlockOutputTuning);
@@ -284,6 +287,7 @@ angular.module('virtoCommerce.catalogModule')
 
         $scope.editProperties = function (rulesBlock) {
             let propertyCondition = $scope.getCondition(rulesBlock, $scope.ConditionPropertyValues);
+            let categoryCondition = $scope.getCondition(rulesBlock, $scope.ConditionCategoryIs);
 
             var newBlade = {
                 id: 'propertiesEditor',
@@ -299,8 +303,14 @@ angular.module('virtoCommerce.catalogModule')
                     {
                         name: "platform.commands.preview", icon: 'fa fa-filter',
                         executeMethod: (pickingBlade) => {
-                            //ToDo: show blade with filtered products
-                            bladeNavigationService.closeBlade(pickingBlade);
+                            var viewerBlade = {
+                                id: 'propertiesSelector',
+                                controller: 'virtoCommerce.catalogModule.dynamicAssociationViewerController',
+                                template: 'Modules/$(virtoCommerce.catalog)/Scripts/blades/dynamicAssociations/dynamicAssociation-viewer.tpl.html',
+                                categoryIds: categoryCondition.categoryIds,
+                                properties: pickingBlade.currentEntities
+                            };
+                            bladeNavigationService.showBlade(viewerBlade, pickingBlade);
                         },
                         canExecuteMethod: () => true
                     }]
