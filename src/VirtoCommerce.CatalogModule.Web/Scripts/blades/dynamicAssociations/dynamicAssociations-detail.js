@@ -72,7 +72,7 @@ angular.module('virtoCommerce.catalogModule')
         };
 
         $scope.outputTuning = function () {
-            const rulesBlock = _.find(blade.currentEntity.expressionTree.children, x => x.id === $scope.BlockMatchingRules);
+            const rulesBlock = _.find(blade.currentEntity.expressionTree.children, x => x.id === $scope.BlockResultingRules);
             const categoryCondition = $scope.getCondition(rulesBlock, $scope.ConditionCategoryIs);
             const newBlade = {
                 id: "outputTuning",
@@ -85,9 +85,7 @@ angular.module('virtoCommerce.catalogModule')
                 onSelected: function (newSortingRules) {
                     let sortingRules = _.find(blade.currentEntity.expressionTree.children, x => x.id === $scope.BlockOutputTuning);
                     if (sortingRules) {
-                        if (newSortingRules.sortInfos && newSortingRules.sortInfos.length > 0) {
-                            sortingRules.sortInfos = newSortingRules.sortInfos;
-                        }
+                        sortingRules.sortInfos = newSortingRules.sortInfos;
                         sortingRules.outputLimit = newSortingRules.outputLimit;
                     }
                 }

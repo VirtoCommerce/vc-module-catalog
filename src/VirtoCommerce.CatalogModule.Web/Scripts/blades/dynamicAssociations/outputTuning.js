@@ -51,7 +51,7 @@ angular.module('virtoCommerce.catalogModule')
 
         $scope.saveChanges = function () {
             if (blade.onSelected) {
-                blade.outputTuningBlock.sortInfos = [];
+                blade.outputTuningBlock.sortInfos = '';
                 for (let i = 0; i < blade.sortFields.length; i++) {
                     if (blade.sortFields[i].length > 0) {
                         blade.outputTuningBlock.sortInfos += blade.sortFields[i] + ':' + blade.sortDirections[i] + ';';
