@@ -45,7 +45,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var authorizationResult = await _authorizationService.AuthorizeAsync(
                 User,
                 criteria,
-                new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read)
+                new DynamicAssociationAuthorizationRequirement(ModuleConstants.Security.Permissions.Read)
                 );
 
             if (!authorizationResult.Succeeded)
@@ -72,7 +72,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var authorizationResult = await _authorizationService.AuthorizeAsync(
                 User,
                 result,
-                new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read)
+                new DynamicAssociationAuthorizationRequirement(ModuleConstants.Security.Permissions.Read)
                 );
 
             if (!authorizationResult.Succeeded)
@@ -111,7 +111,11 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("")]
         public async Task<ActionResult<DynamicAssociation[]>> SaveAssociations([FromBody] DynamicAssociation[] associations)
         {
-            var authorizationResult = await _authorizationService.AuthorizeAsync(User, associations, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
+            var authorizationResult = await _authorizationService.AuthorizeAsync(
+                User,
+                associations,
+                new DynamicAssociationAuthorizationRequirement(ModuleConstants.Security.Permissions.Update)
+                );
 
             if (!authorizationResult.Succeeded)
             {
@@ -138,7 +142,11 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         public async Task<ActionResult> DeleteAssociation([FromQuery] string[] ids)
         {
             var dynamicAssociations = await _dynamicAssociationService.GetByIdsAsync(ids);
-            var authorizationResult = await _authorizationService.AuthorizeAsync(User, dynamicAssociations, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Delete));
+            var authorizationResult = await _authorizationService.AuthorizeAsync(
+                User,
+                dynamicAssociations,
+                new DynamicAssociationAuthorizationRequirement(ModuleConstants.Security.Permissions.Delete)
+                );
 
             if (!authorizationResult.Succeeded)
             {
@@ -161,7 +169,11 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         {
             ValidateParameters(context);
 
-            var authorizationResult = await _authorizationService.AuthorizeAsync(User, context, ModuleConstants.Security.Permissions.Read);
+            var authorizationResult = await _authorizationService.AuthorizeAsync(
+                User,
+                context,
+                new DynamicAssociationAuthorizationRequirement(ModuleConstants.Security.Permissions.Read)
+                );
 
             if (!authorizationResult.Succeeded)
             {
@@ -175,12 +187,22 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
         [HttpPost]
         [Route("preview")]
-        [Authorize(ModuleConstants.Security.Permissions.Read)]
         public async Task<ActionResult<string[]>> PreviewDynamicAssociations([FromBody] DynamicAssociationConditionEvaluationRequest conditionRequest)
         {
             if (conditionRequest == null)
             {
                 throw new ArgumentNullException(nameof(conditionRequest));
+            }
+
+            var authorizationResult = await _authorizationService.AuthorizeAsync(
+                User,
+                conditionRequest,
+                new DynamicAssociationAuthorizationRequirement(ModuleConstants.Security.Permissions.Read)
+                );
+
+            if (!authorizationResult.Succeeded)
+            {
+                return Unauthorized();
             }
 
             var result = await _dynamicAssociationConditionEvaluator.EvaluateDynamicAssociationConditionAsync(conditionRequest);

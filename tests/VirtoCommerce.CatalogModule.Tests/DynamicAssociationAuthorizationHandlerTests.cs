@@ -9,10 +9,13 @@ using Microsoft.Extensions.Options;
 using Moq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.DynamicAssociations;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
+using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Authorization;
 using VirtoCommerce.CatalogModule.Web.Authorization;
+using VirtoCommerce.CoreModule.Core.Outlines;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.DynamicProperties;
 using VirtoCommerce.Platform.Core.Security;
@@ -23,12 +26,12 @@ using Xunit;
 
 namespace VirtoCommerce.CatalogModule.Tests
 {
-    public class CatalogAuthorizationHandlerTests
+    public class DynamicAssociationAuthorizationHandlerTests
     {
         private readonly IOptions<MvcNewtonsoftJsonOptions> _jsonOptions;
         private const string _permission = "test:permission";
 
-        public CatalogAuthorizationHandlerTests()
+        public DynamicAssociationAuthorizationHandlerTests()
         {
             AbstractTypeFactory<PermissionScope>.RegisterType<SelectedCatalogScope>();
             _jsonOptions = CreateJsonConverterWrapper();
@@ -49,7 +52,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                     Catalog = "testCatalog"
                 });
 
-            var catalogAuthorizationHandler = CreateCatalogAuthorizationHandler(storeMock.Object);
+            var authorizationHandler = CreateAuthorizationHandler(storeMock.Object, null);
 
             var dynamicAssociation = new DynamicAssociation();
 
@@ -59,7 +62,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                 dynamicAssociation);
 
             // Act
-            await catalogAuthorizationHandler.HandleAsync(context);
+            await authorizationHandler.HandleAsync(context);
 
             // Assert
             Assert.True(context.HasSucceeded);
@@ -79,7 +82,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                     Catalog = "testCatalog1"
                 });
 
-            var catalogAuthorizationHandler = CreateCatalogAuthorizationHandler(storeMock.Object);
+            var authorizationHandler = CreateAuthorizationHandler(storeMock.Object, null);
 
             var dynamicAssociation = new DynamicAssociation();
 
@@ -89,7 +92,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                 dynamicAssociation);
 
             // Act
-            await catalogAuthorizationHandler.HandleAsync(context);
+            await authorizationHandler.HandleAsync(context);
 
             // Assert
             Assert.False(context.HasSucceeded);
@@ -109,7 +112,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                     Catalog = "testCatalog"
                 });
 
-            var catalogAuthorizationHandler = CreateCatalogAuthorizationHandler(storeMock.Object);
+            var authorizationHandler = CreateAuthorizationHandler(storeMock.Object, null);
 
             var dynamicAssociation = new DynamicAssociation();
 
@@ -119,7 +122,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                 dynamicAssociation);
 
             // Act
-            await catalogAuthorizationHandler.HandleAsync(context);
+            await authorizationHandler.HandleAsync(context);
 
             // Assert
             Assert.True(context.HasSucceeded);
@@ -147,7 +150,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                     },
                 });
 
-            var catalogAuthorizationHandler = CreateCatalogAuthorizationHandler(storeMock.Object);
+            var authorizationHandler = CreateAuthorizationHandler(storeMock.Object, null);
             var dynamicAssociationSearchCriteria = new DynamicAssociationSearchCriteria
             {
                 StoreIds = Array.Empty<string>(),
@@ -159,7 +162,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                 dynamicAssociationSearchCriteria);
 
             // Act
-            await catalogAuthorizationHandler.HandleAsync(context);
+            await authorizationHandler.HandleAsync(context);
 
             // Assert
             Assert.Equal(new[] { "testStore1" }, dynamicAssociationSearchCriteria.StoreIds);
@@ -176,7 +179,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                 .Setup(x => x.GetByIdsAsync(It.IsAny<string[]>(), It.IsAny<string>()))
                 .ReturnsAsync(new Store[0]);
 
-            var catalogAuthorizationHandler = CreateCatalogAuthorizationHandler(storeMock.Object);
+            var authorizationHandler = CreateAuthorizationHandler(storeMock.Object, null);
             var dynamicAssociationSearchCriteria = new DynamicAssociationSearchCriteria();
 
             var context = CreateAuthorizationHandlerContext(
@@ -185,7 +188,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                 dynamicAssociationSearchCriteria);
 
             // Act
-            await catalogAuthorizationHandler.HandleAsync(context);
+            await authorizationHandler.HandleAsync(context);
 
             // Assert
             Assert.Equal(new string[0], dynamicAssociationSearchCriteria.StoreIds);
@@ -202,7 +205,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                 .Setup(x => x.GetByIdsAsync(It.IsAny<string[]>(), It.IsAny<string>()))
                 .ReturnsAsync(new Store[0]);
 
-            var catalogAuthorizationHandler = CreateCatalogAuthorizationHandler(storeMock.Object);
+            var authorizationHandler = CreateAuthorizationHandler(storeMock.Object, null);
             var dynamicAssociationSearchCriteria = new DynamicAssociationSearchCriteria
             {
                 StoreIds = new[] { "testStore1", "testStore2" },
@@ -214,7 +217,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                 dynamicAssociationSearchCriteria);
 
             // Act
-            await catalogAuthorizationHandler.HandleAsync(context);
+            await authorizationHandler.HandleAsync(context);
 
             // Assert
             Assert.Equal(new[] { "testStore1", "testStore2" }, dynamicAssociationSearchCriteria.StoreIds);
@@ -227,7 +230,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             // Arrange
             var storeMock = CreateStoreServiceMock();
 
-            var catalogAuthorizationHandler = CreateCatalogAuthorizationHandler(storeMock.Object);
+            var authorizationHandler = CreateAuthorizationHandler(storeMock.Object, null);
             var dynamicAssociations = new DynamicAssociation[0];
 
             var context = CreateAuthorizationHandlerContext(
@@ -236,7 +239,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                 dynamicAssociations);
 
             // Act
-            await catalogAuthorizationHandler.HandleAsync(context);
+            await authorizationHandler.HandleAsync(context);
 
             // Assert
             Assert.True(context.HasSucceeded);
@@ -262,7 +265,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                     },
                 });
 
-            var catalogAuthorizationHandler = CreateCatalogAuthorizationHandler(storeMock.Object);
+            var authorizationHandler = CreateAuthorizationHandler(storeMock.Object, null);
             var dynamicAssociations = new DynamicAssociation[0];
 
             var context = CreateAuthorizationHandlerContext(
@@ -271,7 +274,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                 dynamicAssociations);
 
             // Act
-            await catalogAuthorizationHandler.HandleAsync(context);
+            await authorizationHandler.HandleAsync(context);
 
             // Assert
             Assert.False(context.HasSucceeded);
@@ -297,7 +300,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                     },
                 });
 
-            var catalogAuthorizationHandler = CreateCatalogAuthorizationHandler(storeMock.Object);
+            var authorizationHandler = CreateAuthorizationHandler(storeMock.Object, null);
             var dynamicAssociations = new DynamicAssociation[0];
 
             var context = CreateAuthorizationHandlerContext(
@@ -309,7 +312,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                 dynamicAssociations);
 
             // Act
-            await catalogAuthorizationHandler.HandleAsync(context);
+            await authorizationHandler.HandleAsync(context);
 
             // Assert
             Assert.True(context.HasSucceeded);
@@ -324,7 +327,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                 .Setup(x => x.GetByIdAsync(It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(new Store { Catalog = "testCatalog1", });
 
-            var catalogAuthorizationHandler = CreateCatalogAuthorizationHandler(storeMock.Object);
+            var authorizationHandler = CreateAuthorizationHandler(storeMock.Object, null);
             var productsToMatchCriteria = new DynamicAssociationEvaluationContext();
 
             var context = CreateAuthorizationHandlerContext(
@@ -333,7 +336,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                 productsToMatchCriteria);
 
             // Act
-            await catalogAuthorizationHandler.HandleAsync(context);
+            await authorizationHandler.HandleAsync(context);
 
             // Assert
             Assert.True(context.HasSucceeded);
@@ -348,7 +351,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                 .Setup(x => x.GetByIdAsync(It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(new Store { Catalog = "testCatalog", });
 
-            var catalogAuthorizationHandler = CreateCatalogAuthorizationHandler(storeMock.Object);
+            var authorizationHandler = CreateAuthorizationHandler(storeMock.Object, null);
             var productsToMatchCriteria = new DynamicAssociationEvaluationContext();
 
             var context = CreateAuthorizationHandlerContext(
@@ -357,7 +360,99 @@ namespace VirtoCommerce.CatalogModule.Tests
                 productsToMatchCriteria);
 
             // Act
-            await catalogAuthorizationHandler.HandleAsync(context);
+            await authorizationHandler.HandleAsync(context);
+
+            // Assert
+            Assert.False(context.HasSucceeded);
+        }
+
+        [Fact]
+        public async Task Handle_ConditionEvaluationRequest_Category_Succeded()
+        {
+            // Arrage
+            var categoryServiceMock = CreateCategoryServiceMock();
+            categoryServiceMock
+                .Setup(x => x.GetByIdsAsync(It.IsAny<string[]>(), It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(new[]
+                {
+                    new Category
+                    {
+                        Id = "testCategory1",
+                        Outlines = new[]
+                        {
+                            new Outline
+                            {
+                                Items = new []
+                                {
+                                    new OutlineItem
+                                    {
+                                        Id = "testCatalog1",
+                                    }, 
+                                }
+                            }, 
+                        }
+                    },
+                });
+
+            var authorizationHandler = CreateAuthorizationHandler(null, categoryServiceMock.Object);
+            var evaluationRequest = new DynamicAssociationConditionEvaluationRequest
+            {
+                CategoryIds = new [] { "testCategory1" }
+            };
+
+            var context = CreateAuthorizationHandlerContext(
+                $"{_permission}",
+                $"{_permission}|[{{\"catalogId\":\"testCatalog1\",\"type\":\"SelectedCatalogScope\",\"label\":\"Electronics\",\"scope\":\"testCatalog1\"}}]",
+                evaluationRequest);
+
+            // Act
+            await authorizationHandler.HandleAsync(context);
+
+            // Assert
+            Assert.True(context.HasSucceeded);
+        }
+
+        [Fact]
+        public async Task Handle_ConditionEvaluationRequest_Category_Unsucceded()
+        {
+            // Arrage
+            var categoryServiceMock = CreateCategoryServiceMock();
+            categoryServiceMock
+                .Setup(x => x.GetByIdsAsync(It.IsAny<string[]>(), It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(new[]
+                {
+                    new Category
+                    {
+                        Id = "testCategory1",
+                        Outlines = new[]
+                        {
+                            new Outline
+                            {
+                                Items = new []
+                                {
+                                    new OutlineItem
+                                    {
+                                        Id = "testCatalog2",
+                                    },
+                                }
+                            },
+                        }
+                    },
+                });
+
+            var authorizationHandler = CreateAuthorizationHandler(null, categoryServiceMock.Object);
+            var evaluationRequest = new DynamicAssociationConditionEvaluationRequest
+            {
+                CategoryIds = new[] { "testCategory1" }
+            };
+
+            var context = CreateAuthorizationHandlerContext(
+                $"{_permission}",
+                $"{_permission}|[{{\"catalogId\":\"testCatalog1\",\"type\":\"SelectedCatalogScope\",\"label\":\"Electronics\",\"scope\":\"testCatalog1\"}}]",
+                evaluationRequest);
+
+            // Act
+            await authorizationHandler.HandleAsync(context);
 
             // Assert
             Assert.False(context.HasSucceeded);
@@ -366,17 +461,14 @@ namespace VirtoCommerce.CatalogModule.Tests
 
         private IOptions<MvcNewtonsoftJsonOptions> CreateJsonConverterWrapper()
         {
-            var result = new Mock<IOptions<MvcNewtonsoftJsonOptions>>();
-            result.Setup(x => x.Value).Returns(new MvcNewtonsoftJsonOptions());
-
-            return result.Object;
+            return Options.Create(new MvcNewtonsoftJsonOptions());
         }
 
         private static ICollection<IAuthorizationRequirement> CreateAuthorizationRequirements(string permission)
         {
             var result = new List<IAuthorizationRequirement>
             {
-                new CatalogAuthorizationRequirement(permission)
+                new DynamicAssociationAuthorizationRequirement(permission)
             };
 
             return result;
@@ -408,9 +500,16 @@ namespace VirtoCommerce.CatalogModule.Tests
             return result;
         }
 
-        private CatalogAuthorizationHandler CreateCatalogAuthorizationHandler(IStoreService storeService)
+        private static Mock<ICategoryService> CreateCategoryServiceMock()
         {
-            var result = new CatalogAuthorizationHandler(_jsonOptions, storeService);
+            var result = new Mock<ICategoryService>();
+
+            return result;
+        }
+
+        private IAuthorizationHandler CreateAuthorizationHandler(IStoreService storeService, ICategoryService categoryService)
+        {
+            var result = new DynamicAssociationAuthorizationHandler(_jsonOptions, storeService, categoryService);
 
             return result;
         }
