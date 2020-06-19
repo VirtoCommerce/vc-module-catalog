@@ -1,5 +1,5 @@
 angular.module('virtoCommerce.catalogModule')
-    .controller('virtoCommerce.catalogModule.outputTuningController', ['$scope', 'platformWebApp.bladeNavigationService', 'virtoCommerce.storeModule.stores', 'virtoCommerce.catalogModule.items', 'platformWebApp.settings', function ($scope, bladeNavigationService, stores, items, settings) {
+    .controller('virtoCommerce.catalogModule.outputTuningController', ['$scope', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.categories' , function ($scope, bladeNavigationService, categories) {
         var blade = $scope.blade;
         blade.isLoading = true;
         blade.headIcon = 'fa-area-chart';
@@ -24,11 +24,11 @@ angular.module('virtoCommerce.catalogModule')
 
         function initializeBlade() {
             blade.currentEntity = angular.copy(blade.originalEntity);
-
-            const resultingRules = _.find(blade.currentEntity.expressionTree.children, x => x.id === $scope.BlockResultingRules);
-            const categoryCondition = _.find(resultingRules.children, x => x.id === $scope.ConditionPropertyValues);
-            blade.properties = categoryCondition.properties.map(x => x.name);
-
+            categories.getByIds({ ids: blade.categoryIds },
+                data => {
+                    blade.properties = _.unique(_.first(data.map(x => x.properties))).map(x=>x.name);
+                });
+           
             blade.outputTuningBlock = _.find(blade.currentEntity.expressionTree.children, x => x.id === $scope.BlockOutputTuning);
 
             if (blade.outputTuningBlock.sortInfos) {
