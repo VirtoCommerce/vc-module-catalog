@@ -40,7 +40,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         public virtual DynamicAssociationSearchRequestBuilder AddSortInfo(string sortInfoString)
         {
-            var softInfos = SortInfo.Parse(sortInfoString);
+            var softInfos = SortInfo.Parse(sortInfoString).ToArray();
 
             if (!softInfos.IsNullOrEmpty())
             {
