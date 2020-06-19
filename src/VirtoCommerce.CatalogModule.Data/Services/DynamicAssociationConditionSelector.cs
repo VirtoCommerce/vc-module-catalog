@@ -34,7 +34,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     SortInfos = { new SortInfo
                     {
                         SortColumn = nameof(DynamicAssociation.Priority),
-                        SortDirection = SortDirection.Ascending,
+                        SortDirection = SortDirection.Descending,
                     }},
                     IsActive = true,
                 }))
