@@ -61,7 +61,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                         .PopulatePaging(context);
                     result.PropertyValues = resultRule.GetPropertyValues();
                     result.CategoryIds = resultRule.GetCategoryIds();
-                    result.SortInfoString = outputTuningBlock.SortInfos;
+                    result.Sort = outputTuningBlock.Sort;
                     result.Skip = context.Skip;
                     result.Take = Math.Min(Math.Max(outputTuningBlock.OutputLimit - context.Skip, 0), context.Take);
 
