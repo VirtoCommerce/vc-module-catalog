@@ -8,14 +8,12 @@ namespace VirtoCommerce.CatalogModule.Core.Model.DynamicAssociations
     public static class DynamicAssociationExpressionEvaluationContextExtensions
     {
 
-        public static bool IsItemInCategory(this DynamicAssociationExpressionEvaluationContext context, string[] categoryIds, string[] excludingCategoryIds, string[] excludingProductIds)
+        public static bool AreItemsInCategory(this DynamicAssociationExpressionEvaluationContext context, string[] categoryIds)
         {
-            //TODO: Add unit tests for this method (can get from marketing)
+            var result = context.Products
+                .InCategories(categoryIds)
+                .Any();
 
-            var result = context.Products.InCategories(categoryIds)
-                               .ExcludeCategories(excludingCategoryIds)
-                               .ExcludeProducts(excludingProductIds)
-                               .Any();
             return result;
         }
 
@@ -26,20 +24,6 @@ namespace VirtoCommerce.CatalogModule.Core.Model.DynamicAssociations
             var result = context.Products.WithPropertyValues(propertyValues).Any();
 
             return result;
-        }
-
-        public static IEnumerable<CatalogProduct> ExcludeCategories(this IEnumerable<CatalogProduct> products, string[] categoryIds)
-        {
-            var retVal = products.Where(x => !ProductInCategories(x, categoryIds));
-
-            return retVal;
-        }
-
-        public static IEnumerable<CatalogProduct> ExcludeProducts(this IEnumerable<CatalogProduct> products, string[] productIds)
-        {
-            var retval = products.Where(x => !ProductInProducts(x, productIds));
-
-            return retval;
         }
 
         public static IEnumerable<CatalogProduct> InCategories(this IEnumerable<CatalogProduct> products, string[] categoryIds)
