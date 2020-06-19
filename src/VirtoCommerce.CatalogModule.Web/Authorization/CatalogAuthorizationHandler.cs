@@ -6,26 +6,22 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using VirtoCommerce.CatalogModule.Core.Model;
-using VirtoCommerce.CatalogModule.Core.Model.DynamicAssociations;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Data.Authorization;
 using VirtoCommerce.CatalogModule.Data.ExportImport;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.Platform.Security.Authorization;
-using VirtoCommerce.StoreModule.Core.Services;
 
 namespace VirtoCommerce.CatalogModule.Web.Authorization
 {
     public sealed class CatalogAuthorizationHandler : PermissionAuthorizationHandlerBase<CatalogAuthorizationRequirement>
     {
         private readonly MvcNewtonsoftJsonOptions _jsonOptions;
-        private readonly IStoreService _storeService;
 
-        public CatalogAuthorizationHandler(IOptions<MvcNewtonsoftJsonOptions> jsonOptions, IStoreService storeService)
+        public CatalogAuthorizationHandler(IOptions<MvcNewtonsoftJsonOptions> jsonOptions)
         {
             _jsonOptions = jsonOptions.Value;
-            _storeService = storeService;
         }
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, CatalogAuthorizationRequirement requirement)
@@ -97,48 +93,6 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
                             propertyDictionaryItemSearchCriteria.CatalogIds = propertyDictionaryItemSearchCriteria.CatalogIds.Intersect(allowedCatalogIds).ToArray();
                         }
                         context.Succeed(requirement);
-                    }
-                    else if (context.Resource is DynamicAssociation[] dynamicAssociations)
-                    {
-                        var storeIds = dynamicAssociations.Select(x => x.StoreId).Distinct();
-                        var stores = await _storeService.GetByIdsAsync(storeIds.ToArray());
-                        var catalogIds = stores.Select(x => x.Catalog);
-
-                        if (catalogIds.All(x => allowedCatalogIds.Contains(x)))
-                        {
-                            context.Succeed(requirement);
-                        }
-                    }
-                    else if (context.Resource is DynamicAssociationSearchCriteria dynamicAssociationSearchCriteria)
-                    {
-                        var storeIds = dynamicAssociationSearchCriteria.StoreIds?.Distinct() ?? Array.Empty<string>();
-                        var stores = await _storeService.GetByIdsAsync(storeIds.ToArray());
-                        var availableStores = stores.Where(x => allowedCatalogIds.Contains(x.Catalog));
-
-                        dynamicAssociationSearchCriteria.StoreIds = availableStores.Select(x => x.Id).ToArray();
-
-                        context.Succeed(requirement);
-                        
-                    }
-                    else if (context.Resource is DynamicAssociation dynamicAssociation)
-                    {
-                        var storeId = dynamicAssociation.StoreId;
-                        var store = await _storeService.GetByIdAsync(storeId);
-
-                        if (allowedCatalogIds.Contains(store.Catalog))
-                        {
-                            context.Succeed(requirement);
-                        }
-                    }
-                    else if (context.Resource is DynamicAssociationEvaluationContext productsToMatchSearchContext)
-                    {
-                        var storeId = productsToMatchSearchContext.StoreId;
-                        var store = await _storeService.GetByIdAsync(storeId);
-
-                        if (allowedCatalogIds.Contains(store.Catalog))
-                        {
-                            context.Succeed(requirement);
-                        }
                     }
                 }
             }
