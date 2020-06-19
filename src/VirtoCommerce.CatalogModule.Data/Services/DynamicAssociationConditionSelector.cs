@@ -7,7 +7,6 @@ using VirtoCommerce.CatalogModule.Core.Model.DynamicAssociations.Conditions;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
-using VirtoCommerce.CatalogModule.Data.Extensions;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
@@ -56,9 +55,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     var outputTuningBlock = dynamicAssociationRule.ExpressionTree.Children.OfType<BlockOutputTuning>().FirstOrDefault()
                         ?? throw new InvalidOperationException($"Output tuning block for \"{dynamicAssociationRule.Name}\" dynamic association rule is missing");
 
-                    result = AbstractTypeFactory<DynamicAssociationConditionEvaluationRequest>
-                        .TryCreateInstance()
-                        .PopulatePaging(context);
+                    result = AbstractTypeFactory<DynamicAssociationConditionEvaluationRequest>.TryCreateInstance();
                     result.PropertyValues = resultRule.GetPropertyValues();
                     result.CategoryIds = resultRule.GetCategoryIds();
                     result.Sort = outputTuningBlock.Sort;
