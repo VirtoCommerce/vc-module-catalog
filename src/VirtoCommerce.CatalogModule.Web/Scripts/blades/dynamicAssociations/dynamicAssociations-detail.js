@@ -34,8 +34,8 @@ angular.module('virtoCommerce.catalogModule')
 
                     if (blade.currentEntity.storeId) {
                         //Need to pre filter catalog-category selector
-                        stores.get({ id: blade.currentEntity.storeId }, data => {
-                            blade.currentEntity.catalogId = blade.origEntity.catalogId = data.catalog;
+                        stores.get({ id: blade.currentEntity.storeId }, response => {
+                            blade.currentEntity.catalogId = blade.origEntity.catalogId = response.catalog;
                         });
                      }
                 });
@@ -303,14 +303,14 @@ angular.module('virtoCommerce.catalogModule')
                     {
                         name: "platform.commands.preview", icon: 'fa fa-filter',
                         executeMethod: (pickingBlade) => {
-                            var newBlade = {
+                            var viewerBlade = {
                                 id: 'propertiesSelector',
                                 controller: 'virtoCommerce.catalogModule.dynamicAssociationViewerController',
                                 template: 'Modules/$(virtoCommerce.catalog)/Scripts/blades/dynamicAssociations/dynamicAssociation-viewer.tpl.html',
                                 categoryIds: categoryCondition.categoryIds,
                                 properties: pickingBlade.currentEntities
                             };
-                            bladeNavigationService.showBlade(newBlade, pickingBlade);
+                            bladeNavigationService.showBlade(viewerBlade, pickingBlade);
                         },
                         canExecuteMethod: () => true
                     }]
