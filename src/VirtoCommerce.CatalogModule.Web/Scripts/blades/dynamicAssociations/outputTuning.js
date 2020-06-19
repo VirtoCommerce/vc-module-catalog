@@ -31,8 +31,8 @@ angular.module('virtoCommerce.catalogModule')
            
             blade.outputTuningBlock = _.find(blade.currentEntity.expressionTree.children, x => x.id === $scope.BlockOutputTuning);
 
-            if (blade.outputTuningBlock.sortInfos) {
-                let sortPairs = blade.outputTuningBlock.sortInfos.split(';');
+            if (blade.outputTuningBlock.sort) {
+                let sortPairs = blade.outputTuningBlock.sort.split(';');
                 _.each(sortPairs,
                     (item, index) => {
                         let pair = item.split(':');
@@ -51,10 +51,10 @@ angular.module('virtoCommerce.catalogModule')
 
         $scope.saveChanges = function () {
             if (blade.onSelected) {
-                blade.outputTuningBlock.sortInfos = '';
+                blade.outputTuningBlock.sort = '';
                 for (let i = 0; i < blade.sortFields.length; i++) {
                     if (blade.sortFields[i].length > 0) {
-                        blade.outputTuningBlock.sortInfos += blade.sortFields[i] + ':' + blade.sortDirections[i] + ';';
+                        blade.outputTuningBlock.sort += blade.sortFields[i] + ':' + blade.sortDirections[i] + ';';
                     }
                 }
 

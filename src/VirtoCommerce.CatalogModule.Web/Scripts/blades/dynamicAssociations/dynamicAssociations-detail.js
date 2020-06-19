@@ -85,7 +85,7 @@ angular.module('virtoCommerce.catalogModule')
                 onSelected: function (newSortingRules) {
                     let sortingRules = _.find(blade.currentEntity.expressionTree.children, x => x.id === $scope.BlockOutputTuning);
                     if (sortingRules) {
-                        sortingRules.sortInfos = newSortingRules.sortInfos;
+                        sortingRules.sort = newSortingRules.sort;
                         sortingRules.outputLimit = newSortingRules.outputLimit;
                     }
                 }
