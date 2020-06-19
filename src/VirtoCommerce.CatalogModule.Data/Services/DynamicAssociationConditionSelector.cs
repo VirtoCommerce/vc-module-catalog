@@ -23,9 +23,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public async Task<DynamicAssociationConditionEvaluationRequest> GetDynamicAssociationConditionAsync(DynamicAssociationEvaluationContext context, CatalogProduct product)
         {
-            var result = AbstractTypeFactory<DynamicAssociationConditionEvaluationRequest>
-                .TryCreateInstance()
-                .PopulatePaging(context);
+            DynamicAssociationConditionEvaluationRequest result = null;
 
             var dynamicAssociationRules = (await _dynamicAssociationSearchService
                 .SearchDynamicAssociationsAsync(new DynamicAssociationSearchCriteria
@@ -58,6 +56,9 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     var outputTuningBlock = dynamicAssociationRule.ExpressionTree.Children.OfType<BlockOutputTuning>().FirstOrDefault()
                         ?? throw new InvalidOperationException($"Output tuning block for \"{dynamicAssociationRule.Name}\" dynamic association rule is missing");
 
+                    result = AbstractTypeFactory<DynamicAssociationConditionEvaluationRequest>
+                        .TryCreateInstance()
+                        .PopulatePaging(context);
                     result.PropertyValues = resultRule.GetPropertyValues();
                     result.CategoryIds = resultRule.GetCategoryIds();
                     result.SortInfoString = outputTuningBlock.SortInfos;

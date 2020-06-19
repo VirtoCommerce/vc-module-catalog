@@ -48,10 +48,13 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             {
 
                 var dynamicAssociationCondition = await _dynamicAssociationsConditionSelector.GetDynamicAssociationConditionAsync(context, product);
-                var searchResult = await _dynamicAssociationsConditionEvaluator.EvaluateDynamicAssociationConditionAsync(dynamicAssociationCondition);
 
-                result.AddRange(searchResult);
+                if (dynamicAssociationCondition != null)
+                {
+                    var searchResult = await _dynamicAssociationsConditionEvaluator.EvaluateDynamicAssociationConditionAsync(dynamicAssociationCondition);
 
+                    result.AddRange(searchResult);
+                }
             }
 
             return result.ToArray();
