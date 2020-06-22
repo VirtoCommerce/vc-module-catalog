@@ -26,13 +26,16 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         public virtual DynamicAssociationSearchRequestBuilder AddPropertySearch(IDictionary<string, string[]> propertyValues)
         {
-            foreach (var propertyValue in propertyValues)
+            if (!propertyValues.IsNullOrEmpty())
             {
-                ((AndFilter)_searchRequest.Filter).ChildFilters.Add(new TermFilter
+                foreach (var propertyValue in propertyValues)
                 {
-                    FieldName = propertyValue.Key,
-                    Values = propertyValue.Value
-                });
+                    ((AndFilter)_searchRequest.Filter).ChildFilters.Add(new TermFilter
+                    {
+                        FieldName = propertyValue.Key,
+                        Values = propertyValue.Value
+                    });
+                }
             }
 
             return this;
@@ -52,11 +55,14 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         public virtual DynamicAssociationSearchRequestBuilder AddOutlineSearch(ICollection<string> categoryIds)
         {
-            ((AndFilter)_searchRequest.Filter).ChildFilters.Add(new WildCardTermFilter
+            if (!categoryIds.IsNullOrEmpty())
             {
-                FieldName = "__outline",
-                Value = string.Join(',', categoryIds.Select(x => $"*{x}")),
-            });
+                ((AndFilter)_searchRequest.Filter).ChildFilters.Add(new WildCardTermFilter
+                {
+                    FieldName = "__outline",
+                    Value = string.Join(',', categoryIds.Select(x => $"*{x}")),
+                });
+            }
 
             return this;
         }
