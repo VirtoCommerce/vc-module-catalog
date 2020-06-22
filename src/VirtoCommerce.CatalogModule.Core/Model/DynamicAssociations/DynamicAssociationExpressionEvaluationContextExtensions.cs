@@ -68,9 +68,8 @@ namespace VirtoCommerce.CatalogModule.Core.Model.DynamicAssociations
                 {
                     var productPropertyValues = productProperty.Values.Where(x => x.Value != null).Select(x => x.Value.ToString()).Distinct().ToArray();
                     var valuesToSearch = kvp.Value;
-                    var foundValuesCount = valuesToSearch.Intersect(productPropertyValues, StringComparer.OrdinalIgnoreCase).Count();
 
-                    result = valuesToSearch.Length == foundValuesCount;
+                    result = valuesToSearch.Intersect(productPropertyValues, StringComparer.OrdinalIgnoreCase).Any();
                 }
 
                 return result;
