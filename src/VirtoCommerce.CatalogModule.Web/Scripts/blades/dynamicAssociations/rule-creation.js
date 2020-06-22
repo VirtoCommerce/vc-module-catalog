@@ -157,6 +157,7 @@ angular.module('virtoCommerce.catalogModule')
             };
 
             $scope.blade.headIcon = 'fa-upload';
+            $scope.blade.title = 'Create matching rule';
 
             initializeBlade();
 

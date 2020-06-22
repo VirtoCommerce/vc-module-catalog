@@ -33,14 +33,14 @@
                             ng-class="{'__disabled': blade.currentEntity.catalogId == null}">
                             <i class="list-ico fa fa-file-text"></i>
                             <span class="list-t">{{ 'catalog.blades.dynamicAssociation-detail.labels.productsToMatch' | translate }}</span>
-                            <span class="list-descr">{{ 'catalog.blades.dynamicAssociation-detail.descriptions.productsToMatch' | translate: {count: blade.propertySelected} }}</span>
+                            <span class="list-descr">{{ 'catalog.blades.dynamicAssociation-detail.descriptions.productsToMatch' | translate: {count: productsToMatchCount} }}</span>
                         </li>
                         <li class="list-item"
                             ng-click="createProductFilter(BlockResultingRules)"
                             ng-class="{'__disabled': !blade.isMatchingRulesExist}">
                             <i class="list-ico fa fa-file-text"></i>
                             <span class="list-t">{{ 'catalog.blades.dynamicAssociation-detail.labels.productsToDisplay' | translate }}</span>
-                            <span class="list-descr">{{ 'catalog.blades.dynamicAssociation-detail.descriptions.productsToDisplay' | translate: {count: blade.propertySelected} }}</span>
+                            <span class="list-descr">{{ 'catalog.blades.dynamicAssociation-detail.descriptions.productsToDisplay' | translate: {count: productsToDisplayCount} }}</span>
                         </li>
                         <li class="list-item"
                             ng-click="outputTuning()"

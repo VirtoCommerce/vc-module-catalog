@@ -10,6 +10,10 @@ angular.module('virtoCommerce.catalogModule')
         $scope.ConditionPropertyValues = 'ConditionPropertyValues';
         $scope.ConditionCategoryIs = 'ConditionCategoryIs';
 
+        $scope.productsToMatchCount = 0;
+        $scope.productsToDisplayCount = 0;
+
+
         blade.currentEntity = {};
 
         blade.updatePermission = 'catalog:update';
@@ -50,6 +54,7 @@ angular.module('virtoCommerce.catalogModule')
             blade.origEntity = data;
 
             $scope.checkExistingRules();
+            $scope.GetMatchingProductsCount();
             blade.isLoading = false;
         }
 
@@ -214,6 +219,48 @@ angular.module('virtoCommerce.catalogModule')
             bladeNavigationService.showBlade(ruleCreationBlade, blade);
 
         }; 
+        // Receive counts of products
+        $scope.GetMatchingProductsCount = function() {
+            const matchingRules = _.find(blade.currentEntity.expressionTree.children, x => x.id === $scope.BlockMatchingRules);
+
+            let query = $scope.prepareQuery(matchingRules);
+            associations.preview(query, data => {
+                $scope.productsToMatchCount = data.length;
+            });
+
+            const resultingRules = _.find(blade.currentEntity.expressionTree.children, x => x.id === $scope.BlockResultingRules);
+            query = $scope.prepareQuery(resultingRules);
+            associations.preview(query, data => {
+                $scope.productsToDisplayCount = data.length;
+            });
+        };
+
+        $scope.prepareQuery = function (rule) {
+
+            const properties = $scope.getCondition(rule, $scope.ConditionPropertyValues).properties;
+
+            let categoryIds = [];
+            const categoryCondition = $scope.getCondition(rule, $scope.ConditionCategoryIs);
+
+            if (categoryCondition.categoryIds) {
+                categoryIds = categoryCondition.categoryIds;
+            }
+
+            let propertyValues = {};
+            _.each(properties,
+                property => {
+                    propertyValues[property.name] = property.values.map(x => x.value);
+                });
+            const dataQuery = {
+                categoryIds: categoryIds,
+                propertyValues: propertyValues,
+                skip: 0,
+                take: 100
+            };
+            return dataQuery;
+
+        };
+
 
         initializeToolbar();
         blade.refresh(false);
