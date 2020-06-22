@@ -12,17 +12,17 @@
                         <li class="list-item" ng-click="selectCategories()">
                             <i class="list-ico fa fa-cogs"></i>
                             <span class="list-t">{{ 'Select categories' | translate }}</span>
-                            <span class="list-descr">{{ 'export.blades.export-settings.labels.selected' | translate: {count: blade.categoryCount, total: blade.propertyTotal} }}</span>
+                            <span class="list-descr">{{ blade.categoryCount }} selected </span>
                         </li>
                         <li class="list-item" ng-click="selectProperties()" ng-class="{'__disabled': blade.categoryCount === 0 }">
                             <i class="list-ico fa fa-cogs"></i>
                             <span class="list-t">{{ 'Select properties' | translate }}</span>
-                            <span class="list-descr">{{ 'export.blades.export-settings.labels.selected' | translate: {count: blade.editedPropertiesCount, total: blade.propertiesCount} }}</span>
+                            <span class="list-descr">{{blade.editedPropertiesCount  }} selected</span>
                         </li>
                         <li class="list-item" ng-click="editProperties()" ng-class="{'__disabled': blade.editedPropertiesCount === 0  }">
                             <i class="list-ico fa fa-cogs"></i>
                             <span class="list-t">{{ 'Set value to selected properties' | translate }}</span>
-                            <span class="list-descr">{{ 'export.blades.export-settings.labels.selected' | translate: {count: blade.editedPropertiesCount, total: blade.propertiesCount} }}</span>
+                            <span class="list-descr">{{ blade.editedPropertiesCount }} selected</span>
                         </li>
                     </ul>
                 </div>
