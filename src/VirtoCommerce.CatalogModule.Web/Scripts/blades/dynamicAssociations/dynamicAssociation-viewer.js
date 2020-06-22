@@ -125,7 +125,7 @@ angular.module('virtoCommerce.catalogModule')
                     name: "platform.commands.refresh",
                     icon: 'fa fa-refresh',
                     executeMethod: function () {
-                        blade.resetFiltering();
+                        //blade.resetFiltering();
                         blade.refresh();
                     },
                     canExecuteMethod: function () {

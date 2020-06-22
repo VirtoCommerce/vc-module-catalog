@@ -1,5 +1,5 @@
 angular.module('virtoCommerce.catalogModule')
-    .controller('virtoCommerce.catalogModule.dynamicAssociationDetailController', ['$scope', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.dynamicAssociations', 'virtoCommerce.catalogModule.categories', 'virtoCommerce.storeModule.stores', function ($scope, bladeNavigationService, associations, categories, stores) {
+    .controller('virtoCommerce.catalogModule.dynamicAssociationDetailController', ['$scope', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.dynamicAssociations', 'virtoCommerce.storeModule.stores', function ($scope, bladeNavigationService, associations, stores) {
         var blade = $scope.blade;
         var formScope;
         $scope.setForm = (form) => { formScope = form; };
@@ -193,131 +193,27 @@ angular.module('virtoCommerce.catalogModule')
 
 
         $scope.createProductFilter = function (rulesBlockName) {
-            var allProperties = [];
 
             const rulesBlock = _.find(blade.currentEntity.expressionTree.children, x => x.id === rulesBlockName);
             let categoryCondition = $scope.getCondition(rulesBlock, $scope.ConditionCategoryIs);
-
-            var options = {
-                showCheckingMultiple: false,
-                allowCheckingCategory: true,
-                allowCheckingItem: false,
-                selectedItemIds: categoryCondition.categoryIds,
-                checkItemFn: (listItem, isSelected) => {
-                    if (isSelected) {
-                        if (!_.find(categoryCondition.categoryIds, (x) =>  x === listItem.id )) {
-                            categoryCondition.categoryIds.push(listItem.id);
-                        }
-                    }
-                    else {
-                        categoryCondition.categoryIds = _.reject(categoryCondition.categoryIds, (x) => x === listItem.id);
-                    }
+            let propertyCondition = $scope.getCondition(rulesBlock, $scope.ConditionPropertyValues);
+            
+            var ruleCreationBlade = {
+                id: "createDynamicAssociationRule",
+                controller: 'virtoCommerce.catalogModule.ruleCreationController',
+                template: 'Modules/$(virtoCommerce.catalog)/Scripts/blades/dynamicAssociations/rule-creation.tpl.html',
+                categoryIds: categoryCondition.categoryIds,
+                editedProperties: propertyCondition.properties,
+                catalogId: blade.currentEntity.catalogId,
+                onSelected: function (selectedCategoryIds, editedProperties) {
+                    propertyCondition.properties = editedProperties;
+                    categoryCondition.categoryIds = selectedCategoryIds;
+                    $scope.checkExistingRules();
                 }
             };
-            
-            var newBlade = {
-                id: "CatalogItemsSelect",
-                controller: 'virtoCommerce.catalogModule.catalogItemSelectController',
-                template: 'Modules/$(virtoCommerce.catalog)/Scripts/blades/common/catalog-items-select.tpl.html',
-                title: 'catalog.selectors.blades.titles.select-categories',
-                options: options,
-                breadcrumbs: [],
-                catalogId: blade.currentEntity.catalogId,
-                toolbarCommands: [
-                    {
-                        name: "platform.commands.confirm", icon: 'fa fa-check',
-                        executeMethod: function (pickingBlade) {
-                            bladeNavigationService.closeBlade(pickingBlade);
-
-                            categories.getByIds({ ids: categoryCondition.categoryIds },
-                                data => {
-                                    allProperties = _.unique(_.first(data.map(x => x.properties)));
-                                    _.each(allProperties, prop => {
-                                        prop.group = 'All properties';
-                                        prop.UseDefaultUIForEdit = true;
-                                        prop.values = [];
-                                        prop.isReadOnly = false;
-                                    });
-                                    $scope.selectProperties(allProperties, rulesBlock);
-                                });
-                        },
-                        canExecuteMethod: () => _.any(categoryCondition.categoryIds)
-                    },
-                    {
-                        name: "platform.commands.reset", icon: 'fa fa-undo',
-                        executeMethod: function (pickingBlade) {
-                            categoryCondition.categoryIds = [];
-                            $scope.selectedCount = 0;
-                            bladeNavigationService.closeBlade(pickingBlade);
-                        },
-                        canExecuteMethod: () => _.any(categoryCondition.categoryIds)
-                        
-                    }]
-            };
-            bladeNavigationService.showBlade(newBlade, blade);
+            bladeNavigationService.showBlade(ruleCreationBlade, blade);
 
         }; 
-
-        $scope.selectProperties = function (allProperties, rulesBlock) {
-            let propertyCondition = $scope.getCondition(rulesBlock, $scope.ConditionPropertyValues);
-
-            let selectedProperties = [];
-            angular.copy(propertyCondition.properties, selectedProperties);
-            _.each(selectedProperties, prop => {
-                prop.group = 'All properties';
-                prop.UseDefaultUIForEdit = true;
-                prop.isReadOnly = false;
-            });
-
-            var newBlade = {
-                id: 'propertiesSelector',
-                controller: 'virtoCommerce.catalogModule.propertiesSelectorController',
-                template: 'Modules/$(virtoCommerce.catalog)/Scripts/blades/step-select-properties.tpl.html',
-                properties: allProperties,
-                includedProperties: selectedProperties,
-                onSelected: function (includedProperties) {
-                    propertyCondition.properties = includedProperties;
-                    blade.isPropertiesSelected = true;
-                    $scope.editProperties(rulesBlock);
-                }
-            };
-
-            bladeNavigationService.showBlade(newBlade, blade);
-        };
-
-        $scope.editProperties = function (rulesBlock) {
-            let propertyCondition = $scope.getCondition(rulesBlock, $scope.ConditionPropertyValues);
-            let categoryCondition = $scope.getCondition(rulesBlock, $scope.ConditionCategoryIs);
-
-            var newBlade = {
-                id: 'propertiesEditor',
-                controller: 'virtoCommerce.catalogModule.editPropertiesActionStepController',
-                template: 'Modules/$(virtoCommerce.catalog)/Scripts/blades/step-edit-properties.tpl.html',
-                properties: propertyCondition.properties,
-                propGroups: [{ title: 'catalog.properties.product', type: 'Product' }, { title: 'catalog.properties.variation', type: 'Variation' }],
-                onSelected: function (editedProps) {
-                    propertyCondition.properties = editedProps;
-                    $scope.checkExistingRules();
-                },
-                toolbarCommands: [
-                    {
-                        name: "platform.commands.preview", icon: 'fa fa-filter',
-                        executeMethod: (pickingBlade) => {
-                            var viewerBlade = {
-                                id: 'propertiesSelector',
-                                controller: 'virtoCommerce.catalogModule.dynamicAssociationViewerController',
-                                template: 'Modules/$(virtoCommerce.catalog)/Scripts/blades/dynamicAssociations/dynamicAssociation-viewer.tpl.html',
-                                categoryIds: categoryCondition.categoryIds,
-                                properties: pickingBlade.currentEntities
-                            };
-                            bladeNavigationService.showBlade(viewerBlade, pickingBlade);
-                        },
-                        canExecuteMethod: () => true
-                    }]
-
-            };
-            bladeNavigationService.showBlade(newBlade, blade);
-        };
 
         initializeToolbar();
         blade.refresh(false);
