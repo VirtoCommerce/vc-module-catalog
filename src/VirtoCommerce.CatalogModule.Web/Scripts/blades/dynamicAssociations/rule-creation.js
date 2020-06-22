@@ -159,4 +159,23 @@ angular.module('virtoCommerce.catalogModule')
             $scope.blade.headIcon = 'fa-upload';
 
             initializeBlade();
+
+            blade.toolbarCommands = [
+                {
+                    name: "platform.commands.preview",
+                    icon: 'fa fa-filter',
+                    executeMethod: () => {
+                        var viewerBlade = {
+                            id: 'propertiesSelector',
+                            controller: 'virtoCommerce.catalogModule.dynamicAssociationViewerController',
+                            template:
+                                'Modules/$(virtoCommerce.catalog)/Scripts/blades/dynamicAssociations/dynamicAssociation-viewer.tpl.html',
+                            categoryIds: blade.categoryIds,
+                            properties: blade.editedProperties
+                        };
+                        bladeNavigationService.showBlade(viewerBlade, blade);
+                    },
+                    canExecuteMethod: () => blade.editedPropertiesCount > 0
+                }
+            ];
         }]);
