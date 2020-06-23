@@ -57,10 +57,15 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         {
             if (!categoryIds.IsNullOrEmpty())
             {
-                ((AndFilter)_searchRequest.Filter).ChildFilters.Add(new WildCardTermFilter
+                ((AndFilter)_searchRequest.Filter).ChildFilters.Add(new OrFilter
                 {
-                    FieldName = "__outline",
-                    Value = string.Join(',', categoryIds.Select(x => $"*{x}")),
+                    ChildFilters = categoryIds
+                        .Select(x => new WildCardTermFilter
+                        {
+                            FieldName = "__outline",
+                            Value = $"*{x}"
+                        })
+                        .ToArray<IFilter>(),
                 });
             }
 
