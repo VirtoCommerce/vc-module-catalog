@@ -170,7 +170,7 @@ angular.module('virtoCommerce.catalogModule')
                 $scope.filledPropertiesCount += blade.currentEntity.endDate ? 1 : 0;
                 $scope.filledPropertiesCount += blade.currentEntity.storeId ? 1 : 0;
                 $scope.filledPropertiesCount += blade.currentEntity.associationType ? 1 : 0;
-                $scope.filledPropertiesCount += blade.currentEntity.priority ? 1 : 0;
+                $scope.filledPropertiesCount += blade.currentEntity.priority !== undefined ? 1 : 0;
             }
         }, true);
 
