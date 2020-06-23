@@ -20,7 +20,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _dynamicAssociationSearchService = dynamicAssociationSearchService;
         }
 
-        public async Task<DynamicAssociationConditionEvaluationRequest> GetDynamicAssociationConditionAsync(DynamicAssociationEvaluationContext context, CatalogProduct product)
+        public virtual async Task<DynamicAssociationConditionEvaluationRequest> GetDynamicAssociationConditionAsync(DynamicAssociationEvaluationContext context, CatalogProduct product)
         {
             DynamicAssociationConditionEvaluationRequest result = null;
 
@@ -42,7 +42,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             var expressionContext = AbstractTypeFactory<DynamicAssociationExpressionEvaluationContext>.TryCreateInstance();
             expressionContext.Products.Add(product);
 
-            foreach (var dynamicAssociationRule in dynamicAssociationRules)
+            foreach (var dynamicAssociationRule in dynamicAssociationRules.Where(IsNotExpired))
             {
                 var matchingRule = dynamicAssociationRule.ExpressionTree.Children.OfType<BlockMatchingRules>().FirstOrDefault()
                     ?? throw new InvalidOperationException($"Matching rules block for \"{dynamicAssociationRule.Name}\" dynamic association rule is missing");
@@ -67,6 +67,14 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
 
             return result;
+        }
+
+        protected virtual bool IsNotExpired(DynamicAssociation dynamicAssociation)
+        {
+            var startDate = dynamicAssociation.StartDate;
+            var endDate = dynamicAssociation.EndDate;
+
+            return startDate < DateTime.Now && (endDate == null || endDate > DateTime.Now);
         }
     }
 }
