@@ -20,7 +20,7 @@ angular.module('virtoCommerce.catalogModule')
 
                     categories.getByIds({ ids: blade.categoryIds },
                         data => {
-                            allProperties = $scope.prepareProperties(_.unique(_.first(data.map(x => x.properties))));
+                            allProperties = $scope.prepareProperties(_.flatten(data.map(x => x.properties)));
                             blade.propertiesCount = allProperties.length;
                         });
                 }
@@ -31,21 +31,25 @@ angular.module('virtoCommerce.catalogModule')
                 blade.isLoading = false;
             }
 
-            $scope.prepareProperties = function(properties, needClear = true) {
+            $scope.prepareProperties = function (properties, needClear = true) {
+                let newProperties = [];
                 _.each(properties,
                     prop => {
-                        prop.group = 'All properties';
-                        prop.required = false;
-                        prop.UseDefaultUIForEdit = true;
-                        if (needClear) {
-                            prop.values = [];
-                        }
-                        prop.isReadOnly = false;
-                        if (prop.dictionary) {
-                            prop.multivalue = true;
+                        if (!_.find(newProperties, newProp => newProp.name === prop.name)) {
+                            prop.group = 'All properties';
+                            prop.required = false;
+                            prop.UseDefaultUIForEdit = true;
+                            if (needClear) {
+                                prop.values = [];
+                            }
+                            prop.isReadOnly = false;
+                            if (prop.dictionary) {
+                                prop.multivalue = true;
+                            }
+                            newProperties.push(prop);
                         }
                     });
-                return properties;
+                return newProperties;
             };
 
             $scope.selectCategories = function() {
@@ -82,7 +86,7 @@ angular.module('virtoCommerce.catalogModule')
                                 blade.categoryCount = blade.categoryIds.length;
                                 categories.getByIds({ ids: blade.categoryIds },
                                     data => {
-                                        allProperties = $scope.prepareProperties(_.unique(_.first(data.map(x => x.properties))));
+                                        allProperties = $scope.prepareProperties(_.flatten(data.map(x => x.properties)));
                                         $scope.selectProperties();
                                     });
                             },
