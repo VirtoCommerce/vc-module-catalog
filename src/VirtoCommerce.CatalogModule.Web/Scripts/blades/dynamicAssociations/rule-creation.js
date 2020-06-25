@@ -10,7 +10,6 @@ angular.module('virtoCommerce.catalogModule')
             blade.categoryCount = 0;
             blade.propertiesCount = 0;
             blade.editedPropertiesCount = 0;
-            blade.changed = false;
             blade.isPropertiesSelected = false;
 
             function initializeBlade() {
@@ -27,6 +26,10 @@ angular.module('virtoCommerce.catalogModule')
 
                 blade.editedProperties = $scope.prepareProperties(blade.editedProperties, false);
                 blade.editedPropertiesCount = blade.editedProperties.length;
+
+                blade.originalCategoryIds = angular.copy(blade.categoryIds);
+                blade.originalEditedProperties = angular.copy(blade.editedProperties);
+
                 $scope.selectCategories();
                 blade.isLoading = false;
             }
@@ -82,7 +85,6 @@ angular.module('virtoCommerce.catalogModule')
                         {
                             name: "platform.commands.confirm", icon: 'fa fa-check',
                             executeMethod: function (pickingBlade) {
-                                blade.changed = true;
                                 bladeNavigationService.closeBlade(pickingBlade);
                                 blade.categoryCount = blade.categoryIds.length;
                                 categories.getByIds({ ids: blade.categoryIds },
@@ -132,7 +134,6 @@ angular.module('virtoCommerce.catalogModule')
                     properties: blade.editedProperties,
                     propGroups: [{ title: 'catalog.properties.product', type: 'Product' }, { title: 'catalog.properties.variation', type: 'Variation' }],
                     onSelected: function (editedProps) {
-                        blade.changed = true;
                         blade.editedProperties = editedProps;
                     },
                     toolbarCommands: [
@@ -153,6 +154,14 @@ angular.module('virtoCommerce.catalogModule')
 
                 };
                 bladeNavigationService.showBlade(newBlade, blade);
+            };
+
+            $scope.isDirty = () => {
+                return !angular.equals(blade.originalCategoryIds, blade.categoryIds) || !angular.equals(blade.originalEditedProperties, blade.editedProperties);
+            };
+
+            $scope.canSave = () => {
+                return $scope.isDirty() && blade.categoryCount !== 0;
             };
 
             $scope.saveRule = function() {
