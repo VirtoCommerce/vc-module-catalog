@@ -161,8 +161,6 @@ angular.module('virtoCommerce.catalogModule')
             };
 
             $scope.blade.headIcon = 'fa-upload';
-            $scope.blade.title = 'Create matching rule';
-
             initializeBlade();
 
             blade.toolbarCommands = [
@@ -180,7 +178,7 @@ angular.module('virtoCommerce.catalogModule')
                         };
                         bladeNavigationService.showBlade(viewerBlade, blade);
                     },
-                    canExecuteMethod: () => blade.editedPropertiesCount > 0
+                    canExecuteMethod: () => blade.categoryCount > 0
                 }
             ];
         }]);
