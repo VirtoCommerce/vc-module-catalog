@@ -161,10 +161,10 @@ namespace VirtoCommerce.CatalogModule.Tests
                                     CreateBlockMatchingRulesMock().Object,
                                     CreateBlockResultingRules(),
                                     new BlockOutputTuning(),
-                                }
-                            }
-                        }
-                    }
+                                },
+                            },
+                        },
+                    },
                 });
 
             var selector = CreateDynamicAssociationConditionSelector();
@@ -207,7 +207,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                                 Children = new IConditionTree[]
                                 {
                                     matchingRuleMock.Object,
-                                }
+                                },
                             },
                         },
                     },
@@ -242,8 +242,8 @@ namespace VirtoCommerce.CatalogModule.Tests
                                 Children = new IConditionTree[]
                                 {
                                     matchingRule.Object,
-                                }
-                            }
+                                },
+                            },
                         },
                     },
                 });
@@ -319,10 +319,10 @@ namespace VirtoCommerce.CatalogModule.Tests
                                     {
                                         OutputLimit = limit
                                     }, 
-                                }
-                            }
+                                },
+                            },
                         }, 
-                    }
+                    },
                 });
 
             _evaluationContext.Skip = skip;
