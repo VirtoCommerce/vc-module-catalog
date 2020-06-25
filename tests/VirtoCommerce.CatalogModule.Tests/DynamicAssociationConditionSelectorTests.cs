@@ -28,7 +28,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         }
 
         [Fact]
-        public async Task DynamicAssociationRule_Matching_Rule_Exception_Thrown()
+        public async Task GetDynamicAssociationCondition_MatchingRule_ExceptionThrown()
         {
             // Arrange
             _dynamicAssociationSearchServiceMock
@@ -61,7 +61,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         }
 
         [Fact]
-        public async Task DynamicAssociationRule_Result_Rule_Exception_Thrown()
+        public async Task GetDynamicAssociationCondition_ResultRule_ExceptionThrown()
         {
             // Arrange
             _dynamicAssociationSearchServiceMock
@@ -93,7 +93,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         }
 
         [Fact]
-        public async Task DynamicAssociationRule_Output_Tuning_Block_Exception_Thrown()
+        public async Task GetDynamicAssociationCondition_OutputTuningBlock_ExceptionThrown()
         {
             // Arrange
             _dynamicAssociationSearchServiceMock
@@ -126,7 +126,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         }
 
         [Fact]
-        public async Task DynamicAssociationRule_SearchResultIsEmpty_Null_Returned()
+        public async Task GetDynamicAssociationCondition_SearchResultIsEmpty_NullReturned()
         {
             // Arrange
             _dynamicAssociationSearchServiceMock
@@ -177,7 +177,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         }
 
         [Fact]
-        public async Task DynamicAssociationRule_Find_First_And_Single_Rule()
+        public async Task GetDynamicAssociationCondition_MultipleResultFetched_FindSingleRule()
         {
             // Arrange
             var matchingRuleMock = CreateBlockMatchingRulesMock();
@@ -224,7 +224,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         }
 
         [Fact]
-        public async Task DynamicAssociationRule_Select_Only_Not_Expired_Not_Started_Yet()
+        public async Task GetDynamicAssociationCondition_NotStarted_NullResult()
         {
             // Arrange
             var matchingRule = CreateBlockMatchingRulesMock();
@@ -259,7 +259,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         }
 
         [Fact]
-        public async Task DynamicAssociationRule_Select_Only_Not_Expired_Already_Ended()
+        public async Task GetDynamicAssociationCondition_AlreadyEnded_NullResult()
         {
             // Arrange
             var matchingRule = CreateBlockMatchingRulesMock();
@@ -292,6 +292,49 @@ namespace VirtoCommerce.CatalogModule.Tests
             // Assert
             Assert.Null(result);
             matchingRule.Verify(x => x.IsSatisfiedBy(It.IsAny<IEvaluationContext>()), Times.Never);
+        }
+
+        [Theory]
+        [InlineData(100, 101, 10, 0)]
+        [InlineData(1000, 980, 30, 20)]
+        [InlineData(1000, 0, 1000, 1000)]
+        public async Task GetDynamicAssociationCondition_Pagination_Succeded(int limit, int skip, int take, int expecting)
+        {
+            // Arrange
+            _dynamicAssociationSearchServiceMock
+                .Setup(x => x.SearchDynamicAssociationsAsync(It.IsAny<DynamicAssociationSearchCriteria>()))
+                .ReturnsAsync(new DynamicAssociationSearchResult
+                {
+                    Results = new[]
+                    {
+                        new DynamicAssociation
+                        {
+                            ExpressionTree = new DynamicAssociationRuleTree
+                            {
+                                Children = new IConditionTree[]
+                                {
+                                    CreateBlockMatchingRulesMock().Object,
+                                    CreateBlockResultingRules(),
+                                    new BlockOutputTuning
+                                    {
+                                        OutputLimit = limit
+                                    }, 
+                                }
+                            }
+                        }, 
+                    }
+                });
+
+            _evaluationContext.Skip = skip;
+            _evaluationContext.Take = take;
+
+            var selector = CreateDynamicAssociationConditionSelector();
+
+            // Act
+            var result = await selector.GetDynamicAssociationConditionAsync(_evaluationContext, _catalogProduct);
+
+            // Assert
+            Assert.Equal(expecting, result.Take);
         }
 
 
