@@ -48,5 +48,29 @@ namespace VirtoCommerce.CatalogModule.Tests
             Assert.False(sortProperty1?.IsDescending);
             Assert.True(sortProperty2?.IsDescending);
         }
+
+        [Fact]
+        public void Builder_All_Null_Succeded()
+        {
+            // Arrange
+            var builder = new DynamicAssociationSearchRequestBuilder()
+                .AddPropertySearch(null)
+                .AddKeywordSearch(null)
+                .AddOutlineSearch(null)
+                .AddSortInfo(null);
+
+            // Act
+            var result = builder.Build();
+            var outlineFilter = ((AndFilter) result.Filter).ChildFilters.OfType<OrFilter>().FirstOrDefault();
+            var sorting = result.Sorting.FirstOrDefault();
+            var propertyFilter = ((AndFilter)result.Filter).ChildFilters.OfType<TermFilter>().FirstOrDefault();
+
+            // Assert
+            Assert.Null(result.SearchKeywords);
+            Assert.Null(result.SearchFields);
+            Assert.Null(outlineFilter);
+            Assert.Equal("__sort", sorting?.FieldName);
+            Assert.Null(propertyFilter);
+        }
     }
 }
