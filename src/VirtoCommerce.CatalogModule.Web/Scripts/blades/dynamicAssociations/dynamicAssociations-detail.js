@@ -60,12 +60,12 @@ angular.module('virtoCommerce.catalogModule')
 
         $scope.checkExistingRules = function() {
             const matchingRules = _.find(blade.currentEntity.expressionTree.children, x => x.id === $scope.BlockMatchingRules);
-            const matchingCondition = $scope.getCondition(matchingRules, $scope.ConditionPropertyValues);
-            blade.isMatchingRulesExist = matchingCondition.properties.length > 0;
+            const matchingCondition = $scope.getCondition(matchingRules, $scope.ConditionCategoryIs);
+            blade.isMatchingRulesExist = matchingCondition.categoryIds.length > 0;
 
             const resultingRules = _.find(blade.currentEntity.expressionTree.children, x => x.id === $scope.BlockResultingRules);
-            const resultingCondition = $scope.getCondition(resultingRules, $scope.ConditionPropertyValues);
-            blade.isResultingRulesExist = resultingCondition.properties.length > 0;
+            const resultingCondition = $scope.getCondition(resultingRules, $scope.ConditionCategoryIs);
+            blade.isResultingRulesExist = resultingCondition.categoryIds.length > 0;
         };
 
         $scope.isDirty = () => {
