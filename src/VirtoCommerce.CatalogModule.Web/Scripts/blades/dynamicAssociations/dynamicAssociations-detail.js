@@ -208,9 +208,9 @@ angular.module('virtoCommerce.catalogModule')
                 controller: 'virtoCommerce.catalogModule.ruleCreationController',
                 title: `Create rule for ${rulesBlockName === $scope.BlockMatchingRules ? 'matching': 'display'  } products`,
                 template: 'Modules/$(virtoCommerce.catalog)/Scripts/blades/dynamicAssociations/rule-creation.tpl.html',
-                categoryIds: categoryCondition.categoryIds,
-                editedProperties: propertyCondition.properties,
-                catalogId: blade.currentEntity.catalogId,
+                categoryIds: angular.copy(categoryCondition.categoryIds),
+                editedProperties: angular.copy(propertyCondition.properties),
+                catalogId: angular.copy(blade.currentEntity.catalogId),
                 onSelected: function (selectedCategoryIds, editedProperties) {
                     propertyCondition.properties = editedProperties;
                     categoryCondition.categoryIds = selectedCategoryIds;
