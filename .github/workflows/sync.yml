@@ -1,0 +1,15 @@
+name: Sync
+'on':
+  push:
+    branches:
+      - dev
+
+jobs:
+  github-automation:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Sync modules workflows
+      uses: VirtoCommerce/vc-github-actions/sync-module-cicd@master
+      with:
+        github_token: ${{ secrets.REPO_TOKEN }}

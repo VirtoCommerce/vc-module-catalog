@@ -1,0 +1,64 @@
+name: CI
+on:
+  push:
+    branches: [ master, dev ]
+  pull_request:
+    branches: [ master, dev ]
+
+jobs:
+  cancel-previous-runs:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: n1hility/cancel-previous-runs@v2
+      with: 
+        token: ${{ secrets.GITHUB_TOKEN }}
+        workflow: synced-main.yml
+      
+  unit-tests:    
+    # The type of runner that the job will run on
+    runs-on: windows-latest
+    name: Unit Tests
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
+
+    - name: Install VirtoCommerce.GlobalTool
+      run: dotnet tool install --global VirtoCommerce.GlobalTool --version 1.0.0
+
+    - name: Install dotnet-sonarscanner
+      run: dotnet tool install --global dotnet-sonarscanner
+
+    - name: SonarCloud Begin
+      if: ${{ env.SONAR_TOKEN != 0 }}
+      shell: pwsh
+      env:
+        PULL_REQUEST_TITLE: ${{ github.event.pull_request.title }}
+      run: |
+        $repo = '${{ github.repository }}'.Substring(('${{ github.repository }}'.IndexOf('/')+1))
+        $BRANCH='${{ github.ref }}'.Replace('refs/heads', '')
+        $CMD="dotnet sonarscanner begin /k:'VirtoCommerce_$($repo)'"
+        $CMD="$($CMD) /o:'virto-commerce'"
+        $CMD="$($CMD) /d:sonar.cs.opencover.reportsPaths='$PWD/.tmp/coverage.xml'"
+        $CMD="$($CMD) /d:sonar.host.url='https://sonarcloud.io'"
+        $CMD="$($CMD) /d:sonar.login='${{ secrets.SONAR_TOKEN }}'"
+        $CMD = "$($CMD) /d:sonar.branch='$($BRANCH)'"
+        if ('${{ github.event_name }}' -eq 'pull_request' ) {
+          $CMD="$($CMD) /d:sonar.pullrequest.base='$('${{ github.event.pull_request.base.ref }}')'"
+          $CMD="$($CMD) /d:sonar.pullrequest.branch='$($env:PULL_REQUEST_TITLE)'"
+          $CMD="$($CMD) /d:sonar.pullrequest.key=${{ github.event.number }}"
+        }
+        pwsh -command $CMD
+    - name: Build
+      run: vc-build Compile
+
+    - name: Unit Tests
+      run: vc-build Test -skip Restore+Compile
+
+    - name: SonarCloud End
+      if: ${{ env.SONAR_TOKEN != 0 }}
+      run: dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
