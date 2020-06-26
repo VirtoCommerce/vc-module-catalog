@@ -1,6 +1,6 @@
 using VirtoCommerce.Platform.Core.Security;
 
-namespace VirtoCommerce.CatalogModule.Web.Authorization
+namespace VirtoCommerce.CatalogModule.Data.Authorization
 {
     /// <summary>
     /// Restricts access rights to a particular catalog
