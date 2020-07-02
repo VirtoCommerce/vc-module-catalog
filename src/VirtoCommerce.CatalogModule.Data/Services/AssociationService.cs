@@ -78,16 +78,20 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
             using (var repository = _repositoryFactory())
             {
-                //Optimize performance and CPU usage
-                repository.DisableChangesTracking();
-
                 var itemIds = owners.Where(x => x.Id != null).Select(x => x.Id).ToArray();
                 var existentEntities = await repository.Associations.Where(x => itemIds.Contains(x.ItemId)).ToArrayAsync();
 
-                var target = new { Associations = new ObservableCollection<AssociationEntity>(existentEntities) };
-                var source = new { Associations = new ObservableCollection<AssociationEntity>(changedEntities) };
-
-                source.Associations.Patch(target.Associations, (sourcePropValue, targetPropValue) => sourcePropValue.Patch(targetPropValue));
+                if (!existentEntities.IsNullOrEmpty())
+                {
+                    changedEntities.Patch(existentEntities, (sourcePropValue, targetPropValue) => sourcePropValue.Patch(targetPropValue));
+                }
+                else
+                {
+                    foreach (var associationEntity in changedEntities)
+                    {
+                        repository.Add(associationEntity);
+                    }
+                }
 
                 await repository.UnitOfWork.CommitAsync();
                 //Reset cached associations
