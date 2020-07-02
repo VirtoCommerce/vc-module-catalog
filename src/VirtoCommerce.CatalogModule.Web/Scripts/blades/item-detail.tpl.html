@@ -1,31 +1,48 @@
-﻿<div class="blade-content __medium-wide">
+<div class="blade-content __medium-wide">
     <div class="blade-inner">
         <div class="inner-block">
             <form name="detailForm">
                 <fieldset ng-init="setForm(detailForm)">
                     <va-metaform registered-inputs="blade.metaFields" blade="blade" column-count="2" ng-if="blade.currentEntity"></va-metaform>
-
                     <div class="form-group clearfix">
                         <div class="column">
                             <div class="form-group">
-                                <label class="form-label">{{ 'catalog.blades.item-detail.labels.sku' | translate }}</label>
+                                <label class="form-label">{{ 'catalog.blades.item-detail.labels.id' | translate }}</label>
                                 <div class="form-input">
-                                    <input ng-class="{'error': detailForm.code.$invalid && !detailForm.code.$pristine}" required class="form-control" ng-model="blade.item.code" name="code" placeholder="{{ 'catalog.blades.item-detail.placeholders.sku' | translate }}" ui-validate=" 'blade.codeValidator($value)' " />
-                                </div>
-                                <div class="form-error" data-ng-show="blade.formScope.code.$dirty">
-                                    <span data-ng-show="blade.formScope.code.$error.validator">{{ 'catalog.blades.item-detail.validations.sku' | translate }}</span>
+                                    <input class="form-control" ng-model="blade.item.id" readonly />
                                 </div>
                             </div>
                         </div>
                         <div class="column">
                             <div class="form-group">
-                                <label class="form-label">{{ 'catalog.blades.item-detail.labels.priority' | translate }}</label>
-                                <div class="form-input __number">
-                                    <input smart-float num-type="integer" required ng-model="blade.item._priority" placeholder="{{ 'catalog.blades.item-detail.placeholders.priority' | translate }}" type="text" />
+                                <label class="form-label">{{ 'catalog.blades.item-detail.labels.outer-id' | translate }}</label>
+                                <div class="form-input">
+                                    <input class="form-control" ng-model="blade.item.outerId" readonly />
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <div class="form-group clearfix">
+                            <div class="column">
+                                <div class="form-group">
+                                    <label class="form-label">{{ 'catalog.blades.item-detail.labels.sku' | translate }}</label>
+                                    <div class="form-input">
+                                        <input ng-class="{'error': detailForm.code.$invalid && !detailForm.code.$pristine}" required class="form-control" ng-model="blade.item.code" name="code" placeholder="{{ 'catalog.blades.item-detail.placeholders.sku' | translate }}" ui-validate=" 'blade.codeValidator($value)' " />
+                                    </div>
+                                    <div class="form-error" data-ng-show="blade.formScope.code.$dirty">
+                                        <span data-ng-show="blade.formScope.code.$error.validator">{{ 'catalog.blades.item-detail.validations.sku' | translate }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="column">
+                                <div class="form-group">
+                                    <label class="form-label">{{ 'catalog.blades.item-detail.labels.priority' | translate }}</label>
+                                    <div class="form-input __number">
+                                        <input smart-float num-type="integer" required ng-model="blade.item._priority" placeholder="{{ 'catalog.blades.item-detail.placeholders.priority' | translate }}" type="text" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     <div class="columns clearfix">
                         <div class="column">
                             <div class="form-group __info list">
