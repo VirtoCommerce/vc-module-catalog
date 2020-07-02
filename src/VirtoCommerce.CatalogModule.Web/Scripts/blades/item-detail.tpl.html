@@ -5,14 +5,22 @@
                 <fieldset ng-init="setForm(detailForm)">
                     <va-metaform registered-inputs="blade.metaFields" blade="blade" column-count="2" ng-if="blade.currentEntity"></va-metaform>
                     <div class="form-group clearfix">
-                    <div class="column">
-                        <div class="form-group">
-                            <label class="form-label">{{ 'catalog.blades.item-detail.labels.id' | translate }}</label>
-                            <div class="form-input">
-                                <input class="form-control" ng-model="blade.item.id" name="code" readonly />
+                        <div class="column">
+                            <div class="form-group">
+                                <label class="form-label">{{ 'catalog.blades.item-detail.labels.id' | translate }}</label>
+                                <div class="form-input">
+                                    <input class="form-control" ng-model="blade.item.id" readonly />
+                                </div>
                             </div>
                         </div>
-                    </div>
+                        <div class="column">
+                            <div class="form-group">
+                                <label class="form-label">{{ 'catalog.blades.item-detail.labels.outer-id' | translate }}</label>
+                                <div class="form-input">
+                                    <input class="form-control" ng-model="blade.item.outerId" readonly />
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="form-group clearfix">
                             <div class="column">
