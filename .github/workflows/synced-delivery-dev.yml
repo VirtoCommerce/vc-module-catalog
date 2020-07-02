@@ -54,7 +54,7 @@ jobs:
         cd vc-deploy-apps/webstore-app/overlays/dev
 
         $json = Get-Content 'modules.json' | Out-String | ConvertFrom-Json
-        $json | Where-Object Repository -Match ${{ github.repository }} | ForEach-Object { 
+        $json | Where-Object Repository -EQ ${{ github.repository }} | ForEach-Object { 
             $_.PackageUrl = "https://vc3prerelease.blob.core.windows.net/packages/$($_.Id)_${{ steps.image.outputs.tag }}.zip"
         }
         $json | ConvertTo-Json | Set-Content 'modules.json'
