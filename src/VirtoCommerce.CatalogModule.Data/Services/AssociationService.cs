@@ -104,7 +104,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
             using (var repository = _repositoryFactory())
             {
-                var dbExistentEntities = await repository.GetAssociationsByIdsAsync(associations.Where(x => !x.IsTransient()).Select(x => x.Id).ToArray());
+                var transientProductAssociations = associations.Where(x => !x.IsTransient());
+                var associationIds = transientProductAssociations.Select(x => x.Id).ToArray();
+                var dbExistentEntities = await repository.GetAssociationsByIdsAsync(associationIds);
+
                 foreach (var association in associations)
                 {
 
