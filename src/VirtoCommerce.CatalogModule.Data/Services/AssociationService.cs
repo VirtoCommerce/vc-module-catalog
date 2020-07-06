@@ -79,11 +79,13 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             using (var repository = _repositoryFactory())
             {
                 var itemIds = owners.Where(x => x.Id != null).Select(x => x.Id).ToArray();
-                var existentEntities = await repository.Associations.Where(x => itemIds.Contains(x.ItemId)).ToArrayAsync();
+                var existedEntities = await repository.Associations.Where(x => itemIds.Contains(x.ItemId)).ToArrayAsync();
 
-                if (!existentEntities.IsNullOrEmpty())
+
+                if (!existedEntities.IsNullOrEmpty())
                 {
-                    changedEntities.Patch(existentEntities, (sourcePropValue, targetPropValue) => sourcePropValue.Patch(targetPropValue));
+                    var associationComparer = AnonymousComparer.Create((AssociationEntity x) => x.ItemId + ":" + x.AssociationType + ":" + x.AssociatedItemId + ":" + x.AssociatedCategoryId);
+                    changedEntities.Patch(existedEntities, associationComparer, (sourceAssociation, targetAssociation) => sourceAssociation.Patch(targetAssociation));
                 }
                 else
                 {
@@ -97,29 +99,30 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 //Reset cached associations
                 ClearCache(changedEntities.Select(c => c.ItemId).ToArray());
             }
-
         }
 
         public async Task UpdateAssociationsAsync(ProductAssociation[] associations)
         {
+
+            var changedEntities = new List<AssociationEntity>();
+            var dbAssociations = associations.Select(x => AbstractTypeFactory<AssociationEntity>.TryCreateInstance().FromModel(x)).ToArray();
+
+            changedEntities.AddRange(dbAssociations);
+
             using (var repository = _repositoryFactory())
             {
-                var transientProductAssociations = associations.Where(x => !x.IsTransient());
-                var associationIds = transientProductAssociations.Select(x => x.Id).ToArray();
-                var dbExistentEntities = await repository.GetAssociationsByIdsAsync(associationIds);
 
-                foreach (var association in associations)
+                foreach (var changedEntity in changedEntities)
                 {
 
-                    var originalEntity = dbExistentEntities.FirstOrDefault(x => x.Id == association.Id);
-                    var modifiedEntity = AbstractTypeFactory<AssociationEntity>.TryCreateInstance().FromModel(association);
-                    if (originalEntity != null)
+                    var existEntity = repository.Associations.FirstOrDefault(x => changedEntity.ItemId == x.ItemId && changedEntity.AssociatedItemId == x.AssociatedItemId && changedEntity.AssociationType == x.AssociationType && changedEntity.AssociatedCategoryId == x.AssociatedCategoryId);
+                    if (existEntity == null)
                     {
-                        modifiedEntity.Patch(originalEntity);
+                        repository.Add(changedEntity);
                     }
                     else
                     {
-                        repository.Add(modifiedEntity);
+                        changedEntity.Patch(existEntity);
                     }
                 }
 
@@ -127,7 +130,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
                 //Reset cached associations
 
-                ClearCache(dbExistentEntities.Select(x => x.Id).ToArray());
+                ClearCache(changedEntities.Select(x => x.ItemId).ToArray());
             }
         }
 
