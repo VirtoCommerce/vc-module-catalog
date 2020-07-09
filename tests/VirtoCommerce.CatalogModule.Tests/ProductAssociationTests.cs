@@ -3,16 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Data.Services;
 using Xunit;
 using dataModel = VirtoCommerce.CatalogModule.Data.Model;
 using MockQueryable.Moq;
 using VirtoCommerce.CatalogModule.Core.Model;
-using VirtoCommerce.Platform.Caching;
 using VirtoCommerce.Platform.Core.Domain;
 
 namespace VirtoCommerce.CatalogModule.Test
@@ -40,7 +36,7 @@ namespace VirtoCommerce.CatalogModule.Test
 
         [Theory]
         [MemberData(nameof(ValidEntities))]
-        public async Task AddNotTransientAssociation(dataModel.AssociationEntity entity)
+        public async Task UpdateAssociationsAsync_UpdateNotTransientAssociation_Changed(dataModel.AssociationEntity entity)
         {
 
             // Arrange
@@ -58,16 +54,17 @@ namespace VirtoCommerce.CatalogModule.Test
             await associationServiceMock.UpdateAssociationsAsync(new[] {productAssociation});
             // Assert
             Assert.Equal(productAssociation.ItemId, entity.ItemId);
+            _catalogRepositoryMock.Verify(x => x.Add(It.IsAny<dataModel.AssociationEntity>()), Times.Never);
         }
 
         [Theory]
         [MemberData(nameof(ValidEntities))]
-        public async Task AddTransientAssociation(dataModel.AssociationEntity entity)
+        public async Task UpdateAssociationsAsync_UpdateTransientAssociation_Changed(dataModel.AssociationEntity entity)
         {
             // Arrange
             var associationServiceMock = CreateProductAssociationServiceMock(new[] { entity });
 
-            var productAssociation = new ProductAssociation()
+            var productAssociation = new ProductAssociation
             {
                 Id = null,
                 ItemId = entity.ItemId,
@@ -76,16 +73,17 @@ namespace VirtoCommerce.CatalogModule.Test
                 Type = entity.AssociationType,
                 Priority = 10
             };
-            // Act
 
+            // Act
             await associationServiceMock.UpdateAssociationsAsync(new[] { productAssociation });
             // Assert
             Assert.Equal(productAssociation.Priority, entity.Priority);
+            _catalogRepositoryMock.Verify(x => x.Add(It.IsAny<dataModel.AssociationEntity>()), Times.Never);
         }
 
         [Theory]
         [MemberData(nameof(ValidEntities))]
-        public async Task AddNewAssociation(dataModel.AssociationEntity entity)
+        public async Task UpdateAssociationsAsync_AddNewAssociation_Added(dataModel.AssociationEntity entity)
         {
             // Arrange
             var associationServiceMock = CreateProductAssociationServiceMock(new[] { entity });
@@ -108,7 +106,7 @@ namespace VirtoCommerce.CatalogModule.Test
 
         [Theory]
         [MemberData(nameof(ValidEntities))]
-        public async Task SaveExistedAssociation(dataModel.AssociationEntity association)
+        public async Task SaveChangesAsync_UpdateExistingAssociation_Changed(dataModel.AssociationEntity association)
         {
 
             var associationServiceMock = CreateProductAssociationServiceMock( new List<dataModel.AssociationEntity>() { association});
@@ -135,11 +133,12 @@ namespace VirtoCommerce.CatalogModule.Test
             await associationServiceMock.SaveChangesAsync(new IHasAssociations[] { product });
             // Assert
             Assert.Equal(association.Priority, product.Associations.First().Priority);
+            _catalogRepositoryMock.Verify(x => x.Add(It.IsAny<dataModel.AssociationEntity>()), Times.Never);
         }
 
         [Theory]
         [MemberData(nameof(ValidEntities))]
-        public async Task SaveExistedTransientAssociation(dataModel.AssociationEntity association)
+        public async Task SaveChangesAsync_UpdateExistingTransientAssociation_Changed(dataModel.AssociationEntity association)
         {
 
             var associationServiceMock = CreateProductAssociationServiceMock(new List<dataModel.AssociationEntity>() { association });
@@ -165,11 +164,12 @@ namespace VirtoCommerce.CatalogModule.Test
             await associationServiceMock.SaveChangesAsync(new IHasAssociations[] { product });
             // Assert
             Assert.Equal(association.Priority, product.Associations.First().Priority);
+            _catalogRepositoryMock.Verify(x => x.Add(It.IsAny<dataModel.AssociationEntity>()), Times.Never);
         }
 
         [Theory]
         [MemberData(nameof(ValidEntities))]
-        public async Task SaveNotExistedTransientAssociation(dataModel.AssociationEntity association)
+        public async Task SaveChangesAsync_AddNotExistingTransientAssociation_Added(dataModel.AssociationEntity association)
         {
 
             var associationServiceMock = CreateProductAssociationServiceMock(new List<dataModel.AssociationEntity>() { association });
@@ -271,9 +271,8 @@ namespace VirtoCommerce.CatalogModule.Test
 
         [Theory]
         [MemberData(nameof(EqualEntities))]
-        public void EqualAssociation(dataModel.AssociationEntity x, dataModel.AssociationEntity y)
+        public void CompareEqualAssociation_Equal(dataModel.AssociationEntity x, dataModel.AssociationEntity y)
         {
-
             var result = new dataModel.AssociationEntityComparer().Equals(x, y);
             Assert.True(result);
         }
@@ -321,19 +320,13 @@ namespace VirtoCommerce.CatalogModule.Test
 
         [Theory]
         [MemberData(nameof(NotEqualEntities))]
-        public void NotEqualAssociation(dataModel.AssociationEntity x, dataModel.AssociationEntity y)
+        public void Compare_NotEqualAssociation_NotEqual(dataModel.AssociationEntity x, dataModel.AssociationEntity y)
         {
 
             var result = new dataModel.AssociationEntityComparer().Equals(x, y);
 
             Assert.False(result);
         }
-
-
-
-
-
-
 
         private AssociationService CreateProductAssociationServiceMock(IEnumerable<dataModel.AssociationEntity> entities)
         {
@@ -342,29 +335,8 @@ namespace VirtoCommerce.CatalogModule.Test
             return productAssociationsService;
         }
 
-
-        private static IEnumerable<dataModel.AssociationEntity> TestAssociationEntities
-        {
-            get
-            {
-                yield return new dataModel.AssociationEntity { Id = "assoc-1", ItemId = "prod-1", AssociatedCategoryId = "cat-1" };
-                yield return new dataModel.AssociationEntity { Id = "assoc-2", ItemId = "prod-1", AssociatedItemId = "prod-4" };
-            }
-        }
-        private static IEnumerable<dataModel.ItemEntity> TestItemEntities
-        {
-            get
-            {
-                yield return new dataModel.ItemEntity { Id = "prod-1", CategoryId = "cat-1" };
-                yield return new dataModel.ItemEntity { Id = "prod-2", CategoryId = "cat-1-2" };
-                yield return new dataModel.ItemEntity { Id = "prod-3", CategoryId = "cat-1-2-3" };
-                yield return new dataModel.ItemEntity { Id = "prod-4", CategoryId = "cat-2" };
-                yield return new dataModel.ItemEntity { Id = "prod-5", CategoryId = "cat-3" };
-            }
-        }
         private Func<ICatalogRepository> CreateRepositoryMock(IEnumerable<dataModel.AssociationEntity> entities)
         {
-            
             var entitiesMock = entities.AsQueryable().BuildMock();
 
             _catalogRepositoryMock.SetupGet(x => x.UnitOfWork).Returns(new Mock<IUnitOfWork>().Object);
@@ -378,13 +350,6 @@ namespace VirtoCommerce.CatalogModule.Test
             ICatalogRepository func() => _catalogRepositoryMock.Object;
 
             return func;
-        }
-
-        private static PlatformMemoryCache GetPlatformMemoryCache()
-        {
-            var memoryCache = new MemoryCache(Options.Create(new MemoryCacheOptions()));
-            var platformMemoryCache = new PlatformMemoryCache(memoryCache, Options.Create(new CachingOptions()), new Mock<ILogger<PlatformMemoryCache>>().Object);
-            return platformMemoryCache;
         }
     }
 }
