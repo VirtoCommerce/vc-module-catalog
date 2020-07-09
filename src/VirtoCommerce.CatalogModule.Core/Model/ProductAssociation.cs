@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
@@ -5,7 +6,7 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Core.Model
 {
-    public class ProductAssociation : ValueObject, IHasOuterId, IHasImages
+    public class ProductAssociation : Entity, IHasOuterId, IHasImages, ICloneable
     {
         /// <summary>
         /// Association type (Accessories, Up-Sales, Cross-Sales, Related etc)
@@ -69,22 +70,14 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         #endregion
 
         #region ICloneable
-        public override object Clone()
+        public virtual object Clone()
         {
-            var result = base.Clone() as ProductAssociation;
+            var result = MemberwiseClone() as ProductAssociation;
 
             result.Images = Images?.Select(x => x.Clone()).OfType<Image>().ToList();
 
             return result;
         }
         #endregion
-
-        protected override IEnumerable<object> GetEqualityComponents()
-        {
-            yield return AssociatedObjectId;
-            yield return AssociatedObjectType;
-            yield return Type;
-        }
-
     }
 }
