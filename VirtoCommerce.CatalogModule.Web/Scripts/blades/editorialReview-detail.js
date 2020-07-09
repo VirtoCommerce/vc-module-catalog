@@ -95,17 +95,17 @@ angular.module('virtoCommerce.catalogModule')
         ];
 
         function saveChanges() {
-            var existReview = _.find(blade.item.reviews, function (x) { return x === blade.origEntity; });
+            blade.currentEntity.isInherited = false;
+            var existReview = _.find(blade.item.reviews, x => x === blade.origEntity);
             if (!existReview) {
                 blade.item.reviews.push(blade.origEntity);
-            };
-
+            } 
             angular.copy(blade.currentEntity, blade.origEntity);
         }
 
         function isDirty() {
             return !angular.equals(blade.currentEntity, blade.origEntity);
-        };
+        }
 
         function canSave() {
             return isDirty() && formScope && formScope.$valid;
