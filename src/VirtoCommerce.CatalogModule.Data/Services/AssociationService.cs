@@ -125,7 +125,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
             using (var repository = _repositoryFactory())
             {
-                var associations = repository.Associations.Where(x => ids.Contains(x.Id));
+                var associations = repository.Associations.Where(x => ids.Contains(x.Id)).ToArray();
 
                 foreach (var association in associations)
                 {
