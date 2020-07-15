@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
@@ -70,6 +71,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             if (association == null)
                 throw new ArgumentNullException(nameof(association));
 
+            association.Id = Id;
             association.OuterId = OuterId;
             association.Type = AssociationType;
             association.Priority = Priority;
@@ -101,6 +103,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             if (association == null)
                 throw new ArgumentNullException(nameof(association));
 
+            Id = association.Id;
             Priority = association.Priority;
             AssociationType = association.Type;
             Quantity = association.Quantity;
@@ -114,6 +117,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             {
                 AssociatedCategoryId = association.AssociatedObjectId;
             }
+
             if (!association.Tags.IsNullOrEmpty())
             {
                 Tags = string.Join(";", association.Tags);
@@ -128,6 +132,40 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             target.Tags = Tags;
             target.AssociationType = AssociationType;
             target.Quantity = Quantity;
+            target.ItemId = ItemId;
+            target.AssociatedItemId = AssociatedItemId;
+            target.AssociatedCategoryId = AssociatedCategoryId;
+        }
+    }
+
+    public class AssociationEntityComparer : IEqualityComparer<AssociationEntity>
+    {
+        public bool Equals(AssociationEntity x, AssociationEntity y)
+        {
+            if (ReferenceEquals(x, y))
+            {
+                return true;
+            }
+
+            if (x == null || y == null)
+            {
+                return false;
+            }
+
+
+            var result = x.Id == y.Id;
+
+            if (x.IsTransient() || y.IsTransient())
+            {
+                result = x.AssociationType == y.AssociationType && x.AssociatedItemId == y.AssociatedItemId && x.ItemId == y.ItemId && x.AssociatedCategoryId == y.AssociatedCategoryId;
+            }
+
+            return result;
+        }
+
+        public int GetHashCode(AssociationEntity obj)
+        {
+            return obj != null ? HashCode.Combine(obj.AssociationType, obj.AssociatedItemId, obj.AssociatedCategoryId, obj.ItemId) : 0;
         }
     }
 }

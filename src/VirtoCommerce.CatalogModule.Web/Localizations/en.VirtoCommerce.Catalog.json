@@ -288,6 +288,8 @@
       "item-detail": {
         "subtitle-variation": "Variation details",
         "labels": {
+          "id": "ID",
+          "outer-id": "Outer ID",
           "sku": "SKU",
           "priority": "Priority",
           "name": "Name",

@@ -77,7 +77,5 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var result = await _productAssociationSearchService.SearchProductAssociationsAsync(criteria);
             return Ok(result);
         }
-
-
     }
 }
