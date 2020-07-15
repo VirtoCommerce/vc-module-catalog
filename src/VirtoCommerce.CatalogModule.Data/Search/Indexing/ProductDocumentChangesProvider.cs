@@ -44,7 +44,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 // Get added and modified products count
                 using (var repository = _catalogRepositoryFactory())
                 {
-                    result = await repository.Items.CountAsync(i => i.ParentId == null && ((i.ModifiedDate >= startDate && i.ModifiedDate <= endDate) || (i.CreatedDate >= startDate && i.CreatedDate <= endDate)));
+                    result = await repository.Items.CountAsync(i => i.ParentId == null && (i.ModifiedDate >= startDate && i.ModifiedDate <= endDate));
                 }
 
                 var criteria = new ChangeLogSearchCriteria
@@ -95,7 +95,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 else
                 {
                     var changedProductsInfos = await repository.Items
-                       .Where(i => i.ParentId == null && ((i.ModifiedDate >= startDate && i.ModifiedDate <= endDate) || (i.CreatedDate >= startDate && i.CreatedDate <= endDate)))
+                       .Where(i => i.ParentId == null && (i.ModifiedDate >= startDate && i.ModifiedDate <= endDate))
                        .OrderBy(i => i.CreatedDate)
                        .Select(i => new { i.Id, i.CreatedDate, i.ModifiedDate })
                        .Skip((int)skip)
