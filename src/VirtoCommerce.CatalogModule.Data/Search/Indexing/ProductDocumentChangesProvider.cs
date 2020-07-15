@@ -42,7 +42,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 // Get added and modified products count
                 using (var repository = _catalogRepositoryFactory())
                 {
-                    result = await repository.Items.CountAsync(i => i.ParentId == null && (i.ModifiedDate >= startDate || startDate == null) && (i.ModifiedDate <= endDate || endDate == null));
+                    result = await GetChangedItemsQuery(repository, startDate, endDate).CountAsync();
                 }
 
                 var criteria = new ChangeLogSearchCriteria
@@ -90,8 +90,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 }
                 else
                 {
-                    var changedProductsInfos = await repository.Items
-                       .Where(i => i.ParentId == null && (i.ModifiedDate >= startDate || startDate == null) && (i.ModifiedDate <= endDate || endDate == null))
+                    var changedProductsInfos = await GetChangedItemsQuery(repository, startDate, endDate)
                        .OrderBy(i => i.CreatedDate)
                        .Select(i => new { i.Id, i.CreatedDate, i.ModifiedDate })
                        .Skip((int)skip)
@@ -135,6 +134,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             }
 
             return result;
+        }
+
+        private  IQueryable<Model.ItemEntity> GetChangedItemsQuery(ICatalogRepository repository, DateTime? startDate, DateTime? endDate)
+        {
+            return repository.Items.Where(i => i.ParentId == null && (i.ModifiedDate >= startDate || startDate == null) && (i.ModifiedDate <= endDate || endDate == null));
         }
     }
 }
