@@ -50,13 +50,14 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 var criteria = new ChangeLogSearchCriteria
                 {
                     ObjectType = ChangeLogObjectType,
+                    OperationTypes = new[] { EntryState.Deleted },
                     StartDate = startDate,
                     EndDate = endDate,
                     Take = 0
                 };
                 
                 var deletedOperations = (await _changeLogSearchService.SearchAsync(criteria)).Results;
-                var deletedCount = deletedOperations.Count(o => o.OperationType == EntryState.Deleted);
+                var deletedCount = deletedOperations.Count;
                 result += deletedCount;
             }
 
@@ -114,6 +115,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                     var criteria = new ChangeLogSearchCriteria
                     {
                         ObjectType = ChangeLogObjectType,
+                        OperationTypes = new[] { EntryState.Deleted },
                         StartDate = startDate,
                         EndDate = endDate,
                         Skip = (int)skip,
@@ -122,7 +124,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
                     var operations = (await _changeLogSearchService.SearchAsync(criteria)).Results;
 
-                    var deletedProductIndexDocumentChanges = operations.Where(o => o.OperationType == EntryState.Deleted).Select(o =>
+                    var deletedProductIndexDocumentChanges = operations.Select(o =>
                         new IndexDocumentChange
                         {
                             DocumentId = o.ObjectId,
