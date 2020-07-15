@@ -27,8 +27,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         public virtual async Task<long> GetTotalChangesCountAsync(DateTime? startDate, DateTime? endDate)
         {
-            ValidateDates(startDate, endDate);
-
             long result;
 
             if (startDate == null && endDate == null)
@@ -44,7 +42,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 // Get added and modified products count
                 using (var repository = _catalogRepositoryFactory())
                 {
-                    result = await repository.Items.CountAsync(i => i.ParentId == null && (i.ModifiedDate >= startDate && i.ModifiedDate <= endDate));
+                    result = await repository.Items.CountAsync(i => i.ParentId == null && (i.ModifiedDate >= startDate || startDate == null) && (i.ModifiedDate <= endDate || endDate == null));
                 }
 
                 var criteria = new ChangeLogSearchCriteria
@@ -66,8 +64,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         public virtual async Task<IList<IndexDocumentChange>> GetChangesAsync(DateTime? startDate, DateTime? endDate, long skip, long take)
         {
-            ValidateDates(startDate, endDate);
-
             IList<IndexDocumentChange> result;
             // Get documents from repository and return them as changes
             using (var repository = _catalogRepositoryFactory())
@@ -95,7 +91,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 else
                 {
                     var changedProductsInfos = await repository.Items
-                       .Where(i => i.ParentId == null && (i.ModifiedDate >= startDate && i.ModifiedDate <= endDate))
+                       .Where(i => i.ParentId == null && (i.ModifiedDate >= startDate || startDate == null) && (i.ModifiedDate <= endDate || endDate == null))
                        .OrderBy(i => i.CreatedDate)
                        .Select(i => new { i.Id, i.CreatedDate, i.ModifiedDate })
                        .Skip((int)skip)
@@ -139,14 +135,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             }
 
             return result;
-        }
-
-        private static void ValidateDates(DateTime? startDate, DateTime? endDate)
-        {
-            if (startDate.HasValue ^ endDate.HasValue)
-            {
-                throw new ArgumentException("The startDate and endDate must have either both null value or both not null value");
-            }
         }
     }
 }
