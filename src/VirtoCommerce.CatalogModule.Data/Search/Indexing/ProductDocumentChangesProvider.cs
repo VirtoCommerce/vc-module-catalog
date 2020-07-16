@@ -70,28 +70,20 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 {
                     result = new List<IndexDocumentChange>();
 
-                    var overallDeletedCount = await GetOverallDeletedProductsCount(startDate, endDate);
+                    var totalDeletedCount = await GetOverallDeletedProductsCount(startDate, endDate);
 
-                    if (overallDeletedCount > skip)
-                    {
-                        var deletedProductIndexDocumentChanges = await GetDeletedProductIndexDocumentChanges(startDate, endDate, skip, take);
-                        result.AddRange(deletedProductIndexDocumentChanges);
+                    var originSkip = skip;
+                    var originTake = take;
 
-                        if (deletedProductIndexDocumentChanges.Count < take)
-                        {
-                            skip = 0;
-                            take = skip == 0 ? take - overallDeletedCount : take - (overallDeletedCount % skip);
-                            var modifiedProductIndexDocumentChanges = await GetModifiedProductIndexDocumentChanges(startDate, endDate, skip, take, repository);
-                            result.AddRange(modifiedProductIndexDocumentChanges);
-                        }
-                    }
-                    else
-                    {
-                        // shift skip on deleted count
-                        skip -= overallDeletedCount;
-                        var modifiedProductIndexDocumentChanges = await GetModifiedProductIndexDocumentChanges(startDate, endDate, skip, take, repository);
-                        result.AddRange(modifiedProductIndexDocumentChanges);
-                    }
+                    var deletedProductIndexDocumentChanges = await GetDeletedProductIndexDocumentChanges(startDate, endDate, originSkip, originTake);
+                    var deletedCount = deletedProductIndexDocumentChanges.Count();
+                    result.AddRange(deletedProductIndexDocumentChanges);
+
+                    skip = originSkip - Math.Min(deletedCount, originSkip);
+                    take = originTake - Math.Min(originTake, Math.Max(0, totalDeletedCount - originSkip));
+
+                    var modifiedProductIndexDocumentChanges = await GetModifiedProductIndexDocumentChanges(startDate, endDate, skip, take, repository);
+                    result.AddRange(modifiedProductIndexDocumentChanges);
                 }
             }
 
@@ -108,7 +100,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                .ToArrayAsync();
         }
 
-        private async Task<List<IndexDocumentChange>> GetDeletedProductIndexDocumentChanges(DateTime? startDate, DateTime? endDate, long skip, long take)
+        private async Task<IndexDocumentChange[]> GetDeletedProductIndexDocumentChanges(DateTime? startDate, DateTime? endDate, long skip, long take)
         {
             var criteria = new ChangeLogSearchCriteria
             {
@@ -129,7 +121,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                     ChangeType = IndexDocumentChangeType.Deleted,
                     ChangeDate = operation.ModifiedDate ?? operation.CreatedDate,
                 }
-            ).ToList();
+            ).ToArray();
             return deletedProductIndexDocumentChanges;
         }
       
