@@ -28,39 +28,26 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         public virtual async Task<long> GetTotalChangesCountAsync(DateTime? startDate, DateTime? endDate)
         {
             long result;
-
-            if (startDate == null && endDate == null)
+            using (var repository = _catalogRepositoryFactory())
             {
-                // Get total products count
-                using (var repository = _catalogRepositoryFactory())
+
+                if (startDate == null && endDate == null)
                 {
+                    // Get total products count
                     result = await repository.Items.CountAsync(i => i.ParentId == null);
                 }
-            }
-            else
-            {
-                // Get added and modified products count
-                using (var repository = _catalogRepositoryFactory())
+                else
                 {
-                    result = await GetChangedItemsQuery(repository, startDate, endDate).CountAsync();
+                    // Get added and modified products count
+                    result = await BuildChangedItemsQuery(repository, startDate, endDate).CountAsync();
+                    // Get deleted count
+                    var deletedCount = await GetOverallDeletedProductsCount(startDate, endDate);
+                    result += deletedCount;
                 }
-
-                var criteria = new ChangeLogSearchCriteria
-                {
-                    ObjectType = ChangeLogObjectType,
-                    OperationTypes = new[] { EntryState.Deleted },
-                    StartDate = startDate,
-                    EndDate = endDate,
-                    Take = 0
-                };
-                
-                var deletedOperations = (await _changeLogSearchService.SearchAsync(criteria)).Results;
-                var deletedCount = deletedOperations.Count;
-                result += deletedCount;
             }
 
             return result;
-        }
+        }       
 
         public virtual async Task<IList<IndexDocumentChange>> GetChangesAsync(DateTime? startDate, DateTime? endDate, long skip, long take)
         {
@@ -71,72 +58,108 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
                 if (startDate == null && endDate == null)
                 {
-                    var changedProductsInfos = await repository.Items
+                    result = await repository.Items
                         .Where(i => i.ParentId == null)
                         .OrderBy(i => i.CreatedDate)
-                        .Select(i => new { i.Id, i.CreatedDate, i.ModifiedDate })
-                        .Skip((int)skip)
-                        .Take((int)take)
-                        .ToArrayAsync();
-
-                    result = changedProductsInfos.Select(itemInfo =>
-                        new IndexDocumentChange
-                        {
-                            DocumentId = itemInfo.Id,
-                            ChangeType = IndexDocumentChangeType.Modified,
-                            ChangeDate = itemInfo.ModifiedDate ?? itemInfo.CreatedDate
-                        }
-                    ).ToArray();
+                        .Select(i => ItemEntityToIndexDocumentChange(i))
+                        .Skip(Convert.ToInt32(skip))
+                        .Take(Convert.ToInt32(take))
+                        .ToListAsync();
                 }
                 else
                 {
-                    var changedProductsInfos = await GetChangedItemsQuery(repository, startDate, endDate)
-                       .OrderBy(i => i.CreatedDate)
-                       .Select(i => new { i.Id, i.CreatedDate, i.ModifiedDate })
-                       .Skip((int)skip)
-                       .Take((int)take)
-                       .ToArrayAsync();
+                    result = new List<IndexDocumentChange>();
 
-                    var changedProductIdsList = changedProductsInfos.Select(itemInfo =>
-                        new IndexDocumentChange
-                        {
-                            DocumentId = itemInfo.Id,
-                            ChangeType = IndexDocumentChangeType.Modified,
-                            ChangeDate = itemInfo.ModifiedDate ?? itemInfo.CreatedDate
-                        }
-                    ).ToList();
+                    var overallDeletedCount = await GetOverallDeletedProductsCount(startDate, endDate);
 
-                    // Get changes from operation log for deleted items
-                    var criteria = new ChangeLogSearchCriteria
+                    if (overallDeletedCount > skip)
                     {
-                        ObjectType = ChangeLogObjectType,
-                        OperationTypes = new[] { EntryState.Deleted },
-                        StartDate = startDate,
-                        EndDate = endDate,
-                        Skip = (int)skip,
-                        Take = (int)take
-                    };
+                        var deletedProductIndexDocumentChanges = await GetDeletedProductIndexDocumentChanges(startDate, endDate, skip, take);
+                        result.AddRange(deletedProductIndexDocumentChanges);
 
-                    var operations = (await _changeLogSearchService.SearchAsync(criteria)).Results;
-
-                    var deletedProductIndexDocumentChanges = operations.Select(o =>
-                        new IndexDocumentChange
+                        if (deletedProductIndexDocumentChanges.Count < take)
                         {
-                            DocumentId = o.ObjectId,
-                            ChangeType = IndexDocumentChangeType.Deleted,
-                            ChangeDate = o.ModifiedDate ?? o.CreatedDate,
+                            skip = 0;
+                            take = skip == 0 ? take - overallDeletedCount : take - (overallDeletedCount % skip);
+                            var modifiedProductIndexDocumentChanges = await GetModifiedProductIndexDocumentChanges(startDate, endDate, skip, take, repository);
+                            result.AddRange(modifiedProductIndexDocumentChanges);
                         }
-                    ).ToArray();
-
-                    changedProductIdsList.AddRange(deletedProductIndexDocumentChanges);
-                    result = changedProductIdsList.ToArray();
+                    }
+                    else
+                    {
+                        // shift skip on deleted count
+                        skip -= overallDeletedCount;
+                        var modifiedProductIndexDocumentChanges = await GetModifiedProductIndexDocumentChanges(startDate, endDate, skip, take, repository);
+                        result.AddRange(modifiedProductIndexDocumentChanges);
+                    }
                 }
             }
 
             return result;
         }
 
-        private  IQueryable<Model.ItemEntity> GetChangedItemsQuery(ICatalogRepository repository, DateTime? startDate, DateTime? endDate)
+        private static async Task<IndexDocumentChange[]> GetModifiedProductIndexDocumentChanges(DateTime? startDate, DateTime? endDate, long skip, long take, ICatalogRepository repository)
+        {
+            return await BuildChangedItemsQuery(repository, startDate, endDate)
+               .OrderBy(i => i.CreatedDate)
+               .Select(i => ItemEntityToIndexDocumentChange(i))
+               .Skip(Convert.ToInt32(skip))
+               .Take(Convert.ToInt32(take))
+               .ToArrayAsync();
+        }
+
+        private async Task<List<IndexDocumentChange>> GetDeletedProductIndexDocumentChanges(DateTime? startDate, DateTime? endDate, long skip, long take)
+        {
+            var criteria = new ChangeLogSearchCriteria
+            {
+                ObjectType = ChangeLogObjectType,
+                OperationTypes = new[] { EntryState.Deleted },
+                StartDate = startDate,
+                EndDate = endDate,
+                Skip = Convert.ToInt32(skip),
+                Take = Convert.ToInt32(take)
+            };
+
+            var deleteOperations = (await _changeLogSearchService.SearchAsync(criteria)).Results;
+
+            var deletedProductIndexDocumentChanges = deleteOperations.Select(operation =>
+                new IndexDocumentChange
+                {
+                    DocumentId = operation.ObjectId,
+                    ChangeType = IndexDocumentChangeType.Deleted,
+                    ChangeDate = operation.ModifiedDate ?? operation.CreatedDate,
+                }
+            ).ToList();
+            return deletedProductIndexDocumentChanges;
+        }
+      
+
+        private async Task<int> GetOverallDeletedProductsCount(DateTime? startDate, DateTime? endDate)
+        {
+            var criteria = new ChangeLogSearchCriteria
+            {
+                ObjectType = ChangeLogObjectType,
+                OperationTypes = new[] { EntryState.Deleted },
+                StartDate = startDate,
+                EndDate = endDate,
+                Take = 0
+            };
+
+            var deletedOperations = (await _changeLogSearchService.SearchAsync(criteria)).Results;
+            var deletedCount = deletedOperations.Count;
+            return deletedCount;
+        }
+
+        private static IndexDocumentChange ItemEntityToIndexDocumentChange(Model.ItemEntity item)
+        {
+            return new IndexDocumentChange
+            {
+                DocumentId = item.Id,
+                ChangeType = IndexDocumentChangeType.Modified,
+                ChangeDate = item.ModifiedDate ?? item.CreatedDate
+            };
+        }
+        private static IQueryable<Model.ItemEntity> BuildChangedItemsQuery(ICatalogRepository repository, DateTime? startDate, DateTime? endDate)
         {
             return repository.Items.Where(i => i.ParentId == null && (i.ModifiedDate >= startDate || startDate == null) && (i.ModifiedDate <= endDate || endDate == null));
         }
