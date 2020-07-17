@@ -40,14 +40,14 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 {
                     // Get added and modified products count
                     result = await BuildChangedItemsQuery(repository, startDate, endDate).CountAsync();
-                    // Get deleted count
-                    var deletedCount = await GetOverallDeletedProductsCount(startDate, endDate);
+                    
+                    var deletedCount = await GetTotalDeletedProductsCount(startDate, endDate);
                     result += deletedCount;
                 }
             }
 
             return result;
-        }       
+        }
 
         public virtual async Task<IList<IndexDocumentChange>> GetChangesAsync(DateTime? startDate, DateTime? endDate, long skip, long take)
         {
@@ -55,22 +55,22 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             // Get documents from repository and return them as changes
             using (var repository = _catalogRepositoryFactory())
             {
-
                 if (startDate == null && endDate == null)
                 {
                     result = await repository.Items
                         .Where(i => i.ParentId == null)
                         .OrderBy(i => i.CreatedDate)
-                        .Select(i => ItemEntityToIndexDocumentChange(i))
+                        .Select(i => ConvertItemEntityToIndexDocumentChange(i))
                         .Skip(Convert.ToInt32(skip))
                         .Take(Convert.ToInt32(take))
                         .ToListAsync();
                 }
                 else
                 {
+                    // The result is collected from two sources. The deleted ones are selected from the log of operations. Added and modified ones are selected directly from the product repository.
                     result = new List<IndexDocumentChange>();
 
-                    var totalDeletedCount = await GetOverallDeletedProductsCount(startDate, endDate);
+                    var totalDeletedCount = await GetTotalDeletedProductsCount(startDate, endDate);
 
                     var originSkip = skip;
                     var originTake = take;
@@ -88,16 +88,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             }
 
             return result;
-        }
-
-        private static async Task<IndexDocumentChange[]> GetModifiedProductIndexDocumentChanges(DateTime? startDate, DateTime? endDate, long skip, long take, ICatalogRepository repository)
-        {
-            return await BuildChangedItemsQuery(repository, startDate, endDate)
-               .OrderBy(i => i.CreatedDate)
-               .Select(i => ItemEntityToIndexDocumentChange(i))
-               .Skip(Convert.ToInt32(skip))
-               .Take(Convert.ToInt32(take))
-               .ToArrayAsync();
         }
 
         private async Task<IndexDocumentChange[]> GetDeletedProductIndexDocumentChanges(DateTime? startDate, DateTime? endDate, long skip, long take)
@@ -124,9 +114,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             ).ToArray();
             return deletedProductIndexDocumentChanges;
         }
-      
 
-        private async Task<int> GetOverallDeletedProductsCount(DateTime? startDate, DateTime? endDate)
+        private async Task<int> GetTotalDeletedProductsCount(DateTime? startDate, DateTime? endDate)
         {
             var criteria = new ChangeLogSearchCriteria
             {
@@ -142,7 +131,17 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             return deletedCount;
         }
 
-        private static IndexDocumentChange ItemEntityToIndexDocumentChange(Model.ItemEntity item)
+        private static async Task<IndexDocumentChange[]> GetModifiedProductIndexDocumentChanges(DateTime? startDate, DateTime? endDate, long skip, long take, ICatalogRepository repository)
+        {
+            return await BuildChangedItemsQuery(repository, startDate, endDate)
+               .OrderBy(i => i.CreatedDate)
+               .Select(i => ConvertItemEntityToIndexDocumentChange(i))
+               .Skip(Convert.ToInt32(skip))
+               .Take(Convert.ToInt32(take))
+               .ToArrayAsync();
+        }
+
+        private static IndexDocumentChange ConvertItemEntityToIndexDocumentChange(Model.ItemEntity item)
         {
             return new IndexDocumentChange
             {
@@ -151,9 +150,12 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 ChangeDate = item.ModifiedDate ?? item.CreatedDate
             };
         }
+
         private static IQueryable<Model.ItemEntity> BuildChangedItemsQuery(ICatalogRepository repository, DateTime? startDate, DateTime? endDate)
         {
-            return repository.Items.Where(i => i.ParentId == null && (i.ModifiedDate >= startDate || startDate == null) && (i.ModifiedDate <= endDate || endDate == null));
+            return repository.Items.Where(i => i.ParentId == null
+                && (startDate == null || i.ModifiedDate >= startDate)
+                && (endDate == null || i.ModifiedDate <= endDate));
         }
     }
 }
