@@ -114,6 +114,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             // Add outlines to search index
             var outlineStrings = GetOutlineStrings(product.Outlines);
             document.AddFilterableValues("__outline", outlineStrings);
+            // Add the all physical and virtual paths
+            document.AddFilterableValues("__path", product.Outlines.Select(x=> string.Join("/", x.Items.Take(x.Items.Count - 1).Select(i=> i.Id))).ToList());
 
             // Types of properties which values should be added to the searchable __content field
             var contentPropertyTypes = new[] { PropertyType.Product, PropertyType.Variation };
