@@ -16,6 +16,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
     {
         private readonly IItemService _itemService;
         private readonly IProductSearchService _productsSearchService;
+
         public ProductDocumentBuilder(ISettingsManager settingsManager, IItemService itemService, IProductSearchService productsSearchService)
             : base(settingsManager)
         {
@@ -27,7 +28,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         {
             var result = new List<IndexDocument>();
             var products = await GetProducts(documentIds);
-            foreach(var product in products)
+            foreach (var product in products)
             {
                 var doc = CreateDocument(product);
                 result.Add(doc);
@@ -65,7 +66,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         protected virtual Task<CatalogProduct[]> GetProducts(IList<string> productIds)
         {
-            return _itemService.GetByIdsAsync(productIds.ToArray(), (ItemResponseGroup.Full &~ ItemResponseGroup.Variations).ToString());
+            return _itemService.GetByIdsAsync(productIds.ToArray(), (ItemResponseGroup.Full & ~ItemResponseGroup.Variations).ToString());
         }
 
         protected virtual IndexDocument CreateDocument(CatalogProduct product)
@@ -130,10 +131,10 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             if (product.Catalog != null)
             {
                 IndexCustomProperties(document, product.Catalog.Properties, contentPropertyTypes);
-            }          
+            }
 
             if (StoreObjectsInIndex)
-            {                
+            {
                 // Index serialized product
                 document.AddObjectFieldValue(product);
             }
@@ -158,6 +159,9 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             document.Add(new IndexDocumentField("code", variation.Code) { IsRetrievable = true, IsFilterable = true, IsCollection = true });
             // add the variation code to content
             document.Add(new IndexDocumentField("__content", variation.Code) { IsRetrievable = true, IsSearchable = true, IsCollection = true });
+            // add the variationId to __variations
+            document.Add(new IndexDocumentField("__variations", variation.Id) { IsRetrievable = true, IsSearchable = true, IsCollection = true });
+
             IndexCustomProperties(document, variation.Properties, new[] { PropertyType.Variation });
         }
 
