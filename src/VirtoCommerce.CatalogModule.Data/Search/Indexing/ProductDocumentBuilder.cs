@@ -82,6 +82,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             IndexIsProperty(document, product.Code);
 
             document.AddFilterableValue("status", statusField);
+            document.AddFilterableAndSearchableValue("sku", product.Code);
             document.AddFilterableAndSearchableValue("code", product.Code);// { IsRetrievable = true, IsFilterable = true, IsCollection = true });
             document.AddFilterableAndSearchableValue("name", product.Name);
             document.AddFilterableValue("startdate", product.StartDate);
@@ -116,7 +117,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             document.AddFilterableValues("__outline", outlineStrings);
             // Add the all physical and virtual paths
             document.AddFilterableValues("__path", product.Outlines.Select(x=> string.Join("/", x.Items.Take(x.Items.Count - 1).Select(i=> i.Id))).ToList());
-
+          
             // Types of properties which values should be added to the searchable __content field
             var contentPropertyTypes = new[] { PropertyType.Product, PropertyType.Variation };
 
