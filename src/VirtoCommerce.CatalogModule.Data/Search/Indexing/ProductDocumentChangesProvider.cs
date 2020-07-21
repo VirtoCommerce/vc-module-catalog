@@ -73,7 +73,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                     var originSkip = skip;
                     var originTake = take;
 
-                    var searchResult = await SearchDeleteOperationIntoLog(startDate, endDate, originSkip, originTake);
+                    var searchResult = await SearchDeleteOperationsInLog(startDate, endDate, originSkip, originTake);
                     var totalDeletedCount = searchResult.TotalCount;
                     var deletedProductIndexDocumentChanges = searchResult.Results.Select(operation => ConvertOperationLogToIndexDocumentChange(operation)).ToArray();
                     var deletedCount = deletedProductIndexDocumentChanges.Count();
@@ -90,7 +90,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             return result;
         }
 
-        private async Task<ChangeLogSearchResult> SearchDeleteOperationIntoLog(DateTime? startDate, DateTime? endDate, long skip, long take)
+        private async Task<ChangeLogSearchResult> SearchDeleteOperationsInLog(DateTime? startDate, DateTime? endDate, long skip, long take)
         {
             var criteria = new ChangeLogSearchCriteria
             {
