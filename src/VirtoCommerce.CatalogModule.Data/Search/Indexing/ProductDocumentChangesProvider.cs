@@ -70,12 +70,12 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                     // The result is collected from two sources. The deleted ones are selected from the log of operations. Added and modified ones are selected directly from the product repository.
                     result = new List<IndexDocumentChange>();
 
-                    var totalDeletedCount = await GetTotalDeletedProductsCount(startDate, endDate);
-
                     var originSkip = skip;
                     var originTake = take;
 
-                    var deletedProductIndexDocumentChanges = await GetDeletedProductIndexDocumentChanges(startDate, endDate, originSkip, originTake);
+                    var searchResult = await SearchDeleteOperationIntoLog(startDate, endDate, originSkip, originTake);
+                    var totalDeletedCount = searchResult.TotalCount;
+                    var deletedProductIndexDocumentChanges = searchResult.Results.Select(operation => ConvertOperationLogToIndexDocumentChange(operation)).ToArray();
                     var deletedCount = deletedProductIndexDocumentChanges.Count();
                     result.AddRange(deletedProductIndexDocumentChanges);
 
@@ -90,7 +90,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             return result;
         }
 
-        private async Task<IndexDocumentChange[]> GetDeletedProductIndexDocumentChanges(DateTime? startDate, DateTime? endDate, long skip, long take)
+        private async Task<ChangeLogSearchResult> SearchDeleteOperationIntoLog(DateTime? startDate, DateTime? endDate, long skip, long take)
         {
             var criteria = new ChangeLogSearchCriteria
             {
@@ -102,17 +102,9 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 Take = Convert.ToInt32(take)
             };
 
-            var deleteOperations = (await _changeLogSearchService.SearchAsync(criteria)).Results;
-
-            var deletedProductIndexDocumentChanges = deleteOperations.Select(operation =>
-                new IndexDocumentChange
-                {
-                    DocumentId = operation.ObjectId,
-                    ChangeType = IndexDocumentChangeType.Deleted,
-                    ChangeDate = operation.ModifiedDate ?? operation.CreatedDate,
-                }
-            ).ToArray();
-            return deletedProductIndexDocumentChanges;
+            var searchResult = (await _changeLogSearchService.SearchAsync(criteria));
+                        
+            return searchResult;
         }
 
         private async Task<int> GetTotalDeletedProductsCount(DateTime? startDate, DateTime? endDate)
@@ -148,6 +140,16 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 DocumentId = item.Id,
                 ChangeType = IndexDocumentChangeType.Modified,
                 ChangeDate = item.ModifiedDate ?? item.CreatedDate
+            };
+        }
+
+        private static IndexDocumentChange ConvertOperationLogToIndexDocumentChange(OperationLog operation)
+        {
+            return new IndexDocumentChange
+            {
+                DocumentId = operation.ObjectId,
+                ChangeType = IndexDocumentChangeType.Deleted,
+                ChangeDate = operation.ModifiedDate ?? operation.CreatedDate,
             };
         }
 
