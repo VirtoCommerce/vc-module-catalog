@@ -34,7 +34,7 @@ The Catalog Module supports two types of catalogs - master and virtual.
 * Installation: https://www.virtocommerce.com/docs/latest/user-guide/modules/
 * Home: https://virtocommerce.com
 * Community: https://www.virtocommerce.org
-* [Download Latest Release](releases/latest)
+* [Download Latest Release](https://github.com/VirtoCommerce/vc-module-catalog/releases/latest)
 
 ## License
 
