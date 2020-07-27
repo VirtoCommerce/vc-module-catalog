@@ -24,7 +24,7 @@ The Catalog Module supports two types of catalogs - master and virtual.
 * Enterprise ready - supports millions of the products
 
 ## Documentation
-* [Catalog Module Documentation](https://virtocommerce.com/docs/latest/modules/catalog/index/)
+* [Catalog Module Documentation](https://virtocommerce.com/docs/latest/modules/catalog/)
 * [View on GitHub](docs/index.md)
 
 
