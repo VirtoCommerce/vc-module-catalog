@@ -84,6 +84,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
                     if (products.Any())
                     {
+                        products = products.OrderBy(x => Array.IndexOf(itemIds, x.Id)).ToArray();
                         await LoadDependenciesAsync(products);
                         ApplyInheritanceRules(products);
 
