@@ -4,7 +4,7 @@
   <version>3.5.0</version>
   <version-tag>
   </version-tag>
-  <platformVersion>3.3.0</platformVersion>
+  <platformVersion>3.5.0</platformVersion>
   <dependencies>
     <dependency id="VirtoCommerce.Core" version="3.1.0" />
     <dependency id="VirtoCommerce.Search" version="3.2.0" />

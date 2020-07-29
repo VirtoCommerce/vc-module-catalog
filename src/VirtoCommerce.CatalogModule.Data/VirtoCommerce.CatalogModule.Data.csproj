@@ -23,9 +23,9 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.2" />
     <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.1.0" />
     <PackageReference Include="VirtoCommerce.ExportModule.Data" Version="3.1.0" />
-    <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.3.0" />
-    <PackageReference Include="VirtoCommerce.Platform.Data" Version="3.3.0" />
-    <PackageReference Include="VirtoCommerce.Platform.Security" Version="3.3.0" />
+    <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.5.0" />
+    <PackageReference Include="VirtoCommerce.Platform.Data" Version="3.5.0" />
+    <PackageReference Include="VirtoCommerce.Platform.Security" Version="3.5.0" />
     <PackageReference Include="VirtoCommerce.SearchModule.Data" Version="3.2.0" />
     <PackageReference Include="VirtoCommerce.StoreModule.Core" Version="3.1.0" />
   </ItemGroup>
