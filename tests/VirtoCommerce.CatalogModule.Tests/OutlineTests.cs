@@ -6,7 +6,7 @@ using VirtoCommerce.CatalogModule.Data.Services;
 using VirtoCommerce.CoreModule.Core.Outlines;
 using Xunit;
 
-namespace VirtoCommerce.CatalogModule.Test
+namespace VirtoCommerce.CatalogModule.Tests
 {
     [Trait("Category", "CI")]
     public class OutlineTests
