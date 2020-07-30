@@ -82,7 +82,9 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             MetaDescription = seoInfo.MetaDescription;
             MetaKeywords = seoInfo.MetaKeywords;
             StoreId = seoInfo.StoreId;
-
+            CategoryId = seoInfo.ObjectType == "Category" ? seoInfo.ObjectId : null;
+            ItemId = seoInfo.ObjectType == "CatalogProduct" ? seoInfo.ObjectId : null;
+            
             return this;
         }
 
