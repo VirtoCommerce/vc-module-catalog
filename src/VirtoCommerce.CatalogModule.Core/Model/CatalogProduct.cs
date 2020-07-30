@@ -11,7 +11,7 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Core.Model
 {
-    public class CatalogProduct : AuditableEntity, IHasLinks, ISeoSupport, IHasOutlines, IHasDimension, IHasAssociations, IHasProperties, IHasImages, IHasAssets, IInheritable, IHasTaxType, IHasName, IHasOuterId, IExportable, ICopyable
+    public class CatalogProduct : AuditableEntity, IHasLinks, ISeoSupport, IHasOutlines, IHasDimension, IHasAssociations, IHasProperties, IHasImages, IHasAssets, IInheritable, IHasTaxType, IHasName, IHasOuterId, IExportable, ICopyable, IHasCategoryId
     {
         /// <summary>
         /// SKU code
@@ -160,7 +160,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         /// System flag used to mark that object was inherited from other
         /// </summary>
         public bool IsInherited { get; private set; }
-
+       
         public virtual void TryInheritFrom(IEntity parent)
         {
             if (parent is IHasProperties hasProperties)
@@ -189,14 +189,11 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                 }
             }
 
-            if (parent is IHasTaxType hasTaxType)
+            //TODO: prevent saving the inherited simple values
+            //TaxType  inheritance
+            if (parent is IHasTaxType hasTaxType && TaxType == null)
             {
-                //TODO: prevent saving the inherited simple values
-                //TaxType  inheritance
-                if (TaxType == null)
-                {
-                    TaxType = hasTaxType.TaxType;
-                }
+                TaxType = hasTaxType.TaxType;
             }
 
             if (!Variations.IsNullOrEmpty())
@@ -258,17 +255,14 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                     existProperty.IsReadOnly = existProperty.Type != PropertyType.Variation && existProperty.Type != PropertyType.Product;
 
                     //Inherit only parent Product properties  values if own values aren't set
-                    if (parentProductProperty.Type == PropertyType.Product)
+                    if (parentProductProperty.Type == PropertyType.Product && existProperty.Values.IsNullOrEmpty() && !parentProductProperty.Values.IsNullOrEmpty())
                     {
-                        if (existProperty.Values.IsNullOrEmpty() && !parentProductProperty.Values.IsNullOrEmpty())
+                        existProperty.Values = new List<PropertyValue>();
+                        foreach (var parentPropValue in parentProductProperty.Values)
                         {
-                            existProperty.Values = new List<PropertyValue>();
-                            foreach (var parentPropValue in parentProductProperty.Values)
-                            {
-                                var propValue = AbstractTypeFactory<PropertyValue>.TryCreateInstance();
-                                propValue.TryInheritFrom(parentPropValue);
-                                existProperty.Values.Add(propValue);
-                            }
+                            var propValue = AbstractTypeFactory<PropertyValue>.TryCreateInstance();
+                            propValue.TryInheritFrom(parentPropValue);
+                            existProperty.Values.Add(propValue);
                         }
                     }
                 }
@@ -279,7 +273,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                 MeasureUnit = parentProduct.MeasureUnit ?? MeasureUnit;
                 Weight = parentProduct.Weight ?? Weight;
                 WeightUnit = parentProduct.WeightUnit ?? WeightUnit;
-                PackageType = parentProduct.PackageType ?? PackageType;              
+                PackageType = parentProduct.PackageType ?? PackageType;
             }
         }
         #endregion
@@ -300,7 +294,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
             foreach (var seoSuportEntity in allSeoSupportEntities)
             {
                 seoSuportEntity.SeoInfos?.Clear();
-            }            
+            }
             return result;
         }
 
@@ -363,6 +357,8 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         {
             var result = MemberwiseClone() as CatalogProduct;
 
+            // result.Catalog = (Catalog)Catalog?.Clone(); // Intentionally temporary disabled due to memory overhead
+            // result.Category = (Category)Category?.Clone(); // Intentionally temporary disabled due to memory overhead
             result.SeoInfos = SeoInfos?.Select(x => x.Clone()).OfType<SeoInfo>().ToList();
             result.Images = Images?.Select(x => x.Clone()).OfType<Image>().ToList();
             result.Assets = Assets?.Select(x => x.Clone()).OfType<Asset>().ToList();
@@ -372,9 +368,15 @@ namespace VirtoCommerce.CatalogModule.Core.Model
             result.Reviews = Reviews?.Select(x => x.Clone()).OfType<EditorialReview>().ToList();
             result.Links = Links?.Select(x => x.Clone()).OfType<CategoryLink>().ToList();
             result.Variations = Variations?.Select(x => x.Clone()).OfType<Variation>().ToList();
+            // result.Outlines = Outlines?.Select(x => x.Clone()).OfType<Outline>().ToList(); // Intentionally temporary disabled due to memory overhead
 
             return result;
         }
         #endregion
+
+        public override string ToString()
+        {
+            return $"{Name}, Id: {Id}, Code: {Code}";
+        }
     }
 }

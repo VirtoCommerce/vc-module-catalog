@@ -18,7 +18,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             _settingsManager = settingsManager;
         }
 
-        protected virtual bool StoreObjectsInIndex => _settingsManager.GetValue(ModuleConstants.Settings.Search.UseFullObjectIndexStoring.Name, true);
+        protected virtual bool StoreObjectsInIndex => _settingsManager.GetValue(ModuleConstants.Settings.Search.UseFullObjectIndexStoring.Name, false);
 
         protected virtual void IndexCustomProperties(IndexDocument document, ICollection<Property> properties, ICollection<PropertyType> contentPropertyTypes)
         {

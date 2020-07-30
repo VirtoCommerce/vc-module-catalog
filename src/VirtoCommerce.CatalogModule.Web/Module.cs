@@ -10,6 +10,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using VirtoCommerce.BulkActionsModule.Core.Models.BulkActions;
+using VirtoCommerce.BulkActionsModule.Core.Services;
+using VirtoCommerce.CatalogModule.BulkActions.Actions.CategoryChange;
+using VirtoCommerce.CatalogModule.BulkActions.Actions.PropertiesUpdate;
+using VirtoCommerce.CatalogModule.BulkActions.DataSources;
+using VirtoCommerce.CatalogModule.BulkActions.Models;
+using VirtoCommerce.CatalogModule.BulkActions.Services;
 using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Events;
 using VirtoCommerce.CatalogModule.Core.Model;
@@ -167,6 +174,16 @@ namespace VirtoCommerce.CatalogModule.Web
             });
 
             #endregion
+
+            #region BulkActions
+
+            serviceCollection.AddTransient<ListEntryMover<Category>, CategoryMover>();
+            serviceCollection.AddTransient<ListEntryMover<CatalogProduct>, ProductMover>();
+            serviceCollection.AddTransient<IBulkPropertyUpdateManager, BulkPropertyUpdateManager>();
+            serviceCollection.AddTransient<IDataSourceFactory, DataSourceFactory>();
+            serviceCollection.AddTransient<IBulkActionFactory, CatalogBulkActionFactory>();
+
+            #endregion
         }
 
         public void PostInitialize(IApplicationBuilder appBuilder)
@@ -195,13 +212,8 @@ namespace VirtoCommerce.CatalogModule.Web
             var inProcessBus = appBuilder.ApplicationServices.GetService<IHandlerRegistrar>();
             inProcessBus.RegisterHandler<ProductChangedEvent>(async (message, token) => await appBuilder.ApplicationServices.GetService<LogChangesChangedEventHandler>().Handle(message));
             inProcessBus.RegisterHandler<CategoryChangedEvent>(async (message, token) => await appBuilder.ApplicationServices.GetService<LogChangesChangedEventHandler>().Handle(message));
-
-            var settingsManager = appBuilder.ApplicationServices.GetService<ISettingsManager>();
-            if (settingsManager.GetValue(ModuleConstants.Settings.General.EventBasedIndexation.Name, false))
-            {
-                inProcessBus.RegisterHandler<CategoryChangedEvent>(async (message, token) => await appBuilder.ApplicationServices.GetService<IndexCategoryChangedEventHandler>().Handle(message));
-                inProcessBus.RegisterHandler<ProductChangedEvent>(async (message, token) => await appBuilder.ApplicationServices.GetService<IndexProductChangedEventHandler>().Handle(message));
-            }
+            inProcessBus.RegisterHandler<CategoryChangedEvent>(async (message, token) => await appBuilder.ApplicationServices.GetService<IndexCategoryChangedEventHandler>().Handle(message));
+            inProcessBus.RegisterHandler<ProductChangedEvent>(async (message, token) => await appBuilder.ApplicationServices.GetService<IndexProductChangedEventHandler>().Handle(message));
 
             //Force migrations
             using (var serviceScope = appBuilder.ApplicationServices.CreateScope())
@@ -246,10 +258,21 @@ namespace VirtoCommerce.CatalogModule.Web
                     .WithMetadata(new ExportedTypeMetadata { PropertyInfos = Array.Empty<ExportedTypePropertyInfo>() }));
 
             #endregion
+
+            #region BulkActions
+
+            AbstractTypeFactory<BulkActionContext>.RegisterType<CategoryChangeBulkActionContext>();
+            AbstractTypeFactory<BulkActionContext>.RegisterType<PropertiesUpdateBulkActionContext>();
+
+            RegisterBulkAction(nameof(CategoryChangeBulkAction), nameof(CategoryChangeBulkActionContext));
+            RegisterBulkAction(nameof(PropertiesUpdateBulkAction), nameof(PropertiesUpdateBulkActionContext));
+
+            #endregion
         }
 
         public void Uninstall()
         {
+            // Method intentionally left empty.
         }
 
         public async Task ExportAsync(Stream outStream, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback,
@@ -264,6 +287,26 @@ namespace VirtoCommerce.CatalogModule.Web
         {
             await _appBuilder.ApplicationServices.GetRequiredService<CatalogExportImport>().DoImportAsync(inputStream, options,
                 progressCallback, cancellationToken);
+        }
+
+
+        private void RegisterBulkAction(string name, string contextTypeName)
+        {
+            var dataSourceFactory = _appBuilder.ApplicationServices.GetService<IDataSourceFactory>();
+            var actionFactory = _appBuilder.ApplicationServices.GetService<IBulkActionFactory>();
+            var permissions = new[] { ModuleConstants.Security.Permissions.CategoryChange, ModuleConstants.Security.Permissions.PropertiesUpdate };
+            var applicableTypes = new[] { nameof(CatalogProduct) };
+
+            var provider = new BulkActionProvider(
+                name,
+                contextTypeName,
+                applicableTypes,
+                dataSourceFactory,
+                actionFactory,
+                permissions);
+
+            var actionProviderStorage = _appBuilder.ApplicationServices.GetService<IBulkActionProviderStorage>();
+            actionProviderStorage.Add(provider);
         }
     }
 }

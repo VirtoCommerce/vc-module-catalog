@@ -19,9 +19,11 @@ namespace VirtoCommerce.CatalogModule.Core
                   Export = "catalog:export",
                   Import = "catalog:import",
                   CatalogBrowseFiltersRead = "catalog:BrowseFilters:Read",
-                  CatalogBrowseFiltersUpdate = "catalog:BrowseFilters:Update";
+                  CatalogBrowseFiltersUpdate = "catalog:BrowseFilters:Update",
+                  CategoryChange = "bulk-action:category:change",
+                  PropertiesUpdate = "bulk-action:properties:update";
 
-                public static string[] AllPermissions { get; } = new[] { Access, Create, Read, Update, Delete, Export, Import, CatalogBrowseFiltersRead, CatalogBrowseFiltersUpdate };
+                public static string[] AllPermissions { get; } = new[] { Access, Create, Read, Update, Delete, Export, Import, CatalogBrowseFiltersRead, CatalogBrowseFiltersUpdate, CategoryChange, PropertiesUpdate };
             }
         }
 
@@ -98,7 +100,8 @@ namespace VirtoCommerce.CatalogModule.Core
                                    AssociationGroups,
                                    EditorialReviewTypes,
                                    CodesInOutline,
-                                   ExposeAliasInDictionary,
+                                   EventBasedIndexation,
+                                   ExposeAliasInDictionary, // remove this redundant setting after sample data is fixed
                                    UseSeoDeduplication
                                };
                     }

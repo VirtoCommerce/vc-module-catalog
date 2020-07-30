@@ -9,7 +9,7 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Core.Model
 {
-    public class Category : AuditableEntity, IHasLinks, ISeoSupport, IHasOutlines, IHasImages, IHasProperties, ICloneable, IHasTaxType, IHasName, IHasOuterId, IHasCatalogId, IExportable
+    public class Category : AuditableEntity, IHasLinks, ISeoSupport, IHasOutlines, IHasImages, IHasProperties, IHasTaxType, IHasName, IHasOuterId, IExportable
     {
         public Category()
         {
@@ -158,6 +158,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
             result.Parents = Parents?.Select(x => x.Clone()).OfType<Category>().ToArray();
             result.Properties = Properties?.Select(x => x.Clone()).OfType<Property>().ToList();
             result.Links = Links?.Select(x => x.Clone()).OfType<CategoryLink>().ToList();
+            // result.Images = Images?.Select(x => x.Clone()).OfType<Image>().ToList(); // Intentionally temporary disabled due to memory overhead
 
             return result;
         }

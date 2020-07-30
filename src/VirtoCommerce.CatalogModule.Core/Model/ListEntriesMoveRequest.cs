@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CatalogModule.Core.Model.ListEntry;
 using VirtoCommerce.Platform.Core.Common;
 
-namespace VirtoCommerce.CatalogModule.Web.Model
+namespace VirtoCommerce.CatalogModule.Core.Model
 {
     /// <summary>
     /// Represents  move list entries command
@@ -15,6 +15,6 @@ namespace VirtoCommerce.CatalogModule.Web.Model
         //Destination category
         public string Category { get; set; }
 
-        public ICollection<Core.Model.ListEntry.ListEntryBase> ListEntries { get; set; }
+        public ICollection<ListEntryBase> ListEntries { get; set; }
     }
 }

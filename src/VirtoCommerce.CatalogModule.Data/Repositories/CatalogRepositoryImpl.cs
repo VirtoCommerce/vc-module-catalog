@@ -289,6 +289,18 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             return result;
         }
 
+        public async Task<AssociationEntity[]> GetAssociationsByIdsAsync(string[] associationIds)
+        {
+            var result = Array.Empty<AssociationEntity>();
+
+            if (!associationIds.IsNullOrEmpty())
+            {
+                result = await Associations.Where(x => associationIds.Contains(x.Id)).ToArrayAsync();
+            }
+
+            return result;
+        }
+
         public async Task<string[]> GetAllChildrenCategoriesIdsAsync(string[] categoryIds)
         {
             string[] result = null;
@@ -426,7 +438,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             if (catalogProperty != null)
             {
                 commandText = $"DELETE PV FROM PropertyValue PV INNER JOIN Catalog C ON C.Id = PV.CatalogId AND C.Id = '{catalogProperty.CatalogId}' WHERE PV.Name = '{catalogProperty.Name}'";
-                var res = await DbContext.Database.ExecuteSqlRawAsync(commandText);
+                await DbContext.Database.ExecuteSqlRawAsync(commandText);
             }
             if (categoryProperty != null)
             {

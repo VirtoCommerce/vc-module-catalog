@@ -1,5 +1,4 @@
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
 using FluentValidation.Results;
@@ -8,8 +7,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using VirtoCommerce.CatalogModule.Core.Model;
-using VirtoCommerce.CatalogModule.Core.Model.Search;
-using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
@@ -30,7 +27,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         private readonly Mock<ICatalogRepository> _repositoryMock;
         private readonly Mock<IEventPublisher> _eventPublisherMock;
         private readonly Mock<AbstractValidator<IHasProperties>> _hasPropertyValidatorMock;
-        private readonly Mock<ICatalogSearchService> _catalogSearchServiceMock;
+        private readonly Mock<ICatalogService> _catalogServiceMock;
         private readonly Mock<ICategoryService> _categoryServiceMock;
         private readonly Mock<IOutlineService> _outlineServiceMock;
         private readonly Mock<IPlatformMemoryCache> _platformMemoryCacheMock;
@@ -43,7 +40,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             _repositoryMock = new Mock<ICatalogRepository>();
             _eventPublisherMock = new Mock<IEventPublisher>();
             _hasPropertyValidatorMock = new Mock<AbstractValidator<IHasProperties>>();
-            _catalogSearchServiceMock = new Mock<ICatalogSearchService>();
+            _catalogServiceMock = new Mock<ICatalogService>();
             _categoryServiceMock = new Mock<ICategoryService>();
             _outlineServiceMock = new Mock<IOutlineService>();
             _platformMemoryCacheMock = new Mock<IPlatformMemoryCache>();
@@ -60,6 +57,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             {
                 Id = id,
                 CatalogId = Guid.NewGuid().ToString(),
+                CategoryId = Guid.NewGuid().ToString(),
                 Name = "some product",
                 Code = "some code"
             };
@@ -71,6 +69,9 @@ namespace VirtoCommerce.CatalogModule.Tests
                     _repositoryMock.Setup(o => o.GetItemByIdsAsync(new[] { id }, null))
                         .ReturnsAsync(new[] { newItemEntity });
                 });
+
+            _catalogServiceMock.Setup(x => x.GetByIdsAsync(It.IsAny<string[]>(), default)).ReturnsAsync(new Catalog[] { new Catalog() { Id = newItem.CatalogId } });
+            _categoryServiceMock.Setup(x => x.GetByIdsAsync(It.IsAny<string[]>(), It.IsAny<string>(), default)).ReturnsAsync(new Category[] { new Category() { Id = newItem.CategoryId } });
 
             //Act
             var nullItem = await service.GetByIdAsync(id, null);
@@ -93,9 +94,6 @@ namespace VirtoCommerce.CatalogModule.Tests
 
         private ItemService GetItemService(IPlatformMemoryCache platformMemoryCache, ICatalogRepository catalogRepository)
         {
-            _catalogSearchServiceMock.Setup(x => x.SearchCatalogsAsync(It.IsAny<CatalogSearchCriteria>()))
-                .ReturnsAsync(new CatalogSearchResult());
-
             _hasPropertyValidatorMock
                 .Setup(x => x.ValidateAsync(It.IsAny<ValidationContext<IHasProperties>>(), default))
                 .ReturnsAsync(new ValidationResult());
@@ -103,7 +101,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             return new ItemService(() => catalogRepository,
                 _eventPublisherMock.Object,
                 _hasPropertyValidatorMock.Object,
-                _catalogSearchServiceMock.Object,
+                _catalogServiceMock.Object,
                 _categoryServiceMock.Object,
                 _outlineServiceMock.Object,
                 platformMemoryCache,
