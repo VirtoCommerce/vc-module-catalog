@@ -75,11 +75,10 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
                     var searchResult = await SearchDeleteOperationsInLog(startDate, endDate, originSkip, originTake);
                     var totalDeletedCount = searchResult.TotalCount;
-                    var deletedProductIndexDocumentChanges = searchResult.Results.Select(operation => ConvertOperationLogToIndexDocumentChange(operation)).ToArray();
-                    var deletedCount = deletedProductIndexDocumentChanges.Count();
+                    var deletedProductIndexDocumentChanges = searchResult.Results.Select(operation => ConvertOperationLogToIndexDocumentChange(operation)).ToArray();                    
                     result.AddRange(deletedProductIndexDocumentChanges);
 
-                    skip = originSkip - Math.Min(deletedCount, originSkip);
+                    skip = originSkip - Math.Min(totalDeletedCount, originSkip);
                     take = originTake - Math.Min(originTake, Math.Max(0, totalDeletedCount - originSkip));
 
                     var modifiedProductIndexDocumentChanges = await GetModifiedProductIndexDocumentChanges(startDate, endDate, skip, take, repository);

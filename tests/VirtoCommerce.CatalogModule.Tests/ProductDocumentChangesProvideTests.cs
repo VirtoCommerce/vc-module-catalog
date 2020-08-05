@@ -21,7 +21,7 @@ namespace VirtoCommerce.CatalogModule.Test
         const int DAYS_OF_WEEK = 7;
 
         [Fact]
-        public async Task GetTotalChangesCountAsync_DatesNulls_ChengesCountAsExpected()
+        public async Task GetTotalChangesCountAsync_DatesNulls_ChangesCountAsExpected()
         {
             // Arrange
 
@@ -51,7 +51,7 @@ namespace VirtoCommerce.CatalogModule.Test
         }
 
 
-        public static IEnumerable<object[]> GetTestStartEndDates()
+        public static IEnumerable<object[]> GetTestStartEndDatesForGetTotalChangesCountAsyncTest()
         {
             yield return new object[] { DateTime.UtcNow.AddDays(DAYS_OF_WEEK), DateTime.UtcNow.AddDays(DAYS_OF_WEEK * 2) };
             yield return new object[] { null, DateTime.UtcNow.AddDays(DAYS_OF_WEEK * 2) };
@@ -60,8 +60,8 @@ namespace VirtoCommerce.CatalogModule.Test
 
 
         [Theory]
-        [MemberData(nameof(GetTestStartEndDates))]
-        public async Task GetTotalChangesCountAsync_DatesNotNull_ChengesCountAsExpected(DateTime? startDate, DateTime? endDate)
+        [MemberData(nameof(GetTestStartEndDatesForGetTotalChangesCountAsyncTest))]
+        public async Task GetTotalChangesCountAsync_DatesNotNull_ChangesCountAsExpected(DateTime? startDate, DateTime? endDate)
         {
             // Arrange
 
@@ -119,7 +119,7 @@ namespace VirtoCommerce.CatalogModule.Test
         [InlineData(TAKE * 2, TAKE)]
         [InlineData(TAKE * 3, TAKE)]
         [InlineData(TAKE * 4, TAKE)]
-        public async Task GetChangesAsync_DatesNulls_ChengesCountAsExpected(int skip, int take)
+        public async Task GetChangesAsync_DatesNulls_ChangesCountAsExpected(int skip, int take)
         {
             // Arrange
             var itemsCountForGenerate = TAKE * 5;
@@ -152,26 +152,29 @@ namespace VirtoCommerce.CatalogModule.Test
 
 
 
-        public static IEnumerable<object[]> GetTestStartEndDates2()
+        public static IEnumerable<object[]> GetTestStartEndDatesForGetChangesAsyncTest()
         {
             yield return new object[] { DateTime.UtcNow.AddDays(DAYS_OF_WEEK), DateTime.UtcNow.AddDays(DAYS_OF_WEEK * 2), 0, TAKE };
             yield return new object[] { DateTime.UtcNow.AddDays(DAYS_OF_WEEK), DateTime.UtcNow.AddDays(DAYS_OF_WEEK * 2), TAKE, TAKE };
             yield return new object[] { DateTime.UtcNow.AddDays(DAYS_OF_WEEK), DateTime.UtcNow.AddDays(DAYS_OF_WEEK * 2), TAKE * 2, TAKE };
+            yield return new object[] { DateTime.UtcNow.AddDays(DAYS_OF_WEEK), DateTime.UtcNow.AddDays(DAYS_OF_WEEK * 2), TAKE * 3, TAKE };
             yield return new object[] { null, DateTime.UtcNow.AddDays(DAYS_OF_WEEK * 2), 0, TAKE };
             yield return new object[] { null, DateTime.UtcNow.AddDays(DAYS_OF_WEEK * 2), TAKE, TAKE };
             yield return new object[] { null, DateTime.UtcNow.AddDays(DAYS_OF_WEEK * 2), TAKE * 2, TAKE };
+            yield return new object[] { null, DateTime.UtcNow.AddDays(DAYS_OF_WEEK * 2), TAKE * 3, TAKE };
             yield return new object[] { DateTime.UtcNow.AddDays(DAYS_OF_WEEK), null, 0, TAKE };
-            yield return new object[] { DateTime.UtcNow.AddDays(DAYS_OF_WEEK), null, TAKE, TAKE };
+            yield return new object[] { DateTime.UtcNow.AddDays(DAYS_OF_WEEK*2), null, TAKE, TAKE };
             yield return new object[] { DateTime.UtcNow.AddDays(DAYS_OF_WEEK), null, TAKE * 2, TAKE };
+            yield return new object[] { DateTime.UtcNow.AddDays(DAYS_OF_WEEK), null, TAKE * 3, TAKE };
         }
 
 
         [Theory]
-        [MemberData(nameof(GetTestStartEndDates2))]
-        public async Task GetChangesAsync_DatesNotNulls_ChengesCountAsExpected(DateTime? startDate, DateTime? endDate, int skip, int take)
+        [MemberData(nameof(GetTestStartEndDatesForGetChangesAsyncTest))]
+        public async Task GetChangesAsync_DatesNotNulls_ChangesCountAsExpected(DateTime? startDate, DateTime? endDate, int skip, int take)
         {
             // Arrange
-            var itemsCountForGenerate = TAKE * 2;
+            var itemsCountForGenerate = TAKE * 10;
 
             A.Configure<ItemEntity>()
                 .Fill(i => i.ParentId)
@@ -188,7 +191,7 @@ namespace VirtoCommerce.CatalogModule.Test
 
             A.Configure<OperationLog>()
                 .Fill(x => x.OperationType).WithRandom(new EntryState[] { EntryState.Added, EntryState.Modified, EntryState.Deleted });
-            var operatoins = A.ListOf<OperationLog>(A.Random.Next(5, 15));
+            var operatoins = A.ListOf<OperationLog>(A.Random.Next(take * 5));
             var deleteOperations = operatoins.Where(x => x.OperationType == EntryState.Deleted).ToList();
             var deleteOperationsCount = deleteOperations.Count;
 
