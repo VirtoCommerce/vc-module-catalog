@@ -141,7 +141,7 @@ jobs:
           }
 
       - name: Upload a Build Artifact to Azure Blob Storage
-        uses: bacongobbler/azure-blob-storage-upload@master
+        uses: bacongobbler/azure-blob-storage-upload@main
         with:
           source_dir: '${{needs.build-package.outputs.path}}'
           container_name: 'packages'
