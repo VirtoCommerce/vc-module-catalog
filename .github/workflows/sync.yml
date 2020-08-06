@@ -1,6 +1,11 @@
 name: Sync
 'on':
   push:
+    paths-ignore:
+     - '.github/**'
+     - 'docs/**'
+     - 'build/**'
+     - 'README.md'
     branches:
       - dev
 
