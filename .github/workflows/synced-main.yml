@@ -157,7 +157,7 @@ jobs:
 
       - name: Parse Jira Keys from Commit
         id: jira_keys
-        if: always()
+        if: always() && ${{ github.event_name == 'push' }}
         uses: HighwayThree/jira-extract-issue-keys@master
         with:
           is-pull-request: ${{ github.event_name == 'pull_request' }}
@@ -166,7 +166,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   
       - name: Push Build Info to Jira
-        if: ${{ env.CLOUD_INSTANCE_BASE_URL != 0 && env.CLIENT_ID != 0 && env.CLIENT_SECRET != 0 && env.BUILD_STATE != 0 && steps.jira_keys.outputs.jira-keys != '' && always() }}
+        if: ${{ env.CLOUD_INSTANCE_BASE_URL != 0 && env.CLIENT_ID != 0 && env.CLIENT_SECRET != 0 && env.BUILD_STATE != 0 && steps.jira_keys.outputs.jira-keys != '' && always() }} && ${{ github.event_name == 'push' }}
         id: push_build_info_to_jira
         uses: HighwayThree/jira-upload-build-info@master
         env:
