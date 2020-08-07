@@ -16,6 +16,8 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 {
     public class CatalogRepositoryImpl : DbContextRepositoryBase<CatalogDbContext>, ICatalogRepository
     {
+        const int batchSize = 500;
+
         public CatalogRepositoryImpl(CatalogDbContext dbContext)
             : base(dbContext)
         {
@@ -67,7 +69,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             return result;
         }
 
-        public async Task<CategoryEntity[]> GetCategoriesByIdsAsync(string[] categoriesIds, string responseGroup = null)
+        public async Task<CategoryEntity[]> GetCategoriesByIdsAsync(string[] categoriesIds, string responseGroup)
         {
             var categoryResponseGroup = EnumUtility.SafeParseFlags(responseGroup, CategoryResponseGroup.Full);
             var result = Array.Empty<CategoryEntity>();
@@ -327,7 +329,6 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         {
             if (!itemIds.IsNullOrEmpty())
             {
-                const int batchSize = 500;
                 var skip = 0;
                 do
                 {
@@ -361,7 +362,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                         DELETE  FROM Item  WHERE Id IN ({0})
                     ";
 
-                    await ExecuteStoreQueryAsync(commandTemplate, itemIds);
+                    await ExecuteStoreQueryAsync(commandTemplate, itemIds.Skip(skip).Take(batchSize));
 
                     skip += batchSize;
                 }
@@ -380,7 +381,11 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 var itemIds = await Items.Where(i => categoryIds.Contains(i.CategoryId)).Select(i => i.Id).ToArrayAsync();
                 await RemoveItemsAsync(itemIds);
 
-                const string commandTemplate = @"
+                var skip = 0;
+                do
+                {
+
+                    const string commandTemplate = @"
                     DELETE SEO FROM CatalogSeoInfo SEO INNER JOIN Category C ON C.Id = SEO.CategoryId WHERE C.Id IN ({0}) 
                     DELETE CI FROM CatalogImage CI INNER JOIN Category C ON C.Id = CI.CategoryId WHERE C.Id IN ({0}) 
                     DELETE PV FROM PropertyValue PV INNER JOIN Category C ON C.Id = PV.CategoryId WHERE C.Id IN ({0}) 
@@ -391,7 +396,11 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     DELETE FROM Category WHERE Id IN ({0})
                 ";
 
-                await ExecuteStoreQueryAsync(commandTemplate, categoryIds);
+                    await ExecuteStoreQueryAsync(commandTemplate, categoryIds.Skip(skip).Take(batchSize));
+
+                    skip += batchSize;
+                }
+                while (skip < categoryIds.Length);
 
                 //TODO: Notify about removed entities by event or trigger
             }
@@ -407,7 +416,11 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 var categoryIds = await Categories.Where(c => ids.Contains(c.CatalogId)).Select(c => c.Id).ToArrayAsync();
                 await RemoveCategoriesAsync(categoryIds);
 
-                const string commandTemplate = @"
+                var skip = 0;
+                do
+                {
+
+                    const string commandTemplate = @"
                     DELETE CL FROM CatalogLanguage CL INNER JOIN Catalog C ON C.Id = CL.CatalogId WHERE C.Id IN ({0})
                     DELETE CR FROM CategoryRelation CR INNER JOIN Catalog C ON C.Id = CR.TargetCatalogId WHERE C.Id IN ({0}) 
                     DELETE PV FROM PropertyValue PV INNER JOIN Catalog C ON C.Id = PV.CatalogId WHERE C.Id IN ({0}) 
@@ -415,7 +428,10 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     DELETE FROM Catalog WHERE Id IN ({0})
                 ";
 
-                await ExecuteStoreQueryAsync(commandTemplate, ids);
+                    await ExecuteStoreQueryAsync(commandTemplate, ids.Skip(skip).Take(batchSize));
+                    skip += batchSize;
+                }
+                while (skip < ids.Length);
 
                 //TODO: Notify about removed entities by event or trigger
             }
