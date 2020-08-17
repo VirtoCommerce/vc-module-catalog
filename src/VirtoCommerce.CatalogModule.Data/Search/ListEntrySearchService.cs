@@ -155,9 +155,12 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 result.TotalCount = await query.CountAsync();
                 if (criteria.Take > 0 && result.TotalCount > 0)
                 {
-                    query = query.OrderBySortInfos(sortInfos).ThenBy(x => x.Id);
+                    var categoryIds = query.OrderBySortInfos(sortInfos).ThenBy(x => x.Id)
+                                        .Skip(criteria.Skip).Take(criteria.Take)
+                                        .Select(x => x.Id)
+                                        .AsNoTracking()
+                                        .ToList();
 
-                    var categoryIds = query.Select(x => x.Id).AsNoTracking().ToList();
                     var essentialResponseGroup = CategoryResponseGroup.Info | CategoryResponseGroup.WithImages | CategoryResponseGroup.WithSeo | CategoryResponseGroup.WithLinks | CategoryResponseGroup.WithParents | CategoryResponseGroup.WithProperties | CategoryResponseGroup.WithOutlines;
                     var respGroup = string.Concat(criteria.ResponseGroup, ",", essentialResponseGroup.ToString());
                     result.Results = (await _categoryService.GetByIdsAsync(categoryIds.ToArray(), respGroup, criteria.CatalogId)).OrderBy(x => categoryIds.IndexOf(x.Id)).ToList();
@@ -205,13 +208,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 result.TotalCount = await query.CountAsync();
                 if (criteria.Take > 0 && result.TotalCount > 0)
                 {
-                    query = query.OrderBySortInfos(sortInfos).ThenBy(x => x.Id);
-
-                    var itemIds = query.Skip(criteria.Skip)
-                                       .Take(criteria.Take)
-                                       .Select(x => x.Id)
-                                       .AsNoTracking()
-                                       .ToList();
+                    var itemIds = query.OrderBySortInfos(sortInfos).ThenBy(x => x.Id)
+                                    .Skip(criteria.Skip).Take(criteria.Take)
+                                    .Select(x => x.Id)
+                                    .AsNoTracking()
+                                    .ToList();
 
                     var essentialResponseGroup = ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemAssets | ItemResponseGroup.Links | ItemResponseGroup.Seo | ItemResponseGroup.Outlines;
                     var responseGroup = string.Concat(criteria.ResponseGroup, ",", essentialResponseGroup.ToString());
