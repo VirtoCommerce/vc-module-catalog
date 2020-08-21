@@ -425,7 +425,7 @@ angular.module('virtoCommerce.catalogModule')
                         };
                         bladeNavigationService.showBlade(newBlade, blade);
                     },
-                    canExecuteMethod: function () { return blade.catalogId; },
+                    canExecuteMethod: function () { return $scope.items.length && blade.catalogId; },
                     permission: 'catalog:export'
                 },
                 {
