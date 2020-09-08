@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Search;
@@ -283,7 +282,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return Ok();
         }
 
-
         /// <summary>
         /// Plenty delete the specified items by id.
         /// </summary>
@@ -308,7 +306,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             for (var i = 0; i < ids.Length; i += batchSize)
             {
-                var idsToDelete = products.Skip(i).Take(batchSize).Select(x=>x.Id);
+                var idsToDelete = products.Skip(i).Take(batchSize).Select(x => x.Id);
                 await _itemsService.DeleteAsync(idsToDelete.ToArray());
             }
 
