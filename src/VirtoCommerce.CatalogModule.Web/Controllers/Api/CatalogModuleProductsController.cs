@@ -282,6 +282,36 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return Ok();
         }
 
+        /// <summary>
+        /// Plenty delete the specified items by id.
+        /// </summary>
+        /// <param name="ids">The items ids.</param>
+        [HttpPost]
+        [Route("plentyDelete")]
+        public async Task<ActionResult> PlentyDeleteProducts([FromBody] string[] ids)
+        {
+            const int batchSize = 20;
+            var products = new List<CatalogProduct>();
+
+            for (var i = 0; i < ids.Length; i += batchSize)
+            {
+                var idsToDelete = ids.Skip(i).Take(batchSize);
+                products.AddRange(await _itemsService.GetByIdsAsync(idsToDelete.ToArray(), ItemResponseGroup.ItemInfo.ToString()));
+                var authorizationResult = await _authorizationService.AuthorizeAsync(User, products, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Delete));
+                if (!authorizationResult.Succeeded)
+                {
+                    return Unauthorized();
+                }
+            }
+
+            for (var i = 0; i < ids.Length; i += batchSize)
+            {
+                var idsToDelete = products.Skip(i).Take(batchSize).Select(x => x.Id);
+                await _itemsService.DeleteAsync(idsToDelete.ToArray());
+            }
+
+            return Ok();
+        }
         private async Task<CatalogProduct[]> InnerSaveProducts(CatalogProduct[] products)
         {
             var toSaveList = new List<CatalogProduct>();

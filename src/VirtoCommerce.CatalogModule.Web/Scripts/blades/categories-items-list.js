@@ -226,7 +226,7 @@ angular.module('virtoCommerce.catalogModule')
                                 });
                             }
                             if (itemIds.length > 0) {
-                                items.remove({ ids: itemIds }, function (data, headers) {
+                                items.plentyRemove(itemIds, function (data, headers) {
                                     blade.refresh();
                                 }, function (error) {
                                     bladeNavigationService.setError('Error ' + error.status, blade);
