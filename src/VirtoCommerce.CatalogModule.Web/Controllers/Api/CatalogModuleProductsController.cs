@@ -291,12 +291,11 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         public async Task<ActionResult> PlentyDeleteProducts([FromBody] string[] ids)
         {
             const int batchSize = 20;
-            var products = new List<CatalogProduct>();
 
             for (var i = 0; i < ids.Length; i += batchSize)
             {
                 var idsToDelete = ids.Skip(i).Take(batchSize);
-                products.AddRange(await _itemsService.GetByIdsAsync(idsToDelete.ToArray(), ItemResponseGroup.ItemInfo.ToString()));
+                var products =  await _itemsService.GetByIdsAsync(idsToDelete.ToArray(), ItemResponseGroup.ItemInfo.ToString());
                 var authorizationResult = await _authorizationService.AuthorizeAsync(User, products, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Delete));
                 if (!authorizationResult.Succeeded)
                 {
@@ -306,7 +305,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             for (var i = 0; i < ids.Length; i += batchSize)
             {
-                var idsToDelete = products.Skip(i).Take(batchSize).Select(x => x.Id);
+                var idsToDelete = ids.Skip(i).Take(batchSize);
                 await _itemsService.DeleteAsync(idsToDelete.ToArray());
             }
 
