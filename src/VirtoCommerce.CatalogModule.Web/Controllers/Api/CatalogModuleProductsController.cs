@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Search;
@@ -281,6 +282,39 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             await _itemsService.DeleteAsync(ids);
             return Ok();
         }
+
+
+        /// <summary>
+        /// Plenty delete the specified items by id.
+        /// </summary>
+        /// <param name="ids">The items ids.</param>
+        [HttpPost]
+        [Route("plentyDelete")]
+        public async Task<ActionResult> PlentyDeleteProducts([FromBody] string[] ids)
+        {
+            const int batchSize = 20;
+            var products = new List<CatalogProduct>();
+
+            for (var i = 0; i < ids.Length; i += batchSize)
+            {
+                var idsToDelete = ids.Skip(i).Take(batchSize);
+                products.AddRange(await _itemsService.GetByIdsAsync(idsToDelete.ToArray(), ItemResponseGroup.ItemInfo.ToString()));
+                var authorizationResult = await _authorizationService.AuthorizeAsync(User, products, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Delete));
+                if (!authorizationResult.Succeeded)
+                {
+                    return Unauthorized();
+                }
+            }
+
+            for (var i = 0; i < ids.Length; i += batchSize)
+            {
+                var idsToDelete = products.Skip(i).Take(batchSize).Select(x=>x.Id);
+                await _itemsService.DeleteAsync(idsToDelete.ToArray());
+            }
+
+            return Ok();
+        }
+
 
         private async Task<CatalogProduct[]> InnerSaveProducts(CatalogProduct[] products)
         {
