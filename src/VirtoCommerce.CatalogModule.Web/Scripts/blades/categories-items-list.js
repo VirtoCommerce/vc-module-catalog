@@ -214,8 +214,9 @@ angular.module('virtoCommerce.catalogModule')
                                 listEntries.deletelinks(listEntryLinks, () => {
                                         blade.refresh();
 
-                                        if (blade.mode === 'mappingSource')
+                                        if (blade.mode === 'mappingSource') {
                                             blade.parentBlade.refresh();
+                                        }
                                     }
                                 );
                             }
