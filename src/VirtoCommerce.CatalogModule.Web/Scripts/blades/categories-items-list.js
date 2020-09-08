@@ -209,28 +209,31 @@ angular.module('virtoCommerce.catalogModule')
                         if (remove) {
                             bladeNavigationService.closeChildrenBlades(blade);
                             blade.isLoading = true;
+
                             if (listEntryLinks.length > 0) {
-                                listEntries.deletelinks(listEntryLinks, function (data, headers) {
-                                    blade.refresh();
-                                    if (blade.mode === 'mappingSource')
-                                        blade.parentBlade.refresh();
-                                }, function (error) {
-                                    bladeNavigationService.setError('Error ' + error.status, blade);
-                                });
+                                listEntries.deletelinks(listEntryLinks,
+                                    () => {
+                                        blade.refresh();
+
+                                        if (blade.mode === 'mappingSource')
+                                            blade.parentBlade.refresh();
+                                    },
+                                    (error) => bladeNavigationService.setError('Error ' + error.status, blade)
+                                );
                             }
+
                             if (categoryIds.length > 0) {
-                                categories.remove({ ids: categoryIds }, function (data, headers) {
-                                    blade.refresh();
-                                }, function (error) {
-                                    bladeNavigationService.setError('Error ' + error.status, blade);
-                                });
+                                categories.remove({ ids: categoryIds },
+                                    ()  => blade.refresh(),
+                                    (error) => bladeNavigationService.setError('Error ' + error.status, blade)
+                                );
                             }
+
                             if (itemIds.length > 0) {
-                                items.plentyRemove(itemIds, function (data, headers) {
-                                    blade.refresh();
-                                }, function (error) {
-                                    bladeNavigationService.setError('Error ' + error.status, blade);
-                                });
+                                items.removePlenty(itemIds,
+                                    ()  => blade.refresh(),
+                                    (error) => bladeNavigationService.setError('Error ' + error.status, blade)
+                                );
                             }
                         }
                     }
