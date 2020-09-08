@@ -211,29 +211,21 @@ angular.module('virtoCommerce.catalogModule')
                             blade.isLoading = true;
 
                             if (listEntryLinks.length > 0) {
-                                listEntries.deletelinks(listEntryLinks,
-                                    () => {
+                                listEntries.deletelinks(listEntryLinks, () => {
                                         blade.refresh();
 
                                         if (blade.mode === 'mappingSource')
                                             blade.parentBlade.refresh();
-                                    },
-                                    (error) => bladeNavigationService.setError('Error ' + error.status, blade)
+                                    }
                                 );
                             }
 
                             if (categoryIds.length > 0) {
-                                categories.remove({ ids: categoryIds },
-                                    ()  => blade.refresh(),
-                                    (error) => bladeNavigationService.setError('Error ' + error.status, blade)
-                                );
+                                categories.remove({ ids: categoryIds }, () => blade.refresh());
                             }
 
                             if (itemIds.length > 0) {
-                                items.removePlenty(itemIds,
-                                    ()  => blade.refresh(),
-                                    (error) => bladeNavigationService.setError('Error ' + error.status, blade)
-                                );
+                                items.removePlenty(itemIds, () => blade.refresh());
                             }
                         }
                     }
