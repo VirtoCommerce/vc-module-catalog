@@ -1,7 +1,7 @@
 angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.categoriesItemsListController', [
-        '$sessionStorage', '$localStorage', '$timeout', '$scope',  'virtoCommerce.catalogModule.categories', 'virtoCommerce.catalogModule.items', 'virtoCommerce.catalogModule.listEntries', 'platformWebApp.bladeUtils', 'platformWebApp.dialogService', 'platformWebApp.authService', 'platformWebApp.uiGridHelper', 'virtoCommerce.catalogModule.catalogs',
-        function ($sessionStorage, $localStorage, $timeout, $scope, categories, items, listEntries, bladeUtils, dialogService, authService, uiGridHelper, catalogs) {
+        '$sessionStorage', '$localStorage', '$timeout', '$scope',  'virtoCommerce.catalogModule.categories', 'virtoCommerce.catalogModule.items', 'virtoCommerce.catalogModule.listEntries', 'platformWebApp.bladeUtils', 'platformWebApp.dialogService', 'platformWebApp.authService', 'platformWebApp.uiGridHelper', 'virtoCommerce.catalogModule.catalogs', 
+        function ($sessionStorage, $localStorage, $timeout, $scope, categories, items, listEntries, bladeUtils, dialogService, authService, uiGridHelper, catalogs ) {
             $scope.uiGridConstants = uiGridHelper.uiGridConstants;
             $scope.hasMore = true;
             $scope.items = [];
@@ -199,6 +199,7 @@ angular.module('virtoCommerce.catalogModule')
                 });
 
                 var listCategoryLinkCount = _.where(listEntryLinks, { listEntryType: 'category' }).length;
+                let idsToDelete = categoryIds.concat(itemIds);
                 var dialog = {
                     id: "confirmDeleteItem",
                     categoryCount: categoryIds.length,
@@ -221,12 +222,8 @@ angular.module('virtoCommerce.catalogModule')
                                 );
                             }
 
-                            if (categoryIds.length > 0) {
-                                categories.remove({ ids: categoryIds }, () => blade.refresh());
-                            }
-
-                            if (itemIds.length > 0) {
-                                items.removePlenty(itemIds, () => blade.refresh());
+                            if (idsToDelete.length > 0) {
+                                listEntries.delete({ objectIds: idsToDelete}, () => blade.refresh());
                             }
                         }
                     }

@@ -16,6 +16,7 @@ using VirtoCommerce.CatalogModule.Data.Services;
 using VirtoCommerce.CatalogModule.Web.Model;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Settings;
+using VirtoCommerce.SearchModule.Core.Model;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
@@ -67,47 +68,14 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("")]
         public async Task<ActionResult<ListEntrySearchResult>> ListItemsSearchAsync([FromBody]CatalogListEntrySearchCriteria criteria)
         {
-            var result = new ListEntrySearchResult();
-            var useIndexedSearch = _settingsManager.GetValue(ModuleConstants.Settings.Search.UseCatalogIndexedSearchInManager.Name, true);
-
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, criteria, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
             if (!authorizationResult.Succeeded)
             {
                 return Unauthorized();
             }
 
-            if (useIndexedSearch && !string.IsNullOrEmpty(criteria.Keyword))
-            {
-                // TODO: create outline for category
-                // TODO: implement sorting
+            var result = await InnerListItemsSearchAsync(criteria);
 
-                var categoryIndexedSearchCriteria = AbstractTypeFactory<CategoryIndexedSearchCriteria>.TryCreateInstance().FromListEntryCriteria(criteria) as CategoryIndexedSearchCriteria;
-                const CategoryResponseGroup catResponseGroup = CategoryResponseGroup.Info | CategoryResponseGroup.WithOutlines;
-                categoryIndexedSearchCriteria.ResponseGroup = catResponseGroup.ToString();
-
-                var catIndexedSearchResult = await _categoryIndexedSearchService.SearchAsync(categoryIndexedSearchCriteria);
-                var totalCount = catIndexedSearchResult.TotalCount;
-                var skip = Math.Min(totalCount, criteria.Skip);
-                var take = Math.Min(criteria.Take, Math.Max(0, totalCount - criteria.Skip));
-
-                result.Results = catIndexedSearchResult.Items.Select(x => AbstractTypeFactory<CategoryListEntry>.TryCreateInstance().FromModel(x)).ToList();
-
-                criteria.Skip -= (int)skip;
-                criteria.Take -= (int)take;
-
-                const ItemResponseGroup itemResponseGroup = ItemResponseGroup.ItemInfo | ItemResponseGroup.Outlines;
-
-                var productIndexedSearchCriteria = AbstractTypeFactory<ProductIndexedSearchCriteria>.TryCreateInstance().FromListEntryCriteria(criteria) as ProductIndexedSearchCriteria;
-                productIndexedSearchCriteria.ResponseGroup = itemResponseGroup.ToString();
-
-                var indexedSearchResult = await _productIndexedSearchService.SearchAsync(productIndexedSearchCriteria);
-                result.TotalCount += (int)indexedSearchResult.TotalCount;
-                result.Results.AddRange(indexedSearchResult.Items.Select(x => AbstractTypeFactory<ProductListEntry>.TryCreateInstance().FromModel(x)));
-            }
-            else
-            {
-                result = await _listEntrySearchService.SearchAsync(criteria);
-            }
             return Ok(result);
         }
 
@@ -262,6 +230,50 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return NoContent();
         }
 
+        /// <summary>
+        /// Bulk delete by the search criteria.
+        /// </summary>
+        /// <param name="criteria"></param>
+        [HttpPost]
+        [Route("delete")]
+        [ProducesResponseType(typeof(void),StatusCodes.Status204NoContent)]
+        public async Task<ActionResult> Delete([FromBody] CatalogListEntrySearchCriteria criteria)
+        {
+            const int deleteBatchSize = 20;
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, criteria, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Delete));
+            if (!authorizationResult.Succeeded)
+            {
+                return Unauthorized();
+            }
+
+            var idsToDelete = criteria.ObjectIds?.ToList() ?? new List<string>();
+
+            if (idsToDelete.IsNullOrEmpty())
+            {
+                var listEntries = await InnerListItemsSearchAsync(criteria);
+                idsToDelete = listEntries.ListEntries
+                    .Where(x => x.Type.EqualsInvariant(KnownDocumentTypes.Product) || x.Type.EqualsInvariant(KnownDocumentTypes.Category))
+                    .Select(x => x.Id)
+                    .ToList();
+            }
+
+            if (!idsToDelete.IsNullOrEmpty())
+            {
+                for (var i = 0; i < idsToDelete.Count; i++)
+                {
+                    var commonIds = idsToDelete.Skip(i).Take(deleteBatchSize).ToArray();
+
+                    var searchProductResult = await _itemService.GetByIdsAsync(commonIds, ItemResponseGroup.None.ToString());
+                    await _itemService.DeleteAsync(searchProductResult.Select(x => x.Id).ToArray());
+
+                    var searchCategoryResult = await _categoryService.GetByIdsAsync(commonIds, CategoryResponseGroup.None.ToString());
+                    await _categoryService.DeleteAsync(searchCategoryResult.Select(x => x.Id).ToArray());
+                }
+            }
+
+            return StatusCode(StatusCodes.Status204NoContent);
+        }
+
         private async Task SaveListCatalogEntitiesAsync(IEntity[] entities)
         {
             if (!entities.IsNullOrEmpty())
@@ -284,6 +296,48 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var products = await _itemService.GetByIdsAsync(ids, (ItemResponseGroup.Links | ItemResponseGroup.Variations).ToString());
             var categories = await _categoryService.GetByIdsAsync(ids.Except(products.Select(x => x.Id)).ToArray(), CategoryResponseGroup.WithLinks.ToString());
             return products.OfType<T>().Concat(categories.OfType<T>()).ToList();
+        }
+
+        private async Task<ListEntrySearchResult> InnerListItemsSearchAsync(CatalogListEntrySearchCriteria criteria)
+        {
+            var result = new ListEntrySearchResult();
+            var useIndexedSearch = _settingsManager.GetValue(ModuleConstants.Settings.Search.UseCatalogIndexedSearchInManager.Name, true);
+
+            if (useIndexedSearch && !string.IsNullOrEmpty(criteria.Keyword))
+            {
+                // TODO: create outline for category
+                // TODO: implement sorting
+
+                var categoryIndexedSearchCriteria = AbstractTypeFactory<CategoryIndexedSearchCriteria>.TryCreateInstance().FromListEntryCriteria(criteria) as CategoryIndexedSearchCriteria;
+                const CategoryResponseGroup catResponseGroup = CategoryResponseGroup.Info | CategoryResponseGroup.WithOutlines;
+                categoryIndexedSearchCriteria.ResponseGroup = catResponseGroup.ToString();
+
+                var catIndexedSearchResult = await _categoryIndexedSearchService.SearchAsync(categoryIndexedSearchCriteria);
+                var totalCount = catIndexedSearchResult.TotalCount;
+                var skip = Math.Min(totalCount, criteria.Skip);
+                var take = Math.Min(criteria.Take, Math.Max(0, totalCount - criteria.Skip));
+
+                result.Results = catIndexedSearchResult.Items.Select(x => AbstractTypeFactory<CategoryListEntry>.TryCreateInstance().FromModel(x)).ToList();
+
+                criteria.Skip -= (int)skip;
+                criteria.Take -= (int)take;
+
+                const ItemResponseGroup itemResponseGroup = ItemResponseGroup.ItemInfo | ItemResponseGroup.Outlines;
+
+                var productIndexedSearchCriteria = AbstractTypeFactory<ProductIndexedSearchCriteria>.TryCreateInstance().FromListEntryCriteria(criteria) as ProductIndexedSearchCriteria;
+                productIndexedSearchCriteria.ResponseGroup = itemResponseGroup.ToString();
+
+                var indexedSearchResult = await _productIndexedSearchService.SearchAsync(productIndexedSearchCriteria);
+                result.TotalCount += (int)indexedSearchResult.TotalCount;
+                result.Results.AddRange(indexedSearchResult.Items.Select(x => AbstractTypeFactory<ProductListEntry>.TryCreateInstance().FromModel(x)));
+            }
+            else
+            {
+                result = await _listEntrySearchService.SearchAsync(criteria);
+            }
+
+            return result;
+
         }
     }
 }
