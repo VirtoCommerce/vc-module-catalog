@@ -19,10 +19,12 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
         public const string FilteredBrowsingPropertyName = "FilteredBrowsing";
 
         private readonly IStoreService _storeService;
+        private readonly IDynamicPropertySearchService _dynamicPropertySearchService;
 
-        public BrowseFilterService(IStoreService storeService)
+        public BrowseFilterService(IStoreService storeService, IDynamicPropertySearchService dynamicPropertySearchService)
         {
             _storeService = storeService;
+            _dynamicPropertySearchService = dynamicPropertySearchService;
         }
 
         private static readonly XmlSerializer _xmlSerializer = new XmlSerializer(typeof(FilteredBrowsing));
@@ -98,7 +100,19 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
                 var property = store.DynamicProperties.FirstOrDefault(p => p.Name == FilteredBrowsingPropertyName);
                 if (property == null)
                 {
-                    property = new DynamicObjectProperty { Name = FilteredBrowsingPropertyName };
+                    var criteria = AbstractTypeFactory<DynamicPropertySearchCriteria>.TryCreateInstance();
+                    criteria.ObjectType = typeof(Store).FullName;
+                    criteria.Keyword = FilteredBrowsingPropertyName;
+                    criteria.Take = int.MaxValue;
+
+                    var dynamicPropertyResult = await _dynamicPropertySearchService.SearchDynamicPropertiesAsync(criteria);
+
+                    property = new DynamicObjectProperty
+                    {
+                        Name = FilteredBrowsingPropertyName,
+                        Id = dynamicPropertyResult.Results.FirstOrDefault(x => x.Name == FilteredBrowsingPropertyName).Id,
+                        ValueType = DynamicPropertyValueType.LongText
+                    };
                     store.DynamicProperties.Add(property);
                 }
 
