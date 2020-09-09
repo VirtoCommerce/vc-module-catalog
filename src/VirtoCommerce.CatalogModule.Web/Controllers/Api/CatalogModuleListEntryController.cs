@@ -16,7 +16,6 @@ using VirtoCommerce.CatalogModule.Data.Services;
 using VirtoCommerce.CatalogModule.Web.Model;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Settings;
-using VirtoCommerce.SearchModule.Core.Model;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
@@ -259,18 +258,15 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                     .ToList();
             }
 
-            if (!idsToDelete.IsNullOrEmpty())
+            for (var i = 0; i < idsToDelete.Count; i += deleteBatchSize)
             {
-                for (var i = 0; i < idsToDelete.Count; i += deleteBatchSize)
-                {
-                    var commonIds = idsToDelete.Skip(i).Take(deleteBatchSize).ToArray();
+                var commonIds = idsToDelete.Skip(i).Take(deleteBatchSize).ToArray();
 
-                    var searchProductResult = await _itemService.GetByIdsAsync(commonIds, ItemResponseGroup.None.ToString());
-                    await _itemService.DeleteAsync(searchProductResult.Select(x => x.Id).ToArray());
+                var searchProductResult = await _itemService.GetByIdsAsync(commonIds, ItemResponseGroup.None.ToString());
+                await _itemService.DeleteAsync(searchProductResult.Select(x => x.Id).ToArray());
 
-                    var searchCategoryResult = await _categoryService.GetByIdsAsync(commonIds, CategoryResponseGroup.None.ToString());
-                    await _categoryService.DeleteAsync(searchCategoryResult.Select(x => x.Id).ToArray());
-                }
+                var searchCategoryResult = await _categoryService.GetByIdsAsync(commonIds, CategoryResponseGroup.None.ToString());
+                await _categoryService.DeleteAsync(searchCategoryResult.Select(x => x.Id).ToArray());
             }
 
             return StatusCode(StatusCodes.Status204NoContent);
