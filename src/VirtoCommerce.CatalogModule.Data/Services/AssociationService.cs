@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Caching;
@@ -17,12 +16,14 @@ namespace VirtoCommerce.CatalogModule.Data.Services
     public class AssociationService : IAssociationService
     {
         private readonly Func<ICatalogRepository> _repositoryFactory;
+
         public AssociationService(Func<ICatalogRepository> repositoryFactory)
         {
             _repositoryFactory = repositoryFactory;
         }
 
         #region IAssociationService members
+
         public async Task LoadAssociationsAsync(IHasAssociations[] owners)
         {
             using (var repository = _repositoryFactory())
@@ -40,6 +41,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                         {
                             owner.Associations = new List<ProductAssociation>();
                         }
+
                         owner.Associations.Clear();
                         owner.Associations.AddRange(productEntity.Associations.Select(x => x.ToModel(AbstractTypeFactory<ProductAssociation>.TryCreateInstance())));
                     }
@@ -72,24 +74,38 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     {
                         dbAssociation.ItemId = owner.Id;
                     }
+
                     changedEntities.AddRange(dbAssociations);
                 }
             }
 
-            await CreateOrUpdateAssociationAsync(changedEntities.ToArray());
+            using (var repository = _repositoryFactory())
+            {
+                var itemIds = owners.Where(x => x.Id != null).Select(x => x.Id).ToArray();
+                var existEntities = repository.Associations.Where(x => itemIds.Contains(x.ItemId)).ToArray();
+
+                var associationComparer = AnonymousComparer.Create((AssociationEntity x) => x.ItemId + ":" + x.AssociationType + ":" + x.AssociatedItemId + ":" + x.AssociatedCategoryId);
+                changedEntities.Patch(existEntities, associationComparer, (sourceAssociation, targetAssociation) => sourceAssociation.Patch(targetAssociation));
+
+                await repository.UnitOfWork.CommitAsync();
+            }
         }
 
         private async Task CreateOrUpdateAssociationAsync(AssociationEntity[] changedEntities)
         {
             using (var repository = _repositoryFactory())
             {
+
+                var transientChangedEntities = changedEntities.Where(x => x.IsTransient());
+                var nonTransientChangedEntities = changedEntities.Except(transientChangedEntities);
+
                 foreach (var changedEntity in changedEntities)
                 {
                     AssociationEntity existEntity = null;
 
                     if (!changedEntity.IsTransient())
                     {
-                        existEntity = repository.Associations.FirstOrDefault(x => x.Id == changedEntity.Id);
+                        existEntity = get
                     }
                     else
                     {
@@ -112,7 +128,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
                 ClearCache(changedEntities.Select(x => x.ItemId).ToArray());
             }
-
         }
 
         public async Task UpdateAssociationsAsync(ProductAssociation[] associations)
@@ -131,11 +146,13 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 {
                     repository.Remove(association);
                 }
+
                 await repository.UnitOfWork.CommitAsync();
 
                 ClearCache(associations.Select(x => x.ItemId).ToArray());
             }
         }
+
         #endregion
 
         private void ClearCache(string[] ids)
@@ -143,6 +160,5 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             ItemCacheRegion.ExpireProducts(ids);
             AssociationSearchCacheRegion.ExpireRegion();
         }
-
     }
 }
