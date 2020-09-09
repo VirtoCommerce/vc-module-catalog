@@ -36,16 +36,16 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly ListEntryMover<CatalogProduct> _productMover;
 
         public CatalogModuleListEntryController(
-            IProductIndexedSearchService productIndexedSearchService
-            , ICategoryIndexedSearchService categoryIndexedSearchService
-            , IListEntrySearchService listEntrySearchService
-            , ICategoryService categoryService
-            , IItemService itemService
-            , ICatalogService catalogService
-            , IAuthorizationService authorizationService
-            , ISettingsManager settingsManager
-            , ListEntryMover<Category> categoryMover
-            , ListEntryMover<CatalogProduct> productMover)
+            IProductIndexedSearchService productIndexedSearchService,
+            ICategoryIndexedSearchService categoryIndexedSearchService,
+            IListEntrySearchService listEntrySearchService,
+            ICategoryService categoryService,
+            IItemService itemService,
+            ICatalogService catalogService,
+            IAuthorizationService authorizationService,
+            ISettingsManager settingsManager,
+            ListEntryMover<Category> categoryMover,
+            ListEntryMover<CatalogProduct> productMover)
         {
             _productIndexedSearchService = productIndexedSearchService;
             _categoryIndexedSearchService = categoryIndexedSearchService;
@@ -66,7 +66,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <returns></returns>
         [HttpPost]
         [Route("")]
-        public async Task<ActionResult<ListEntrySearchResult>> ListItemsSearchAsync([FromBody]CatalogListEntrySearchCriteria criteria)
+        public async Task<ActionResult<ListEntrySearchResult>> ListItemsSearchAsync([FromBody] CatalogListEntrySearchCriteria criteria)
         {
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, criteria, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
             if (!authorizationResult.Succeeded)
@@ -88,7 +88,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("~/api/catalog/listentrylinks")]
         public async Task<ActionResult> CreateLinks([FromBody] CategoryLink[] links)
         {
-
             var entryIds = links.Select(x => x.EntryId).ToArray();
             var hasLinkEntries = await LoadCatalogEntriesAsync<IHasLinks>(entryIds);
 
@@ -106,10 +105,12 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                     hasLinkEntry.Links.Add(link);
                 }
             }
+
             if (!hasLinkEntries.IsNullOrEmpty())
             {
                 await SaveListCatalogEntitiesAsync(hasLinkEntries.ToArray());
             }
+
             return Ok();
         }
 
@@ -120,7 +121,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <returns></returns>
         [HttpPost]
         [Route("~/api/catalog/listentrylinks/bulkcreate")]
-        public async Task<ActionResult> BulkCreateLinks([FromBody]BulkLinkCreationRequest creationRequest)
+        public async Task<ActionResult> BulkCreateLinks([FromBody] BulkLinkCreationRequest creationRequest)
         {
             if (creationRequest.CatalogId.IsNullOrEmpty())
             {
@@ -156,7 +157,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 {
                     await SaveListCatalogEntitiesAsync(hasLinkEntries.ToArray());
                 }
-
             } while (haveProducts);
 
             return Ok();
@@ -177,7 +177,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [HttpPost]
         [Route("~/api/catalog/listentrylinks/delete")]
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
-        public async Task<ActionResult> DeleteLinks([FromBody]CategoryLink[] links)
+        public async Task<ActionResult> DeleteLinks([FromBody] CategoryLink[] links)
         {
             var entryIds = links.Select(x => x.EntryId).ToArray();
             var hasLinkEntries = await LoadCatalogEntriesAsync<IHasLinks>(entryIds);
@@ -187,11 +187,13 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             {
                 return Unauthorized();
             }
+
             foreach (var link in links)
             {
                 var hasLinkEntry = hasLinkEntries.FirstOrDefault(x => x.Id.Equals(link.EntryId));
                 hasLinkEntry?.Links.Remove(link);
             }
+
             if (!hasLinkEntries.IsNullOrEmpty())
             {
                 await SaveListCatalogEntitiesAsync(hasLinkEntries.ToArray());
@@ -207,7 +209,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [HttpPost]
         [Route("move")]
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
-        public async Task<ActionResult> Move([FromBody]ListEntriesMoveRequest moveRequest)
+        public async Task<ActionResult> Move([FromBody] ListEntriesMoveRequest moveRequest)
         {
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, moveRequest, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
             if (!authorizationResult.Succeeded)
@@ -215,7 +217,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return Unauthorized();
             }
 
-            var dstCatalog = (await _catalogService.GetByIdsAsync(new[] { moveRequest.Catalog })).FirstOrDefault();
+            var dstCatalog = (await _catalogService.GetByIdsAsync(new[] {moveRequest.Catalog})).FirstOrDefault();
             if (dstCatalog.IsVirtual)
             {
                 return BadRequest("Unable to move to a virtual catalog");
@@ -226,7 +228,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             await _categoryMover.ConfirmMoveAsync(categories);
             await _productMover.ConfirmMoveAsync(products);
-            
+
             return NoContent();
         }
 
@@ -236,7 +238,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <param name="criteria"></param>
         [HttpPost]
         [Route("delete")]
-        [ProducesResponseType(typeof(void),StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         public async Task<ActionResult> Delete([FromBody] CatalogListEntrySearchCriteria criteria)
         {
             const int deleteBatchSize = 20;
@@ -252,14 +254,14 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             {
                 var listEntries = await InnerListItemsSearchAsync(criteria);
                 idsToDelete = listEntries.ListEntries
-                    .Where(x => x.Type.EqualsInvariant(KnownDocumentTypes.Product) || x.Type.EqualsInvariant(KnownDocumentTypes.Category))
+                    .Where(x => x.Type.EqualsInvariant(ProductListEntry.TypeName) || x.Type.EqualsInvariant(CategoryListEntry.TypeName))
                     .Select(x => x.Id)
                     .ToList();
             }
 
             if (!idsToDelete.IsNullOrEmpty())
             {
-                for (var i = 0; i < idsToDelete.Count; i++)
+                for (var i = 0; i < idsToDelete.Count; i += deleteBatchSize)
                 {
                     var commonIds = idsToDelete.Skip(i).Take(deleteBatchSize).ToArray();
 
@@ -283,6 +285,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 {
                     await _itemService.SaveChangesAsync(products);
                 }
+
                 var categories = entities.OfType<Category>().ToArray();
                 if (!categories.IsNullOrEmpty())
                 {
@@ -319,8 +322,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
                 result.Results = catIndexedSearchResult.Items.Select(x => AbstractTypeFactory<CategoryListEntry>.TryCreateInstance().FromModel(x)).ToList();
 
-                criteria.Skip -= (int)skip;
-                criteria.Take -= (int)take;
+                criteria.Skip -= (int) skip;
+                criteria.Take -= (int) take;
 
                 const ItemResponseGroup itemResponseGroup = ItemResponseGroup.ItemInfo | ItemResponseGroup.Outlines;
 
@@ -328,7 +331,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 productIndexedSearchCriteria.ResponseGroup = itemResponseGroup.ToString();
 
                 var indexedSearchResult = await _productIndexedSearchService.SearchAsync(productIndexedSearchCriteria);
-                result.TotalCount += (int)indexedSearchResult.TotalCount;
+                result.TotalCount += (int) indexedSearchResult.TotalCount;
                 result.Results.AddRange(indexedSearchResult.Items.Select(x => AbstractTypeFactory<ProductListEntry>.TryCreateInstance().FromModel(x)));
             }
             else
@@ -337,7 +340,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             }
 
             return result;
-
         }
     }
 }
