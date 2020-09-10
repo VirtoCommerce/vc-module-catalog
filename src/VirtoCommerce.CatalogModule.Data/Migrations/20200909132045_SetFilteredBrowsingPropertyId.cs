@@ -10,6 +10,8 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                 BEGIN
                     DELETE FROM PlatformDynamicPropertyName WHERE PropertyId IN (select Id from [PlatformDynamicProperty]
                         WHERE Name = 'FilteredBrowsing' AND ObjectType = 'VirtoCommerce.StoreModule.Core.Model.Store')
+                    DELETE FROM PlatformDynamicPropertyObjectValue WHERE PropertyId IN (select Id from [PlatformDynamicProperty]
+                        WHERE Name = 'FilteredBrowsing' AND ObjectType = 'VirtoCommerce.StoreModule.Core.Model.Store')
                     UPDATE [PlatformDynamicProperty] SET Id = 'VirtoCommerce.Catalog_FilteredBrowsing_Property'
                         WHERE Name = 'FilteredBrowsing' AND ObjectType = 'VirtoCommerce.StoreModule.Core.Model.Store' AND Id != 'VirtoCommerce.Catalog_FilteredBrowsing_Property'
                 END");
