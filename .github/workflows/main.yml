@@ -1,0 +1,74 @@
+# v1
+name: Module CI
+
+on:
+  workflow_dispatch:
+  push:
+    paths-ignore:
+      - '.github/**'
+      - 'docs/**'
+      - 'build/**'
+      - 'README.md'
+      - 'LICENSE'
+    branches:
+      [master, dev]
+  pull_request:
+    branches:
+      [master, dev]
+    paths-ignore:
+      - 'docs/**'
+      - 'build/**'
+      - 'README.md'
+      - 'LICENSE'
+    
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    env:
+      SONAR_TOKEN: ${{secrets.SONAR_TOKEN}}
+      GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
+      NUGET_KEY: ${{ secrets.NUGET_KEY }}
+      BLOB_SAS: ${{ secrets.BLOB_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Install VirtoCommerce.GlobalTool
+        run: dotnet tool install --global VirtoCommerce.GlobalTool
+
+      - name: Install dotnet-sonarscanner
+        run: dotnet tool install --global dotnet-sonarscanner
+
+      - name: Get changelog
+        id: changelog
+        uses: VirtoCommerce/vc-github-actions/changelog-generator@master
+
+      - name: Add version suffix
+        uses: VirtoCommerce/vc-github-actions/add-version-suffix@master
+
+      - name: SonarCloud Begin
+        uses: VirtoCommerce/vc-github-actions/sonar-scanner-begin@master
+
+      - name: Build
+        run: vc-build Compile
+
+      - name: Unit Tests
+        run: vc-build Test -skip
+
+      - name: SonarCloud End
+        uses: VirtoCommerce/vc-github-actions/sonar-scanner-end@master
+
+      - name: Packaging
+        run: vc-build Compress -skip Clean+Restore+Compile+Test
+      
+      # Step runs only on commit to master or dev brunch
+      - name: Publish Nuget
+        uses: VirtoCommerce/vc-github-actions/publish-nuget@master
+        
+      # Step runs only on commit to master or dev brunch
+      - name: Publish Github Release
+        with:
+          changelog: ${{ steps.changelog.outputs.changelog }}
+        uses: VirtoCommerce/vc-github-actions/publish-github-release@master
