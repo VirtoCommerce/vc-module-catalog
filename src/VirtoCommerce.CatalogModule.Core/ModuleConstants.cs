@@ -23,7 +23,7 @@ namespace VirtoCommerce.CatalogModule.Core
                   CategoryChange = "bulk-action:category:change",
                   PropertiesUpdate = "bulk-action:properties:update";
 
-                public static string[] AllPermissions { get; } = new[] { Access, Create, Read, Update, Delete, Export, Import, CatalogBrowseFiltersRead, CatalogBrowseFiltersUpdate, CategoryChange, PropertiesUpdate };
+                public static string[] AllPermissions { get; } = { Access, Create, Read, Update, Delete, Export, Import, CatalogBrowseFiltersRead, CatalogBrowseFiltersUpdate, CategoryChange, PropertiesUpdate };
             }
         }
 
@@ -45,7 +45,7 @@ namespace VirtoCommerce.CatalogModule.Core
                     ValueType = SettingValueType.ShortText,
                     GroupName = "Catalog|General",
                     IsDictionary = true,
-                    AllowedValues = new string[] { "Accessories", "Related Items" }
+                    AllowedValues = new [] { "Accessories", "Related Items" }
                 };
 
                 public static SettingDescriptor EditorialReviewTypes { get; } = new SettingDescriptor
@@ -55,20 +55,12 @@ namespace VirtoCommerce.CatalogModule.Core
                     GroupName = "Catalog|General",
                     IsDictionary = true,
                     DefaultValue = "QuickReview",
-                    AllowedValues = new string[] { "QuickReview", "FullReview" }
+                    AllowedValues = new [] { "QuickReview", "FullReview" }
                 };
 
                 public static SettingDescriptor CodesInOutline { get; } = new SettingDescriptor
                 {
                     Name = "Catalog.CodesInOutline",
-                    GroupName = "Catalog|General",
-                    ValueType = SettingValueType.Boolean,
-                    DefaultValue = false
-                };
-
-                public static SettingDescriptor ExposeAliasInDictionary { get; } = new SettingDescriptor
-                {
-                    Name = "Catalog.ExposeAliasInDictionary",
                     GroupName = "Catalog|General",
                     ValueType = SettingValueType.Boolean,
                     DefaultValue = false
@@ -101,7 +93,6 @@ namespace VirtoCommerce.CatalogModule.Core
                                    EditorialReviewTypes,
                                    CodesInOutline,
                                    EventBasedIndexation,
-                                   ExposeAliasInDictionary, // remove this redundant setting after sample data is fixed
                                    UseSeoDeduplication
                                };
                     }
