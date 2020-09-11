@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using FluentAssertions;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Data.Services;
 using Xunit;
@@ -60,6 +59,28 @@ namespace VirtoCommerce.CatalogModule.Test
 
         [Theory]
         [MemberData(nameof(ValidEntities))]
+        public async Task UpdateAssociationsAsync_AddAssociation_Added(dataModel.AssociationEntity entity)
+        {
+
+            // Arrange
+            var associationServiceMock = CreateProductAssociationServiceMock(new[] { entity });
+
+            var productAssociation = new ProductAssociation()
+            {
+                Id = "newId",
+                ItemId = "new_Item_ID",
+                AssociatedObjectId = "new_object_Id",
+                AssociatedObjectType = entity.AssociationType,
+            };
+            // Act
+
+            await associationServiceMock.UpdateAssociationsAsync(new[] { productAssociation });
+            // Assert
+            _catalogRepositoryMock.Verify(x => x.Add(It.IsAny<dataModel.AssociationEntity>()), Times.Once);
+        }
+
+        [Theory]
+        [MemberData(nameof(ValidEntities))]
         public async Task UpdateAssociationsAsync_AddNewAssociationWithExistedObjectId_Added(dataModel.AssociationEntity entity)
         {
             // Arrange
@@ -100,6 +121,7 @@ namespace VirtoCommerce.CatalogModule.Test
             };
             // Act
             await associationServiceMock.UpdateAssociationsAsync(new[] { productAssociation });
+
             // Assert
             _catalogRepositoryMock.Verify(x => x.Add(It.Is<dataModel.AssociationEntity>(q => q.AssociatedItemId == "NEW_AssociatedItemId")), Times.Once);
         }

@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentValidation;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Caching;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
+using VirtoCommerce.CatalogModule.Data.Validation;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Events;
 using VirtoCommerce.Platform.Data.Infrastructure;
@@ -61,7 +63,11 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     .Select(x => x.ToModel(AbstractTypeFactory<ProductAssociation>.TryCreateInstance())).ToArray();
             }
         }
-
+        /// <summary>
+        /// Saves collections of associations for given objects. Replaces all collection - adds new, updates existing and deletes associations that are not presented in the saved objects associations.
+        /// </summary>
+        /// <param name="owners"></param>
+        /// <returns></returns>
         public async Task SaveChangesAsync(IHasAssociations[] owners)
         {
             var changedEntities = new List<AssociationEntity>();
@@ -82,48 +88,55 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             using (var repository = _repositoryFactory())
             {
                 var itemIds = owners.Where(x => x.Id != null).Select(x => x.Id).ToArray();
-                var existEntities = repository.Associations.Where(x => itemIds.Contains(x.ItemId)).ToList();
+                var existingEntities = repository.Associations.Where(x => itemIds.Contains(x.ItemId)).ToList();
 
                 var associationComparer = AnonymousComparer.Create((AssociationEntity x) => x.ItemId + ":" + x.AssociationType + ":" + x.AssociatedItemId + ":" + x.AssociatedCategoryId);
-                changedEntities.Patch(existEntities, associationComparer, (sourceAssociation, targetAssociation) => sourceAssociation.Patch(targetAssociation));
+                changedEntities.Patch(existingEntities, associationComparer, (sourceAssociation, targetAssociation) => sourceAssociation.Patch(targetAssociation));
 
                 await repository.UnitOfWork.CommitAsync();
             }
         }
 
+        /// <summary>
+        /// Saves association entities. Adds new or updates existing based on ids.
+        /// </summary>
+        /// <param name="associations"></param>
+        /// <returns></returns>
         public async Task UpdateAssociationsAsync(ProductAssociation[] associations)
         {
-            var changedEntries = new List<GenericChangedEntry<ProductAssociation>>();
+
+            await ValidateAssociationAsync(associations);
 
             using (var repository = _repositoryFactory())
             {
                 var ids = associations.Where(x => !x.IsTransient()).Select(x => x.Id);
-                var dbExistsAssociation = repository.Associations.Where(x => ids.Contains(x.Id));
-
+                var existingAssociation = repository.Associations.Where(x => ids.Contains(x.Id)).ToList();
+                
                 foreach (var association in associations)
                 {
                     var modifiedEntity = AbstractTypeFactory<AssociationEntity>.TryCreateInstance().FromModel(association);
-                    var originalEntity = dbExistsAssociation.FirstOrDefault(x => x.Id == association.Id);
+                    var originalEntity = existingAssociation.FirstOrDefault(x => x.Id == association.Id);
 
                     if (originalEntity != null)
                     {
-                        changedEntries.Add(new GenericChangedEntry<ProductAssociation>(association, originalEntity.ToModel(AbstractTypeFactory<ProductAssociation>.TryCreateInstance()), EntryState.Modified));
+                        if (modifiedEntity.ItemId != originalEntity.ItemId)
+                        {
+                            //Reset cached item that just had association  
+                            ClearCache(new[] { originalEntity.ItemId });
+                        }
+
                         modifiedEntity.Patch(originalEntity);
                     }
                     else
                     {
                         repository.Add(modifiedEntity);
-                        changedEntries.Add(new GenericChangedEntry<ProductAssociation>(association, EntryState.Added));
                     }
                 }
 
                 await repository.UnitOfWork.CommitAsync();
-
-                ClearCache(dbExistsAssociation.Select(x => x.ItemId).ToArray());
             }
 
             //Reset cached associations
-
             ClearCache(associations.Select(x => x.ItemId).ToArray());
         }
 
@@ -150,6 +163,21 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
             ItemCacheRegion.ExpireProducts(ids);
             AssociationSearchCacheRegion.ExpireRegion();
+        }
+
+        protected virtual async Task ValidateAssociationAsync(IEnumerable<ProductAssociation> associations)
+        {
+            if (associations == null)
+            {
+                throw new ArgumentNullException(nameof(associations));
+            }
+
+            var validator = new ProductAssociationValidator();
+            foreach (var association in associations)
+            {
+                await validator.ValidateAndThrowAsync(association);
+            }
+
         }
     }
 }
