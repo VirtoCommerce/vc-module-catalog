@@ -9,6 +9,7 @@ using VirtoCommerce.CatalogModule.Data.Caching;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.Events;
 using VirtoCommerce.Platform.Data.Infrastructure;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
@@ -82,7 +83,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             using (var repository = _repositoryFactory())
             {
                 var itemIds = owners.Where(x => x.Id != null).Select(x => x.Id).ToArray();
-                var existEntities = repository.Associations.Where(x => itemIds.Contains(x.ItemId)).ToArray();
+                var existEntities = repository.Associations.Where(x => itemIds.Contains(x.ItemId)).ToList();
 
                 var associationComparer = AnonymousComparer.Create((AssociationEntity x) => x.ItemId + ":" + x.AssociationType + ":" + x.AssociatedItemId + ":" + x.AssociatedCategoryId);
                 changedEntities.Patch(existEntities, associationComparer, (sourceAssociation, targetAssociation) => sourceAssociation.Patch(targetAssociation));
@@ -91,49 +92,40 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
         }
 
-        private async Task CreateOrUpdateAssociationAsync(AssociationEntity[] changedEntities)
+        public async Task UpdateAssociationsAsync(ProductAssociation[] associations)
         {
+            var changedEntries = new List<GenericChangedEntry<ProductAssociation>>();
+
             using (var repository = _repositoryFactory())
             {
+                var ids = associations.Where(x => !x.IsTransient()).Select(x => x.Id);
+                var dbExistsAssociation = repository.Associations.Where(x => ids.Contains(x.Id));
 
-                var transientChangedEntities = changedEntities.Where(x => x.IsTransient());
-                var nonTransientChangedEntities = changedEntities.Except(transientChangedEntities);
-
-                foreach (var changedEntity in changedEntities)
+                foreach (var association in associations)
                 {
-                    AssociationEntity existEntity = null;
+                    var modifiedEntity = AbstractTypeFactory<AssociationEntity>.TryCreateInstance().FromModel(association);
+                    var originalEntity = dbExistsAssociation.FirstOrDefault(x => x.Id == association.Id);
 
-                    if (!changedEntity.IsTransient())
+                    if (originalEntity != null)
                     {
-                        existEntity = get
+                        changedEntries.Add(new GenericChangedEntry<ProductAssociation>(association, originalEntity.ToModel(AbstractTypeFactory<ProductAssociation>.TryCreateInstance()), EntryState.Modified));
+                        modifiedEntity.Patch(originalEntity);
                     }
                     else
                     {
-                        existEntity = repository.Associations.FirstOrDefault(x => changedEntity.ItemId == x.ItemId && changedEntity.AssociatedItemId == x.AssociatedItemId && changedEntity.AssociationType == x.AssociationType && changedEntity.AssociatedCategoryId == x.AssociatedCategoryId);
-                    }
-
-                    if (existEntity == null)
-                    {
-                        repository.Add(changedEntity);
-                    }
-                    else
-                    {
-                        changedEntity.Patch(existEntity);
+                        repository.Add(modifiedEntity);
+                        changedEntries.Add(new GenericChangedEntry<ProductAssociation>(association, EntryState.Added));
                     }
                 }
 
                 await repository.UnitOfWork.CommitAsync();
 
-                //Reset cached associations
-
-                ClearCache(changedEntities.Select(x => x.ItemId).ToArray());
+                ClearCache(dbExistsAssociation.Select(x => x.ItemId).ToArray());
             }
-        }
 
-        public async Task UpdateAssociationsAsync(ProductAssociation[] associations)
-        {
-            var changedEntities = associations.Select(x => AbstractTypeFactory<AssociationEntity>.TryCreateInstance().FromModel(x)).ToArray();
-            await CreateOrUpdateAssociationAsync(changedEntities);
+            //Reset cached associations
+
+            ClearCache(associations.Select(x => x.ItemId).ToArray());
         }
 
         public async Task DeleteAssociationAsync(string[] ids)
@@ -150,6 +142,20 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 await repository.UnitOfWork.CommitAsync();
 
                 ClearCache(associations.Select(x => x.ItemId).ToArray());
+            }
+        }
+
+        private AssociationEntity[] GetAssociationsByIdsAsync(string[] ids)
+        {
+            using (var repository = _repositoryFactory())
+            {
+                //Optimize performance and CPU usage
+                repository.DisableChangesTracking();
+
+                var result = repository.Associations
+                    .Where(x => ids.Contains(x.Id));
+
+                return result.ToArray();
             }
         }
 
