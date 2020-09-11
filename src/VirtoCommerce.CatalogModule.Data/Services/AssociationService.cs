@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core.Model;
@@ -142,20 +141,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 await repository.UnitOfWork.CommitAsync();
 
                 ClearCache(associations.Select(x => x.ItemId).ToArray());
-            }
-        }
-
-        private AssociationEntity[] GetAssociationsByIdsAsync(string[] ids)
-        {
-            using (var repository = _repositoryFactory())
-            {
-                //Optimize performance and CPU usage
-                repository.DisableChangesTracking();
-
-                var result = repository.Associations
-                    .Where(x => ids.Contains(x.Id));
-
-                return result.ToArray();
             }
         }
 
