@@ -121,7 +121,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     {
                         if (modifiedEntity.ItemId != originalEntity.ItemId)
                         {
-                            //Reset cached item that just had association  
+                            //Reset cache for item that has lost association 
                             ClearCache(new[] { originalEntity.ItemId });
                         }
 

@@ -18,7 +18,7 @@ namespace VirtoCommerce.CatalogModule.Test
     {
         Mock<ICatalogRepository> _catalogRepositoryMock = new Mock<ICatalogRepository>();
 
-        public static object[][] ValidEntities => new object[][]
+        public static object[][] UpdateTestData => new object[][]
         {
             new object[]
             {
@@ -35,8 +35,8 @@ namespace VirtoCommerce.CatalogModule.Test
         };
 
         [Theory]
-        [MemberData(nameof(ValidEntities))]
-        public async Task UpdateAssociationsAsync_UpdateNotTransientAssociation_Changed(dataModel.AssociationEntity entity)
+        [MemberData(nameof(UpdateTestData))]
+        public async Task UpdateAssociationsAsync_UpdateAssociation_Changed(dataModel.AssociationEntity entity)
         {
 
             // Arrange
@@ -58,54 +58,8 @@ namespace VirtoCommerce.CatalogModule.Test
         }
 
         [Theory]
-        [MemberData(nameof(ValidEntities))]
+        [MemberData(nameof(UpdateTestData))]
         public async Task UpdateAssociationsAsync_AddAssociation_Added(dataModel.AssociationEntity entity)
-        {
-
-            // Arrange
-            var associationServiceMock = CreateProductAssociationServiceMock(new[] { entity });
-
-            var productAssociation = new ProductAssociation()
-            {
-                Id = "newId",
-                ItemId = "new_Item_ID",
-                AssociatedObjectId = "new_object_Id",
-                AssociatedObjectType = entity.AssociationType,
-            };
-            // Act
-
-            await associationServiceMock.UpdateAssociationsAsync(new[] { productAssociation });
-            // Assert
-            _catalogRepositoryMock.Verify(x => x.Add(It.IsAny<dataModel.AssociationEntity>()), Times.Once);
-        }
-
-        [Theory]
-        [MemberData(nameof(ValidEntities))]
-        public async Task UpdateAssociationsAsync_AddNewAssociationWithExistedObjectId_Added(dataModel.AssociationEntity entity)
-        {
-            // Arrange
-            var associationServiceMock = CreateProductAssociationServiceMock(new[] { entity });
-
-            var productAssociation = new ProductAssociation
-            {
-                Id = null,
-                ItemId = entity.ItemId,
-                AssociatedObjectId = entity.AssociatedItemId,
-                AssociatedObjectType = entity.AssociationType,
-                Type = entity.AssociationType,
-                Priority = 10
-            };
-
-            // Act
-            await associationServiceMock.UpdateAssociationsAsync(new[] { productAssociation });
-            // Assert
-
-            _catalogRepositoryMock.Verify(x => x.Add(It.IsAny<dataModel.AssociationEntity>()), Times.Once);
-        }
-
-        [Theory]
-        [MemberData(nameof(ValidEntities))]
-        public async Task UpdateAssociationsAsync_AddNewAssociation_Added(dataModel.AssociationEntity entity)
         {
             // Arrange
             var associationServiceMock = CreateProductAssociationServiceMock(new[] { entity });
