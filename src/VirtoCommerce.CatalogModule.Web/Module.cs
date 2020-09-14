@@ -42,6 +42,7 @@ using VirtoCommerce.ExportModule.Data.Extensions;
 using VirtoCommerce.ExportModule.Data.Services;
 using VirtoCommerce.Platform.Core.Bus;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.DynamicProperties;
 using VirtoCommerce.Platform.Core.ExportImport;
 using VirtoCommerce.Platform.Core.Modularity;
 using VirtoCommerce.Platform.Core.Security;
@@ -50,6 +51,7 @@ using VirtoCommerce.Platform.Data.Extensions;
 using VirtoCommerce.Platform.Security.Authorization;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
+using VirtoCommerce.StoreModule.Core.Model;
 using AuthorizationOptions = Microsoft.AspNetCore.Authorization.AuthorizationOptions;
 
 namespace VirtoCommerce.CatalogModule.Web
@@ -228,6 +230,19 @@ namespace VirtoCommerce.CatalogModule.Web
 
             searchRequestBuilderRegistrar.Register(KnownDocumentTypes.Product, appBuilder.ApplicationServices.GetService<ProductSearchRequestBuilder>);
             searchRequestBuilderRegistrar.Register(KnownDocumentTypes.Category, appBuilder.ApplicationServices.GetService<CategorySearchRequestBuilder>);
+
+            // Ensure that required dynamic properties are always registered in the system
+            var dynamicPropertyService = appBuilder.ApplicationServices.GetRequiredService<IDynamicPropertyService>();
+            dynamicPropertyService.SaveDynamicPropertiesAsync(new[] {
+                    new DynamicProperty
+                    {
+                        Id = BrowseFilterService.FilteredBrowsingPropertyId,
+                        Name = BrowseFilterService.FilteredBrowsingPropertyName,
+                        ObjectType = typeof(Store).FullName,
+                        ValueType = DynamicPropertyValueType.LongText,
+                        CreatedBy = "Auto"
+                    }
+                }).GetAwaiter().GetResult();
 
             #region Register types for generic Export
 
