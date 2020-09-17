@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentValidation;
-using VirtoCommerce.CatalogModule.Core.Extensions;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Caching;
@@ -88,10 +88,13 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             using (var repository = _repositoryFactory())
             {
                 var itemIds = owners.Where(x => x.Id != null).Select(x => x.Id).ToArray();
-                var existingEntities = repository.Associations.Where(x => itemIds.Contains(x.ItemId)).ToList();
 
                 var associationComparer = AnonymousComparer.Create((AssociationEntity x) => x.ItemId + ":" + x.AssociationType + ":" + x.AssociatedItemId + ":" + x.AssociatedCategoryId);
-                changedEntities.Patch(existingEntities, associationComparer, (sourceAssociation, targetAssociation) => sourceAssociation.Patch(targetAssociation), repository);
+
+                var existingEntities = new ObservableCollection<AssociationEntity>(repository.Associations.Where(x => itemIds.Contains(x.ItemId)).ToList());
+
+                existingEntities.ObserveCollection(x => repository.Add(x), x => repository.Remove(x));
+                changedEntities.Patch(existingEntities, associationComparer, (sourceAssociation, targetAssociation) => sourceAssociation.Patch(targetAssociation));
 
                 await repository.UnitOfWork.CommitAsync();
             }
@@ -111,7 +114,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             {
                 var ids = associations.Where(x => !x.IsTransient()).Select(x => x.Id);
                 var existingAssociation = repository.Associations.Where(x => ids.Contains(x.Id)).ToList();
-                
+
                 foreach (var association in associations)
                 {
                     var modifiedEntity = AbstractTypeFactory<AssociationEntity>.TryCreateInstance().FromModel(association);
