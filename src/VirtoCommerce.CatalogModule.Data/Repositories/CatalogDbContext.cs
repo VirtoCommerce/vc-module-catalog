@@ -111,9 +111,9 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             modelBuilder.Entity<ImageEntity>().ToTable("CatalogImage").HasKey(x => x.Id);
             modelBuilder.Entity<ImageEntity>().Property(x => x.Id).HasMaxLength(128).ValueGeneratedOnAdd();
             modelBuilder.Entity<ImageEntity>().HasOne(m => m.Category).WithMany(x => x.Images)
-                .HasForeignKey(x => x.CategoryId).OnDelete(DeleteBehavior.Restrict);
+                .HasForeignKey(x => x.CategoryId).OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<ImageEntity>().HasOne(m => m.CatalogItem).WithMany(x => x.Images)
-                .HasForeignKey(x => x.ItemId).OnDelete(DeleteBehavior.Restrict);
+                .HasForeignKey(x => x.ItemId).OnDelete(DeleteBehavior.Cascade);
             #endregion
 
             #region EditorialReview
