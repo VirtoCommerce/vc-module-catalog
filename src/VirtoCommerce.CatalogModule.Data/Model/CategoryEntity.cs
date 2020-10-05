@@ -193,8 +193,8 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 {
                     if (property.Values != null)
                     {
-                        //Do not use values from inherited properties and skip empty values
-                        foreach (var propValue in property.Values.Where(x => !x.IsInherited && !x.IsEmpty))
+                        //Do not use values from inherited properties
+                        foreach (var propValue in property.Values.Where(x => !x.IsInherited))
                         {
                             //Need populate required fields
                             propValue.PropertyName = property.Name;
