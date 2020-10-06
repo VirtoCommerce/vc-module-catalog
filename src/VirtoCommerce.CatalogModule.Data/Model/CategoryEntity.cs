@@ -205,6 +205,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 }
                 if (!propValues.IsNullOrEmpty())
                 {
+                    //Skip the empty property values in order to remove the empty values from DB in the further Patch method call.
                     CategoryPropertyValues = new ObservableCollection<PropertyValueEntity>(AbstractTypeFactory<PropertyValueEntity>.TryCreateInstance().FromModels(propValues.Where(x => !x.IsEmpty), pkMap));
                 }
             }
