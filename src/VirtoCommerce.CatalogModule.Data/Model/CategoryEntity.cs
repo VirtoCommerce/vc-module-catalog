@@ -193,8 +193,8 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 {
                     if (property.Values != null)
                     {
-                        //Do not use values from inherited properties
-                        foreach (var propValue in property.Values.Where(x => !x.IsInherited))
+                        //Do not use values from inherited properties 
+                        foreach (var propValue in property.Values.Where(x => x != null && !x.IsInherited))
                         {
                             //Need populate required fields
                             propValue.PropertyName = property.Name;
@@ -205,7 +205,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 }
                 if (!propValues.IsNullOrEmpty())
                 {
-                    CategoryPropertyValues = new ObservableCollection<PropertyValueEntity>(AbstractTypeFactory<PropertyValueEntity>.TryCreateInstance().FromModels(propValues, pkMap));
+                    CategoryPropertyValues = new ObservableCollection<PropertyValueEntity>(AbstractTypeFactory<PropertyValueEntity>.TryCreateInstance().FromModels(propValues.Where(x => !x.IsEmpty), pkMap));
                 }
             }
 
