@@ -17,6 +17,7 @@ WHERE ItemId is NULL AND CategoryId is NULL;
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            // Not needed
         }
     }
 }
