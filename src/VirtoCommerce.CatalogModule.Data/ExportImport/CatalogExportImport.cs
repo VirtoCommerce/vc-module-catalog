@@ -63,7 +63,47 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             {
                 await writer.WriteStartObjectAsync();
 
+                #region Export properties
+
+                progressInfo.Description = "Properties exporting...";
+                progressCallback(progressInfo);
+
+                await writer.WritePropertyNameAsync("Properties");
+                await writer.SerializeJsonArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
+                {
+                    var searchResult = await _propertySearchService.SearchPropertiesAsync(new PropertySearchCriteria { Skip = skip, Take = take });
+                    foreach (var item in searchResult.Results)
+                    {
+                        ResetRedundantReferences(item);
+                    }
+                    return (GenericSearchResult<Property>)searchResult;
+                }
+                , (processedCount, totalCount) =>
+                {
+                    progressInfo.Description = $"{ processedCount } of { totalCount } properties have been exported";
+                    progressCallback(progressInfo);
+                }, cancellationToken);
+
+                #endregion Export properties
+
+                #region Export propertyDictionaryItems
+
+                progressInfo.Description = "PropertyDictionaryItems exporting...";
+                progressCallback(progressInfo);
+
+                await writer.WritePropertyNameAsync("PropertyDictionaryItems");
+                await writer.SerializeJsonArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
+                    (GenericSearchResult<PropertyDictionaryItem>)await _propertyDictionarySearchService.SearchAsync(new PropertyDictionaryItemSearchCriteria { Skip = skip, Take = take })
+                , (processedCount, totalCount) =>
+                {
+                    progressInfo.Description = $"{ processedCount } of { totalCount } property dictionary items have been exported";
+                    progressCallback(progressInfo);
+                }, cancellationToken);
+
+                #endregion Export propertyDictionaryItems
+
                 #region Export catalogs
+
                 progressInfo.Description = "Catalogs exporting...";
                 progressCallback(progressInfo);
 
@@ -75,9 +115,11 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                     progressInfo.Description = $"{ processedCount } of { totalCount } catalogs have been exported";
                     progressCallback(progressInfo);
                 }, cancellationToken);
-                #endregion
+
+                #endregion Export catalogs
 
                 #region Export categories
+
                 progressInfo.Description = "Categories exporting...";
                 progressCallback(progressInfo);
 
@@ -97,44 +139,11 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                     progressInfo.Description = $"{ processedCount } of { totalCount } Categories have been exported";
                     progressCallback(progressInfo);
                 }, cancellationToken);
-                #endregion
 
-                #region Export properties
-                progressInfo.Description = "Properties exporting...";
-                progressCallback(progressInfo);
-
-                await writer.WritePropertyNameAsync("Properties");
-                await writer.SerializeJsonArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
-                {
-                    var searchResult = await _propertySearchService.SearchPropertiesAsync(new PropertySearchCriteria { Skip = skip, Take = take });
-                    foreach (var item in searchResult.Results)
-                    {
-                        ResetRedundantReferences(item);
-                    }
-                    return (GenericSearchResult<Property>)searchResult;
-                }
-                , (processedCount, totalCount) =>
-                {
-                    progressInfo.Description = $"{ processedCount } of { totalCount } properties have been exported";
-                    progressCallback(progressInfo);
-                }, cancellationToken);
-                #endregion
-
-                #region Export propertyDictionaryItems 
-                progressInfo.Description = "PropertyDictionaryItems exporting...";
-                progressCallback(progressInfo);
-
-                await writer.WritePropertyNameAsync("PropertyDictionaryItems");
-                await writer.SerializeJsonArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
-                    (GenericSearchResult<PropertyDictionaryItem>)await _propertyDictionarySearchService.SearchAsync(new PropertyDictionaryItemSearchCriteria { Skip = skip, Take = take })
-                , (processedCount, totalCount) =>
-                {
-                    progressInfo.Description = $"{ processedCount } of { totalCount } property dictionary items have been exported";
-                    progressCallback(progressInfo);
-                }, cancellationToken);
-                #endregion
+                #endregion Export categories
 
                 #region Export products
+
                 progressInfo.Description = "Products exporting...";
                 progressCallback(progressInfo);
 
@@ -153,15 +162,15 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                     progressInfo.Description = $"{ processedCount } of { totalCount } Products have been exported";
                     progressCallback(progressInfo);
                 }, cancellationToken);
-                #endregion
+
+                #endregion Export products
 
                 await writer.WriteEndObjectAsync();
                 await writer.FlushAsync();
             }
         }
 
-        public async Task DoImportAsync(Stream inputStream, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback,
-            ICancellationToken cancellationToken)
+        public async Task DoImportAsync(Stream inputStream, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -173,116 +182,35 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             {
                 while (reader.Read())
                 {
-                    if (reader.TokenType == JsonToken.PropertyName)
+                    if (reader.TokenType != JsonToken.PropertyName)
                     {
-                        if (reader.Value.ToString() == "Catalogs")
-                        {
-                            await reader.DeserializeJsonArrayWithPagingAsync<Catalog>(_jsonSerializer, _batchSize, async (items) =>
-                            {
-                                await _catalogService.SaveChangesAsync(items.ToArray());
+                        continue;
+                    }
 
-                            }, processedCount =>
-                            {
-                                progressInfo.Description = $"{ processedCount } catalogs have been imported";
-                                progressCallback(progressInfo);
-                            }, cancellationToken);
+                    switch (reader.Value.ToString())
+                    {
+                        case "Properties":
+                            await ImportPropertiesAsync(reader, propertiesWithForeignKeys, progressInfo, progressCallback, cancellationToken);
+                            break;
 
-                        }
-                        else if (reader.Value.ToString() == "Categories")
-                        {
-                            await reader.DeserializeJsonArrayWithPagingAsync<Category>(_jsonSerializer, _batchSize, async (items) =>
-                            {
-                                var itemsArray = items.ToArray();
-                                await _categoryService.SaveChangesAsync(itemsArray);
-                                ImportImages(itemsArray.OfType<IHasImages>().ToArray(), progressInfo);
+                        case "PropertyDictionaryItems":
+                            await ImportPropertyDictionaryItemsAsync(reader, progressInfo, progressCallback, cancellationToken);
+                            break;
 
-                            }, processedCount =>
-                            {
-                                progressInfo.Description = $"{ processedCount } categories have been imported";
-                                progressCallback(progressInfo);
-                            }, cancellationToken);
-                        }
-                        else if (reader.Value.ToString() == "Properties")
-                        {
-                            await reader.DeserializeJsonArrayWithPagingAsync<Property>(_jsonSerializer, _batchSize, async (items) =>
-                            {
-                                var itemsArray = items.ToArray();
-                                foreach (var property in itemsArray)
-                                {
-                                    if (property.CategoryId != null || property.CatalogId != null)
-                                    {
-                                        propertiesWithForeignKeys.Add(property.Clone() as Property);
-                                        //Need to reset property foreign keys to prevent FK violation during  inserting into database 
-                                        property.CategoryId = null;
-                                        property.CatalogId = null;
-                                    }
-                                }
-                                await _propertyService.SaveChangesAsync(itemsArray);
-                            }, processedCount =>
-                        {
-                            progressInfo.Description = $"{ processedCount } properties have been imported";
-                            progressCallback(progressInfo);
-                        }, cancellationToken);
-                        }
-                        else if (reader.Value.ToString() == "PropertyDictionaryItems")
-                        {
-                            await reader.DeserializeJsonArrayWithPagingAsync<PropertyDictionaryItem>(_jsonSerializer, _batchSize, items => _propertyDictionaryService.SaveChangesAsync(items.ToArray()), processedCount =>
-                            {
-                                progressInfo.Description = $"{ processedCount } property dictionary items have been imported";
-                                progressCallback(progressInfo);
-                            }, cancellationToken);
-                        }
-                        else if (reader.Value.ToString() == "Products")
-                        {
-                            var associationBackupMap = new Dictionary<string, IList<ProductAssociation>>();
-                            var products = new List<CatalogProduct>();
+                        case "Catalogs":
+                            await ImportCatalogsAsync(reader, progressInfo, progressCallback, cancellationToken);
+                            break;
 
-                            await reader.DeserializeJsonArrayWithPagingAsync<CatalogProduct>(_jsonSerializer, _batchSize, async (items) =>
-                            {
-                                var itemsArray = items.ToArray();
-                                foreach (var product in itemsArray)
-                                {
-                                    //Do not save associations withing product to prevent dependency conflicts in db
-                                    //we will save separateley after product import
-                                    if (!product.Associations.IsNullOrEmpty())
-                                    {
-                                        associationBackupMap[product.Id] = product.Associations;
-                                    }
+                        case "Categories":
+                            await ImportCategoriesAsync(reader, progressInfo, progressCallback, cancellationToken);
+                            break;
 
-                                    product.Associations = null;
-                                    products.Add(product);
-                                }
-                                await _itemService.SaveChangesAsync(products.ToArray());
-                                if (options != null && options.HandleBinaryData)
-                                {
-                                    ImportImages(itemsArray.OfType<IHasImages>().ToArray(), progressInfo);
-                                }
+                        case "Products":
+                            await ImportProductsAsync(reader, options, progressInfo, progressCallback, cancellationToken);
+                            break;
 
-                                products.Clear();
-                            }, processedCount =>
-                            {
-                                progressInfo.Description = $"{ processedCount } products have been imported";
-                                progressCallback(progressInfo);
-                            }, cancellationToken);
-
-                            //Import products associations separately to avoid DB constrain violation
-                            var totalProductsWithAssociationsCount = associationBackupMap.Count;
-                            for (var i = 0; i < totalProductsWithAssociationsCount; i += _batchSize)
-                            {
-                                var fakeProducts = new List<CatalogProduct>();
-                                foreach (var pair in associationBackupMap.Skip(i).Take(_batchSize))
-                                {
-                                    var fakeProduct = AbstractTypeFactory<CatalogProduct>.TryCreateInstance();
-                                    fakeProduct.Id = pair.Key;
-                                    fakeProduct.Associations = pair.Value;
-                                    fakeProducts.Add(fakeProduct);
-                                }
-
-                                await _associationService.SaveChangesAsync(fakeProducts.OfType<IHasAssociations>().ToArray());
-                                progressInfo.Description = $"{ Math.Min(totalProductsWithAssociationsCount, i + _batchSize) } of { totalProductsWithAssociationsCount } products associations imported";
-                                progressCallback(progressInfo);
-                            }
-                        }
+                        default:
+                            continue;
                     }
                 }
             }
@@ -303,6 +231,114 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             }
         }
 
+        private async Task ImportCatalogsAsync(JsonTextReader reader, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
+        {
+            await reader.DeserializeJsonArrayWithPagingAsync<Catalog>(_jsonSerializer, _batchSize, async (items) =>
+            {
+                await _catalogService.SaveChangesAsync(items.ToArray());
+            }, processedCount =>
+            {
+                progressInfo.Description = $"{ processedCount } catalogs have been imported";
+                progressCallback(progressInfo);
+            }, cancellationToken);
+        }
+
+        private async Task ImportCategoriesAsync(JsonTextReader reader, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
+        {
+            await reader.DeserializeJsonArrayWithPagingAsync<Category>(_jsonSerializer, _batchSize, async (items) =>
+            {
+                var itemsArray = items.ToArray();
+                await _categoryService.SaveChangesAsync(itemsArray);
+                ImportImages(itemsArray.OfType<IHasImages>().ToArray(), progressInfo);
+            }, processedCount =>
+            {
+                progressInfo.Description = $"{ processedCount } categories have been imported";
+                progressCallback(progressInfo);
+            }, cancellationToken);
+        }
+
+        private async Task ImportPropertiesAsync(JsonTextReader reader, List<Property> propertiesWithForeignKeys, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
+        {
+            await reader.DeserializeJsonArrayWithPagingAsync<Property>(_jsonSerializer, _batchSize, async (items) =>
+            {
+                var itemsArray = items.ToArray();
+                foreach (var property in itemsArray)
+                {
+                    if (property.CategoryId != null || property.CatalogId != null)
+                    {
+                        propertiesWithForeignKeys.Add(property.Clone() as Property);
+                        //Need to reset property foreign keys to prevent FK violation during  inserting into database
+                        property.CategoryId = null;
+                        property.CatalogId = null;
+                    }
+                }
+                await _propertyService.SaveChangesAsync(itemsArray);
+            }, processedCount =>
+            {
+                progressInfo.Description = $"{ processedCount } properties have been imported";
+                progressCallback(progressInfo);
+            }, cancellationToken);
+        }
+
+        private async Task ImportPropertyDictionaryItemsAsync(JsonTextReader reader, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
+        {
+            await reader.DeserializeJsonArrayWithPagingAsync<PropertyDictionaryItem>(_jsonSerializer, _batchSize, items => _propertyDictionaryService.SaveChangesAsync(items.ToArray()), processedCount =>
+            {
+                progressInfo.Description = $"{ processedCount } property dictionary items have been imported";
+                progressCallback(progressInfo);
+            }, cancellationToken);
+        }
+
+        private async Task ImportProductsAsync(JsonTextReader reader, ExportImportOptions options, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
+        {
+            var associationBackupMap = new Dictionary<string, IList<ProductAssociation>>();
+
+            await reader.DeserializeJsonArrayWithPagingAsync<CatalogProduct>(_jsonSerializer, _batchSize, async (items) =>
+            {
+                var products = items.Select(product =>
+                {
+                    //Do not save associations withing product to prevent dependency conflicts in db
+                    //we will save separateley after product import
+                    if (!product.Associations.IsNullOrEmpty())
+                    {
+                        associationBackupMap[product.Id] = product.Associations;
+                    }
+
+                    product.Associations = null;
+
+                    return product;
+                }).ToArray();
+
+                await _itemService.SaveChangesAsync(products.ToArray());
+
+                if (options != null && options.HandleBinaryData)
+                {
+                    ImportImages(products.OfType<IHasImages>().ToArray(), progressInfo);
+                }
+            }, processedCount =>
+            {
+                progressInfo.Description = $"{ processedCount } products have been imported";
+                progressCallback(progressInfo);
+            }, cancellationToken);
+
+            //Import products associations separately to avoid DB constrain violation
+            var totalProductsWithAssociationsCount = associationBackupMap.Count;
+            for (var i = 0; i < totalProductsWithAssociationsCount; i += _batchSize)
+            {
+                var fakeProducts = new List<CatalogProduct>();
+                foreach (var pair in associationBackupMap.Skip(i).Take(_batchSize))
+                {
+                    var fakeProduct = AbstractTypeFactory<CatalogProduct>.TryCreateInstance();
+                    fakeProduct.Id = pair.Key;
+                    fakeProduct.Associations = pair.Value;
+                    fakeProducts.Add(fakeProduct);
+                }
+
+                await _associationService.SaveChangesAsync(fakeProducts.OfType<IHasAssociations>().ToArray());
+                progressInfo.Description = $"{ Math.Min(totalProductsWithAssociationsCount, i + _batchSize) } of { totalProductsWithAssociationsCount } products associations imported";
+                progressCallback(progressInfo);
+            }
+        }
 
         //Remove redundant references to reduce resulting JSON size
         private static void ResetRedundantReferences(object entity)
@@ -414,7 +450,6 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 
         private void ImportImages(IHasImages[] haveImagesObjects, ExportImportProgressInfo progressInfo)
         {
-
             var allImages = haveImagesObjects.SelectMany(x => x.GetFlatObjectsListWithInterface<IHasImages>())
                                        .SelectMany(x => x.Images).ToArray();
             foreach (var image in allImages.Where(x => x.BinaryData != null))

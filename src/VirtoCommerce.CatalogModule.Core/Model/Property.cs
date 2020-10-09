@@ -110,7 +110,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                 CategoryId = parentProperty.CategoryId;
                 Hidden = parentProperty.Hidden;
 
-                foreach (var propValue in Values ?? Array.Empty<PropertyValue>())
+                foreach (var propValue in (Values ?? Array.Empty<PropertyValue>()).Where(x => x != null))
                 {
                     propValue.PropertyId = parentProperty.Id;
                     propValue.ValueType = parentProperty.ValueType;
