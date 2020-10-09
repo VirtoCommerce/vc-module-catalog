@@ -36,7 +36,8 @@ namespace VirtoCommerce.CatalogModule.Core
                     Name = "Catalog.ImageCategories",
                     GroupName = "Catalog|General",
                     ValueType = SettingValueType.ShortText,
-                    IsDictionary = true
+                    IsDictionary = true,
+                    AllowedValues = new[] { "Images" }
                 };
 
                 public static SettingDescriptor AssociationGroups { get; } = new SettingDescriptor
@@ -45,7 +46,7 @@ namespace VirtoCommerce.CatalogModule.Core
                     ValueType = SettingValueType.ShortText,
                     GroupName = "Catalog|General",
                     IsDictionary = true,
-                    AllowedValues = new [] { "Accessories", "Related Items" }
+                    AllowedValues = new[] { "Accessories", "Related Items" }
                 };
 
                 public static SettingDescriptor EditorialReviewTypes { get; } = new SettingDescriptor
@@ -55,7 +56,7 @@ namespace VirtoCommerce.CatalogModule.Core
                     GroupName = "Catalog|General",
                     IsDictionary = true,
                     DefaultValue = "QuickReview",
-                    AllowedValues = new [] { "QuickReview", "FullReview" }
+                    AllowedValues = new[] { "QuickReview", "FullReview" }
                 };
 
                 public static SettingDescriptor CodesInOutline { get; } = new SettingDescriptor
