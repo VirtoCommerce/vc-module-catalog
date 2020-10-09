@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Data.Model;
+using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Data.Extensions;
 using VirtoCommerce.Platform.Data.Infrastructure;
@@ -16,7 +17,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 {
     public class CatalogRepositoryImpl : DbContextRepositoryBase<CatalogDbContext>, ICatalogRepository
     {
-        const int batchSize = 500;
+        private const int batchSize = 500;
 
         public CatalogRepositoryImpl(CatalogDbContext dbContext)
             : base(dbContext)
@@ -232,8 +233,8 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         }
 
         /// <summary>
-        /// Returned all properties belongs to specified catalog 
-        /// For virtual catalog also include all properties for categories linked to this virtual catalog 
+        /// Returned all properties belongs to specified catalog
+        /// For virtual catalog also include all properties for categories linked to this virtual catalog
         /// </summary>
         /// <param name="catalogId"></param>
         /// <returns></returns>
@@ -303,6 +304,27 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             return result;
         }
 
+        public async Task<string[]> GetAllSeoDuplicatesIdsAsync()
+        {
+            const string commandTemplate = @"
+                    WITH cte AS (
+	                    SELECT
+		                    Id,
+		                    Keyword,
+		                    StoreId,
+		                    ROW_NUMBER() OVER ( PARTITION BY Keyword, StoreId ORDER BY StoreId) row_num
+	                    FROM CatalogSeoInfo
+                    )
+                    SELECT Id FROM cte
+                    WHERE row_num > 1
+                ";
+
+            var getAllSeoDuplicatesAsyncCommand = CreateCommand(commandTemplate, new string[0]);
+            var result = await DbContext.ExecuteArrayAsync<string>(getAllSeoDuplicatesAsyncCommand.Text, getAllSeoDuplicatesAsyncCommand.Parameters.ToArray());
+
+            return result ?? new string[0];
+        }
+
         public async Task<string[]> GetAllChildrenCategoriesIdsAsync(string[] categoryIds)
         {
             string[] result = null;
@@ -338,7 +360,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
                         DELETE CR FROM CategoryItemRelation  CR INNER JOIN Item I ON I.Id = CR.ItemId
                         WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
-        
+
                         DELETE CI FROM CatalogImage CI INNER JOIN Item I ON I.Id = CI.ItemId
                         WHERE I.Id IN ({0})  OR I.ParentId IN ({0})
 
@@ -384,13 +406,12 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 var skip = 0;
                 do
                 {
-
                     const string commandTemplate = @"
-                    DELETE SEO FROM CatalogSeoInfo SEO INNER JOIN Category C ON C.Id = SEO.CategoryId WHERE C.Id IN ({0}) 
-                    DELETE CI FROM CatalogImage CI INNER JOIN Category C ON C.Id = CI.CategoryId WHERE C.Id IN ({0}) 
-                    DELETE PV FROM PropertyValue PV INNER JOIN Category C ON C.Id = PV.CategoryId WHERE C.Id IN ({0}) 
-                    DELETE CR FROM CategoryRelation CR INNER JOIN Category C ON C.Id = CR.SourceCategoryId OR C.Id = CR.TargetCategoryId  WHERE C.Id IN ({0}) 
-                    DELETE CIR FROM CategoryItemRelation CIR INNER JOIN Category C ON C.Id = CIR.CategoryId WHERE C.Id IN ({0}) 
+                    DELETE SEO FROM CatalogSeoInfo SEO INNER JOIN Category C ON C.Id = SEO.CategoryId WHERE C.Id IN ({0})
+                    DELETE CI FROM CatalogImage CI INNER JOIN Category C ON C.Id = CI.CategoryId WHERE C.Id IN ({0})
+                    DELETE PV FROM PropertyValue PV INNER JOIN Category C ON C.Id = PV.CategoryId WHERE C.Id IN ({0})
+                    DELETE CR FROM CategoryRelation CR INNER JOIN Category C ON C.Id = CR.SourceCategoryId OR C.Id = CR.TargetCategoryId  WHERE C.Id IN ({0})
+                    DELETE CIR FROM CategoryItemRelation CIR INNER JOIN Category C ON C.Id = CIR.CategoryId WHERE C.Id IN ({0})
                     DELETE A FROM Association A INNER JOIN Category C ON C.Id = A.AssociatedCategoryId WHERE C.Id IN ({0})
                     DELETE P FROM Property P INNER JOIN Category C ON C.Id = P.CategoryId  WHERE C.Id IN ({0})
                     DELETE FROM Category WHERE Id IN ({0})
@@ -419,11 +440,10 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 var skip = 0;
                 do
                 {
-
                     const string commandTemplate = @"
                     DELETE CL FROM CatalogLanguage CL INNER JOIN Catalog C ON C.Id = CL.CatalogId WHERE C.Id IN ({0})
-                    DELETE CR FROM CategoryRelation CR INNER JOIN Catalog C ON C.Id = CR.TargetCatalogId WHERE C.Id IN ({0}) 
-                    DELETE PV FROM PropertyValue PV INNER JOIN Catalog C ON C.Id = PV.CatalogId WHERE C.Id IN ({0}) 
+                    DELETE CR FROM CategoryRelation CR INNER JOIN Catalog C ON C.Id = CR.TargetCatalogId WHERE C.Id IN ({0})
+                    DELETE PV FROM PropertyValue PV INNER JOIN Catalog C ON C.Id = PV.CatalogId WHERE C.Id IN ({0})
                     DELETE P FROM Property P INNER JOIN Catalog C ON C.Id = P.CatalogId  WHERE C.Id IN ({0})
                     DELETE FROM Catalog WHERE Id IN ({0})
                 ";
@@ -440,7 +460,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         /// <summary>
         /// Delete all exist property values belong to given property.
         /// Because PropertyValue table doesn't have a foreign key to Property table by design,
-        /// we use columns Name and TargetType to find values that reference to the deleting property.  
+        /// we use columns Name and TargetType to find values that reference to the deleting property.
         /// </summary>
         /// <param name="propertyId"></param>
         public async Task RemoveAllPropertyValuesAsync(string propertyId)
@@ -491,14 +511,14 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     FROM Category c
                     INNER JOIN Category_CTE cte ON c.ParentCategoryId = cte.Id
                 ),
-                Item_CTE AS 
+                Item_CTE AS
                 (
                     SELECT  i.Id
                     FROM (SELECT DISTINCT Id FROM Category_CTE) c
                     LEFT JOIN Item i ON c.Id=i.CategoryId WHERE i.ParentId IS NULL
                     UNION
                     SELECT AssociatedItemId Id FROM Association_CTE
-                ) 
+                )
                 SELECT COUNT(Id) FROM Item_CTE";
 
             var querySqlCommandText = new StringBuilder();
@@ -506,7 +526,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     ;WITH Association_CTE AS
                     (
                         SELECT
-                            Id	
+                            Id
                             ,AssociationType
                             ,Priority
                             ,ItemId
@@ -543,10 +563,10 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                         FROM Category c
                         INNER JOIN Category_CTE cte ON c.ParentCategoryId = cte.Id
                     ),
-                    Item_CTE AS 
+                    Item_CTE AS
                     (
-                        SELECT 
-                            a.Id	
+                        SELECT
+                            a.Id
                             ,a.AssociationType
                             ,a.Priority
                             ,a.ItemId
@@ -565,7 +585,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                         WHERE i.ParentId IS NULL
                         UNION
                         SELECT * FROM Association_CTE
-                    ) 
+                    )
                     SELECT  * FROM Item_CTE WHERE AssociatedItemId IS NOT NULL ORDER BY Priority ");
 
             querySqlCommandText.Append($"OFFSET {criteria.Skip} ROWS FETCH NEXT {criteria.Take} ROWS ONLY");
@@ -591,7 +611,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             return result;
         }
 
-        #endregion
+        #endregion ICatalogRepository Members
 
         protected virtual async Task<int> ExecuteStoreQueryAsync(string commandTemplate, IEnumerable<string> parameterValues)
         {
@@ -613,7 +633,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
         protected SqlParameter[] AddArrayParameters<T>(Command cmd, string paramNameRoot, IEnumerable<T> values)
         {
-            /* An array cannot be simply added as a parameter to a SqlCommand so we need to loop through things and add it manually. 
+            /* An array cannot be simply added as a parameter to a SqlCommand so we need to loop through things and add it manually.
              * Each item in the array will end up being it's own SqlParameter so the return value for this must be used as part of the
              * IN statement in the CommandText.
              */

@@ -148,11 +148,9 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
             using (var repository = _repositoryFactory())
             {
-                var duplicateSeoRecords = await repository.SeoInfos
-                    .GroupBy(x => $"{x.Keyword}:{x.StoreId}", x => x)
-                    .Where(x => x.Count() > 1)
-                    .SelectMany(x => x)
-                    .ToArrayAsync();
+                var duplicateIds = await repository.GetAllSeoDuplicatesIdsAsync();
+
+                var duplicateSeoRecords = await repository.SeoInfos.Where(x => duplicateIds.Contains(x.Id)).ToArrayAsync();
 
                 return duplicateSeoRecords.Select(x => x.ToModel(AbstractTypeFactory<SeoInfo>.TryCreateInstance()));
             }
