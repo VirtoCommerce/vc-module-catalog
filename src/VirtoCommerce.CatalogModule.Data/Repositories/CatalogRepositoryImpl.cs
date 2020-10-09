@@ -319,8 +319,8 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     WHERE row_num > 1
                 ";
 
-            var getAllSeoDuplicatesAsyncCommand = CreateCommand(commandTemplate, new string[0]);
-            var result = await DbContext.ExecuteArrayAsync<string>(getAllSeoDuplicatesAsyncCommand.Text, getAllSeoDuplicatesAsyncCommand.Parameters.ToArray());
+            var command = CreateCommand(commandTemplate, new string[0]);
+            var result = await DbContext.ExecuteArrayAsync<string>(command.Text, command.Parameters.ToArray());
 
             return result ?? new string[0];
         }
