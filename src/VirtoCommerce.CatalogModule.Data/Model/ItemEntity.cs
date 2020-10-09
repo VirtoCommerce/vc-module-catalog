@@ -284,7 +284,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 {
                     if (property.Values != null)
                     {
-                        foreach (var propValue in property.Values)
+                        foreach (var propValue in property.Values.Where(x => x != null))
                         {
                             //Need populate required fields
                             propValue.PropertyName = property.Name;
