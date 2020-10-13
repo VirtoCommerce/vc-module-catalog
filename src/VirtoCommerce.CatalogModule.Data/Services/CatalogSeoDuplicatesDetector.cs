@@ -41,6 +41,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         }
 
         #region ISeoConflictDetector Members
+
         public async Task<IEnumerable<SeoInfo>> DetectSeoDuplicatesAsync(TenantIdentity tenantIdentity)
         {
             var useSeoDeduplication = _settingsManager.GetValue(ModuleConstants.Settings.General.UseSeoDeduplication.Name, false);
@@ -97,7 +98,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
             return retVal;
         }
-        #endregion
+
+        #endregion ISeoConflictDetector Members
 
         /// <summary>
         /// Detect SEO duplicates for object belongs to catalog  (physical or virtual) based on links information
@@ -144,17 +146,14 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         private async Task<IEnumerable<SeoInfo>> GetAllSeoDuplicatesAsync()
         {
-            var retVal = new List<SeoInfo>();
             using (var repository = _repositoryFactory())
             {
-                var duplicateSeoRecords = await repository.SeoInfos
-                    .GroupBy(x => x.Keyword + ":" + x.StoreId)
-                    .Where(x => x.Count() > 1)
-                    .SelectMany(x => x)
-                    .ToArrayAsync();
-                retVal.AddRange(duplicateSeoRecords.Select(x => x.ToModel(AbstractTypeFactory<SeoInfo>.TryCreateInstance())));
+                var duplicateIds = await repository.GetAllSeoDuplicatesIdsAsync();
+
+                var duplicateSeoRecords = await repository.SeoInfos.Where(x => duplicateIds.Contains(x.Id)).ToArrayAsync();
+
+                return duplicateSeoRecords.Select(x => x.ToModel(AbstractTypeFactory<SeoInfo>.TryCreateInstance()));
             }
-            return retVal;
         }
     }
 }

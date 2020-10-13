@@ -93,9 +93,9 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             modelBuilder.Entity<PropertyValueEntity>().HasOne(m => m.CatalogItem).WithMany(x => x.ItemPropertyValues)
                 .HasForeignKey(x => x.ItemId).OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<PropertyValueEntity>().HasOne(m => m.Category).WithMany(x => x.CategoryPropertyValues)
-                .HasForeignKey(x => x.CategoryId).OnDelete(DeleteBehavior.Restrict);
+                .HasForeignKey(x => x.CategoryId).OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<PropertyValueEntity>().HasOne(m => m.Catalog).WithMany(x => x.CatalogPropertyValues)
-                .HasForeignKey(x => x.CatalogId).OnDelete(DeleteBehavior.Restrict);
+                .HasForeignKey(x => x.CatalogId).OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<PropertyValueEntity>().HasOne(m => m.DictionaryItem).WithMany()
                 .HasForeignKey(x => x.DictionaryItemId).OnDelete(DeleteBehavior.Cascade);
             #endregion
@@ -178,9 +178,9 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             modelBuilder.Entity<SeoInfoEntity>().ToTable("CatalogSeoInfo").HasKey(x => x.Id);
             modelBuilder.Entity<SeoInfoEntity>().Property(x => x.Id).HasMaxLength(128).ValueGeneratedOnAdd();
             modelBuilder.Entity<SeoInfoEntity>().HasOne(x => x.Category).WithMany(x => x.SeoInfos).HasForeignKey(x => x.CategoryId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<SeoInfoEntity>().HasOne(x => x.Item).WithMany(x => x.SeoInfos).HasForeignKey(x => x.ItemId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
             #endregion
 
             base.OnModelCreating(modelBuilder);
