@@ -40,6 +40,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
         [StringLength(128)]
         public string ManufacturerPartNumber { get; set; }
+
         [StringLength(64)]
         public string Gtin { get; set; }
 
@@ -48,9 +49,12 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
         [StringLength(32)]
         public string WeightUnit { get; set; }
+
         public decimal? Weight { get; set; }
+
         [StringLength(32)]
         public string MeasureUnit { get; set; }
+
         public decimal? Height { get; set; }
         public decimal? Length { get; set; }
         public decimal? Width { get; set; }
@@ -59,13 +63,18 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
         public int? MaxNumberOfDownload { get; set; }
         public DateTime? DownloadExpiration { get; set; }
+
         [StringLength(64)]
         public string DownloadType { get; set; }
+
         public bool? HasUserAgreement { get; set; }
+
         [StringLength(64)]
         public string ShippingType { get; set; }
+
         [StringLength(64)]
         public string TaxType { get; set; }
+
         [StringLength(128)]
         public string Vendor { get; set; }
 
@@ -112,7 +121,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         public virtual ObservableCollection<ItemEntity> Childrens { get; set; }
             = new NullCollection<ItemEntity>();
 
-        #endregion
+        #endregion Navigation Properties
 
         public virtual CatalogProduct ToModel(CatalogProduct product, bool convertChildrens = true, bool convertAssociations = true)
         {
@@ -277,6 +286,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             CategoryId = string.IsNullOrEmpty(product.CategoryId) ? null : product.CategoryId;
 
             #region ItemPropertyValues
+
             if (!product.Properties.IsNullOrEmpty())
             {
                 var propValues = new List<PropertyValue>();
@@ -284,7 +294,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 {
                     if (property.Values != null)
                     {
-                        foreach (var propValue in property.Values)
+                        foreach (var propValue in property.Values.Where(x => x != null))
                         {
                             //Need populate required fields
                             propValue.PropertyName = property.Name;
@@ -304,49 +314,62 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 //TODO: Remove later
                 ItemPropertyValues = new ObservableCollection<PropertyValueEntity>(AbstractTypeFactory<PropertyValueEntity>.TryCreateInstance().FromModels(product.PropertyValues, pkMap));
             }
-            #endregion
+
+            #endregion ItemPropertyValues
 
             #region Assets
+
             if (product.Assets != null)
             {
                 Assets = new ObservableCollection<AssetEntity>(product.Assets.Where(x => !x.IsInherited).Select(x => AbstractTypeFactory<AssetEntity>.TryCreateInstance().FromModel(x, pkMap)));
             }
-            #endregion
+
+            #endregion Assets
 
             #region Images
+
             if (product.Images != null)
             {
                 Images = new ObservableCollection<ImageEntity>(product.Images.Where(x => !x.IsInherited).Select(x => AbstractTypeFactory<ImageEntity>.TryCreateInstance().FromModel(x, pkMap)));
             }
-            #endregion
+
+            #endregion Images
 
             #region Links
+
             if (product.Links != null)
             {
                 CategoryLinks = new ObservableCollection<CategoryItemRelationEntity>(product.Links.Select(x => AbstractTypeFactory<CategoryItemRelationEntity>.TryCreateInstance().FromModel(x)));
             }
-            #endregion
+
+            #endregion Links
 
             #region EditorialReview
+
             if (product.Reviews != null)
             {
                 EditorialReviews = new ObservableCollection<EditorialReviewEntity>(product.Reviews.Where(x => !x.IsInherited).Select(x => AbstractTypeFactory<EditorialReviewEntity>.TryCreateInstance().FromModel(x, pkMap)));
             }
-            #endregion
+
+            #endregion EditorialReview
 
             #region Associations
+
             if (product.Associations != null)
             {
                 Associations = new ObservableCollection<AssociationEntity>(product.Associations.Select(x => AbstractTypeFactory<AssociationEntity>.TryCreateInstance().FromModel(x)));
             }
-            #endregion
+
+            #endregion Associations
 
             #region SeoInfo
+
             if (product.SeoInfos != null)
             {
                 SeoInfos = new ObservableCollection<SeoInfoEntity>(product.SeoInfos.Select(x => AbstractTypeFactory<SeoInfoEntity>.TryCreateInstance().FromModel(x, pkMap)));
             }
-            #endregion
+
+            #endregion SeoInfo
 
             if (product.Variations != null)
             {
@@ -395,55 +418,69 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             target.EndDate = EndDate;
 
             #region Assets
+
             if (!Assets.IsNullCollection())
             {
                 Assets.Patch(target.Assets, (sourceAsset, targetAsset) => sourceAsset.Patch(targetAsset));
             }
-            #endregion
+
+            #endregion Assets
 
             #region Images
+
             if (!Images.IsNullCollection())
             {
                 Images.Patch(target.Images, (sourceImage, targetImage) => sourceImage.Patch(targetImage));
             }
-            #endregion
+
+            #endregion Images
 
             #region ItemPropertyValues
+
             if (!ItemPropertyValues.IsNullCollection())
             {
                 ItemPropertyValues.Patch(target.ItemPropertyValues, (sourcePropValue, targetPropValue) => sourcePropValue.Patch(targetPropValue));
             }
-            #endregion
+
+            #endregion ItemPropertyValues
 
             #region Links
+
             if (!CategoryLinks.IsNullCollection())
             {
                 var categoryItemRelationComparer = AnonymousComparer.Create((CategoryItemRelationEntity x) => string.Join(":", x.CatalogId, x.CategoryId));
                 CategoryLinks.Patch(target.CategoryLinks, categoryItemRelationComparer,
                                          (sourcePropValue, targetPropValue) => sourcePropValue.Patch(targetPropValue));
             }
-            #endregion
+
+            #endregion Links
 
             #region EditorialReviews
+
             if (!EditorialReviews.IsNullCollection())
             {
                 EditorialReviews.Patch(target.EditorialReviews, (sourcePropValue, targetPropValue) => sourcePropValue.Patch(targetPropValue));
             }
-            #endregion
+
+            #endregion EditorialReviews
 
             #region Association
+
             if (!Associations.IsNullCollection())
             {
                 Associations.Patch(target.Associations, new AssociationEntityComparer(), (sourcePropValue, targetPropValue) => sourcePropValue.Patch(targetPropValue));
             }
-            #endregion
+
+            #endregion Association
 
             #region SeoInfos
+
             if (!SeoInfos.IsNullCollection())
             {
                 SeoInfos.Patch(target.SeoInfos, (sourceSeoInfo, targetSeoInfo) => sourceSeoInfo.Patch(targetSeoInfo));
             }
-            #endregion
+
+            #endregion SeoInfos
         }
     }
 }
