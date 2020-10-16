@@ -165,10 +165,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 await repository.UnitOfWork.CommitAsync();
                 pkMap.ResolvePrimaryKeys();
 
+                ClearCache(items);
+
                 await _eventPublisher.Publish(new ProductChangedEvent(changedEntries));
             }
-
-            ClearCache(items);
         }
 
         public virtual async Task DeleteAsync(string[] itemIds)
@@ -185,10 +185,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 await repository.RemoveItemsAsync(itemIds);
                 await repository.UnitOfWork.CommitAsync();
 
+                ClearCache(items);
+
                 await _eventPublisher.Publish(new ProductChangedEvent(changedEntries));
             }
-
-            ClearCache(items);
         }
 
         #endregion

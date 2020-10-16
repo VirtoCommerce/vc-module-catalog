@@ -97,10 +97,11 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 //Save changes in database
                 await repository.UnitOfWork.CommitAsync();
                 pkMap.ResolvePrimaryKeys();
-                await _eventPublisher.Publish(new PropertyChangedEvent(changedEntries));
 
                 //Reset catalog cache
                 CatalogCacheRegion.ExpireRegion();
+
+                await _eventPublisher.Publish(new PropertyChangedEvent(changedEntries));
             }
         }
 
@@ -123,9 +124,11 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     }
                 }
                 await repository.UnitOfWork.CommitAsync();
-                await _eventPublisher.Publish(new PropertyChangedEvent(changedEntries));
+
                 //Reset catalog cache
                 CatalogCacheRegion.ExpireRegion();
+
+                await _eventPublisher.Publish(new PropertyChangedEvent(changedEntries));
             }
         }
         #endregion

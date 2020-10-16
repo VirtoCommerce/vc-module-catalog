@@ -59,7 +59,7 @@ angular.module('virtoCommerce.catalogModule').directive('vaProperty2', ['$compil
                         scope.currentEntity.values = newValues;
                     }
                     //reset inherited status to force property value override
-                    _.each(scope.currentEntity.values, function (x) { x.isInherited = false; });
+                    _.each(scope.currentEntity.values, function (x) { if (x) { x.isInherited = false;}; });
 
                     ngModelController.$setViewValue(scope.currentEntity);
                 }
