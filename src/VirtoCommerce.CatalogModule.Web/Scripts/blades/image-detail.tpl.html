@@ -1,4 +1,4 @@
-﻿<div class="blade-static __bottom" ng-include="'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/common/templates/ok-cancel.tpl.html'"></div>
+<div class="blade-static __bottom" ng-include="'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/common/templates/ok-cancel.tpl.html'"></div>
 <div class="blade-content">
     <div class="blade-inner">
         <div class="inner-block">
@@ -26,6 +26,21 @@
                         </ui-select>
                     </div>
                 </div>
+
+                <div class="form-group">
+                    <label class="form-label">{{ 'catalog.blades.images.labels.altText' | translate }}</label>
+                    <div class="form-input">
+                        <input class="form-control" ng-model="blade.currentEntity.altText" name="altText" placeholder="{{ 'catalog.blades.images.placeholders.altText' | translate }}"/>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">{{ 'catalog.blades.images.labels.description' | translate }}</label>
+                    <div class="form-input">
+                        <textarea class="__small" cols="30" rows="2" ng-model="blade.currentEntity.description" name="description" placeholder="{{ 'catalog.blades.images.placeholders.description' | translate }}"></textarea>
+                    </div>
+                </div>
+
             </form>
         </div>
     </div>

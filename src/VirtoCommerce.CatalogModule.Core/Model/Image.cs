@@ -7,8 +7,9 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         public Image() : base(nameof(Image))
         {
         }
-        public int SortOrder { get; set; }
         public byte[] BinaryData { get; set; }
+
+        public string AltText { get; set; }
 
         public override void TryInheritFrom(IEntity parent)
         {

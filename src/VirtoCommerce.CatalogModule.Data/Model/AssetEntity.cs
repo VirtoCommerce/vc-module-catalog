@@ -25,6 +25,14 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         [StringLength(128)]
         public string OuterId { get; set; }
 
+        public int SortOrder { get; set; }
+
+        [StringLength(1024)]
+        public string Description { get; set; }
+
+        [StringLength(64)]
+        public string Group { get; set; }
+
         #region Navigation Properties
 
         public string ItemId { get; set; }
@@ -49,6 +57,10 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             asset.MimeType = MimeType;
             asset.Url = Url;
             asset.Size = Size;
+            asset.SortOrder = SortOrder;
+            asset.Description = Description;
+            asset.Group = Group;
+
 
             return asset;
         }
@@ -72,6 +84,9 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             MimeType = asset.MimeType;
             Url = asset.Url;
             Size = asset.Size;
+            Group = asset.Group;
+            SortOrder = asset.SortOrder;
+            Description = asset.Description;
 
             return this;
         }
@@ -83,6 +98,9 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             target.MimeType = MimeType;
             target.Url = Url;
             target.Size = Size;
+            target.Description = Description;
+            target.Group = Group;
+            target.SortOrder = SortOrder;
         }
     }
 }
