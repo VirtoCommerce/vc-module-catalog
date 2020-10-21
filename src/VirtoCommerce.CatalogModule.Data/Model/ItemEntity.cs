@@ -286,16 +286,25 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                     {
                         foreach (var propValue in property.Values)
                         {
-                            //Need populate required fields
-                            propValue.PropertyName = property.Name;
-                            propValue.ValueType = property.ValueType;
-                            propValues.Add(propValue);
+                            //Do not use values from inherited properties 
+                            if (propValue != null && !propValue.IsInherited)
+                            {
+                                //Need populate required fields
+                                propValue.PropertyName = property.Name;
+                                propValue.ValueType = property.ValueType;
+                                propValues.Add(propValue);
+                            }
+                            else
+                            {
+                                //Add empty property value for null values to be able remove these values from db in the lines below 
+                                propValues.Add(new PropertyValue());
+                            }
                         }
                     }
                 }
                 if (!propValues.IsNullOrEmpty())
                 {
-                    ItemPropertyValues = new ObservableCollection<PropertyValueEntity>(AbstractTypeFactory<PropertyValueEntity>.TryCreateInstance().FromModels(propValues, pkMap));
+                    ItemPropertyValues = new ObservableCollection<PropertyValueEntity>(AbstractTypeFactory<PropertyValueEntity>.TryCreateInstance().FromModels(propValues.Where(x=> !x.IsEmpty), pkMap));
                 }
             }
             else if (!product.PropertyValues.IsNullOrEmpty())

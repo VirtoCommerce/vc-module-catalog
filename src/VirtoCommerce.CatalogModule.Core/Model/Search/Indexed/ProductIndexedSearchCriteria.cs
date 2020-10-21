@@ -33,6 +33,11 @@ namespace VirtoCommerce.CatalogModule.Core.Model.Search
         public virtual bool WithHidden { get; set; }
 
         /// <summary>
+        /// Include product variations in result
+        /// </summary>
+        public bool SearchInVariations { get; set; }
+
+        /// <summary>
         /// Gets or sets the start date. The date must be in UTC format as that is format indexes are stored in.
         /// </summary>
         /// <value>The start date.</value>
