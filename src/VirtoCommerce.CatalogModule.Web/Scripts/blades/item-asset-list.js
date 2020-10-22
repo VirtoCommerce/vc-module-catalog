@@ -74,7 +74,7 @@ angular.module('virtoCommerce.catalogModule')
             blade.subtitle = 'catalog.widgets.itemAsset.blade-subtitle';
 
             blade.currentEntities = item.assets ? angular.copy(item.assets) : [];
-        };
+        }
 
         $scope.toggleAssetSelect = function (e, asset) {
             if (e.ctrlKey === 1) {
