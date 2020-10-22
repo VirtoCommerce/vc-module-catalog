@@ -15,24 +15,17 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
         public override IList<SeoInfo> SeoInfos
         {
-            get
-            {
-                if (base.SeoInfos.IsNullOrEmpty())
+            get =>
+                new List<SeoInfo>
                 {
-                    return new List<SeoInfo>()
+                    new SeoInfo
                     {
-                        new SeoInfo()
-                        {
-                            Name = Name,
-                            MetaDescription = Description,
-                            LanguageCode = LanguageCode,
-                            ImageAltDescription = AltText
-                        }
-                    };
-                }
-
-                return base.SeoInfos;
-            }
+                        Name = Name,
+                        MetaDescription = Description,
+                        LanguageCode = LanguageCode,
+                        ImageAltDescription = AltText
+                    }
+                };
             set
             {
                 base.SeoInfos = value;
