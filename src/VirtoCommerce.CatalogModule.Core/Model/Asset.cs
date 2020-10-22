@@ -21,21 +21,6 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
         public byte[] BinaryData { get; set; }
 
-        public override IList<SeoInfo> SeoInfos
-        {
-            get =>
-                new List<SeoInfo>
-                {
-                    new SeoInfo
-                    {
-                        Name = Name,
-                        MetaDescription = Description,
-                        LanguageCode = LanguageCode,
-                    }
-                };
-        }
-
-
         public override void TryInheritFrom(IEntity parent)
         {
             if (parent is Asset parentAsset)

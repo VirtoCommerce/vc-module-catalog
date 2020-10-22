@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
 
@@ -15,17 +16,17 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
         public override IList<SeoInfo> SeoInfos
         {
-            get =>
-                new List<SeoInfo>
+            get
+            {
+                var result = base.SeoInfos;
+                foreach (var seoInfo in result)
                 {
-                    new SeoInfo
-                    {
-                        Name = Name,
-                        MetaDescription = Description,
-                        LanguageCode = LanguageCode,
-                        ImageAltDescription = AltText
-                    }
-                };
+                    seoInfo.ImageAltDescription = AltText;
+                }
+
+                return result;
+
+            }
         }
 
         public override void TryInheritFrom(IEntity parent)
