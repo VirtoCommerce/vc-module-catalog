@@ -386,12 +386,16 @@
           "make-default-image": "Drag and drop an image to top left corner of images area to make it the default image.",
           "language": "Language",
           "preview": "Preview",
-          "external-link": "External link"
+          "external-link": "External link",
+          "altText": "Image alternative text",
+          "description": "Meta description"
         },
         "placeholders": {
           "image-url": "Paste image URL here",
           "image-category": "Select...",
-          "language": "Select language"
+          "language": "Select language",
+          "altText": "Enter text",
+          "description": "Enter description"
         },
         "descr": {
           "external-link": "Use external image URL instead of uploading it to assets",
@@ -399,6 +403,18 @@
         }
       },
       "item-asset-detail": {
+        "labels": {
+          "category": "Category",
+          "language": "Language",
+          "description": "Meta description"
+        },
+        "placeholders": {
+          "category": "Select...",
+          "language": "Select language",
+          "description": "Enter description"
+        }
+      },
+      "item-asset-list": {
         "subtitle": "item assets",
         "labels": {
           "copy-url-prompt": "Copy to clipboard: Ctrl+C, Enter",

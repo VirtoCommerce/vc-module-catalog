@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.Model
@@ -23,6 +25,12 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
         [StringLength(128)]
         public string OuterId { get; set; }
+
+        [StringLength(1024)]
+        public string Description { get; set; }
+
+        [StringLength(1024)]
+        public string AltText { get; set; }
 
         #region Navigation Properties
 
@@ -52,6 +60,20 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             image.SortOrder = SortOrder;
             image.Url = Url;
             image.RelativeUrl = Url;
+            image.Description = Description;
+            image.AltText = AltText;
+
+            if (!(string.IsNullOrEmpty(Name) && string.IsNullOrEmpty(Description) && string.IsNullOrEmpty(LanguageCode) && string.IsNullOrEmpty(Url) && string.IsNullOrEmpty(AltText)))
+            {
+                var seoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
+                seoInfo.Name = Name;
+                seoInfo.MetaDescription = Description;
+                seoInfo.LanguageCode = LanguageCode;
+                seoInfo.SemanticUrl = Url;
+                seoInfo.ImageAltDescription = AltText;
+                image.SeoInfos = new List<SeoInfo> { seoInfo };
+            }
+
 
             return image;
         }
@@ -74,6 +96,8 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             LanguageCode = image.LanguageCode;
             Name = image.Name;
             SortOrder = image.SortOrder;
+            AltText = image.AltText;
+            Description = image.Description;
             Url = !string.IsNullOrEmpty(image.RelativeUrl) ? image.RelativeUrl : image.Url;
 
             return this;
@@ -86,6 +110,8 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             target.Group = Group;
             target.SortOrder = SortOrder;
             target.Url = Url;
+            target.AltText = AltText;
+            target.Description = Description;
         }
     }
 }
