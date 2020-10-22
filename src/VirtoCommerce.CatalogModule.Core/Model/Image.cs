@@ -26,10 +26,6 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                         ImageAltDescription = AltText
                     }
                 };
-            set
-            {
-                base.SeoInfos = value;
-            }
         }
 
         public override void TryInheritFrom(IEntity parent)

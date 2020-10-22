@@ -33,10 +33,6 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                         LanguageCode = LanguageCode,
                     }
                 };
-            set
-            {
-                base.SeoInfos = value;
-            }
         }
 
 
