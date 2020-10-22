@@ -1,14 +1,14 @@
-﻿<div class="blade-static __bottom" ng-include="'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/common/templates/ok-cancel.tpl.html'"></div>
+<div class="blade-static __bottom" ng-include="'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/common/templates/ok-cancel.tpl.html'"></div>
 <div class="blade-content">
     <div class="blade-inner">
         <div class="inner-block">
             <div class="inner">
-                <div class="sub-t">{{ 'catalog.blades.item-asset-detail.labels.select-files' | translate }}</div>
+                <div class="sub-t">{{ 'catalog.blades.item-asset-list.labels.select-files' | translate }}</div>
                 <form class="form">
                     <div ng-show="uploader.isHTML5">
                         <!-- 3. ng-file-over | ng-file-over="className" -->
                         <div class="well my-drop-zone panel drag-area" uploader="uploader" nv-file-drop nv-file-over>
-                            <div class="drag-content">{{ 'catalog.blades.item-asset-detail.labels.drag-drop-comment' | translate }}</div>
+                            <div class="drag-content">{{ 'catalog.blades.item-asset-list.labels.drag-drop-comment' | translate }}</div>
                         </div>
                     </div>
 
@@ -23,16 +23,16 @@
                 </form>
 
                 <div ng-show="uploader.isUploading">
-                    <div class="sub-t">{{ 'catalog.blades.item-asset-detail.labels.progress' | translate }}</div>
+                    <div class="sub-t">{{ 'catalog.blades.item-asset-list.labels.progress' | translate }}</div>
                     <div class="progress-bar __aqua" ng-style="{'width': uploader.progress + '%'}"></div>
                 </div>
 
                 <div class="table-wrapper" ng-if="blade.currentEntities.length > 0">
                     <table class="table">
                         <tr>
-                            <th class="table-col">{{ 'catalog.blades.item-asset-detail.labels.type' | translate }}</th>
-                            <th class="table-col">{{ 'catalog.blades.item-asset-detail.labels.name' | translate }}</th>
-                            <th class="table-col">{{ 'catalog.blades.item-asset-detail.labels.actions' | translate }}</th>
+                            <th class="table-col">{{ 'catalog.blades.item-asset-list.labels.type' | translate }}</th>
+                            <th class="table-col">{{ 'catalog.blades.item-asset-list.labels.name' | translate }}</th>
+                            <th class="table-col">{{ 'catalog.blades.item-asset-list.labels.actions' | translate }}</th>
                         </tr>
                         <tr class="table-item" ng-repeat="data in blade.currentEntities">
                             <td class="table-col __product-img">
