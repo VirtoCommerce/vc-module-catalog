@@ -94,7 +94,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
         #region ISeoSupport members
         public string SeoObjectType { get { return GetType().Name; } }
-        public IList<SeoInfo> SeoInfos { get; set; }
+        public virtual IList<SeoInfo> SeoInfos { get; set; }
         #endregion
 
         #region ICopyable members

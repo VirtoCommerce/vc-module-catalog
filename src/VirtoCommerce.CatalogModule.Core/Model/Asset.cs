@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Core.Model
@@ -18,6 +20,32 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         }
 
         public byte[] BinaryData { get; set; }
+
+        public override IList<SeoInfo> SeoInfos
+        {
+            get
+            {
+                if (base.SeoInfos.IsNullOrEmpty())
+                {
+                    return new List<SeoInfo>()
+                    {
+                        new SeoInfo()
+                        {
+                            Name = Name,
+                            MetaDescription = Description,
+                            LanguageCode = LanguageCode,
+                        }
+                    };
+                }
+
+                return base.SeoInfos;
+            }
+            set
+            {
+                base.SeoInfos = value;
+            }
+        }
+
 
         public override void TryInheritFrom(IEntity parent)
         {
