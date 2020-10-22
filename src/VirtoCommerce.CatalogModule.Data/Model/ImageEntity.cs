@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.Model
@@ -60,7 +62,19 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             image.RelativeUrl = Url;
             image.Description = Description;
             image.AltText = AltText;
-            
+
+            if (!(string.IsNullOrEmpty(Name) && string.IsNullOrEmpty(Description) && string.IsNullOrEmpty(LanguageCode) && string.IsNullOrEmpty(Url) && string.IsNullOrEmpty(AltText)))
+            {
+                var seoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
+                seoInfo.Name = Name;
+                seoInfo.MetaDescription = Description;
+                seoInfo.LanguageCode = LanguageCode;
+                seoInfo.SemanticUrl = Url;
+                seoInfo.ImageAltDescription = AltText;
+                image.SeoInfos = new List<SeoInfo> { seoInfo };
+            }
+
+
             return image;
         }
 

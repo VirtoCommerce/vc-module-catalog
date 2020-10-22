@@ -14,7 +14,6 @@ namespace VirtoCommerce.CatalogModule.Core.Model
     /// </summary>
     public abstract class AssetBase : AuditableEntity, IHasLanguage, IInheritable, ICloneable, ISeoSupport, IHasOuterId, ICopyable
     {
-        private IList<SeoInfo> _seoInfo;
         protected AssetBase(string typeName)
         {
             TypeId = typeName;
@@ -96,31 +95,8 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         #region ISeoSupport members
         public string SeoObjectType { get { return GetType().Name; } }
 
-        public virtual IList<SeoInfo> SeoInfos
-        {
-            get
-            {
-                var result = _seoInfo;
-                if (result.IsNullOrEmpty())
-                {
-                    result = new List<SeoInfo>
-                    {
-                        new SeoInfo
-                        {
-                            Name = Name,
-                            MetaDescription = Description,
-                            LanguageCode = LanguageCode,
-                            SemanticUrl = RelativeUrl
-                        }
-                    };
-                }
-
-                return result;
-            }
-
-            set => _seoInfo = value;
-        }
-
+        public virtual IList<SeoInfo> SeoInfos { get; set; }
+       
         #endregion
 
         #region ICopyable members
