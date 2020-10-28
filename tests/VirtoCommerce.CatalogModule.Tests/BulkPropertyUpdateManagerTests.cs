@@ -81,22 +81,27 @@ namespace VirtoCommerce.CatalogModule.Tests
         {
             var dataSourceFactory = new Mock<IDataSourceFactory>();
             var itemService = new Mock<IItemService>();
-            var manager = new BulkPropertyUpdateManager(dataSourceFactory.Object, itemService.Object);
+            var categoryService = new Mock<ICategoryService>();
+            var catalogService = new Mock<ICatalogService>();
+            var manager = new BulkPropertyUpdateManager(dataSourceFactory.Object, itemService.Object, categoryService.Object, catalogService.Object);
             return manager;
         }
 
         private IBulkPropertyUpdateManager BuildManager(IMock<IDataSourceFactory> dataSourceFactory)
         {
             var itemService = new Mock<IItemService>();
-            var manager = new BulkPropertyUpdateManager(dataSourceFactory.Object, itemService.Object);
+            var categoryService = new Mock<ICategoryService>();
+            var catalogService = new Mock<ICatalogService>();
+
+            var manager = new BulkPropertyUpdateManager(dataSourceFactory.Object, itemService.Object, categoryService.Object, catalogService.Object);
             return manager;
         }
 
-        private IBulkPropertyUpdateManager BuildManager(
-            IMock<IDataSourceFactory> dataSourceFactory,
-            IMock<IItemService> itemService)
+        private IBulkPropertyUpdateManager BuildManager(IMock<IDataSourceFactory> dataSourceFactory, IMock<IItemService> itemService)
         {
-            var manager = new BulkPropertyUpdateManager(dataSourceFactory.Object, itemService.Object);
+            var categoryService = new Mock<ICategoryService>();
+            var catalogService = new Mock<ICatalogService>();
+            var manager = new BulkPropertyUpdateManager(dataSourceFactory.Object, itemService.Object, categoryService.Object, catalogService.Object);
             return manager;
         }
     }

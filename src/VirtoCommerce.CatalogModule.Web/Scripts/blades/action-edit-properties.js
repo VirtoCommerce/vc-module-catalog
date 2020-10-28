@@ -42,7 +42,12 @@ angular.module('virtoCommerce.catalogModule')
                                 prop.UseDefaultUIForEdit = true;
                             }
                             prop.values = [];
-                            prop.group = 'All properties';
+                            if (prop.ownerName === 'Native properties') {
+                                prop.group = 'Native product properties';
+                            } else {
+                                prop.group = 'Extended properties';
+                            }
+                            
                         });
                     blade.isLoading = false;
                 });
