@@ -55,6 +55,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         public PropertyValueType ValueType { get; set; }
         public PropertyType Type { get; set; }
         public string OuterId { get; set; }
+        public string OwnerName { get; set; }
 
 
         public IList<PropertyValue> Values { get; set; } = new List<PropertyValue>();
