@@ -18,8 +18,11 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
         private readonly IDataSourceFactory _dataSourceFactory;
 
         private readonly IItemService _itemService;
+        private readonly ICategoryService _categoryService;
+        private readonly ICatalogService _catalogService;
 
         private readonly Dictionary<string, MethodInfo> _productProperties = new Dictionary<string, MethodInfo>();
+        private readonly Dictionary<string, string> _namesById = new Dictionary<string, string>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BulkPropertyUpdateManager"/> class.
@@ -30,10 +33,14 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
         /// <param name="itemService">
         /// The item service.
         /// </param>
-        public BulkPropertyUpdateManager(IDataSourceFactory dataSourceFactory, IItemService itemService)
+        /// <param name="categoryService"></param>
+        /// <param name="catalogService"></param>
+        public BulkPropertyUpdateManager(IDataSourceFactory dataSourceFactory, IItemService itemService, ICategoryService categoryService, ICatalogService catalogService)
         {
             _dataSourceFactory = dataSourceFactory;
             _itemService = itemService;
+            _categoryService = categoryService;
+            _catalogService = catalogService;
         }
 
         public async Task<Property[]> GetPropertiesAsync(BulkActionContext context)
@@ -56,6 +63,11 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
 
                 propertyIds.AddRange(newProperties.Select(property => property.Id));
                 result.AddRange(newProperties);
+            }
+
+            foreach (var property in result)
+            {
+                await FillOwnerName(property);
             }
 
             return result.ToArray();
@@ -83,6 +95,35 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
             return result;
         }
 
+        private async Task FillOwnerName(Property property)
+        {
+            string ownerName;
+
+            if (!string.IsNullOrEmpty(property.CategoryId))
+            {
+                if (!_namesById.TryGetValue(property.CategoryId, out ownerName))
+                {
+                    var category = (await _categoryService.GetByIdsAsync(new[] {property.CategoryId}, CategoryResponseGroup.Info.ToString())).FirstOrDefault();
+                    ownerName = $"{category?.Name} (Category)";
+                    _namesById.Add(property.CategoryId, ownerName);
+                }
+            }
+            else if (!string.IsNullOrEmpty(property.CatalogId))
+            {
+                if (!_namesById.TryGetValue(property.CatalogId, out ownerName))
+                {
+                    var catalog = (await _catalogService.GetByIdsAsync(new[] { property.CatalogId }, CategoryResponseGroup.Info.ToString())).FirstOrDefault();
+                    ownerName = $"{catalog?.Name} (Catalog)";
+                    _namesById.Add(property.CatalogId, ownerName);
+                }
+            }
+            else
+            {
+                ownerName = "Native properties";
+            }
+
+            property.OwnerName = ownerName;
+        }
         private static bool AddPropertyValues(IHasProperties product, Property property)
         {
             bool result;
