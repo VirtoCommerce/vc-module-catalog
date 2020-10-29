@@ -248,19 +248,19 @@
     </script>
     <script type="text/ng-template" id="LongText-multivalue-multilang.html">
         <div class="form-group" ng-repeat="(language, langValuesGroup) in context.langValuesMap" ng-if="isLanguageVisible(language)">
-            <div class="vc-catalog form-input __langs" ng-repeat="val in langValuesGroup.currentPropValues track by $index">                                
-                    <label class="lang-code">{{language}}</label>
-                    <textarea ng-disabled="currentEntity.isReadOnly"
-                              ng-required="currentEntity.required && !currentEntity.isReadOnly"
-                              ng-model="val.value"
-                              name="{{currentEntity.name}}"
-                              ng-maxlength="currentEntity.validationRule.charCountMax"
-                              ng-minlength="currentEntity.validationRule.charCountMin"
-                              ng-pattern="currentEntity.validationRule.regExp" />
-                    <va-property-messages></va-property-messages>
-                    <a ng-if="!currentEntity.isReadOnly" ng-click="langValuesGroup.currentPropValues.splice(langValuesGroup.currentPropValues.indexOf(val),1)">remove</a>                
+            <div class="vc-catalog form-input __langs" ng-repeat="val in langValuesGroup.currentPropValues track by $index">
+                <label class="lang-code">{{language}}</label>
+                <textarea ng-disabled="currentEntity.isReadOnly"
+                          ng-required="currentEntity.required && !currentEntity.isReadOnly"
+                          ng-model="val.value"
+                          name="{{currentEntity.name}}"
+                          ng-maxlength="currentEntity.validationRule.charCountMax"
+                          ng-minlength="currentEntity.validationRule.charCountMin"
+                          ng-pattern="currentEntity.validationRule.regExp" />
+                <va-property-messages></va-property-messages>
+                <a ng-if="!currentEntity.isReadOnly" ng-click="langValuesGroup.currentPropValues.splice(langValuesGroup.currentPropValues.indexOf(val),1)">remove</a>
                 <a ng-if="!currentEntity.isReadOnly" ng-click="langValuesGroup.currentPropValues.push({value:'', languageCode:language})" style="cursor:pointer;">add value</a>
-            </div>            
+            </div>
         </div>
     </script>
     <script type="text/ng-template" id="Number-multivalue-multilang.html">
@@ -294,6 +294,17 @@
         <div class="form-input">
             <ui-select ng-model="context.currentPropValues[0]" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
                 <ui-select-match allow-clear="true" placeholder="{{ 'platform.genericValueInput.placeholders.number' | translate }}">{{$select.selected.value}}</ui-select-match>
+                <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search} | orderBy: 'value'" refresh="loadDictionaryValues($select)" refresh-delay="200" when-scrolled="loadNextDictionaryValues($select)">
+                    <span ng-bind-html="propValue.value | highlight: $select.search"></span>
+                </ui-select-choices>
+            </ui-select>
+        </div>
+    </script>
+
+    <script type="text/ng-template" id="LongText-dictionary-multivalue-multilang.html">
+        <div class="form-input">
+            <ui-select multiple ng-model="context.currentPropValues" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
+                <ui-select-match placeholder="{{ 'platform.genericValueInput.placeholders.long-text-dictionary-multivalue-multilang' | translate }}">{{$item.value}}</ui-select-match>
                 <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search} | orderBy: 'value'" refresh="loadDictionaryValues($select)" refresh-delay="200" when-scrolled="loadNextDictionaryValues($select)">
                     <span ng-bind-html="propValue.value | highlight: $select.search"></span>
                 </ui-select-choices>
