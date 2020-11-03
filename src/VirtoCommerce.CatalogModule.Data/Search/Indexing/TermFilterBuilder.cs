@@ -68,8 +68,17 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                     }
                     else // Custom term
                     {
-                        var parseResult = _searchPhraseParser.Parse($"{term.Key}:{string.Join(',', term.Values)}");
-                        result.PermanentFilters.AddRange(parseResult.Filters);
+                        IFilter filter = null;
+                        //Workaround VP-5872: Try to parse range filter from terms first
+                        if (term.Values.Count() == 1 && _searchPhraseParser != null)
+                        {
+                            filter = _searchPhraseParser.Parse($"{term.Key}:{term.Values.First()}").Filters.OfType<RangeFilter>().FirstOrDefault();
+                        }
+                        if (filter == null)
+                        {
+                            filter = FiltersHelper.CreateTermFilter(term.Key, term.Values);
+                        }
+                        result.PermanentFilters.Add(filter);
                     }
                 }
             }

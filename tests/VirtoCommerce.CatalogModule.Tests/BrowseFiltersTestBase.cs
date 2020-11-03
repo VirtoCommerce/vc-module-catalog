@@ -96,7 +96,7 @@ namespace VirtoCommerce.CatalogModule.Tests
 
         protected static ITermFilterBuilder GetTermFilterBuilder()
         {
-            return new TermFilterBuilder(GetBrowseFilterService());
+            return new TermFilterBuilder(GetBrowseFilterService(), null);
         }
 
         protected static IBrowseFilterService GetBrowseFilterService()
