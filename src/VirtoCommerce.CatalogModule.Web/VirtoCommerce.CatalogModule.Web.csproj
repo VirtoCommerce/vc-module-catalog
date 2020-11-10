@@ -20,7 +20,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="8.6.2" />
-    <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.5.0" />
+    <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.30.0" />
     <PackageReference Include="VirtoCommerce.Platform.Data" Version="3.5.0" />
     <PackageReference Include="VirtoCommerce.Platform.Security" Version="3.5.0" />
   </ItemGroup>
