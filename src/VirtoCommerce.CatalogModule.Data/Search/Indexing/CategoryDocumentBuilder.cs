@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.Platform.Core.Settings;
+using VirtoCommerce.SearchModule.Core.Extenstions;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
 
@@ -32,7 +33,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             return result;
         }
 
-
         protected virtual Task<Category[]> GetCategories(IList<string> categoryIds)
         {
             return _categoryService.GetByIdsAsync(categoryIds.ToArray(), (CategoryResponseGroup.WithProperties | CategoryResponseGroup.WithOutlines | CategoryResponseGroup.WithImages | CategoryResponseGroup.WithSeo | CategoryResponseGroup.WithLinks).ToString());
@@ -52,6 +52,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             IndexIsProperty(document, category.Code);
 
             document.Add(new IndexDocumentField("status", statusField) { IsRetrievable = true, IsFilterable = true });
+            document.AddFilterableAndSearchableValue("key", category.Id);
             document.Add(new IndexDocumentField("code", category.Code) { IsRetrievable = true, IsFilterable = true });
             document.Add(new IndexDocumentField("name", category.Name) { IsRetrievable = true, IsFilterable = true });
             document.Add(new IndexDocumentField("createddate", category.CreatedDate) { IsRetrievable = true, IsFilterable = true });
