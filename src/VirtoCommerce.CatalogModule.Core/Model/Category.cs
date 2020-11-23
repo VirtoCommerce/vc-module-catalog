@@ -58,6 +58,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
         public bool? IsActive { get; set; }
         public string OuterId { get; set; }
+        public string[] ExcludedProperties { get; set; }
         [JsonIgnore]
         public IList<Category> Children { get; set; }
 

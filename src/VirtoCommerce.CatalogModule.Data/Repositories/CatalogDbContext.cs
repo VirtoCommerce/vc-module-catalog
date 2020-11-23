@@ -1,5 +1,6 @@
 using EntityFrameworkCore.Triggers;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using VirtoCommerce.CatalogModule.Data.Model;
 
 namespace VirtoCommerce.CatalogModule.Data.Repositories
@@ -30,6 +31,9 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 .WithMany().HasForeignKey(x => x.ParentCategoryId).OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<CategoryEntity>().HasOne(x => x.Catalog)
                 .WithMany().HasForeignKey(x => x.CatalogId).IsRequired().OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<CategoryEntity>().Property(x => x.ExcludedProperties).HasConversion(
+                x => JsonConvert.SerializeObject(x),
+                x => JsonConvert.DeserializeObject<string[]>(x));
             #endregion
 
             #region Item

@@ -84,6 +84,8 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         public virtual ObservableCollection<SeoInfoEntity> SeoInfos { get; set; }
             = new NullCollection<SeoInfoEntity>();
 
+        public virtual string[] ExcludedProperties { get; set; }
+
         #endregion
 
         public virtual Category ToModel(Category category)
@@ -109,6 +111,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
             category.ParentId = ParentCategoryId;
             category.IsActive = IsActive;
+            category.ExcludedProperties = ExcludedProperties;
 
             category.Links = OutgoingLinks.Select(x => x.ToModel(new CategoryLink())).ToList();
             category.Images = Images.OrderBy(x => x.SortOrder).Select(x => x.ToModel(AbstractTypeFactory<Image>.TryCreateInstance())).ToList();
@@ -185,6 +188,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             EndDate = DateTime.UtcNow.AddYears(100);
             StartDate = DateTime.UtcNow;
             IsActive = category.IsActive ?? true;
+            ExcludedProperties = category.ExcludedProperties;
 
             if (!category.Properties.IsNullOrEmpty())
             {
@@ -248,6 +252,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             target.TaxType = TaxType;
             target.Priority = Priority;
             target.IsActive = IsActive;
+            target.ExcludedProperties = ExcludedProperties;
 
             if (!CategoryPropertyValues.IsNullCollection())
             {
