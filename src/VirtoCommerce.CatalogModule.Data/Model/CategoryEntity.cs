@@ -84,7 +84,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         public virtual ObservableCollection<SeoInfoEntity> SeoInfos { get; set; }
             = new NullCollection<SeoInfoEntity>();
 
-        public virtual string[] ExcludedProperties { get; set; }
+        public virtual IList<string> ExcludedProperties { get; set; }
 
         #endregion
 

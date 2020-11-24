@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using EntityFrameworkCore.Triggers;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -33,7 +34,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 .WithMany().HasForeignKey(x => x.CatalogId).IsRequired().OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<CategoryEntity>().Property(x => x.ExcludedProperties).HasConversion(
                 x => JsonConvert.SerializeObject(x),
-                x => JsonConvert.DeserializeObject<string[]>(x));
+                x => JsonConvert.DeserializeObject<List<string>>(x));
             #endregion
 
             #region Item

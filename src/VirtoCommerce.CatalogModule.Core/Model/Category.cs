@@ -9,7 +9,7 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Core.Model
 {
-    public class Category : AuditableEntity, IHasLinks, ISeoSupport, IHasOutlines, IHasImages, IHasProperties, IHasTaxType, IHasName, IHasOuterId, IExportable
+    public class Category : AuditableEntity, IHasLinks, ISeoSupport, IHasOutlines, IHasImages, IHasProperties, IHasTaxType, IHasName, IHasOuterId, IExportable, IHasExcludedProperties
     {
         public Category()
         {
@@ -58,13 +58,15 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
         public bool? IsActive { get; set; }
         public string OuterId { get; set; }
-        public string[] ExcludedProperties { get; set; }
         [JsonIgnore]
         public IList<Category> Children { get; set; }
 
         #region IHasProperties members
         public IList<Property> Properties { get; set; }
+        #endregion
 
+        #region IHasExcludedProperties members
+        public IList<string> ExcludedProperties { get; set; }
         #endregion
 
         #region ILinkSupport members
@@ -111,11 +113,25 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
         public virtual void TryInheritFrom(IEntity parent)
         {
+            if (ExcludedProperties == null)
+            {
+                ExcludedProperties = new List<string>();
+            }
+            if (parent is IHasExcludedProperties hasExcludeProperties &&
+                hasExcludeProperties.ExcludedProperties?.Any() == true)
+            {
+                ExcludedProperties.AddRange(hasExcludeProperties.ExcludedProperties);
+            }
+
             if (parent is IHasProperties hasProperties)
             {
                 //Properties inheritance
                 foreach (var parentProperty in hasProperties.Properties ?? Array.Empty<Property>())
                 {
+                    if (ExcludedProperties.Contains(parentProperty.Name, StringComparer.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
                     if (Properties == null)
                     {
                         Properties = new List<Property>();
