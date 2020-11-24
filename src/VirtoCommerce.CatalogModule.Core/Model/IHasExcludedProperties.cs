@@ -4,6 +4,6 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 {
     public interface IHasExcludedProperties
     {
-        IList<string> ExcludedProperties { get; }
+        IList<ExcludedProperty> ExcludedProperties { get; set; }
     }
 }

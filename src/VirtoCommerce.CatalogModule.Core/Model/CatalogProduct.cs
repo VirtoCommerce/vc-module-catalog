@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+using VirtoCommerce.CatalogModule.Core.Extensions;
 using VirtoCommerce.CatalogModule.Core.Serialization;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Outlines;
@@ -103,7 +104,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         #endregion
 
         #region IHasExcludedProperties members
-        public IList<string> ExcludedProperties { get; set; }
+        public IList<ExcludedProperty> ExcludedProperties { get; set; }
         #endregion
 
         [JsonIgnoreSerialization]
@@ -167,31 +168,14 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
         public virtual void TryInheritFrom(IEntity parent)
         {
-            if (ExcludedProperties == null)
-            {
-                ExcludedProperties = new List<string>();
-            }
-            if (parent is IHasExcludedProperties hasExcludeProperties &&
-                hasExcludeProperties.ExcludedProperties?.Any() == true)
-            {
-                ExcludedProperties.AddRange(hasExcludeProperties.ExcludedProperties);
-            }
-
-            if (Properties != null && ExcludedProperties.Any())
-            {
-                var propertiesToRemove = Properties.Where(x => ExcludedProperties.Contains(x.Name, StringComparer.OrdinalIgnoreCase)).ToArray();
-                foreach (var propertyToRemove in propertiesToRemove)
-                {
-                    Properties.Remove(propertyToRemove);
-                }
-            }
+            this.InheritExcludedProperties(parent as IHasExcludedProperties);
 
             if (parent is IHasProperties hasProperties)
             {
                 //Properties inheritance
                 foreach (var parentProperty in hasProperties.Properties ?? Array.Empty<Property>())
                 {
-                    if (ExcludedProperties.Contains(parentProperty.Name, StringComparer.OrdinalIgnoreCase))
+                    if (this.HasPropertyExcluded(parentProperty.Name))
                     {
                         continue;
                     }

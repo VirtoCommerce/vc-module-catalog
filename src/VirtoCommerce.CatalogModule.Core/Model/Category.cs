@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+using VirtoCommerce.CatalogModule.Core.Extensions;
 using VirtoCommerce.CoreModule.Core.Outlines;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.ExportModule.Core.Model;
@@ -66,7 +67,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         #endregion
 
         #region IHasExcludedProperties members
-        public IList<string> ExcludedProperties { get; set; }
+        public IList<ExcludedProperty> ExcludedProperties { get; set; }
         #endregion
 
         #region ILinkSupport members
@@ -113,22 +114,14 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
         public virtual void TryInheritFrom(IEntity parent)
         {
-            if (ExcludedProperties == null)
-            {
-                ExcludedProperties = new List<string>();
-            }
-            if (parent is IHasExcludedProperties hasExcludeProperties &&
-                hasExcludeProperties.ExcludedProperties?.Any() == true)
-            {
-                ExcludedProperties.AddRange(hasExcludeProperties.ExcludedProperties);
-            }
+            this.InheritExcludedProperties(parent as IHasExcludedProperties);
 
             if (parent is IHasProperties hasProperties)
             {
                 //Properties inheritance
                 foreach (var parentProperty in hasProperties.Properties ?? Array.Empty<Property>())
                 {
-                    if (ExcludedProperties.Contains(parentProperty.Name, StringComparer.OrdinalIgnoreCase))
+                    if (this.HasPropertyExcluded(parentProperty.Name))
                     {
                         continue;
                     }

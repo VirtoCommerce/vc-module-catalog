@@ -70,7 +70,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             = new NullCollection<PropertyValueEntity>();
 
         /// <summary>
-        /// It new navigation property for link replace to stupid CategoryLink (will be removed later) 
+        /// It new navigation property for link replace to stupid CategoryLink (will be removed later)
         /// </summary>
         public virtual ObservableCollection<CategoryRelationEntity> OutgoingLinks { get; set; }
             = new NullCollection<CategoryRelationEntity>();
@@ -111,7 +111,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
             category.ParentId = ParentCategoryId;
             category.IsActive = IsActive;
-            category.ExcludedProperties = ExcludedProperties;
+            category.ExcludedProperties = ExcludedProperties?.Select(x => new ExcludedProperty(x)).ToList();
 
             category.Links = OutgoingLinks.Select(x => x.ToModel(new CategoryLink())).ToList();
             category.Images = Images.OrderBy(x => x.SortOrder).Select(x => x.ToModel(AbstractTypeFactory<Image>.TryCreateInstance())).ToList();
@@ -188,7 +188,10 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             EndDate = DateTime.UtcNow.AddYears(100);
             StartDate = DateTime.UtcNow;
             IsActive = category.IsActive ?? true;
-            ExcludedProperties = category.ExcludedProperties;
+            ExcludedProperties = category.ExcludedProperties?
+                .Where(x => !x.IsInherited)
+                .Select(x => x.Name)
+                .ToList();
 
             if (!category.Properties.IsNullOrEmpty())
             {
@@ -197,7 +200,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 {
                     if (property.Values != null)
                     {
-                        //Do not use values from inherited properties 
+                        //Do not use values from inherited properties
                         foreach (var propValue in property.Values)
                         {
                             if (propValue != null && !propValue.IsInherited)
@@ -209,7 +212,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                             }
                             else
                             {
-                                //Add empty property value for null values to be able remove these values from db in the lines below 
+                                //Add empty property value for null values to be able remove these values from db in the lines below
                                 propValues.Add(new PropertyValue());
                             }
                         }
