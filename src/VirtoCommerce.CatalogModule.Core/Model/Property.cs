@@ -84,6 +84,15 @@ namespace VirtoCommerce.CatalogModule.Core.Model
             return string.Equals(Name, propValue.PropertyName, StringComparison.InvariantCultureIgnoreCase) && ValueType == propValue.ValueType;
         }
 
+        public override bool Equals(object obj)
+        {
+            if (obj is Property prop)
+            {
+                return IsSame(prop);
+            }
+            return base.Equals(obj);
+        }
+
         #region IInheritable Members
         public virtual bool IsInherited { get; set; }
 
