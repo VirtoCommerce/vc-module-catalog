@@ -30,11 +30,7 @@ namespace VirtoCommerce.CatalogModule.Core.Extensions
 
             if (obj.Properties != null && obj.ExcludedProperties?.Any() == true)
             {
-                var propertiesToRemove = obj.Properties.Where(x => obj.HasPropertyExcluded(x.Name)).ToArray();
-                foreach (var propertyToRemove in propertiesToRemove)
-                {
-                    obj.Properties.Remove(propertyToRemove);
-                }
+                obj.Properties = obj.Properties.Where(x => !obj.HasPropertyExcluded(x.Name)).ToList();
             }
         }
     }

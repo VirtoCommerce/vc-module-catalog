@@ -12,10 +12,10 @@ namespace VirtoCommerce.CatalogModule.Core.Model
     {
         /// <summary>
         /// Gets or sets a value indicating whether user can change property value.
-        /// </summary>     
+        /// </summary>
         public bool IsReadOnly { get; set; }
         /// <summary>
-        /// Gets or sets a value indicating whether user can change property metadata or remove this property. 
+        /// Gets or sets a value indicating whether user can change property metadata or remove this property.
         /// </summary>
         public bool IsManageable => !IsTransient();
         /// <summary>
@@ -82,15 +82,6 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         public virtual bool IsSuitableForValue(PropertyValue propValue)
         {
             return string.Equals(Name, propValue.PropertyName, StringComparison.InvariantCultureIgnoreCase) && ValueType == propValue.ValueType;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj is Property prop)
-            {
-                return IsSame(prop);
-            }
-            return base.Equals(obj);
         }
 
         #region IInheritable Members
