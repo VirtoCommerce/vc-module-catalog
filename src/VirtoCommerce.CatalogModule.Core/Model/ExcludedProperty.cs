@@ -1,9 +1,9 @@
-using System;
+using System.Collections.Generic;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Core.Model
 {
-    public class ExcludedProperty
+    public class ExcludedProperty : ValueObject
     {
         public string Name { get; set; }
 
@@ -23,19 +23,9 @@ namespace VirtoCommerce.CatalogModule.Core.Model
             return IsInherited ? this : new ExcludedProperty(Name) { IsInherited = true };
         }
 
-        public override bool Equals(object obj)
+        protected override IEnumerable<object> GetEqualityComponents()
         {
-            if (obj is ExcludedProperty excludedProperty)
-            {
-                return Name.EqualsInvariant(excludedProperty.Name);
-            }
-
-            return base.Equals(obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return Name.GetHashCode();
+            yield return Name;
         }
     }
 }
