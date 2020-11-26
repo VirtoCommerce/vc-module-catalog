@@ -82,7 +82,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         public async Task<ActionResult<Catalog>> GetCatalog(string id)
         {
             var catalog = (await _catalogService.GetByIdsAsync(new[] { id }, CatalogResponseGroup.Full.ToString())).FirstOrDefault();
-         
+
             if (catalog == null)
             {
                 return NotFound();
@@ -104,18 +104,16 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Authorize(ModuleConstants.Security.Permissions.Create)]
         public ActionResult<Catalog> GetNewCatalog()
         {
-            var retVal = new Catalog
-            {
-                Name = "New catalog",
-                Languages = new List<CatalogLanguage>
+            var retVal = AbstractTypeFactory<Catalog>.TryCreateInstance();
+            retVal.Name = "New catalog";
+            retVal.Languages = new List<CatalogLanguage>
                 {
                     new CatalogLanguage
                     {
                         IsDefault = true,
                         LanguageCode = "en-US"
                     }
-                }
-            };
+                };
             return Ok(retVal);
         }
 
@@ -127,19 +125,17 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Authorize(ModuleConstants.Security.Permissions.Create)]
         public ActionResult<Catalog> GetNewVirtualCatalog()
         {
-            var retVal = new Catalog
-            {
-                Name = "New virtual catalog",
-                IsVirtual = true,
-                Languages = new List<CatalogLanguage>
+            var retVal = AbstractTypeFactory<Catalog>.TryCreateInstance();
+            retVal.Name = "New virtual catalog";
+            retVal.IsVirtual = true;
+            retVal.Languages = new List<CatalogLanguage>
                 {
                     new CatalogLanguage
                     {
                         IsDefault = true,
                         LanguageCode = "en-US"
                     }
-                }
-            };
+                };
             return Ok(retVal);
         }
 
@@ -152,7 +148,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [HttpPost]
         [Route("")]
         [Authorize(ModuleConstants.Security.Permissions.Create)]
-        public async Task<ActionResult<Catalog>> CreateCatalog([FromBody]Catalog catalog)
+        public async Task<ActionResult<Catalog>> CreateCatalog([FromBody] Catalog catalog)
         {
             await _catalogService.SaveChangesAsync(new[] { catalog });
             return Ok(catalog);
@@ -166,7 +162,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [HttpPut]
         [Route("")]
         [Authorize(ModuleConstants.Security.Permissions.Update)]
-        public async Task<ActionResult> UpdateCatalog([FromBody]Catalog catalog)
+        public async Task<ActionResult> UpdateCatalog([FromBody] Catalog catalog)
         {
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, catalog, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
             if (!authorizationResult.Succeeded)
@@ -189,7 +185,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         public async Task<ActionResult> DeleteCatalog(string id)
         {
-            var catalog = (await _catalogService.GetByIdsAsync(new [] { id})).FirstOrDefault();
+            var catalog = (await _catalogService.GetByIdsAsync(new[] { id })).FirstOrDefault();
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, catalog, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Delete));
             if (!authorizationResult.Succeeded)
             {
