@@ -376,7 +376,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             target.MinQuantity = MinQuantity;
             target.MaxQuantity = MaxQuantity;
             target.EnableReview = EnableReview;
-
+            target.OuterId = OuterId;
             target.CatalogId = CatalogId;
             target.CategoryId = CategoryId;
             target.Name = Name;
