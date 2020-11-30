@@ -6,19 +6,19 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql(@"IF NOT (EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '__MigrationHistory'))
+            migrationBuilder.Sql(@"DROP INDEX IF EXISTS [IX_Item_Code] ON [Item]
+                    IF NOT EXISTS(SELECT * FROM sys.indexes WHERE name = 'IX_Code_CatalogId' AND object_id = OBJECT_ID('Item'))
                     BEGIN
-		                DROP INDEX IF EXISTS [IX_Item_Code] ON [Item]
-		                CREATE INDEX IX_Item_Code_CatalogId ON [Item](Code, CatalogId);
+		                CREATE INDEX IX_Code_CatalogId ON [Item](Code, CatalogId);
                     END
                 ");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql(@"IF NOT (EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '__MigrationHistory'))
+            migrationBuilder.Sql(@"DROP INDEX IF EXISTS [IX_Code_CatalogId] ON [Item]
+                    IF NOT EXISTS(SELECT * FROM sys.indexes WHERE name = 'IX_Item_Code' AND object_id = OBJECT_ID('Item'))
                     BEGIN
-		                DROP INDEX IF EXISTS [IX_Item_Code_CatalogId] ON [Item]
 		                CREATE INDEX IX_Item_Code ON [Item](Code);
                     END
                 ");
