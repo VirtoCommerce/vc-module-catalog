@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace VirtoCommerce.CatalogModule.Data.Migrations
 {
@@ -6,28 +6,22 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropIndex(
-                name: "IX_Item_Code",
-                table: "Item");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Item_Code_CatalogId",
-                table: "Item",
-                columns: new[] { "Code", "CatalogId" },
-                unique: true);
+            migrationBuilder.Sql(@"DROP INDEX IF EXISTS [IX_Item_Code] ON [Item]
+                    IF NOT EXISTS(SELECT * FROM sys.indexes WHERE name = 'IX_Code_CatalogId' AND object_id = OBJECT_ID('Item'))
+                    BEGIN
+		                CREATE INDEX IX_Code_CatalogId ON [Item](Code, CatalogId);
+                    END
+                ");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropIndex(
-                name: "IX_Item_Code_CatalogId",
-                table: "Item");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Item_Code",
-                table: "Item",
-                column: "Code",
-                unique: true);
+            migrationBuilder.Sql(@"DROP INDEX IF EXISTS [IX_Code_CatalogId] ON [Item]
+                    IF NOT EXISTS(SELECT * FROM sys.indexes WHERE name = 'IX_Item_Code' AND object_id = OBJECT_ID('Item'))
+                    BEGIN
+		                CREATE INDEX IX_Item_Code ON [Item](Code);
+                    END
+                ");
         }
     }
 }

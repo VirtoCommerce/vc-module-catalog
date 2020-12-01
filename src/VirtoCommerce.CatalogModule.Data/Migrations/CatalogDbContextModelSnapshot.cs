@@ -611,7 +611,8 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasName("IX_CatalogId_ParentId");
 
                     b.HasIndex("Code", "CatalogId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasName("IX_Code_CatalogId");
 
                     b.ToTable("Item");
                 });
