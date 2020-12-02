@@ -47,7 +47,7 @@
                             </div>
                         </div>
                         <div class="form-group" ng-show="!prop.id && prop.name === 'PackageType'">
-                            <label class="form-label">Package type </label>
+                            <label class="form-label">{{ 'catalog.blades.item-detail.labels.package-type' | translate }} </label>
                             <div class="form-input">
                                 <ui-select ng-model="blade.packageType">
                                     <ui-select-match allow-clear="true" placeholder="N/A">{{$select.selected.name}}</ui-select-match>
@@ -59,7 +59,7 @@
                         </div>
 
                         <div class="form-group" ng-show="!prop.id && prop.name === 'MeasureUnit'">
-                            <label class="form-label">Measure unit</label>
+                            <label class="form-label">{{ 'catalog.blades.item-detail.labels.measure-unit' | translate }} </label>
                             <div class="form-input">
                                 <ui-select ng-model="blade.measureUnit">
                                     <ui-select-match allow-clear="true" placeholder="N/A">{{$select.selected}}</ui-select-match>
