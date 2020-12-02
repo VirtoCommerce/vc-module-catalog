@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -29,7 +28,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
         [HttpPost]
         [Route("products")]
-        public async Task<ActionResult<ProductIndexedSearchResult>> SearchProducts([FromBody]ProductIndexedSearchCriteria criteria)
+        public async Task<ActionResult<ProductIndexedSearchResult>> SearchProducts([FromBody] ProductIndexedSearchCriteria criteria)
         {
             criteria.ObjectType = KnownDocumentTypes.Product;
             var result = await _productIndexedSearchService.SearchAsync(criteria);
@@ -41,7 +40,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
         [HttpPost]
         [Route("categories")]
-        public async Task<ActionResult<CategoryIndexedSearchResult>> SearchCategories([FromBody]CategoryIndexedSearchCriteria criteria)
+        public async Task<ActionResult<CategoryIndexedSearchResult>> SearchCategories([FromBody] CategoryIndexedSearchCriteria criteria)
         {
             criteria.ObjectType = KnownDocumentTypes.Category;
             var result = await _categoryIndexedSearchService.SearchAsync(criteria);
