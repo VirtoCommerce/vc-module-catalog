@@ -79,7 +79,9 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         {
             return outlines
                 .SelectMany(ExpandOutline)
-                .Distinct(StringComparer.OrdinalIgnoreCase)
+                // VP-6151 Need to save outlines in index in lower case as we are converting search criteria outlines to lower case
+                .Select(x=>x.ToLowerInvariant())
+                .Distinct()
                 .ToArray();
         }
 
