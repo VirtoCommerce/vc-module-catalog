@@ -77,6 +77,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private GenericTreeNode<Entity> GetRelationshipsTree(CatalogProduct product)
         {
             var retVal = new GenericTreeNode<Entity>(product);
+
             if (product.Category != null)
             {
                 retVal.AddChild(GetRelationshipsTree(product.Category));
@@ -86,9 +87,17 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 retVal.AddChild(new GenericTreeNode<Entity>(product.Catalog));
             }
 
-            if (!product.Links.IsNullOrEmpty())
+            var productLinks = product.Links;
+
+            // VP-5628: Need to use main product links for the variations
+            if (product.MainProduct != null)
             {
-                foreach (var link in product.Links)
+                productLinks = product.MainProduct.Links;
+            }
+
+            if (!productLinks.IsNullOrEmpty())
+            {
+                foreach (var link in productLinks)
                 {
                     if (link.Category != null)
                     {
