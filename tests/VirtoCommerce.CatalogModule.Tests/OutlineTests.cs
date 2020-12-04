@@ -162,25 +162,27 @@ namespace VirtoCommerce.CatalogModule.Tests
             //Assert.True(allOutlineItems.All(i => i.SeoInfos != null && i.SeoInfos.Any()));
         }
 
-        [Fact]
-        public void GetProducts_When_NoCatalog_Expect_PhysicalAndVirtualOutlines()
+        [Theory]
+        [InlineData("p1")]
+        [InlineData("p1_v")]
+        public void GetProductOrVariationOutlines_NoCatalog_PhysicalAndVirtualOutlines(string productId)
         {
             var service = GetOutlineService();
-            var p1 = GetTestData().OfType<CatalogProduct>().FirstOrDefault(x => x.Id == "p1");
-            service.FillOutlinesForObjects(new[] { p1 }, null);
+            var product = GetTestData().OfType<CatalogProduct>().FirstOrDefault(x => x.Id == productId);
+            service.FillOutlinesForObjects(new[] { product }, null);
 
 
-            Assert.NotNull(p1.Outlines);
-            Assert.Equal(7, p1.Outlines.Count);
+            Assert.NotNull(product.Outlines);
+            Assert.Equal(7, product.Outlines.Count);
 
-            var outlineStrings = p1.Outlines.Select(o => o.ToString()).ToList();
-            Assert.Contains("c/c1/c2/c3/p1", outlineStrings);
-            Assert.Contains("v/v1/v2/*c1/c2/c3/p1", outlineStrings);
-            Assert.Contains("v/v1/v2/*c2/c3/p1", outlineStrings);
-            Assert.Contains("v/v1/v2/*c3/p1", outlineStrings);
-            Assert.Contains("v/*c3/p1", outlineStrings);
-            Assert.Contains("v/v1/v2/*p1", outlineStrings);
-            Assert.Contains("v/*p1", outlineStrings);
+            var outlineStrings = product.Outlines.Select(o => o.ToString()).ToList();
+            Assert.Contains($"c/c1/c2/c3/{productId}", outlineStrings);
+            Assert.Contains($"v/v1/v2/*c1/c2/c3/{productId}", outlineStrings);
+            Assert.Contains($"v/v1/v2/*c2/c3/{productId}", outlineStrings);
+            Assert.Contains($"v/v1/v2/*c3/{productId}", outlineStrings);
+            Assert.Contains($"v/*c3/{productId}", outlineStrings);
+            Assert.Contains($"v/v1/v2/*{productId}", outlineStrings);
+            Assert.Contains($"v/*{productId}", outlineStrings);
 
             //var allOutlineItems = p1.Outlines.SelectMany(o => o.Items.Where(i => i.SeoObjectType != "Catalog")).ToList();
             //Assert.True(allOutlineItems.All(i => i.SeoInfos != null && i.SeoInfos.Any()));
@@ -203,6 +205,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             var v2 = new Category { CatalogId = v.Id, Catalog = v, Id = "v2", IsVirtual = true, ParentId = v1.Id, Parents = new[] { v1 } };
             var p0 = new CatalogProduct { CatalogId = c.Id, Id = "p0", Catalog = c };
             var p1 = new CatalogProduct { CatalogId = c.Id, Id = "p1", Catalog = c, CategoryId = c3.Id, Category = c3 };
+            var p1_variation = new CatalogProduct { CatalogId = c.Id, Id = "p1_v", Catalog = c, CategoryId = c3.Id, Category = c3, MainProductId = "p1", MainProduct = p1 };
 
             c1.Links = new[] { new CategoryLink { CatalogId = v.Id, Catalog = v, CategoryId = v2.Id, Category = v2 } };
             c2.Links = new[] { new CategoryLink { CatalogId = v.Id, Catalog = v, CategoryId = v2.Id, Category = v2 } };
@@ -215,7 +218,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                                  new CategoryLink { CatalogId = v.Id, Catalog = v, CategoryId = v2.Id, Category = v2 },
             };
 
-            return new IHasOutlines[] { c0, c1, c2, c3, v1, v2, p0, p1 };
+            return new IHasOutlines[] { c0, c1, c2, c3, v1, v2, p0, p1, p1_variation };
         }
     }
 }
