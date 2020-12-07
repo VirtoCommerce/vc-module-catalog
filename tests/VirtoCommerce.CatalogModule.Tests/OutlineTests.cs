@@ -188,6 +188,29 @@ namespace VirtoCommerce.CatalogModule.Tests
             //Assert.True(allOutlineItems.All(i => i.SeoInfos != null && i.SeoInfos.Any()));
         }
 
+        [Fact]
+        public void GetVariationOutlines_VariationLinkedDirectlyToCategory_PhysicalAndVirtualOutlines()
+        {
+            var productId = "p1_v_linked";
+            var service = GetOutlineService();
+            var product = GetTestData().OfType<CatalogProduct>().FirstOrDefault(x => x.Id == productId);
+            service.FillOutlinesForObjects(new[] { product }, null);
+
+            Assert.NotNull(product.Outlines);
+            Assert.Equal(8, product.Outlines.Count);
+
+            var outlineStrings = product.Outlines.Select(o => o.ToString()).ToList();
+            Assert.Contains($"c/c1/c2/c3/{productId}", outlineStrings);
+            Assert.Contains($"v/v1/v2/*c1/c2/c3/{productId}", outlineStrings);
+            Assert.Contains($"v/v1/v2/*c2/c3/{productId}", outlineStrings);
+            Assert.Contains($"v/v1/v2/*c3/{productId}", outlineStrings);
+            Assert.Contains($"v/*c3/{productId}", outlineStrings);
+            Assert.Contains($"v/v1/v2/*{productId}", outlineStrings);
+            Assert.Contains($"v/*{productId}", outlineStrings);
+            // Variation link outline is here
+            Assert.Contains($"v/v1/*{productId}", outlineStrings);
+        }
+
         private static IOutlineService GetOutlineService()
         {
             return new OutlineService();
@@ -206,6 +229,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             var p0 = new CatalogProduct { CatalogId = c.Id, Id = "p0", Catalog = c };
             var p1 = new CatalogProduct { CatalogId = c.Id, Id = "p1", Catalog = c, CategoryId = c3.Id, Category = c3 };
             var p1_variation = new CatalogProduct { CatalogId = c.Id, Id = "p1_v", Catalog = c, CategoryId = c3.Id, Category = c3, MainProductId = "p1", MainProduct = p1 };
+            var p1_variation_withLinks = new CatalogProduct { CatalogId = c.Id, Id = "p1_v_linked", Catalog = c, CategoryId = c3.Id, Category = c3, MainProductId = "p1", MainProduct = p1 };
 
             c1.Links = new[] { new CategoryLink { CatalogId = v.Id, Catalog = v, CategoryId = v2.Id, Category = v2 } };
             c2.Links = new[] { new CategoryLink { CatalogId = v.Id, Catalog = v, CategoryId = v2.Id, Category = v2 } };
@@ -217,8 +241,11 @@ namespace VirtoCommerce.CatalogModule.Tests
                                  new CategoryLink { CatalogId = v.Id, Catalog = v },
                                  new CategoryLink { CatalogId = v.Id, Catalog = v, CategoryId = v2.Id, Category = v2 },
             };
+            p1_variation_withLinks.Links = new[] {
+                                 new CategoryLink { CatalogId = v.Id, Catalog = v, CategoryId = v1.Id, Category = v1 },
+            };
 
-            return new IHasOutlines[] { c0, c1, c2, c3, v1, v2, p0, p1, p1_variation };
+            return new IHasOutlines[] { c0, c1, c2, c3, v1, v2, p0, p1, p1_variation, p1_variation_withLinks };
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Core.Model;
@@ -87,12 +88,12 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 retVal.AddChild(new GenericTreeNode<Entity>(product.Catalog));
             }
 
-            var productLinks = product.Links;
+            var productLinks = new List<CategoryLink>(product.Links ?? Array.Empty<CategoryLink>());
 
             // VP-5628: Need to use main product links for the variations
             if (product.MainProduct != null)
             {
-                productLinks = product.MainProduct.Links;
+                productLinks.AddRange(product.MainProduct.Links ?? Array.Empty<CategoryLink>());
             }
 
             if (!productLinks.IsNullOrEmpty())
