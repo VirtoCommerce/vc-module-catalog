@@ -1,6 +1,6 @@
 using Xunit;
 
-namespace VirtoCommerce.CatalogModule.Test
+namespace VirtoCommerce.CatalogModule.Tests
 {
     [Trait("Category", "Unit")]
     public class EntityCloningTests
