@@ -34,14 +34,17 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             if (!string.IsNullOrEmpty(moveInfo.Category))
             {
                 var targetCategory = (await _categoryService.GetByIdsAsync(new[] { moveInfo.Category }, CategoryResponseGroup.WithOutlines.ToString())).FirstOrDefault()
-                    ?? throw new InvalidOperationException($"Destination category does not exist");
+                    ?? throw new InvalidOperationException($"Destination category does not exist.");
 
-                foreach (var listEntryOfTypeCategory in moveInfo.ListEntries.Where(listEntry => listEntry.Type.EqualsInvariant(CategoryListEntry.TypeName)))
+                foreach (var movedCategory in moveInfo.ListEntries.Where(x => x.Type.EqualsInvariant(CategoryListEntry.TypeName)))
                 {
-                    var movedCategoryOutline = string.Join('\\', listEntryOfTypeCategory.Outline);
-
-                    // TODO: Need to think on preventing cycles in the links, and add test
-                    if (targetCategory.Outline.StartsWith(movedCategoryOutline, StringComparison.OrdinalIgnoreCase))
+                    var movedCategoryFullPhysicalPath = string.Join("/", string.Join("/", movedCategory.Outline), movedCategory.Id);
+                    // Here we comparing that category will not be placed under itself.
+                    // E.g. we have hierarchy: Catalog1\Cat1\Cat2 - We should not allow to move Cat1 under Cat2.
+                    // Target category path - Catalog1\Cat1\Cat2, moved category path - Catalog1\Cat1.
+                    // Outlines (including virtual) of target category should not start with moved category full physical outline.
+                    // Because if moved category is a parent of a target one, it shoulld be in one of the terget category outlines.                    
+                    if (targetCategory.Outlines.Any(targetOutline => targetOutline.ToString().StartsWith(movedCategoryFullPhysicalPath)))
                     {
                         throw new InvalidOperationException("Cannot move category under itself");
                     }
