@@ -15,53 +15,76 @@ namespace VirtoCommerce.CatalogModule.Tests
     public class CategoryMoverTests
     {
         private readonly Mock<ICategoryService> _categoryServiceMock = new Mock<ICategoryService>();
+        private readonly string _targetCateroryId = "targetCat";
+        private readonly string _movedCateroryId = "movedCat";
+        private readonly CategoryMover _categoryMover;
 
+        public CategoryMoverTests()
+        {
+            _categoryMover = new CategoryMover(_categoryServiceMock.Object);
+        }
 
         [Theory]
+        [InlineData("Catalog/movedCat", "Catalog")]
         [InlineData("Catalog/movedCat/", "Catalog")]
         [InlineData("Catalog/movedCat/*virtual", "Catalog")]
         [InlineData("Catalog/movedCat/child1", "Catalog")]
+        [InlineData("Catalog/*virtual/movedCat", "Catalog/*virtual")]
         public async Task PrepareMoveAsync_PasteUnderItself_Throws(string targetCategoryOutline, string movedCategoryOutline)
         {
             // Arrange
-            var targetCateroryId = "targetCat";
-            var movedCateroryId = "movedCat";
-
-            MockCategoryGetById(targetCategoryOutline, targetCateroryId);
-
-            var categoryMover = new CategoryMover(_categoryServiceMock.Object);
+            MockCategoryGetById(targetCategoryOutline, _targetCateroryId);
 
             var moveRequest = new ListEntriesMoveRequest()
             {
-                Category = targetCateroryId,
+                Category = _targetCateroryId,
                 ListEntries = new[]
                 {
                     new CategoryListEntry()
                     {
                         Type = CategoryListEntry.TypeName,
-                        Id = movedCateroryId,
+                        Id = _movedCateroryId,
                         Outline = movedCategoryOutline.Split("/")
                     }
                 },
             };
 
             // Act
-            async Task action() => await categoryMover.PrepareMoveAsync(moveRequest);
+            async Task action() => await _categoryMover.PrepareMoveAsync(moveRequest);
 
             // Assert
             await Assert.ThrowsAsync<InvalidOperationException>(action);
         }
 
-        [Fact]
-        public async Task PrepareMoveAsync_PasteNotUnderItself_Passes()
+        [Theory]
+        [InlineData("Catalog/movedCat2", "Catalog")]
+        [InlineData("Catalog/anyOtherCat", "Catalog")]
+        [InlineData("DifferentCatalog/movedCat/child1", "Catalog")]
+        public async Task PrepareMoveAsync_PasteNotUnderItself_Passes(string targetCategoryOutline, string movedCategoryOutline)
         {
             // Arrange
-            var categoryServiceStub = new Mock<ICategoryService>();
-            var categoryMover = new CategoryMover(categoryServiceStub.Object);
+            MockCategoryGetById(targetCategoryOutline, _targetCateroryId);
+            MockCategoryGetById(movedCategoryOutline, _movedCateroryId);
+
+            var moveRequest = new ListEntriesMoveRequest()
+            {
+                Category = _targetCateroryId,
+                ListEntries = new[]
+                {
+                    new CategoryListEntry()
+                    {
+                        Type = CategoryListEntry.TypeName,
+                        Id = _movedCateroryId,
+                        Outline = movedCategoryOutline.Split("/")
+                    }
+                },
+            };
 
             // Act
+            var categories = await _categoryMover.PrepareMoveAsync(moveRequest);
 
             // Assert
+            Assert.Single(categories);
 
         }
 
