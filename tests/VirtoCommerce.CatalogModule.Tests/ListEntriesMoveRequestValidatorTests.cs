@@ -1,25 +1,54 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Moq;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.ListEntry;
 using VirtoCommerce.CatalogModule.Core.Services;
-using VirtoCommerce.CatalogModule.Data.Services;
+using VirtoCommerce.CatalogModule.Data.Validation;
 using VirtoCommerce.CoreModule.Core.Outlines;
 using VirtoCommerce.Platform.Core.Common;
 using Xunit;
 
 namespace VirtoCommerce.CatalogModule.Tests
 {
-    public class CategoryMoverTests
+    public class ListEntriesMoveRequestValidatorTests
     {
         private readonly Mock<ICategoryService> _categoryServiceMock = new Mock<ICategoryService>();
-        private readonly CategoryMover _categoryMover;
+        private readonly ListEntriesMoveRequestValidator _validator;
 
-        public CategoryMoverTests()
+        public ListEntriesMoveRequestValidatorTests()
         {
-            _categoryMover = new CategoryMover(_categoryServiceMock.Object);
+            _validator = new ListEntriesMoveRequestValidator(_categoryServiceMock.Object);
+        }
+
+        [Fact]
+        public async Task Validate_NoTargetCategory_NotValid()
+        {
+            // Arrange
+            var targetCateroryId = "targetCat";
+            var movedCateroryId = "movedCat";
+
+            var moveRequest = new ListEntriesMoveRequest()
+            {
+                Category = targetCateroryId,
+                ListEntries = new[]
+                {
+                    new CategoryListEntry()
+                    {
+                        Type = CategoryListEntry.TypeName,
+                        Id = movedCateroryId,
+                    }
+                },
+            };
+
+            // Act
+            var validationResult = await _validator.ValidateAsync(moveRequest);
+
+            // Assert
+            validationResult.IsValid.Should().BeFalse();
+            validationResult.Errors.Should().Contain(x => x.ErrorMessage == "Destination category does not exist.");
         }
 
         [Theory]
@@ -27,7 +56,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         [InlineData("Catalog/movedCat/*virtual/targetCat", "Catalog/movedCat")]
         [InlineData("Catalog/movedCat/child1/targetCat", "Catalog/movedCat")]
         [InlineData("Catalog/*virtual/movedCat/targetCat", "Catalog/*virtual/movedCat")]
-        public async Task PrepareMoveAsync_PasteUnderItself_Throws(string targetCategoryPath, string movedCategoryPath)
+        public async Task Validate_PasteUnderItself_NotValid(string targetCategoryPath, string movedCategoryPath)
         {
             // Arrange
             var targetCateroryId = targetCategoryPath.Split("/").Last();
@@ -50,17 +79,18 @@ namespace VirtoCommerce.CatalogModule.Tests
             };
 
             // Act
-            async Task action() => await _categoryMover.PrepareMoveAsync(moveRequest);
+            var validationResult = await _validator.ValidateAsync(moveRequest);
 
             // Assert
-            await Assert.ThrowsAsync<InvalidOperationException>(action);
+            validationResult.IsValid.Should().BeFalse();
+            validationResult.Errors.Should().Contain(x => x.ErrorMessage == "Cannot move category under itself.");
         }
 
         [Theory]
         [InlineData("Catalog/movedCat2/targetCat", "Catalog/movedCat")]
         [InlineData("Catalog/anyOtherCat/targetCat", "Catalog/movedCat")]
         [InlineData("DifferentCatalog/movedCat/child1/targetCat", "Catalog/movedCat")]
-        public async Task PrepareMoveAsync_PasteNotUnderItself_Passes(string targetCategoryPath, string movedCategoryPath)
+        public async Task Validate_PasteNotUnderItself_Valid(string targetCategoryPath, string movedCategoryPath)
         {
             // Arrange
             var targetCateroryId = targetCategoryPath.Split("/").Last();
@@ -84,11 +114,10 @@ namespace VirtoCommerce.CatalogModule.Tests
             };
 
             // Act
-            var categories = await _categoryMover.PrepareMoveAsync(moveRequest);
+            var validationResult = await _validator.ValidateAsync(moveRequest);
 
             // Assert
-            Assert.Single(categories);
-
+            validationResult.IsValid.Should().BeTrue();
         }
 
         private void MockCategoryGetById(string path, string id)
