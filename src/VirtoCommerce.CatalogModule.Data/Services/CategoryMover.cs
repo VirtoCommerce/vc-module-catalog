@@ -64,14 +64,15 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
                 foreach (var movedCategory in moveInfo.ListEntries.Where(x => x.Type.EqualsInvariant(CategoryListEntry.TypeName)))
                 {
-                    var movedCategoryFullPhysicalPath = string.Join("/", string.Join("/", movedCategory.Outline), movedCategory.Id);
+                    var movedCategoryPath = string.Join("/", movedCategory.Outline);
+                    var targetCategoryPath = string.Join("/", targetCategory.Outlines.FirstOrDefault());
                     // Here we comparing that category will not be placed under itself.
                     // E.g. we have hierarchy: Catalog1\Cat1\Cat2 - We should not allow to move Cat1 under Cat2.
                     // Target category path - Catalog1\Cat1\Cat2, moved category path - Catalog1\Cat1.
-                    // Outlines (including virtual) of target category should not be presented in moved category full physical outline.
-                    // Because if moved category is a parent of a target one, it should be in one of the terget category outlines.                    
-                    if (targetCategory.Outlines.Any(targetOutline => targetOutline.ToString().EqualsInvariant(movedCategoryFullPhysicalPath)
-                        || targetOutline.ToString().StartsWith($"{movedCategoryFullPhysicalPath}/")))
+                    // Target category path should not be part of moved category full physical path.
+                    // Because if moved category is a parent of a target one, it should be in target category path.                    
+                    if (targetCategoryPath.EqualsInvariant(movedCategoryPath)
+                        || targetCategoryPath.StartsWith($"{movedCategoryPath}/"))
                     {
                         throw new InvalidOperationException("Cannot move category under itself");
                     }
