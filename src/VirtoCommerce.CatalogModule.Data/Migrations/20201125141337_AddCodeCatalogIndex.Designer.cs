@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 
 namespace VirtoCommerce.CatalogModule.Data.Migrations
 {
     [DbContext(typeof(CatalogDbContext))]
-    partial class CatalogDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201125141337_AddCodeCatalogIndex")]
+    partial class AddCodeCatalogIndex
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -242,9 +244,6 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
 
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("ExcludedProperties")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -614,8 +613,7 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasName("IX_CatalogId_ParentId");
 
                     b.HasIndex("Code", "CatalogId")
-                        .IsUnique()
-                        .HasName("IX_Code_CatalogId");
+                        .IsUnique();
 
                     b.ToTable("Item");
                 });

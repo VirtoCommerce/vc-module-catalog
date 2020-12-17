@@ -23,6 +23,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         protected virtual void IndexCustomProperties(IndexDocument document, ICollection<Property> properties, ICollection<PropertyType> contentPropertyTypes)
         {
             foreach (var property in properties)
+            {
                 foreach (var propValue in property.Values?.Where(x => x.Value != null) ?? Array.Empty<PropertyValue>())
                 {
                     var propertyName = propValue.PropertyName?.ToLowerInvariant();
@@ -48,7 +49,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                                 document.Add(new IndexDocumentField(propertyName, shortTextValue) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection });
                                 break;
                             case PropertyValueType.GeoPoint:
-                                document.Add(new IndexDocumentField(propertyName, GeoPoint.TryParse((string)propValue.Value)) { IsRetrievable = true, IsSearchable = true, IsCollection = true });
+                                document.Add(new IndexDocumentField(propertyName, GeoPoint.TryParse((string) propValue.Value)) { IsRetrievable = true, IsSearchable = true, IsCollection = true });
                                 break;
                         }
                     }
@@ -73,13 +74,16 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                         }
                     }
                 }
+            }
         }
 
         protected virtual string[] GetOutlineStrings(IEnumerable<Outline> outlines)
         {
             return outlines
                 .SelectMany(ExpandOutline)
-                .Distinct(StringComparer.OrdinalIgnoreCase)
+                // VP-6151 Need to save outlines in index in lower case as we are converting search criteria outlines to lower case
+                .Select(x => x.ToLowerInvariant())
+                .Distinct()
                 .ToArray();
         }
 

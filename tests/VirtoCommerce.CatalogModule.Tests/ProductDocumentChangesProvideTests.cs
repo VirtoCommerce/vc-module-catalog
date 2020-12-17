@@ -12,7 +12,7 @@ using VirtoCommerce.Platform.Core.ChangeLog;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.Platform.Core.Common;
 
-namespace VirtoCommerce.CatalogModule.Test
+namespace VirtoCommerce.CatalogModule.Tests
 {
     [Trait("Category", "CI")]
     public class ProductDocumentChangesProvideTests
