@@ -7,7 +7,6 @@ using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.ListEntry;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Validation;
-using VirtoCommerce.CoreModule.Core.Outlines;
 using VirtoCommerce.Platform.Core.Common;
 using Xunit;
 
@@ -62,7 +61,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             var targetCateroryId = targetCategoryPath.Split("/").Last();
             var movedCateroryId = movedCategoryPath.Split("/").Last();
 
-            MockCategoryGetById(targetCategoryPath, targetCateroryId);
+            MockCategoryGetById(targetCategoryPath);
 
             var moveRequest = new ListEntriesMoveRequest()
             {
@@ -96,8 +95,8 @@ namespace VirtoCommerce.CatalogModule.Tests
             var targetCateroryId = targetCategoryPath.Split("/").Last();
             var movedCateroryId = movedCategoryPath.Split("/").Last();
 
-            MockCategoryGetById(targetCategoryPath, targetCateroryId);
-            MockCategoryGetById(movedCategoryPath, movedCateroryId);
+            MockCategoryGetById(targetCategoryPath);
+            MockCategoryGetById(movedCategoryPath);
 
             var moveRequest = new ListEntriesMoveRequest()
             {
@@ -120,28 +119,45 @@ namespace VirtoCommerce.CatalogModule.Tests
             validationResult.IsValid.Should().BeTrue();
         }
 
-        private void MockCategoryGetById(string path, string id)
+        private void MockCategoryGetById(string path)
         {
+            var parts = path.Split("/");
+            var catalogId = parts.FirstOrDefault();
+            var categoryId = parts.LastOrDefault();
+            var outline = string.Join("/", parts.Skip(1));
+
             _categoryServiceMock
-                .Setup(x => x.GetByIdsAsync(It.Is<string[]>(ids => ids.Length == 1 && ids[0].EqualsInvariant(id)), It.IsAny<string>(), null))
-                .Returns(Task.FromResult(new[] {
-                    new Category()
+                .Setup(x => x.GetByIdsAsync(It.Is<string[]>(ids => ids.Length == 1 && ids[0].EqualsInvariant(categoryId)), It.IsAny<string>(), null))
+                .Returns(() =>
                     {
-                        Outlines = new []
+                        // This complex part is done to allow Category.Outline property to be calculated. It uses Category.Parent recursively, so need to create all hierarchy.
+                        var parts = outline.Split("/").Reverse();
+                        Category currentCategory = null, resultCategory = null;
+
+                        foreach (var part in parts)
                         {
-                            new Outline()
+                            if (currentCategory == null)
                             {
-                                Items = path.Split("/", StringSplitOptions.RemoveEmptyEntries)
-                                    .Select( part =>
-                                        new OutlineItem()
-                                        {
-                                            Id = part
-                                        })
-                                    .ToList()
+                                resultCategory = currentCategory = new Category()
+                                {
+                                    CatalogId = catalogId,
+                                    Id = part
+                                };
+                            }
+                            else
+                            {
+                                currentCategory.Parent = new Category()
+                                {
+                                    CatalogId = catalogId,
+                                    Id = part
+                                };
+                                currentCategory = currentCategory.Parent;
                             }
                         }
+
+                        return Task.FromResult(new[] { resultCategory });
                     }
-                }));
+                );
         }
     }
 }

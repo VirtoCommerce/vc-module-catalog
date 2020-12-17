@@ -59,18 +59,13 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         protected virtual async Task ValidateOperationArguments(ListEntriesMoveRequest moveInfo)
         {
-            ValidateParameters(moveInfo);
-
-            var validator = new ListEntriesMoveRequestValidator(_categoryService);
-            await validator.ValidateAndThrowAsync(moveInfo);
-        }
-
-        private void ValidateParameters(ListEntriesMoveRequest moveInfo)
-        {
             if (moveInfo == null)
             {
                 throw new ArgumentNullException(nameof(moveInfo));
             }
+
+            var validator = new ListEntriesMoveRequestValidator(_categoryService);
+            await validator.ValidateAndThrowAsync(moveInfo);
         }
     }
 }

@@ -33,7 +33,7 @@ namespace VirtoCommerce.CatalogModule.Data.Validation
                 foreach (var movedCategory in moveInfo.ListEntries.Where(x => x.Type.EqualsInvariant(CategoryListEntry.TypeName)))
                 {
                     var movedCategoryPath = string.Join("/", movedCategory.Outline);
-                    var targetCategoryPath = string.Join("/", targetCategory.Outlines.FirstOrDefault());
+                    var targetCategoryPath = string.Join("/", targetCategory.CatalogId, targetCategory.Outline);
                     // Here we comparing that category will not be placed under itself.
                     // E.g. we have hierarchy: Catalog1\Cat1\Cat2 - We should not allow to move Cat1 under Cat2.
                     // Target category path - Catalog1\Cat1\Cat2, moved category path - Catalog1\Cat1.
