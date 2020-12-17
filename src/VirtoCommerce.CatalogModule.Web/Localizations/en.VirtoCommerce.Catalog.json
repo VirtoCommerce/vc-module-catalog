@@ -202,7 +202,11 @@
           "empty-list": "None",
           "modified": "(modified)",
           "add-filter": "Filter",
-          "reset-filter": "Reset filter"
+          "reset-filter": "Reset filter",
+          "excluded": "Excluded from inheritance"
+        },
+        "placeholders": {
+          "excluded":  "select properties"
         },
         "validations": {
           "required": "This field is required",
