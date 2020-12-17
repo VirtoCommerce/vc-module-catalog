@@ -3,9 +3,11 @@ using Newtonsoft.Json;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Domain;
+using VirtoCommerce.Platform.Core.ObjectValue;
 
 namespace VirtoCommerce.CatalogModule.Core.Model
 {
+    [ObjectValueSerializedAsStringForIndex]
     public class PropertyValue : AuditableEntity, IHasLanguage, IInheritable, ICloneable, IHasOuterId, ICopyable
     {
         public string PropertyName { get; set; }
