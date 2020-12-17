@@ -7,7 +7,7 @@ using VirtoCommerce.Platform.Core.ObjectValue;
 
 namespace VirtoCommerce.CatalogModule.Core.Model
 {
-    [ObjectValueSerializedAsStringForIndex]
+    [ObjectValueToString(nameof(Value))]
     public class PropertyValue : AuditableEntity, IHasLanguage, IInheritable, ICloneable, IHasOuterId, ICopyable
     {
         public string PropertyName { get; set; }
