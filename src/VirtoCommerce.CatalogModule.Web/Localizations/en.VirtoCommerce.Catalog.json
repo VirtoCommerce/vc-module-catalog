@@ -203,7 +203,7 @@
           "modified": "(modified)",
           "add-filter": "Filter",
           "reset-filter": "Reset filter",
-          "excluded": "Excluded from inheritance"
+          "excluded": "Properties excluded from inheritance"
         },
         "placeholders": {
           "excluded":  "select properties"
