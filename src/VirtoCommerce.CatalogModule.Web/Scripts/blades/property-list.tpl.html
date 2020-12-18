@@ -1,4 +1,4 @@
-﻿<div class="blade-static __bottom" ng-include="'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/common/templates/ok-cancel.tpl.html'"></div>
+<div class="blade-static __bottom" ng-include="'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/common/templates/ok-cancel.tpl.html'"></div>
 <div class="blade-content __gray">
     <div class="blade-inner">
         <div class="inner-block">
@@ -25,6 +25,17 @@
                         <va-property2 ng-model="prop" get-prop-values="getPropValues" ng-if="!prop.isReadOnly" languages="blade.languages" default-language="blade.defaultLanguage"></va-property2>
                     </div>
                     <div class="note" ng-if="properties.length == 0">{{ 'catalog.blades.property-list.labels.empty-list' | translate }}</div>
+                </fieldset>
+                <fieldset ng-if="blade.entityType == 'category'">
+                    <legend>{{ 'catalog.blades.property-list.labels.excluded' | translate }}</legend>
+                    <div class="form-group list __info">
+                        <ui-select multiple ng-model="blade.currentEntity.excludedProperties">
+                            <ui-select-match placeholder="{{ 'catalog.blades.property-list.placeholders.excluded' | translate }}">{{$item.name}}</ui-select-match>
+                            <ui-select-choices repeat="x in blade.propertiesForExclude | filter: {name: $select.search}">
+                                <span ng-bind-html="x.name | highlight: $select.search"></span>
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
                 </fieldset>
             </form>
         </div>
