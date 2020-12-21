@@ -326,6 +326,7 @@
     <Compile Include="Services\PropertyServiceImpl.cs" />
     <Compile Include="Services\Validation\CategoryValidator.cs" />
     <Compile Include="Services\Validation\HasPropertiesValidator.cs" />
+    <Compile Include="Services\Validation\MoveInfoValidator.cs" />
     <Compile Include="Services\Validation\ProductValidator.cs" />
     <Compile Include="Services\Validation\PropertyValueValidator.cs" />
   </ItemGroup>
