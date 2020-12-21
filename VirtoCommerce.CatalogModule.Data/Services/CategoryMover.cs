@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using FluentValidation;
+using VirtoCommerce.CatalogModule.Data.Services.Validation;
 using VirtoCommerce.CatalogModule.Web.Model;
 using VirtoCommerce.CatalogModule.Web.Services;
 using VirtoCommerce.Domain.Catalog.Services;
@@ -32,6 +34,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public override List<domain.Category> PrepareMove(MoveInfo moveInfo)
         {
+            ValidateOperationArguments(moveInfo);
+
             var result = new List<domain.Category>();
 
             foreach (var listEntryCategory in moveInfo.ListEntries.Where(
@@ -52,6 +56,18 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
 
             return result;
+        }
+
+
+        protected virtual void ValidateOperationArguments(MoveInfo moveInfo)
+        {
+            if (moveInfo == null)
+            {
+                throw new ArgumentNullException(nameof(moveInfo));
+            }
+
+            var validator = new MoveInfoValidator(_categoryService);
+            validator.ValidateAndThrow(moveInfo);
         }
     }
 }
