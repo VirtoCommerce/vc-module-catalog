@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
@@ -235,11 +236,16 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         {
             var result = aggregationResponseValues
                 .Select(v =>
-                    new AggregationItem
+                {
+                    return new AggregationItem
                     {
-                        Value = v.Id,
+                        Value = v.Id.Contains('_') ? v.Id.Split('_')[0] : v.Id,
                         Count = (int)v.Count,
-                    })
+                        Labels = v.Id.Contains('_') ?
+                                    new[] { new AggregationLabel { Label = v.Id.Split('_')[1] } } :
+                                    Array.Empty<AggregationLabel>()
+                    };
+                })
                 .ToList();
 
             return result;

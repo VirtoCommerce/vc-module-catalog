@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Core.Model.OutlinePart
@@ -13,6 +10,21 @@ namespace VirtoCommerce.CatalogModule.Core.Model.OutlinePart
         public string ResolveOutlinePart(IEntity entity)
         {
             return entity.Id;
+        }
+
+        public string ResolveOutlineName(IEntity entity)
+        {
+            var result = entity.Id;
+            if (entity is Catalog catalog)
+            {
+                result = catalog.Name;
+            }
+            else if (entity is Category category)
+            {
+                result = category.Name;
+            }
+
+            return result;
         }
     }
 }

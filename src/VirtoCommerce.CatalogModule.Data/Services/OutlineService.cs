@@ -163,8 +163,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             {
                 Id = _outlinePartResolver.ResolveOutlinePart(entity),
                 SeoObjectType = seoSupport != null ? seoSupport.SeoObjectType : "Catalog",
-                SeoInfos = seoSupport?.SeoInfos
+                SeoInfos = seoSupport?.SeoInfos,
+                Name = _outlinePartResolver.ResolveOutlineName(entity)
             };
+
             return retVal;
         }
     }

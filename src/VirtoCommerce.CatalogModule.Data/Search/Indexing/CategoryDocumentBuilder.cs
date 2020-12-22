@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.Platform.Core.Settings;
@@ -84,6 +85,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             foreach (var outline in outlineStrings)
             {
                 document.Add(new IndexDocumentField("__outline", outline.ToLowerInvariant()) { IsRetrievable = true, IsFilterable = true, IsCollection = true });
+            }
+
+            foreach (var outlineItem in GetOutlineStrings(category.Outlines, getNameLatestItem: true))
+            {
+                document.Add(new IndexDocumentField($"__outlines", outlineItem) { IsRetrievable = true, IsFilterable = true, IsCollection = true });
             }
 
             IndexCustomProperties(document, category.Properties, new[] { PropertyType.Category });

@@ -21,5 +21,20 @@ namespace VirtoCommerce.CatalogModule.Core.Model.OutlinePart
             }
             return result;
         }
+
+        public string ResolveOutlineName(IEntity entity)
+        {
+            var result = entity.Id;
+            if (entity is Catalog catalog)
+            {
+                result = catalog.Name;
+            }
+            else if (entity is Category category)
+            {
+                result = category.Name;
+            }
+
+            return result;
+        }
     }
 }

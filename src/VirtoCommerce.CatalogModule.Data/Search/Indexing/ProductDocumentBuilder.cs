@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
@@ -115,6 +116,9 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             // Add outlines to search index
             var outlineStrings = GetOutlineStrings(product.Outlines);
             document.AddFilterableValues("__outline", outlineStrings);
+
+            document.AddFilterableValues("__outlines", GetOutlineStrings(product.Outlines, getNameLatestItem: true));
+
             // Add the all physical and virtual paths
             document.AddFilterableValues("__path", product.Outlines.Select(x=> string.Join("/", x.Items.Take(x.Items.Count - 1).Select(i=> i.Id))).ToList());
           
