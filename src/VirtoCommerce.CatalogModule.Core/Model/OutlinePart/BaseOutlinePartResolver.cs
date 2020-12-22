@@ -2,10 +2,8 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Core.Model.OutlinePart
 {
-    public abstract class BaseOutlinePartResolver : IOutlinePartResolver
+    public abstract class BaseOutlinePartResolver
     {
-        public abstract string ResolveOutlinePart(IEntity entity);
-
         public string ResolveOutlineName(IEntity entity)
         {
             var result = entity.Id;

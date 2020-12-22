@@ -7,7 +7,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model.OutlinePart
     /// </summary>
     public class IdOutlinePartResolver : BaseOutlinePartResolver, IOutlinePartResolver
     {
-        public override string ResolveOutlinePart(IEntity entity)
+        public string ResolveOutlinePart(IEntity entity)
         {
             return entity.Id;
         }
