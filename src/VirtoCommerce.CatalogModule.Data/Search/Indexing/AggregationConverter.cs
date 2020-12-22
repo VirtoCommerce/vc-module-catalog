@@ -239,10 +239,10 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 {
                     return new AggregationItem
                     {
-                        Value = v.Id.Contains('_') ? v.Id.Split('_')[0] : v.Id,
+                        Value = v.Id.Contains(ModuleConstants.Search.OutlineDelimiter) ? v.Id.Split(ModuleConstants.Search.OutlineDelimiter)[0] : v.Id,
                         Count = (int)v.Count,
-                        Labels = v.Id.Contains('_') ?
-                                    new[] { new AggregationLabel { Label = v.Id.Split('_')[1] } } :
+                        Labels = v.Id.Contains(ModuleConstants.Search.OutlineDelimiter) ?
+                                    new[] { new AggregationLabel { Label = v.Id.Split(ModuleConstants.Search.OutlineDelimiter)[1] } } :
                                     Array.Empty<AggregationLabel>()
                     };
                 })

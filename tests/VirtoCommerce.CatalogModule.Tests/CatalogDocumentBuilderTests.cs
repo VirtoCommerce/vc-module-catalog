@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Moq;
+using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Data.Search.Indexing;
 using VirtoCommerce.CoreModule.Core.Outlines;
 using VirtoCommerce.Platform.Core.Settings;
@@ -67,7 +68,12 @@ namespace VirtoCommerce.CatalogModule.Tests
                                 new OutlineItem { Id = "1", Name = "Catalog" },
                                 new OutlineItem { Id = "11", Name = "Category1" },
                                 new OutlineItem { Id = "111", Name = "Product1" },
-                            } } }, true, new [] { "1/11_Category1", "1_Catalog" } },
+                            } } }, true,
+                        new []
+                        {
+                            $"1/11{ModuleConstants.Search.OutlineDelimiter}Category1",
+                            $"1{ModuleConstants.Search.OutlineDelimiter}Catalog"
+                        } },
                     new object[] {
                         new[] { new Outline
                         {
@@ -76,7 +82,14 @@ namespace VirtoCommerce.CatalogModule.Tests
                                 new OutlineItem { Id = "11", Name = "Category1" },
                                 new OutlineItem { Id = "12", Name = "Category2" },
                                 new OutlineItem { Id = "111", Name = "Product1" },
-                            } } }, true, new [] { "1/11/12_Category2", "1/11_Category1", "1_Catalog", "1/12_Category2" } },
+                            } } }, true,
+                        new []
+                        {
+                            $"1/11/12{ModuleConstants.Search.OutlineDelimiter}Category2",
+                            $"1/11{ModuleConstants.Search.OutlineDelimiter}Category1",
+                            $"1{ModuleConstants.Search.OutlineDelimiter}Catalog",
+                            $"1/12{ModuleConstants.Search.OutlineDelimiter}Category2"
+                        } },
                     new object[] {
                         new[] { new Outline
                         {
@@ -86,7 +99,16 @@ namespace VirtoCommerce.CatalogModule.Tests
                                 new OutlineItem { Id = "12", Name = "Category2" },
                                 new OutlineItem { Id = "13", Name = "Category3" },
                                 new OutlineItem { Id = "111", Name = "Product1" },
-                            } } }, true, new [] { "1/11/12/13_Category3", "1/11/12_Category2", "1/11_Category1", "1_Catalog", "1/12_Category2", "1/13_Category3" } },
+                            } } }, true,
+                        new []
+                        {
+                            $"1/11/12/13{ModuleConstants.Search.OutlineDelimiter}Category3",
+                            $"1/11/12{ModuleConstants.Search.OutlineDelimiter}Category2",
+                            $"1/11{ModuleConstants.Search.OutlineDelimiter}Category1",
+                            $"1{ModuleConstants.Search.OutlineDelimiter}Catalog",
+                            $"1/12{ModuleConstants.Search.OutlineDelimiter}Category2",
+                            $"1/13{ModuleConstants.Search.OutlineDelimiter}Category3"
+                        } },
                 };
             }
         }
