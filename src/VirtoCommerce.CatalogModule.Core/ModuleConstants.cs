@@ -155,9 +155,6 @@ namespace VirtoCommerce.CatalogModule.Core
             }
         }
 
-        public static class Search
-        {
-            public const string OutlineDelimiter = "___";
-        }
+        public const string OutlineDelimiter = "___";
     }
 }

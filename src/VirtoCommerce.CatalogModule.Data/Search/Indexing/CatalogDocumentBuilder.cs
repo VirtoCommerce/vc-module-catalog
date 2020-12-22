@@ -110,7 +110,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 for (var i = items.Count; i > 0; i--)
                 {
                     var path = !getNameLatestItem ? string.Join("/", items.Take(i)) :
-                        string.Join(ModuleConstants.Search.OutlineDelimiter,
+                        string.Join(ModuleConstants.OutlineDelimiter,
                             string.Join("/", items.Take(i)), itemNames.Values.ElementAt(i - 1));
 
                     result.Add(path);
@@ -126,7 +126,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                     items.Skip(1)
                         .Select(i => !getNameLatestItem ?
                                 string.Join("/", catalogId, i) :
-                                string.Join(ModuleConstants.Search.OutlineDelimiter,
+                                string.Join(ModuleConstants.OutlineDelimiter,
                                     string.Join("/", catalogId, i), itemNames[i])
                         ));
             }
