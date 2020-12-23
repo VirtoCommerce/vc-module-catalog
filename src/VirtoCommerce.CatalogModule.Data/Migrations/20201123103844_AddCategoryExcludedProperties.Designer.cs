@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 
 namespace VirtoCommerce.CatalogModule.Data.Migrations
 {
     [DbContext(typeof(CatalogDbContext))]
-    partial class CatalogDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201123103844_AddCategoryExcludedProperties")]
+    partial class AddCategoryExcludedProperties
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -608,14 +610,13 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
 
                     b.HasIndex("CategoryId");
 
+                    b.HasIndex("Code")
+                        .IsUnique();
+
                     b.HasIndex("ParentId");
 
                     b.HasIndex("CatalogId", "ParentId")
                         .HasName("IX_CatalogId_ParentId");
-
-                    b.HasIndex("Code", "CatalogId")
-                        .IsUnique()
-                        .HasName("IX_Code_CatalogId");
 
                     b.ToTable("Item");
                 });

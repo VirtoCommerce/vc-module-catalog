@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+using VirtoCommerce.CatalogModule.Core.Extensions;
 using VirtoCommerce.CatalogModule.Core.Serialization;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Outlines;
@@ -11,7 +12,7 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Core.Model
 {
-    public class CatalogProduct : AuditableEntity, IHasLinks, ISeoSupport, IHasOutlines, IHasDimension, IHasAssociations, IHasProperties, IHasImages, IHasAssets, IInheritable, IHasTaxType, IHasName, IHasOuterId, IExportable, ICopyable, IHasCategoryId
+    public class CatalogProduct : AuditableEntity, IHasLinks, ISeoSupport, IHasOutlines, IHasDimension, IHasAssociations, IHasProperties, IHasImages, IHasAssets, IInheritable, IHasTaxType, IHasName, IHasOuterId, IExportable, ICopyable, IHasCategoryId, IHasExcludedProperties
     {
         /// <summary>
         /// SKU code
@@ -100,8 +101,12 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
         #region IHasProperties members
         public IList<Property> Properties { get; set; }
-
         #endregion
+
+        #region IHasExcludedProperties members
+        public IList<ExcludedProperty> ExcludedProperties { get; set; }
+        #endregion
+
         [JsonIgnoreSerialization]
         [Obsolete("it's for importing data from v.2, need to use values in Properties")]
         public ICollection<PropertyValue> PropertyValues { get; set; }
@@ -139,7 +144,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
         public IList<Variation> Variations { get; set; }
         /// <summary>
-        /// Each descendant type should override this property to use other object type for seo records 
+        /// Each descendant type should override this property to use other object type for seo records
         /// </summary>
         public virtual string SeoObjectType { get; } = "CatalogProduct";
         public IList<SeoInfo> SeoInfos { get; set; }
@@ -160,14 +165,20 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         /// System flag used to mark that object was inherited from other
         /// </summary>
         public bool IsInherited { get; private set; }
-       
+
         public virtual void TryInheritFrom(IEntity parent)
         {
+            this.InheritExcludedProperties(parent as IHasExcludedProperties);
+
             if (parent is IHasProperties hasProperties)
             {
                 //Properties inheritance
                 foreach (var parentProperty in hasProperties.Properties ?? Array.Empty<Property>())
                 {
+                    if (this.HasPropertyExcluded(parentProperty.Name))
+                    {
+                        continue;
+                    }
                     if (Properties == null)
                     {
                         Properties = new List<Property>();

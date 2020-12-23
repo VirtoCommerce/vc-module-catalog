@@ -202,7 +202,11 @@
           "empty-list": "None",
           "modified": "(modified)",
           "add-filter": "Filter",
-          "reset-filter": "Reset filter"
+          "reset-filter": "Reset filter",
+          "excluded": "Properties excluded from inheritance"
+        },
+        "placeholders": {
+          "excluded":  "select properties"
         },
         "validations": {
           "required": "This field is required",
@@ -292,7 +296,7 @@
           "outer-id": "Outer ID",
           "sku": "SKU",
           "priority": "Priority",
-          "name": "Name",
+          "name": "Product name",
           "can-be-purchased": "Can be purchased",
           "store-visible": "Store visible",
           "track-inventory": "Track inventory",
