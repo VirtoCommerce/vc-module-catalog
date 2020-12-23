@@ -40,7 +40,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 {
                     // Get added and modified products count
                     result = await BuildChangedItemsQuery(repository, startDate, endDate).CountAsync();
-                    
+
                     var deletedCount = await GetTotalDeletedProductsCount(startDate, endDate);
                     result += deletedCount;
                 }
@@ -57,13 +57,26 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             {
                 if (startDate == null && endDate == null)
                 {
-                    result = await repository.Items
+                    var changedItems = await repository.Items
                         .Where(i => i.ParentId == null)
                         .OrderBy(i => i.CreatedDate)
-                        .Select(i => ConvertItemEntityToIndexDocumentChange(i))
+                        .Select(i => new
+                        {
+                            i.Id,
+                            ChangeType = IndexDocumentChangeType.Modified,
+                            ChangeDate = i.ModifiedDate ?? i.CreatedDate
+                        })
                         .Skip(Convert.ToInt32(skip))
                         .Take(Convert.ToInt32(take))
                         .ToListAsync();
+
+                    result = changedItems.Select(item => new IndexDocumentChange
+                    {
+                        DocumentId = item.Id,
+                        ChangeType = item.ChangeType,
+                        ChangeDate = item.ChangeDate
+                    })
+                    .ToArray();
                 }
                 else
                 {
@@ -75,7 +88,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
                     var searchResult = await SearchDeleteOperationsInLog(startDate, endDate, originSkip, originTake);
                     var totalDeletedCount = searchResult.TotalCount;
-                    var deletedProductIndexDocumentChanges = searchResult.Results.Select(operation => ConvertOperationLogToIndexDocumentChange(operation)).ToArray();                    
+                    var deletedProductIndexDocumentChanges = searchResult.Results.Select(operation => ConvertOperationLogToIndexDocumentChange(operation)).ToArray();
                     result.AddRange(deletedProductIndexDocumentChanges);
 
                     skip = originSkip - Math.Min(totalDeletedCount, originSkip);
@@ -102,7 +115,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             };
 
             var searchResult = (await _changeLogSearchService.SearchAsync(criteria));
-                        
+
             return searchResult;
         }
 
@@ -124,22 +137,24 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         private static async Task<IndexDocumentChange[]> GetModifiedProductIndexDocumentChanges(DateTime? startDate, DateTime? endDate, long skip, long take, ICatalogRepository repository)
         {
-            return await BuildChangedItemsQuery(repository, startDate, endDate)
+            var result = await BuildChangedItemsQuery(repository, startDate, endDate)
                .OrderBy(i => i.CreatedDate)
-               .Select(i => ConvertItemEntityToIndexDocumentChange(i))
+               .Select(i => new
+               {
+                   i.Id,
+                   ChangeType = IndexDocumentChangeType.Modified,
+                   ChangeDate = i.ModifiedDate ?? i.CreatedDate
+               })
                .Skip(Convert.ToInt32(skip))
                .Take(Convert.ToInt32(take))
                .ToArrayAsync();
-        }
 
-        private static IndexDocumentChange ConvertItemEntityToIndexDocumentChange(Model.ItemEntity item)
-        {
-            return new IndexDocumentChange
+            return result.Select(item => new IndexDocumentChange
             {
                 DocumentId = item.Id,
-                ChangeType = IndexDocumentChangeType.Modified,
-                ChangeDate = item.ModifiedDate ?? item.CreatedDate
-            };
+                ChangeType = item.ChangeType,
+                ChangeDate = item.ChangeDate
+            }).ToArray();
         }
 
         private static IndexDocumentChange ConvertOperationLogToIndexDocumentChange(OperationLog operation)
