@@ -15,7 +15,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private readonly IOutlinePartResolver _outlinePartResolver;
         private readonly IOutlinePartNameResolver _outlinePartNameResolver;
 
-        public OutlineService(IOutlinePartResolver outlinePartResolver = null, IOutlinePartNameResolver outlinePartNameResolver = null)
+        public OutlineService(IOutlinePartNameResolver outlinePartNameResolver, IOutlinePartResolver outlinePartResolver = null)
         {
             _outlinePartResolver = outlinePartResolver ?? new IdOutlinePartResolver();
             _outlinePartNameResolver = outlinePartNameResolver;
