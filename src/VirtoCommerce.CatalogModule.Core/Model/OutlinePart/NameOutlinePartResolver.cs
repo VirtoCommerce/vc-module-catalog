@@ -2,7 +2,7 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Core.Model.OutlinePart
 {
-    public abstract class BaseNameOutlinePartResolver : IOutlinePartResolver
+    public class NameOutlinePartResolver : IOutlinePartNameResolver
     {
         public string ResolveOutlineName(IEntity entity)
         {
@@ -18,7 +18,5 @@ namespace VirtoCommerce.CatalogModule.Core.Model.OutlinePart
 
             return result;
         }
-
-        public abstract string ResolveOutlinePart(IEntity entity);
     }
 }

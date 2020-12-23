@@ -5,9 +5,9 @@ namespace VirtoCommerce.CatalogModule.Core.Model.OutlinePart
     /// <summary>
     /// Uses ids for oultines.
     /// </summary>
-    public class IdOutlinePartResolver : BaseNameOutlinePartResolver
+    public class IdOutlinePartResolver : IOutlinePartResolver
     {
-        public override string ResolveOutlinePart(IEntity entity)
+        public string ResolveOutlinePart(IEntity entity)
         {
             return entity.Id;
         }

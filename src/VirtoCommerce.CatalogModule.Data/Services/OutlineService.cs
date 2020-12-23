@@ -13,10 +13,12 @@ namespace VirtoCommerce.CatalogModule.Data.Services
     public sealed class OutlineService : IOutlineService
     {
         private readonly IOutlinePartResolver _outlinePartResolver;
+        private readonly IOutlinePartNameResolver _outlinePartNameResolver;
 
-        public OutlineService(IOutlinePartResolver outlinePartResolver = null)
+        public OutlineService(IOutlinePartResolver outlinePartResolver = null, IOutlinePartNameResolver outlinePartNameResolver = null)
         {
             _outlinePartResolver = outlinePartResolver ?? new IdOutlinePartResolver();
+            _outlinePartNameResolver = outlinePartNameResolver;
         }
 
         /// <summary>
@@ -164,7 +166,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 Id = _outlinePartResolver.ResolveOutlinePart(entity),
                 SeoObjectType = seoSupport != null ? seoSupport.SeoObjectType : "Catalog",
                 SeoInfos = seoSupport?.SeoInfos,
-                Name = _outlinePartResolver.ResolveOutlineName(entity)
+                Name = _outlinePartNameResolver.ResolveOutlineName(entity)
             };
 
             return retVal;

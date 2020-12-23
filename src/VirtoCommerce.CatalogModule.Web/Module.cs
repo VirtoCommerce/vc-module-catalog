@@ -120,6 +120,7 @@ namespace VirtoCommerce.CatalogModule.Web
                     return new IdOutlinePartResolver();
                 }
             });
+            serviceCollection.AddTransient<IOutlinePartNameResolver, NameOutlinePartResolver>();
 
             serviceCollection.AddTransient<ProductDocumentChangesProvider>();
             serviceCollection.AddTransient<ProductDocumentBuilder>();

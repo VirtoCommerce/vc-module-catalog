@@ -9,6 +9,5 @@ namespace VirtoCommerce.CatalogModule.Core.Model.OutlinePart
     public interface IOutlinePartResolver
     {
         string ResolveOutlinePart(IEntity entity);
-        string ResolveOutlineName(IEntity entity);
     }
 }
