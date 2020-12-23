@@ -237,13 +237,24 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             var result = aggregationResponseValues
                 .Select(v =>
                 {
+                    if (v.Id.Contains(ModuleConstants.OutlineDelimiter))
+                    {
+                        var aggregationIdName = v.Id.Split(ModuleConstants.OutlineDelimiter);
+                        if (aggregationIdName.Length > 1)
+                        {
+                            return new AggregationItem
+                            {
+                                Value = aggregationIdName[0],
+                                Count = (int)v.Count,
+                                Labels = new[] { new AggregationLabel { Label = aggregationIdName[1] } }
+                            };
+                        }
+                    }
+
                     return new AggregationItem
                     {
-                        Value = v.Id.Contains(ModuleConstants.OutlineDelimiter) ? v.Id.Split(ModuleConstants.OutlineDelimiter)[0] : v.Id,
-                        Count = (int)v.Count,
-                        Labels = v.Id.Contains(ModuleConstants.OutlineDelimiter) ?
-                                    new[] { new AggregationLabel { Label = v.Id.Split(ModuleConstants.OutlineDelimiter)[1] } } :
-                                    Array.Empty<AggregationLabel>()
+                        Value = v.Id,
+                        Count = (int)v.Count
                     };
                 })
                 .ToList();

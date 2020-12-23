@@ -117,7 +117,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             var outlineStrings = GetOutlineStrings(product.Outlines);
             document.AddFilterableValues("__outline", outlineStrings);
 
-            document.AddFilterableValues("__outlines", GetOutlineStrings(product.Outlines, getNameLatestItem: true));
+            document.AddFilterableValues("__outline_named", GetOutlineStrings(product.Outlines, getNameLatestItem: true));
 
             // Add the all physical and virtual paths
             document.AddFilterableValues("__path", product.Outlines.Select(x=> string.Join("/", x.Items.Take(x.Items.Count - 1).Select(i=> i.Id))).ToList());

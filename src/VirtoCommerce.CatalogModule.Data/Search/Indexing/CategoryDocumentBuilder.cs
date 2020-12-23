@@ -88,7 +88,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
             foreach (var outlineItem in GetOutlineStrings(category.Outlines, getNameLatestItem: true))
             {
-                document.Add(new IndexDocumentField($"__outlines", outlineItem) { IsRetrievable = true, IsFilterable = true, IsCollection = true });
+                document.Add(new IndexDocumentField($"__outline_named", outlineItem) { IsRetrievable = true, IsFilterable = true, IsCollection = true });
             }
 
             IndexCustomProperties(document, category.Properties, new[] { PropertyType.Category });

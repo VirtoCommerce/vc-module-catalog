@@ -71,8 +71,8 @@ namespace VirtoCommerce.CatalogModule.Tests
                             } } }, true,
                         new []
                         {
-                            $"1/11{ModuleConstants.Search.OutlineDelimiter}Category1",
-                            $"1{ModuleConstants.Search.OutlineDelimiter}Catalog"
+                            $"1/11{ModuleConstants.OutlineDelimiter}Category1",
+                            $"1{ModuleConstants.OutlineDelimiter}Catalog"
                         } },
                     new object[] {
                         new[] { new Outline
@@ -85,10 +85,10 @@ namespace VirtoCommerce.CatalogModule.Tests
                             } } }, true,
                         new []
                         {
-                            $"1/11/12{ModuleConstants.Search.OutlineDelimiter}Category2",
-                            $"1/11{ModuleConstants.Search.OutlineDelimiter}Category1",
-                            $"1{ModuleConstants.Search.OutlineDelimiter}Catalog",
-                            $"1/12{ModuleConstants.Search.OutlineDelimiter}Category2"
+                            $"1/11/12{ModuleConstants.OutlineDelimiter}Category2",
+                            $"1/11{ModuleConstants.OutlineDelimiter}Category1",
+                            $"1{ModuleConstants.OutlineDelimiter}Catalog",
+                            $"1/12{ModuleConstants.OutlineDelimiter}Category2"
                         } },
                     new object[] {
                         new[] { new Outline
@@ -102,12 +102,12 @@ namespace VirtoCommerce.CatalogModule.Tests
                             } } }, true,
                         new []
                         {
-                            $"1/11/12/13{ModuleConstants.Search.OutlineDelimiter}Category3",
-                            $"1/11/12{ModuleConstants.Search.OutlineDelimiter}Category2",
-                            $"1/11{ModuleConstants.Search.OutlineDelimiter}Category1",
-                            $"1{ModuleConstants.Search.OutlineDelimiter}Catalog",
-                            $"1/12{ModuleConstants.Search.OutlineDelimiter}Category2",
-                            $"1/13{ModuleConstants.Search.OutlineDelimiter}Category3"
+                            $"1/11/12/13{ModuleConstants.OutlineDelimiter}Category3",
+                            $"1/11/12{ModuleConstants.OutlineDelimiter}Category2",
+                            $"1/11{ModuleConstants.OutlineDelimiter}Category1",
+                            $"1{ModuleConstants.OutlineDelimiter}Catalog",
+                            $"1/12{ModuleConstants.OutlineDelimiter}Category2",
+                            $"1/13{ModuleConstants.OutlineDelimiter}Category3"
                         } },
                 };
             }
