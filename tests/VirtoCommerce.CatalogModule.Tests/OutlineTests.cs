@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
+using Moq;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CatalogModule.Core.Model.OutlinePart;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Services;
 using VirtoCommerce.CoreModule.Core.Outlines;
@@ -213,7 +215,7 @@ namespace VirtoCommerce.CatalogModule.Tests
 
         private static IOutlineService GetOutlineService()
         {
-            return new OutlineService();
+            return new OutlineService(Mock.Of<IOutlinePartNameResolver>());
         }
 
         private static IEnumerable<IHasOutlines> GetTestData()

@@ -273,7 +273,7 @@
                 "labels": {
                     "sku": "SKU",
                     "priority": "Приоритет",
-                    "name": "Название",
+                    "name": "Название продукта",
                     "can-be-purchased": "Можно приобрести",
                     "store-visible": "Видимый запас",
                     "track-inventory": "Отслеживание запасов",

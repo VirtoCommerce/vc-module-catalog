@@ -296,7 +296,7 @@
           "outer-id": "Outer ID",
           "sku": "SKU",
           "priority": "Priority",
-          "name": "Name",
+          "name": "Product name",
           "can-be-purchased": "Can be purchased",
           "store-visible": "Store visible",
           "track-inventory": "Track inventory",
