@@ -6,7 +6,7 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql(@"DROP INDEX IF EXISTS [IX_Item_CreatedDate] ON [Item]
+            migrationBuilder.Sql(@"
                     IF NOT EXISTS(SELECT * FROM sys.indexes WHERE name = 'IX_Item_CreatedDate' AND object_id = OBJECT_ID('Item'))
                     BEGIN
 		                CREATE INDEX [IX_Item_CreatedDate] ON [Item]([CreatedDate] ASC)
