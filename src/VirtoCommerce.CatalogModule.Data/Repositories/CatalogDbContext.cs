@@ -49,6 +49,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<ItemEntity>().HasIndex(x => new { x.Code, x.CatalogId }).HasName("IX_Code_CatalogId").IsUnique();
             modelBuilder.Entity<ItemEntity>().HasIndex(x => new { x.CatalogId, x.ParentId }).IsUnique(false).HasName("IX_CatalogId_ParentId");
+            modelBuilder.Entity<ItemEntity>().HasIndex(x => new { x.CreatedDate }).IsUnique(false).HasName("IX_Item_CreatedDate");
             #endregion
 
             #region Property

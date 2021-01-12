@@ -608,6 +608,9 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
 
                     b.HasIndex("CategoryId");
 
+                    b.HasIndex("CreatedDate")
+                        .HasName("IX_Item_CreatedDate");
+
                     b.HasIndex("ParentId");
 
                     b.HasIndex("CatalogId", "ParentId")
