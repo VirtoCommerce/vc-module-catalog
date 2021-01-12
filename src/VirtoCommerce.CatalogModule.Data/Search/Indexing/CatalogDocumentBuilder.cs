@@ -49,7 +49,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                                 document.Add(new IndexDocumentField(propertyName, shortTextValue) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection });
                                 break;
                             case PropertyValueType.GeoPoint:
-                                document.Add(new IndexDocumentField(propertyName, GeoPoint.TryParse((string) propValue.Value)) { IsRetrievable = true, IsSearchable = true, IsCollection = true });
+                                document.Add(new IndexDocumentField(propertyName, GeoPoint.TryParse((string)propValue.Value)) { IsRetrievable = true, IsSearchable = true, IsCollection = true });
                                 break;
                         }
                     }
@@ -91,13 +91,13 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
             var items = outline.Items
                 .Take(outline.Items.Count - 1) // Exclude last item, which is current item ID
-                // VP-6151 Need to save outlines in index in lower case as we are converting search criteria outlines to lower case
+                                               // VP-6151 Need to save outlines in index in lower case as we are converting search criteria outlines to lower case
                 .Select(i => i.Id.ToLowerInvariant())
                 .ToList();
 
             var itemNames = outline.Items
                 .Take(outline.Items.Count - 1) // Exclude last item, which is current item ID
-                .ToDictionary(x => x.Id, y => y.Name);
+                .ToDictionary(x => x.Id.ToLowerInvariant(), y => y.Name);
 
             var result = new List<string>();
 
