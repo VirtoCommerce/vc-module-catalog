@@ -25,19 +25,20 @@ namespace VirtoCommerce.CatalogModule.Tests
         }
 
         [Fact]
-        public void OutlinesInLowercase()
+        public void GetOutlineStrings_SomeIdsContainUppercasedChars_OutlinesMustBeInLowercase()
         {
             //Arrange
             var builder = GetFakeCatalogDocumentBuilder();
-
-            //Act
             var outlines = new[] { new Outline
                         {
                             Items = new[] {
                                 new OutlineItem { Id = "C", Name = "catalog" },
                                 new OutlineItem { Id = "C1", Name = "category1" },
+                                new OutlineItem { Id = "S1", Name = "subcategory1" },
                                 new OutlineItem { Id = "P1", Name = "product1" },
                             } } };
+
+            //Act
             var result = builder.GetOutlineStringsPublic(outlines, true);
 
             //Assert
