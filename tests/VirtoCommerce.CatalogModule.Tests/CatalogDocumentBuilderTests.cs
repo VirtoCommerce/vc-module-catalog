@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Moq;
 using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Data.Search.Indexing;
@@ -21,6 +22,26 @@ namespace VirtoCommerce.CatalogModule.Tests
 
             //Assert
             Assert.Equal(expectedResult, result);
+        }
+
+        [Fact]
+        public void OutlinesInLowercase()
+        {
+            //Arrange
+            var builder = GetFakeCatalogDocumentBuilder();
+
+            //Act
+            var outlines = new[] { new Outline
+                        {
+                            Items = new[] {
+                                new OutlineItem { Id = "C", Name = "catalog" },
+                                new OutlineItem { Id = "C1", Name = "category1" },
+                                new OutlineItem { Id = "P1", Name = "product1" },
+                            } } };
+            var result = builder.GetOutlineStringsPublic(outlines, true);
+
+            //Assert
+            Assert.DoesNotContain(result, outline => outline.Any(c => char.IsUpper(c)));
         }
 
         private FakeCatalogDocumentBuilder GetFakeCatalogDocumentBuilder()
