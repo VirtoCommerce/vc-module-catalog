@@ -379,7 +379,7 @@ angular.module('virtoCommerce.catalogModule')
                 },
                 {
                     name: "platform.commands.delete",
-                    icon: 'fa fa-trash-o',
+                    icon: 'fas fa-trash-alt',
                     executeMethod: function () { deleteList($scope.gridApi.selection.getSelectedRows()); },
                     canExecuteMethod: isItemsChecked,
                     permission: 'catalog:delete'
@@ -423,7 +423,7 @@ angular.module('virtoCommerce.catalogModule')
                 },
                 {
                     name: "platform.commands.cut",
-                    icon: 'fa fa-cut',
+                    icon: 'fas fa-cut',
                     executeMethod: function () {
                         cutList($scope.gridApi.selection.getSelectedRows());
                     },
@@ -432,7 +432,7 @@ angular.module('virtoCommerce.catalogModule')
                 },
                 {
                     name: "platform.commands.paste",
-                    icon: 'fa fa-clipboard',
+                    icon: 'fas fa-paste',
                     executeMethod: function () {
                         blade.isLoading = true;
                         listEntries.move({
@@ -462,7 +462,7 @@ angular.module('virtoCommerce.catalogModule')
                 if (blade.mode === 'mappingSource') {
                     var mapCommand = {
                         name: "catalog.commands.map",
-                        icon: 'fa fa-link',
+                        icon: 'fas fa-link',
                         executeMethod: function () {
                             mapChecked();
                         },
@@ -473,7 +473,7 @@ angular.module('virtoCommerce.catalogModule')
             } else if (!blade.isBrowsingLinkedCategory && authService.checkPermission('catalog:create')) {
                 blade.toolbarCommands.splice(1, 0, {
                     name: "platform.commands.add",
-                    icon: 'fa fa-plus',
+                    icon: 'fas fa-plus',
                     executeMethod: function () {
                         var newBlade = {
                             id: 'listItemChild',

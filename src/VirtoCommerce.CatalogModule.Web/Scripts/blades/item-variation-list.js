@@ -85,7 +85,7 @@ angular.module('virtoCommerce.catalogModule').controller('virtoCommerce.catalogM
                 canExecuteMethod: function () { return true; }
             },
             {
-                name: "platform.commands.add", icon: 'fa fa-plus',
+                name: "platform.commands.add", icon: 'fas fa-plus',
                 executeMethod: function () {
                     items.newVariation({ itemId: blade.item.id }, function (data) {
                         // take variation properties only
@@ -109,7 +109,7 @@ angular.module('virtoCommerce.catalogModule').controller('virtoCommerce.catalogM
                 permission: 'catalog:create'
             },
             {
-                name: "platform.commands.delete", icon: 'fa fa-trash-o',
+                name: "platform.commands.delete", icon: 'fas fa-trash-alt',
                 executeMethod: function () {
                     $scope.deleteList($scope.gridApi.selection.getSelectedRows());
                 },
