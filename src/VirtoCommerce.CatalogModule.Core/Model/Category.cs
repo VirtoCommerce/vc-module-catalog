@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+using VirtoCommerce.CatalogModule.Core.Extensions;
 using VirtoCommerce.CoreModule.Core.Outlines;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.ExportModule.Core.Model;
@@ -9,7 +10,7 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Core.Model
 {
-    public class Category : AuditableEntity, IHasLinks, ISeoSupport, IHasOutlines, IHasImages, IHasProperties, IHasTaxType, IHasName, IHasOuterId, IExportable
+    public class Category : AuditableEntity, IHasLinks, ISeoSupport, IHasOutlines, IHasImages, IHasProperties, IHasTaxType, IHasName, IHasOuterId, IExportable, IHasExcludedProperties
     {
         public Category()
         {
@@ -63,7 +64,10 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
         #region IHasProperties members
         public IList<Property> Properties { get; set; }
+        #endregion
 
+        #region IHasExcludedProperties members
+        public IList<ExcludedProperty> ExcludedProperties { get; set; }
         #endregion
 
         #region ILinkSupport members
@@ -110,11 +114,17 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
         public virtual void TryInheritFrom(IEntity parent)
         {
+            this.InheritExcludedProperties(parent as IHasExcludedProperties);
+
             if (parent is IHasProperties hasProperties)
             {
                 //Properties inheritance
                 foreach (var parentProperty in hasProperties.Properties ?? Array.Empty<Property>())
                 {
+                    if (this.HasPropertyExcluded(parentProperty.Name))
+                    {
+                        continue;
+                    }
                     if (Properties == null)
                     {
                         Properties = new List<Property>();

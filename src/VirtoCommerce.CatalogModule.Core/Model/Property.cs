@@ -12,10 +12,10 @@ namespace VirtoCommerce.CatalogModule.Core.Model
     {
         /// <summary>
         /// Gets or sets a value indicating whether user can change property value.
-        /// </summary>     
+        /// </summary>
         public bool IsReadOnly { get; set; }
         /// <summary>
-        /// Gets or sets a value indicating whether user can change property metadata or remove this property. 
+        /// Gets or sets a value indicating whether user can change property metadata or remove this property.
         /// </summary>
         public bool IsManageable => !IsTransient();
         /// <summary>

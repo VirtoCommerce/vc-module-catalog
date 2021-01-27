@@ -565,7 +565,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     Item_CTE AS
                     (
                         SELECT
-                            a.Id
+                            CONVERT(nvarchar(64), newid()) as Id
                             ,a.AssociationType
                             ,a.Priority
                             ,a.ItemId

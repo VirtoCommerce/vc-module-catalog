@@ -8,6 +8,7 @@ using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Extenstions;
 using VirtoCommerce.SearchModule.Core.Model;
+using VirtoCommerce.SearchModule.Core.Services;
 using RangeFilter = VirtoCommerce.SearchModule.Core.Model.RangeFilter;
 using RangeFilterValue = VirtoCommerce.SearchModule.Core.Model.RangeFilterValue;
 
@@ -16,10 +17,12 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
     public class TermFilterBuilder : ITermFilterBuilder
     {
         private readonly IBrowseFilterService _browseFilterService;
+        private readonly ISearchPhraseParser _searchPhraseParser;
 
-        public TermFilterBuilder(IBrowseFilterService browseFilterService)
+        public TermFilterBuilder(IBrowseFilterService browseFilterService, ISearchPhraseParser searchPhraseParser)
         {
             _browseFilterService = browseFilterService;
+            _searchPhraseParser = searchPhraseParser;
         }
 
         public virtual async Task<FiltersContainer> GetTermFiltersAsync(ProductIndexedSearchCriteria criteria)
@@ -65,7 +68,16 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                     }
                     else // Custom term
                     {
-                        var filter = FiltersHelper.CreateTermFilter(term.Key, term.Values);
+                        IFilter filter = null;
+                        //Workaround VP-5872: Try to parse range filter from terms first
+                        if (term.Values.Count() == 1 && _searchPhraseParser != null)
+                        {
+                            filter = _searchPhraseParser.Parse($"{term.Key}:{term.Values.First()}").Filters.OfType<RangeFilter>().FirstOrDefault();
+                        }
+                        if (filter == null)
+                        {
+                            filter = FiltersHelper.CreateTermFilter(term.Key, term.Values);
+                        }
                         result.PermanentFilters.Add(filter);
                     }
                 }

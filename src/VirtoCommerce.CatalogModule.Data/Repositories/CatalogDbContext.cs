@@ -1,5 +1,8 @@
+using System.Collections.Generic;
 using EntityFrameworkCore.Triggers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
+using Newtonsoft.Json;
 using VirtoCommerce.CatalogModule.Data.Model;
 
 namespace VirtoCommerce.CatalogModule.Data.Repositories
@@ -30,6 +33,9 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 .WithMany().HasForeignKey(x => x.ParentCategoryId).OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<CategoryEntity>().HasOne(x => x.Catalog)
                 .WithMany().HasForeignKey(x => x.CatalogId).IsRequired().OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<CategoryEntity>().Property(x => x.ExcludedProperties).HasConversion(
+                x => x != null && x.Any() ? JsonConvert.SerializeObject(x) : null,
+                x => x != null ? JsonConvert.DeserializeObject<List<string>>(x) : null);
             #endregion
 
             #region Item
@@ -41,8 +47,9 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<ItemEntity>().HasOne(m => m.Parent).WithMany(x => x.Childrens).HasForeignKey(x => x.ParentId)
                 .OnDelete(DeleteBehavior.Restrict);
-            modelBuilder.Entity<ItemEntity>().HasIndex(x => new { x.Code }).IsUnique();
+            modelBuilder.Entity<ItemEntity>().HasIndex(x => new { x.Code, x.CatalogId }).HasName("IX_Code_CatalogId").IsUnique();
             modelBuilder.Entity<ItemEntity>().HasIndex(x => new { x.CatalogId, x.ParentId }).IsUnique(false).HasName("IX_CatalogId_ParentId");
+            modelBuilder.Entity<ItemEntity>().HasIndex(x => new { x.CreatedDate, x.ParentId }).IncludeProperties(x => x.ModifiedDate).IsUnique(false).HasName("IX_CreatedDate_ParentId");
             #endregion
 
             #region Property
@@ -121,7 +128,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             modelBuilder.Entity<EditorialReviewEntity>().Property(x => x.Id).HasMaxLength(128).ValueGeneratedOnAdd();
             modelBuilder.Entity<EditorialReviewEntity>().HasOne(x => x.CatalogItem).WithMany(x => x.EditorialReviews)
                 .HasForeignKey(x => x.ItemId).IsRequired().OnDelete(DeleteBehavior.Cascade);
-            #endregion         
+            #endregion
 
             #region Association
             modelBuilder.Entity<AssociationEntity>().ToTable("Association").HasKey(x => x.Id);

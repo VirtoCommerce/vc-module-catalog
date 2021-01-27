@@ -86,6 +86,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 document.Add(new IndexDocumentField("__outline", outline.ToLowerInvariant()) { IsRetrievable = true, IsFilterable = true, IsCollection = true });
             }
 
+            foreach (var outlineItem in GetOutlineStrings(category.Outlines, getNameLatestItem: true))
+            {
+                document.Add(new IndexDocumentField($"__outline_named", outlineItem) { IsRetrievable = true, IsFilterable = true, IsCollection = true });
+            }
+
             IndexCustomProperties(document, category.Properties, new[] { PropertyType.Category });
 
             // add to content

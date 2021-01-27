@@ -15,7 +15,8 @@ angular.module('virtoCommerce.catalogModule')
 			blade.title = entity.name;
 			blade.subtitle = 'catalog.blades.property-list.subtitle';
 			blade.currentEntity = entity;
-			blade.currentEntities = angular.copy(entity.properties);
+            blade.currentEntities = angular.copy(entity.properties);
+            blade.propertiesForExclude = _.map(blade.currentEntities, (x) => { return { name: x.name } });
             blade.filteredProperties = [];
             //Apply stored filters
             if ($localStorage.propertyFilter) {
@@ -54,8 +55,8 @@ angular.module('virtoCommerce.catalogModule')
         };
 
 		$scope.saveChanges = function () {
-			blade.currentEntity.properties = blade.currentEntities;
-			$scope.bladeClose();
+            blade.currentEntity.properties = blade.currentEntities;
+            $scope.bladeClose();
 		};
 
 		$scope.getPropertyDisplayName = function (prop) {
@@ -110,10 +111,11 @@ angular.module('virtoCommerce.catalogModule')
 		$scope.setForm = function (form) {
 			formScope = form;
 		}
-
-		$scope.$watch("blade.currentEntities", function () {
-			$scope.isValid = formScope && formScope.$valid;
-		}, true);
+        const isValid = () => {
+            $scope.isValid = formScope && formScope.$valid;
+        };
+        $scope.$watch("blade.currentEntities", isValid, true);
+        $scope.$watch("blade.currentEntity", isValid, true);
 
 		blade.headIcon = 'fa-gear';
 

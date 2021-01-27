@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Search;
@@ -25,6 +27,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly ISkuGenerator _skuGenerator;
         private readonly IProductAssociationSearchService _productAssociationSearchService;
         private readonly IAuthorizationService _authorizationService;
+        private readonly MvcNewtonsoftJsonOptions _jsonOptions;
 
         public CatalogModuleProductsController(
             IItemService itemsService
@@ -32,7 +35,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             , ICategoryService categoryService
             , ISkuGenerator skuGenerator
             , IProductAssociationSearchService productAssociationSearchService
-            , IAuthorizationService authorizationService)
+            , IAuthorizationService authorizationService
+            , IOptions<MvcNewtonsoftJsonOptions> jsonOptions)
         {
             _itemsService = itemsService;
             _categoryService = categoryService;
@@ -40,6 +44,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             _skuGenerator = skuGenerator;
             _productAssociationSearchService = productAssociationSearchService;
             _authorizationService = authorizationService;
+            _jsonOptions = jsonOptions.Value;
         }
 
 
@@ -73,7 +78,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         ///<param name="respGroup">Response group.</param>
         [HttpGet]
         [Route("")]
-        public async Task<ActionResult<CatalogProduct[]>> GetProductByIds([FromQuery] string[] ids, [FromQuery] string respGroup = null)
+        public async Task<ActionResult> GetProductByIds([FromQuery] string[] ids, [FromQuery] string respGroup = null)
         {
             var items = await _itemsService.GetByIdsAsync(ids, respGroup);
             if (items == null)
@@ -85,8 +90,11 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             {
                 return Unauthorized();
             }
+            //It is a important to return serialized data by such way. Instead you have a slow response time for large outputs 
+            //https://github.com/dotnet/aspnetcore/issues/19646
+            var result = JsonConvert.SerializeObject(items, _jsonOptions.SerializerSettings);
 
-            return Ok(items);
+            return Content(result, "application/json");
         }
 
         /// <summary>

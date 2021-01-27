@@ -154,5 +154,7 @@ namespace VirtoCommerce.CatalogModule.Core
                 }
             }
         }
+
+        public const string OutlineDelimiter = "___";
     }
 }

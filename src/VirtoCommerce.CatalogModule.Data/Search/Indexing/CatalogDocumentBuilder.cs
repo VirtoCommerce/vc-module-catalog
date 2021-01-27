@@ -23,6 +23,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         protected virtual void IndexCustomProperties(IndexDocument document, ICollection<Property> properties, ICollection<PropertyType> contentPropertyTypes)
         {
             foreach (var property in properties)
+            {
                 foreach (var propValue in property.Values?.Where(x => x.Value != null) ?? Array.Empty<PropertyValue>())
                 {
                     var propertyName = propValue.PropertyName?.ToLowerInvariant();
@@ -73,24 +74,30 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                         }
                     }
                 }
+            }
         }
 
-        protected virtual string[] GetOutlineStrings(IEnumerable<Outline> outlines)
+        protected virtual string[] GetOutlineStrings(IEnumerable<Outline> outlines, bool getNameLatestItem = false)
         {
             return outlines
-                .SelectMany(ExpandOutline)
-                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .SelectMany(x => ExpandOutline(x, getNameLatestItem))
+                .Distinct()
                 .ToArray();
         }
 
-        protected virtual IEnumerable<string> ExpandOutline(Outline outline)
+        protected virtual IEnumerable<string> ExpandOutline(Outline outline, bool getNameLatestItem)
         {
             // Outline structure: catalog/category1/.../categoryN/current-item
 
             var items = outline.Items
                 .Take(outline.Items.Count - 1) // Exclude last item, which is current item ID
-                .Select(i => i.Id)
+                                               // VP-6151 Need to save outlines in index in lower case as we are converting search criteria outlines to lower case
+                .Select(i => i.Id.ToLowerInvariant())
                 .ToList();
+
+            var itemNames = outline.Items
+                .Take(outline.Items.Count - 1) // Exclude last item, which is current item ID
+                .ToDictionary(x => x.Id.ToLowerInvariant(), y => y.Name);
 
             var result = new List<string>();
 
@@ -102,7 +109,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             {
                 for (var i = items.Count; i > 0; i--)
                 {
-                    result.Add(string.Join("/", items.Take(i)));
+                    var path = !getNameLatestItem ? string.Join("/", items.Take(i)) :
+                        string.Join(ModuleConstants.OutlineDelimiter,
+                            string.Join("/", items.Take(i)), itemNames.Values.ElementAt(i - 1));
+
+                    result.Add(path);
                 }
             }
 
@@ -113,7 +124,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
                 result.AddRange(
                     items.Skip(1)
-                        .Select(i => string.Join("/", catalogId, i)));
+                        .Select(i => !getNameLatestItem ?
+                                string.Join("/", catalogId, i) :
+                                string.Join(ModuleConstants.OutlineDelimiter,
+                                    string.Join("/", catalogId, i), itemNames[i])
+                        ));
             }
 
             return result;

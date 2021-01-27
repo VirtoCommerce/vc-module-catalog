@@ -11,7 +11,7 @@ using VirtoCommerce.Platform.Core.Domain;
 using Xunit;
 using dataModel = VirtoCommerce.CatalogModule.Data.Model;
 
-namespace VirtoCommerce.CatalogModule.Test
+namespace VirtoCommerce.CatalogModule.Tests
 {
     [Trait("Category", "CI")]
     public class ProductAssociationTests
