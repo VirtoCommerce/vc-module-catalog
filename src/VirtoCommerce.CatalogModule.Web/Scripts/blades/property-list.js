@@ -121,7 +121,7 @@ angular.module('virtoCommerce.catalogModule')
 
 		blade.toolbarCommands = [
 			{
-				name: "catalog.commands.add-property", icon: 'fa fa-plus',
+				name: "catalog.commands.add-property", icon: 'fas fa-plus',
 				executeMethod: function () {
 					if (blade.entityType == "product") {
 						editUnmanageable({

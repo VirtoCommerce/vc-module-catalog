@@ -125,12 +125,10 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                     {
                         continue;
                     }
-                    if (Properties == null)
-                    {
-                        Properties = new List<Property>();
-                    }
+
+                    Properties ??= new List<Property>();
                     //Try to find property by type and name
-                    var existProperty = Properties.FirstOrDefault(x => x.IsSame(parentProperty, PropertyType.Product, PropertyType.Variation));
+                    var existProperty = Properties.FirstOrDefault(x => x.IsSame(parentProperty));
                     if (existProperty == null)
                     {
                         existProperty = AbstractTypeFactory<Property>.TryCreateInstance();
@@ -140,19 +138,13 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                     existProperty.IsReadOnly = existProperty.Type != PropertyType.Category;
                 }
                 //Restore order after changes
-                if (Properties != null)
-                {
-                    Properties = Properties.OrderBy(x => x.Name).ToList();
-                }
+                Properties = Properties?.OrderBy(x => x.Name).ToList();
             }
 
             if (parent is IHasTaxType hasTaxType)
             {
                 //Try to inherit taxType from parent category
-                if (TaxType == null)
-                {
-                    TaxType = hasTaxType.TaxType;
-                }
+                TaxType ??= hasTaxType.TaxType;
             }
         }
         #endregion

@@ -88,7 +88,7 @@ angular.module('virtoCommerce.catalogModule')
                 blade.toolbarCommands = [
                     {
                         name: 'platform.commands.remove',
-                        icon: 'fa fa-trash-o',
+                        icon: 'fas fa-trash-alt',
                         executeMethod: function() { $scope.removeAction(); },
                         canExecuteMethod: function() {
                             var retVal = false;
@@ -102,7 +102,7 @@ angular.module('virtoCommerce.catalogModule')
                     },
                     {
                         name: 'catalog.commands.gallery',
-                        icon: 'fa fa-image',
+                        icon: 'fas fa-image',
                         executeMethod: function() {
                             var dialog = {
                                 images: blade.currentEntities,
@@ -116,7 +116,7 @@ angular.module('virtoCommerce.catalogModule')
                     },
                     {
                         name: "Add",
-                        icon: 'fa fa-plus',
+                        icon: 'fas fa-plus',
                         executeMethod: function() {
                             var newBlade = {
                                 languages: languages,
@@ -132,7 +132,7 @@ angular.module('virtoCommerce.catalogModule')
                     },
                     {
                         name: "Link",
-                        icon: 'fa fa-link',
+                        icon: 'fas fa-link',
                         executeMethod: function() {
                             var newBlade = {
                                 title: 'catalog.blades.images-select.title',

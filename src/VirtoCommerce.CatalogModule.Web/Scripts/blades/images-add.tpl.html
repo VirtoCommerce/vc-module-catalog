@@ -47,7 +47,7 @@
                     <input type="file" multiple uploader="uploader" nv-file-select style="z-index: 0;" tabindex="-1">
                     <input type="text" style="z-index: 1; cursor: default;" readonly="">
                     <button class="btn __file" type="button" onclick="$('input[type=file]').trigger('click')" title="Open image file">
-                        <i class="btn-ico fa fa-image"></i>
+                        <i class="btn-ico fas fa-image"></i>
                     </button>
                 </div>
 
@@ -71,7 +71,7 @@
                 <div class="form-input __file form-group">
                     <input ng-model="blade.newExternalImageUrl" type="url" placeholder="{{ 'catalog.blades.images.placeholders.image-url' | translate }}" tabindex="-1">
                     <button class="btn __file" type="button" ng-click="addImageFromUrlHandler()" title="Add image by URL">
-                        <i class="btn-ico fa fa-plus"></i>
+                        <i class="btn-ico fas fa-plus"></i>
                     </button>
                     <div class="__info list">
                         <div class="list-descr">{{ 'catalog.blades.images.descr.external-link-warning' | translate }}</div>
