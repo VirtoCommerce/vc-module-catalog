@@ -43,7 +43,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         public IQueryable<PropertyValidationRuleEntity> PropertyValidationRules => DbContext.Set<PropertyValidationRuleEntity>();
         public IQueryable<SeoInfoEntity> SeoInfos => DbContext.Set<SeoInfoEntity>();
 
-        public async Task<CatalogEntity[]> GetCatalogsByIdsAsync(string[] catalogIds)
+        public virtual async Task<CatalogEntity[]> GetCatalogsByIdsAsync(string[] catalogIds)
         {
             var result = Array.Empty<CatalogEntity>();
 
@@ -69,7 +69,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             return result;
         }
 
-        public async Task<CategoryEntity[]> GetCategoriesByIdsAsync(string[] categoriesIds, string responseGroup)
+        public virtual async Task<CategoryEntity[]> GetCategoriesByIdsAsync(string[] categoriesIds, string responseGroup)
         {
             var categoryResponseGroup = EnumUtility.SafeParseFlags(responseGroup, CategoryResponseGroup.Full);
             var result = Array.Empty<CategoryEntity>();
@@ -119,7 +119,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             return result;
         }
 
-        public async Task<ItemEntity[]> GetItemByIdsAsync(string[] itemIds, string responseGroup = null)
+        public virtual async Task<ItemEntity[]> GetItemByIdsAsync(string[] itemIds, string responseGroup = null)
         {
             var itemResponseGroup = EnumUtility.SafeParseFlags(responseGroup, ItemResponseGroup.ItemLarge);
             var result = Array.Empty<ItemEntity>();
@@ -210,7 +210,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             return result;
         }
 
-        public async Task<PropertyEntity[]> GetPropertiesByIdsAsync(string[] propIds, bool loadDictValues = false)
+        public virtual async Task<PropertyEntity[]> GetPropertiesByIdsAsync(string[] propIds, bool loadDictValues = false)
         {
             var result = Array.Empty<PropertyEntity>();
 
@@ -237,7 +237,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         /// </summary>
         /// <param name="catalogId"></param>
         /// <returns></returns>
-        public async Task<PropertyEntity[]> GetAllCatalogPropertiesAsync(string catalogId)
+        public virtual async Task<PropertyEntity[]> GetAllCatalogPropertiesAsync(string catalogId)
         {
             var result = Array.Empty<PropertyEntity>();
 
@@ -277,7 +277,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             return result;
         }
 
-        public async Task<PropertyDictionaryItemEntity[]> GetPropertyDictionaryItemsByIdsAsync(string[] dictItemIds)
+        public virtual async Task<PropertyDictionaryItemEntity[]> GetPropertyDictionaryItemsByIdsAsync(string[] dictItemIds)
         {
             var result = Array.Empty<PropertyDictionaryItemEntity>();
 
@@ -291,7 +291,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             return result;
         }
 
-        public async Task<AssociationEntity[]> GetAssociationsByIdsAsync(string[] associationIds)
+        public virtual async Task<AssociationEntity[]> GetAssociationsByIdsAsync(string[] associationIds)
         {
             var result = Array.Empty<AssociationEntity>();
 
@@ -303,7 +303,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             return result;
         }
 
-        public async Task<string[]> GetAllSeoDuplicatesIdsAsync()
+        public virtual async Task<string[]> GetAllSeoDuplicatesIdsAsync()
         {
             const string commandTemplate = @"
                     WITH cte AS (
@@ -324,7 +324,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             return result ?? new string[0];
         }
 
-        public async Task<string[]> GetAllChildrenCategoriesIdsAsync(string[] categoryIds)
+        public virtual async Task<string[]> GetAllChildrenCategoriesIdsAsync(string[] categoryIds)
         {
             string[] result = null;
 
@@ -346,7 +346,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             return result ?? new string[0];
         }
 
-        public async Task RemoveItemsAsync(string[] itemIds)
+        public virtual async Task RemoveItemsAsync(string[] itemIds)
         {
             if (!itemIds.IsNullOrEmpty())
             {
@@ -393,7 +393,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             }
         }
 
-        public async Task RemoveCategoriesAsync(string[] ids)
+        public virtual async Task RemoveCategoriesAsync(string[] ids)
         {
             if (!ids.IsNullOrEmpty())
             {
@@ -426,7 +426,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             }
         }
 
-        public async Task RemoveCatalogsAsync(string[] ids)
+        public virtual async Task RemoveCatalogsAsync(string[] ids)
         {
             if (!ids.IsNullOrEmpty())
             {
@@ -462,7 +462,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         /// we use columns Name and TargetType to find values that reference to the deleting property.
         /// </summary>
         /// <param name="propertyId"></param>
-        public async Task RemoveAllPropertyValuesAsync(string propertyId)
+        public virtual async Task RemoveAllPropertyValuesAsync(string propertyId)
         {
             var properties = await GetPropertiesByIdsAsync(new[] { propertyId });
             var catalogProperty = properties.FirstOrDefault(x => x.TargetType.EqualsInvariant(PropertyType.Catalog.ToString()));
@@ -487,7 +487,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             }
         }
 
-        public async Task<GenericSearchResult<AssociationEntity>> SearchAssociations(ProductAssociationSearchCriteria criteria)
+        public virtual async Task<GenericSearchResult<AssociationEntity>> SearchAssociations(ProductAssociationSearchCriteria criteria)
         {
             var result = new GenericSearchResult<AssociationEntity>();
 
