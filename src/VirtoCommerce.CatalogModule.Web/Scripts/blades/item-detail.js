@@ -102,7 +102,7 @@ angular.module('virtoCommerce.catalogModule')
 
     blade.toolbarCommands = [
 	    {
-	        name: "platform.commands.save", icon: 'fa fa-save',
+	        name: "platform.commands.save", icon: 'fas fa-save',
 	        executeMethod: saveChanges,
 	        canExecuteMethod: canSave,
 	        permission: blade.updatePermission
@@ -116,7 +116,7 @@ angular.module('virtoCommerce.catalogModule')
             permission: blade.updatePermission
         },
         {
-            name: "platform.commands.clone", icon: 'fa fa-files-o',
+            name: "platform.commands.clone", icon: 'fas fa-clone',
             executeMethod: function () {
                 blade.isLoading = true;
                 items.cloneItem({ itemId: blade.itemId }, function (data) {

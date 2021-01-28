@@ -242,7 +242,7 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                         toolbarCommands: [
                             {
                                 name: "platform.commands.confirm",
-                                icon: 'fa fa-plus',
+                                icon: 'fas fa-plus',
                                 executeMethod: function (blade) {
                                     var scopes = _.map(selectedListItems, function (x) {
                                         return angular.extend({ scope: x.id, label: x.name }, scopeOriginal);

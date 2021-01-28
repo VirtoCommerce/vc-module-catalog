@@ -74,7 +74,7 @@
         if (!blade.isNew) {
             blade.toolbarCommands = [
                 {
-                    name: "platform.commands.save", icon: 'fa fa-save',
+                    name: "platform.commands.save", icon: 'fas fa-save',
                     executeMethod: function () {
                         $scope.saveChanges();
                     },

@@ -174,7 +174,7 @@ angular.module('virtoCommerce.catalogModule')
                     0,
                     {
                         name: "platform.commands.add",
-                        icon: 'fa fa-plus',
+                        icon: 'fas fa-plus',
                         executeMethod: function () {
                             selectedNode = undefined;
                             $scope.selectedNodeId = undefined;

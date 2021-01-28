@@ -67,7 +67,7 @@ angular.module('virtoCommerce.catalogModule')
 
     blade.toolbarCommands = [
 		{
-		    name: "platform.commands.save", icon: 'fa fa-save',
+		    name: "platform.commands.save", icon: 'fas fa-save',
 		    executeMethod: saveChanges,
 		    canExecuteMethod: canSave,
 		    permission: blade.updatePermission

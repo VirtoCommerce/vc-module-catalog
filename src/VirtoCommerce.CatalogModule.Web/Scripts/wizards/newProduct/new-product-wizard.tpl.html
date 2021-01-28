@@ -31,7 +31,7 @@
                     <span class="list-descr">{{ 'catalog.wizards.new-product.labels.fill-properties-summary' | translate: {count: (getUnfilledProperties().length  | number:0), total: (blade.item.properties.length | number:0)} }} </span>
                 </li>
                 <li class="list-item" ng-click="openBlade('images')">
-                    <i class="list-ico fa fa-image"></i>
+                    <i class="list-ico fas fa-image"></i>
                     <span class="list-t">{{ 'catalog.wizards.new-product.labels.upload-images' | translate }}</span>
                     <span class="list-descr">{{ 'catalog.wizards.new-product.labels.upload-images-summary' | translate: {count: (blade.item.images.length >= 0 ? blade.item.images.length : 0 | number:0)} }}</span>
                 </li>
