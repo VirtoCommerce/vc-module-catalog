@@ -67,7 +67,7 @@ namespace VirtoCommerce.CatalogModule.Web
             serviceCollection.AddDbContext<CatalogDbContext>((provider, options) =>
             {
                 var configuration = provider.GetRequiredService<IConfiguration>();
-                options.UseSqlServer(configuration.GetConnectionString("VirtoCommerce.Catalog") ?? configuration.GetConnectionString("VirtoCommerce"));
+                options.UseSqlServer(configuration.GetConnectionString(ModuleInfo.Id) ?? configuration.GetConnectionString("VirtoCommerce"));
             });
             serviceCollection.AddTransient<ICatalogRepository, CatalogRepositoryImpl>();
             serviceCollection.AddTransient<Func<ICatalogRepository>>(provider => () => provider.CreateScope().ServiceProvider.GetRequiredService<ICatalogRepository>());
