@@ -6,7 +6,7 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Core.Model
 {
-    public class ProductAssociation : Entity, IHasOuterId, IHasImages, ICloneable
+    public class ProductAssociation : Entity, IHasOuterId, IHasImages, ICloneable, ICopyable
     {
         /// <summary>
         /// Association type (Accessories, Up-Sales, Cross-Sales, Related etc)
@@ -76,6 +76,16 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
             result.Images = Images?.Select(x => x.Clone()).OfType<Image>().ToList();
 
+            return result;
+        }
+        #endregion
+
+        #region ICopyable
+        public virtual object GetCopy()
+        {
+            var result = Clone() as ProductAssociation;
+            result.Id = null;
+            result.ItemId = null;
             return result;
         }
         #endregion
