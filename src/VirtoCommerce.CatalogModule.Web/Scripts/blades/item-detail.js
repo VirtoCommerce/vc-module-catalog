@@ -98,15 +98,15 @@ angular.module('virtoCommerce.catalogModule')
     blade.formScope = null;
     $scope.setForm = function (form) { blade.formScope = form; }
 
-    blade.headIcon = blade.productType === 'Digital' ? 'fa-file-zip-o' : 'fa-dropbox';
+    blade.headIcon = blade.productType === 'Digital' ? 'fa fa-file-zip-o' : 'fa fa-dropbox';
 
     blade.toolbarCommands = [
-	    {
-	        name: "platform.commands.save", icon: 'fas fa-save',
-	        executeMethod: saveChanges,
-	        canExecuteMethod: canSave,
-	        permission: blade.updatePermission
-	    },
+        {
+            name: "platform.commands.save", icon: 'fas fa-save',
+            executeMethod: saveChanges,
+            canExecuteMethod: canSave,
+            permission: blade.updatePermission
+        },
         {
             name: "platform.commands.reset", icon: 'fa fa-undo',
             executeMethod: function () {

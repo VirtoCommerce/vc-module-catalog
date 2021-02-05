@@ -71,7 +71,7 @@ angular.module('virtoCommerce.catalogModule').controller('virtoCommerce.catalogM
     };
 
 
-    blade.headIcon = 'fa-dropbox';
+    blade.headIcon = 'fa fa-dropbox';
 
     if (blade.toolbarCommandsAndEvents && blade.toolbarCommandsAndEvents.toolbarCommands) {
         blade.toolbarCommands = blade.toolbarCommandsAndEvents.toolbarCommands;
