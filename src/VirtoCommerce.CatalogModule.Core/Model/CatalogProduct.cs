@@ -300,6 +300,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
             result.Properties = Properties?.Select(x => x.GetCopy()).OfType<Property>().ToList();
             result.Variations = Variations?.Select(x => x.GetCopy()).OfType<Variation>().ToList();
             result.Reviews = Reviews?.Select(x => x.GetCopy()).OfType<EditorialReview>().ToList();
+            result.Associations = Associations?.Select(x => x.GetCopy()).OfType<ProductAssociation>().ToList();
             // Clear ID for all related entities except properties
             var allSeoSupportEntities = result.GetFlatObjectsListWithInterface<ISeoSupport>();
             foreach (var seoSuportEntity in allSeoSupportEntities)
