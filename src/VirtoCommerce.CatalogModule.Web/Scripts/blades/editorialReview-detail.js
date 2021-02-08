@@ -33,7 +33,7 @@ angular.module('virtoCommerce.catalogModule')
             $scope.bladeClose();
         };
 
-        blade.headIcon = 'fa-comments';
+        blade.headIcon = 'fa fa-comments';
         blade.title = 'catalog.blades.editorialReview-detail.title';
         blade.subtitle = 'catalog.blades.editorialReview-detail.subtitle';
         blade.editAsMarkdown = true;

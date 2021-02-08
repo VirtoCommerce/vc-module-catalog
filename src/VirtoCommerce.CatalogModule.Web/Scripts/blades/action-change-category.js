@@ -87,6 +87,6 @@ angular.module('virtoCommerce.catalogModule')
             return true;
         };
 
-        $scope.blade.headIcon = 'fa-upload';
+        $scope.blade.headIcon = 'fa fa-upload';
         initializeBlade();
     }]);

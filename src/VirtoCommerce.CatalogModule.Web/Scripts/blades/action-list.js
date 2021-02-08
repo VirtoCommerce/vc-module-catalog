@@ -37,7 +37,7 @@ angular.module('virtoCommerce.catalogModule')
             }
         };
 
-        $scope.blade.headIcon = 'fa-upload';
+        $scope.blade.headIcon = 'fa fa-upload';
         $scope.blade.title = "Bulk action list";
         $scope.blade.subtitle = "Select action for bulk operation";
 

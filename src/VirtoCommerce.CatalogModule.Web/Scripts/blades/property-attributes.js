@@ -1,4 +1,4 @@
-﻿angular.module('virtoCommerce.catalogModule')
+angular.module('virtoCommerce.catalogModule')
 .controller('virtoCommerce.catalogModule.propertyAttributesController', ['$scope', '$filter', 'platformWebApp.dialogService', function ($scope, $filter, dialogService) {
     var pb = $scope.blade.parentBlade;
     $scope.pb = pb;
@@ -30,7 +30,7 @@
         $scope.selectedItem = listItem;
     };
 
-    $scope.blade.headIcon = 'fa-gear';
+    $scope.blade.headIcon = 'fa fa-gear';
 
     $scope.blade.toolbarCommands = [
      {

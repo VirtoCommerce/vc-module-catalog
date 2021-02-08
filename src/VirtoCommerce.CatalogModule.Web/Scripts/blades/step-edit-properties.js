@@ -98,7 +98,7 @@ angular.module('virtoCommerce.catalogModule')
         };
 
 
-        blade.headIcon = 'fa-gear';
+        blade.headIcon = 'fa fa-gear';
         blade.toolbarCommands = blade.toolbarCommands || [];
         blade.isLoading = false;
         initialize();

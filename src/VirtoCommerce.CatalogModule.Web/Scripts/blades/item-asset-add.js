@@ -1,4 +1,4 @@
-﻿angular.module('virtoCommerce.catalogModule')
+angular.module('virtoCommerce.catalogModule')
 .controller('virtoCommerce.catalogModule.itemAssetAddController', ['$scope', '$translate', 'platformWebApp.bladeNavigationService', '$filter', 'FileUploader', function ($scope, $translate, bladeNavigationService, $filter, FileUploader) {
     var blade = $scope.blade;
 
@@ -78,7 +78,7 @@
         });
     }
 
-    blade.headIcon = 'fa-plus';
+    blade.headIcon = 'fa fa-plus';
     blade.toolbarCommands = [];
 
     initialize(blade.item);

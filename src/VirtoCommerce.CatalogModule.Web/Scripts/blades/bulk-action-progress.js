@@ -10,7 +10,7 @@ angular.module('virtoCommerce.catalogModule')
         {
         var blade = $scope.blade;
         blade.isLoading = true;
-        $scope.blade.headIcon = 'fa-upload';
+        $scope.blade.headIcon = 'fa fa-upload';
 
         function initializeBlade() {
             blade.isLoading = false;
