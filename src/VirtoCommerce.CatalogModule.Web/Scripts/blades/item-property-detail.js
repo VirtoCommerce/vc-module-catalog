@@ -1,4 +1,4 @@
-﻿angular.module('virtoCommerce.catalogModule')
+angular.module('virtoCommerce.catalogModule')
 .controller('virtoCommerce.catalogModule.itemPropertyDetailController', ['$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'virtoCommerce.catalogModule.valueTypes', function ($scope, bladeNavigationService, dialogService, valueTypes) {
     var blade = $scope.blade;
     blade.availableValueTypes = valueTypes.get();
@@ -50,7 +50,7 @@
     $scope.setForm = function (form) { $scope.formScope = form; };
 
     if (!blade.isNew) {
-        blade.headIcon = 'fa-gear';
+        blade.headIcon = 'fa fa fa-gear';
         blade.toolbarCommands = [           
             {
                 name: "platform.commands.delete", icon: 'fas fa-trash-alt',

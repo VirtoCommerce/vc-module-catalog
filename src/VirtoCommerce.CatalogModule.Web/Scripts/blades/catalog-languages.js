@@ -1,4 +1,4 @@
-﻿angular.module('virtoCommerce.catalogModule')
+angular.module('virtoCommerce.catalogModule')
 .controller('virtoCommerce.catalogModule.catalogLanguagesController', ['$scope', 'platformWebApp.settings', 'platformWebApp.bladeNavigationService', function ($scope, settings, bladeNavigationService) {
     var blade = $scope.blade;
     blade.updatePermission = 'catalog:update';
@@ -60,7 +60,7 @@
         $scope.bladeClose();
     };
 
-    blade.headIcon = 'fa-language';
+    blade.headIcon = 'fa fa-language';
 
     $scope.openDictionarySettingManagement = function () {
         var newBlade = {

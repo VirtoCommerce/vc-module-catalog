@@ -1,4 +1,4 @@
-﻿angular.module('virtoCommerce.catalogModule')
+angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.propertyValidationRulesController', ['$scope', function ($scope) {
         var parentEntity = $scope.blade.parentBlade.currentEntity;
         var rule = $scope.blade.parentBlade.currentEntity.validationRule;
@@ -46,7 +46,7 @@
             $scope.bladeClose();
         };
 
-        $scope.blade.headIcon = 'fa-gear';
+        $scope.blade.headIcon = 'fa fa-gear';
         $scope.blade.isLoading = false;
 
         $scope.saveChanges = function () {

@@ -84,6 +84,6 @@ angular.module('virtoCommerce.catalogModule')
         cursor: "move"
     };
 
-    blade.headIcon = 'fa-gear';
+    blade.headIcon = 'fa fa-gear';
     initializeBlade();
 }]);

@@ -6,7 +6,7 @@ angular.module('virtoCommerce.catalogModule')
             'platformWebApp.settings', 'platformWebApp.bladeUtils', 'platformWebApp.uiGridHelper', '$timeout',
             function($scope, $translate, dialogService, bladeNavigationService, authService, settings, bladeUtils, uiGridHelper, $timeout) {
                 var blade = $scope.blade;
-                blade.headIcon = 'fa-image';
+                blade.headIcon = 'fa fa-image';
                 var languages = blade.parentBlade.catalog.languages;
 
                 blade.hasAssetCreatePermission = bladeNavigationService.checkPermission('platform:asset:create');

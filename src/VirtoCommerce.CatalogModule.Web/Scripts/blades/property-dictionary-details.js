@@ -2,7 +2,7 @@ angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.propertyDictionaryDetailsController',
         ['$scope', 'platformWebApp.dialogService', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.propDictItems', function ($scope, dialogService, bladeNavigationService, propDictItems) {
             var blade = $scope.blade;
-            blade.headIcon = 'fa-book';
+            blade.headIcon = 'fa fa-book';
 
             $scope.isValid = true;
             $scope.blade.isLoading = false;

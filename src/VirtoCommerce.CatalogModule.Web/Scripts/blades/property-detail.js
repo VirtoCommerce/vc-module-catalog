@@ -152,7 +152,7 @@ angular.module('virtoCommerce.catalogModule')
         var formScope;
         $scope.setForm = function (form) { formScope = form; }
 
-        blade.headIcon = 'fa-gear';
+        blade.headIcon = 'fa fa-gear';
 
         blade.toolbarCommands = [
             {

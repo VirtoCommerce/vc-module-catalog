@@ -2,7 +2,7 @@ angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.propertyDictionaryListController', ['$scope', '$filter', 'platformWebApp.dialogService', 'platformWebApp.settings', 'platformWebApp.bladeNavigationService', 'platformWebApp.uiGridHelper', 'virtoCommerce.catalogModule.propDictItems', 'platformWebApp.bladeUtils', function ($scope, $filter, dialogService, settings, bladeNavigationService, uiGridHelper, propDictItems, bladeUtils) {
         var blade = $scope.blade;
         $scope.blade.isLoading = false;
-        blade.headIcon = 'fa-book';
+        blade.headIcon = 'fa fa-book';
         $scope.currentEntities = [];
 
         $scope.uiGridConstants = uiGridHelper.uiGridConstants;

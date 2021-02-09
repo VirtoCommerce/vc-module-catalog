@@ -117,7 +117,7 @@ angular.module('virtoCommerce.catalogModule')
         $scope.$watch("blade.currentEntities", isValid, true);
         $scope.$watch("blade.currentEntity", isValid, true);
 
-		blade.headIcon = 'fa-gear';
+		blade.headIcon = 'fa fa-gear';
 
 		blade.toolbarCommands = [
 			{

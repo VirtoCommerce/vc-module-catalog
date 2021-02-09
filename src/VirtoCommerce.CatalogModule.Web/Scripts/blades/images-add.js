@@ -8,7 +8,7 @@ angular.module('virtoCommerce.catalogModule')
 
                 blade.hasAssetCreatePermission = bladeNavigationService.checkPermission('platform:asset:create');
 
-                blade.headIcon = 'fa-image';
+                blade.headIcon = 'fa fa-image';
 
                 $scope.isValid = true;
 

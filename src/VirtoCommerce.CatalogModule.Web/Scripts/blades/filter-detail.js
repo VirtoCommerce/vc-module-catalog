@@ -1,4 +1,4 @@
-﻿angular.module('virtoCommerce.catalogModule')
+angular.module('virtoCommerce.catalogModule')
 .controller('virtoCommerce.catalogModule.filterDetailController', ['$scope', '$localStorage', '$translate',
     function ($scope, $localStorage, $translate) {
         var blade = $scope.blade;
@@ -33,7 +33,7 @@
             return !angular.equals(blade.currentEntity, blade.origEntity);
         }
 
-        blade.headIcon = 'fa-filter';
+        blade.headIcon = 'fa fa-filter';
 
         blade.toolbarCommands = [
                 {

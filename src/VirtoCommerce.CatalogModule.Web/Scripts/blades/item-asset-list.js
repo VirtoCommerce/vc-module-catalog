@@ -1,7 +1,7 @@
 angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.itemAssetController', ['$scope', '$translate', 'platformWebApp.bladeNavigationService', '$filter', 'platformWebApp.uiGridHelper', '$timeout', function ($scope, $translate, bladeNavigationService, $filter, uiGridHelper, $timeout) {
         var blade = $scope.blade;
-        blade.headIcon = 'fa-chain';
+        blade.headIcon = 'fa fa-chain';
 
         blade.toolbarCommands = [
             {
