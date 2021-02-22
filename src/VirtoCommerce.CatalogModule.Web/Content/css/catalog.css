@@ -304,10 +304,18 @@ vc-item-search {
 
 .blade-gray-box {
     background: #F9F9F9;
-    margin: 0 -20px 0 -20px;
+    margin: 15px -20px 0 -20px;
     padding: 0 20px 30px 20px;
 }
 .form-input textarea.__xsmall {
     height: 34px;
     min-height: 34px;
+}
+
+.list.__info.list-descr {
+    color: #999;
+    font-size: 12px;
+    margin: 5px 0 0;
+    word-wrap: break-word;
+    word-break: break-word;
 }
