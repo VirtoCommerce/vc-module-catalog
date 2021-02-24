@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
@@ -92,9 +91,10 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             document.AddFilterableValue("lastmodifieddate", product.ModifiedDate ?? DateTime.MaxValue);
             document.AddFilterableValue("modifieddate", product.ModifiedDate ?? DateTime.MaxValue);
             document.AddFilterableValue("priority", product.Priority);
-            document.AddFilterableValue("vendor", product.Vendor ?? "");
-            document.AddFilterableValue("productType", product.ProductType ?? "");
-            document.AddFilterableValue("mainProductId", product.MainProductId ?? "");
+            document.AddFilterableValue("vendor", product.Vendor ?? string.Empty);
+            document.AddFilterableValue("productType", product.ProductType ?? string.Empty);
+            document.AddFilterableValue("mainProductId", product.MainProductId ?? string.Empty);
+            document.AddFilterableValue("gtin", product.Gtin ?? string.Empty);
 
             // Add priority in virtual categories to search index
             if (product.Links != null)
@@ -120,8 +120,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             document.AddFilterableValues("__outline_named", GetOutlineStrings(product.Outlines, getNameLatestItem: true));
 
             // Add the all physical and virtual paths
-            document.AddFilterableValues("__path", product.Outlines.Select(x=> string.Join("/", x.Items.Take(x.Items.Count - 1).Select(i=> i.Id))).ToList());
-          
+            document.AddFilterableValues("__path", product.Outlines.Select(x => string.Join("/", x.Items.Take(x.Items.Count - 1).Select(i => i.Id))).ToList());
+
             // Types of properties which values should be added to the searchable __content field
             var contentPropertyTypes = new[] { PropertyType.Product, PropertyType.Variation };
 
