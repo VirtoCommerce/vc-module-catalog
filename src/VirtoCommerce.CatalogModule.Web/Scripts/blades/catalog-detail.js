@@ -1,7 +1,9 @@
-﻿angular.module('virtoCommerce.catalogModule')
-    .controller('virtoCommerce.catalogModule.catalogDetailController', ['$scope', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.catalogs', function ($scope, bladeNavigationService, catalogs) {
+angular.module('virtoCommerce.catalogModule')
+    .controller('virtoCommerce.catalogModule.catalogDetailController', ['$scope', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.catalogs', 'platformWebApp.metaFormsService', function ($scope, bladeNavigationService, catalogs, metaFormsService) {
         var blade = $scope.blade;
         blade.updatePermission = 'catalog:update';
+
+        blade.metaFields = metaFormsService.getMetaFields("catalogDetail");
 
         blade.refresh = function (parentRefresh) {
             if (blade.isNew) {

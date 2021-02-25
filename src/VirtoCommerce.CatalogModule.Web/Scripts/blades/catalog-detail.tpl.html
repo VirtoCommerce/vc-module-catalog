@@ -1,17 +1,12 @@
-﻿<div class="blade-static __bottom" ng-include="'$(Platform)/Scripts/common/templates/create.tpl.html'" ng-if="blade.isNew"></div>
+<div class="blade-static __bottom" ng-include="'$(Platform)/Scripts/common/templates/create.tpl.html'" ng-if="blade.isNew"></div>
 <div class="blade-content">
     <div class="blade-inner">
         <div class="inner-block">
             <form class="form" name="formScope">
-                <div ng-init="setForm(formScope)">
-                    <label class="form-label">{{'catalog.blades.catalog-detail.labels.catalog-name' | translate}}</label>
-                    <div class="form-input">
-                        <input ng-model="blade.currentEntity.name" placeholder="{{'catalog.blades.catalog-detail.placeholders.enter-name' | translate}}" focus-on="" required>
-                    </div>
-                </div>
+                <va-metaform registered-inputs="blade.metaFields" blade="blade" column-count="2" ng-if="blade.currentEntity" ng-init="setForm(formScope)"></va-metaform>
             </form>
 
-            <va-widget-container group="catalogDetail" blade="blade" gridster-opts="gridsterOpts"></va-widget-container>
+            <va-widget-container group="catalogDetail" blade="blade" gridster-opts="gridsterOpts" class="form-group"></va-widget-container>
         </div>
     </div>
 </div>
