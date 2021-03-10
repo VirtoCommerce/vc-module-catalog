@@ -12,6 +12,8 @@ angular.module('virtoCommerce.catalogModule')
 
         function initialize(item) {
             blade.title = item.name;
+
+            // need to reset blade.item value inside $timeout because binding in ui-grid could be lost otherwise
             blade.item = null;
             $timeout(() => {
                 blade.item = item;
