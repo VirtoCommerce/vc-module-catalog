@@ -74,7 +74,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         /// <summary>
         /// System flag used to mark that object was inherited from other
         /// </summary>
-        public bool IsInherited { get; private set; }
+        public bool IsInherited { get; set; }
         public virtual void TryInheritFrom(IEntity parent)
         {
             if (parent is AssetBase parentAssetBase)
