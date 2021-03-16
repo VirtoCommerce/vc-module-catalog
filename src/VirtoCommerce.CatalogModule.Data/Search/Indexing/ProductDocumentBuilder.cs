@@ -41,7 +41,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                     {
                         Take = pageSize,
                         MainProductId = product.Id,
-                        ResponseGroup = (ItemResponseGroup.ItemInfo | ItemResponseGroup.Properties | ItemResponseGroup.Seo | ItemResponseGroup.Outlines).ToString()
+                        ResponseGroup = (ItemResponseGroup.ItemInfo | ItemResponseGroup.Properties | ItemResponseGroup.Seo | ItemResponseGroup.Outlines | ItemResponseGroup.ItemAssets).ToString()
                     };
                     var skipCount = 0;
                     int totalCount;
