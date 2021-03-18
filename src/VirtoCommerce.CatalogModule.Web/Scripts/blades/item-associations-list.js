@@ -1,5 +1,5 @@
 angular.module('virtoCommerce.catalogModule')
-    .controller('virtoCommerce.catalogModule.itemAssociationsListController', ['$scope', 'platformWebApp.bladeNavigationService', '$timeout', 'uiGridConstants', 'platformWebApp.uiGridHelper', 'virtoCommerce.catalogModule.catalogs', 'virtoCommerce.catalogModule.items', 'virtoCommerce.catalogModule.categories', function ($scope, bladeNavigationService, $timeout, uiGridConstants, uiGridHelper, catalogs, items, categories) {
+    .controller('virtoCommerce.catalogModule.itemAssociationsListController', ['$scope', 'platformWebApp.bladeNavigationService', 'uiGridConstants', 'platformWebApp.uiGridHelper', 'virtoCommerce.catalogModule.catalogs', 'virtoCommerce.catalogModule.items', 'virtoCommerce.catalogModule.categories', function ($scope, bladeNavigationService, uiGridConstants, uiGridHelper, catalogs, items, categories) {
         $scope.uiGridConstants = uiGridConstants;
         var allCatalogIds = [];
         var blade = $scope.blade;
@@ -12,17 +12,12 @@ angular.module('virtoCommerce.catalogModule')
 
         function initialize(item) {
             blade.title = item.name;
-
-            // need to reset blade.item value inside $timeout because binding in ui-grid could be lost otherwise
-            blade.item = null;
-            $timeout(() => {
-                blade.item = item;
-                populateProductCatalogs(item.associations);
-            });
+            blade.item = item;
+            populateProductCatalogs(item.associations);
         }
 
         function populateProductCatalogs(associations) {
-            if (!associations || !associations.length) {
+            if (!_.some(associations)) {
                 return;
             }
 
@@ -83,7 +78,7 @@ angular.module('virtoCommerce.catalogModule')
                 controller: 'virtoCommerce.catalogModule.itemDetailController',
                 template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/item-detail.tpl.html'
             };
-            if (listItem.associatedObjectType == 'category') {
+            if (listItem.associatedObjectType === 'category') {
                 newBlade.currentEntityId = listItem.associatedObjectId;
                 newBlade.controller = 'virtoCommerce.catalogModule.categoryDetailController';
                 newBlade.template = 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/category-detail.tpl.html';
@@ -149,15 +144,16 @@ angular.module('virtoCommerce.catalogModule')
 
         // ui-grid
         $scope.setGridOptions = function (gridOptions) {
-            uiGridHelper.initialize($scope, gridOptions,
-                function (gridApi) {
-                    // gridApi.grid.registerRowsProcessor($scope.singleFilter, 90);
-                    gridApi.draggableRows.on.rowFinishDrag($scope, function () {
-                        for (var i = 0; i < blade.item.associations.length; i++) {
-                            blade.item.associations[i].priority = i + 1;
-                        }
-                    });
+            uiGridHelper.initialize($scope, gridOptions, function (gridApi) {
+                //update gridApi for current grid
+                $scope.gridApi = gridApi;
+
+                gridApi.draggableRows.on.rowFinishDrag($scope, function () {
+                    for (var i = 0; i < blade.item.associations.length; i++) {
+                        blade.item.associations[i].priority = i + 1;
+                    }
                 });
+            });
         };
 
         initialize(blade.item);
