@@ -123,3 +123,15 @@ jobs:
         uses: VirtoCommerce/vc-github-actions/publish-manifest@master
         with:
           packageUrl: ${{ steps.blobRelease.outputs.packageUrl }}
+
+      - name: Update virtocommerce.com
+        if: ${{ github.ref == 'refs/heads/master' }}
+        uses: VirtoCommerce/vc-github-actions/update-virtocommercecom@master
+        with:
+          githubToken: ${{ secrets.REPO_TOKEN }}
+          login: ${{ secrets.VIRTOCOMMERCE_APP_ID }}
+          password: ${{ secrets.VIRTOCOMMERCE_SECRET }}
+          moduleId: ${{ steps.image.outputs.moduleId }}
+          moduleDescription: ${{ steps.image.outputs.moduleDescription }}
+          projectUrl: ${{ steps.image.outputs.projectUrl }}
+          iconUrl: ${{ steps.image.outputs.iconUrl }}
