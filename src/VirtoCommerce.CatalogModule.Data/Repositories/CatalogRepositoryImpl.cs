@@ -491,16 +491,79 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         {
             var result = new GenericSearchResult<AssociationEntity>();
 
-            var countSqlCommandText = @"
+            var countSqlCommandText = GetAssociationsCountSqlCommandText(criteria);
+            var querySqlCommandText = GetAssociationsQuerySqlCommandText(criteria);
+
+            var countSqlCommand = CreateCommand(countSqlCommandText, criteria.ObjectIds);
+            var querySqlCommand = CreateCommand(querySqlCommandText, criteria.ObjectIds);
+
+            if (!string.IsNullOrEmpty(criteria.Group))
+            {
+                countSqlCommand.Parameters.Add(new SqlParameter($"@group", criteria.Group));
+                querySqlCommand.Parameters.Add(new SqlParameter($"@group", criteria.Group));
+            }
+
+            if (!criteria.Tags.IsNullOrEmpty())
+            {
+                AddArrayParameters(countSqlCommand, "@tags", criteria.Tags ?? Array.Empty<string>());
+                AddArrayParameters(querySqlCommand, "@tags", criteria.Tags ?? Array.Empty<string>());
+            }
+
+            if (!string.IsNullOrEmpty(criteria.Keyword))
+            {
+                var wildcardKeyword = $"%{criteria.Keyword}%";
+                countSqlCommand.Parameters.Add(new SqlParameter($"@keyword", wildcardKeyword));
+                querySqlCommand.Parameters.Add(new SqlParameter($"@keyword", wildcardKeyword));
+            }
+
+            result.TotalCount = await DbContext.ExecuteScalarAsync<int>(countSqlCommand.Text, countSqlCommand.Parameters.ToArray());
+            result.Results = await (DbContext.Set<AssociationEntity>().FromSqlRaw(querySqlCommand.Text, querySqlCommand.Parameters.ToArray())).ToListAsync();
+
+            return result;
+        }
+
+        #endregion ICatalogRepository Members
+
+        protected virtual string GetAssociationsCountSqlCommandText(ProductAssociationSearchCriteria criteria)
+        {
+            var command = new StringBuilder();
+
+            command.Append(@"
                 ;WITH Association_CTE AS
                 (
-                    SELECT *
-                    FROM Association
+                    SELECT a.*
+                    FROM Association a");
+
+            // join items to search by keyword
+            if (!string.IsNullOrEmpty(criteria.Keyword))
+            {
+                command.Append(@"
+                    left join Item i on i.Id = a.AssociatedItemId
+                ");
+            }
+
+            command.Append(@"
                     WHERE ItemId IN ({0})
-                "
-                + (!string.IsNullOrEmpty(criteria.Group) ? $" AND AssociationType = @group" : string.Empty)
-                + (!criteria.Tags.IsNullOrEmpty() ? $" AND exists( SELECT value FROM string_split(Tags, ';') WHERE value IN (@tags))" : string.Empty) +
-                @"), Category_CTE AS
+            ");
+
+            if (!string.IsNullOrEmpty(criteria.Group))
+            {
+                command.Append("  AND AssociationType = @group");
+            }
+
+            if (!criteria.Tags.IsNullOrEmpty())
+            {
+                command.Append("  AND exists( SELECT value FROM string_split(Tags, ';') WHERE value IN (@tags))");
+            }
+
+            // search by keyword
+            if (!string.IsNullOrEmpty(criteria.Keyword))
+            {
+                command.Append("  AND i.Name like @keyword");
+            }
+
+            command.Append(@"
+                ), Category_CTE AS
                 (
                     SELECT AssociatedCategoryId Id
                     FROM Association_CTE
@@ -518,41 +581,64 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     UNION
                     SELECT AssociatedItemId Id FROM Association_CTE
                 )
-                SELECT COUNT(Id) FROM Item_CTE";
+                SELECT COUNT(Id) FROM Item_CTE");
 
-            var querySqlCommandText = new StringBuilder();
-            querySqlCommandText.Append(@"
+            return command.ToString();
+        }
+
+        protected virtual string GetAssociationsQuerySqlCommandText(ProductAssociationSearchCriteria criteria)
+        {
+            var command = new StringBuilder();
+
+            command.Append(@"
                     ;WITH Association_CTE AS
                     (
                         SELECT
-                            Id
-                            ,AssociationType
-                            ,Priority
-                            ,ItemId
-                            ,CreatedDate
-                            ,ModifiedDate
-                            ,CreatedBy
-                            ,ModifiedBy
-                            ,AssociatedItemId
-                            ,AssociatedCategoryId
-                            ,Tags
-                            ,Quantity
-                            ,OuterId
-                        FROM Association
-                        WHERE ItemId IN({0})"
+                             a.Id
+                            ,a.AssociationType
+                            ,a.Priority
+                            ,a.ItemId
+                            ,a.CreatedDate
+                            ,a.ModifiedDate
+                            ,a.CreatedBy
+                            ,a.ModifiedBy
+                            ,a.AssociatedItemId
+                            ,a.AssociatedCategoryId
+                            ,a.Tags
+                            ,a.Quantity
+                            ,a.OuterId
+                        FROM Association a"
             );
+
+            // join items to search by keyword
+            if (!string.IsNullOrEmpty(criteria.Keyword))
+            {
+                command.Append(@"
+                    left join Item i on i.Id = a.AssociatedItemId
+                ");
+            }
+
+            command.Append(@"
+                    WHERE ItemId IN ({0})
+            ");
 
             if (!string.IsNullOrEmpty(criteria.Group))
             {
-                querySqlCommandText.Append(" AND AssociationType = @group");
+                command.Append(" AND AssociationType = @group");
             }
 
             if (!criteria.Tags.IsNullOrEmpty())
             {
-                querySqlCommandText.Append("  AND exists( SELECT value FROM string_split(Tags, ';') WHERE value IN (@tags))");
+                command.Append("  AND exists( SELECT value FROM string_split(Tags, ';') WHERE value IN (@tags))");
             }
 
-            querySqlCommandText.Append(@"), Category_CTE AS
+            // search by keyword
+            if (!string.IsNullOrEmpty(criteria.Keyword))
+            {
+                command.Append("  AND i.Name like @keyword");
+            }
+
+            command.Append(@"), Category_CTE AS
                     (
                         SELECT AssociatedCategoryId Id, AssociatedCategoryId
                         FROM Association_CTE
@@ -585,32 +671,12 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                         UNION
                         SELECT * FROM Association_CTE
                     )
-                    SELECT  * FROM Item_CTE WHERE AssociatedItemId IS NOT NULL ORDER BY Priority ");
+                    SELECT * FROM Item_CTE WHERE AssociatedItemId IS NOT NULL ORDER BY Priority ");
 
-            querySqlCommandText.Append($"OFFSET {criteria.Skip} ROWS FETCH NEXT {criteria.Take} ROWS ONLY");
+            command.Append($"OFFSET {criteria.Skip} ROWS FETCH NEXT {criteria.Take} ROWS ONLY");
 
-            var countSqlCommand = CreateCommand(countSqlCommandText, criteria.ObjectIds);
-            var querySqlCommand = CreateCommand(querySqlCommandText.ToString(), criteria.ObjectIds);
-
-            if (!string.IsNullOrEmpty(criteria.Group))
-            {
-                countSqlCommand.Parameters.Add(new SqlParameter($"@group", criteria.Group));
-                querySqlCommand.Parameters.Add(new SqlParameter($"@group", criteria.Group));
-            }
-
-            if (!criteria.Tags.IsNullOrEmpty())
-            {
-                AddArrayParameters(countSqlCommand, "@tags", criteria.Tags ?? Array.Empty<string>());
-                AddArrayParameters(querySqlCommand, "@tags", criteria.Tags ?? Array.Empty<string>());
-            }
-
-            result.TotalCount = await DbContext.ExecuteScalarAsync<int>(countSqlCommand.Text, countSqlCommand.Parameters.ToArray());
-            result.Results = await (DbContext.Set<AssociationEntity>().FromSqlRaw(querySqlCommand.Text, querySqlCommand.Parameters.ToArray())).ToListAsync();
-
-            return result;
+            return command.ToString();
         }
-
-        #endregion ICatalogRepository Members
 
         protected virtual async Task<int> ExecuteStoreQueryAsync(string commandTemplate, IEnumerable<string> parameterValues)
         {
