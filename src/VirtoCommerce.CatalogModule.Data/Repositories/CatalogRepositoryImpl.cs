@@ -497,23 +497,22 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             var countSqlCommand = CreateCommand(countSqlCommandText, criteria.ObjectIds);
             var querySqlCommand = CreateCommand(querySqlCommandText, criteria.ObjectIds);
 
+            var commands = new List<Command> { countSqlCommand, querySqlCommand };
+
             if (!string.IsNullOrEmpty(criteria.Group))
             {
-                countSqlCommand.Parameters.Add(new SqlParameter($"@group", criteria.Group));
-                querySqlCommand.Parameters.Add(new SqlParameter($"@group", criteria.Group));
+                commands.ForEach(x => x.Parameters.Add(new SqlParameter($"@group", criteria.Group)));
             }
 
             if (!criteria.Tags.IsNullOrEmpty())
             {
-                AddArrayParameters(countSqlCommand, "@tags", criteria.Tags ?? Array.Empty<string>());
-                AddArrayParameters(querySqlCommand, "@tags", criteria.Tags ?? Array.Empty<string>());
+                commands.ForEach(x => AddArrayParameters(x, "@tags", criteria.Tags ?? Array.Empty<string>()));
             }
 
             if (!string.IsNullOrEmpty(criteria.Keyword))
             {
                 var wildcardKeyword = $"%{criteria.Keyword}%";
-                countSqlCommand.Parameters.Add(new SqlParameter($"@keyword", wildcardKeyword));
-                querySqlCommand.Parameters.Add(new SqlParameter($"@keyword", wildcardKeyword));
+                commands.ForEach(x => x.Parameters.Add(new SqlParameter($"@keyword", wildcardKeyword)));
             }
 
             result.TotalCount = await DbContext.ExecuteScalarAsync<int>(countSqlCommand.Text, countSqlCommand.Parameters.ToArray());
@@ -534,36 +533,9 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     SELECT a.*
                     FROM Association a");
 
-            // join items to search by keyword
-            if (!string.IsNullOrEmpty(criteria.Keyword))
-            {
-                command.Append(@"
-                    left join Item i on i.Id = a.AssociatedItemId
-                ");
-            }
+            AddAssociationsSearchCriteraToCommand(command, criteria);
 
-            command.Append(@"
-                    WHERE ItemId IN ({0})
-            ");
-
-            if (!string.IsNullOrEmpty(criteria.Group))
-            {
-                command.Append("  AND AssociationType = @group");
-            }
-
-            if (!criteria.Tags.IsNullOrEmpty())
-            {
-                command.Append("  AND exists( SELECT value FROM string_split(Tags, ';') WHERE value IN (@tags))");
-            }
-
-            // search by keyword
-            if (!string.IsNullOrEmpty(criteria.Keyword))
-            {
-                command.Append("  AND i.Name like @keyword");
-            }
-
-            command.Append(@"
-                ), Category_CTE AS
+            command.Append(@"), Category_CTE AS
                 (
                     SELECT AssociatedCategoryId Id
                     FROM Association_CTE
@@ -610,33 +582,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                         FROM Association a"
             );
 
-            // join items to search by keyword
-            if (!string.IsNullOrEmpty(criteria.Keyword))
-            {
-                command.Append(@"
-                    left join Item i on i.Id = a.AssociatedItemId
-                ");
-            }
-
-            command.Append(@"
-                    WHERE ItemId IN ({0})
-            ");
-
-            if (!string.IsNullOrEmpty(criteria.Group))
-            {
-                command.Append(" AND AssociationType = @group");
-            }
-
-            if (!criteria.Tags.IsNullOrEmpty())
-            {
-                command.Append("  AND exists( SELECT value FROM string_split(Tags, ';') WHERE value IN (@tags))");
-            }
-
-            // search by keyword
-            if (!string.IsNullOrEmpty(criteria.Keyword))
-            {
-                command.Append("  AND i.Name like @keyword");
-            }
+            AddAssociationsSearchCriteraToCommand(command, criteria);
 
             command.Append(@"), Category_CTE AS
                     (
@@ -676,6 +622,39 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             command.Append($"OFFSET {criteria.Skip} ROWS FETCH NEXT {criteria.Take} ROWS ONLY");
 
             return command.ToString();
+        }
+
+        protected virtual void AddAssociationsSearchCriteraToCommand(StringBuilder command, ProductAssociationSearchCriteria criteria)
+        {
+            // join items to search by keyword
+            if (!string.IsNullOrEmpty(criteria.Keyword))
+            {
+                command.Append(@"
+                    left join Item i on i.Id = a.AssociatedItemId
+                ");
+            }
+
+            command.Append(@"
+                    WHERE ItemId IN ({0})
+            ");
+
+            // search by association type
+            if (!string.IsNullOrEmpty(criteria.Group))
+            {
+                command.Append("  AND AssociationType = @group");
+            }
+
+            // search by association tags
+            if (!criteria.Tags.IsNullOrEmpty())
+            {
+                command.Append("  AND exists( SELECT value FROM string_split(Tags, ';') WHERE value IN (@tags))");
+            }
+
+            // search by keyword
+            if (!string.IsNullOrEmpty(criteria.Keyword))
+            {
+                command.Append("  AND i.Name like @keyword");
+            }
         }
 
         protected virtual async Task<int> ExecuteStoreQueryAsync(string commandTemplate, IEnumerable<string> parameterValues)

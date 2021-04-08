@@ -87,27 +87,27 @@ angular.module('virtoCommerce.catalogModule')
                     };
                 }
 
-                function populateAssociationsData(associations) {
-                    if (!_.some(associations)) {
+                function populateAssociationsData(productAssociations) {
+                    if (!_.some(productAssociations)) {
                         return;
                     }
 
                     blade.isLoading = true;
 
-                    var itemIds = _.pluck(associations, 'associatedObjectId');
+                    var itemIds = _.pluck(productAssociations, 'associatedObjectId');
                     items.plenty({ respGroup: 'WithImages' }, itemIds, function (products) {
                         var uniqueCategoriesIds = _.uniq(_.pluck(products, 'categoryId'));
 
-                        categories.plenty({ respGroup: 'Info' }, uniqueCategoriesIds, function (categories) {
-                            addAssociationProperties(associations, products, categories);
+                        categories.plenty({ respGroup: 'Info' }, uniqueCategoriesIds, function (categoriesResult) {
+                            addAssociationProperties(productAssociations, products, categoriesResult);
 
                             blade.isLoading = false;
                         });
                     });
                 }
 
-                function addAssociationProperties(associations, products, categories) {
-                    _.each(associations, function (x) {
+                function addAssociationProperties(productAssociations, products, productCategories) {
+                    _.each(productAssociations, function (x) {
                         x.$$quantity = x.quantity;
                         x.associatedObjectType = blade.associatedObjectType;
 
@@ -116,7 +116,7 @@ angular.module('virtoCommerce.catalogModule')
                             x.$$productName = item.name;
 
                             x.$$categoryId = item.categoryId;
-                            x.$$category = _.find(categories, function (c) { return c.id === x.$$categoryId; });
+                            x.$$category = _.find(productCategories, function (c) { return c.id === x.$$categoryId; });
 
                             if (item.images && item.images.length) {
                                 x.$$imageUrl = item.images[0].url;

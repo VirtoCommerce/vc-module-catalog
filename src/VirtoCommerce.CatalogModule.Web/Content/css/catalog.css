@@ -320,7 +320,7 @@ vc-item-search {
     word-break: break-word;
 }
 
-.centered {
+.note-centered {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -328,11 +328,11 @@ vc-item-search {
     transform: translate(-50%, -50%);
 }
 
-    .centered img {
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-    }
+.note-centered img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
 
 .no-bom-products-text {
     margin-top: 18px;

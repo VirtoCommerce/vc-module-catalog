@@ -127,7 +127,7 @@
           },
           "bill-of-materials-product": {
             "title": "Product with a Bill of Materials",
-            "description": "Represents a physical item that contains nested physical or digital products."
+            "description": "Represents orderable item of merchandise for sale, can be used for targeted promotions, etc. Requires physical shipping."
           }
         },
         "catalog-item-name": "Catalog",
