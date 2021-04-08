@@ -525,7 +525,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             result.TotalCount = await DbContext.ExecuteScalarAsync<int>(countSqlCommand.Text, countSqlCommand.Parameters.ToArray());
             result.Results = criteria.Take > 0
                 ? await DbContext.Set<AssociationEntity>().FromSqlRaw(querySqlCommand.Text, querySqlCommand.Parameters.ToArray()).ToListAsync()
-                : Array.Empty<AssociationEntity>();
+                : new List<AssociationEntity>();
 
             return result;
         }
