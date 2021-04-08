@@ -491,13 +491,15 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         {
             var result = new GenericSearchResult<AssociationEntity>();
 
-            var countSqlCommandText = GetAssociationsCountSqlCommandText(criteria);
-            var querySqlCommandText = GetAssociationsQuerySqlCommandText(criteria);
+            var countSqlCommand = CreateCommand(GetAssociationsCountSqlCommandText(criteria), criteria.ObjectIds);
+            var querySqlCommand = CreateCommand(GetAssociationsQuerySqlCommandText(criteria), criteria.ObjectIds);
 
-            var countSqlCommand = CreateCommand(countSqlCommandText, criteria.ObjectIds);
-            var querySqlCommand = CreateCommand(querySqlCommandText, criteria.ObjectIds);
+            var commands = new List<Command> { countSqlCommand };
 
-            var commands = new List<Command> { countSqlCommand, querySqlCommand };
+            if (criteria.Take > 0)
+            {
+                commands.Add(querySqlCommand);
+            }
 
             if (!string.IsNullOrEmpty(criteria.Group))
             {
@@ -515,8 +517,15 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 commands.ForEach(x => x.Parameters.Add(new SqlParameter($"@keyword", wildcardKeyword)));
             }
 
+            if (!criteria.AssociatedObjectIds.IsNullOrEmpty())
+            {
+                commands.ForEach(x => AddArrayParameters(x, "@associatedoOjectIds", criteria.AssociatedObjectIds ?? Array.Empty<string>()));
+            }
+
             result.TotalCount = await DbContext.ExecuteScalarAsync<int>(countSqlCommand.Text, countSqlCommand.Parameters.ToArray());
-            result.Results = await (DbContext.Set<AssociationEntity>().FromSqlRaw(querySqlCommand.Text, querySqlCommand.Parameters.ToArray())).ToListAsync();
+            result.Results = criteria.Take > 0
+                ? await DbContext.Set<AssociationEntity>().FromSqlRaw(querySqlCommand.Text, querySqlCommand.Parameters.ToArray()).ToListAsync()
+                : Array.Empty<AssociationEntity>();
 
             return result;
         }
@@ -654,6 +663,12 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             if (!string.IsNullOrEmpty(criteria.Keyword))
             {
                 command.Append("  AND i.Name like @keyword");
+            }
+
+            // search by associated product ids
+            if (!criteria.AssociatedObjectIds.IsNullOrEmpty())
+            {
+                command.Append("  AND a.AssociatedItemId in (@associatedoOjectIds)");
             }
         }
 

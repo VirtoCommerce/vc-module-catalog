@@ -211,18 +211,30 @@ angular.module('virtoCommerce.catalogModule')
                                     blade.isLoading = true;
                                     bladeNavigationService.closeBlade(selectBlade);
 
-                                    // filter out already associated products
-                                    associations.get({ productId: blade.item.id }, function (existingAssociations) {
-                                        selection = _.filter(selection, function (product) {
-                                            return !_.some(existingAssociations, function (association) {
-                                                return product.id === association.associatedObjectId && association.type === blade.associationType;
-                                            });
-                                        })
+                                    // search for associated products
+                                    var selectedProductIds = _.pluck(selection, 'id');
+                                    var searchCriteria = {
+                                        take: selectedProductIds.length,
+                                        objectIds: [blade.item.id],
+                                        group: blade.associationType,
+                                        associatedObjectIds: selectedProductIds
+                                    };
 
-                                        if (selection.length) {
-                                            var newAssociations = _.map(selection, function (x) {
+                                    associations.search(searchCriteria, function (data) {
+                                        // filter out already associated products, if any
+                                        if (data.totalCount) {
+                                            selectedProductIds = _.filter(selectedProductIds, function (productId) {
+                                                return !_.some(data.results, function (association) {
+                                                    return productId === association.associatedObjectId;
+                                                });
+                                            });
+                                        }
+
+                                        // save only unique product associations
+                                        if (selectedProductIds.length) {
+                                            var newAssociations = _.map(selectedProductIds, function (id) {
                                                 return {
-                                                    associatedObjectId: x.id,
+                                                    associatedObjectId: id,
                                                     associatedObjectType: blade.associatedObjectType,
                                                     itemId: blade.item.id,
                                                     quantity: 1,
@@ -230,6 +242,7 @@ angular.module('virtoCommerce.catalogModule')
                                                 }
                                             });
 
+                                            blade.isLoading = true;
                                             associations.update(newAssociations, function () {
                                                 blade.refresh();
                                             });
