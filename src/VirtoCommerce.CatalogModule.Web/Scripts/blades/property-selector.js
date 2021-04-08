@@ -7,7 +7,7 @@ angular.module('virtoCommerce.catalogModule')
 
         function initializeBlade() {
             blade.title = 'catalog.blades.property-selector.title';
-            blade.headIcon = 'fa-folder';
+            blade.headIcon = 'fa fa-folder';
 
             var allProperties = angular.copy(blade.properties);
 
