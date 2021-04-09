@@ -1,5 +1,5 @@
 angular.module('virtoCommerce.catalogModule')
-    .controller('virtoCommerce.catalogModule.itemDetailController', ['$rootScope', '$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.settings', 'virtoCommerce.catalogModule.items', 'virtoCommerce.customerModule.members', 'virtoCommerce.catalogModule.catalogs', 'platformWebApp.metaFormsService', 'virtoCommerce.catalogModule.categories', function ($rootScope, $scope, bladeNavigationService, settings, items, members, catalogs, metaFormsService, categories) {
+    .controller('virtoCommerce.catalogModule.itemDetailController', ['$rootScope', '$scope', '$translate', 'platformWebApp.bladeNavigationService', 'platformWebApp.settings', 'virtoCommerce.catalogModule.items', 'virtoCommerce.customerModule.members', 'virtoCommerce.catalogModule.catalogs', 'platformWebApp.metaFormsService', 'virtoCommerce.catalogModule.categories', function ($rootScope, $scope, $translate, bladeNavigationService, settings, items, members, catalogs, metaFormsService, categories) {
         var blade = $scope.blade;
         blade.updatePermission = 'catalog:update';
         blade.currentEntityId = blade.itemId;
@@ -31,7 +31,9 @@ angular.module('virtoCommerce.catalogModule')
             if (!data.productType) {
                 data.productType = 'Physical';
             }
-            blade.subtitle = data.productType + ' item details';
+
+            blade.subtitle = 'catalog.blades.item-detail.subtitle';
+            blade.subtitleValues = { productTypeName: $translate.instant('catalog.product-types.' + data.productType) };
 
             var linkWithPriority = getLinkWithPriority(data);
             data._priority = (linkWithPriority ? linkWithPriority.priority : data.priority) || 0;

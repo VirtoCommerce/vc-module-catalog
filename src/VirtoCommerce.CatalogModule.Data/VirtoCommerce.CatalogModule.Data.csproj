@@ -1,43 +1,44 @@
 <Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <TargetFramework>netcoreapp3.1</TargetFramework>
-        <noWarn>1591</noWarn>
-        <LangVersion>latest</LangVersion>
-        <IsPackable>True</IsPackable>
-        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <noWarn>1591</noWarn>
+    <LangVersion>latest</LangVersion>
+    <IsPackable>True</IsPackable>
+            <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    </PropertyGroup>
-    <ItemGroup>
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-        <PackageReference Include="FluentValidation" Version="8.6.2" />
-        <PackageReference Include="Hangfire" Version="1.7.9" />
-        <PackageReference Include="EntityFrameworkCore.Triggers" Version="1.2.2" />
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.2" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.2" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.2">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.2">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.2" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.2" />
-        <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.1.0" />
-        <PackageReference Include="VirtoCommerce.ExportModule.Data" Version="3.4.0" />
-        <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.5.0" />
-        <PackageReference Include="VirtoCommerce.Platform.Data" Version="3.5.0" />
-        <PackageReference Include="VirtoCommerce.Platform.Security" Version="3.5.0" />
-        <PackageReference Include="VirtoCommerce.SearchModule.Data" Version="3.2.0" />
-        <PackageReference Include="VirtoCommerce.StoreModule.Core" Version="3.1.0" />
-    </ItemGroup>
-    <ItemGroup>
-        <ProjectReference Include="..\VirtoCommerce.CatalogModule.Core\VirtoCommerce.CatalogModule.Core.csproj" />
-    </ItemGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-        <NoWarn>1701;1702;1705;1591</NoWarn>
-    </PropertyGroup>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="FluentValidation" Version="8.6.3" />
+    <PackageReference Include="Hangfire" Version="1.7.9" />
+    <PackageReference Include="EntityFrameworkCore.Triggers" Version="1.2.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.8" />
+    <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.1.0" />
+    <PackageReference Include="VirtoCommerce.ExportModule.Data" Version="3.4.0" />
+    <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.51.0" />
+    <PackageReference Include="VirtoCommerce.Platform.Data" Version="3.51.0" />
+    <PackageReference Include="VirtoCommerce.Platform.Security" Version="3.51.0" />
+    <PackageReference Include="VirtoCommerce.SearchModule.Data" Version="3.2.0" />
+    <PackageReference Include="VirtoCommerce.StoreModule.Core" Version="3.1.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VirtoCommerce.CatalogModule.Core\VirtoCommerce.CatalogModule.Core.csproj" />
+  </ItemGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;1705;1591</NoWarn>
+  </PropertyGroup>
 </Project>

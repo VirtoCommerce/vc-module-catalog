@@ -13,6 +13,11 @@
         "description": "Enter Lat/Long Coordinates (one per line in format: lat,long [no spaces], e.g. 41.40338, 2.17403"
       }
     },
+    "product-types": {
+      "Physical": "Physical",
+      "Digital": "Digital",
+      "BillOfMaterials": "Product with a Bill of Materials"
+    },
     "blades": {
       "catalogs-list": {
         "title": "Catalog",
@@ -124,6 +129,10 @@
           "digital-product": {
             "title": "Digital Product",
             "description": "Represents orderable item of merchandise for sale, can be used for targeted promotions, etc. Is digital product, thus is downloaded on purchase, not shipped."
+          },
+          "bill-of-materials-product": {
+            "title": "Product with a Bill of Materials",
+            "description": "Represents orderable item of merchandise for sale, can be used for targeted promotions, etc. Requires physical shipping."
           }
         },
         "catalog-item-name": "Catalog",
@@ -290,6 +299,7 @@
         }
       },
       "item-detail": {
+        "subtitle": "{{ productTypeName }} item details",
         "subtitle-variation": "Variation details",
         "labels": {
           "id": "ID",
@@ -512,6 +522,17 @@
       "exporter": {
         "productTitle": "Export catalog products",
         "productSubtitle": "Export catalog products to JSON or CSV"
+      },
+      "bill-of-materials-list": {
+        "title": "Bill of material products",
+        "subtitle": "Add or delete BOM products",
+        "no-data": "There are no products yet",
+        "labels": {
+          "picture": "Img",
+          "name": "Name",
+          "category": "Category",
+          "quantity": "Quantity"
+        }
       }
     },
     "exporter-list": {
@@ -522,7 +543,6 @@
       "productTitle": "Export catalog products",
       "productSubtitle": "Export catalog products to JSON or CSV"
     },
-
     "widgets": {
       "catalogLanguages": {
         "blade-subtitle": "Manage languages",
@@ -567,6 +587,9 @@
         "length": "Length",
         "width": "Width",
         "height": "Height"
+      },
+      "billOfMaterials": {
+        "title": "Bill of Material"
       }
     },
     "dialogs": {
@@ -657,6 +680,10 @@
       "language-save": {
         "title": "Save changes",
         "message": "The Languages has been modified. Do you want to save changes?"
+      },
+      "bill-or-materials-associations-delete": {
+        "title": "Delete confirmation",
+        "message": "Are you sure you want to delete selected products?"
       }
     },
     "wizards": {

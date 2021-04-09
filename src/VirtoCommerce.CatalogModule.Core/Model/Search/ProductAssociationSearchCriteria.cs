@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Core.Model.Search
@@ -6,5 +7,6 @@ namespace VirtoCommerce.CatalogModule.Core.Model.Search
     {
         public string Group { get; set; }
         public string[] Tags { get; set; }
+        public IList<string> AssociatedObjectIds { get; set; }
     }
 }

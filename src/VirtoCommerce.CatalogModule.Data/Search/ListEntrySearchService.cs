@@ -284,6 +284,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 query = query.Where(x => criteria.ProductTypes.Contains(x.ProductType));
             }
 
+            if (!criteria.ExcludeProductTypes.IsNullOrEmpty())
+            {
+                query = query.Where(x => !criteria.ExcludeProductTypes.Contains(x.ProductType));
+            }
+
             if (criteria.OnlyBuyable != null)
             {
                 query = query.Where(x => x.IsBuyable == criteria.OnlyBuyable);
