@@ -153,6 +153,14 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                 };
                 widgetService.registerWidget(itemAssetWidget, 'itemDetail');
 
+                //Register Bill of materials widget
+                var billOfMaterialsWidget = {
+                    controller: 'virtoCommerce.catalogModule.billOfMaterialsWidgetController',
+                    isVisible: function (blade) { return blade.productType === 'BillOfMaterials'; },
+                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/billOfMaterialsWidget.tpl.html'
+                };
+                widgetService.registerWidget(billOfMaterialsWidget, 'itemDetail');
+
                 //Register widgets to categoryDetail
                 widgetService.registerWidget(entryImageWidget, 'categoryDetail');
 
@@ -185,7 +193,6 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                     template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/catalogPropertyWidget.tpl.html'
                 };
                 widgetService.registerWidget(catalogPropertyWidget, 'catalogDetail');
-
 
                 //Security scopes
                 //Register permission scopes templates used for scope bounded definition in role management ui
@@ -303,6 +310,12 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                     description: 'catalog.blades.categories-items-add.menu.digital-product.description',
                     productType: 'Digital',
                     icon: 'fa-file-archive-o'
+                });
+                itemTypesResolverService.registerType({
+                    itemType: 'catalog.blades.categories-items-add.menu.bill-of-materials-product.title',
+                    description: 'catalog.blades.categories-items-add.menu.bill-of-materials-product.description',
+                    productType: 'BillOfMaterials',
+                    icon: 'far fa-list-alt'
                 });
 
                 //meta-form used for all catalog, category and item fields input.

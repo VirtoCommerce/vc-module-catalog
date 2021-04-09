@@ -27,7 +27,8 @@ angular.module('virtoCommerce.catalogModule')
                     categoryId: blade.categoryId,
                     keyword: filter.keyword,
                     searchInVariations : filter.searchInVariations ? filter.searchInVariations : false,
-                    responseGroup: 'withCategories, withProducts',                    
+                    responseGroup: 'withCategories, withProducts',
+                    excludeProductType: $scope.options.excludeProductType,
                     sort: uiGridHelper.getSortExpression($scope),
                     skip: ($scope.pageSettings.currentPage - 1) * $scope.pageSettings.itemsPerPageCount,
                     take: $scope.pageSettings.itemsPerPageCount

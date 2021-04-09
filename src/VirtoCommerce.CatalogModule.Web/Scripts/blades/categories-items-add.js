@@ -41,9 +41,7 @@ angular.module('virtoCommerce.catalogModule')
             if (!angular.isDefined(pb.categoryId)) {
                 items.newItemInCatalog({ catalogId: pb.catalogId }, function (data) {
                     data.productType = productType;
-                    if (productType == 'Digital') {
-                        data.trackInventory = false;
-                    }
+                    setTrackInventory(data);
                     $scope.bladeClose(function () {
                         showNewItemWizard(data);
                     });
@@ -53,9 +51,7 @@ angular.module('virtoCommerce.catalogModule')
             else {
                 items.newItemInCategory({ catalogId: pb.catalogId, categoryId: pb.categoryId }, function (data) {
                     data.productType = productType;
-                    if (productType == 'Digital') {
-                        data.trackInventory = false;
-                    }
+                    setTrackInventory(data);
                     $scope.bladeClose(function () {
                         showNewItemWizard(data);
                     });
@@ -79,6 +75,13 @@ angular.module('virtoCommerce.catalogModule')
             };
             bladeNavigationService.showBlade(newBlade, pb);
         };
+
+        function setTrackInventory(product) {
+            if (product.productType === 'Digital'
+                || product.productType === 'BillOfMaterials') {
+                product.trackInventory = false;
+            }
+        }
 
         blade.isLoading = false;
     }]);

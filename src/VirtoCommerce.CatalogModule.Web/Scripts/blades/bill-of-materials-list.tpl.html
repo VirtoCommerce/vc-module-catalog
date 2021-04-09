@@ -1,0 +1,93 @@
+<div class="blade-static" ng-if="blade.currentEntities.length">
+    <div class="form-group">
+        <div class="form-input __search">
+            <input placeholder="{{'platform.placeholders.search-keyword' | translate }}" ng-model="blade.filter.keyword" ng-keyup="$event.which === 13 && blade.filter.criteriaChanged()">
+            <button class="btn __other" style="position: relative;right: 45px;">
+                <i class="btn-ico fa fa-remove" ng-click="blade.filter.keyword=null;blade.filter.criteriaChanged()"></i>
+            </button>
+        </div>
+
+        <p class="form-count">{{ 'platform.list.count' | translate }}: <span class="count">{{ pageSettings.totalItems | number:0 }}</span></p>
+    </div>
+</div>
+
+<div class="blade-content __medium-wide">
+    <div class="blade-inner">
+        <div ng-if="!blade.currentEntities.length" class="note-centered">
+            <img class="image" ng-src="{{blade.cupImage}}">
+            <div class="no-bom-products-text">{{ 'catalog.blades.bill-of-materials-list.no-data' | translate }}</div>
+        </div>
+        <div class="inner-block" ng-init="setGridOptions({
+                    rowTemplate: 'bom-list.row.html',
+                    rowHeight: 60,
+                    enableSorting: false,
+                    infiniteScrollRowsFromEnd: 10,
+                    columnDefs: [
+                        { name: 'actions', displayName: '', enableColumnResizing: false, enableSorting: false, width: 30, cellTemplate: 'bom-list-actions.cell.html', pinnedLeft: true },
+                        { name: '$$imageUrl', displayName: 'catalog.blades.bill-of-materials-list.labels.picture', enableColumnResizing: false, width: 60, cellTemplate: 'bom-icon.cell.html' },
+                        { name: '$$productName', displayName: 'catalog.blades.bill-of-materials-list.labels.name', cellTemplate: 'bom-productName.cell.html'},
+                        { name: '$$category', displayName: 'catalog.blades.bill-of-materials-list.labels.category', field: '$$category.name', width: 120 },
+                        { name: 'quantity', displayName: 'catalog.blades.bill-of-materials-list.labels.quantity', cellTemplate: 'bom-quantity-cell-editor.html', editableCellTemplate: 'bom-quantity-cell-editor.html', enableCellEdit: true, width: 120 }
+                    ]})">
+            <div class="table-wrapper" ng-if="blade.currentEntities.length">
+                <div ui-grid="gridOptions" ui-grid-edit ui-grid-auto-resize ui-grid-save-state ui-grid-selection ui-grid-resize-columns ui-grid-move-columns ui-grid-pinning ui-grid-height ui-grid-infinite-scroll></div>
+                <ul class="menu __context" role="menu" id="bom_menu">
+                    <li class="menu-item" ng-click='openProduct(contextMenuEntity)'>
+                        <i class="menu-ico fa fa-edit"></i> {{ 'catalog.commands.open-item' | translate }}
+                    </li>
+                    <li class="menu-item" ng-click='deleteList([contextMenuEntity])'>
+                        <i class="menu-ico fas fa-trash-alt"></i> {{ 'platform.commands.delete' | translate }}
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/ng-template" id="bom-list.row.html">
+    <div ng-click='grid.appScope.openProduct(row.entity)'
+         ng-repeat="(colRenderIndex, col) in colContainer.renderedColumns track by col.uid"
+         ui-grid-one-bind-id-grid="rowRenderIndex + '-' + col.uid + '-cell'"
+         class="ui-grid-cell"
+         ng-class="{'ui-grid-row-header-cell': col.isRowHeader, '__hovered': grid.appScope.contextMenuEntity === row.entity, '__selected': row.entity.id===grid.appScope.selectedNodeId }"
+         role="{{ col.isRowHeader ? 'rowheader' : 'gridcell' }}"
+         ui-grid-cell
+         context-menu="grid.appScope.contextMenuEntity = row.entity"
+         data-target="bom_menu"></div>
+</script>
+
+<script type="text/ng-template" id="bom-list-actions.cell.html">
+    <div class="ui-grid-actions" left-click-menu="grid.appScope.contextMenuEntity = row.entity" data-target="bom_menu">
+        <i class="fa fa-ellipsis-v"></i>
+    </div>
+</script>
+
+<script type="text/ng-template" id="bom-icon.cell.html">
+    <div class="ui-grid-cell-contents">
+        <div class="product-img">
+            <img class="image" ng-src="{{COL_FIELD}}" ng-if="COL_FIELD">
+            <i class="table-ico fas fa-image" ng-if="!COL_FIELD"></i>
+        </div>
+    </div>
+</script>
+
+<script type="text/ng-template" id="bom-productName.cell.html">
+    <div class="ui-grid-cell-contents">
+        <div class="table-t" title="{{COL_FIELD}}">{{COL_FIELD}}</div>
+    </div>
+</script>
+
+<script type="text/ng-template" id="bom-quantity-cell-editor.html">
+    <div class="form-editor form-input">
+        <input class="form-input"
+               smart-float
+               num-type="integer"
+               required
+               ng-model="MODEL_COL_FIELD"
+               ng-blur="grid.appScope.updateQuantity(row.entity)"
+               ng-keyup="$event.which === 13 && grid.appScope.updateQuantity(row.entity)"
+               ng-click="$event.stopPropagation()"
+               ng-class="{'ng-invalid': !grid.appScope.isValidQuantity(row.entity)}"
+               ui-grid-editor>
+    </div>
+</script>
