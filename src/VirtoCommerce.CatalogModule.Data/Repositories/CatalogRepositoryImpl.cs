@@ -508,7 +508,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
             if (!criteria.Tags.IsNullOrEmpty())
             {
-                commands.ForEach(x => AddArrayParameters(x, "@tags", criteria.Tags ?? Array.Empty<string>()));
+                commands.ForEach(x => AddArrayParameters(x, "@tags", criteria.Tags));
             }
 
             if (!string.IsNullOrEmpty(criteria.Keyword))
@@ -519,7 +519,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
             if (!criteria.AssociatedObjectIds.IsNullOrEmpty())
             {
-                commands.ForEach(x => AddArrayParameters(x, "@associatedoOjectIds", criteria.AssociatedObjectIds ?? Array.Empty<string>()));
+                commands.ForEach(x => AddArrayParameters(x, "@associatedoOjectIds", criteria.AssociatedObjectIds));
             }
 
             result.TotalCount = await DbContext.ExecuteScalarAsync<int>(countSqlCommand.Text, countSqlCommand.Parameters.ToArray());
