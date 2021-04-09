@@ -1,21 +1,26 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <IsPackable>True</IsPackable>
-    <noWarn>1591</noWarn>
-    <LangVersion>latest</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <NoWarn>1701;1702;1705;1591</NoWarn>
-  </PropertyGroup>
-  <ItemGroup>
-    <Folder Include="Model\ListEntry\" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.1.0" />
-    <PackageReference Include="VirtoCommerce.ExportModule.Core" Version="3.1.0" />
-    <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.5.0" />
-    <PackageReference Include="VirtoCommerce.SearchModule.Core" Version="3.2.0" />
-  </ItemGroup>
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <IsPackable>True</IsPackable>
+        <noWarn>1591</noWarn>
+        <LangVersion>latest</LangVersion>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+        <NoWarn>1701;1702;1705;1591</NoWarn>
+    </PropertyGroup>
+    <ItemGroup>
+        <Folder Include="Model\ListEntry\" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+        <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.1.0" />
+        <PackageReference Include="VirtoCommerce.ExportModule.Core" Version="3.1.0" />
+        <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.5.0" />
+        <PackageReference Include="VirtoCommerce.SearchModule.Core" Version="3.2.0" />
+    </ItemGroup>
 </Project>
