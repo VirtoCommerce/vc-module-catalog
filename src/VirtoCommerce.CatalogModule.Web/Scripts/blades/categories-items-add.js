@@ -78,7 +78,7 @@ angular.module('virtoCommerce.catalogModule')
 
         function setTrackInventory(product) {
             if (product.productType === 'Digital'
-                || product.productType === 'Product with a Bill of Materials') {
+                || product.productType === 'BillOfMaterials') {
                 product.trackInventory = false;
             }
         }

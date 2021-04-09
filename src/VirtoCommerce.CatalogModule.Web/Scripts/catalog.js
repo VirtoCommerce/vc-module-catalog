@@ -156,7 +156,7 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                 //Register Bill of materials widget
                 var billOfMaterialsWidget = {
                     controller: 'virtoCommerce.catalogModule.billOfMaterialsWidgetController',
-                    isVisible: function (blade) { return blade.productType === 'Product with a Bill of Materials'; },
+                    isVisible: function (blade) { return blade.productType === 'BillOfMaterials'; },
                     template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/billOfMaterialsWidget.tpl.html'
                 };
                 widgetService.registerWidget(billOfMaterialsWidget, 'itemDetail');
@@ -314,7 +314,7 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                 itemTypesResolverService.registerType({
                     itemType: 'catalog.blades.categories-items-add.menu.bill-of-materials-product.title',
                     description: 'catalog.blades.categories-items-add.menu.bill-of-materials-product.description',
-                    productType: 'Product with a Bill of Materials',
+                    productType: 'BillOfMaterials',
                     icon: 'far fa-list-alt'
                 });
 

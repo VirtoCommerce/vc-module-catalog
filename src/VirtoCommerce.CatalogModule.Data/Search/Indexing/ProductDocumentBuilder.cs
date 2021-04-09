@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
-using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.SearchModule.Core.Extenstions;
 using VirtoCommerce.SearchModule.Core.Model;
@@ -164,11 +163,10 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 IndexIsProperty(document, "digital");
             }
 
-            var billOfMaterialsProductType = "product with a bill of materials";
-            if (variation.ProductType.EqualsInvariant(billOfMaterialsProductType))
+            if (variation.ProductType == "BillOfMaterials")
             {
-                document.Add(new IndexDocumentField("type", billOfMaterialsProductType) { IsRetrievable = true, IsFilterable = true, IsCollection = true });
-                IndexIsProperty(document, billOfMaterialsProductType);
+                document.Add(new IndexDocumentField("type", "billofmaterials") { IsRetrievable = true, IsFilterable = true, IsCollection = true });
+                IndexIsProperty(document, "billofmaterials");
             }
 
             document.Add(new IndexDocumentField("code", variation.Code) { IsRetrievable = true, IsFilterable = true, IsCollection = true });

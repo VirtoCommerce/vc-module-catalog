@@ -185,7 +185,7 @@ angular.module('virtoCommerce.catalogModule')
                     var options = {
                         allowCheckingCategory: false,
                         selectedItemIds: [],
-                        excludeProductType: 'Product with a Bill of Materials',
+                        excludeProductType: 'BillOfMaterials',
                         checkItemFn: function (listItem, isSelected) {
                             if (isSelected) {
                                 if (!_.find(selection, function (x) { return x.id == listItem.id; })) {

@@ -13,6 +13,11 @@
         "description": "Enter Lat/Long Coordinates (one per line in format: lat,long [no spaces], e.g. 41.40338, 2.17403"
       }
     },
+    "product-types": {
+      "Physical": "Physical",
+      "Digital": "Digital",
+      "BillOfMaterials": "Product with a Bill of Materials"
+    },
     "blades": {
       "catalogs-list": {
         "title": "Catalog",
@@ -294,6 +299,7 @@
         }
       },
       "item-detail": {
+        "subtitle": "{{ productTypeName }} item details",
         "subtitle-variation": "Variation details",
         "labels": {
           "id": "ID",
