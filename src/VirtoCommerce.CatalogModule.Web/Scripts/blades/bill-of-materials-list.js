@@ -121,6 +121,10 @@ angular.module('virtoCommerce.catalogModule')
                             if (item.images && item.images.length) {
                                 x.$$imageUrl = item.images[0].url;
                             }
+
+                            if (x.associatedObjectType === 'product') {
+                                x.$$productType = item.productType;
+                            }
                         }
                     });
                 }
@@ -131,6 +135,7 @@ angular.module('virtoCommerce.catalogModule')
                     var newBlade = {
                         id: 'billOfMaterialsDetail',
                         itemId: listItem.associatedObjectId,
+                        productType: listItem.$$productType,
                         catalog: blade.catalog,
                         controller: 'virtoCommerce.catalogModule.itemDetailController',
                         template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/item-detail.tpl.html'

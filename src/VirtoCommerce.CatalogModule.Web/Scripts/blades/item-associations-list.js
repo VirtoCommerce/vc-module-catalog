@@ -33,7 +33,7 @@ angular.module('virtoCommerce.catalogModule')
             var productAssociations = _.filter(associations, function (association) { return association.associatedObjectType === 'product' });
             var itemIds = _.pluck(productAssociations, 'associatedObjectId');
             return items.plenty({ respGroup: 'ItemSmall' }, itemIds, function (data) {
-                addAssociationCatalogId(productAssociations, data);
+                addAssociationProperties(productAssociations, data);
             }).$promise;
         }
 
@@ -41,7 +41,7 @@ angular.module('virtoCommerce.catalogModule')
             var categoryAssociations = _.filter(associations, function (association) { return association.associatedObjectType !== 'product' });
             var categoryIds = _.pluck(categoryAssociations, 'associatedObjectId');
             return categories.plenty({ respGroup: 'Info' }, categoryIds, function (data) {
-                addAssociationCatalogId(categoryAssociations, data);
+                addAssociationProperties(categoryAssociations, data);
             }).$promise;
         }
 
@@ -59,11 +59,15 @@ angular.module('virtoCommerce.catalogModule')
             }).$promise;
         }
 
-        function addAssociationCatalogId(associations, data) {
+        function addAssociationProperties(associations, data) {
             _.each(associations, function (x) {
                 var item = _.find(data, function (d) { return d.id === x.associatedObjectId; });
                 if (item) {
                     x.$$catalogId = item.catalogId;
+
+                    if (x.associatedObjectType === 'product') {
+                        x.$$productType = item.productType;
+                    }
                 }
             });
             allCatalogIds.push.apply(allCatalogIds, _.pluck(associations, '$$catalogId'));
@@ -83,6 +87,10 @@ angular.module('virtoCommerce.catalogModule')
                 newBlade.controller = 'virtoCommerce.catalogModule.categoryDetailController';
                 newBlade.template = 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/category-detail.tpl.html';
             }
+            if (listItem.associatedObjectType === 'product') {
+                newBlade.productType = listItem.$$productType;
+            }
+
             bladeNavigationService.showBlade(newBlade, blade);
         };
 
