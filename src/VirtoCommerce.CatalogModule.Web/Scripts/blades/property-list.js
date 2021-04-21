@@ -239,6 +239,7 @@ angular.module('virtoCommerce.catalogModule')
                     return false;
                 }
 
+                // empty property: no values or all values are null or an empty string 
                 if (!property.values ||
                     !property.values.length ||
                     allPropertiesEmpty(property.values)) {
