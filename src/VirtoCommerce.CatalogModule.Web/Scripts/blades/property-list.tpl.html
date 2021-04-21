@@ -14,7 +14,7 @@
                             <a class="btn-ico fa fa-times-circle filter-quickaction" ng-click="resetFilter()"></a>
                         </span>
                     </legend>
-                    <div class="form-group list __info" ng-repeat="prop in properties = (blade.currentEntities | filter: {type:propGroup.type} | filter: isPropertyVisible)">
+                    <div class="form-group list __info" ng-repeat="prop in properties = (blade.currentEntities | filter: {type:propGroup.type} | filter: isPropertyVisible | filter: isPropertyHasValues)">
                         <label class="form-label">
                             {{prop.name}} {{ getPropertyDisplayName(prop) ? '(' + getPropertyDisplayName(prop) + ')' : '' }}
                             <span class="alt-description" ng-if="isPropertyChanged(prop)"> {{'catalog.blades.property-list.labels.modified' | translate }} </span>
@@ -22,7 +22,7 @@
                                 <i class="form-ico fa fa-pencil"></i>
                             </a>
                         </label>
-                        <va-property2 ng-model="prop" get-prop-values="getPropValues" ng-if="!prop.isReadOnly" languages="blade.languages" default-language="blade.defaultLanguage"></va-property2>
+                        <va-property2 ng-model="prop" get-prop-values="getPropValues" ng-if="!prop.isReadOnly" languages="blade.languages" default-language="blade.defaultLanguage" hidden-languages="prop.$$hiddenLangauges"></va-property2>
                     </div>
                     <div class="note" ng-if="properties.length == 0">{{ 'catalog.blades.property-list.labels.empty-list' | translate }}</div>
                 </fieldset>
