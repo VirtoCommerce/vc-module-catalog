@@ -3,7 +3,6 @@
     <div id='valuePlaceHolder'></div>
 
     <script type="text/ng-template" id="ShortText.html">
-        ShortText.html
         <div class="form-input">
             <input ng-disabled="currentEntity.isReadOnly"
                    ng-required="currentEntity.required && !currentEntity.isReadOnly"
@@ -19,7 +18,6 @@
     </script>
 
     <script type="text/ng-template" id="LongText.html">
-        LongText.html
         <div class="form-input">
             <textarea ng-disabled="currentEntity.isReadOnly"
                       ng-required="currentEntity.required && !currentEntity.isReadOnly"
@@ -34,7 +32,6 @@
     </script>
 
     <script type="text/ng-template" id="Number.html">
-        Number.html
         <!--<a href="#" editable-number="val.value">{{val.value || "N/A" }}</a>-->
         <div class="form-input">
             <input smart-float num-type="float"
@@ -47,7 +44,6 @@
     </script>
 
     <script type="text/ng-template" id="Integer.html">
-        Integer.html
         <div class="form-input __number">
             <input smart-float num-type="integer"
                    ng-disabled="currentEntity.isReadOnly"
@@ -60,7 +56,6 @@
     </script>
 
     <script type="text/ng-template" id="DateTime.html">
-        DateTime.html
         <div class="form-input __calendar">
             <input is-open="datepickers.DateTime"
                    datepicker-popup
@@ -74,7 +69,6 @@
     </script>
 
     <script type="text/ng-template" id="Boolean.html">
-        Boolean.html
         <label class="form-label __switch">
             <input type="checkbox" ng-model="context.currentPropValues[0].value">
             <span class="switch"></span>
@@ -82,7 +76,6 @@
     </script>
 
     <script type="text/ng-template" id="ShortText-multivalue.html">
-        ShortText-multivalue.html
         <tags-input ng-model="context.currentPropValues"
                     ng-disabled="currentEntity.isReadOnly"
                     ng-required="currentEntity.required && !currentEntity.isReadOnly"
@@ -99,7 +92,6 @@
         <va-property-messages></va-property-messages>
     </script>
     <script type="text/ng-template" id="LongText-multivalue.html">
-        LongText-multivalue.html
         <div class="form-group" ng-repeat="val in context.currentPropValues track by $index">
             <div class="form-input">
                 <textarea ng-disabled="currentEntity.isReadOnly"
@@ -119,7 +111,6 @@
 
     </script>
     <script type="text/ng-template" id="Integer-multivalue.html">
-        Integer-multivalue.html
         <tags-input ng-model="context.currentPropValues"
                     ng-disabled="currentEntity.isReadOnly"
                     min-tags="{{(currentEntity.required && !currentEntity.isReadOnly) ? 1 : undefined}}"
@@ -131,7 +122,6 @@
         </tags-input>
     </script>
     <script type="text/ng-template" id="Number-multivalue.html">
-        Number-multivalue.html
         <tags-input ng-model="context.currentPropValues"
                     ng-disabled="currentEntity.isReadOnly"
                     min-tags="{{(currentEntity.required && !currentEntity.isReadOnly) ? 1 : undefined}}"
@@ -144,7 +134,6 @@
     </script>
 
     <script type="text/ng-template" id="ShortText-dictionary.html">
-        ShortText-dictionary.html
         <div class="form-input">
             <ui-select ng-model="context.currentPropValues[0]" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
                 <ui-select-match allow-clear="true" placeholder="{{ 'platform.genericValueInput.placeholders.short-text-dictionary' | translate }}">{{$select.selected.value}}</ui-select-match>
@@ -155,7 +144,6 @@
         </div>
     </script>
     <script type="text/ng-template" id="Number-dictionary.html">
-        Number-dictionary.html
         <div class="form-input">
             <ui-select ng-model="context.currentPropValues[0]" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
                 <ui-select-match allow-clear="true" placeholder="{{ 'platform.genericValueInput.placeholders.number' | translate }}">{{$select.selected.value}}</ui-select-match>
@@ -168,7 +156,6 @@
 
 
     <script type="text/ng-template" id="ShortText-dictionary-multivalue.html">
-        ShortText-dictionary-multivalue.html
         <div class="form-input">
             <ui-select multiple ng-model="context.currentPropValues" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
                 <ui-select-match placeholder="{{ 'platform.genericValueInput.placeholders.short-text-dictionary-multivalue' | translate }}">{{$item.value}}</ui-select-match>
@@ -179,7 +166,6 @@
         </div>
     </script>
     <script type="text/ng-template" id="Number-dictionary-multivalue.html">
-        Number-dictionary-multivalue.html
         <div class="form-input">
             <ui-select multiple ng-model="context.currentPropValues[0]" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
                 <ui-select-match placeholder="{{ 'platform.genericValueInput.placeholders.number-multivalue' | translate }}">{{$item.value}}</ui-select-match>
@@ -192,7 +178,6 @@
 
 
     <script type="text/ng-template" id="ShortText-multilang.html">
-        ShortText-multilang.html
         <div class="form-group" ng-repeat="(language, langValuesGroup) in context.langValuesMap" ng-if="isLanguageVisible(language)">
             <div class="vc-catalog form-input __langs">
                 <label class="lang-code">{{language}}</label>
@@ -212,7 +197,6 @@
     </script>
 
     <script type="text/ng-template" id="LongText-multilang.html">
-        LongText-multilang.html
         <div class="form-group" ng-repeat="(language, langValuesGroup) in context.langValuesMap" ng-if="isLanguageVisible(language)">
             <div class="form-input __langs">
                 <label>{{language}}</label>
@@ -228,7 +212,6 @@
         </div>
     </script>
     <script type="text/ng-template" id="Number-multilang.html">
-        Number-multilang.html
         <div class="form-group" ng-repeat="(language, langValuesGroup) in context.langValuesMap" ng-if="isLanguageVisible(language)">
             <div class="form-input __langs __number">
                 <input ng-disabled="currentEntity.isReadOnly"
@@ -243,7 +226,6 @@
     </script>
 
     <script type="text/ng-template" id="ShortText-multivalue-multilang.html">
-        ShortText-multivalue-multilang.html
         <div class="form-group" ng-repeat="(language, langValuesGroup) in context.langValuesMap" ng-if="isLanguageVisible(language)">
             <div class="vc-catalog form-input __langs">
                 <label class="lang-code">{{language}}</label>
@@ -265,7 +247,6 @@
         </div>
     </script>
     <script type="text/ng-template" id="LongText-multivalue-multilang.html">
-        LongText-multivalue-multilang.html
         <div class="form-group" ng-repeat="(language, langValuesGroup) in context.langValuesMap" ng-if="isLanguageVisible(language)">
             <div class="vc-catalog form-input __langs" ng-repeat="val in langValuesGroup.currentPropValues track by $index">
                 <label class="lang-code">{{language}}</label>
@@ -283,7 +264,6 @@
         </div>
     </script>
     <script type="text/ng-template" id="Number-multivalue-multilang.html">
-        Number-multivalue-multilang.html
         <div class="form-group" ng-repeat="(language, langValuesGroup) in context.langValuesMap" ng-if="isLanguageVisible(language)">
             <div class="vc-catalog form-input __langs">
                 <label class="lang-code">{{language}}</label>
@@ -300,7 +280,6 @@
         </div>
     </script>
     <script type="text/ng-template" id="ShortText-dictionary-multilang.html">
-        ShortText-dictionary-multilang.html
         <div class="form-input">
             <ui-select ng-model="context.currentPropValues[0]" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
                 <ui-select-match allow-clear="true" placeholder="{{ 'platform.genericValueInput.placeholders.short-text-dictionary-multilang' | translate }}">{{$select.selected.value}}</ui-select-match>
@@ -312,7 +291,6 @@
     </script>
 
     <script type="text/ng-template" id="Number-dictionary-multilang.html">
-        Number-dictionary-multilang.html
         <div class="form-input">
             <ui-select ng-model="context.currentPropValues[0]" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
                 <ui-select-match allow-clear="true" placeholder="{{ 'platform.genericValueInput.placeholders.number' | translate }}">{{$select.selected.value}}</ui-select-match>
@@ -324,7 +302,6 @@
     </script>
 
     <script type="text/ng-template" id="LongText-dictionary-multivalue-multilang.html">
-        LongText-dictionary-multivalue-multilang.html
         <div class="form-input">
             <ui-select multiple ng-model="context.currentPropValues" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
                 <ui-select-match placeholder="{{ 'platform.genericValueInput.placeholders.long-text-dictionary-multivalue-multilang' | translate }}">{{$item.value}}</ui-select-match>
@@ -336,7 +313,6 @@
     </script>
 
     <script type="text/ng-template" id="ShortText-dictionary-multivalue-multilang.html">
-        ShortText-dictionary-multivalue-multilang.html
         <div class="form-input">
             <ui-select multiple ng-model="context.currentPropValues" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
                 <ui-select-match placeholder="{{ 'platform.genericValueInput.placeholders.short-text-dictionary-multivalue-multilang' | translate }}">{{$item.value}}</ui-select-match>
@@ -348,7 +324,6 @@
     </script>
 
     <script type="text/ng-template" id="Number-dictionary-multivalue-multilang.html">
-        Number-dictionary-multivalue-multilang.html
         <div class="form-input">
             <ui-select multiple ng-model="context.currentPropValues" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
                 <ui-select-match placeholder="{{ 'platform.genericValueInput.placeholders.number-multivalue' | translate }}">{{$item.value}}</ui-select-match>
