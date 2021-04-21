@@ -55,10 +55,7 @@ angular.module('virtoCommerce.catalogModule')
         }
 
         $scope.isPropertyHasValues = function (property) {
-            if (blade.emptyProperties && blade.emptyProperties.length > 0) {
-                return !blade.emptyProperties.includes(property.name);
-            }
-            return true;
+            return !blade.emptyProperties.includes(property.name);
         }
 
         function applyFilter(filteredProperties) {
@@ -218,14 +215,14 @@ angular.module('virtoCommerce.catalogModule')
             // control visibility of multilanguage properties separately
             _.each(blade.currentEntities, function (property) {
                 if (property.multilanguage) {
-                    property.$$hiddenLangauges = [];
+                    property.$$hiddenLanguages = [];
                     _.each(blade.languages, function (language) {
                         var languageFound = _.some(property.values, function (propertyValue) {
                             return propertyValue.value && propertyValue.value !== '' && propertyValue.languageCode === language;
                         });
 
                         if (!languageFound) {
-                            property.$$hiddenLangauges.push(language);
+                            property.$$hiddenLanguages.push(language);
                         }
                     });
                 }
@@ -239,13 +236,7 @@ angular.module('virtoCommerce.catalogModule')
                     return false;
                 }
 
-                if (!property.values ||
-                    !property.values.length ||
-                    allPropertiesEmpty(property.values)) {
-                    return true;
-                }
-
-                return false;
+                return allPropertiesEmpty(property.values);
             });
 
             blade.emptyProperties = _.pluck(noValueProperties, 'name');
@@ -260,8 +251,8 @@ angular.module('virtoCommerce.catalogModule')
 
         function showEmptyProperties() {
             _.each(blade.currentEntities, function (property) {
-                if (property.$$hiddenLangauges) {
-                    property.$$hiddenLangauges = null;
+                if (property.$$hiddenLanguages) {
+                    property.$$hiddenLanguages = null;
                 }
             });
 
