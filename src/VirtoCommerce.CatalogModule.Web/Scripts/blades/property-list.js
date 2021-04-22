@@ -212,7 +212,13 @@ angular.module('virtoCommerce.catalogModule')
         };
 
         function hideEmptyProperties() {
-            var propertiesByType = _.filter(blade.currentEntities, function (property) { return property.type.toLowerCase() === blade.entityType.toLowerCase(); });
+            var propertiesByType = _.filter(blade.currentEntities, function (property) {
+                if (blade.entityType.toLowerCase() === 'product' && property.type.toLowerCase() === 'variation') {
+                    return true;
+                }
+
+                return property.type.toLowerCase() === blade.entityType.toLowerCase();
+            });
 
             // control visibility of multilanguage properties separately
             _.each(propertiesByType, function (property) {

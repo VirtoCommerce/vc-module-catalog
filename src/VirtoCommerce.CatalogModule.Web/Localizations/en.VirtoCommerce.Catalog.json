@@ -213,8 +213,8 @@
           "add-filter": "Filter",
           "reset-filter": "Reset filter",
           "excluded": "Properties excluded from inheritance",
-          "hide-empty-values": "Hide empty values",
-          "show-empty-values": "Show empty values"
+          "hide-empty-values": "Hide empty fields",
+          "show-empty-values": "Show empty fields"
         },
         "placeholders": {
           "excluded":  "select properties"
