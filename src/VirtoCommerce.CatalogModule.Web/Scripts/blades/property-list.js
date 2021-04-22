@@ -55,7 +55,7 @@ angular.module('virtoCommerce.catalogModule')
         }
 
         $scope.isPropertyHasValues = function (property) {
-            return !blade.emptyProperties.includes(property.name);
+            return !blade.emptyProperties.includes(getPropertyCode(property));
         }
 
         function applyFilter(filteredProperties) {
@@ -212,8 +212,10 @@ angular.module('virtoCommerce.catalogModule')
         };
 
         function hideEmptyProperties() {
+            var properties = _.filter(blade.currentEntities, function (property) { return property.type.toLowerCase() === blade.entityType.toLowerCase(); });
+
             // control visibility of multilanguage properties separately
-            _.each(blade.currentEntities, function (property) {
+            _.each(properties, function (property) {
                 if (property.multilanguage) {
                     property.$$hiddenLanguages = [];
                     _.each(blade.languages, function (language) {
@@ -228,18 +230,15 @@ angular.module('virtoCommerce.catalogModule')
                 }
             })
 
-            var noValueProperties = _.filter(blade.currentEntities, function (property) {
+             _.each(properties, function (property) {
                 // required properties and switchers can’t be hidden
-                if (property.required || 
-                    property.valueType === 'Boolean'
-                ) { 
-                    return false;
+                if (!property.required &&
+                    property.valueType !== 'Boolean' &&
+                    allPropertiesEmpty(property.values)
+                ) {
+                    blade.emptyProperties.push(getPropertyCode(property))
                 }
-
-                return allPropertiesEmpty(property.values);
             });
-
-            blade.emptyProperties = _.pluck(noValueProperties, 'name');
         }
 
         function allPropertiesEmpty(propertyValues) {
@@ -257,6 +256,10 @@ angular.module('virtoCommerce.catalogModule')
             });
 
             blade.emptyProperties = [];
+        }
+
+        function getPropertyCode(property) {
+            return property.name.concat('-', property.valueType, '-', property.id); 
         }
 
         //save filters to localStorage
