@@ -212,10 +212,10 @@ angular.module('virtoCommerce.catalogModule')
         };
 
         function hideEmptyProperties() {
-            var properties = _.filter(blade.currentEntities, function (property) { return property.type.toLowerCase() === blade.entityType.toLowerCase(); });
+            var propertiesByType = _.filter(blade.currentEntities, function (property) { return property.type.toLowerCase() === blade.entityType.toLowerCase(); });
 
             // control visibility of multilanguage properties separately
-            _.each(properties, function (property) {
+            _.each(propertiesByType, function (property) {
                 if (property.multilanguage) {
                     property.$$hiddenLanguages = [];
                     _.each(blade.languages, function (language) {
@@ -230,7 +230,7 @@ angular.module('virtoCommerce.catalogModule')
                 }
             })
 
-             _.each(properties, function (property) {
+            _.each(propertiesByType, function (property) {
                 // required properties and switchers can’t be hidden
                 if (!property.required &&
                     property.valueType !== 'Boolean' &&
