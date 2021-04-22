@@ -55,7 +55,7 @@ angular.module('virtoCommerce.catalogModule')
         }
 
         $scope.isPropertyHasValues = function (property) {
-            return !blade.emptyProperties.includes(getPropertyCode(property));
+            return !blade.emptyProperties.includes(property);
         }
 
         function applyFilter(filteredProperties) {
@@ -236,7 +236,7 @@ angular.module('virtoCommerce.catalogModule')
                     property.valueType !== 'Boolean' &&
                     allPropertiesEmpty(property.values)
                 ) {
-                    blade.emptyProperties.push(getPropertyCode(property))
+                    blade.emptyProperties.push(property)
                 }
             });
         }
@@ -256,10 +256,6 @@ angular.module('virtoCommerce.catalogModule')
             });
 
             blade.emptyProperties = [];
-        }
-
-        function getPropertyCode(property) {
-            return property.name.concat('-', property.valueType, '-', property.id); 
         }
 
         //save filters to localStorage
