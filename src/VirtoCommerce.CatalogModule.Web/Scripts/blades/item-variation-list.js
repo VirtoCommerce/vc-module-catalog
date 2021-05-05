@@ -95,7 +95,7 @@ angular.module('virtoCommerce.catalogModule').controller('virtoCommerce.catalogM
                         if (data.productType === 'Digital'
                             || data.productType === 'BillOfMaterials') {
                             data.trackInventory = false;
-                        };
+                        }
 
                         var newBlade = {
                             id: 'variationDetail',
