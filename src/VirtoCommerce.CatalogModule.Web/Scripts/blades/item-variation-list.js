@@ -92,6 +92,11 @@ angular.module('virtoCommerce.catalogModule').controller('virtoCommerce.catalogM
                         data.properties = _.where(data.properties, { type: 'Variation' });
                         data.productType = blade.item.productType;
 
+                        if (data.productType === 'Digital'
+                            || data.productType === 'BillOfMaterials') {
+                            data.trackInventory = false;
+                        }
+
                         var newBlade = {
                             id: 'variationDetail',
                             item: data,
