@@ -46,7 +46,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             document.Add(new IndexDocumentField("__type", category.GetType().Name) { IsRetrievable = true, IsFilterable = true });
             document.Add(new IndexDocumentField("__sort", category.Name) { IsRetrievable = true, IsFilterable = true });
 
-            var statusField = category.IsActive != true ? "hidden" : "visible";
+            var statusField = IsActiveInTotal(category) ? "visible" : "hidden";
             IndexIsProperty(document, statusField);
             IndexIsProperty(document, "category");
             IndexIsProperty(document, category.Code);
@@ -106,6 +106,26 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             document.Add(new IndexDocumentField("parent", category.ParentId ?? category.CatalogId) { IsRetrievable = true, IsSearchable = true, IsFilterable = true });
 
             return document;
+        }
+
+        /// <summary>
+        /// Child categories must inherit "hidden" flag from parent categories
+        /// </summary>
+        protected virtual bool IsActiveInTotal(Category category)
+        {
+            bool result;
+            if (category.IsActive.HasValue && !category.IsActive.Value)
+            {
+                result = false;
+            }
+            else
+            {
+                result = category.Parent == null
+                    ? category.IsActive == true
+                    : IsActiveInTotal(category.Parent);
+            }
+
+            return result;
         }
 
         protected virtual void IndexIsProperty(IndexDocument document, string value)
