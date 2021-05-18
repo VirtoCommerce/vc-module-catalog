@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using VirtoCommerce.ExportModule.Core.Model;
 
 namespace VirtoCommerce.CatalogModule.Core.Model.Export
 {
-    public class TabularProduct : IExportable
+    public class TabularProduct : IExportable, IHasProperties
     {
         public string Id { get; set; }
         public string Code { get; set; }
@@ -54,10 +56,17 @@ namespace VirtoCommerce.CatalogModule.Core.Model.Export
 
         public string OuterId { get; set; }
 
+        #region IHasProperties members
+        public IList<Property> Properties { get; set; }
+        #endregion
+
 
         public object Clone()
         {
-            return MemberwiseClone() as TabularProduct;
+            var result = MemberwiseClone() as TabularProduct;
+            result.Properties = Properties?.Select(x => x.Clone() as Property).ToList();
+
+            return result;
         }
     }
 }

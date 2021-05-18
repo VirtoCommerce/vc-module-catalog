@@ -105,6 +105,8 @@ namespace VirtoCommerce.CatalogModule.Core.Model.Export
             result.Priority = Priority;
             result.OuterId = OuterId;
 
+            result.Properties = Properties?.Select(x => x.Clone() as Property).ToList();
+
             return result;
         }
         #endregion ITabularConvertible implementation
