@@ -217,7 +217,7 @@
           "show-empty-values": "Show empty fields"
         },
         "placeholders": {
-          "excluded":  "select properties"
+          "excluded": "select properties"
         },
         "validations": {
           "required": "This field is required",
@@ -520,7 +520,7 @@
       "importers-list": {
         "title": "Available importers",
         "subtitle": "Select importer for catalog products"
-      },      
+      },
       "exporter-list": {
         "title": "Available exporters",
         "subtitle": "Select exporter for catalog products"
@@ -902,6 +902,8 @@
       }
     }
   },
+  "CategoryChangeBulkAction": "Bulk category change",
+  "PropertiesUpdateBulkAction": "Properties bulk update",
   "virtoCommerce.catalogBulkActionsModule": {
     "blades": {
       "hello-world": {
