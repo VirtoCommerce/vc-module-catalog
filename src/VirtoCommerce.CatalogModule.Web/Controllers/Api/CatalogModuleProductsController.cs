@@ -224,7 +224,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             {
                 variation.Code = _skuGenerator.GenerateSku(variation);
                 variation.SeoInfos.Clear();
-            }                  
+            }
 
             return Ok(copyProduct);
         }
@@ -239,8 +239,9 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         public async Task<ActionResult<CatalogProduct>> SaveProduct([FromBody] CatalogProduct product)
         {
-            var authorizationResult = await _authorizationService.AuthorizeAsync(User, product, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
-            if (!authorizationResult.Succeeded)
+            var catalogAuthorizationResult = await _authorizationService.AuthorizeAsync(User, product, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
+            var productAuthorizationResult = await _authorizationService.AuthorizeAsync(User, product, new ProductAuthorizationRequirement());
+            if (!catalogAuthorizationResult.Succeeded || !productAuthorizationResult.Succeeded)
             {
                 return Unauthorized();
             }
@@ -261,8 +262,9 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("batch")]
         public async Task<ActionResult> SaveProducts([FromBody] CatalogProduct[] products)
         {
-            var authorizationResult = await _authorizationService.AuthorizeAsync(User, products, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
-            if (!authorizationResult.Succeeded)
+            var catalogAuthorizationResult = await _authorizationService.AuthorizeAsync(User, products, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
+            var productAuthorizationResult = await _authorizationService.AuthorizeAsync(User, products, new ProductAuthorizationRequirement());
+            if (!catalogAuthorizationResult.Succeeded || !productAuthorizationResult.Succeeded)
             {
                 return Unauthorized();
             }
@@ -281,8 +283,9 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         public async Task<ActionResult> DeleteProduct([FromQuery] string[] ids)
         {
             var products = await _itemsService.GetByIdsAsync(ids, ItemResponseGroup.ItemInfo.ToString());
-            var authorizationResult = await _authorizationService.AuthorizeAsync(User, products, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Delete));
-            if (!authorizationResult.Succeeded)
+            var catalogAuthorizationResult = await _authorizationService.AuthorizeAsync(User, products, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Delete));
+            var productAuthorizationResult = await _authorizationService.AuthorizeAsync(User, products, new ProductAuthorizationRequirement());
+            if (!catalogAuthorizationResult.Succeeded || !productAuthorizationResult.Succeeded)
             {
                 return Unauthorized();
             }

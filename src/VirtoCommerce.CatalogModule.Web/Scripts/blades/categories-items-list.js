@@ -223,7 +223,9 @@ angular.module('virtoCommerce.catalogModule')
                             }
 
                             if (idsToDelete.length > 0) {
-                                listEntries.delete({ objectIds: idsToDelete}, () => blade.refresh());
+                                listEntries.delete({ objectIds: idsToDelete }, () => blade.refresh(), function (error) {
+                                    bladeNavigationService.setError('Error ' + error.status, blade);
+                                });
                             }
                         }
                     }

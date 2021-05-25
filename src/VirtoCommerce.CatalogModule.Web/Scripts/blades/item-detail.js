@@ -81,7 +81,8 @@ angular.module('virtoCommerce.catalogModule')
 
             items.update({}, blade.item, function () {
                 blade.refresh(true);
-            });
+            },
+            function (error) { bladeNavigationService.setError('Error ' + error.status, blade); });
         }
 
         blade.onClose = function (closeCallback) {

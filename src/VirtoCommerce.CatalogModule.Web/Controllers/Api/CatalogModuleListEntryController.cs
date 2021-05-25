@@ -216,7 +216,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return Unauthorized();
             }
 
-            var dstCatalog = (await _catalogService.GetByIdsAsync(new[] {moveRequest.Catalog})).FirstOrDefault();
+            var dstCatalog = (await _catalogService.GetByIdsAsync(new[] { moveRequest.Catalog })).FirstOrDefault();
             if (dstCatalog.IsVirtual)
             {
                 return BadRequest("Unable to move to a virtual catalog");
@@ -224,6 +224,12 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             var categories = await _categoryMover.PrepareMoveAsync(moveRequest);
             var products = await _productMover.PrepareMoveAsync(moveRequest);
+
+            var productAuthorizationResult = await _authorizationService.AuthorizeAsync(User, products, new ProductAuthorizationRequirement());
+            if (!productAuthorizationResult.Succeeded)
+            {
+                return Unauthorized();
+            }
 
             await _categoryMover.ConfirmMoveAsync(categories);
             await _productMover.ConfirmMoveAsync(products);
@@ -263,6 +269,12 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 var commonIds = idsToDelete.Skip(i).Take(deleteBatchSize).ToArray();
 
                 var searchProductResult = await _itemService.GetByIdsAsync(commonIds, ItemResponseGroup.None.ToString());
+                var productAuthorizationResult = await _authorizationService.AuthorizeAsync(User, searchProductResult, new ProductAuthorizationRequirement());
+                if (!productAuthorizationResult.Succeeded)
+                {
+                    return Unauthorized();
+                }
+
                 await _itemService.DeleteAsync(searchProductResult.Select(x => x.Id).ToArray());
 
                 var searchCategoryResult = await _categoryService.GetByIdsAsync(commonIds, CategoryResponseGroup.None.ToString());
@@ -318,8 +330,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
                 result.Results = catIndexedSearchResult.Items.Select(x => AbstractTypeFactory<CategoryListEntry>.TryCreateInstance().FromModel(x)).ToList();
 
-                criteria.Skip -= (int) skip;
-                criteria.Take -= (int) take;
+                criteria.Skip -= (int)skip;
+                criteria.Take -= (int)take;
 
                 const ItemResponseGroup itemResponseGroup = ItemResponseGroup.ItemInfo | ItemResponseGroup.Outlines;
 
@@ -327,7 +339,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 productIndexedSearchCriteria.ResponseGroup = itemResponseGroup.ToString();
 
                 var indexedSearchResult = await _productIndexedSearchService.SearchAsync(productIndexedSearchCriteria);
-                result.TotalCount += (int) indexedSearchResult.TotalCount;
+                result.TotalCount += (int)indexedSearchResult.TotalCount;
                 result.Results.AddRange(indexedSearchResult.Items.Select(x => AbstractTypeFactory<ProductListEntry>.TryCreateInstance().FromModel(x)));
             }
             else
