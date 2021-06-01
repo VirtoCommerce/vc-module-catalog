@@ -94,7 +94,7 @@
       "category-detail": {
         "subtitle": "Category details",
         "labels": {
-          "is-active": "Is active",
+          "is-active": "Visible",
           "name": "Name",
           "code": "Code",
           "tax-type": "Tax type",
@@ -310,7 +310,7 @@
           "priority": "Priority",
           "name": "Product name",
           "can-be-purchased": "Can be purchased",
-          "store-visible": "Store visible",
+          "store-visible": "Visible",
           "track-inventory": "Track inventory",
           "has-user-agreement": "Has user agreement",
           "min-quantity": "Min. quantity",
