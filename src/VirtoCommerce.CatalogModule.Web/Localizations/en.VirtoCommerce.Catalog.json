@@ -777,7 +777,8 @@
     },
     "commands": {
       "clear-all": "Clear all",
-      "add-property": "Add property",
+      "add-property": "Add Custom property",
+      "add-variation-property": "Add Custom property",
       "gallery": "Gallery",
       "map": "Map",
       "open-item": "Open item"
