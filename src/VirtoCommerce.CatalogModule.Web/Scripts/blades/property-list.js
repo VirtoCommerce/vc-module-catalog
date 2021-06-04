@@ -34,7 +34,6 @@ angular.module('virtoCommerce.catalogModule')
             if ($localStorage.propertyFilter) {
                 applyFilter($localStorage.propertyFilter[authService.userName]);
             }
-
         }
 
         $scope.isPropertyChanged = function (property) {
@@ -136,7 +135,8 @@ angular.module('virtoCommerce.catalogModule')
 
         blade.toolbarCommands = [
             {
-                name: "catalog.commands.add-property", icon: 'fas fa-plus',
+                name: blade.currentEntity.mainProductId ? "catalog.commands.add-variation-property" : "catalog.commands.add-property",
+                icon: 'fas fa-plus',
                 executeMethod: function () {
                     if (blade.entityType == "product") {
                         editUnmanageable({
