@@ -122,7 +122,8 @@ angular.module('virtoCommerce.catalogModule')
             }
         };
 
-        $scope.edit = function(entity) {
+        $scope.edit = function (entity) {
+            if (!entity.catalogId) entity.catalogId = blade.item.catalogId;
             var newBlade = {
                 id: 'itemDetailChild',
                 origEntity: entity,
