@@ -10,7 +10,6 @@ angular.module('virtoCommerce.catalogModule')
             blade.isLoading = false;
             $scope.isValid = true;
 
-            var promise = settings.getValues({ id: 'VirtoCommerce.Core.General.Languages' }).$promise;
             $scope.languages = [];
 
             function initialize() {
