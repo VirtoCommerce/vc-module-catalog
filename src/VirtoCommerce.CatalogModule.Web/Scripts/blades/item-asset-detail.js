@@ -1,7 +1,7 @@
 angular.module('virtoCommerce.catalogModule')
-.controller('virtoCommerce.catalogModule.itemAssetsDetailController',
-    ['$scope', '$filter', '$translate', 'platformWebApp.bladeNavigationService', 'platformWebApp.assets.api', 'platformWebApp.settings',
-        function ($scope, $filter, $translate, bladeNavigationService, assets, settings) {
+    .controller('virtoCommerce.catalogModule.itemAssetsDetailController',
+        ['$scope', '$filter', '$translate', 'platformWebApp.bladeNavigationService', 'platformWebApp.assets.api', 'platformWebApp.settings', 'virtoCommerce.catalogModule.catalogs',
+            function ($scope, $filter, $translate, bladeNavigationService, assets, settings, catalogs) {
             var blade = $scope.blade;
 
             blade.currentEntity = angular.copy(blade.origEntity);
@@ -14,7 +14,9 @@ angular.module('virtoCommerce.catalogModule')
             $scope.languages = [];
 
             function initialize() {
-                $scope.languages = _.pluck($scope.blade.parentBlade.parentBlade.catalog.languages, 'languageCode');
+                catalogs.get({ id: blade.currentEntity.catalogId }, function (catalog) {
+                    $scope.languages = _.pluck(catalog.languages, 'languageCode');
+                });
                 $scope.imageTypes = settings.getValues({ id: 'Catalog.ImageCategories' });
             };
 
