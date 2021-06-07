@@ -14,9 +14,7 @@ angular.module('virtoCommerce.catalogModule')
             $scope.languages = [];
 
             function initialize() {
-                promise.then(function(promiseData) {
-                    $scope.languages = promiseData;
-                });
+                $scope.languages = _.pluck($scope.blade.parentBlade.parentBlade.catalog.languages, 'languageCode');
                 $scope.imageTypes = settings.getValues({ id: 'Catalog.ImageCategories' });
             };
 
