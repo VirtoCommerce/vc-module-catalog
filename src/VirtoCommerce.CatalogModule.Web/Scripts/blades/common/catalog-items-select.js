@@ -67,7 +67,7 @@ angular.module('virtoCommerce.catalogModule')
         //catalog breadcrumb by default
         var breadCrumb = {
             id: blade.catalogId ? blade.catalogId : "All",
-            name: blade.catalog ? blade.catalog.name : "All",
+            name: blade.catalog ? blade.catalog.name : "catalog.blades.catalog-items-select.bread-crumb-top",
             blade: $scope.blade
         };
 
@@ -86,7 +86,7 @@ angular.module('virtoCommerce.catalogModule')
         breadCrumb.navigate = function (breadcrumb) {
             bladeNavigationService.closeBlade($scope.blade,
                         function () {
-                            if (breadcrumb.id == "All") {
+                            if (breadcrumb.id === "All") {
                                 blade.catalogId = null;
                                 blade.filter.keyword = null;
                             }
