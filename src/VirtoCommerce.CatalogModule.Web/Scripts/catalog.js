@@ -76,8 +76,8 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
     }])
 
     .run(
-        ['platformWebApp.mainMenuService', 'platformWebApp.widgetService', '$state', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.catalogExportService', 'platformWebApp.permissionScopeResolver', 'virtoCommerce.catalogModule.catalogs', 'virtoCommerce.catalogModule.predefinedSearchFilters', 'platformWebApp.metaFormsService', 'virtoCommerce.catalogModule.itemTypesResolverService', '$http', '$compile', 'virtoCommerce.exportModule.genericViewerItemService',
-            function (mainMenuService, widgetService, $state, bladeNavigationService, catalogExportService, scopeResolver, catalogs, predefinedSearchFilters, metaFormsService, itemTypesResolverService, $http, $compile, genericViewerItemService) {
+        ['platformWebApp.mainMenuService', 'platformWebApp.widgetService', '$state', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.catalogExportService', 'platformWebApp.permissionScopeResolver', 'virtoCommerce.catalogModule.catalogs', 'virtoCommerce.catalogModule.predefinedSearchFilters', 'platformWebApp.metaFormsService', 'virtoCommerce.catalogModule.itemTypesResolverService', '$http', '$compile', 'virtoCommerce.exportModule.genericViewerItemService', 'platformWebApp.toolbarService', 'platformWebApp.breadcrumbHistoryService',
+            function (mainMenuService, widgetService, $state, bladeNavigationService, catalogExportService, scopeResolver, catalogs, predefinedSearchFilters, metaFormsService, itemTypesResolverService, $http, $compile, genericViewerItemService, toolbarService, breadcrumbHistoryService) {
 
                 //Register module in main menu
                 var menuItem = {
@@ -90,6 +90,9 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                 };
                 mainMenuService.addMenuItem(menuItem);
 
+                // register back-button
+                toolbarService.register(breadcrumbHistoryService.getBackButtonInstance(), 'virtoCommerce.catalogModule.categoriesItemsListController');
+                toolbarService.register(breadcrumbHistoryService.getBackButtonInstance(), 'virtoCommerce.catalogModule.catalogItemSelectController');
 
                 //Register image widget
                 var entryImageWidget = {

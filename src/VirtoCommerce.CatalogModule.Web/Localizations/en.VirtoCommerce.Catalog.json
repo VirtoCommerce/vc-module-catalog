@@ -354,6 +354,7 @@
         "title": "Select categories",
         "title-association": "Select items to associate",
         "subtitle-association": "Adding Associations to product",
+        "bread-crumb-top": "All catalogs",
         "labels": {
           "picture": "Pic",
           "name": "Name",

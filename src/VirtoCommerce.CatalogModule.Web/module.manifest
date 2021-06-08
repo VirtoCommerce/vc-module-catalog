@@ -3,7 +3,7 @@
   <id>VirtoCommerce.Catalog</id>
   <version>3.44.0</version>
   <version-tag />
-  <platformVersion>3.51.0</platformVersion>
+  <platformVersion>3.60.0-alpha.11919</platformVersion>
   <title>Catalog module</title>
   <description>Catalog, categories, products, variations, properties management</description>
   <authors>
