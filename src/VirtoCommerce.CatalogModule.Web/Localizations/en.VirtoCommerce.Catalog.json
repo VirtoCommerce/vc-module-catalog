@@ -778,7 +778,8 @@
     },
     "commands": {
       "clear-all": "Clear all",
-      "add-property": "Add Custom property",
+      "add-property": "Add property",
+      "add-product-property": "Add Custom property",
       "add-variation-property": "Add Custom property",
       "gallery": "Gallery",
       "map": "Map",
