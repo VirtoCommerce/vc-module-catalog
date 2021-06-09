@@ -135,7 +135,7 @@ angular.module('virtoCommerce.catalogModule')
 
         function setAddPropertyButtonNameKey() {
             if (blade.currentEntity.hasOwnProperty('productType')) {
-                return entity.mainProductId ? 'catalog.commands.add-variation-property' : 'catalog.commands.add-product-property';
+                return blade.currentEntity.mainProductId ? 'catalog.commands.add-variation-property' : 'catalog.commands.add-product-property';
             }
             return 'catalog.commands.add-property';
         }
