@@ -94,7 +94,7 @@
       "category-detail": {
         "subtitle": "Category details",
         "labels": {
-          "is-active": "Is active",
+          "is-active": "Visible",
           "name": "Name",
           "code": "Code",
           "tax-type": "Tax type",
@@ -217,7 +217,7 @@
           "show-empty-values": "Show empty fields"
         },
         "placeholders": {
-          "excluded":  "select properties"
+          "excluded": "select properties"
         },
         "validations": {
           "required": "This field is required",
@@ -310,7 +310,7 @@
           "priority": "Priority",
           "name": "Product name",
           "can-be-purchased": "Can be purchased",
-          "store-visible": "Store visible",
+          "store-visible": "Visible",
           "track-inventory": "Track inventory",
           "has-user-agreement": "Has user agreement",
           "min-quantity": "Min. quantity",
@@ -354,6 +354,7 @@
         "title": "Select categories",
         "title-association": "Select items to associate",
         "subtitle-association": "Adding Associations to product",
+        "bread-crumb-top": "All catalogs",
         "labels": {
           "picture": "Pic",
           "name": "Name",
@@ -520,7 +521,7 @@
       "importers-list": {
         "title": "Available importers",
         "subtitle": "Select importer for catalog products"
-      },      
+      },
       "exporter-list": {
         "title": "Available exporters",
         "subtitle": "Select exporter for catalog products"
@@ -778,6 +779,8 @@
     "commands": {
       "clear-all": "Clear all",
       "add-property": "Add property",
+      "add-product-property": "Add Custom property",
+      "add-variation-property": "Add Custom property",
       "gallery": "Gallery",
       "map": "Map",
       "open-item": "Open item"
@@ -902,6 +905,8 @@
       }
     }
   },
+  "CategoryChangeBulkAction": "Bulk category change",
+  "PropertiesUpdateBulkAction": "Properties bulk update",
   "virtoCommerce.catalogBulkActionsModule": {
     "blades": {
       "hello-world": {

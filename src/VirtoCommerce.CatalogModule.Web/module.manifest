@@ -1,9 +1,9 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <id>VirtoCommerce.Catalog</id>
-  <version>3.43.0</version>
+  <version>3.44.0</version>
   <version-tag />
-  <platformVersion>3.51.0</platformVersion>
+  <platformVersion>3.60.0-alpha.11919</platformVersion>
   <title>Catalog module</title>
   <description>Catalog, categories, products, variations, properties management</description>
   <authors>
@@ -25,7 +25,7 @@
     <dependency id="VirtoCommerce.Search" version="3.2.0" />
     <dependency id="VirtoCommerce.Export" version="3.4.0" />
     <dependency id="VirtoCommerce.Store" version="3.1.0" />
-    <dependency id="VirtoCommerce.BulkActionsModule" version="3.1.0" />
+    <dependency id="VirtoCommerce.BulkActionsModule" version="3.3.0-alpha.96" />
   </dependencies>
   <groups>
     <group>commerce</group>

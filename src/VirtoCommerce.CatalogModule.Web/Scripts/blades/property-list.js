@@ -34,7 +34,6 @@ angular.module('virtoCommerce.catalogModule')
             if ($localStorage.propertyFilter) {
                 applyFilter($localStorage.propertyFilter[authService.userName]);
             }
-
         }
 
         $scope.isPropertyChanged = function (property) {
@@ -134,9 +133,17 @@ angular.module('virtoCommerce.catalogModule')
 
         blade.headIcon = 'fa fa-gear';
 
+        function setAddPropertyButtonNameKey() {
+            if (blade.currentEntity.hasOwnProperty('productType')) {
+                return blade.currentEntity.mainProductId ? 'catalog.commands.add-variation-property' : 'catalog.commands.add-product-property';
+            }
+            return 'catalog.commands.add-property';
+        }
+        blade.addPropertyButtonNameKey = setAddPropertyButtonNameKey();
         blade.toolbarCommands = [
             {
-                name: "catalog.commands.add-property", icon: 'fas fa-plus',
+                name: blade.addPropertyButtonNameKey,
+                icon: 'fas fa-plus',
                 executeMethod: function () {
                     if (blade.entityType == "product") {
                         editUnmanageable({

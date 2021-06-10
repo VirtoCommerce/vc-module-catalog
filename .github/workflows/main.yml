@@ -1,4 +1,4 @@
-# v1.1.3
+# v1.1.4
 name: Module CI
 
 on:
@@ -68,7 +68,6 @@ jobs:
           else
             echo "VERSION_SUFFIX=${{ steps.image.outputs.suffix }}" >> $GITHUB_ENV
           fi;
-
       - name: Add version suffix
         if: ${{ github.ref != 'refs/heads/master' }}
         uses: VirtoCommerce/vc-github-actions/add-version-suffix@master
@@ -100,7 +99,6 @@ jobs:
         uses: VirtoCommerce/vc-github-actions/publish-nuget@master
 
       - name: Publish to Blob
-        if: ${{ github.ref == 'refs/heads/dev' || (github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/master') }}
         id: blobRelease
         uses: VirtoCommerce/vc-github-actions/publish-blob-release@master
         with:
@@ -135,3 +133,11 @@ jobs:
           moduleDescription: ${{ steps.image.outputs.moduleDescription }}
           projectUrl: ${{ steps.image.outputs.projectUrl }}
           iconUrl: ${{ steps.image.outputs.iconUrl }}
+          
+      - name: Invoke Module deployment workflow
+        if: ${{ github.ref == 'refs/heads/master' }}
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: VC deployment
+          token: ${{ secrets.REPO_TOKEN }}
+          inputs: '{ "artifactUrl": "${{ steps.blobRelease.outputs.packageUrl }}", "deployBranch": "dev" }'
