@@ -257,6 +257,11 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 foreach (var item in items)
                 {
                     // clear category links (to save later)
+                    foreach (var link in item.Links.Where(x => x.EntryId == null))
+                    {
+                        link.ListEntryId = item.Id;
+                    }
+
                     categoryLinks.AddRange(item.Links);
                     item.Links = new List<CategoryLink>();
 
