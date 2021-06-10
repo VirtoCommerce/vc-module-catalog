@@ -245,16 +245,91 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 
         private async Task ImportCategoriesAsync(JsonTextReader reader, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
         {
+            var processedCount = 0;
+
+            var categoriesByHierarchyLevel = new Dictionary<int, IList<Category>>();
+            var categoryLinks = new List<CategoryLink>();
+
             await reader.DeserializeJsonArrayWithPagingAsync<Category>(_jsonSerializer, _batchSize, async (items) =>
             {
-                var itemsArray = items.ToArray();
-                await _categoryService.SaveChangesAsync(itemsArray);
-                ImportImages(itemsArray.OfType<IHasImages>().ToArray(), progressInfo);
-            }, processedCount =>
+                var categories = new List<Category>();
+
+                foreach (var item in items)
+                {
+                    // clear category links (to save later)
+                    categoryLinks.AddRange(item.Links);
+                    item.Links = new List<CategoryLink>();
+
+                    if (item.Level > 0)
+                    {
+                        if (!categoriesByHierarchyLevel.ContainsKey(item.Level))
+                        {
+                            categoriesByHierarchyLevel.Add(item.Level, new List<Category>());
+                        }
+
+                        categoriesByHierarchyLevel[item.Level].Add(item);
+                    }
+                    else
+                    {
+                        categories.Add(item);
+                    }
+                }
+
+                // save hierarchy level 0 (root) categories
+                processedCount += await SaveCategories(categories, progressInfo);
+            }, _ =>
             {
                 progressInfo.Description = $"{ processedCount } categories have been imported";
                 progressCallback(progressInfo);
             }, cancellationToken);
+
+            // save hierarchy level 1+ categories
+            foreach (var categories in categoriesByHierarchyLevel.OrderBy(x => x.Key))
+            {
+                foreach (var page in categories.Value.Paginate(50))
+                {
+                    processedCount += await SaveCategories(page, progressInfo);
+
+                    progressInfo.Description = $"{ processedCount } categories have been imported";
+                    progressCallback(progressInfo);
+                }
+            }
+
+            // save category links separately after all categories are saved, to avoid DB constraint violation
+            processedCount = 0;
+
+            foreach (var page in categoryLinks.Paginate(_batchSize))
+            {
+                var categoryIds = page.Select(x => x.EntryId).ToArray();
+                var categories = await _categoryService.GetByIdsAsync(categoryIds.ToArray(), CategoryResponseGroup.WithLinks.ToString());
+
+                foreach (var link in page)
+                {
+                    var category = categories.FirstOrDefault(x => x.Id == link.EntryId);
+                    if (category?.Links.Contains(link) == false)
+                    {
+                        category.Links.Add(link);
+                    }
+                }
+
+                if (!categories.IsNullOrEmpty())
+                {
+                    await _categoryService.SaveChangesAsync(categories);
+
+                    processedCount += categories.Length;
+                    progressInfo.Description = $"{ processedCount } of { categoryLinks.Count } category links have been imported";
+                    progressCallback(progressInfo);
+                }
+            }
+        }
+
+        private async Task<int> SaveCategories(IEnumerable<Category> categories, ExportImportProgressInfo progressInfo)
+        {
+            var itemsArray = categories.ToArray();
+            await _categoryService.SaveChangesAsync(itemsArray);
+            ImportImages(itemsArray.OfType<IHasImages>().ToArray(), progressInfo);
+
+            return itemsArray.Length;
         }
 
         private async Task ImportPropertiesAsync(JsonTextReader reader, List<Property> propertiesWithForeignKeys, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
