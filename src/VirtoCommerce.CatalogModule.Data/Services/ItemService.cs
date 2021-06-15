@@ -207,7 +207,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         public virtual async Task LoadDependenciesAsync(IEnumerable<CatalogProduct> products)
         {
             //TODO: refactor to do this by one call and iteration
-            var catalogsIds = new { products }.GetFlatObjectsListWithInterface<IHasCatalogId>().Select(x => x.CatalogId).Where(x=> x != null).Distinct().ToArray();
+            var catalogsIds = new { products }.GetFlatObjectsListWithInterface<IHasCatalogId>().Select(x => x.CatalogId).Where(x => x != null).Distinct().ToArray();
             var catalogsByIdDict = (await _catalogService.GetByIdsAsync(catalogsIds)).ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase);
 
             var categoriesIds = new { products }.GetFlatObjectsListWithInterface<IHasCategoryId>().Select(x => x.CategoryId).Where(x => x != null).Distinct().ToArray();
@@ -258,7 +258,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 if (!string.IsNullOrEmpty(link.CategoryId))
                 {
                     link.Category = categoriesByIdDict.GetValueOrThrow(link.CategoryId, $"link category with key {link.CategoryId} doesn't exist").Clone() as Category;
-                    link.Category.ReduceDetails((CategoryResponseGroup.WithProperties | CategoryResponseGroup.WithParents).ToString());
+                    link.Category.ReduceDetails((CategoryResponseGroup.WithProperties | CategoryResponseGroup.WithParents | CategoryResponseGroup.WithSeo).ToString());
                 }
             }
         }
