@@ -141,4 +141,4 @@ jobs:
         with:
           workflow: VC deployment
           token: ${{ secrets.REPO_TOKEN }}
-          inputs: '{ "artifactUrl": "https://github.com/${{ env.GITHUB_REPOSITORY }}/releases/download/${{ steps.image.outputs.shortVersion }}/${{ steps.image.outputs.moduleId }}_${{ steps.image.outputs.shortVersion }}.zip", "deployBranch": "dev" }'
+          inputs: '{ "artifactUrl": "https://github.com/${{ github.repository }}/releases/download/${{ steps.image.outputs.shortVersion }}/${{ steps.image.outputs.moduleId }}_${{ steps.image.outputs.shortVersion }}.zip", "deployBranch": "dev" }'
