@@ -173,6 +173,10 @@ namespace VirtoCommerce.CatalogModule.Core.Model
             ParentId = categoryId;
         }
 
+        /// <summary>
+        /// Reduce Category details
+        /// </summary>
+        /// <param name="responseGroup">A set of necessary groups</param>
         public virtual void ReduceDetails(string responseGroup)
         {
             //Reduce details according to response group
