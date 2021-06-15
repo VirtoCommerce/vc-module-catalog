@@ -258,7 +258,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 if (!string.IsNullOrEmpty(link.CategoryId))
                 {
                     link.Category = categoriesByIdDict.GetValueOrThrow(link.CategoryId, $"link category with key {link.CategoryId} doesn't exist").Clone() as Category;
-                    link.Category.ReduceDetails((CategoryResponseGroup.WithProperties | CategoryResponseGroup.WithParents | CategoryResponseGroup.WithSeo).ToString());
+                    var necessaryGroups = CategoryResponseGroup.WithProperties | CategoryResponseGroup.WithParents | CategoryResponseGroup.WithSeo;
+                    link.Category.ReduceDetails(necessaryGroups.ToString());
                 }
             }
         }
