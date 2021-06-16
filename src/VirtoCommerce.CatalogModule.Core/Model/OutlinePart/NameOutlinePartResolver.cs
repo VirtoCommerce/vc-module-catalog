@@ -15,6 +15,10 @@ namespace VirtoCommerce.CatalogModule.Core.Model.OutlinePart
             {
                 result = category.Name;
             }
+            else if (entity is CatalogProduct product)
+            {
+                result = product.Name;
+            }
 
             return result;
         }
