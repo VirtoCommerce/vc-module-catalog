@@ -191,7 +191,7 @@ Lucene Search Module is recommended for development purposes only, not for produ
 
 ### Search Provider Tests
 
-https://github.com/VirtoCommerce/vc-module-core/blob/dev/VirtoCommerce.CoreModule.Search.Tests/SearchProviderTests.cs
+https://github.com/VirtoCommerce/vc-module-search/blob/master/tests/VirtoCommerce.SearchModule.Tests/SearchProviderTests.cs
 
 ## Search Index
 
