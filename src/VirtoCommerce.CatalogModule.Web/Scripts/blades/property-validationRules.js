@@ -1,12 +1,11 @@
 angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.propertyValidationRulesController', ['$scope', function ($scope) {
-        var parentEntity = $scope.blade.parentBlade.currentEntity;
-        var rule = $scope.blade.parentBlade.currentEntity.validationRule;
-        if (!rule) rule = {};
+        var blade = $scope.blade;
+        var rule = blade.parentBlade.currentEntity.validationRule || {};
 
-        $scope.blade.propertyValidationRule = {
+        blade.propertyValidationRule = {
             id: rule.id,
-            required: parentEntity.required,
+            required: blade.parentBlade.currentEntity.required,
             isLimited: rule.charCountMin != null || rule.charCountMax != null,
             isSpecificPattern: rule.regExp != null,
             charCountMin: rule.charCountMin,
@@ -36,27 +35,22 @@ angular.module('virtoCommerce.catalogModule')
         };
 
         if (rule.charCountMin && !rule.charCountMax)
-            $scope.blade.propertyValidationRule.selectedLimit = 'at-least';
+            blade.propertyValidationRule.selectedLimit = 'at-least';
         else if (!rule.charCountMin && rule.charCountMax)
-            $scope.blade.propertyValidationRule.selectedLimit = 'not-more-than';
+            blade.propertyValidationRule.selectedLimit = 'not-more-than';
         else if (rule.charCountMin && rule.charCountMax)
-            $scope.blade.propertyValidationRule.selectedLimit = 'between';
-        $scope.selectOption = function (option) {
-            $scope.blade.property.valueType = option;
-            $scope.bladeClose();
-        };
+            blade.propertyValidationRule.selectedLimit = 'between';
 
-        $scope.blade.headIcon = 'fa fa-gear';
-        $scope.blade.isLoading = false;
+        blade.isLoading = false;
 
         $scope.saveChanges = function () {
-            $scope.blade.parentBlade.currentEntity.required = $scope.blade.propertyValidationRule.required;
-            $scope.blade.parentBlade.currentEntity.validationRule = {
-                id: $scope.blade.propertyValidationRule.id,
-                charCountMin: $scope.blade.propertyValidationRule.isLimited ? $scope.blade.propertyValidationRule.charCountMin : null,
-                charCountMax: $scope.blade.propertyValidationRule.isLimited ? $scope.blade.propertyValidationRule.charCountMax : null,
-                regExp: $scope.blade.propertyValidationRule.isSpecificPattern ? $scope.blade.propertyValidationRule.selectedPattern.pattern : null
-            };
+            blade.parentBlade.currentEntity.required = blade.propertyValidationRule.required;
+            blade.parentBlade.currentEntity.validationRules = [{
+                id: blade.propertyValidationRule.id,
+                charCountMin: blade.propertyValidationRule.isLimited && blade.propertyValidationRule.selectedLimit !== 'not-more-than' ? blade.propertyValidationRule.charCountMin : null,
+                charCountMax: blade.propertyValidationRule.isLimited && blade.propertyValidationRule.selectedLimit !== 'at-least' ? blade.propertyValidationRule.charCountMax : null,
+                regExp: blade.propertyValidationRule.isSpecificPattern ? blade.propertyValidationRule.selectedPattern.pattern : null
+            }];
             $scope.bladeClose();
         };
 
