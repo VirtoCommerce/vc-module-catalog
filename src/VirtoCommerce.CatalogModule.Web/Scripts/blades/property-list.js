@@ -100,7 +100,7 @@ angular.module('virtoCommerce.catalogModule')
 
         function editUnmanageable(bladeData) {
             var newBlade = {
-                id: 'editItemProperty',
+                id: 'editItemProperty' + blade.currentEntity.id,
                 properties: blade.currentEntities,
                 productId: blade.currentEntity.id,
                 catalog: blade.catalog,

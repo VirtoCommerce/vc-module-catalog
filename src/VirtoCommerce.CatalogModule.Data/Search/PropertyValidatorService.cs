@@ -58,11 +58,12 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             var searchResult = await _productSearchService.SearchProductsAsync(new ProductSearchCriteria
             {
                 MainProductId = request.ProductId,
-                Take = 1000,
+                PropertyName = request.Name,
+                Take = 1,
                 ResponseGroup = ItemResponseGroup.ItemProperties.ToString()
             });
 
-            var duplicateVariation = searchResult.Results.FirstOrDefault(v => v.Properties.Any(x => x.Name.EqualsInvariant(request.Name)));
+            var duplicateVariation = searchResult.Results.FirstOrDefault();
             if (duplicateVariation != null)
             {
                 var failure = new ValidationFailure(nameof(Property.Name), "duplicate-property-in-variation")

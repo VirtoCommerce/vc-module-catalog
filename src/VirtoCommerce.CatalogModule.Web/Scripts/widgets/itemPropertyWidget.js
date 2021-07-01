@@ -10,7 +10,7 @@ angular.module('virtoCommerce.catalogModule')
 
     $scope.openItemPropertyBlade = function () {
         var newBlade = {
-        	id: "itemProperty",
+            id: "itemProperty" + blade.currentEntity.id,
         	productId: blade.currentEntity.id,
             entityType: "product",
             catalog: blade.catalog,
