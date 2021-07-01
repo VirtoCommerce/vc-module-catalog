@@ -102,6 +102,8 @@ angular.module('virtoCommerce.catalogModule')
             var newBlade = {
                 id: 'editItemProperty',
                 properties: blade.currentEntities,
+                productId: blade.currentEntity.id,
+                catalog: blade.catalog,
                 controller: 'virtoCommerce.catalogModule.itemPropertyDetailController',
                 template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/item-property-detail.tpl.html'
             };

@@ -183,7 +183,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
             var catalogsByIdDict = ((await _catalogSearchService.SearchCatalogsAsync(new Core.Model.Search.CatalogSearchCriteria { Take = int.MaxValue })).Results).ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase)
                                                                            .WithDefaultValue(null);
-            foreach (var property in properties.Where(x=>x.CatalogId != null))
+            foreach (var property in properties.Where(x => x.CatalogId != null))
             {
                 property.Catalog = catalogsByIdDict[property.CatalogId];
             }
@@ -222,7 +222,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             {
                 throw new ArgumentNullException(nameof(properties));
             }
-            //Validate products
+
             var validator = AbstractTypeFactory<PropertyValidator>.TryCreateInstance();
             foreach (var property in properties)
             {

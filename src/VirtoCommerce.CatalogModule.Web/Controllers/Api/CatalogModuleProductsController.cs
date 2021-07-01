@@ -224,7 +224,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             {
                 variation.Code = _skuGenerator.GenerateSku(variation);
                 variation.SeoInfos.Clear();
-            }                  
+            }
 
             return Ok(copyProduct);
         }
@@ -296,24 +296,20 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var catalogs = await _catalogService.GetByIdsAsync(products.Select(pr => pr.CatalogId).Distinct().ToArray());
             foreach (var product in products)
             {
-                if (product.IsTransient())
+                if (product.IsTransient() && product.SeoInfos.IsNullOrEmpty())
                 {
-                    if (product.SeoInfos == null || !product.SeoInfos.Any())
+                    var slugUrl = GenerateProductDefaultSlugUrl(product);
+                    if (!string.IsNullOrEmpty(slugUrl))
                     {
-                        var slugUrl = GenerateProductDefaultSlugUrl(product);
-                        if (!string.IsNullOrEmpty(slugUrl))
+                        var catalog = catalogs.FirstOrDefault(c => c.Id.EqualsInvariant(product.CatalogId));
+                        var defaultLanguageCode = catalog?.Languages.First(x => x.IsDefault).LanguageCode;
+                        var seoInfo = new SeoInfo
                         {
-                            var catalog = catalogs.FirstOrDefault(c => c.Id.EqualsInvariant(product.CatalogId));
-                            var defaultLanguageCode = catalog?.Languages.First(x => x.IsDefault).LanguageCode;
-                            var seoInfo = new SeoInfo
-                            {
-                                LanguageCode = defaultLanguageCode,
-                                SemanticUrl = slugUrl
-                            };
-                            product.SeoInfos = new[] { seoInfo };
-                        }
+                            LanguageCode = defaultLanguageCode,
+                            SemanticUrl = slugUrl
+                        };
+                        product.SeoInfos = new[] { seoInfo };
                     }
-
                 }
 
                 toSaveList.Add(product);

@@ -1,4 +1,4 @@
-﻿angular.module('virtoCommerce.catalogModule')
+angular.module('virtoCommerce.catalogModule')
 .controller('virtoCommerce.catalogModule.itemPropertyWidgetController', ['$scope', 'platformWebApp.bladeNavigationService', function ($scope, bladeNavigationService) {
     var blade = $scope.blade;
     $scope.propertiesCount = '...';
@@ -12,7 +12,8 @@
         var newBlade = {
         	id: "itemProperty",
         	productId: blade.currentEntity.id,
-        	entityType: "product",
+            entityType: "product",
+            catalog: blade.catalog,
         	currentEntity: blade.currentEntity,
         	languages: _.pluck(blade.catalog.languages, 'languageCode'),
         	defaultLanguage: blade.catalog.defaultLanguage.languageCode,
