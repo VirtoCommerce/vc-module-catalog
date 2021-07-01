@@ -8,6 +8,5 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         public string OriginalName { get; set; }
         public string Name { get; set; }
         public string ProductId { get; set; }
-
     }
 }
