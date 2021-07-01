@@ -17,7 +17,6 @@
         <Folder Include="Model\ListEntry\" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="FluentValidation" Version="8.6.3" />
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
         <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.1.0" />
         <PackageReference Include="VirtoCommerce.ExportModule.Core" Version="3.1.0" />

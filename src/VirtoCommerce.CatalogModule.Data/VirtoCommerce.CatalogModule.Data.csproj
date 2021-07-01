@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -11,6 +11,7 @@
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     </PropertyGroup>
     <ItemGroup>
+        <PackageReference Include="FluentValidation" Version="8.6.3" />
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
         <PackageReference Include="Hangfire" Version="1.7.9" />
         <PackageReference Include="EntityFrameworkCore.Triggers" Version="1.2.2" />
