@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -12,6 +13,7 @@ using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Authorization;
+using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
@@ -19,8 +21,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
     [Authorize]
     public class CatalogModulePropertiesController : Controller
     {
+        private readonly AbstractValidator<PropertyValidationRequest> _propertyValidationRequestValidator;
         private readonly IPropertyService _propertyService;
-        private readonly IPropertyValidatorService _propertyValidatorService;
         private readonly ICategoryService _categoryService;
         private readonly ICatalogService _catalogService;
         private readonly IPropertyDictionaryItemSearchService _propertyDictionarySearchService;
@@ -31,14 +33,15 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             , ICategoryService categoryService
             , ICatalogService catalogService
             , IPropertyDictionaryItemSearchService propertyDictionarySearchService
-            , IAuthorizationService authorizationService, IPropertyValidatorService propertyValidatorService)
+            , IAuthorizationService authorizationService
+            , AbstractValidator<PropertyValidationRequest> propertyValidationRequestValidator)
         {
             _propertyService = propertyService;
             _categoryService = categoryService;
             _catalogService = catalogService;
             _propertyDictionarySearchService = propertyDictionarySearchService;
             _authorizationService = authorizationService;
-            _propertyValidatorService = propertyValidatorService;
+            _propertyValidationRequestValidator = propertyValidationRequestValidator;
         }
 
 
@@ -161,7 +164,13 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("validate-name")]
         public async Task<ActionResult<ValidationResult>> ValidateName([FromBody] PropertyValidationRequest request)
         {
-            var result = await _propertyValidatorService.ValidateAsync(request);
+            if (request == null || request.Name.IsNullOrEmpty() || request.ProductId.IsNullOrEmpty())
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            var result = await _propertyValidationRequestValidator.ValidateAsync(request);
+
             return Ok(result);
         }
 

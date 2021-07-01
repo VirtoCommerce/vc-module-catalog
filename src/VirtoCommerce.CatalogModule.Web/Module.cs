@@ -89,7 +89,8 @@ namespace VirtoCommerce.CatalogModule.Web
 
             serviceCollection.AddTransient<IPropertyService, PropertyService>();
             serviceCollection.AddTransient<IPropertySearchService, PropertySearchService>();
-            serviceCollection.AddTransient<IPropertyValidatorService, PropertyValidatorService>();
+            serviceCollection.AddTransient<AbstractValidator<PropertyValidationRequest>, PropertyNameValidator>();
+
             serviceCollection.AddTransient<IPropertyDictionaryItemService, PropertyDictionaryItemService>();
             serviceCollection.AddTransient<IPropertyDictionaryItemSearchService, PropertyDictionaryItemSearchService>();
 

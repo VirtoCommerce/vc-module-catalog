@@ -1,6 +1,7 @@
-using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using FluentValidation;
 using FluentValidation.Results;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
@@ -10,25 +11,21 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.Search
 {
-    public class PropertyValidatorService : IPropertyValidatorService
+    public class PropertyNameValidator : AbstractValidator<PropertyValidationRequest>
     {
         private readonly IItemService _itemService;
         private readonly IProductSearchService _productSearchService;
 
-        public PropertyValidatorService(IItemService itemService, IProductSearchService productSearchService)
+        public PropertyNameValidator(IItemService itemService, IProductSearchService productSearchService)
         {
             _itemService = itemService;
             _productSearchService = productSearchService;
         }
 
-        public async Task<ValidationResult> ValidateAsync(PropertyValidationRequest request)
+        public override async Task<ValidationResult> ValidateAsync(ValidationContext<PropertyValidationRequest> context, CancellationToken cancellation = default)
         {
-            if (request == null || request.Name.IsNullOrEmpty() || request.ProductId.IsNullOrEmpty())
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
-
             var result = new ValidationResult();
+            var request = context.InstanceToValidate;
 
             if (request.Name.EqualsInvariant(request.OriginalName))
             {
@@ -42,7 +39,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             }
 
             var duplicate = product.Properties.FirstOrDefault(x => x.Name.EqualsInvariant(request.Name) && x.Name != request.OriginalName);
-
             if (duplicate != null)
             {
                 var failure = new ValidationFailure(nameof(Property.Name), "duplicate-property")
