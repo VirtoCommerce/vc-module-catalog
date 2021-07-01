@@ -158,7 +158,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// Validate name for Product-level (unmanaged) property
         /// </summary>
         [HttpPost]
-        [Route("validatename")]
+        [Route("validate-name")]
         public async Task<ActionResult<ValidationResult>> ValidateName([FromBody] PropertyValidationRequest request)
         {
             var result = await _propertyValidatorService.ValidateAsync(request);

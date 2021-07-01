@@ -6,7 +6,7 @@ angular.module('virtoCommerce.catalogModule')
         newCatalogProperty: { method: 'GET', url: 'api/catalog/:catalogId/properties/getnew' },
         get: { method: 'GET', url: 'api/catalog/properties/:propertyId' },
         update: { method: 'POST', url: 'api/catalog/properties' },
-        validateName: { method: 'POST', url: 'api/catalog/properties/validatename' },
+        validateName: { method: 'POST', url: 'api/catalog/properties/validate-name' },
         values: { url: 'api/catalog/properties/:propertyId/values', isArray: true },
         remove: { method: 'DELETE', url: 'api/catalog/properties' }
     });
