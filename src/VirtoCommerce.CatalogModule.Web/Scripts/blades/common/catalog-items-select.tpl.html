@@ -1,10 +1,5 @@
 <div class="blade-static" ng-class="{'__expanded': !isCatalogSelectMode()}">
-    <style>
-        .breadcrumbs .menu .menu-item .menu-link {
-            max-width: 131px;
-        }
-    </style>
-    <va-breadcrumb ng-model="blade.breadcrumbs" blade-id="blade.id" ng-if="!isCatalogSelectMode()"></va-breadcrumb>
+    <va-breadcrumb ng-model="blade.breadcrumbs" blade-id="blade.id" blade-maximized="blade.isMaximized" ng-if="!isCatalogSelectMode()"></va-breadcrumb>
     <div class="form-group">
         <vc-item-search blade="blade"></vc-item-search>
         <p class="form-count">{{'platform.list.count' | translate}}: <span class="count">{{pageSettings.totalItems}}</span></p>
