@@ -1,7 +1,7 @@
 angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.propertyValidationRulesController', ['$scope', function ($scope) {
         var blade = $scope.blade;
-        var rule = blade.parentBlade.currentEntity.validationRule || {};
+        var rule = _.first(blade.parentBlade.currentEntity.validationRules) || {};
 
         blade.propertyValidationRule = {
             id: rule.id,
@@ -51,6 +51,7 @@ angular.module('virtoCommerce.catalogModule')
                 charCountMax: blade.propertyValidationRule.isLimited && blade.propertyValidationRule.selectedLimit !== 'at-least' ? blade.propertyValidationRule.charCountMax : null,
                 regExp: blade.propertyValidationRule.isSpecificPattern ? blade.propertyValidationRule.selectedPattern.pattern : null
             }];
+            blade.parentBlade.currentEntity.validationRule = blade.parentBlade.currentEntity.validationRules[0];
             $scope.bladeClose();
         };
 
