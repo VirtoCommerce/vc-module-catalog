@@ -89,6 +89,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 query = query.Where(x => x.ParentId == null);
             }
 
+            if (!criteria.PropertyName.IsNullOrEmpty())
+            {
+                query = query.Where(x => x.ItemPropertyValues.Any(x => x.Name == criteria.PropertyName));
+            }
+
             return query;
         }
 
