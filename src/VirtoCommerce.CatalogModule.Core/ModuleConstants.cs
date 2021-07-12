@@ -94,7 +94,6 @@ namespace VirtoCommerce.CatalogModule.Core
                                    EditorialReviewTypes,
                                    CodesInOutline,
                                    EventBasedIndexation,
-                                   UseSeoDeduplication
                                };
                     }
                 }
