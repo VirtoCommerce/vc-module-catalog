@@ -20,9 +20,9 @@ jobs:
 
     steps:
       - name: Read deployment config
-          if: contains(github.event.pull_request.labels.*.name, 'deploy-qa')
-          uses: VirtoCommerce/vc-github-actions/get-deploy-param@master
-          id: deployConfig
+        if: contains(github.event.pull_request.labels.*.name, 'deploy-qa')
+        uses: VirtoCommerce/vc-github-actions/get-deploy-param@master
+        id: deployConfig
 
       - name: Gets artifact link
         if: contains(github.event.pull_request.labels.*.name, 'deploy-qa')
