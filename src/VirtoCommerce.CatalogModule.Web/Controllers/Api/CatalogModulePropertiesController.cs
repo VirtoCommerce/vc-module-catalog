@@ -22,6 +22,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
     public class CatalogModulePropertiesController : Controller
     {
         private readonly AbstractValidator<PropertyValidationRequest> _propertyValidationRequestValidator;
+        private readonly AbstractValidator<CategoryPropertyValidationRequest> _categoryPropertyNameValidator;
         private readonly IPropertyService _propertyService;
         private readonly ICategoryService _categoryService;
         private readonly ICatalogService _catalogService;
@@ -34,7 +35,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             , ICatalogService catalogService
             , IPropertyDictionaryItemSearchService propertyDictionarySearchService
             , IAuthorizationService authorizationService
-            , AbstractValidator<PropertyValidationRequest> propertyValidationRequestValidator)
+            , AbstractValidator<PropertyValidationRequest> propertyValidationRequestValidator
+            , AbstractValidator<CategoryPropertyValidationRequest> categoryPropertyNameValidator)
         {
             _propertyService = propertyService;
             _categoryService = categoryService;
@@ -42,6 +44,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             _propertyDictionarySearchService = propertyDictionarySearchService;
             _authorizationService = authorizationService;
             _propertyValidationRequestValidator = propertyValidationRequestValidator;
+            _categoryPropertyNameValidator = categoryPropertyNameValidator;
         }
 
 
@@ -170,6 +173,20 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             }
 
             var result = await _propertyValidationRequestValidator.ValidateAsync(request);
+
+            return Ok(result);
+        }
+
+        [HttpPost]
+        [Route("validate-property-name")]
+        public async Task<ActionResult<ValidationResult>> ValidatePropertyName([FromBody] CategoryPropertyValidationRequest request)
+        {
+            if (request == null || request.PropertyName.IsNullOrEmpty() || request.CategoryId.IsNullOrEmpty())
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            var result = await _categoryPropertyNameValidator.ValidateAsync(request);
 
             return Ok(result);
         }
