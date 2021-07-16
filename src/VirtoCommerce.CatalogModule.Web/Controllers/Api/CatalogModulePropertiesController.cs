@@ -28,6 +28,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly ICatalogService _catalogService;
         private readonly IPropertyDictionaryItemSearchService _propertyDictionarySearchService;
         private readonly IAuthorizationService _authorizationService;
+
         //Workaround: Bad design to use repository in the controller layer, need to extend in the future IPropertyService.Delete with new parameter DeleteAllValues
         public CatalogModulePropertiesController(
             IPropertyService propertyService
@@ -47,7 +48,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             _categoryPropertyNameValidator = categoryPropertyNameValidator;
         }
 
-
         /// <summary>
         /// Gets all dictionary values that specified property can have.
         /// </summary>
@@ -63,7 +63,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             return Ok(dictValues.Results);
         }
-
 
         /// <summary>
         /// Gets property metainformation by id.
@@ -86,7 +85,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             return Ok(property);
         }
-
 
         /// <summary>
         /// Gets the template for a new catalog property.
@@ -112,7 +110,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return Ok(retVal);
         }
 
-
         /// <summary>
         /// Gets the template for a new category property.
         /// </summary>
@@ -137,7 +134,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             return Ok(retVal);
         }
-
 
         /// <summary>
         /// Creates or updates the specified property.
@@ -183,14 +179,13 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         {
             if (request == null || request.PropertyName.IsNullOrEmpty() || request.CategoryId.IsNullOrEmpty())
             {
-                throw new ArgumentNullException(nameof(request));
+                return BadRequest(request);
             }
 
             var result = await _categoryPropertyNameValidator.ValidateAsync(request);
 
             return Ok(result);
         }
-
 
         /// <summary>
         /// Deletes property by id.
