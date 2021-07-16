@@ -1,5 +1,5 @@
 angular.module('virtoCommerce.catalogModule')
-    .controller('virtoCommerce.catalogModule.propertyDetailController', ['$scope', 'virtoCommerce.catalogModule.properties', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'virtoCommerce.catalogModule.valueTypes', function ($scope, properties, bladeNavigationService, dialogService, valueTypes) {
+    .controller('virtoCommerce.catalogModule.propertyDetailController', ['$scope', '$q', 'virtoCommerce.catalogModule.properties', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'virtoCommerce.catalogModule.valueTypes', function ($scope, $q, properties, bladeNavigationService, dialogService, valueTypes) {
         var blade = $scope.blade;
         blade.updatePermission = 'catalog:update';
         blade.origEntity = {};
@@ -33,6 +33,21 @@ angular.module('virtoCommerce.catalogModule')
                     break;
             }
         });
+
+        $scope.doValidateNameAsync = value => {
+            return properties.validateCategoryPropertyName({
+                propertyName: value,
+                categoryId: blade.origEntity.categoryId
+            }).$promise.then(result => {
+                if (result.isValid) {
+                    $scope.errorData = null;
+                    return $q.resolve();
+                } else {
+                    $scope.errorData = result.errors[0];
+                    return $q.reject();
+                }
+            });
+        };
 
         blade.refresh = function (parentRefresh) {
             if (blade.currentEntityId) {
