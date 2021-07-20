@@ -17,6 +17,9 @@
                             {{ 'catalog.blades.item-property-detail.labels.duplicate-property-in-variation1' | translate: errorData.customState }}
                             <a href="" ng-click="openBlade(errorData.customState)">{{errorData.customState.name}}</a>{{ 'catalog.blades.item-property-detail.labels.duplicate-property-in-variation2' | translate: errorData.customState }}
                         </span>
+                        <span ng-if="errorData.errorMessage=='property-naming-error'">
+                            {{ 'catalog.blades.item-property-detail.labels.property-naming-error' | translate }}
+                        </span>
                     </span>
                 </div>
                 <div class="form-group">

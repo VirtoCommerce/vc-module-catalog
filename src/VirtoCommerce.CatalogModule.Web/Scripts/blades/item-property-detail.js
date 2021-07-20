@@ -1,5 +1,5 @@
 angular.module('virtoCommerce.catalogModule')
-    .controller('virtoCommerce.catalogModule.itemPropertyDetailController', ['$scope', '$q', 'virtoCommerce.catalogModule.properties', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'virtoCommerce.catalogModule.valueTypes', function ($scope, $q, properties, bladeNavigationService, dialogService, valueTypes) {
+    .controller('virtoCommerce.catalogModule.itemPropertyDetailController', ['$scope', '$q', 'virtoCommerce.catalogModule.properties', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'virtoCommerce.catalogModule.valueTypes', 'virtoCommerce.catalogModule.propertyValidators', function ($scope, $q, properties, bladeNavigationService, dialogService, valueTypes, propertyValidators) {
         var blade = $scope.blade;
         blade.availableValueTypes = valueTypes.get();
         $scope.isValid = false;
@@ -22,6 +22,14 @@ angular.module('virtoCommerce.catalogModule')
         }
 
         $scope.doValidateNameAsync = value => {
+            // common property name errors validation
+            if (value && !propertyValidators.isNameValid(value)) {
+                $scope.errorData = {
+                    errorMessage: 'property-naming-error'
+                }
+                return $q.reject();
+            }
+
             return properties.validateName({
                 name: value,
                 originalName: blade.origEntity.name,

@@ -12,6 +12,9 @@
                         <span ng-if="errorData.errorMessage=='duplicate-property'">
                             {{ 'catalog.blades.item-property-detail.labels.duplicate-property-in-product' | translate: errorData.customState }}
                         </span>
+                        <span ng-if="errorData.errorMessage=='property-naming-error'">
+                            {{ 'catalog.blades.item-property-detail.labels.property-naming-error' | translate }}
+                        </span>
                     </span>
                 </div>
 
