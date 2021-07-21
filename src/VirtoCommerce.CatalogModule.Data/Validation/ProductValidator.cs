@@ -3,6 +3,7 @@ using VirtoCommerce.CatalogModule.Core.Model;
 
 namespace VirtoCommerce.CatalogModule.Data.Validation
 {
+    // TODO: use DI
     public class ProductValidator : AbstractValidator<CatalogProduct>
     {
         private static readonly char[] _illegalCodeChars = { '$', '+', ';', '=', '%', '{', '}', '[', ']', '|', '@', '~', '!', '^', '*', '&', '(', ')', '<', '>' };
@@ -13,6 +14,10 @@ namespace VirtoCommerce.CatalogModule.Data.Validation
             RuleFor(product => product.Name).NotNull().WithMessage(x => $"Name is null. Code: {x.Code}").NotEmpty().WithMessage(x => $"Name is empty. Code: {x.Code}").MaximumLength(1024);
             RuleFor(product => product.Code).NotNull().NotEmpty().MaximumLength(64).DependentRules(() => RuleFor(product => product.Code).Must(x => x.IndexOfAny(_illegalCodeChars) < 0).WithMessage("product code contains illegal chars"));
 
+            // validate custom product properties
+            RuleForEach(product => product.Properties)
+                .Where(x => !x.IsManageable)
+                .SetValidator(new PropertyValidator());
         }
     }
 }

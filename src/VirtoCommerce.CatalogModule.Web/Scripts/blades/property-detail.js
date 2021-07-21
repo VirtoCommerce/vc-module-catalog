@@ -1,5 +1,5 @@
 angular.module('virtoCommerce.catalogModule')
-    .controller('virtoCommerce.catalogModule.propertyDetailController', ['$scope', '$q', 'virtoCommerce.catalogModule.properties', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'virtoCommerce.catalogModule.valueTypes', function ($scope, $q, properties, bladeNavigationService, dialogService, valueTypes) {
+    .controller('virtoCommerce.catalogModule.propertyDetailController', ['$scope', '$q', 'virtoCommerce.catalogModule.properties', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'virtoCommerce.catalogModule.valueTypes', 'virtoCommerce.catalogModule.propertyValidators', function ($scope, $q, properties, bladeNavigationService, dialogService, valueTypes, propertyValidators) {
         var blade = $scope.blade;
         blade.updatePermission = 'catalog:update';
         blade.origEntity = {};
@@ -15,7 +15,6 @@ angular.module('virtoCommerce.catalogModule')
         blade.availablePropertyTypes = blade.catalogId ? ['Product', 'Variation', 'Category', 'Catalog'] : ['Product', 'Variation', 'Category'];
 
         $scope.$watch('blade.currentEntity.valueType', function (newValue, oldValue) {
-
             blade.hasMultivalue = true;
             blade.hasDictionary = true;
             blade.hasMultilanguage = true;
@@ -35,6 +34,20 @@ angular.module('virtoCommerce.catalogModule')
         });
 
         $scope.doValidateNameAsync = value => {
+            // common property name errors validation
+            if (value && !propertyValidators.isNameValid(value)) {
+                $scope.errorData = {
+                    errorMessage: 'property-naming-error'
+                }
+                return $q.reject();
+            }
+
+            // validation for category properties
+            if (!blade.origEntity.categoryId) {
+                $scope.errorData = null;
+                return $q.resolve();
+            }
+
             return properties.validateCategoryPropertyName({
                 propertyName: value,
                 categoryId: blade.origEntity.categoryId
