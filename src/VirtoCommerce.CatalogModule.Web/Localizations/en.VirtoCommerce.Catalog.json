@@ -243,7 +243,7 @@
           "duplicate-property-in-product": "The property with the name ’{{propertyName}}’ already exists for this entity. The name should be unique.",
           "duplicate-property-in-variation1": "The property with the name ’{{propertyName}}’ already exists for variation ",
           "duplicate-property-in-variation2": ". The name should be unique.",
-          "property-naming-error": "Property name must start with a letter or number, and can contain only Latin letters, digits, underscore ('_')",
+          "property-naming-error": "Property name must start with a letter or number, and can contain only Latin letters, digits, underscore ('_'). Every underscore ('_') character must be immediately preceded and followed by a letter or number.",
           "value-type": "Value Type"
         }
       },
