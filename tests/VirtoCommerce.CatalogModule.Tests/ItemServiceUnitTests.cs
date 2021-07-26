@@ -11,6 +11,7 @@ using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Data.Services;
+using VirtoCommerce.CatalogModule.Data.Validation;
 using VirtoCommerce.Platform.Caching;
 using VirtoCommerce.Platform.Core.Assets;
 using VirtoCommerce.Platform.Core.Caching;
@@ -30,7 +31,6 @@ namespace VirtoCommerce.CatalogModule.Tests
         private readonly Mock<ICatalogService> _catalogServiceMock;
         private readonly Mock<ICategoryService> _categoryServiceMock;
         private readonly Mock<IOutlineService> _outlineServiceMock;
-        private readonly Mock<IPlatformMemoryCache> _platformMemoryCacheMock;
         private readonly Mock<IBlobUrlResolver> _blobUrlResolverMock;
         private readonly Mock<ISkuGenerator> _skuGeneratorMock;
 
@@ -43,7 +43,6 @@ namespace VirtoCommerce.CatalogModule.Tests
             _catalogServiceMock = new Mock<ICatalogService>();
             _categoryServiceMock = new Mock<ICategoryService>();
             _outlineServiceMock = new Mock<IOutlineService>();
-            _platformMemoryCacheMock = new Mock<IPlatformMemoryCache>();
             _blobUrlResolverMock = new Mock<IBlobUrlResolver>();
             _skuGeneratorMock = new Mock<ISkuGenerator>();
         }
@@ -106,7 +105,8 @@ namespace VirtoCommerce.CatalogModule.Tests
                 _outlineServiceMock.Object,
                 platformMemoryCache,
                 _blobUrlResolverMock.Object,
-                _skuGeneratorMock.Object);
+                _skuGeneratorMock.Object,
+                new ProductValidator(new PropertyValidator()));
         }
     }
 }

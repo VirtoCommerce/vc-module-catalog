@@ -46,11 +46,40 @@ namespace VirtoCommerce.CatalogModule.Tests
             };
 
             // Act
-            var validator = new ProductValidator();
+            var validator = new ProductValidator(new PropertyValidator());
 
             // Assert
             var result = validator.Validate(product);
             Assert.Equal(isValid, result.IsValid);
+        }
+
+        [Fact]
+        public void ValidateBrokenName_FromDifferentValidators()
+        {
+            // Arrange
+            var property = new Property()
+            {
+                Name = "Inv@lid value)))______",
+                Id = "id",
+            };
+
+            var product = new CatalogProduct()
+            {
+                Name = "name",
+                Code = "code",
+                CatalogId = "catalogId",
+                Properties = new List<Property> { property }
+            };
+
+            // Act
+            var propertyValidator = new PropertyValidator();
+            var productValidator = new ProductValidator(propertyValidator);
+            var resultFromProductValidation = productValidator.Validate(product);
+            var resultFromPropertyValidation = propertyValidator.Validate(property);
+
+            // Assert
+            Assert.True(resultFromProductValidation.IsValid);
+            Assert.False(resultFromPropertyValidation.IsValid);
         }
 
         public static IEnumerable<object[]> GetPropertyNameData()
@@ -59,7 +88,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             {
                 new object[]
                 {
-                    // property name, is new, expected result 
+                    // property name, is new, expected result
                     "New", true, true
                 },
                 new object[]
