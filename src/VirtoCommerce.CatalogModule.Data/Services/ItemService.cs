@@ -10,7 +10,6 @@ using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Caching;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
-using VirtoCommerce.CatalogModule.Data.Validation;
 using VirtoCommerce.Platform.Core.Assets;
 using VirtoCommerce.Platform.Core.Caching;
 using VirtoCommerce.Platform.Core.Common;
@@ -32,17 +31,16 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private readonly ISkuGenerator _skuGenerator;
         private readonly AbstractValidator<CatalogProduct> _productValidator;
 
-        public ItemService(
-            Func<ICatalogRepository> catalogRepositoryFactory
-            , IEventPublisher eventPublisher
-            , AbstractValidator<IHasProperties> hasPropertyValidator
-            , ICatalogService catalogService
-            , ICategoryService categoryService
-            , IOutlineService outlineService
-            , IPlatformMemoryCache platformMemoryCache
-            , IBlobUrlResolver blobUrlResolver
-            , ISkuGenerator skuGenerator
-            , AbstractValidator<CatalogProduct> productValidator)
+        public ItemService(Func<ICatalogRepository> catalogRepositoryFactory,
+            IEventPublisher eventPublisher,
+            AbstractValidator<IHasProperties> hasPropertyValidator,
+            ICatalogService catalogService,
+            ICategoryService categoryService,
+            IOutlineService outlineService,
+            IPlatformMemoryCache platformMemoryCache,
+            IBlobUrlResolver blobUrlResolver,
+            ISkuGenerator skuGenerator,
+            AbstractValidator<CatalogProduct> productValidator)
         {
             _repositoryFactory = catalogRepositoryFactory;
             _eventPublisher = eventPublisher;
