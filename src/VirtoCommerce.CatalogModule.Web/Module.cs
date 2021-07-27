@@ -89,8 +89,6 @@ namespace VirtoCommerce.CatalogModule.Web
 
             serviceCollection.AddTransient<IPropertyService, PropertyService>();
             serviceCollection.AddTransient<IPropertySearchService, PropertySearchService>();
-            serviceCollection.AddTransient<AbstractValidator<PropertyValidationRequest>, PropertyNameValidator>();
-            serviceCollection.AddTransient<AbstractValidator<CategoryPropertyValidationRequest>, CategoryPropertyNameValidator>();
 
             serviceCollection.AddTransient<IPropertyDictionaryItemService, PropertyDictionaryItemService>();
             serviceCollection.AddTransient<IPropertyDictionaryItemSearchService, PropertyDictionaryItemSearchService>();
@@ -105,9 +103,19 @@ namespace VirtoCommerce.CatalogModule.Web
 
             serviceCollection.AddTransient<ISeoBySlugResolver, CatalogSeoBySlugResolver>();
 
+            #region Validators
+
+            serviceCollection.AddTransient<AbstractValidator<PropertyValidationRequest>, PropertyNameValidator>();
+            serviceCollection.AddTransient<AbstractValidator<CategoryPropertyValidationRequest>, CategoryPropertyNameValidator>();
+
             PropertyValueValidator PropertyValueValidatorFactory(PropertyValidationRule rule) => new PropertyValueValidator(rule);
             serviceCollection.AddSingleton((Func<PropertyValidationRule, PropertyValueValidator>)PropertyValueValidatorFactory);
             serviceCollection.AddTransient<AbstractValidator<IHasProperties>, HasPropertiesValidator>();
+
+            serviceCollection.AddTransient<AbstractValidator<CatalogProduct>, ProductValidator>();
+            serviceCollection.AddTransient<AbstractValidator<Property>, PropertyValidator>();
+
+            #endregion Validators
 
             serviceCollection.AddTransient<CatalogExportImport>();
 
@@ -179,7 +187,7 @@ namespace VirtoCommerce.CatalogModule.Web
                 configure.AddPolicy(typeof(ExportableCatalogFull).FullName + "ExportDataPolicy", exportPolicy);
             });
 
-            #endregion
+            #endregion Add Authorization Policy for GenericExport
 
             #region BulkActions
 
@@ -189,7 +197,7 @@ namespace VirtoCommerce.CatalogModule.Web
             serviceCollection.AddTransient<IDataSourceFactory, DataSourceFactory>();
             serviceCollection.AddTransient<IBulkActionFactory, CatalogBulkActionFactory>();
 
-            #endregion
+            #endregion BulkActions
         }
 
         public void PostInitialize(IApplicationBuilder appBuilder)
@@ -202,7 +210,6 @@ namespace VirtoCommerce.CatalogModule.Web
             //Register module permissions
             var permissionsProvider = appBuilder.ApplicationServices.GetRequiredService<IPermissionsRegistrar>();
             permissionsProvider.RegisterPermissions(ModuleConstants.Security.Permissions.AllPermissions.Select(x => new Permission() { GroupName = "Catalog", Name = x }).ToArray());
-
 
             //Register Permission scopes
             AbstractTypeFactory<PermissionScope>.RegisterType<SelectedCatalogScope>();
@@ -274,7 +281,7 @@ namespace VirtoCommerce.CatalogModule.Web
                     .WithMetadata(new ExportedTypeMetadata { PropertyInfos = Array.Empty<ExportedTypePropertyInfo>() })
                     .WithRestrictDataSelectivity());
 
-            #endregion
+            #endregion Register types for generic Export
 
             #region BulkActions
 
@@ -284,7 +291,7 @@ namespace VirtoCommerce.CatalogModule.Web
             RegisterBulkAction(nameof(CategoryChangeBulkAction), nameof(CategoryChangeBulkActionContext));
             RegisterBulkAction(nameof(PropertiesUpdateBulkAction), nameof(PropertiesUpdateBulkActionContext));
 
-            #endregion
+            #endregion BulkActions
         }
 
         public void Uninstall()
@@ -305,7 +312,6 @@ namespace VirtoCommerce.CatalogModule.Web
             await _appBuilder.ApplicationServices.GetRequiredService<CatalogExportImport>().DoImportAsync(inputStream, options,
                 progressCallback, cancellationToken);
         }
-
 
         private void RegisterBulkAction(string name, string contextTypeName)
         {
