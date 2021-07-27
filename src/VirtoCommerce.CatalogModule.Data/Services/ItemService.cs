@@ -10,7 +10,6 @@ using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Caching;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
-using VirtoCommerce.CatalogModule.Data.Validation;
 using VirtoCommerce.Platform.Core.Assets;
 using VirtoCommerce.Platform.Core.Caching;
 using VirtoCommerce.Platform.Core.Common;
@@ -30,17 +29,18 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private readonly IPlatformMemoryCache _platformMemoryCache;
         private readonly IBlobUrlResolver _blobUrlResolver;
         private readonly ISkuGenerator _skuGenerator;
+        private readonly AbstractValidator<CatalogProduct> _productValidator;
 
-        public ItemService(
-            Func<ICatalogRepository> catalogRepositoryFactory
-            , IEventPublisher eventPublisher
-            , AbstractValidator<IHasProperties> hasPropertyValidator
-            , ICatalogService catalogService
-            , ICategoryService categoryService
-            , IOutlineService outlineService
-            , IPlatformMemoryCache platformMemoryCache
-            , IBlobUrlResolver blobUrlResolver
-            , ISkuGenerator skuGenerator)
+        public ItemService(Func<ICatalogRepository> catalogRepositoryFactory,
+            IEventPublisher eventPublisher,
+            AbstractValidator<IHasProperties> hasPropertyValidator,
+            ICatalogService catalogService,
+            ICategoryService categoryService,
+            IOutlineService outlineService,
+            IPlatformMemoryCache platformMemoryCache,
+            IBlobUrlResolver blobUrlResolver,
+            ISkuGenerator skuGenerator,
+            AbstractValidator<CatalogProduct> productValidator)
         {
             _repositoryFactory = catalogRepositoryFactory;
             _eventPublisher = eventPublisher;
@@ -50,6 +50,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _platformMemoryCache = platformMemoryCache;
             _blobUrlResolver = blobUrlResolver;
             _skuGenerator = skuGenerator;
+            _productValidator = productValidator;
             _catalogService = catalogService;
         }
 
@@ -191,7 +192,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
         }
 
-        #endregion
+        #endregion IItemService Members
 
         protected virtual void ClearCache(IEnumerable<CatalogProduct> entities)
         {
@@ -289,10 +290,9 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
 
             //Validate products
-            var validator = new ProductValidator();
             foreach (var product in products)
             {
-                validator.ValidateAndThrow(product);
+                _productValidator.ValidateAndThrow(product);
             }
 
             await LoadDependenciesAsync(products);

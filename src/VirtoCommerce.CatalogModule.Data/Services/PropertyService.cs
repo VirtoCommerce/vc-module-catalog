@@ -12,7 +12,6 @@ using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Caching;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
-using VirtoCommerce.CatalogModule.Data.Validation;
 using VirtoCommerce.Platform.Core.Caching;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Events;
@@ -27,20 +26,23 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private readonly IEventPublisher _eventPublisher;
         private readonly IPlatformMemoryCache _platformMemoryCache;
         private readonly ICatalogSearchService _catalogSearchService;
+        private readonly AbstractValidator<Property> _propertyValidator;
 
-        public PropertyService(
-            Func<ICatalogRepository> repositoryFactory
-            , IEventPublisher eventPublisher
-            , IPlatformMemoryCache platformMemoryCache
-            , ICatalogSearchService catalogSearchService)
+        public PropertyService(Func<ICatalogRepository> repositoryFactory,
+            IEventPublisher eventPublisher,
+            IPlatformMemoryCache platformMemoryCache,
+            ICatalogSearchService catalogSearchService,
+            AbstractValidator<Property> propertyValidator)
         {
             _repositoryFactory = repositoryFactory;
             _eventPublisher = eventPublisher;
             _platformMemoryCache = platformMemoryCache;
             _catalogSearchService = catalogSearchService;
+            _propertyValidator = propertyValidator;
         }
 
         #region IPropertyService members
+
         public async Task<IEnumerable<Property>> GetByIdsAsync(IEnumerable<string> ids)
         {
             var preloadedProperties = await PreloadAllPropertiesAsync();
@@ -131,12 +133,13 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 await _eventPublisher.Publish(new PropertyChangedEvent(changedEntries));
             }
         }
-        #endregion
 
-        protected virtual async Task<IDictionary<string, Property>> PreloadAllPropertiesAsync()
+        #endregion IPropertyService members
+
+        protected virtual Task<IDictionary<string, Property>> PreloadAllPropertiesAsync()
         {
             var cacheKey = CacheKey.With(GetType(), "PreloadAllProperties");
-            return await _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async (cacheEntry) =>
+            return _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async (cacheEntry) =>
             {
                 cacheEntry.AddExpirationToken(CatalogCacheRegion.CreateChangeToken());
 
@@ -157,10 +160,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             });
         }
 
-        protected virtual async Task<Property[]> PreloadAllCatalogPropertiesAsync(string catalogId)
+        protected virtual Task<Property[]> PreloadAllCatalogPropertiesAsync(string catalogId)
         {
             var cacheKey = CacheKey.With(GetType(), "PreloadAllCatalogProperties", catalogId);
-            return await _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async (cacheEntry) =>
+            return _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async (cacheEntry) =>
             {
                 cacheEntry.AddExpirationToken(CatalogCacheRegion.CreateChangeToken());
                 using (var repository = _repositoryFactory())
@@ -223,12 +226,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 throw new ArgumentNullException(nameof(properties));
             }
 
-            var validator = AbstractTypeFactory<PropertyValidator>.TryCreateInstance();
             foreach (var property in properties)
             {
-                validator.ValidateAndThrow(property);
+                _propertyValidator.ValidateAndThrow(property);
             }
         }
     }
 }
-
