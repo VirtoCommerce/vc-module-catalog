@@ -5,7 +5,7 @@
 1. In order to add a physical product to the Catalog, the user should navigate to ‘Categories and items’, select a Category and click the ‘Add’ button and then select ‘Physical Product’; 
 1. The system will open the ‘New product’ blade and prompt the user to fill out the new product information:  
 
-     1. ‘SKU’ generated automatically by the system and cannot be edited; see [Glossary](/docs/glossary.md)
+     1. ‘SKU’ generated automatically by the system and cannot be edited; see [Glossary](glossary.md)
      1. ‘Name’ text box is required;
      1. ‘Fill properties’ button;
      1. ‘Upload images’ button;
@@ -39,16 +39,16 @@ In order to view and manage the physical item details, the user should navigate 
 
 1. ‘Name’ input field is editable and requires entering the physical product name that will be displayed on client side;
 1. Buttons:  
-     1. Can be purchased: see [Glossary](/docs/glossary.md)
+     1. Can be purchased: see [Glossary](glossary.md)
          1. If switched on, the product will be visible and available for purchase on client side;
          1. If switched off- the product will not be available for purchase.
-     1. Store visible: see [Glossary](/docs/glossary.md)
+     1. Store visible: see [Glossary](glossary.md)
          1. If switched on- the product will be visible on the store side;
          1. If switched off- the product will be visible only on admin side, not on store.
-     1. Track inventory: see [Glossary](/docs/glossary.md)
+     1. Track inventory: see [Glossary](glossary.md)
          1. If switched on- inventory will be tracked;
          1. If switched off- inventory will not be tracked in the system.
-1. GTIN input field - Global Trade Item Number; see [Glossary](/docs/glossary.md)
+1. GTIN input field - Global Trade Item Number; see [Glossary](glossary.md)
 1. ‘Vendor’ drop down helps to select a Vendor and add new vendors;
 1. ‘Tax type’ drop down allows the user to select an existing tax type or add new tax types to the list;
 1. The following widgets, displayed on the screen, help the user to configure different physical item parameters:
