@@ -1,8 +1,9 @@
+using System;
 using System.Collections.Generic;
 
 namespace VirtoCommerce.CatalogModule.Web.Model
 {
-    public class AggregationProperty
+    public class AggregationProperty : ICloneable
     {
         public string Name { get; set; }
         public bool IsSelected { get; set; }
@@ -11,5 +12,10 @@ namespace VirtoCommerce.CatalogModule.Web.Model
         public int? Size { get; set; }
         public int ValuesCount => Values?.Count ?? 0;
         public IList<string> Values { get; set; }
+
+        public object Clone()
+        {
+            return MemberwiseClone();
+        }
     }
 }
