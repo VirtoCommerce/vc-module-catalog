@@ -132,7 +132,10 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                     {
                         var catalog = (await _catalogService.GetByIdsAsync(new[] { category.CatalogId })).FirstOrDefault();
                         var defaultLanguage = catalog?.Languages.First(x => x.IsDefault).LanguageCode;
-                        category.SeoInfos = new[] { new SeoInfo { LanguageCode = defaultLanguage, SemanticUrl = slugUrl } };
+                        var seoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
+                        seoInfo.LanguageCode = defaultLanguage;
+                        seoInfo.SemanticUrl = slugUrl;
+                        category.SeoInfos = new[] { seoInfo};
                     }
                 }
             }                     
