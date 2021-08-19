@@ -73,35 +73,35 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         {
             var document = new IndexDocument(product.Id);
 
-            document.AddFilterableValue("__type", product.GetType().Name);
-            document.AddFilterableValue("__sort", product.Name);
+            document.AddFilterableValue("__type", product.GetType().Name, IndexDocumentFieldValueType.String);
+            document.AddFilterableValue("__sort", product.Name, IndexDocumentFieldValueType.String);
 
             var statusField = product.IsActive != true || product.MainProductId != null ? "hidden" : "visible";
             IndexIsProperty(document, statusField);
             IndexIsProperty(document, string.IsNullOrEmpty(product.MainProductId) ? "product" : "variation");
             IndexIsProperty(document, product.Code);
 
-            document.AddFilterableValue("status", statusField);
+            document.AddFilterableValue("status", statusField, IndexDocumentFieldValueType.String);
             document.AddFilterableAndSearchableValue("sku", product.Code);
             document.AddFilterableAndSearchableValue("code", product.Code);// { IsRetrievable = true, IsFilterable = true, IsCollection = true });
             document.AddFilterableAndSearchableValue("name", product.Name);
-            document.AddFilterableValue("startdate", product.StartDate);
-            document.AddFilterableValue("enddate", product.EndDate ?? DateTime.MaxValue);
-            document.AddFilterableValue("createddate", product.CreatedDate);
-            document.AddFilterableValue("lastmodifieddate", product.ModifiedDate ?? DateTime.MaxValue);
-            document.AddFilterableValue("modifieddate", product.ModifiedDate ?? DateTime.MaxValue);
-            document.AddFilterableValue("priority", product.Priority);
-            document.AddFilterableValue("vendor", product.Vendor ?? string.Empty);
-            document.AddFilterableValue("productType", product.ProductType ?? string.Empty);
-            document.AddFilterableValue("mainProductId", product.MainProductId ?? string.Empty);
-            document.AddFilterableValue("gtin", product.Gtin ?? string.Empty);
+            document.AddFilterableValue("startdate", product.StartDate, IndexDocumentFieldValueType.DateTime);
+            document.AddFilterableValue("enddate", product.EndDate ?? DateTime.MaxValue, IndexDocumentFieldValueType.DateTime);
+            document.AddFilterableValue("createddate", product.CreatedDate, IndexDocumentFieldValueType.DateTime);
+            document.AddFilterableValue("lastmodifieddate", product.ModifiedDate ?? DateTime.MaxValue, IndexDocumentFieldValueType.DateTime);
+            document.AddFilterableValue("modifieddate", product.ModifiedDate ?? DateTime.MaxValue, IndexDocumentFieldValueType.DateTime);
+            document.AddFilterableValue("priority", product.Priority, IndexDocumentFieldValueType.Integer);
+            document.AddFilterableValue("vendor", product.Vendor ?? string.Empty, IndexDocumentFieldValueType.String);
+            document.AddFilterableValue("productType", product.ProductType ?? string.Empty, IndexDocumentFieldValueType.String);
+            document.AddFilterableValue("mainProductId", product.MainProductId ?? string.Empty, IndexDocumentFieldValueType.String);
+            document.AddFilterableValue("gtin", product.Gtin ?? string.Empty, IndexDocumentFieldValueType.String);
 
             // Add priority in virtual categories to search index
             if (product.Links != null)
             {
                 foreach (var link in product.Links)
                 {
-                    document.AddFilterableValue($"priority_{link.CatalogId}_{link.CategoryId}", link.Priority);
+                    document.AddFilterableValue($"priority_{link.CatalogId}_{link.CategoryId}", link.Priority, IndexDocumentFieldValueType.Integer);
                 }
             }
 
@@ -153,34 +153,34 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         {
             if (variation.ProductType == "Physical")
             {
-                document.Add(new IndexDocumentField("type", "physical") { IsRetrievable = true, IsFilterable = true, IsCollection = true });
+                document.Add(new IndexDocumentField("type", "physical") { IsRetrievable = true, IsFilterable = true, IsCollection = true, ValueType = IndexDocumentFieldValueType.String, });
                 IndexIsProperty(document, "physical");
             }
 
             if (variation.ProductType == "Digital")
             {
-                document.Add(new IndexDocumentField("type", "digital") { IsRetrievable = true, IsFilterable = true, IsCollection = true });
+                document.Add(new IndexDocumentField("type", "digital") { IsRetrievable = true, IsFilterable = true, IsCollection = true, ValueType = IndexDocumentFieldValueType.String, });
                 IndexIsProperty(document, "digital");
             }
 
             if (variation.ProductType == "BillOfMaterials")
             {
-                document.Add(new IndexDocumentField("type", "billofmaterials") { IsRetrievable = true, IsFilterable = true, IsCollection = true });
+                document.Add(new IndexDocumentField("type", "billofmaterials") { IsRetrievable = true, IsFilterable = true, IsCollection = true, ValueType = IndexDocumentFieldValueType.String, });
                 IndexIsProperty(document, "billofmaterials");
             }
 
-            document.Add(new IndexDocumentField("code", variation.Code) { IsRetrievable = true, IsFilterable = true, IsCollection = true });
+            document.Add(new IndexDocumentField("code", variation.Code) { IsRetrievable = true, IsFilterable = true, IsCollection = true, ValueType = IndexDocumentFieldValueType.String, });
             // add the variation code to content
-            document.Add(new IndexDocumentField("__content", variation.Code) { IsRetrievable = true, IsSearchable = true, IsCollection = true });
+            document.Add(new IndexDocumentField("__content", variation.Code) { IsRetrievable = true, IsSearchable = true, IsCollection = true, ValueType = IndexDocumentFieldValueType.String, });
             // add the variationId to __variations
-            document.Add(new IndexDocumentField("__variations", variation.Id) { IsRetrievable = true, IsSearchable = true, IsCollection = true });
+            document.Add(new IndexDocumentField("__variations", variation.Id) { IsRetrievable = true, IsSearchable = true, IsCollection = true, ValueType = IndexDocumentFieldValueType.String, });
 
             IndexCustomProperties(document, variation.Properties, new[] { PropertyType.Variation });
         }
 
         protected virtual void IndexIsProperty(IndexDocument document, string value)
         {
-            document.Add(new IndexDocumentField("is", value) { IsRetrievable = true, IsFilterable = true, IsCollection = true });
+            document.Add(new IndexDocumentField("is", value) { IsRetrievable = true, IsFilterable = true, IsCollection = true, ValueType = IndexDocumentFieldValueType.String, });
         }
     }
 }
