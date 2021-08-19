@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace VirtoCommerce.CatalogModule.Web.Model
 {
@@ -15,7 +16,9 @@ namespace VirtoCommerce.CatalogModule.Web.Model
 
         public object Clone()
         {
-            return MemberwiseClone();
+            var result = (AggregationProperty) MemberwiseClone();
+            result.Values = Values?.ToList();
+            return result;
         }
     }
 }
