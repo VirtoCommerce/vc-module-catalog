@@ -34,26 +34,32 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                         switch (propValue.ValueType)
                         {
                             case PropertyValueType.Boolean:
+                                document.Add(new IndexDocumentField(propertyName, propValue.Value) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection, ValueType = IndexDocumentFieldValueType.Boolean, });
+                                break;
                             case PropertyValueType.DateTime:
+                                document.Add(new IndexDocumentField(propertyName, propValue.Value) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection, ValueType = IndexDocumentFieldValueType.DateTime, });
+                                break;
                             case PropertyValueType.Integer:
+                                document.Add(new IndexDocumentField(propertyName, propValue.Value) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection, ValueType = IndexDocumentFieldValueType.Integer, });
+                                break;
                             case PropertyValueType.Number:
-                                document.Add(new IndexDocumentField(propertyName, propValue.Value) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection });
+                                document.Add(new IndexDocumentField(propertyName, propValue.Value) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection, ValueType = IndexDocumentFieldValueType.Double, });
                                 break;
                             case PropertyValueType.LongText:
-                                document.Add(new IndexDocumentField(propertyName, propValue.Value.ToString().ToLowerInvariant()) { IsRetrievable = true, IsSearchable = true, IsCollection = isCollection });
+                                document.Add(new IndexDocumentField(propertyName, propValue.Value.ToString().ToLowerInvariant()) { IsRetrievable = true, IsSearchable = true, IsCollection = isCollection, ValueType = IndexDocumentFieldValueType.String, });
                                 break;
                             case PropertyValueType.ShortText:
                                 // Index alias when it is available instead of display value.
                                 // Do not tokenize small values as they will be used for lookups and filters.
                                 var shortTextValue = propValue.Alias ?? propValue.Value.ToString();
-                                document.Add(new IndexDocumentField(propertyName, shortTextValue) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection });
+                                document.Add(new IndexDocumentField(propertyName, shortTextValue) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection, ValueType = IndexDocumentFieldValueType.String });
                                 if (property.Multilanguage && !string.IsNullOrEmpty(propValue.LanguageCode))
                                 {
-                                    document.Add(new IndexDocumentField($"{propertyName}_{propValue.LanguageCode.ToLowerInvariant()}", shortTextValue) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection });
+                                    document.Add(new IndexDocumentField($"{propertyName}_{propValue.LanguageCode.ToLowerInvariant()}", shortTextValue) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection, ValueType = IndexDocumentFieldValueType.String });
                                 }
                                 break;
                             case PropertyValueType.GeoPoint:
-                                document.Add(new IndexDocumentField(propertyName, GeoPoint.TryParse((string)propValue.Value)) { IsRetrievable = true, IsSearchable = true, IsCollection = true });
+                                document.Add(new IndexDocumentField(propertyName, GeoPoint.TryParse((string)propValue.Value)) { IsRetrievable = true, IsSearchable = true, IsCollection = true, ValueType = IndexDocumentFieldValueType.GeoPoint, });
                                 break;
                         }
                     }
@@ -71,7 +77,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
                                 if (!string.IsNullOrWhiteSpace(stringValue)) // don't index empty values
                                 {
-                                    document.Add(new IndexDocumentField(contentField, stringValue.ToLower()) { IsRetrievable = true, IsSearchable = true, IsCollection = true });
+                                    document.Add(new IndexDocumentField(contentField, stringValue.ToLower()) { IsRetrievable = true, IsSearchable = true, IsCollection = true, ValueType = IndexDocumentFieldValueType.String, });
                                 }
 
                                 break;
