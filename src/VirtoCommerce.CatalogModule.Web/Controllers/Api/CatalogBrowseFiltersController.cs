@@ -92,9 +92,36 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             {
                 return NoContent();
             }
+
+            // Add culture-specific aggregations for specific handling multivalue, multilanguage, non-dictionary properties.
+            // Look for details at PT-3044, VP-7549
+
+            var catalogProperties = await _propertyService.GetAllCatalogPropertiesAsync(store.Catalog);
+
+            var browseFilterPropertiesList = new List<AggregationProperty>();
+            foreach (var aggregationProperty in browseFilterProperties)
+            {
+                browseFilterPropertiesList.Add(aggregationProperty);
+                var catalogProperty = catalogProperties.FirstOrDefault(x => x.Name == aggregationProperty.Name);
+                // If the property is multilanguage, but not dictionary, let's add synthetic aggregation property for each store culture
+                // To allow future facet filtering.
+                if (catalogProperty!=null &&
+                    !catalogProperty.Dictionary &&
+                    catalogProperty.Multilanguage)
+                {
+                    
+                    foreach (var lang in store.Languages)
+                    {
+                        var aggregationPropertyLangSpecific=aggregationProperty.Clone() as AggregationProperty;
+                        aggregationPropertyLangSpecific.Name = $"{aggregationPropertyLangSpecific.Name}_{lang.ToLowerInvariant()}";
+                        browseFilterPropertiesList.Add(aggregationPropertyLangSpecific);
+                    }
+                }
+            }
+
             // Filter names must be unique
             // Keep the selected properties order.
-            var filters = browseFilterProperties
+            var filters = browseFilterPropertiesList
                 .Where(p => p.IsSelected)
                 .GroupBy(p => p.Name, StringComparer.OrdinalIgnoreCase)
                 .Select((g, i) => ConvertToFilter(g.First(), i))
