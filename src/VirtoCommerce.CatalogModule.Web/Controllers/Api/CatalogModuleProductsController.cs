@@ -303,11 +303,9 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                     {
                         var catalog = catalogs.FirstOrDefault(c => c.Id.EqualsInvariant(product.CatalogId));
                         var defaultLanguageCode = catalog?.Languages.First(x => x.IsDefault).LanguageCode;
-                        var seoInfo = new SeoInfo
-                        {
-                            LanguageCode = defaultLanguageCode,
-                            SemanticUrl = slugUrl
-                        };
+                        var seoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
+                        seoInfo.LanguageCode = defaultLanguageCode;
+                        seoInfo.SemanticUrl = slugUrl;
                         product.SeoInfos = new[] { seoInfo };
                     }
                 }
