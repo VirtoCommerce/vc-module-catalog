@@ -5,6 +5,10 @@
     <LangVersion>latest</LangVersion>
     <IsPackable>False</IsPackable>
   </PropertyGroup>
+  <PropertyGroup>
+    <!-- Project is a test project -->
+    <SonarQubeTestProject>true</SonarQubeTestProject>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
     <PackageReference Include="GenFu" Version="1.6.0" />
