@@ -403,7 +403,6 @@
           "copy-url-prompt": "Copy to clipboard: Ctrl+C, Enter",
           "select-images": "Select images",
           "select-image-category": "Select image category",
-          "name": "Name",
           "image-category": "Image category",
           "drag-drop-comment": "Drag and drop images here",
           "progress": "Progress",
@@ -416,7 +415,6 @@
         },
         "placeholders": {
           "image-url": "Paste image URL here",
-          "name": "Enter name",
           "image-category": "Select...",
           "language": "Select language",
           "altText": "Enter text",
