@@ -4,6 +4,13 @@
         <div class="inner-block">
             <form class="form" name="imageForm">
                 <div class="form-group" ng-init="setForm(imageForm)">
+                    <label class="form-label">{{ 'catalog.blades.images.labels.name' | translate }}</label>
+                    <div class="form-input">
+                        <input class="form-control" ng-model="blade.currentEntity.name" required name="name" placeholder="{{ 'catalog.blades.images.placeholders.name' | translate }}" />
+                    </div>
+                </div>
+
+                <div class="form-group">
                     <label class="form-label">{{ 'catalog.blades.images.labels.image-category' | translate }} <a href="" ng-click="openDictionarySettingManagement()" class="form-edit" va-permission="catalog:imagetypes"><i class="form-ico fa fa-pencil"></i></a></label>
                     <div class="form-input">
                         <ui-select ng-model="blade.currentEntity.group" on-select="changeImageCategory($item, $model)">
@@ -30,7 +37,7 @@
                 <div class="form-group">
                     <label class="form-label">{{ 'catalog.blades.images.labels.altText' | translate }}</label>
                     <div class="form-input">
-                        <input class="form-control" ng-model="blade.currentEntity.altText" name="altText" placeholder="{{ 'catalog.blades.images.placeholders.altText' | translate }}"/>
+                        <input class="form-control" ng-model="blade.currentEntity.altText" name="altText" placeholder="{{ 'catalog.blades.images.placeholders.altText' | translate }}" />
                     </div>
                 </div>
 
