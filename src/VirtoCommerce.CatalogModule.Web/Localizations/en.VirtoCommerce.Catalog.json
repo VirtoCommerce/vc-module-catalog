@@ -546,6 +546,28 @@
           "category": "Category",
           "quantity": "Quantity"
         }
+      },
+      "property-type-list": {
+        "title": "New property",
+        "subtitle": "Choose property type",
+        "lables": {
+          "Product": {
+            "title": "Product property",
+            "description": "Appears only for related products"
+          },
+          "Category": {
+            "title": "Category property",
+            "description": "Appears only for related catalog"
+          },
+          "Catalog": {
+            "title": "Catalog property",
+            "description": "Appears only for this catalog"
+          },
+          "Variation": {
+            "title": "Variation property",
+            "description": "Appears only for related variations"
+          }
+        }
       }
     },
     "exporter-list": {
