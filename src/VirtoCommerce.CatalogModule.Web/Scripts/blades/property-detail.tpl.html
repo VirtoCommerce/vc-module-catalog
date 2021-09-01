@@ -78,7 +78,7 @@
                 <div class="form-group">
                     <label class="form-label">{{ 'catalog.blades.property-detail.labels.applies-to' | translate }}</label>
                     <div class="form-input">
-                        <ui-select ng-disabled="blade.propertyType" ng-model="blade.currentEntity.type" class="capitalizeText">
+                        <ui-select ng-disabled="true" ng-model="blade.currentEntity.type" class="capitalizeText">
                             <ui-select-match>{{$select.selected}}</ui-select-match>
                             <ui-select-choices repeat="propertyType in blade.availablePropertyTypes | filter: $select.search">
                                 <span ng-click="blade.currentEntity.type">{{propertyType}}</span>
