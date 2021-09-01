@@ -158,7 +158,17 @@ angular.module('virtoCommerce.catalogModule')
                             }
                         });
                     } else {
-                        $scope.editProperty({ isManageable: true });
+                        var newBlade = {
+                            id: 'propertyTypesList',
+                            currentEntityId: undefined,
+                            categoryId: blade.categoryId,
+                            catalogId: blade.catalogId,
+                            defaultLanguage: blade.defaultLanguage,
+                            languages: blade.languages,
+                            controller: 'virtoCommerce.catalogModule.propertyTypeListController',
+                            template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-type-list.tpl.html'
+                        };
+                        bladeNavigationService.showBlade(newBlade, blade);
                     }
                 },
                 canExecuteMethod: function () {

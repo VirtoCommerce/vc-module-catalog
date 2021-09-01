@@ -344,3 +344,8 @@ vc-item-search {
     text-align: center;
     color: #333333;
 }
+
+.block-centered {
+    display: flex;
+    align-items: center;
+}

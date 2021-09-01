@@ -129,6 +129,9 @@ angular.module('virtoCommerce.catalogModule')
                     });
                 }
 
+                if (blade.propertyType) {
+                    data.type = blade.propertyType;
+                }
                 blade.currentEntity = angular.copy(data);
                 blade.origEntity = data;
                 blade.isLoading = false;

@@ -1,0 +1,18 @@
+<div class="blade-content">
+    <div class="blade-inner">
+        <div class="inner-block">
+            <ul class="list __items">
+                <li class="list-item" ng-click="blade.createProperty(item.typeName)" ng-repeat="item in blade.availablePropertyTypes track by item.typeName"
+                        ng-class="{'__selected': item.typeName === blade.selectedType}">
+                    <a class="list-block block-centered">
+                        <i class="list-ico {{item.icon}}" ></i>
+                        <div>
+                            <span class="list-name">{{ 'catalog.blades.property-type-list.lables.' + item.typeName + '.title' | translate}}</span>
+                            <span class="list-descr">{{ 'catalog.blades.property-type-list.lables.' + item.typeName + '.description' | translate}}</span>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
