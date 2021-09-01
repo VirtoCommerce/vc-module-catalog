@@ -22,7 +22,7 @@
   <moduleType>VirtoCommerce.CatalogModule.Web.Module, VirtoCommerce.CatalogModule.Web</moduleType>
   <dependencies>
     <dependency id="VirtoCommerce.Core" version="3.1.0" />
-    <dependency id="VirtoCommerce.Search" version="3.2.0" />
+    <dependency id="VirtoCommerce.Search" version="3.15.0" />
     <dependency id="VirtoCommerce.Export" version="3.4.0" />
     <dependency id="VirtoCommerce.Store" version="3.1.0" />
     <dependency id="VirtoCommerce.BulkActionsModule" version="3.3.0-alpha.96" />
