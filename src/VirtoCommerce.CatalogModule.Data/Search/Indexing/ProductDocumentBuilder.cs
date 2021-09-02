@@ -9,6 +9,7 @@ using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.SearchModule.Core.Extenstions;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
+using VirtoCommerce.CatalogModule.Data.Caching;
 
 namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 {
@@ -60,6 +61,10 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                     while (skipCount < totalCount);
                 }
             }
+
+            // Forcibly clear products from the cache to reduce memory consumption
+            ItemCacheRegion.ExpireRegion();
+            GC.Collect();
 
             return result;
         }
