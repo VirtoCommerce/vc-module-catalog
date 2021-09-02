@@ -17,14 +17,15 @@ using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Events;
 using VirtoCommerce.Platform.Core.Exceptions;
 using VirtoCommerce.Platform.Data.Infrastructure;
+using VirtoCommerce.Platform.Data.GenericCrud;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
-    public class CategoryService : ICategoryService
+    public class CategoryService : CrudService<Category, CategoryEntity, CategoryChangingEvent, CategoryChangedEvent>, ICategoryService
     {
-        private readonly IPlatformMemoryCache _platformMemoryCache;
-        private readonly Func<ICatalogRepository> _repositoryFactory;
-        private readonly IEventPublisher _eventPublisher;
+        private new readonly IPlatformMemoryCache _platformMemoryCache;
+        private new readonly Func<ICatalogRepository> _repositoryFactory;
+        private new readonly IEventPublisher _eventPublisher;
         private readonly AbstractValidator<IHasProperties> _hasPropertyValidator;
         private readonly ICatalogService _catalogService;
         private readonly IOutlineService _outlineService;
@@ -38,6 +39,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             , ICatalogService catalogService
             , IOutlineService outlineService
             , IBlobUrlResolver blobUrlResolver)
+            : base(catalogRepositoryFactory, platformMemoryCache, eventPublisher)
         {
             _repositoryFactory = catalogRepositoryFactory;
             _eventPublisher = eventPublisher;
@@ -72,46 +74,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public virtual async Task SaveChangesAsync(Category[] categories)
         {
-            var pkMap = new PrimaryKeyResolvingMap();
-            var changedEntries = new List<GenericChangedEntry<Category>>();
-
-            await ValidateCategoryPropertiesAsync(categories);
-
-            using (var repository = _repositoryFactory())
-            {
-                var categoriesIds = categories.Where(x => !x.IsTransient()).Select(x => x.Id).ToArray();
-                var dbExistCategories = await repository.GetCategoriesByIdsAsync(categoriesIds, CategoryResponseGroup.Full.ToString());
-                foreach (var category in categories)
-                {
-                    var originalEntity = dbExistCategories.FirstOrDefault(x => x.Id == category.Id);
-                    var modifiedEntity = AbstractTypeFactory<CategoryEntity>.TryCreateInstance().FromModel(category, pkMap);
-                    if (originalEntity != null)
-                    {
-                        /// This extension is allow to get around breaking changes is introduced in EF Core 3.0 that leads to throw
-                        /// Database operation expected to affect 1 row(s) but actually affected 0 row(s) exception when trying to add the new children entities with manually set keys
-                        /// https://docs.microsoft.com/en-us/ef/core/what-is-new/ef-core-3.0/breaking-changes#detectchanges-honors-store-generated-key-values
-                        repository.TrackModifiedAsAddedForNewChildEntities(originalEntity);
-
-                        changedEntries.Add(new GenericChangedEntry<Category>(category, originalEntity.ToModel(AbstractTypeFactory<Category>.TryCreateInstance()), EntryState.Modified));
-                        modifiedEntity.Patch(originalEntity);
-                        //Force set ModifiedDate property to mark a product changed. Special for  partial update cases when product table not have changes
-                        originalEntity.ModifiedDate = DateTime.UtcNow;
-                    }
-                    else
-                    {
-                        repository.Add(modifiedEntity);
-                        changedEntries.Add(new GenericChangedEntry<Category>(category, EntryState.Added));
-                    }
-                }
-
-                await _eventPublisher.Publish(new CategoryChangingEvent(changedEntries));
-
-                await repository.UnitOfWork.CommitAsync();
-                pkMap.ResolvePrimaryKeys();
-                ClearCache(categories);
-
-                await _eventPublisher.Publish(new CategoryChangedEvent(changedEntries));
-            }
+            await base.SaveChangesAsync(categories);
         }
 
         public virtual async Task DeleteAsync(string[] categoryIds)
@@ -168,7 +131,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
             var catalogsIds = new { categories }.GetFlatObjectsListWithInterface<IHasCatalogId>().Select(x => x.CatalogId).Where(x => x != null).Distinct().ToArray();
             var catalogsByIdDict = (await _catalogService.GetByIdsAsync(catalogsIds)).ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase);
-            
+
             //Resolve relative urls for all category assets
             var allImages = new { categories }.GetFlatObjectsListWithInterface<IHasImages>().Where(x => x.Images != null).SelectMany(x => x.Images);
             foreach (var image in allImages.Where(x => !string.IsNullOrEmpty(x.Url)))
@@ -251,11 +214,20 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
         }
 
-        protected virtual void ClearCache(IEnumerable<Category> categories)
+        protected override void ClearCache(IEnumerable<Category> models)
         {
             CatalogCacheRegion.ExpireRegion();
             SeoInfoCacheRegion.ExpireRegion();
         }
 
+        protected async override Task<IEnumerable<CategoryEntity>> LoadEntities(IRepository repository, IEnumerable<string> ids, string responseGroup)
+        {
+            return await ((ICatalogRepository)repository).GetCategoriesByIdsAsync(ids.ToArray(), CategoryResponseGroup.Full.ToString());
+        }
+
+        protected async override Task BeforeSaveChanges(IEnumerable<Category> models)
+        {
+            await ValidateCategoryPropertiesAsync(models);
+        }
     }
 }

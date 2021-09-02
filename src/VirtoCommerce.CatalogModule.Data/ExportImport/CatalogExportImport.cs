@@ -11,6 +11,7 @@ using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.Platform.Core.Assets;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.ExportImport;
+using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.Platform.Data.ExportImport;
 
 namespace VirtoCommerce.CatalogModule.Data.ExportImport
@@ -22,6 +23,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         private readonly IProductSearchService _productSearchService;
         private readonly ICategorySearchService _categorySearchService;
         private readonly ICategoryService _categoryService;
+        private readonly ICrudService<Category> _categoryServiceCrud;
         private readonly IItemService _itemService;
         private readonly IPropertyService _propertyService;
         private readonly IPropertySearchService _propertySearchService;
@@ -41,6 +43,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             _productSearchService = productSearchService;
             _categorySearchService = categorySearchService;
             _categoryService = categoryService;
+            _categoryServiceCrud = (ICrudService<Category>)categoryService;
             _itemService = itemService;
             _propertyService = propertyService;
             _propertySearchService = propertySearchService;
@@ -319,7 +322,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 
                 if (!categories.IsNullOrEmpty())
                 {
-                    await _categoryService.SaveChangesAsync(categories);
+                    await _categoryServiceCrud.SaveChangesAsync(categories);
 
                     processedCount += categories.Length;
                     progressInfo.Description = $"{ processedCount } of { categoryLinks.Count } category links have been imported";
@@ -331,7 +334,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         private async Task<int> SaveCategories(IEnumerable<Category> categories, ExportImportProgressInfo progressInfo)
         {
             var itemsArray = categories.ToArray();
-            await _categoryService.SaveChangesAsync(itemsArray);
+            await _categoryServiceCrud.SaveChangesAsync(itemsArray);
             ImportImages(itemsArray.OfType<IHasImages>().ToArray(), progressInfo);
 
             return itemsArray.Length;

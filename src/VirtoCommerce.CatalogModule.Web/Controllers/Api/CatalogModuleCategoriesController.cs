@@ -11,6 +11,7 @@ using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Authorization;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.GenericCrud;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
@@ -19,6 +20,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
     public class CatalogModuleCategoriesController : Controller
     {
         private readonly ICategoryService _categoryService;
+        private readonly ICrudService<Category> _categoryServiceCrud;
         private readonly ICatalogService _catalogService;
         private readonly IAuthorizationService _authorizationService;
 
@@ -29,6 +31,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             , IAuthorizationService authorizationService)
         {
             _categoryService = categoryService;
+            _categoryServiceCrud = (ICrudService<Category>)categoryService;
             _catalogService = catalogService;
             _authorizationService = authorizationService;
         }
@@ -146,7 +149,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return Unauthorized();
             }
 
-            await _categoryService.SaveChangesAsync(new[] { category });
+            await _categoryServiceCrud.SaveChangesAsync(new[] { category });
             return Ok(category);
 
         }

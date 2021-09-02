@@ -15,6 +15,7 @@ using VirtoCommerce.CatalogModule.Data.Authorization;
 using VirtoCommerce.CatalogModule.Data.Services;
 using VirtoCommerce.CatalogModule.Web.Model;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.Platform.Core.Settings;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
@@ -26,6 +27,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly IProductIndexedSearchService _productIndexedSearchService;
         private readonly ICategoryIndexedSearchService _categoryIndexedSearchService;
         private readonly ICategoryService _categoryService;
+        private readonly ICrudService<Category> _categoryServiceCrud;
         private readonly ICatalogService _catalogService;
         private readonly IItemService _itemService;
         private readonly IListEntrySearchService _listEntrySearchService;
@@ -49,6 +51,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             _productIndexedSearchService = productIndexedSearchService;
             _categoryIndexedSearchService = categoryIndexedSearchService;
             _categoryService = categoryService;
+            _categoryServiceCrud = (ICrudService<Category>)categoryService;
             _authorizationService = authorizationService;
             _itemService = itemService;
             _catalogService = catalogService;
@@ -285,7 +288,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 var categories = entities.OfType<Category>().ToArray();
                 if (!categories.IsNullOrEmpty())
                 {
-                    await _categoryService.SaveChangesAsync(categories);
+                    await _categoryServiceCrud.SaveChangesAsync(categories);
                 }
             }
         }

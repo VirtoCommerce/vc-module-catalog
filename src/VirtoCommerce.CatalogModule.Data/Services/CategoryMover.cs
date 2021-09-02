@@ -8,12 +8,14 @@ using VirtoCommerce.CatalogModule.Core.Model.ListEntry;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Validation;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.GenericCrud;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
     public class CategoryMover : ListEntryMover<Category>
     {
         private readonly ICategoryService _categoryService;
+        private readonly ICrudService<Category> _categoryServiceCrud;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CategoryMover"/> class.
@@ -24,11 +26,12 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         public CategoryMover(ICategoryService categoryService)
         {
             _categoryService = categoryService;
+            _categoryServiceCrud = (ICrudService<Category>)categoryService;
         }
 
         public override Task ConfirmMoveAsync(IEnumerable<Category> entities)
         {
-            return _categoryService.SaveChangesAsync(entities.ToArray());
+            return _categoryServiceCrud.SaveChangesAsync(entities.ToArray());
         }
 
         public override async Task<List<Category>> PrepareMoveAsync(ListEntriesMoveRequest moveInfo)
