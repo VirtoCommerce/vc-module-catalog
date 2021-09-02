@@ -11,7 +11,10 @@ using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Authorization;
+using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.GenericCrud;
+using VirtoCommerce.Platform.Data.GenericCrud;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
@@ -19,8 +22,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
     [Authorize]
     public class CatalogModuleCatalogsController : Controller
     {
-        private readonly ICatalogService _catalogService;
-        private readonly ICatalogSearchService _catalogSearchService;
+        private readonly ICrudService<Catalog> _catalogService;
+        private readonly SearchService<CatalogSearchCriteria, CatalogSearchResult, Catalog, CatalogEntity> _catalogSearchService;
         private readonly IAuthorizationService _authorizationService;
 
         public CatalogModuleCatalogsController(
@@ -29,8 +32,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             , IAuthorizationService authorizationService
             )
         {
-            _catalogService = catalogService;
-            _catalogSearchService = catalogSearchService;
+            _catalogService = (ICrudService<Catalog>)catalogService;
+            _catalogSearchService = (SearchService<CatalogSearchCriteria, CatalogSearchResult, Catalog, CatalogEntity>)catalogSearchService;
             _authorizationService = authorizationService;
         }
 
@@ -54,7 +57,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return Unauthorized();
             }
 
-            var result = await _catalogSearchService.SearchCatalogsAsync(criteria);
+            var result = await _catalogSearchService.SearchAsync(criteria);
             return Ok(result.Results);
         }
 
@@ -68,7 +71,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return Unauthorized();
             }
 
-            var result = await _catalogSearchService.SearchCatalogsAsync(criteria);
+            var result = await _catalogSearchService.SearchAsync(criteria);
             return Ok(result);
         }
 

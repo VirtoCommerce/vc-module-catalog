@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using VirtoCommerce.CatalogModule.Core.Events;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Caching;
@@ -15,6 +16,7 @@ using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Platform.Core.Caching;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Events;
+using VirtoCommerce.Platform.Data.GenericCrud;
 using VirtoCommerce.Platform.Data.Infrastructure;
 using VirtoCommerce.SearchModule.Core.Model;
 
@@ -25,7 +27,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private readonly Func<ICatalogRepository> _repositoryFactory;
         private readonly IEventPublisher _eventPublisher;
         private readonly IPlatformMemoryCache _platformMemoryCache;
-        private readonly ICatalogSearchService _catalogSearchService;
+        private readonly SearchService<CatalogSearchCriteria, CatalogSearchResult, Catalog, CatalogEntity> _catalogSearchService;
         private readonly AbstractValidator<Property> _propertyValidator;
 
         public PropertyService(Func<ICatalogRepository> repositoryFactory,
@@ -37,7 +39,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _repositoryFactory = repositoryFactory;
             _eventPublisher = eventPublisher;
             _platformMemoryCache = platformMemoryCache;
-            _catalogSearchService = catalogSearchService;
+            _catalogSearchService = (SearchService<CatalogSearchCriteria, CatalogSearchResult, Catalog, CatalogEntity>)catalogSearchService;
             _propertyValidator = propertyValidator;
         }
 
@@ -184,7 +186,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         protected virtual async Task LoadDependenciesAsync(Property[] properties)
         {
-            var catalogsByIdDict = ((await _catalogSearchService.SearchCatalogsAsync(new Core.Model.Search.CatalogSearchCriteria { Take = int.MaxValue })).Results).ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase)
+            var catalogsByIdDict = ((await _catalogSearchService.SearchAsync(new Core.Model.Search.CatalogSearchCriteria { Take = int.MaxValue })).Results).ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase)
                                                                            .WithDefaultValue(null);
             foreach (var property in properties.Where(x => x.CatalogId != null))
             {
