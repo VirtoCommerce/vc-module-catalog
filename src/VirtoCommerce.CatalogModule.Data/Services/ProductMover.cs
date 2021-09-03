@@ -5,12 +5,14 @@ using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.ListEntry;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.GenericCrud;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
     public class ProductMover : ListEntryMover<CatalogProduct>
     {
         private readonly IItemService _itemService;
+        private readonly ICrudService<CatalogProduct> _itemServiceCrud;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProductMover"/> class.
@@ -21,11 +23,12 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         public ProductMover(IItemService itemService)
         {
             _itemService = itemService;
+            _itemServiceCrud = (ICrudService<CatalogProduct>)itemService;
         }
 
         public override Task ConfirmMoveAsync(IEnumerable<CatalogProduct> entities)
         {
-            return _itemService.SaveChangesAsync(entities.ToArray());
+            return _itemServiceCrud.SaveChangesAsync(entities.ToArray());
         }
 
         public override async Task<List<CatalogProduct>> PrepareMoveAsync(ListEntriesMoveRequest moveInfo)

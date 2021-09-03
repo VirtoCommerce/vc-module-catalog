@@ -14,6 +14,7 @@ using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Authorization;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.GenericCrud;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
@@ -22,6 +23,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
     public class CatalogModuleProductsController : Controller
     {
         private readonly IItemService _itemsService;
+        private readonly ICrudService<CatalogProduct> _itemsServiceCrud;
         private readonly ICatalogService _catalogService;
         private readonly ICategoryService _categoryService;
         private readonly ISkuGenerator _skuGenerator;
@@ -39,6 +41,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             , IOptions<MvcNewtonsoftJsonOptions> jsonOptions)
         {
             _itemsService = itemsService;
+            _itemsServiceCrud = (ICrudService<CatalogProduct>)itemsService;
             _categoryService = categoryService;
             _catalogService = catalogService;
             _skuGenerator = skuGenerator;
@@ -286,7 +289,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             {
                 return Unauthorized();
             }
-            await _itemsService.DeleteAsync(ids);
+            await _itemsServiceCrud.DeleteAsync(ids);
             return Ok();
         }
 
@@ -315,7 +318,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             if (!toSaveList.IsNullOrEmpty())
             {
-                await _itemsService.SaveChangesAsync(toSaveList.ToArray());
+                await _itemsServiceCrud.SaveChangesAsync(toSaveList.ToArray());
             }
 
             return toSaveList.ToArray();

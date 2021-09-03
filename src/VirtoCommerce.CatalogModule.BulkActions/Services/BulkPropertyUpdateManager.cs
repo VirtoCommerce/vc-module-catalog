@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -10,6 +9,7 @@ using VirtoCommerce.CatalogModule.Core.Extensions;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.GenericCrud;
 
 namespace VirtoCommerce.CatalogModule.BulkActions.Services
 {
@@ -18,6 +18,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
         private readonly IDataSourceFactory _dataSourceFactory;
 
         private readonly IItemService _itemService;
+        private readonly ICrudService<CatalogProduct> _itemServiceCrud;
         private readonly ICategoryService _categoryService;
         private readonly ICatalogService _catalogService;
 
@@ -39,6 +40,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
         {
             _dataSourceFactory = dataSourceFactory;
             _itemService = itemService;
+            _itemServiceCrud = (ICrudService<CatalogProduct>)itemService;
             _categoryService = categoryService;
             _catalogService = catalogService;
         }
@@ -89,7 +91,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
 
             if (hasChanges)
             {
-                await _itemService.SaveChangesAsync(products);
+                await _itemServiceCrud.SaveChangesAsync(products);
             }
 
             return result;

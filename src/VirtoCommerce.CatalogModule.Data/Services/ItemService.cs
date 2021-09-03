@@ -15,18 +15,19 @@ using VirtoCommerce.Platform.Core.Caching;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Events;
 using VirtoCommerce.Platform.Data.Infrastructure;
+using VirtoCommerce.Platform.Data.GenericCrud;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
-    public class ItemService : IItemService
+    public class ItemService : CrudService<CatalogProduct, ItemEntity, ProductChangingEvent, ProductChangedEvent>, IItemService
     {
-        private readonly Func<ICatalogRepository> _repositoryFactory;
-        private readonly IEventPublisher _eventPublisher;
+        private new readonly Func<ICatalogRepository> _repositoryFactory;
+        private new readonly IEventPublisher _eventPublisher;
         private readonly AbstractValidator<IHasProperties> _hasPropertyValidator;
         private readonly ICatalogService _catalogService;
         private readonly ICategoryService _categoryService;
         private readonly IOutlineService _outlineService;
-        private readonly IPlatformMemoryCache _platformMemoryCache;
+        private new readonly IPlatformMemoryCache _platformMemoryCache;
         private readonly IBlobUrlResolver _blobUrlResolver;
         private readonly ISkuGenerator _skuGenerator;
         private readonly AbstractValidator<CatalogProduct> _productValidator;
@@ -41,6 +42,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             IBlobUrlResolver blobUrlResolver,
             ISkuGenerator skuGenerator,
             AbstractValidator<CatalogProduct> productValidator)
+             : base(catalogRepositoryFactory, platformMemoryCache, eventPublisher)
         {
             _repositoryFactory = catalogRepositoryFactory;
             _eventPublisher = eventPublisher;
@@ -129,52 +131,17 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public virtual async Task SaveChangesAsync(CatalogProduct[] items)
         {
-            var pkMap = new PrimaryKeyResolvingMap();
-            var changedEntries = new List<GenericChangedEntry<CatalogProduct>>();
-
-            await ValidateProductsAsync(items);
-
-            using (var repository = _repositoryFactory())
-            {
-                var dbExistProducts = await repository.GetItemByIdsAsync(items.Where(x => !x.IsTransient()).Select(x => x.Id).ToArray());
-                foreach (var product in items)
-                {
-                    var modifiedEntity = AbstractTypeFactory<ItemEntity>.TryCreateInstance().FromModel(product, pkMap);
-                    var originalEntity = dbExistProducts.FirstOrDefault(x => x.Id == product.Id);
-
-                    if (originalEntity != null)
-                    {
-                        /// This extension is allow to get around breaking changes is introduced in EF Core 3.0 that leads to throw
-                        /// Database operation expected to affect 1 row(s) but actually affected 0 row(s) exception when trying to add the new children entities with manually set keys
-                        /// https://docs.microsoft.com/en-us/ef/core/what-is-new/ef-core-3.0/breaking-changes#detectchanges-honors-store-generated-key-values
-                        repository.TrackModifiedAsAddedForNewChildEntities(originalEntity);
-
-                        changedEntries.Add(new GenericChangedEntry<CatalogProduct>(product, originalEntity.ToModel(AbstractTypeFactory<CatalogProduct>.TryCreateInstance()), EntryState.Modified));
-                        modifiedEntity.Patch(originalEntity);
-                        //Force set ModifiedDate property to mark a product changed. Special for  partial update cases when product table not have changes
-                        originalEntity.ModifiedDate = DateTime.UtcNow;
-                    }
-                    else
-                    {
-                        repository.Add(modifiedEntity);
-                        changedEntries.Add(new GenericChangedEntry<CatalogProduct>(product, EntryState.Added));
-                    }
-                }
-
-                await _eventPublisher.Publish(new ProductChangingEvent(changedEntries));
-
-                await repository.UnitOfWork.CommitAsync();
-                pkMap.ResolvePrimaryKeys();
-
-                ClearCache(items);
-
-                await _eventPublisher.Publish(new ProductChangedEvent(changedEntries));
-            }
+            await base.SaveChangesAsync(items);
         }
 
         public virtual async Task DeleteAsync(string[] itemIds)
         {
-            var items = await GetByIdsAsync(itemIds, ItemResponseGroup.ItemInfo.ToString());
+            await base.DeleteAsync(itemIds);
+        }
+
+        public override async Task DeleteAsync(IEnumerable<string> ids, bool softDelete = false)
+        {
+            var items = await GetByIdsAsync(ids, ItemResponseGroup.ItemInfo.ToString());
             var changedEntries = items
                 .Select(i => new GenericChangedEntry<CatalogProduct>(i, EntryState.Deleted))
                 .ToList();
@@ -183,7 +150,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             {
                 await _eventPublisher.Publish(new ProductChangingEvent(changedEntries));
 
-                await repository.RemoveItemsAsync(itemIds);
+                await repository.RemoveItemsAsync(ids.ToArray());
                 await repository.UnitOfWork.CommitAsync();
 
                 ClearCache(items);
@@ -194,12 +161,12 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         #endregion IItemService Members
 
-        protected virtual void ClearCache(IEnumerable<CatalogProduct> entities)
+        protected override void ClearCache(IEnumerable<CatalogProduct> models)
         {
             AssociationSearchCacheRegion.ExpireRegion();
             SeoInfoCacheRegion.ExpireRegion();
 
-            foreach (var entity in entities)
+            foreach (var entity in models)
             {
                 ItemCacheRegion.ExpireEntity(entity);
             }
@@ -307,6 +274,16 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     throw new ValidationException($"Product properties has validation error: {string.Join(Environment.NewLine, validationResult.Errors.Select(x => x.ToString()))}");
                 }
             }
+        }
+
+        protected async override Task<IEnumerable<ItemEntity>> LoadEntities(IRepository repository, IEnumerable<string> ids, string responseGroup)
+        {
+            return await ((ICatalogRepository)repository).GetItemByIdsAsync(ids.ToArray());
+        }
+
+        protected async override Task BeforeSaveChanges(IEnumerable<CatalogProduct> models)
+        {
+            await ValidateProductsAsync(models.ToArray());
         }
     }
 }

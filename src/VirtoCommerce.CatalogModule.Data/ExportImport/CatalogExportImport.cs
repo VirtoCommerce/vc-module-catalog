@@ -27,6 +27,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         private readonly ICategoryService _categoryService;
         private readonly ICrudService<Category> _categoryServiceCrud;
         private readonly IItemService _itemService;
+        private readonly ICrudService<CatalogProduct> _itemServiceCrud;
         private readonly IPropertyService _propertyService;
         private readonly IPropertySearchService _propertySearchService;
         private readonly IPropertyDictionaryItemSearchService _propertyDictionarySearchService;
@@ -47,6 +48,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             _categoryService = categoryService;
             _categoryServiceCrud = (ICrudService<Category>)categoryService;
             _itemService = itemService;
+            _itemServiceCrud = (ICrudService<CatalogProduct>)itemService;
             _propertyService = propertyService;
             _propertySearchService = propertySearchService;
             _propertyDictionarySearchService = propertyDictionarySearchService;
@@ -394,7 +396,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                     return product;
                 }).ToArray();
 
-                await _itemService.SaveChangesAsync(products.ToArray());
+                await _itemServiceCrud.SaveChangesAsync(products.ToArray());
 
                 if (options != null && options.HandleBinaryData)
                 {

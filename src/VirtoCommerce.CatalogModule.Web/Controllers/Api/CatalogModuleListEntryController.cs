@@ -30,6 +30,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly ICrudService<Category> _categoryServiceCrud;
         private readonly ICatalogService _catalogService;
         private readonly IItemService _itemService;
+        private readonly ICrudService<CatalogProduct> _itemServiceCrud;
         private readonly IListEntrySearchService _listEntrySearchService;
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthorizationService _authorizationService;
@@ -54,6 +55,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             _categoryServiceCrud = (ICrudService<Category>)categoryService;
             _authorizationService = authorizationService;
             _itemService = itemService;
+            _itemServiceCrud = (ICrudService<CatalogProduct>)itemService;
             _catalogService = catalogService;
             _listEntrySearchService = listEntrySearchService;
             _settingsManager = settingsManager;
@@ -266,7 +268,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 var commonIds = idsToDelete.Skip(i).Take(deleteBatchSize).ToArray();
 
                 var searchProductResult = await _itemService.GetByIdsAsync(commonIds, ItemResponseGroup.None.ToString());
-                await _itemService.DeleteAsync(searchProductResult.Select(x => x.Id).ToArray());
+                await _itemServiceCrud.DeleteAsync(searchProductResult.Select(x => x.Id).ToArray());
 
                 var searchCategoryResult = await _categoryService.GetByIdsAsync(commonIds, CategoryResponseGroup.None.ToString());
                 await _categoryServiceCrud.DeleteAsync(searchCategoryResult.Select(x => x.Id).ToArray());
@@ -282,7 +284,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 var products = entities.OfType<CatalogProduct>().ToArray();
                 if (!products.IsNullOrEmpty())
                 {
-                    await _itemService.SaveChangesAsync(products);
+                    await _itemServiceCrud.SaveChangesAsync(products);
                 }
 
                 var categories = entities.OfType<Category>().ToArray();
