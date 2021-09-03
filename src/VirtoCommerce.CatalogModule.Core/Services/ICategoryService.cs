@@ -9,6 +9,7 @@ namespace VirtoCommerce.CatalogModule.Core.Services
         Task<Category[]> GetByIdsAsync(string[] categoryIds, string responseGroup, string catalogId = null);
         [Obsolete(@"Need to remove after inherit ICategoryService from ICrudService<Category>")]
         Task SaveChangesAsync(Category[] categories);
+        [Obsolete(@"Need to remove after inherit ICategoryService from ICrudService<Category>")]
         Task DeleteAsync(string[] categoryIds);
     }
 }

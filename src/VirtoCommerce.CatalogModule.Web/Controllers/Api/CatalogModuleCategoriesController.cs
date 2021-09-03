@@ -171,7 +171,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return Unauthorized();
             }
 
-            await _categoryService.DeleteAsync(ids);
+            await _categoryServiceCrud.DeleteAsync(ids);
             return NoContent();
         }
     }

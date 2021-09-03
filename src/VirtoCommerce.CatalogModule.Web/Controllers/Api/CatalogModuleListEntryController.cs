@@ -269,7 +269,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 await _itemService.DeleteAsync(searchProductResult.Select(x => x.Id).ToArray());
 
                 var searchCategoryResult = await _categoryService.GetByIdsAsync(commonIds, CategoryResponseGroup.None.ToString());
-                await _categoryService.DeleteAsync(searchCategoryResult.Select(x => x.Id).ToArray());
+                await _categoryServiceCrud.DeleteAsync(searchCategoryResult.Select(x => x.Id).ToArray());
             }
 
             return StatusCode(StatusCodes.Status204NoContent);

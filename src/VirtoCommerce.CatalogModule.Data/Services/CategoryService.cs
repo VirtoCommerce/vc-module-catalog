@@ -50,8 +50,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _catalogService = catalogService;
         }
 
-        #region ICategoryService Members
-
         public virtual async Task<Category[]> GetByIdsAsync(string[] categoryIds, string responseGroup, string catalogId = null)
         {
             var categoryResponseGroup = EnumUtility.SafeParseFlags(responseGroup, CategoryResponseGroup.Full);
@@ -79,7 +77,12 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public virtual async Task DeleteAsync(string[] categoryIds)
         {
-            var categories = await GetByIdsAsync(categoryIds, CategoryResponseGroup.Info.ToString());
+            await base.DeleteAsync(categoryIds);
+        }
+
+        public override async Task DeleteAsync(IEnumerable<string> ids, bool softDelete = false)
+        {
+            var categories = await GetByIdsAsync(ids, CategoryResponseGroup.Info.ToString());
             var changedEntries = categories
                 .Select(c => new GenericChangedEntry<Category>(c, EntryState.Deleted))
                 .ToList();
@@ -87,15 +90,13 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             using (var repository = _repositoryFactory())
             {
                 await _eventPublisher.Publish(new CategoryChangingEvent(changedEntries));
-                await repository.RemoveCategoriesAsync(categoryIds);
+                await repository.RemoveCategoriesAsync(ids.ToArray());
                 await repository.UnitOfWork.CommitAsync();
 
                 ClearCache(categories);
                 await _eventPublisher.Publish(new CategoryChangedEvent(changedEntries));
             }
         }
-
-        #endregion
 
         protected virtual async Task<IDictionary<string, Category>> PreloadCategoriesAsync(string catalogId)
         {
@@ -172,7 +173,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                         property.Category = preloadedCategoriesMap[property.CategoryId];
                     }
                 }
-
             }
         }
 
