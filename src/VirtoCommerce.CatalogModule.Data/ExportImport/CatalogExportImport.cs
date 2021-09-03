@@ -20,15 +20,15 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 {
     public class CatalogExportImport
     {
-        private readonly ICatalogService _catalogService;
+        private readonly ICrudService<Catalog> _catalogService;
         private readonly SearchService<CatalogSearchCriteria, CatalogSearchResult, Catalog, CatalogEntity> _catalogSearchService;
         private readonly IProductSearchService _productSearchService;
         private readonly ICategorySearchService _categorySearchService;
         private readonly ICategoryService _categoryService;
         private readonly ICrudService<Category> _categoryServiceCrud;
         private readonly IItemService _itemService;
-        private readonly IPropertyService _propertyService;
-        private readonly IPropertySearchService _propertySearchService;
+        private readonly ICrudService<Property> _propertyService;
+        private readonly SearchService<PropertySearchCriteria, PropertySearchResult, Property, PropertyEntity> _propertySearchService;
         private readonly IPropertyDictionaryItemSearchService _propertyDictionarySearchService;
         private readonly IPropertyDictionaryItemService _propertyDictionaryService;
         private readonly JsonSerializer _jsonSerializer;
@@ -41,14 +41,14 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                                   IItemService itemService, IPropertyService propertyService, IPropertySearchService propertySearchService, IPropertyDictionaryItemSearchService propertyDictionarySearchService,
                                   IPropertyDictionaryItemService propertyDictionaryService, JsonSerializer jsonSerializer, IBlobStorageProvider blobStorageProvider, IAssociationService associationService)
         {
-            _catalogService = catalogService;
+            _catalogService = (ICrudService <Catalog>)catalogService;
             _productSearchService = productSearchService;
             _categorySearchService = categorySearchService;
             _categoryService = categoryService;
             _categoryServiceCrud = (ICrudService<Category>)categoryService;
             _itemService = itemService;
-            _propertyService = propertyService;
-            _propertySearchService = propertySearchService;
+            _propertyService = (ICrudService<Property>)propertyService;
+            _propertySearchService = (SearchService<PropertySearchCriteria, PropertySearchResult, Property, PropertyEntity>)propertySearchService;
             _propertyDictionarySearchService = propertyDictionarySearchService;
             _propertyDictionaryService = propertyDictionaryService;
             _jsonSerializer = jsonSerializer;
@@ -76,7 +76,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 await writer.WritePropertyNameAsync("Properties");
                 await writer.SerializeJsonArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
                 {
-                    var searchResult = await _propertySearchService.SearchPropertiesAsync(new PropertySearchCriteria { Skip = skip, Take = take });
+                    var searchResult = await _propertySearchService.SearchAsync(new PropertySearchCriteria { Skip = skip, Take = take });
                     foreach (var item in searchResult.Results)
                     {
                         ResetRedundantReferences(item);

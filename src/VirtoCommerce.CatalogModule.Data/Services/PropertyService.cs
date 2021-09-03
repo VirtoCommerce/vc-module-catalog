@@ -13,6 +13,7 @@ using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Caching;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
+using VirtoCommerce.Platform.Caching;
 using VirtoCommerce.Platform.Core.Caching;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Events;
@@ -22,30 +23,23 @@ using VirtoCommerce.SearchModule.Core.Model;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
-    public class PropertyService : IPropertyService
+    public class PropertyService : CrudService<Property, PropertyEntity, PropertyChangingEvent, PropertyChangedEvent>, IPropertyService
     {
-        private readonly Func<ICatalogRepository> _repositoryFactory;
-        private readonly IEventPublisher _eventPublisher;
-        private readonly IPlatformMemoryCache _platformMemoryCache;
         private readonly SearchService<CatalogSearchCriteria, CatalogSearchResult, Catalog, CatalogEntity> _catalogSearchService;
         private readonly AbstractValidator<Property> _propertyValidator;
 
-        public PropertyService(Func<ICatalogRepository> repositoryFactory,
+        public PropertyService(Func<ICatalogRepositoryForCrud> repositoryFactory,
             IEventPublisher eventPublisher,
             IPlatformMemoryCache platformMemoryCache,
             ICatalogSearchService catalogSearchService,
             AbstractValidator<Property> propertyValidator)
+            : base(repositoryFactory, platformMemoryCache, eventPublisher)
         {
-            _repositoryFactory = repositoryFactory;
-            _eventPublisher = eventPublisher;
-            _platformMemoryCache = platformMemoryCache;
             _catalogSearchService = (SearchService<CatalogSearchCriteria, CatalogSearchResult, Catalog, CatalogEntity>)catalogSearchService;
             _propertyValidator = propertyValidator;
         }
 
-        #region IPropertyService members
-
-        public async Task<IEnumerable<Property>> GetByIdsAsync(IEnumerable<string> ids)
+        public override async Task<IEnumerable<Property>> GetByIdsAsync(IEnumerable<string> ids, string responseGroup = null)
         {
             var preloadedProperties = await PreloadAllPropertiesAsync();
 
@@ -58,62 +52,11 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return result;
         }
 
-        public async Task<IEnumerable<Property>> GetAllCatalogPropertiesAsync(string catalogId)
-        {
-            var preloadedProperties = await PreloadAllCatalogPropertiesAsync(catalogId);
-            var result = preloadedProperties.Select(x => x.Clone()).OfType<Property>().ToArray();
-            return result;
-        }
-
-        public async Task SaveChangesAsync(IEnumerable<Property> properties)
-        {
-            var pkMap = new PrimaryKeyResolvingMap();
-            var changedEntries = new List<GenericChangedEntry<Property>>();
-
-            ValidateProperties(properties);
-
-            using (var repository = _repositoryFactory())
-            {
-                TryAddPredefinedValidationRules(properties);
-
-                var dbExistProperties = await repository.GetPropertiesByIdsAsync(properties.Where(x => !x.IsTransient()).Select(x => x.Id).ToArray());
-                foreach (var property in properties)
-                {
-                    var modifiedEntity = AbstractTypeFactory<PropertyEntity>.TryCreateInstance().FromModel(property, pkMap);
-                    var originalEntity = dbExistProperties.FirstOrDefault(x => x.Id == property.Id);
-
-                    if (originalEntity != null)
-                    {
-                        changedEntries.Add(new GenericChangedEntry<Property>(property, originalEntity.ToModel(AbstractTypeFactory<Property>.TryCreateInstance()), EntryState.Modified));
-                        modifiedEntity.Patch(originalEntity);
-                        //Force set ModifiedDate property to mark a product changed. Special for  partial update cases when product table not have changes
-                        originalEntity.ModifiedDate = DateTime.UtcNow;
-                    }
-                    else
-                    {
-                        repository.Add(modifiedEntity);
-                        changedEntries.Add(new GenericChangedEntry<Property>(property, EntryState.Added));
-                    }
-                }
-
-                //Raise domain events
-                await _eventPublisher.Publish(new PropertyChangingEvent(changedEntries));
-                //Save changes in database
-                await repository.UnitOfWork.CommitAsync();
-                pkMap.ResolvePrimaryKeys();
-
-                //Reset catalog cache
-                CatalogCacheRegion.ExpireRegion();
-
-                await _eventPublisher.Publish(new PropertyChangedEvent(changedEntries));
-            }
-        }
-
-        public async Task DeleteAsync(IEnumerable<string> ids, bool doDeleteValues = false)
+        public override async Task DeleteAsync(IEnumerable<string> ids, bool doDeleteValues = false)
         {
             using (var repository = _repositoryFactory())
             {
-                var entities = await repository.GetPropertiesByIdsAsync(ids.ToArray());
+                var entities = await ((ICatalogRepositoryForCrud)repository).GetPropertiesByIdsAsync(ids.ToArray());
                 //Raise domain events before deletion
                 var changedEntries = entities.Select(x => new GenericChangedEntry<Property>(x.ToModel(AbstractTypeFactory<Property>.TryCreateInstance()), EntryState.Deleted));
 
@@ -124,7 +67,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     repository.Remove(entity);
                     if (doDeleteValues)
                     {
-                        await repository.RemoveAllPropertyValuesAsync(entity.Id);
+                        await ((ICatalogRepositoryForCrud)repository).RemoveAllPropertyValuesAsync(entity.Id);
                     }
                 }
                 await repository.UnitOfWork.CommitAsync();
@@ -134,6 +77,30 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
                 await _eventPublisher.Publish(new PropertyChangedEvent(changedEntries));
             }
+        }
+
+        protected override void ClearCache(IEnumerable<Property> models)
+        {
+            CatalogCacheRegion.ExpireRegion();
+        }
+
+        protected override Task<IEnumerable<PropertyEntity>> LoadEntities(IRepository repository, IEnumerable<string> ids, string responseGroup)
+        {
+            return ((ICatalogRepositoryForCrud)repository).GetPropertiesByIdsAsync(ids);
+        }
+
+        #region IPropertyService members
+
+        public async Task<IEnumerable<Property>> GetByIdsAsync(IEnumerable<string> ids)
+        {
+            return await base.GetByIdsAsync(ids);
+        }
+
+        public async Task<IEnumerable<Property>> GetAllCatalogPropertiesAsync(string catalogId)
+        {
+            var preloadedProperties = await PreloadAllCatalogPropertiesAsync(catalogId);
+            var result = preloadedProperties.Select(x => x.Clone()).OfType<Property>().ToArray();
+            return result;
         }
 
         #endregion IPropertyService members
@@ -149,8 +116,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 {
                     repository.DisableChangesTracking();
 
-                    var propertyIds = await repository.Properties.Select(p => p.Id).ToArrayAsync();
-                    var entities = await repository.GetPropertiesByIdsAsync(propertyIds);
+                    var propertyIds = await ((ICatalogRepositoryForCrud)repository).Properties.Select(p => p.Id).ToArrayAsync();
+                    var entities = await ((ICatalogRepositoryForCrud)repository).GetPropertiesByIdsAsync(propertyIds);
                     var properties = entities.Select(p => p.ToModel(AbstractTypeFactory<Property>.TryCreateInstance())).ToArray();
 
                     await LoadDependenciesAsync(properties);
@@ -172,7 +139,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 {
                     repository.DisableChangesTracking();
 
-                    var result = (await repository.GetAllCatalogPropertiesAsync(catalogId))
+                    var result = (await ((ICatalogRepositoryForCrud)repository).GetAllCatalogPropertiesAsync(catalogId))
                         .GroupBy(p => p.Id, StringComparer.OrdinalIgnoreCase) // Remove duplicates
                         .Select(g => g.First())
                         .OrderBy(p => p.Name, StringComparer.OrdinalIgnoreCase)

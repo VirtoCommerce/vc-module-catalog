@@ -18,6 +18,7 @@ using VirtoCommerce.Platform.Core.Events;
 using VirtoCommerce.Platform.Core.Exceptions;
 using VirtoCommerce.Platform.Data.Infrastructure;
 using VirtoCommerce.Platform.Data.GenericCrud;
+using VirtoCommerce.Platform.Core.GenericCrud;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
@@ -27,7 +28,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private new readonly Func<ICatalogRepository> _repositoryFactory;
         private new readonly IEventPublisher _eventPublisher;
         private readonly AbstractValidator<IHasProperties> _hasPropertyValidator;
-        private readonly ICatalogService _catalogService;
+        private readonly ICrudService<Catalog> _catalogService;
         private readonly IOutlineService _outlineService;
         private readonly IBlobUrlResolver _blobUrlResolver;
 
@@ -47,7 +48,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _hasPropertyValidator = hasPropertyValidator;
             _outlineService = outlineService;
             _blobUrlResolver = blobUrlResolver;
-            _catalogService = catalogService;
+            _catalogService = (ICrudService<Catalog>)catalogService;
         }
 
         public virtual async Task<Category[]> GetByIdsAsync(string[] categoryIds, string responseGroup, string catalogId = null)

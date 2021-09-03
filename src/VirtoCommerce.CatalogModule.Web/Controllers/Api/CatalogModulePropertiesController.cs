@@ -14,6 +14,7 @@ using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Authorization;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.GenericCrud;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
@@ -23,9 +24,9 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
     {
         private readonly AbstractValidator<PropertyValidationRequest> _propertyValidationRequestValidator;
         private readonly AbstractValidator<CategoryPropertyValidationRequest> _categoryPropertyNameValidator;
-        private readonly IPropertyService _propertyService;
+        private readonly ICrudService<Property> _propertyService;
         private readonly ICategoryService _categoryService;
-        private readonly ICatalogService _catalogService;
+        private readonly ICrudService<Catalog> _catalogService;
         private readonly IPropertyDictionaryItemSearchService _propertyDictionarySearchService;
         private readonly IAuthorizationService _authorizationService;
 
@@ -39,9 +40,9 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             , AbstractValidator<PropertyValidationRequest> propertyValidationRequestValidator
             , AbstractValidator<CategoryPropertyValidationRequest> categoryPropertyNameValidator)
         {
-            _propertyService = propertyService;
+            _propertyService = (ICrudService<Property>)propertyService;
             _categoryService = categoryService;
-            _catalogService = catalogService;
+            _catalogService = (ICrudService<Catalog>)catalogService;
             _propertyDictionarySearchService = propertyDictionarySearchService;
             _authorizationService = authorizationService;
             _propertyValidationRequestValidator = propertyValidationRequestValidator;
