@@ -8,18 +8,20 @@ using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
+using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.Platform.Core.Assets;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.ExportImport;
 using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.Platform.Data.ExportImport;
+using VirtoCommerce.Platform.Data.GenericCrud;
 
 namespace VirtoCommerce.CatalogModule.Data.ExportImport
 {
     public class CatalogExportImport
     {
         private readonly ICatalogService _catalogService;
-        private readonly ICatalogSearchService _catalogSearchService;
+        private readonly SearchService<CatalogSearchCriteria, CatalogSearchResult, Catalog, CatalogEntity> _catalogSearchService;
         private readonly IProductSearchService _productSearchService;
         private readonly ICategorySearchService _categorySearchService;
         private readonly ICategoryService _categoryService;
@@ -52,7 +54,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             _jsonSerializer = jsonSerializer;
             _blobStorageProvider = blobStorageProvider;
             _associationService = associationService;
-            _catalogSearchService = catalogSearchService;
+            _catalogSearchService = (SearchService<CatalogSearchCriteria, CatalogSearchResult, Catalog, CatalogEntity>)catalogSearchService;
         }
 
         public async Task DoExportAsync(Stream outStream, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
@@ -112,7 +114,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 
                 await writer.WritePropertyNameAsync("Catalogs");
                 await writer.SerializeJsonArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
-                    (GenericSearchResult<Catalog>)await _catalogSearchService.SearchCatalogsAsync(new CatalogSearchCriteria { Skip = skip, Take = take })
+                    (GenericSearchResult<Catalog>)await _catalogSearchService.SearchAsync(new CatalogSearchCriteria { Skip = skip, Take = take })
                 , (processedCount, totalCount) =>
                 {
                     progressInfo.Description = $"{ processedCount } of { totalCount } catalogs have been exported";
