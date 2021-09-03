@@ -69,6 +69,9 @@ namespace VirtoCommerce.CatalogModule.Web
             serviceCollection.AddTransient<ICatalogRepository, CatalogRepositoryImpl>();
             serviceCollection.AddTransient<Func<ICatalogRepository>>(provider => () => provider.CreateScope().ServiceProvider.GetRequiredService<ICatalogRepository>());
 
+            serviceCollection.AddTransient<ICatalogRepositoryForCrud, CatalogRepository>();
+            serviceCollection.AddTransient<Func<ICatalogRepositoryForCrud>>(provider => () => provider.CreateScope().ServiceProvider.GetRequiredService<ICatalogRepositoryForCrud>());
+
             serviceCollection.AddTransient<IProductSearchService, ProductSearchService>();
             serviceCollection.AddTransient<ICategorySearchService, CategorySearchService>();
 

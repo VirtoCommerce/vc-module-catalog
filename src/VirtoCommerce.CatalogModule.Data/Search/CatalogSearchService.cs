@@ -3,31 +3,34 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
+using VirtoCommerce.Platform.Core.Caching;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.GenericCrud;
+using VirtoCommerce.Platform.Data.GenericCrud;
 using VirtoCommerce.Platform.Data.Infrastructure;
 
 namespace VirtoCommerce.CatalogModule.Data.Search
 {
-    public class CatalogSearchService : ICatalogSearchService
+    public class CatalogSearchService : SearchService<CatalogSearchCriteria, CatalogSearchResult, Catalog, CatalogEntity>,  ICatalogSearchService
     {
-        private readonly Func<ICatalogRepository> _catalogRepositoryFactory;
-        private readonly ICatalogService _catalogService;
-        public CatalogSearchService(Func<ICatalogRepository> catalogRepositoryFactory, ICatalogService catalogService)
+
+        public CatalogSearchService(Func<ICatalogRepositoryForCrud> repositoryFactory, IPlatformMemoryCache platformMemoryCache,
+            ICatalogService catalogService)
+            :base(repositoryFactory, platformMemoryCache, (ICrudService<Catalog>) catalogService)
         {
-            _catalogRepositoryFactory = catalogRepositoryFactory;
-            _catalogService = catalogService;
         }
 
-        public async Task<CatalogSearchResult> SearchCatalogsAsync(CatalogSearchCriteria criteria)
+        public override async Task<CatalogSearchResult> SearchAsync(CatalogSearchCriteria criteria)
         {
             var result = AbstractTypeFactory<CatalogSearchResult>.TryCreateInstance();
 
-            using (var repository = _catalogRepositoryFactory())
+            using (var repository = _repositoryFactory())
             {
                 //Optimize performance and CPU usage
                 repository.DisableChangesTracking();
@@ -43,15 +46,15 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                                         .Skip(criteria.Skip).Take(criteria.Take)
                                         .ToArrayAsync();
 
-                    result.Results = (await _catalogService.GetByIdsAsync(ids, criteria.ResponseGroup)).OrderBy(x => Array.IndexOf(ids, x.Id)).ToList();
+                    result.Results = (await _crudService.GetByIdsAsync(ids, criteria.ResponseGroup)).OrderBy(x => Array.IndexOf(ids, x.Id)).ToList();
                 }
             }
             return result;
         }
 
-        protected virtual IQueryable<CatalogEntity> BuildQuery(ICatalogRepository repository, CatalogSearchCriteria criteria)
+        protected override IQueryable<CatalogEntity> BuildQuery(IRepository repository, CatalogSearchCriteria criteria)
         {
-            var query = repository.Catalogs;
+            var query = ((ICatalogRepositoryForCrud)repository).Catalogs;
             if (!string.IsNullOrEmpty(criteria.Keyword))
             {
                 query = query.Where(x => x.Name.Contains(criteria.Keyword));
@@ -68,7 +71,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return query;
         }
 
-        protected virtual IList<SortInfo> BuildSortExpression(CatalogSearchCriteria criteria)
+        protected override IList<SortInfo> BuildSortExpression(CatalogSearchCriteria criteria)
         {
             var sortInfos = criteria.SortInfos;
             if (sortInfos.IsNullOrEmpty())
