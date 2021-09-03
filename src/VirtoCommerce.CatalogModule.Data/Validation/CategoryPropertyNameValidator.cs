@@ -2,16 +2,18 @@ using FluentValidation;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
+using VirtoCommerce.CatalogModule.Data.Model;
+using VirtoCommerce.Platform.Data.GenericCrud;
 
 namespace VirtoCommerce.CatalogModule.Data.Validation
 {
     public class CategoryPropertyNameValidator : AbstractValidator<CategoryPropertyValidationRequest>
     {
-        private readonly IPropertySearchService _propertySearchService;
+        private readonly SearchService<PropertySearchCriteria, PropertySearchResult, Property, PropertyEntity> _propertySearchService;
 
         public CategoryPropertyNameValidator(IPropertySearchService propertySearchService)
         {
-            _propertySearchService = propertySearchService;
+            _propertySearchService = (SearchService<PropertySearchCriteria, PropertySearchResult, Property, PropertyEntity>)propertySearchService;
             AttachValidators();
         }
 
@@ -24,7 +26,7 @@ namespace VirtoCommerce.CatalogModule.Data.Validation
                     PropertyNames = new[] { r.PropertyName },
                     CategoryId = r.CategoryId
                 };
-                var propertySearchResult = await _propertySearchService.SearchPropertiesAsync(propertySearchCriteria);
+                var propertySearchResult = await _propertySearchService.SearchAsync(propertySearchCriteria);
 
                 return propertySearchResult.TotalCount == 0;
             }).WithState(r => new

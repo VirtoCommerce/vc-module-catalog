@@ -3,24 +3,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
+using VirtoCommerce.Platform.Core.Caching;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.GenericCrud;
+using VirtoCommerce.Platform.Data.GenericCrud;
 using VirtoCommerce.Platform.Data.Infrastructure;
 
 namespace VirtoCommerce.CatalogModule.Data.Search
 {
-    public class PropertySearchService : IPropertySearchService
+    public class PropertySearchService : SearchService<PropertySearchCriteria, PropertySearchResult, Property, PropertyEntity>, IPropertySearchService
     {
-        private readonly Func<ICatalogRepository> _repositoryFactory;
-        private readonly IPropertyService _propertyService;
-        public PropertySearchService(Func<ICatalogRepository> repositoryFactory, IPropertyService propertyService)
+        public PropertySearchService(Func<ICatalogRepositoryForCrud> repositoryFactory, IPlatformMemoryCache platformMemoryCache, IPropertyService propertyService)
+            : base(repositoryFactory, platformMemoryCache, (ICrudService<Property>)propertyService)
         {
-            _repositoryFactory = repositoryFactory;
-            _propertyService = propertyService;
         }
 
         public async Task<PropertySearchResult> SearchPropertiesAsync(PropertySearchCriteria criteria)
@@ -44,16 +45,16 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                                         .AsNoTracking()
                                         .ToArrayAsync();
 
-                    result.Results = (await _propertyService.GetByIdsAsync(ids)).OrderBy(x => Array.IndexOf(ids, x.Id)).ToList();
+                    result.Results = (await _crudService.GetByIdsAsync(ids)).OrderBy(x => Array.IndexOf(ids, x.Id)).ToList();
                 }
             }
             return result;
         }
 
 
-        protected virtual IQueryable<PropertyEntity> BuildQuery(ICatalogRepository repository, PropertySearchCriteria criteria)
+        protected override IQueryable<PropertyEntity> BuildQuery(IRepository repository, PropertySearchCriteria criteria)
         {
-            var query = repository.Properties;
+            var query = ((ICatalogRepositoryForCrud)repository).Properties;
             if (!criteria.CatalogIds.IsNullOrEmpty())
             {
                 query = query.Where(x => criteria.CatalogIds.Contains(x.CatalogId));
@@ -73,7 +74,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return query;
         }
 
-        protected virtual IList<SortInfo> BuildSortExpression(PropertySearchCriteria criteria)
+        protected override IList<SortInfo> BuildSortExpression(PropertySearchCriteria criteria)
         {
             var sortInfos = criteria.SortInfos;
             if (sortInfos.IsNullOrEmpty())

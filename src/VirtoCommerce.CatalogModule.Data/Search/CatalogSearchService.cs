@@ -84,5 +84,12 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
             return sortInfos;
         }
+
+
+        public async Task<CatalogSearchResult> SearchCatalogsAsync(CatalogSearchCriteria criteria)
+        {
+            return await SearchAsync(criteria);
+        }
+
     }
 }
