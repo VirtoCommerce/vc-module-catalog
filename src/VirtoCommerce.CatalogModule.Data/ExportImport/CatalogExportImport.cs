@@ -26,7 +26,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         private readonly ICategorySearchService _categorySearchService;
         private readonly ICategoryService _categoryService;
         private readonly ICrudService<Category> _categoryServiceCrud;
-        private readonly IItemService _itemService;
+        private readonly ICrudService<CatalogProduct> _itemServiceCrud;
         private readonly ICrudService<Property> _propertyService;
         private readonly SearchService<PropertySearchCriteria, PropertySearchResult, Property, PropertyEntity> _propertySearchService;
         private readonly IPropertyDictionaryItemSearchService _propertyDictionarySearchService;
@@ -46,7 +46,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             _categorySearchService = categorySearchService;
             _categoryService = categoryService;
             _categoryServiceCrud = (ICrudService<Category>)categoryService;
-            _itemService = itemService;
+            _itemServiceCrud = (ICrudService<CatalogProduct>)itemService;
             _propertyService = (ICrudService<Property>)propertyService;
             _propertySearchService = (SearchService<PropertySearchCriteria, PropertySearchResult, Property, PropertyEntity>)propertySearchService;
             _propertyDictionarySearchService = propertyDictionarySearchService;
