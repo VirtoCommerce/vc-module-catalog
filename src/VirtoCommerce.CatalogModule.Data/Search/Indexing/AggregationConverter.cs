@@ -21,13 +21,13 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
     {
         private readonly IBrowseFilterService _browseFilterService;
         private readonly IPropertyService _propertyService;
-        private readonly IPropertyDictionaryItemSearchService _propDictItemsSearchService;
+        private readonly ISearchService<PropertyDictionaryItemSearchCriteria, PropertyDictionaryItemSearchResult, PropertyDictionaryItem> _propDictItemsSearchService;
 
         public AggregationConverter(IBrowseFilterService browseFilterService, IPropertyService propertyService, IPropertyDictionaryItemSearchService propDictItemsSearchService)
         {
             _browseFilterService = browseFilterService;
             _propertyService = propertyService;
-            _propDictItemsSearchService = propDictItemsSearchService;
+            _propDictItemsSearchService = (ISearchService<PropertyDictionaryItemSearchCriteria, PropertyDictionaryItemSearchResult, PropertyDictionaryItem>)propDictItemsSearchService;
         }
 
         #region Request converter

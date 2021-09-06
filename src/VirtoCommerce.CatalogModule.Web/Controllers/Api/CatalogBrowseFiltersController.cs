@@ -7,12 +7,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using VirtoCommerce.CatalogModule.Core;
+using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
 using VirtoCommerce.CatalogModule.Web.Model;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.StoreModule.Core.Model;
 using VirtoCommerce.StoreModule.Core.Services;
 
@@ -30,7 +32,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly IStoreService _storeService;
         private readonly IPropertyService _propertyService;
         private readonly IBrowseFilterService _browseFilterService;
-        private readonly IPropertyDictionaryItemSearchService _propDictItemsSearchService;
+        private readonly ISearchService<PropertyDictionaryItemSearchCriteria, PropertyDictionaryItemSearchResult, PropertyDictionaryItem> _propDictItemsSearchService;
 
         public CatalogBrowseFiltersController(
             IStoreService storeService
@@ -41,7 +43,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             _storeService = storeService;
             _propertyService = propertyService;
             _browseFilterService = browseFilterService;
-            _propDictItemsSearchService = propDictItemsSearchService;
+            _propDictItemsSearchService = (ISearchService<PropertyDictionaryItemSearchCriteria, PropertyDictionaryItemSearchResult, PropertyDictionaryItem>)propDictItemsSearchService;
         }
 
         /// <summary>

@@ -15,7 +15,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
     [Authorize]
     public class CatalogModulePropertyDictionaryItemsController : Controller
     {
-        private readonly IPropertyDictionaryItemSearchService _propertyDictionarySearchService;
+        private readonly ISearchService<PropertyDictionaryItemSearchCriteria, PropertyDictionaryItemSearchResult, PropertyDictionaryItem> _propertyDictionarySearchService;
         private readonly ICrudService<PropertyDictionaryItem> _propertyDictionaryService;
         private readonly IAuthorizationService _authorizationService;
 
@@ -23,7 +23,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                                                              IPropertyDictionaryItemService propertyDictionaryService,
                                                              IAuthorizationService authorizationService)
         {
-            _propertyDictionarySearchService = propertyDictionarySearchService;
+            _propertyDictionarySearchService = (ISearchService<PropertyDictionaryItemSearchCriteria, PropertyDictionaryItemSearchResult, PropertyDictionaryItem>)propertyDictionarySearchService;
             _propertyDictionaryService = (ICrudService<PropertyDictionaryItem>)propertyDictionaryService;
             _authorizationService = authorizationService;
         }

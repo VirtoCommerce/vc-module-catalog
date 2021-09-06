@@ -71,14 +71,14 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return result.ToArray();
         }
 
-        public virtual async Task SaveChangesAsync(Category[] categories)
+        public virtual Task SaveChangesAsync(Category[] categories)
         {
-            await base.SaveChangesAsync(categories);
+            return base.SaveChangesAsync(categories);
         }
 
-        public virtual async Task DeleteAsync(string[] categoryIds)
+        public virtual Task DeleteAsync(string[] categoryIds)
         {
-            await base.DeleteAsync(categoryIds);
+            return base.DeleteAsync(categoryIds);
         }
 
         public override async Task DeleteAsync(IEnumerable<string> ids, bool softDelete = false)
@@ -99,10 +99,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
         }
 
-        protected virtual async Task<IDictionary<string, Category>> PreloadCategoriesAsync(string catalogId)
+        protected virtual Task<IDictionary<string, Category>> PreloadCategoriesAsync(string catalogId)
         {
             var cacheKey = CacheKey.With(GetType(), "PreloadCategories", catalogId);
-            return await _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async (cacheEntry) =>
+            return _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async (cacheEntry) =>
            {
                cacheEntry.AddExpirationToken(CatalogCacheRegion.CreateChangeToken());
 
@@ -226,9 +226,9 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return await ((ICatalogRepository)repository).GetCategoriesByIdsAsync(ids.ToArray(), CategoryResponseGroup.Full.ToString());
         }
 
-        protected async override Task BeforeSaveChanges(IEnumerable<Category> models)
+        protected override Task BeforeSaveChanges(IEnumerable<Category> models)
         {
-            await ValidateCategoryPropertiesAsync(models);
+            return ValidateCategoryPropertiesAsync(models);
         }
     }
 }

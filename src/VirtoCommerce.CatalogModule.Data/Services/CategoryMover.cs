@@ -60,7 +60,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return result;
         }
 
-        protected virtual async Task ValidateOperationArguments(ListEntriesMoveRequest moveInfo)
+        protected virtual Task ValidateOperationArguments(ListEntriesMoveRequest moveInfo)
         {
             if (moveInfo == null)
             {
@@ -68,7 +68,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
 
             var validator = new ListEntriesMoveRequestValidator(_categoryService);
-            await validator.ValidateAndThrowAsync(moveInfo);
+            return validator.ValidateAndThrowAsync(moveInfo);
         }
     }
 }

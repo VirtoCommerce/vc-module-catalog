@@ -56,14 +56,14 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             });
         }
 
-        public async Task SaveChangesAsync(PropertyDictionaryItem[] dictItems)
+        public Task SaveChangesAsync(PropertyDictionaryItem[] dictItems)
         {
-            await base.SaveChangesAsync(dictItems);
+            return base.SaveChangesAsync(dictItems);
         }
 
-        public async Task DeleteAsync(string[] ids)
+        public Task DeleteAsync(string[] ids)
         {
-            await base.DeleteAsync(ids);
+            return base.DeleteAsync(ids);
         }
 
         public override async Task DeleteAsync(IEnumerable<string> ids, bool softDelete = false)

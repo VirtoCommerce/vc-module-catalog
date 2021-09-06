@@ -1,18 +1,20 @@
 using System.Linq;
+using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.ExportModule.Core.Model;
 using VirtoCommerce.ExportModule.Data.Services;
+using VirtoCommerce.Platform.Core.GenericCrud;
 
 namespace VirtoCommerce.CatalogModule.Data.ExportImport
 {
     public class PropertyDictionaryItemExportPagedDataSource : ExportPagedDataSource<PropertyDictionaryItemExportDataQuery, PropertyDictionaryItemSearchCriteria>
     {
-        private readonly IPropertyDictionaryItemSearchService _propertyDictionaryItemSearchService;
+        private readonly ISearchService<PropertyDictionaryItemSearchCriteria, PropertyDictionaryItemSearchResult, PropertyDictionaryItem> _propertyDictionaryItemSearchService;
 
         public PropertyDictionaryItemExportPagedDataSource(IPropertyDictionaryItemSearchService propertyDictionaryItemSearchService, PropertyDictionaryItemExportDataQuery dataQuery) : base(dataQuery)
         {
-            _propertyDictionaryItemSearchService = propertyDictionaryItemSearchService;
+            _propertyDictionaryItemSearchService = (ISearchService<PropertyDictionaryItemSearchCriteria, PropertyDictionaryItemSearchResult, PropertyDictionaryItem>)propertyDictionaryItemSearchService;
         }
 
         protected override ExportableSearchResult FetchData(PropertyDictionaryItemSearchCriteria searchCriteria)

@@ -29,8 +29,8 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         private readonly ICrudService<CatalogProduct> _itemServiceCrud;
         private readonly ICrudService<Property> _propertyService;
         private readonly SearchService<PropertySearchCriteria, PropertySearchResult, Property, PropertyEntity> _propertySearchService;
-        private readonly IPropertyDictionaryItemSearchService _propertyDictionarySearchService;
-        private readonly IPropertyDictionaryItemService _propertyDictionaryService;
+        private readonly ISearchService<PropertyDictionaryItemSearchCriteria, PropertyDictionaryItemSearchResult, PropertyDictionaryItem> _propertyDictionarySearchService;
+        private readonly ICrudService<PropertyDictionaryItem> _propertyDictionaryService;
         private readonly JsonSerializer _jsonSerializer;
         private readonly IBlobStorageProvider _blobStorageProvider;
         private readonly IAssociationService _associationService;
@@ -49,8 +49,8 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             _itemServiceCrud = (ICrudService<CatalogProduct>)itemService;
             _propertyService = (ICrudService<Property>)propertyService;
             _propertySearchService = (SearchService<PropertySearchCriteria, PropertySearchResult, Property, PropertyEntity>)propertySearchService;
-            _propertyDictionarySearchService = propertyDictionarySearchService;
-            _propertyDictionaryService = propertyDictionaryService;
+            _propertyDictionarySearchService = (ISearchService<PropertyDictionaryItemSearchCriteria, PropertyDictionaryItemSearchResult, PropertyDictionaryItem>)propertyDictionarySearchService;
+            _propertyDictionaryService = (ICrudService<PropertyDictionaryItem>)propertyDictionaryService;
             _jsonSerializer = jsonSerializer;
             _blobStorageProvider = blobStorageProvider;
             _associationService = associationService;

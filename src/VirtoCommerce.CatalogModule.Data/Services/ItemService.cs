@@ -129,14 +129,14 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return result;
         }
 
-        public virtual async Task SaveChangesAsync(CatalogProduct[] items)
+        public virtual Task SaveChangesAsync(CatalogProduct[] items)
         {
-            await base.SaveChangesAsync(items);
+            return base.SaveChangesAsync(items);
         }
 
-        public virtual async Task DeleteAsync(string[] itemIds)
+        public virtual Task DeleteAsync(string[] itemIds)
         {
-            await base.DeleteAsync(itemIds);
+            return base.DeleteAsync(itemIds);
         }
 
         public override async Task DeleteAsync(IEnumerable<string> ids, bool softDelete = false)
@@ -281,9 +281,9 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return await ((ICatalogRepository)repository).GetItemByIdsAsync(ids.ToArray());
         }
 
-        protected async override Task BeforeSaveChanges(IEnumerable<CatalogProduct> models)
+        protected override Task BeforeSaveChanges(IEnumerable<CatalogProduct> models)
         {
-            await ValidateProductsAsync(models.ToArray());
+            return ValidateProductsAsync(models.ToArray());
         }
     }
 }
