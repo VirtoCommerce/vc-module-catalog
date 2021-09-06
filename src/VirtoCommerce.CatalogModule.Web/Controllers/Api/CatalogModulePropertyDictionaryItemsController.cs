@@ -7,6 +7,7 @@ using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Authorization;
+using VirtoCommerce.Platform.Core.GenericCrud;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
@@ -15,7 +16,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
     public class CatalogModulePropertyDictionaryItemsController : Controller
     {
         private readonly IPropertyDictionaryItemSearchService _propertyDictionarySearchService;
-        private readonly IPropertyDictionaryItemService _propertyDictionaryService;
+        private readonly ICrudService<PropertyDictionaryItem> _propertyDictionaryService;
         private readonly IAuthorizationService _authorizationService;
 
         public CatalogModulePropertyDictionaryItemsController(IPropertyDictionaryItemSearchService propertyDictionarySearchService,
@@ -23,7 +24,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                                                              IAuthorizationService authorizationService)
         {
             _propertyDictionarySearchService = propertyDictionarySearchService;
-            _propertyDictionaryService = propertyDictionaryService;
+            _propertyDictionaryService = (ICrudService<PropertyDictionaryItem>)propertyDictionaryService;
             _authorizationService = authorizationService;
         }
 

@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.Platform.Data.Infrastructure;
 
 namespace VirtoCommerce.CatalogModule.Data.Search
@@ -16,12 +18,12 @@ namespace VirtoCommerce.CatalogModule.Data.Search
     public class PropertyDictionaryItemSearchService : IPropertyDictionaryItemSearchService
     {
         private readonly Func<ICatalogRepository> _repositoryFactory;
-        private readonly IPropertyDictionaryItemService _properyDictionaryItemService;
+        private readonly ICrudService<PropertyDictionaryItem> _properyDictionaryItemService;
 
         public PropertyDictionaryItemSearchService(Func<ICatalogRepository> repositoryFactory, IPropertyDictionaryItemService properyDictionaryItemService)
         {
             _repositoryFactory = repositoryFactory;
-            _properyDictionaryItemService = properyDictionaryItemService;
+            _properyDictionaryItemService = (ICrudService<PropertyDictionaryItem>)properyDictionaryItemService;
         }
 
         public async Task<PropertyDictionaryItemSearchResult> SearchAsync(PropertyDictionaryItemSearchCriteria criteria)
