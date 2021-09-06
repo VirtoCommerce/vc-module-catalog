@@ -24,34 +24,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search
         {
         }
 
-        public async Task<PropertySearchResult> SearchPropertiesAsync(PropertySearchCriteria criteria)
-        {
-            var result = AbstractTypeFactory<PropertySearchResult>.TryCreateInstance();
-
-            using (var repository = _repositoryFactory())
-            {
-                //Optimize performance and CPU usage
-                repository.DisableChangesTracking();
-
-                var sortInfos = BuildSortExpression(criteria);
-                var query = BuildQuery(repository, criteria);
-
-                result.TotalCount = await query.CountAsync();
-                if (criteria.Take > 0)
-                {
-                    var ids = await query.OrderBySortInfos(sortInfos).ThenBy(x => x.Id)
-                                        .Select(x => x.Id)
-                                        .Skip(criteria.Skip).Take(criteria.Take)
-                                        .AsNoTracking()
-                                        .ToArrayAsync();
-
-                    result.Results = (await _crudService.GetByIdsAsync(ids)).OrderBy(x => Array.IndexOf(ids, x.Id)).ToList();
-                }
-            }
-            return result;
-        }
-
-
         protected override IQueryable<PropertyEntity> BuildQuery(IRepository repository, PropertySearchCriteria criteria)
         {
             var query = ((ICatalogRepositoryForCrud)repository).Properties;
@@ -85,6 +57,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 };
             }
             return sortInfos;
+        }
+
+        public async Task<PropertySearchResult> SearchPropertiesAsync(PropertySearchCriteria criteria)
+        {
+            return await base.SearchAsync(criteria);
         }
     }
 }
