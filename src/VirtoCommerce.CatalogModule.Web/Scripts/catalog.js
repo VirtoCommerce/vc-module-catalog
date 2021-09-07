@@ -210,7 +210,7 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                             subtitle: 'catalog.permissions.catalog-scope.blade.subtitle',
                             currentEntity: this,
                             onChangesConfirmedFn: callback,
-                            dataPromise: catalogs.query().$promise,
+                            dataService: catalogs,
                             controller: 'platformWebApp.security.scopeValuePickFromSimpleListController',
                             template: '$(Platform)/Scripts/app/security/blades/common/scope-value-pick-from-simple-list.tpl.html'
                         };
