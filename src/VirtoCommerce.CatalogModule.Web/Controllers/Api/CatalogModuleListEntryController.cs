@@ -28,7 +28,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly ICategoryIndexedSearchService _categoryIndexedSearchService;
         private readonly ICategoryService _categoryService;
         private readonly ICrudService<Category> _categoryServiceCrud;
-        private readonly ICatalogService _catalogService;
+        private readonly ICrudService<Catalog> _catalogService;
         private readonly IItemService _itemService;
         private readonly ICrudService<CatalogProduct> _itemServiceCrud;
         private readonly IListEntrySearchService _listEntrySearchService;
@@ -56,7 +56,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             _authorizationService = authorizationService;
             _itemService = itemService;
             _itemServiceCrud = (ICrudService<CatalogProduct>)itemService;
-            _catalogService = catalogService;
+            _catalogService = (ICrudService<Catalog>)catalogService;
             _listEntrySearchService = listEntrySearchService;
             _settingsManager = settingsManager;
             _categoryMover = categoryMover;

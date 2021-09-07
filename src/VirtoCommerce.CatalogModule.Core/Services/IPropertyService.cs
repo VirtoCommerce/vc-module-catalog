@@ -9,7 +9,7 @@ namespace VirtoCommerce.CatalogModule.Core.Services
     {
         [Obsolete(@"Need to remove after inheriting IPropertyService from ICrudService<Property>.")]
         Task<IEnumerable<Property>> GetByIdsAsync(IEnumerable<string> ids);
-        [Obsolete(@"Need to remove after inheriting IPropertyService from ICrudService<Property>.")]
+
         Task<IEnumerable<Property>> GetAllCatalogPropertiesAsync(string catalogId);
         [Obsolete(@"Need to remove after inheriting IPropertyService from ICrudService<Property>.")]
         Task SaveChangesAsync(IEnumerable<Property> properties);

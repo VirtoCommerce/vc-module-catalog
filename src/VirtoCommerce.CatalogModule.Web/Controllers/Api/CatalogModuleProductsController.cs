@@ -24,7 +24,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
     {
         private readonly IItemService _itemsService;
         private readonly ICrudService<CatalogProduct> _itemsServiceCrud;
-        private readonly ICatalogService _catalogService;
+        private readonly ICrudService<Catalog> _catalogService;
         private readonly ICategoryService _categoryService;
         private readonly ISkuGenerator _skuGenerator;
         private readonly IProductAssociationSearchService _productAssociationSearchService;
@@ -43,7 +43,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             _itemsService = itemsService;
             _itemsServiceCrud = (ICrudService<CatalogProduct>)itemsService;
             _categoryService = categoryService;
-            _catalogService = catalogService;
+            _catalogService = (ICrudService<Catalog>)catalogService;
             _skuGenerator = skuGenerator;
             _productAssociationSearchService = productAssociationSearchService;
             _authorizationService = authorizationService;
