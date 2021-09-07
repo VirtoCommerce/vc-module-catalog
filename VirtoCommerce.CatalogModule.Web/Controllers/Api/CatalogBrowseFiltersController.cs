@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
@@ -78,7 +79,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [HttpPut]
         [Route("{storeId}/properties")]
         [ResponseType(typeof(void))]
-        public IHttpActionResult SetAggregationProperties(string storeId, AggregationProperty[] browseFilterProperties)
+        public async Task<IHttpActionResult> SetAggregationProperties(string storeId, AggregationProperty[] browseFilterProperties)
         {
             var store = _storeService.GetById(storeId);
             if (store == null)
