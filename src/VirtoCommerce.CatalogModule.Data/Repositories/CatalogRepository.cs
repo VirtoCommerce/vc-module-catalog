@@ -13,7 +13,7 @@ using VirtoCommerce.Platform.Data.Extensions;
 using VirtoCommerce.Platform.Data.Infrastructure;
 namespace VirtoCommerce.CatalogModule.Data.Repositories
 {
-    public class CatalogRepository : DbContextRepositoryBase<CatalogDbContext>, ICatalogRepositoryForCrud
+    public class CatalogRepository : DbContextRepositoryBase<CatalogDbContext>, ICatalogRepository
     {
         private const int batchSize = 500;
         public CatalogRepository(CatalogDbContext dbContext) : base(dbContext)
@@ -339,6 +339,49 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             }
 
             return result ?? new string[0];
+        }
+
+        public virtual async Task<GenericSearchResult<AssociationEntity>> SearchAssociations(ProductAssociationSearchCriteria criteria)
+        {
+            var result = new GenericSearchResult<AssociationEntity>();
+
+            var countSqlCommand = CreateCommand(GetAssociationsCountSqlCommandText(criteria), criteria.ObjectIds);
+            var querySqlCommand = CreateCommand(GetAssociationsQuerySqlCommandText(criteria), criteria.ObjectIds);
+
+            var commands = new List<Command> { countSqlCommand };
+
+            if (criteria.Take > 0)
+            {
+                commands.Add(querySqlCommand);
+            }
+
+            if (!string.IsNullOrEmpty(criteria.Group))
+            {
+                commands.ForEach(x => x.Parameters.Add(new SqlParameter($"@group", criteria.Group)));
+            }
+
+            if (!criteria.Tags.IsNullOrEmpty())
+            {
+                commands.ForEach(x => AddArrayParameters(x, "@tags", criteria.Tags));
+            }
+
+            if (!string.IsNullOrEmpty(criteria.Keyword))
+            {
+                var wildcardKeyword = $"%{criteria.Keyword}%";
+                commands.ForEach(x => x.Parameters.Add(new SqlParameter($"@keyword", wildcardKeyword)));
+            }
+
+            if (!criteria.AssociatedObjectIds.IsNullOrEmpty())
+            {
+                commands.ForEach(x => AddArrayParameters(x, "@associatedoOjectIds", criteria.AssociatedObjectIds));
+            }
+
+            result.TotalCount = await DbContext.ExecuteScalarAsync<int>(countSqlCommand.Text, countSqlCommand.Parameters.ToArray());
+            result.Results = criteria.Take > 0
+                ? await DbContext.Set<AssociationEntity>().FromSqlRaw(querySqlCommand.Text, querySqlCommand.Parameters.ToArray()).ToListAsync()
+                : new List<AssociationEntity>();
+
+            return result;
         }
 
         public virtual async Task RemoveItemsAsync(IEnumerable<string> itemIds)

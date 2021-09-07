@@ -340,7 +340,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                 .Returns(entitiesMock.Object);
             _catalogRepositoryMock.Setup(x => x.GetAssociationsByIdsAsync(It.IsAny<string[]>()))
                 .Returns<string[]>(ids =>
-                    Task.FromResult(entities.Where(x => ids.Contains(x.Id)).ToArray()));
+                    Task.FromResult(entities.Where(x => ids.Contains(x.Id)).AsEnumerable()));
 
             ICatalogRepository func() => _catalogRepositoryMock.Object;
 

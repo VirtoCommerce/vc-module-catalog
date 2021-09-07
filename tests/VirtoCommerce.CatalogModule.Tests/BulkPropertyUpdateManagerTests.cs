@@ -7,6 +7,7 @@ using VirtoCommerce.CatalogModule.BulkActions.Models;
 using VirtoCommerce.CatalogModule.BulkActions.Services;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
+using VirtoCommerce.Platform.Core.GenericCrud;
 using Xunit;
 
 namespace VirtoCommerce.CatalogModule.Tests
@@ -37,6 +38,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             var context = new PropertiesUpdateBulkActionContext();
             var dataSourceFactory = new Mock<IDataSourceFactory>();
             var itemService = new Mock<IItemService>();
+
             var manager = BuildManager(dataSourceFactory, itemService);
             var dataSource = new Mock<IDataSource>();
             var productId = "fakeProductId";
@@ -90,6 +92,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         private IBulkPropertyUpdateManager BuildManager(IMock<IDataSourceFactory> dataSourceFactory)
         {
             var itemService = new Mock<IItemService>();
+            itemService.As<ICrudService<CatalogProduct>>();
             var categoryService = new Mock<ICategoryService>();
             var catalogService = new Mock<ICatalogService>();
 
@@ -101,6 +104,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         {
             var categoryService = new Mock<ICategoryService>();
             var catalogService = new Mock<ICatalogService>();
+            
             var manager = new BulkPropertyUpdateManager(dataSourceFactory.Object, itemService.Object, categoryService.Object, catalogService.Object);
             return manager;
         }

@@ -20,7 +20,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
     public class CatalogSearchService : SearchService<CatalogSearchCriteria, CatalogSearchResult, Catalog, CatalogEntity>,  ICatalogSearchService
     {
 
-        public CatalogSearchService(Func<ICatalogRepositoryForCrud> repositoryFactory, IPlatformMemoryCache platformMemoryCache,
+        public CatalogSearchService(Func<ICatalogRepository> repositoryFactory, IPlatformMemoryCache platformMemoryCache,
             ICatalogService catalogService)
             :base(repositoryFactory, platformMemoryCache, (ICrudService<Catalog>) catalogService)
         {
@@ -54,7 +54,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
         protected override IQueryable<CatalogEntity> BuildQuery(IRepository repository, CatalogSearchCriteria criteria)
         {
-            var query = ((ICatalogRepositoryForCrud)repository).Catalogs;
+            var query = ((ICatalogRepository)repository).Catalogs;
             if (!string.IsNullOrEmpty(criteria.Keyword))
             {
                 query = query.Where(x => x.Name.Contains(criteria.Keyword));

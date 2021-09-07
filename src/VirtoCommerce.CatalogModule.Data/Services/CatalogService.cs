@@ -23,7 +23,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
     {
         private readonly AbstractValidator<IHasProperties> _hasPropertyValidator;
 
-        public CatalogService(Func<ICatalogRepositoryForCrud> repositoryFactory,
+        public CatalogService(Func<ICatalogRepository> repositoryFactory,
                                   IEventPublisher eventPublisher, IPlatformMemoryCache platformMemoryCache, AbstractValidator<IHasProperties> hasPropertyValidator)
             : base(repositoryFactory, platformMemoryCache, eventPublisher)
         {
@@ -60,7 +60,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     var changedEntries = catalogs.Select(x => new GenericChangedEntry<Catalog>(x, EntryState.Deleted));
                     await _eventPublisher.Publish(new CatalogChangingEvent(changedEntries));
 
-                    await ((ICatalogRepositoryForCrud)repository).RemoveCatalogsAsync(catalogs.Select(m => m.Id).ToArray());
+                    await ((ICatalogRepository)repository).RemoveCatalogsAsync(catalogs.Select(m => m.Id).ToArray());
                     await repository.UnitOfWork.CommitAsync();
 
                     CatalogCacheRegion.ExpireRegion();
@@ -72,7 +72,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         protected override Task<IEnumerable<CatalogEntity>> LoadEntities(IRepository repository, IEnumerable<string> ids, string responseGroup)
         {
-            return ((ICatalogRepositoryForCrud)repository).GetCatalogsByIdsAsync(ids);
+            return ((ICatalogRepository)repository).GetCatalogsByIdsAsync(ids);
         }
 
         protected override Task BeforeSaveChanges(IEnumerable<Catalog> models)
@@ -98,8 +98,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     //Optimize performance and CPU usage
                     repository.DisableChangesTracking();
 
-                    var ids = await ((ICatalogRepositoryForCrud)repository).Catalogs.Select(x => x.Id).ToListAsync();
-                    entities = await ((ICatalogRepositoryForCrud)repository).GetCatalogsByIdsAsync(ids);
+                    var ids = await ((ICatalogRepository)repository).Catalogs.Select(x => x.Id).ToListAsync();
+                    entities = await ((ICatalogRepository)repository).GetCatalogsByIdsAsync(ids);
                 }
 
                 var result = entities.Select(x => x.ToModel(AbstractTypeFactory<Catalog>.TryCreateInstance()))

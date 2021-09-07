@@ -28,7 +28,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private readonly SearchService<CatalogSearchCriteria, CatalogSearchResult, Catalog, CatalogEntity> _catalogSearchService;
         private readonly AbstractValidator<Property> _propertyValidator;
 
-        public PropertyService(Func<ICatalogRepositoryForCrud> repositoryFactory,
+        public PropertyService(Func<ICatalogRepository> repositoryFactory,
             IEventPublisher eventPublisher,
             IPlatformMemoryCache platformMemoryCache,
             ICatalogSearchService catalogSearchService,
@@ -56,7 +56,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
             using (var repository = _repositoryFactory())
             {
-                var entities = await ((ICatalogRepositoryForCrud)repository).GetPropertiesByIdsAsync(ids.ToArray());
+                var entities = await ((ICatalogRepository)repository).GetPropertiesByIdsAsync(ids.ToArray());
                 //Raise domain events before deletion
                 var changedEntries = entities.Select(x => new GenericChangedEntry<Property>(x.ToModel(AbstractTypeFactory<Property>.TryCreateInstance()), EntryState.Deleted));
 
@@ -67,7 +67,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     repository.Remove(entity);
                     if (doDeleteValues)
                     {
-                        await ((ICatalogRepositoryForCrud)repository).RemoveAllPropertyValuesAsync(entity.Id);
+                        await ((ICatalogRepository)repository).RemoveAllPropertyValuesAsync(entity.Id);
                     }
                 }
                 await repository.UnitOfWork.CommitAsync();
@@ -86,7 +86,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         protected override Task<IEnumerable<PropertyEntity>> LoadEntities(IRepository repository, IEnumerable<string> ids, string responseGroup)
         {
-            return ((ICatalogRepositoryForCrud)repository).GetPropertiesByIdsAsync(ids);
+            return ((ICatalogRepository)repository).GetPropertiesByIdsAsync(ids);
         }
 
         #region IPropertyService members
@@ -116,8 +116,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 {
                     repository.DisableChangesTracking();
 
-                    var propertyIds = await ((ICatalogRepositoryForCrud)repository).Properties.Select(p => p.Id).ToArrayAsync();
-                    var entities = await ((ICatalogRepositoryForCrud)repository).GetPropertiesByIdsAsync(propertyIds);
+                    var propertyIds = await ((ICatalogRepository)repository).Properties.Select(p => p.Id).ToArrayAsync();
+                    var entities = await ((ICatalogRepository)repository).GetPropertiesByIdsAsync(propertyIds);
                     var properties = entities.Select(p => p.ToModel(AbstractTypeFactory<Property>.TryCreateInstance())).ToArray();
 
                     await LoadDependenciesAsync(properties);
@@ -139,7 +139,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 {
                     repository.DisableChangesTracking();
 
-                    var result = (await ((ICatalogRepositoryForCrud)repository).GetAllCatalogPropertiesAsync(catalogId))
+                    var result = (await ((ICatalogRepository)repository).GetAllCatalogPropertiesAsync(catalogId))
                         .GroupBy(p => p.Id, StringComparer.OrdinalIgnoreCase) // Remove duplicates
                         .Select(g => g.First())
                         .OrderBy(p => p.Name, StringComparer.OrdinalIgnoreCase)

@@ -66,11 +66,11 @@ namespace VirtoCommerce.CatalogModule.Web
                 var configuration = provider.GetRequiredService<IConfiguration>();
                 options.UseSqlServer(configuration.GetConnectionString(ModuleInfo.Id) ?? configuration.GetConnectionString("VirtoCommerce"));
             });
-            serviceCollection.AddTransient<ICatalogRepository, CatalogRepositoryImpl>();
+            serviceCollection.AddTransient<ICatalogRepository, CatalogRepository>();
             serviceCollection.AddTransient<Func<ICatalogRepository>>(provider => () => provider.CreateScope().ServiceProvider.GetRequiredService<ICatalogRepository>());
 
-            serviceCollection.AddTransient<ICatalogRepositoryForCrud, CatalogRepository>();
-            serviceCollection.AddTransient<Func<ICatalogRepositoryForCrud>>(provider => () => provider.CreateScope().ServiceProvider.GetRequiredService<ICatalogRepositoryForCrud>());
+            /*serviceCollection.AddTransient<ICatalogRepositoryForCrud, CatalogRepository>();
+            serviceCollection.AddTransient<Func<ICatalogRepositoryForCrud>>(provider => () => provider.CreateScope().ServiceProvider.GetRequiredService<ICatalogRepositoryForCrud>());*/
 
             serviceCollection.AddTransient<IProductSearchService, ProductSearchService>();
             serviceCollection.AddTransient<ICategorySearchService, CategorySearchService>();

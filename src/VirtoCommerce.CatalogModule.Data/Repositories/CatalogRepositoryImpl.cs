@@ -14,7 +14,7 @@ using VirtoCommerce.Platform.Data.Infrastructure;
 
 namespace VirtoCommerce.CatalogModule.Data.Repositories
 {
-    public class CatalogRepositoryImpl : DbContextRepositoryBase<CatalogDbContext>, ICatalogRepository
+    public class CatalogRepositoryImpl : DbContextRepositoryBase<CatalogDbContext>
     {
         private const int batchSize = 500;
 

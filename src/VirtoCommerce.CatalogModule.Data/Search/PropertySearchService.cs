@@ -13,20 +13,20 @@ using VirtoCommerce.Platform.Core.Caching;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.Platform.Data.GenericCrud;
-using VirtoCommerce.Platform.Data.Infrastructure;
+
 
 namespace VirtoCommerce.CatalogModule.Data.Search
 {
     public class PropertySearchService : SearchService<PropertySearchCriteria, PropertySearchResult, Property, PropertyEntity>, IPropertySearchService
     {
-        public PropertySearchService(Func<ICatalogRepositoryForCrud> repositoryFactory, IPlatformMemoryCache platformMemoryCache, IPropertyService propertyService)
+        public PropertySearchService(Func<ICatalogRepository> repositoryFactory, IPlatformMemoryCache platformMemoryCache, IPropertyService propertyService)
             : base(repositoryFactory, platformMemoryCache, (ICrudService<Property>)propertyService)
         {
         }
 
         protected override IQueryable<PropertyEntity> BuildQuery(IRepository repository, PropertySearchCriteria criteria)
         {
-            var query = ((ICatalogRepositoryForCrud)repository).Properties;
+            var query = ((ICatalogRepository)repository).Properties;
             if (!criteria.CatalogIds.IsNullOrEmpty())
             {
                 query = query.Where(x => criteria.CatalogIds.Contains(x.CatalogId));

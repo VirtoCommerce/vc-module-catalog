@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
@@ -23,31 +24,31 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         IQueryable<CategoryRelationEntity> CategoryLinks { get; }
         IQueryable<SeoInfoEntity> SeoInfos { get; }
 
-        Task<string[]> GetAllSeoDuplicatesIdsAsync();
+        Task<IEnumerable<string>> GetAllSeoDuplicatesIdsAsync();
 
-        Task<string[]> GetAllChildrenCategoriesIdsAsync(string[] categoryIds);
+        Task<IEnumerable<string>> GetAllChildrenCategoriesIdsAsync(IEnumerable<string> categoryIds);
 
-        Task<CatalogEntity[]> GetCatalogsByIdsAsync(string[] catalogIds);
+        Task<IEnumerable<CatalogEntity>> GetCatalogsByIdsAsync(IEnumerable<string> ids, string responseGroup = null);
 
-        Task<CategoryEntity[]> GetCategoriesByIdsAsync(string[] categoriesIds, string responseGroup);
+        Task<IEnumerable<CategoryEntity>> GetCategoriesByIdsAsync(IEnumerable<string> categoriesIds, string responseGroup);
 
-        Task<ItemEntity[]> GetItemByIdsAsync(string[] itemIds, string responseGroup = null);
+        Task<IEnumerable<ItemEntity>> GetItemByIdsAsync(IEnumerable<string> itemIds, string responseGroup = null);
 
-        Task<PropertyEntity[]> GetAllCatalogPropertiesAsync(string catalogId);
+        Task<IEnumerable<PropertyEntity>> GetAllCatalogPropertiesAsync(string catalogId);
 
-        Task<PropertyEntity[]> GetPropertiesByIdsAsync(string[] propIds, bool loadDictValues = false);
+        Task<IEnumerable<PropertyEntity>> GetPropertiesByIdsAsync(IEnumerable<string> propIds, bool loadDictValues = false);
 
-        Task<PropertyDictionaryItemEntity[]> GetPropertyDictionaryItemsByIdsAsync(string[] dictItemIds);
+        Task<IEnumerable<PropertyDictionaryItemEntity>> GetPropertyDictionaryItemsByIdsAsync(IEnumerable<string> dictItemIds);
 
-        Task<AssociationEntity[]> GetAssociationsByIdsAsync(string[] associationIds);
+        Task<IEnumerable<AssociationEntity>> GetAssociationsByIdsAsync(IEnumerable<string> associationIds);
 
         Task<GenericSearchResult<AssociationEntity>> SearchAssociations(ProductAssociationSearchCriteria criteria);
 
-        Task RemoveItemsAsync(string[] itemIds);
+        Task RemoveItemsAsync(IEnumerable<string> itemIds);
 
-        Task RemoveCategoriesAsync(string[] ids);
+        Task RemoveCategoriesAsync(IEnumerable<string> ids);
 
-        Task RemoveCatalogsAsync(string[] ids);
+        Task RemoveCatalogsAsync(IEnumerable<string> ids);
 
         Task RemoveAllPropertyValuesAsync(string propertyId);
     }

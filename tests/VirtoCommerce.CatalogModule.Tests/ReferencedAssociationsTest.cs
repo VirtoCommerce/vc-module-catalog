@@ -26,7 +26,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             catalogRepository.Setup(r => r.GetItemByIdsAsync(It.IsAny<string[]>(), It.IsAny<string>()))
                 .Returns((string[] ids, ItemResponseGroup responseGroup) =>
             {
-                return Task.FromResult(products.Where(p => ids.Contains(p.Id)).ToArray());
+                return Task.FromResult(products.Where(p => ids.Contains(p.Id)).AsEnumerable());
             });
             catalogRepository.Setup(r => r.Associations).Returns(associations);
 
