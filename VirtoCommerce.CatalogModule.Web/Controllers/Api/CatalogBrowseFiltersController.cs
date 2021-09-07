@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
@@ -28,7 +27,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly IPropertyService _propertyService;
         private readonly IBrowseFilterService _browseFilterService;
         private readonly IProperyDictionaryItemSearchService _propDictItemsSearchService;
-
 
         public CatalogBrowseFiltersController(ISecurityService securityService, IPermissionScopeService permissionScopeService, IStoreService storeService, IPropertyService propertyService, IBrowseFilterService browseFilterService, IProperyDictionaryItemSearchService propDictItemsSearchService)
             : base(securityService, permissionScopeService)
@@ -79,7 +77,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [HttpPut]
         [Route("{storeId}/properties")]
         [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> SetAggregationProperties(string storeId, AggregationProperty[] browseFilterProperties)
+        public IHttpActionResult SetAggregationProperties(string storeId, AggregationProperty[] browseFilterProperties)
         {
             var store = _storeService.GetById(storeId);
             if (store == null)
@@ -90,7 +88,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             CheckCurrentUserHasPermissionForObjects(CatalogPredefinedPermissions.UpdateBrowseFilters, store);
 
             // Add culture-specific aggregations for specific handling multivalue, multilanguage, non-dictionary properties.
-            var catalogProperties = await _propertyService.GetAllCatalogPropertiesAsync(store.Catalog);
+            var catalogProperties = _propertyService.GetAllCatalogProperties(store.Catalog);
             var browseFilterPropertiesList = new List<AggregationProperty>();
             foreach (var aggregationProperty in browseFilterProperties)
             {
@@ -102,7 +100,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 {
                     foreach (var lang in store.Languages)
                     {
-                        var aggregationPropertyLangSpecific=aggregationProperty.Clone() as AggregationProperty;
+                        var aggregationPropertyLangSpecific = aggregationProperty.Clone() as AggregationProperty;
                         aggregationPropertyLangSpecific.Name = $"{aggregationPropertyLangSpecific.Name}_{lang.ToLowerInvariant()}";
                         browseFilterPropertiesList.Add(aggregationPropertyLangSpecific);
                     }
@@ -144,7 +142,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             }
             return Ok(result);
         }
-
 
         private IList<AggregationProperty> GetAllProperties(string catalogId, IEnumerable<string> currencies)
         {
@@ -236,6 +233,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                         Values = property.Values?.OrderBy(v => v, StringComparer.OrdinalIgnoreCase).Select(v => new AttributeFilterValue { Id = v }).ToArray(),
                     };
                     break;
+
                 case _rangeType:
                     result = new RangeFilter
                     {
@@ -244,6 +242,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                         Values = GetRangeFilterValues(property.Values),
                     };
                     break;
+
                 case _priceRangeType:
                     result = new PriceRangeFilter
                     {
