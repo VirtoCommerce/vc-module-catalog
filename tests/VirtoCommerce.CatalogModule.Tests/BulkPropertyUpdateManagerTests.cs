@@ -38,7 +38,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             var context = new PropertiesUpdateBulkActionContext();
             var dataSourceFactory = new Mock<IDataSourceFactory>();
             var itemService = new Mock<IItemService>();
-
+            itemService.As<ICrudService<CatalogProduct>>();
             var manager = BuildManager(dataSourceFactory, itemService);
             var dataSource = new Mock<IDataSource>();
             var productId = "fakeProductId";
