@@ -53,6 +53,10 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                             // Do not tokenize small values as they will be used for lookups and filters.
                             var shortTextValue = propValue.Alias ?? propValue.Value.ToString();
                             document.Add(new IndexDocumentField(propertyName, shortTextValue) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection });
+                            if (property.Multilanguage && !string.IsNullOrEmpty(propValue.LanguageCode))
+                            {
+                                document.Add(new IndexDocumentField($"{propertyName}_{propValue.LanguageCode.ToLowerInvariant()}", shortTextValue) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection });
+                            }
                             break;
                         case PropertyValueType.GeoPoint:
                             document.Add(new IndexDocumentField(propertyName, GeoPoint.TryParse((string)propValue.Value)) { IsRetrievable = true, IsSearchable = true, IsCollection = true });
