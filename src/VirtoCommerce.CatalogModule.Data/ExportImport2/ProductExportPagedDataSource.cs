@@ -6,10 +6,12 @@ using VirtoCommerce.CatalogModule.Core.Model.Export;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
+using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.ExportModule.Core.Model;
 using VirtoCommerce.ExportModule.Data.Services;
 using VirtoCommerce.Platform.Core.Assets;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Data.GenericCrud;
 
 namespace VirtoCommerce.CatalogModule.Data.ExportImport
 {
@@ -17,13 +19,13 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
     {
         private readonly IBlobStorageProvider _blobStorageProvider;
         private readonly IItemService _itemService;
-        private readonly IProductSearchService _productSearchService;
+        private readonly SearchService<ProductSearchCriteria, ProductSearchResult, CatalogProduct, ItemEntity> _productSearchService;
 
         public ProductExportPagedDataSource(IBlobStorageProvider blobStorageProvider, IItemService itemService, IProductSearchService productSearchService, ProductExportDataQuery dataQuery) : base(dataQuery)
         {
             _blobStorageProvider = blobStorageProvider;
             _itemService = itemService;
-            _productSearchService = productSearchService;
+            _productSearchService = (SearchService<ProductSearchCriteria, ProductSearchResult, CatalogProduct, ItemEntity>)productSearchService;
         }
 
 
@@ -42,7 +44,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             else
             {
                 searchCriteria.ResponseGroup = responseGroup.ToString();
-                var productSearchResult = _productSearchService.SearchProductsAsync(searchCriteria).GetAwaiter().GetResult();
+                var productSearchResult = _productSearchService.SearchAsync(searchCriteria).GetAwaiter().GetResult();
                 result = productSearchResult.Results.ToArray();
                 totalCount = productSearchResult.TotalCount;
             }

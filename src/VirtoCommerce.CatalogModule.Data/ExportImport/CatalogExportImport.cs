@@ -22,7 +22,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
     {
         private readonly ICrudService<Catalog> _catalogService;
         private readonly SearchService<CatalogSearchCriteria, CatalogSearchResult, Catalog, CatalogEntity> _catalogSearchService;
-        private readonly IProductSearchService _productSearchService;
+        private readonly SearchService<ProductSearchCriteria, ProductSearchResult, CatalogProduct, ItemEntity> _productSearchService;
         private readonly ICategorySearchService _categorySearchService;
         private readonly ICategoryService _categoryService;
         private readonly ICrudService<Category> _categoryServiceCrud;
@@ -42,7 +42,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                                   IPropertyDictionaryItemService propertyDictionaryService, JsonSerializer jsonSerializer, IBlobStorageProvider blobStorageProvider, IAssociationService associationService)
         {
             _catalogService = (ICrudService <Catalog>)catalogService;
-            _productSearchService = productSearchService;
+            _productSearchService = (SearchService<ProductSearchCriteria, ProductSearchResult, CatalogProduct, ItemEntity>)productSearchService;
             _categorySearchService = categorySearchService;
             _categoryService = categoryService;
             _categoryServiceCrud = (ICrudService<Category>)categoryService;
@@ -155,7 +155,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 await writer.WritePropertyNameAsync("Products");
                 await writer.SerializeJsonArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
                 {
-                    var searchResult = await _productSearchService.SearchProductsAsync(new ProductSearchCriteria { Skip = skip, Take = take, ResponseGroup = ItemResponseGroup.Full.ToString() });
+                    var searchResult = await _productSearchService.SearchAsync(new ProductSearchCriteria { Skip = skip, Take = take, ResponseGroup = ItemResponseGroup.Full.ToString() });
                     LoadImages(searchResult.Results.OfType<IHasImages>().ToArray(), progressInfo, options.HandleBinaryData);
                     foreach (var item in searchResult.Results)
                     {

@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
+using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.Platform.Core.Settings;
+using VirtoCommerce.Platform.Data.GenericCrud;
 using VirtoCommerce.SearchModule.Core.Extenstions;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
@@ -15,13 +18,13 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
     public class ProductDocumentBuilder : CatalogDocumentBuilder, IIndexDocumentBuilder
     {
         private readonly IItemService _itemService;
-        private readonly IProductSearchService _productsSearchService;
+        private readonly SearchService<ProductSearchCriteria, ProductSearchResult, CatalogProduct, ItemEntity> _productsSearchService;
 
         public ProductDocumentBuilder(ISettingsManager settingsManager, IItemService itemService, IProductSearchService productsSearchService)
             : base(settingsManager)
         {
             _itemService = itemService;
-            _productsSearchService = productsSearchService;
+            _productsSearchService = (SearchService<ProductSearchCriteria, ProductSearchResult, CatalogProduct, ItemEntity>)productsSearchService;
         }
 
         public virtual async Task<IList<IndexDocument>> GetDocumentsAsync(IList<string> documentIds)
@@ -48,7 +51,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                     do
                     {
                         variationsSearchCriteria.Skip = skipCount;
-                        var productVariations = await _productsSearchService.SearchProductsAsync(variationsSearchCriteria);
+                        var productVariations = await _productsSearchService.SearchAsync(variationsSearchCriteria);
                         foreach (var variation in productVariations.Results)
                         {
                             result.Add(CreateDocument(variation));

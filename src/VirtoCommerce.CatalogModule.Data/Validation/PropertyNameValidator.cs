@@ -7,19 +7,21 @@ using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
+using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Data.GenericCrud;
 
 namespace VirtoCommerce.CatalogModule.Data.Search
 {
     public class PropertyNameValidator : AbstractValidator<PropertyValidationRequest>
     {
         private readonly IItemService _itemService;
-        private readonly IProductSearchService _productSearchService;
+        private readonly SearchService<ProductSearchCriteria, ProductSearchResult, CatalogProduct, ItemEntity> _productSearchService;
 
         public PropertyNameValidator(IItemService itemService, IProductSearchService productSearchService)
         {
             _itemService = itemService;
-            _productSearchService = productSearchService;
+            _productSearchService = (SearchService<ProductSearchCriteria, ProductSearchResult, CatalogProduct, ItemEntity>)productSearchService;
         }
 
         public override async Task<ValidationResult> ValidateAsync(ValidationContext<PropertyValidationRequest> context, CancellationToken cancellation = default)
@@ -51,7 +53,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 return new ValidationResult(new[] { failure });
             }
 
-            var searchResult = await _productSearchService.SearchProductsAsync(new ProductSearchCriteria
+            var searchResult = await _productSearchService.SearchAsync(new ProductSearchCriteria
             {
                 MainProductId = request.ProductId,
                 PropertyName = request.Name,
