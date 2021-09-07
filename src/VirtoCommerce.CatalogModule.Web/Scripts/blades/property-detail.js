@@ -43,7 +43,7 @@ angular.module('virtoCommerce.catalogModule')
             }
 
             // validation for category properties
-            if (!blade.origEntity.categoryId) {
+            if (!blade.origEntity.categoryId || (!blade.origEntity.isNew && value === blade.origEntity.name)) {
                 $scope.errorData = null;
                 return $q.resolve();
             }
