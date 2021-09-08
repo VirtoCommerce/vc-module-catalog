@@ -13,7 +13,6 @@ using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Caching;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
-using VirtoCommerce.Platform.Caching;
 using VirtoCommerce.Platform.Core.Caching;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Events;
@@ -52,7 +51,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return result;
         }
 
-        public override async Task DeleteAsync(IEnumerable<string> ids, bool doDeleteValues = false)
+        public override async Task DeleteAsync(IEnumerable<string> ids, bool softDelete = false)
         {
             using (var repository = _repositoryFactory())
             {
@@ -65,7 +64,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 foreach (var entity in entities)
                 {
                     repository.Remove(entity);
-                    if (doDeleteValues)
+                    if (softDelete)
                     {
                         await ((ICatalogRepository)repository).RemoveAllPropertyValuesAsync(entity.Id);
                     }
@@ -91,9 +90,9 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         #region IPropertyService members
 
-        public async Task<IEnumerable<Property>> GetByIdsAsync(IEnumerable<string> ids)
+        public Task<IEnumerable<Property>> GetByIdsAsync(IEnumerable<string> ids)
         {
-            return await base.GetByIdsAsync(ids);
+            return base.GetByIdsAsync(ids);
         }
 
         public async Task<IEnumerable<Property>> GetAllCatalogPropertiesAsync(string catalogId)

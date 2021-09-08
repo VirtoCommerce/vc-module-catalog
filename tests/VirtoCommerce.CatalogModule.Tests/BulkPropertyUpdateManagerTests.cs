@@ -95,6 +95,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             itemService.As<ICrudService<CatalogProduct>>();
             var categoryService = new Mock<ICategoryService>();
             var catalogService = new Mock<ICatalogService>();
+            catalogService.As<ICrudService<Catalog>>();
 
             var manager = new BulkPropertyUpdateManager(dataSourceFactory.Object, itemService.Object, categoryService.Object, catalogService.Object);
             return manager;
@@ -104,6 +105,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         {
             var categoryService = new Mock<ICategoryService>();
             var catalogService = new Mock<ICatalogService>();
+            catalogService.As<ICrudService<Catalog>>();
             
             var manager = new BulkPropertyUpdateManager(dataSourceFactory.Object, itemService.Object, categoryService.Object, catalogService.Object);
             return manager;

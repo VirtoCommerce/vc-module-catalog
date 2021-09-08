@@ -181,6 +181,7 @@ namespace VirtoCommerce.CatalogModule.Tests
 
         private IBulkAction BuildBulkAction(CategoryChangeBulkActionContext context)
         {
+            _catalogServiceMock.As<ICrudService<Catalog>>();
             return new CategoryChangeBulkAction(context, _catalogServiceMock.Object, _categoryListEntryMoverMock.Object, _productListEntryMoverMock.Object);
         }
     }

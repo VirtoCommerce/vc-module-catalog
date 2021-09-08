@@ -10,6 +10,7 @@ using VirtoCommerce.CatalogModule.Core.Model.ListEntry;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Services;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.GenericCrud;
 
 namespace VirtoCommerce.CatalogModule.BulkActions.Actions.CategoryChange
 {
@@ -17,7 +18,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Actions.CategoryChange
     {
         private readonly CategoryChangeBulkActionContext _context;
 
-        private readonly ICatalogService _catalogService;
+        private readonly ICrudService<Catalog> _catalogService;
         private readonly ListEntryMover<Category> _categoryListEntryMover;
         private readonly ListEntryMover<CatalogProduct> _productListEntryMover;
 
@@ -37,7 +38,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Actions.CategoryChange
             ListEntryMover<CatalogProduct> productListEntryMover)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
-            _catalogService = catalogService;
+            _catalogService = (ICrudService<Catalog>)catalogService;
             _categoryListEntryMover = categoryListEntryMover;
             _productListEntryMover = productListEntryMover;
         }

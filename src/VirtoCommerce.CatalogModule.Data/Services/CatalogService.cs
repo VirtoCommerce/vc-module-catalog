@@ -30,13 +30,13 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _hasPropertyValidator = hasPropertyValidator;
         }
 
-        public override async Task<IEnumerable<Catalog>> GetByIdsAsync(IEnumerable<string> catalogIds, string responseGroup = null)
+        public override async Task<IEnumerable<Catalog>> GetByIdsAsync(IEnumerable<string> ids, string responseGroup = null)
         {
             var catalogResponseGroup = EnumUtility.SafeParseFlags(responseGroup, CatalogResponseGroup.Full);
 
             var result = new List<Catalog>();
             var preloadedCatalogsByIdDict = await PreloadCatalogsAsync();
-            foreach (var catalogId in catalogIds.Where(x => x != null))
+            foreach (var catalogId in ids.Where(x => x != null))
             {
                 var catalog = preloadedCatalogsByIdDict[catalogId];
                 if (catalog != null)

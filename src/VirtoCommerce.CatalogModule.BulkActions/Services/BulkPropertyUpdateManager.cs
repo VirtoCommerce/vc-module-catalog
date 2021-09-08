@@ -20,7 +20,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
         private readonly IItemService _itemService;
         private readonly ICrudService<CatalogProduct> _itemServiceCrud;
         private readonly ICategoryService _categoryService;
-        private readonly ICatalogService _catalogService;
+        private readonly ICrudService<Catalog> _catalogService;
 
         private readonly Dictionary<string, MethodInfo> _productProperties = new Dictionary<string, MethodInfo>();
         private readonly Dictionary<string, string> _namesById = new Dictionary<string, string>();
@@ -42,7 +42,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
             _itemService = itemService;
             _itemServiceCrud = (ICrudService<CatalogProduct>)itemService;
             _categoryService = categoryService;
-            _catalogService = catalogService;
+            _catalogService = (ICrudService<Catalog>)catalogService;
         }
 
         public async Task<Property[]> GetPropertiesAsync(BulkActionContext context)

@@ -38,15 +38,15 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         public IQueryable<PropertyValidationRuleEntity> PropertyValidationRules => DbContext.Set<PropertyValidationRuleEntity>();
         public IQueryable<SeoInfoEntity> SeoInfos => DbContext.Set<SeoInfoEntity>();
 
-        public virtual async Task<IEnumerable<CatalogEntity>> GetCatalogsByIdsAsync(IEnumerable<string> catalogIds, string responseGroup = null)
+        public virtual async Task<IEnumerable<CatalogEntity>> GetCatalogsByIdsAsync(IEnumerable<string> ids, string responseGroup = null)
         {
             var result = Array.Empty<CatalogEntity>();
 
-            if (!catalogIds.IsNullOrEmpty())
+            if (!ids.IsNullOrEmpty())
             {
                 result = await Catalogs.Include(x => x.CatalogLanguages)
                     .Include(x => x.IncomingLinks)
-                    .Where(x => catalogIds.Contains(x.Id))
+                    .Where(x => ids.Contains(x.Id))
                     .ToArrayAsync();
 
                 if (result.Any())
@@ -54,8 +54,8 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     //https://docs.microsoft.com/en-us/ef/core/querying/async
 
                     await PropertyValues.Include(x => x.DictionaryItem.DictionaryItemValues)
-                                                           .Where(x => catalogIds.Contains(x.CatalogId) && x.CategoryId == null).LoadAsync();
-                    var catalogPropertiesIds = await Properties.Where(x => catalogIds.Contains(x.CatalogId) && x.CategoryId == null)
+                                                           .Where(x => ids.Contains(x.CatalogId) && x.CategoryId == null).LoadAsync();
+                    var catalogPropertiesIds = await Properties.Where(x => ids.Contains(x.CatalogId) && x.CategoryId == null)
                         .Select(x => x.Id)
                         .ToArrayAsync();
                     await GetPropertiesByIdsAsync(catalogPropertiesIds);
@@ -69,46 +69,49 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             var categoryResponseGroup = EnumUtility.SafeParseFlags(responseGroup, CategoryResponseGroup.Full);
             var result = Array.Empty<CategoryEntity>();
 
-            if (!categoriesIds.IsNullOrEmpty())
+            if (categoriesIds.IsNullOrEmpty())
             {
-                result = await Categories.Where(x => categoriesIds.Contains(x.Id)).ToArrayAsync();
+                return result;
+            }
 
-                if (result.Any())
-                {
-                    if (categoryResponseGroup.HasFlag(CategoryResponseGroup.WithOutlines))
-                    {
-                        categoryResponseGroup |= CategoryResponseGroup.WithLinks | CategoryResponseGroup.WithParents;
-                    }
+            result = await Categories.Where(x => categoriesIds.Contains(x.Id)).ToArrayAsync();
 
-                    if (categoryResponseGroup.HasFlag(CategoryResponseGroup.WithLinks))
-                    {
-                        await CategoryLinks.Where(x => categoriesIds.Contains(x.TargetCategoryId)).LoadAsync();
-                        await CategoryLinks.Where(x => categoriesIds.Contains(x.SourceCategoryId)).LoadAsync();
-                    }
+            if (!result.Any()) {
+                return result;
+            }
 
-                    if (categoryResponseGroup.HasFlag(CategoryResponseGroup.WithImages))
-                    {
-                        await Images.Where(x => categoriesIds.Contains(x.CategoryId)).LoadAsync();
-                    }
+            if (categoryResponseGroup.HasFlag(CategoryResponseGroup.WithOutlines))
+            {
+                categoryResponseGroup |= CategoryResponseGroup.WithLinks | CategoryResponseGroup.WithParents;
+            }
 
-                    if (categoryResponseGroup.HasFlag(CategoryResponseGroup.WithSeo))
-                    {
-                        await SeoInfos.Where(x => categoriesIds.Contains(x.CategoryId)).LoadAsync();
-                    }
+            if (categoryResponseGroup.HasFlag(CategoryResponseGroup.WithLinks))
+            {
+                await CategoryLinks.Where(x => categoriesIds.Contains(x.TargetCategoryId)).LoadAsync();
+                await CategoryLinks.Where(x => categoriesIds.Contains(x.SourceCategoryId)).LoadAsync();
+            }
 
-                    //Load all properties meta information and information for inheritance
-                    if (categoryResponseGroup.HasFlag(CategoryResponseGroup.WithProperties))
-                    {
-                        await PropertyValues.Include(x => x.DictionaryItem.DictionaryItemValues).Where(x => categoriesIds.Contains(x.CategoryId)).LoadAsync();
-                        //Load category property values by separate query
-                        await PropertyValues.Include(x => x.DictionaryItem.DictionaryItemValues)
-                                                               .Where(x => categoriesIds.Contains(x.CategoryId)).LoadAsync();
+            if (categoryResponseGroup.HasFlag(CategoryResponseGroup.WithImages))
+            {
+                await Images.Where(x => categoriesIds.Contains(x.CategoryId)).LoadAsync();
+            }
 
-                        var categoryPropertiesIds = await Properties.Where(x => categoriesIds.Contains(x.CategoryId))
-                                                                    .Select(x => x.Id).ToArrayAsync();
-                        await GetPropertiesByIdsAsync(categoryPropertiesIds);
-                    }
-                }
+            if (categoryResponseGroup.HasFlag(CategoryResponseGroup.WithSeo))
+            {
+                await SeoInfos.Where(x => categoriesIds.Contains(x.CategoryId)).LoadAsync();
+            }
+
+            //Load all properties meta information and information for inheritance
+            if (categoryResponseGroup.HasFlag(CategoryResponseGroup.WithProperties))
+            {
+                await PropertyValues.Include(x => x.DictionaryItem.DictionaryItemValues).Where(x => categoriesIds.Contains(x.CategoryId)).LoadAsync();
+                //Load category property values by separate query
+                await PropertyValues.Include(x => x.DictionaryItem.DictionaryItemValues)
+                                                        .Where(x => categoriesIds.Contains(x.CategoryId)).LoadAsync();
+
+                var categoryPropertiesIds = await Properties.Where(x => categoriesIds.Contains(x.CategoryId))
+                                                            .Select(x => x.Id).ToArrayAsync();
+                await GetPropertiesByIdsAsync(categoryPropertiesIds);
             }
 
             return result;
@@ -119,90 +122,92 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             var itemResponseGroup = EnumUtility.SafeParseFlags(responseGroup, ItemResponseGroup.ItemLarge);
             var result = Array.Empty<ItemEntity>();
 
-            if (!itemIds.IsNullOrEmpty())
-            {
-                // Use breaking query EF performance concept https://docs.microsoft.com/en-us/ef/ef6/fundamentals/performance/perf-whitepaper#8-loading-related-entities
-                result = await Items.Include(x => x.Images).Where(x => itemIds.Contains(x.Id)).ToArrayAsync();
-
-                if (result.Any())
-                {
-                    if (itemResponseGroup.HasFlag(ItemResponseGroup.Outlines))
-                    {
-                        itemResponseGroup |= ItemResponseGroup.Links;
-                    }
-
-                    if (itemResponseGroup.HasFlag(ItemResponseGroup.ItemProperties))
-                    {
-                        await PropertyValues.Include(x => x.DictionaryItem.DictionaryItemValues).Where(x => itemIds.Contains(x.ItemId)).LoadAsync();
-                    }
-
-                    if (itemResponseGroup.HasFlag(ItemResponseGroup.Links))
-                    {
-                        await CategoryItemRelations.Where(x => itemIds.Contains(x.ItemId)).LoadAsync();
-                    }
-
-                    if (itemResponseGroup.HasFlag(ItemResponseGroup.ItemAssets))
-                    {
-                        await Assets.Where(x => itemIds.Contains(x.ItemId)).LoadAsync();
-                    }
-
-                    if (itemResponseGroup.HasFlag(ItemResponseGroup.ItemEditorialReviews))
-                    {
-                        await EditorialReviews.Where(x => itemIds.Contains(x.ItemId)).LoadAsync();
-                    }
-
-                    if (itemResponseGroup.HasFlag(ItemResponseGroup.WithSeo))
-                    {
-                        await SeoInfos.Where(x => itemIds.Contains(x.ItemId)).LoadAsync();
-                    }
-
-                    if (itemResponseGroup.HasFlag(ItemResponseGroup.Variations))
-                    {
-                        // TODO: Call GetItemByIds for variations recursively (need to measure performance and data amount first)
-                        IQueryable<ItemEntity> variationsQuery = Items.Where(x => itemIds.Contains(x.ParentId))
-                                                    .Include(x => x.Images)
-                                                    .Include(x => x.ItemPropertyValues).ThenInclude(x => x.DictionaryItem.DictionaryItemValues);
-
-                        if (itemResponseGroup.HasFlag(ItemResponseGroup.ItemAssets))
-                        {
-                            variationsQuery = variationsQuery.Include(x => x.Assets);
-                        }
-                        if (itemResponseGroup.HasFlag(ItemResponseGroup.ItemEditorialReviews))
-                        {
-                            variationsQuery = variationsQuery.Include(x => x.EditorialReviews);
-                        }
-                        if (itemResponseGroup.HasFlag(ItemResponseGroup.Seo))
-                        {
-                            variationsQuery = variationsQuery.Include(x => x.SeoInfos);
-                        }
-                        await variationsQuery.LoadAsync();
-                    }
-
-                    if (itemResponseGroup.HasFlag(ItemResponseGroup.ItemAssociations))
-                    {
-                        var associations = await Associations.Where(x => itemIds.Contains(x.ItemId)).ToArrayAsync();
-                        var associatedProductIds = associations.Where(x => x.AssociatedItemId != null)
-                            .Select(x => x.AssociatedItemId).Distinct().ToArray();
-                        var associatedCategoryIds = associations.Where(x => x.AssociatedCategoryId != null).Select(x => x.AssociatedCategoryId).Distinct().ToArray();
-
-                        await GetItemByIdsAsync(associatedProductIds, (ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemAssets).ToString());
-                        await GetCategoriesByIdsAsync(associatedCategoryIds, (CategoryResponseGroup.Info | CategoryResponseGroup.WithImages).ToString());
-                    }
-
-                    if (itemResponseGroup.HasFlag(ItemResponseGroup.ReferencedAssociations))
-                    {
-                        var referencedAssociations = await Associations.Where(x => itemIds.Contains(x.AssociatedItemId)).ToArrayAsync();
-                        var referencedProductIds = referencedAssociations.Select(x => x.ItemId).Distinct().ToArray();
-                        await GetItemByIdsAsync(referencedProductIds, ItemResponseGroup.ItemInfo.ToString());
-                    }
-
-                    // Load parents
-                    var parentIds = result.Where(x => x.Parent == null && x.ParentId != null).Select(x => x.ParentId).ToArray();
-                    await GetItemByIdsAsync(parentIds, responseGroup);
-                }
+            if (itemIds.IsNullOrEmpty()) {
+                return result;
             }
 
-            return result;
+            // Use breaking query EF performance concept https://docs.microsoft.com/en-us/ef/ef6/fundamentals/performance/perf-whitepaper#8-loading-related-entities
+            result = await Items.Include(x => x.Images).Where(x => itemIds.Contains(x.Id)).ToArrayAsync();
+
+            if (!result.Any()) {
+                return result;
+            }
+
+            if (itemResponseGroup.HasFlag(ItemResponseGroup.Outlines))
+            {
+                itemResponseGroup |= ItemResponseGroup.Links;
+            }
+
+            if (itemResponseGroup.HasFlag(ItemResponseGroup.ItemProperties))
+            {
+                await PropertyValues.Include(x => x.DictionaryItem.DictionaryItemValues).Where(x => itemIds.Contains(x.ItemId)).LoadAsync();
+            }
+
+            if (itemResponseGroup.HasFlag(ItemResponseGroup.Links))
+            {
+                await CategoryItemRelations.Where(x => itemIds.Contains(x.ItemId)).LoadAsync();
+            }
+
+            if (itemResponseGroup.HasFlag(ItemResponseGroup.ItemAssets))
+            {
+                await Assets.Where(x => itemIds.Contains(x.ItemId)).LoadAsync();
+            }
+
+            if (itemResponseGroup.HasFlag(ItemResponseGroup.ItemEditorialReviews))
+            {
+                await EditorialReviews.Where(x => itemIds.Contains(x.ItemId)).LoadAsync();
+            }
+
+            if (itemResponseGroup.HasFlag(ItemResponseGroup.WithSeo))
+            {
+                await SeoInfos.Where(x => itemIds.Contains(x.ItemId)).LoadAsync();
+            }
+
+            if (itemResponseGroup.HasFlag(ItemResponseGroup.Variations))
+            {
+                // TODO: Call GetItemByIds for variations recursively (need to measure performance and data amount first)
+                IQueryable<ItemEntity> variationsQuery = Items.Where(x => itemIds.Contains(x.ParentId))
+                                            .Include(x => x.Images)
+                                            .Include(x => x.ItemPropertyValues).ThenInclude(x => x.DictionaryItem.DictionaryItemValues);
+
+                if (itemResponseGroup.HasFlag(ItemResponseGroup.ItemAssets))
+                {
+                    variationsQuery = variationsQuery.Include(x => x.Assets);
+                }
+                if (itemResponseGroup.HasFlag(ItemResponseGroup.ItemEditorialReviews))
+                {
+                    variationsQuery = variationsQuery.Include(x => x.EditorialReviews);
+                }
+                if (itemResponseGroup.HasFlag(ItemResponseGroup.Seo))
+                {
+                    variationsQuery = variationsQuery.Include(x => x.SeoInfos);
+                }
+                await variationsQuery.LoadAsync();
+            }
+
+            if (itemResponseGroup.HasFlag(ItemResponseGroup.ItemAssociations))
+            {
+                var associations = await Associations.Where(x => itemIds.Contains(x.ItemId)).ToArrayAsync();
+                var associatedProductIds = associations.Where(x => x.AssociatedItemId != null)
+                    .Select(x => x.AssociatedItemId).Distinct().ToArray();
+                var associatedCategoryIds = associations.Where(x => x.AssociatedCategoryId != null).Select(x => x.AssociatedCategoryId).Distinct().ToArray();
+
+                await GetItemByIdsAsync(associatedProductIds, (ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemAssets).ToString());
+                await GetCategoriesByIdsAsync(associatedCategoryIds, (CategoryResponseGroup.Info | CategoryResponseGroup.WithImages).ToString());
+            }
+
+            if (itemResponseGroup.HasFlag(ItemResponseGroup.ReferencedAssociations))
+            {
+                var referencedAssociations = await Associations.Where(x => itemIds.Contains(x.AssociatedItemId)).ToArrayAsync();
+                var referencedProductIds = referencedAssociations.Select(x => x.ItemId).Distinct().ToArray();
+                await GetItemByIdsAsync(referencedProductIds, ItemResponseGroup.ItemInfo.ToString());
+            }
+
+            // Load parents
+            var parentIds = result.Where(x => x.Parent == null && x.ParentId != null).Select(x => x.ParentId).ToArray();
+            await GetItemByIdsAsync(parentIds, responseGroup);
+
+        return result;
         }
 
         public virtual async Task<IEnumerable<PropertyEntity>> GetPropertiesByIdsAsync(IEnumerable<string> propIds, bool loadDictValues = false)
