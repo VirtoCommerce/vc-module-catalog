@@ -120,7 +120,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             return ToModel(product, true, true);
         }
 
-        public virtual CatalogProduct ToModel(CatalogProduct product, bool convertChildrens = true, bool convertAssociations = true)
+        public virtual CatalogProduct ToModel(CatalogProduct product, bool convertChildrens, bool convertAssociations)
         {
             if (product == null)
             {
