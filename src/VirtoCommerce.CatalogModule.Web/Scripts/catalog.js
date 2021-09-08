@@ -542,7 +542,6 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                     id: 'catalogGenericExport',
                     title: 'catalog.blades.exporter.productTitle',
                     subtitle: 'catalog.blades.exporter.productSubtitle',
-                    isNew: true,
                     onInitialize: function (newBlade) {
                         var exportDataRequest = {
                             exportTypeName: 'VirtoCommerce.CatalogModule.Core.Model.Export.ExportableProduct',
