@@ -34,7 +34,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                     break;
                 }
 
-                foreach (var propValue in property.Values?.Where(x => x.Value != null) ?? Array.Empty<PropertyValue>())
+                foreach (var propValue in property?.Values?.Where(x => x.Value != null) ?? Array.Empty<PropertyValue>())
                 {
                     var propertyName = propValue.PropertyName?.ToLowerInvariant();
                     if (!string.IsNullOrEmpty(propertyName))
