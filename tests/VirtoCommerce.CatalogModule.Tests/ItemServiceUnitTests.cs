@@ -18,6 +18,7 @@ using VirtoCommerce.Platform.Core.Caching;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Domain;
 using VirtoCommerce.Platform.Core.Events;
+using VirtoCommerce.Platform.Core.GenericCrud;
 using Xunit;
 
 namespace VirtoCommerce.CatalogModule.Tests
@@ -61,6 +62,8 @@ namespace VirtoCommerce.CatalogModule.Tests
                 Code = "some code"
             };
             var newItemEntity = AbstractTypeFactory<ItemEntity>.TryCreateInstance().FromModel(newItem, new PrimaryKeyResolvingMap());
+            _catalogServiceMock.As<ICrudService<Catalog>>().Setup(x => x.GetByIdsAsync(It.IsAny<string[]>(), default)).ReturnsAsync(new Catalog[] { new Catalog() { Id = newItem.CatalogId } });
+            _categoryServiceMock.Setup(x => x.GetByIdsAsync(It.IsAny<string[]>(), It.IsAny<string>(), default)).ReturnsAsync(new Category[] { new Category() { Id = newItem.CategoryId } });
             var service = GetItemServiceWithPlatformMemoryCache();
             _repositoryMock.Setup(x => x.Add(newItemEntity))
                 .Callback(() =>
@@ -68,10 +71,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                     _repositoryMock.Setup(o => o.GetItemByIdsAsync(new[] { id }, null))
                         .ReturnsAsync(new[] { newItemEntity });
                 });
-
-            _catalogServiceMock.Setup(x => x.GetByIdsAsync(It.IsAny<string[]>(), default)).ReturnsAsync(new Catalog[] { new Catalog() { Id = newItem.CatalogId } });
-            _categoryServiceMock.Setup(x => x.GetByIdsAsync(It.IsAny<string[]>(), It.IsAny<string>(), default)).ReturnsAsync(new Category[] { new Category() { Id = newItem.CategoryId } });
-
+   
             //Act
             var nullItem = await service.GetByIdAsync(id, null);
             await service.SaveChangesAsync(new[] { newItem });

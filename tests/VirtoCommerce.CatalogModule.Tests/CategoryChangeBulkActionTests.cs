@@ -13,6 +13,7 @@ using VirtoCommerce.CatalogModule.Core.Model.ListEntry;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Services;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.GenericCrud;
 using Xunit;
 
 namespace VirtoCommerce.CatalogModule.Tests
@@ -128,7 +129,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             // arrange
             var context = new CategoryChangeBulkActionContext { CatalogId = "catalog" };
 
-            _catalogServiceMock.Setup(t => t.GetByIdsAsync(new []{ "catalog" }, It.IsAny<string>()))
+            _catalogServiceMock.As<ICrudService<Catalog>>().Setup(t => t.GetByIdsAsync(new []{ "catalog" }, It.IsAny<string>()))
                 .ReturnsAsync(new [] { new Catalog { IsVirtual = true } });
 
             var bulkAction = BuildBulkAction(context);
@@ -147,7 +148,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             // arrange
             var context = new CategoryChangeBulkActionContext { CatalogId = "catalog" };
 
-            _catalogServiceMock.Setup(t => t.GetByIdsAsync(new[] { "catalog" }, null))
+            _catalogServiceMock.As<ICrudService<Catalog>>().Setup(t => t.GetByIdsAsync(new[] { "catalog" }, null))
                 .ReturnsAsync(new[] { new Catalog { IsVirtual = true } });
 
             var bulkAction = BuildBulkAction(context);
@@ -166,7 +167,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             var context = new CategoryChangeBulkActionContext { CatalogId = "catalog" };
             var catalogService = new Mock<ICatalogService>();
 
-            catalogService.Setup(t => t.GetByIdsAsync(new[] { "catalog" }, null))
+            catalogService.As<ICrudService<Catalog>>().Setup(t => t.GetByIdsAsync(new[] { "catalog" }, null))
                 .ReturnsAsync(new[] { new Catalog { IsVirtual = true } });
 
             var bulkAction = BuildBulkAction(context);

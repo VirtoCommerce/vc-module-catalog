@@ -6,6 +6,7 @@ using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
+using VirtoCommerce.Platform.Core.GenericCrud;
 using Xunit;
 
 namespace VirtoCommerce.CatalogModule.Tests
@@ -16,8 +17,9 @@ namespace VirtoCommerce.CatalogModule.Tests
         [Fact]
         public async Task Add_New_DictionaryItems_To_Property_And_Then_Choose_DictItem_For_Product()
         {
-            var propDictionaryService = new Mock<IPropertyDictionaryItemService>().Object;
-            var propDictionarySearchService = new Mock<IPropertyDictionaryItemSearchService>();
+            var propDictionaryService = new Mock<IPropertyDictionaryItemService>().As<ICrudService<PropertyDictionaryItem>>().Object;
+            var propDictionarySearchService = new Mock<IPropertyDictionaryItemSearchService>().As<ISearchService<PropertyDictionaryItemSearchCriteria, PropertyDictionaryItemSearchResult, PropertyDictionaryItem>>();
+            var productCrudService = new Mock<IItemService>().As<ICrudService<CatalogProduct>>();
             var productService = new Mock<IItemService>();
 
             var colorProperty = new Property
@@ -55,7 +57,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                 .Results.FirstOrDefault();
             //Choose dictionary item for product property
             product.PropertyValues.Add(new PropertyValue { Alias = greenDictItem.Alias, PropertyId = greenDictItem.PropertyId, ValueId = greenDictItem.Id });
-            await productService.Object.SaveChangesAsync(new[] { product });
+            await productCrudService.Object.SaveChangesAsync(new[] { product });
         }
     }
 }
