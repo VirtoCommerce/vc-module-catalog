@@ -28,7 +28,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 var isCollection = property?.Multivalue == true;
 
                 // replace empty value for Boolean property with default 'False'
-                if (property.ValueType == PropertyValueType.Boolean && property.Values.IsNullOrEmpty())
+                if (property?.ValueType == PropertyValueType.Boolean && property.Values.IsNullOrEmpty())
                 {
                     document.Add(new IndexDocumentField(property.Name, false) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection, ValueType = IndexDocumentFieldValueType.Boolean, });
                 }
