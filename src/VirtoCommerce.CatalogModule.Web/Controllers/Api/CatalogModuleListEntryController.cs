@@ -322,9 +322,10 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 var take = Math.Min(criteria.Take, Math.Max(0, totalCount - criteria.Skip));
 
                 result.Results = catIndexedSearchResult.Items.Select(x => AbstractTypeFactory<CategoryListEntry>.TryCreateInstance().FromModel(x)).ToList();
+                result.TotalCount = (int)totalCount;
 
-                criteria.Skip -= (int) skip;
-                criteria.Take -= (int) take;
+                criteria.Skip -= (int)skip;
+                criteria.Take -= (int)take;
 
                 const ItemResponseGroup itemResponseGroup = ItemResponseGroup.ItemInfo | ItemResponseGroup.Outlines;
 
