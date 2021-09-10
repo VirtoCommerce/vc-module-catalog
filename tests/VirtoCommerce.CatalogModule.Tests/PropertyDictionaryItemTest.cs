@@ -17,9 +17,9 @@ namespace VirtoCommerce.CatalogModule.Tests
         [Fact]
         public async Task Add_New_DictionaryItems_To_Property_And_Then_Choose_DictItem_For_Product()
         {
-            var propDictionaryService = new Mock<IPropertyDictionaryItemService>().As<ICrudService<PropertyDictionaryItem>>().Object;
+            var propDictionaryServiceCrud = new Mock<IPropertyDictionaryItemService>().As<ICrudService<PropertyDictionaryItem>>().Object;
             var propDictionarySearchService = new Mock<IPropertyDictionaryItemSearchService>().As<ISearchService<PropertyDictionaryItemSearchCriteria, PropertyDictionaryItemSearchResult, PropertyDictionaryItem>>();
-            var productCrudService = new Mock<IItemService>().As<ICrudService<CatalogProduct>>();
+            var productServiceCrud = new Mock<IItemService>().As<ICrudService<CatalogProduct>>();
             var productService = new Mock<IItemService>();
 
             var colorProperty = new Property
@@ -49,7 +49,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             productService.Setup(x => x.GetByIdAsync(It.IsAny<string>(), It.IsAny<string>(), null))
                 .Returns(Task.FromResult(new CatalogProduct { PropertyValues = new List<PropertyValue>() }));
             //Add the new dictionary item to the property
-            await propDictionaryService.SaveChangesAsync(new[] { greenDictItem });
+            await propDictionaryServiceCrud.SaveChangesAsync(new[] { greenDictItem });
 
             var product = await productService.Object.GetByIdAsync("Shoes", ItemResponseGroup.ItemProperties.ToString());
             //Find the desired dictionary value from all available
@@ -57,7 +57,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                 .Results.FirstOrDefault();
             //Choose dictionary item for product property
             product.PropertyValues.Add(new PropertyValue { Alias = greenDictItem.Alias, PropertyId = greenDictItem.PropertyId, ValueId = greenDictItem.Id });
-            await productCrudService.Object.SaveChangesAsync(new[] { product });
+            await productServiceCrud.Object.SaveChangesAsync(new[] { product });
         }
     }
 }

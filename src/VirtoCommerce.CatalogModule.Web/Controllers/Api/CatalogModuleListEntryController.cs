@@ -28,7 +28,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly ICategoryIndexedSearchService _categoryIndexedSearchService;
         private readonly ICategoryService _categoryService;
         private readonly ICrudService<Category> _categoryServiceCrud;
-        private readonly ICrudService<Catalog> _catalogService;
+        private readonly ICrudService<Catalog> _catalogServiceCrud;
         private readonly IItemService _itemService;
         private readonly ICrudService<CatalogProduct> _itemServiceCrud;
         private readonly IListEntrySearchService _listEntrySearchService;
@@ -56,7 +56,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             _authorizationService = authorizationService;
             _itemService = itemService;
             _itemServiceCrud = (ICrudService<CatalogProduct>)itemService;
-            _catalogService = (ICrudService<Catalog>)catalogService;
+            _catalogServiceCrud = (ICrudService<Catalog>)catalogService;
             _listEntrySearchService = listEntrySearchService;
             _settingsManager = settingsManager;
             _categoryMover = categoryMover;
@@ -221,7 +221,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return Unauthorized();
             }
 
-            var dstCatalog = (await _catalogService.GetByIdsAsync(new[] {moveRequest.Catalog})).FirstOrDefault();
+            var dstCatalog = (await _catalogServiceCrud.GetByIdsAsync(new[] {moveRequest.Catalog})).FirstOrDefault();
             if (dstCatalog.IsVirtual)
             {
                 return BadRequest("Unable to move to a virtual catalog");

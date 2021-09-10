@@ -16,7 +16,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
     public class CatalogModulePropertyDictionaryItemsController : Controller
     {
         private readonly ISearchService<PropertyDictionaryItemSearchCriteria, PropertyDictionaryItemSearchResult, PropertyDictionaryItem> _propertyDictionarySearchService;
-        private readonly ICrudService<PropertyDictionaryItem> _propertyDictionaryService;
+        private readonly ICrudService<PropertyDictionaryItem> _propertyDictionaryServiceCrud;
         private readonly IAuthorizationService _authorizationService;
 
         public CatalogModulePropertyDictionaryItemsController(IPropertyDictionaryItemSearchService propertyDictionarySearchService,
@@ -24,7 +24,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                                                              IAuthorizationService authorizationService)
         {
             _propertyDictionarySearchService = (ISearchService<PropertyDictionaryItemSearchCriteria, PropertyDictionaryItemSearchResult, PropertyDictionaryItem>)propertyDictionarySearchService;
-            _propertyDictionaryService = (ICrudService<PropertyDictionaryItem>)propertyDictionaryService;
+            _propertyDictionaryServiceCrud = (ICrudService<PropertyDictionaryItem>)propertyDictionaryService;
             _authorizationService = authorizationService;
         }
 
@@ -55,7 +55,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Authorize(ModuleConstants.Security.Permissions.Create)]
         public async Task<ActionResult> SaveChanges([FromBody]PropertyDictionaryItem[] propertyDictItems)
         {
-            await _propertyDictionaryService.SaveChangesAsync(propertyDictItems);
+            await _propertyDictionaryServiceCrud.SaveChangesAsync(propertyDictItems);
             return Ok();
         }
 
@@ -68,7 +68,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Authorize(ModuleConstants.Security.Permissions.Delete)]
         public async Task<ActionResult> DeletePropertyDictionaryItems([FromQuery] string[] ids)
         {
-            await _propertyDictionaryService.DeleteAsync(ids);
+            await _propertyDictionaryServiceCrud.DeleteAsync(ids);
             return Ok();
         }
     }

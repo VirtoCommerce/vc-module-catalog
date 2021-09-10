@@ -18,7 +18,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Actions.CategoryChange
     {
         private readonly CategoryChangeBulkActionContext _context;
 
-        private readonly ICrudService<Catalog> _catalogService;
+        private readonly ICrudService<Catalog> _catalogServiceCrud;
         private readonly ListEntryMover<Category> _categoryListEntryMover;
         private readonly ListEntryMover<CatalogProduct> _productListEntryMover;
 
@@ -38,7 +38,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Actions.CategoryChange
             ListEntryMover<CatalogProduct> productListEntryMover)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
-            _catalogService = (ICrudService<Catalog>)catalogService;
+            _catalogServiceCrud = (ICrudService<Catalog>)catalogService;
             _categoryListEntryMover = categoryListEntryMover;
             _productListEntryMover = productListEntryMover;
         }
@@ -75,7 +75,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Actions.CategoryChange
         {
             var result = BulkActionResult.Success;
 
-            var dstCatalog = (await _catalogService.GetByIdsAsync(new [] { _context.CatalogId })).FirstOrDefault();
+            var dstCatalog = (await _catalogServiceCrud.GetByIdsAsync(new [] { _context.CatalogId })).FirstOrDefault();
             if (dstCatalog != null && dstCatalog.IsVirtual)
             {
                 result.Succeeded = false;

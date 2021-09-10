@@ -21,7 +21,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
     {
         private readonly ICategoryService _categoryService;
         private readonly ICrudService<Category> _categoryServiceCrud;
-        private readonly ICrudService<Catalog> _catalogService;
+        private readonly ICrudService<Catalog> _catalogServiceCrud;
         private readonly IAuthorizationService _authorizationService;
 
 
@@ -32,7 +32,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         {
             _categoryService = categoryService;
             _categoryServiceCrud = (ICrudService<Category>)categoryService;
-            _catalogService = (ICrudService<Catalog>)catalogService;
+            _catalogServiceCrud = (ICrudService<Catalog>)catalogService;
             _authorizationService = authorizationService;
         }
 
@@ -133,7 +133,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                     var slugUrl = category.Name.GenerateSlug();
                     if (!string.IsNullOrEmpty(slugUrl))
                     {
-                        var catalog = (await _catalogService.GetByIdsAsync(new[] { category.CatalogId })).FirstOrDefault();
+                        var catalog = (await _catalogServiceCrud.GetByIdsAsync(new[] { category.CatalogId })).FirstOrDefault();
                         var defaultLanguage = catalog?.Languages.First(x => x.IsDefault).LanguageCode;
                         var seoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
                         seoInfo.LanguageCode = defaultLanguage;

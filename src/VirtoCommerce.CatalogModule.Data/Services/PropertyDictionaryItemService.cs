@@ -19,14 +19,9 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 {
     public class PropertyDictionaryItemService : CrudService<PropertyDictionaryItem, PropertyDictionaryItemEntity, PropertyDictionaryItemChangingEvent, PropertyDictionaryItemChangedEvent>, IPropertyDictionaryItemService
     {
-        private new readonly Func<ICatalogRepository> _repositoryFactory;
-        private new readonly IPlatformMemoryCache _platformMemoryCache;
-
         public PropertyDictionaryItemService(Func<ICatalogRepository> repositoryFactory, IPlatformMemoryCache platformMemoryCache, IEventPublisher eventPublisher)
           : base(repositoryFactory, platformMemoryCache, eventPublisher)
         {
-            _repositoryFactory = repositoryFactory;
-            _platformMemoryCache = platformMemoryCache;
         }
 
         public async Task<PropertyDictionaryItem[]> GetByIdsAsync(string[] ids)
@@ -49,7 +44,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     //Optimize performance and CPU usage
                     repository.DisableChangesTracking();
 
-                    result = (await repository.GetPropertyDictionaryItemsByIdsAsync(ids.ToArray()))
+                    result = (await ((ICatalogRepository)repository).GetPropertyDictionaryItemsByIdsAsync(ids.ToArray()))
                         .Select(x => x.ToModel(AbstractTypeFactory<PropertyDictionaryItem>.TryCreateInstance()));
                 }
                 return result;
@@ -70,7 +65,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
             using (var repository = _repositoryFactory())
             {
-                var dbEntities = await repository.GetPropertyDictionaryItemsByIdsAsync(ids.ToArray());
+                var dbEntities = await ((ICatalogRepository)repository).GetPropertyDictionaryItemsByIdsAsync(ids.ToArray());
 
                 foreach (var dbEntity in dbEntities)
                 {

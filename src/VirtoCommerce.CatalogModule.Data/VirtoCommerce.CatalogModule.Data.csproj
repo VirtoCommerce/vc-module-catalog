@@ -35,7 +35,7 @@
         <PackageReference Include="VirtoCommerce.ExportModule.Data" Version="3.4.0" />
         <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.62.0" />
         <PackageReference Include="VirtoCommerce.Platform.Data" Version="3.62.0" />
-        <PackageReference Include="VirtoCommerce.Platform.Security" Version="3.57.0" />
+        <PackageReference Include="VirtoCommerce.Platform.Security" Version="3.62.0" />
         <PackageReference Include="VirtoCommerce.SearchModule.Data" Version="3.15.0" />
         <PackageReference Include="VirtoCommerce.StoreModule.Core" Version="3.1.0" />
     </ItemGroup>

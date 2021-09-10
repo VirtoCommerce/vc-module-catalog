@@ -20,17 +20,17 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 {
     public class CatalogExportImport
     {
-        private readonly ICrudService<Catalog> _catalogService;
+        private readonly ICrudService<Catalog> _catalogServiceCrud;
         private readonly SearchService<CatalogSearchCriteria, CatalogSearchResult, Catalog, CatalogEntity> _catalogSearchService;
         private readonly SearchService<ProductSearchCriteria, ProductSearchResult, CatalogProduct, ItemEntity> _productSearchService;
         private readonly SearchService<CategorySearchCriteria, CategorySearchResult, Category, CategoryEntity> _categorySearchService;
         private readonly ICategoryService _categoryService;
         private readonly ICrudService<Category> _categoryServiceCrud;
         private readonly ICrudService<CatalogProduct> _itemServiceCrud;
-        private readonly ICrudService<Property> _propertyService;
+        private readonly ICrudService<Property> _propertyServiceCrud;
         private readonly SearchService<PropertySearchCriteria, PropertySearchResult, Property, PropertyEntity> _propertySearchService;
         private readonly ISearchService<PropertyDictionaryItemSearchCriteria, PropertyDictionaryItemSearchResult, PropertyDictionaryItem> _propertyDictionarySearchService;
-        private readonly ICrudService<PropertyDictionaryItem> _propertyDictionaryService;
+        private readonly ICrudService<PropertyDictionaryItem> _propertyDictionaryServiceCrud;
         private readonly JsonSerializer _jsonSerializer;
         private readonly IBlobStorageProvider _blobStorageProvider;
         private readonly IAssociationService _associationService;
@@ -41,16 +41,16 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                                   IItemService itemService, IPropertyService propertyService, IPropertySearchService propertySearchService, IPropertyDictionaryItemSearchService propertyDictionarySearchService,
                                   IPropertyDictionaryItemService propertyDictionaryService, JsonSerializer jsonSerializer, IBlobStorageProvider blobStorageProvider, IAssociationService associationService)
         {
-            _catalogService = (ICrudService <Catalog>)catalogService;
+            _catalogServiceCrud = (ICrudService <Catalog>)catalogService;
             _productSearchService = (SearchService<ProductSearchCriteria, ProductSearchResult, CatalogProduct, ItemEntity>)productSearchService;
             _categorySearchService = (SearchService<CategorySearchCriteria, CategorySearchResult, Category, CategoryEntity>)categorySearchService;
             _categoryService = categoryService;
             _categoryServiceCrud = (ICrudService<Category>)categoryService;
             _itemServiceCrud = (ICrudService<CatalogProduct>)itemService;
-            _propertyService = (ICrudService<Property>)propertyService;
+            _propertyServiceCrud = (ICrudService<Property>)propertyService;
             _propertySearchService = (SearchService<PropertySearchCriteria, PropertySearchResult, Property, PropertyEntity>)propertySearchService;
             _propertyDictionarySearchService = (ISearchService<PropertyDictionaryItemSearchCriteria, PropertyDictionaryItemSearchResult, PropertyDictionaryItem>)propertyDictionarySearchService;
-            _propertyDictionaryService = (ICrudService<PropertyDictionaryItem>)propertyDictionaryService;
+            _propertyDictionaryServiceCrud = (ICrudService<PropertyDictionaryItem>)propertyDictionaryService;
             _jsonSerializer = jsonSerializer;
             _blobStorageProvider = blobStorageProvider;
             _associationService = associationService;
@@ -229,7 +229,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 var totalCount = propertiesWithForeignKeys.Count;
                 for (var i = 0; i < totalCount; i += _batchSize)
                 {
-                    await _propertyService.SaveChangesAsync(propertiesWithForeignKeys.Skip(i).Take(_batchSize).ToArray());
+                    await _propertyServiceCrud.SaveChangesAsync(propertiesWithForeignKeys.Skip(i).Take(_batchSize).ToArray());
                     progressInfo.Description = $"{ Math.Min(totalCount, i + _batchSize) } of { totalCount } property associations updated.";
                     progressCallback(progressInfo);
                 }
@@ -240,7 +240,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         {
             await reader.DeserializeJsonArrayWithPagingAsync<Catalog>(_jsonSerializer, _batchSize, async (items) =>
             {
-                await _catalogService.SaveChangesAsync(items.ToArray());
+                await _catalogServiceCrud.SaveChangesAsync(items.ToArray());
             }, processedCount =>
             {
                 progressInfo.Description = $"{ processedCount } catalogs have been imported";
@@ -357,7 +357,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                         property.CatalogId = null;
                     }
                 }
-                await _propertyService.SaveChangesAsync(itemsArray);
+                await _propertyServiceCrud.SaveChangesAsync(itemsArray);
             }, processedCount =>
             {
                 progressInfo.Description = $"{ processedCount } properties have been imported";
@@ -367,7 +367,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 
         private async Task ImportPropertyDictionaryItemsAsync(JsonTextReader reader, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
         {
-            await reader.DeserializeJsonArrayWithPagingAsync<PropertyDictionaryItem>(_jsonSerializer, _batchSize, items => _propertyDictionaryService.SaveChangesAsync(items.ToArray()), processedCount =>
+            await reader.DeserializeJsonArrayWithPagingAsync<PropertyDictionaryItem>(_jsonSerializer, _batchSize, items => _propertyDictionaryServiceCrud.SaveChangesAsync(items.ToArray()), processedCount =>
             {
                 progressInfo.Description = $"{ processedCount } property dictionary items have been imported";
                 progressCallback(progressInfo);

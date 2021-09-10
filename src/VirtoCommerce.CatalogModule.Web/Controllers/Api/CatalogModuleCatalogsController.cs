@@ -22,7 +22,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
     [Authorize]
     public class CatalogModuleCatalogsController : Controller
     {
-        private readonly ICrudService<Catalog> _catalogService;
+        private readonly ICrudService<Catalog> _catalogServiceCrud;
         private readonly SearchService<CatalogSearchCriteria, CatalogSearchResult, Catalog, CatalogEntity> _catalogSearchService;
         private readonly IAuthorizationService _authorizationService;
 
@@ -32,7 +32,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             , IAuthorizationService authorizationService
             )
         {
-            _catalogService = (ICrudService<Catalog>)catalogService;
+            _catalogServiceCrud = (ICrudService<Catalog>)catalogService;
             _catalogSearchService = (SearchService<CatalogSearchCriteria, CatalogSearchResult, Catalog, CatalogEntity>)catalogSearchService;
             _authorizationService = authorizationService;
         }
@@ -84,7 +84,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("{id}")]
         public async Task<ActionResult<Catalog>> GetCatalog(string id)
         {
-            var catalog = (await _catalogService.GetByIdsAsync(new[] { id }, CatalogResponseGroup.Full.ToString())).FirstOrDefault();
+            var catalog = (await _catalogServiceCrud.GetByIdsAsync(new[] { id }, CatalogResponseGroup.Full.ToString())).FirstOrDefault();
 
             if (catalog == null)
             {
@@ -153,7 +153,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Authorize(ModuleConstants.Security.Permissions.Create)]
         public async Task<ActionResult<Catalog>> CreateCatalog([FromBody] Catalog catalog)
         {
-            await _catalogService.SaveChangesAsync(new[] { catalog });
+            await _catalogServiceCrud.SaveChangesAsync(new[] { catalog });
             return Ok(catalog);
         }
 
@@ -172,7 +172,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             {
                 return Unauthorized();
             }
-            await _catalogService.SaveChangesAsync(new[] { catalog });
+            await _catalogServiceCrud.SaveChangesAsync(new[] { catalog });
             return Ok(catalog);
         }
 
@@ -188,14 +188,14 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         public async Task<ActionResult> DeleteCatalog(string id)
         {
-            var catalog = (await _catalogService.GetByIdsAsync(new[] { id })).FirstOrDefault();
+            var catalog = (await _catalogServiceCrud.GetByIdsAsync(new[] { id })).FirstOrDefault();
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, catalog, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Delete));
             if (!authorizationResult.Succeeded)
             {
                 return Unauthorized();
             }
 
-            await _catalogService.DeleteAsync(new[] { id });
+            await _catalogServiceCrud.DeleteAsync(new[] { id });
             return NoContent();
         }
     }

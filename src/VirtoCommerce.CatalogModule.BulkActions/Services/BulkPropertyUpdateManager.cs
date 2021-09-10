@@ -20,7 +20,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
         private readonly IItemService _itemService;
         private readonly ICrudService<CatalogProduct> _itemServiceCrud;
         private readonly ICategoryService _categoryService;
-        private readonly ICrudService<Catalog> _catalogService;
+        private readonly ICrudService<Catalog> _catalogServiceCrud;
 
         private readonly Dictionary<string, MethodInfo> _productProperties = new Dictionary<string, MethodInfo>();
         private readonly Dictionary<string, string> _namesById = new Dictionary<string, string>();
@@ -42,7 +42,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
             _itemService = itemService;
             _itemServiceCrud = (ICrudService<CatalogProduct>)itemService;
             _categoryService = categoryService;
-            _catalogService = (ICrudService<Catalog>)catalogService;
+            _catalogServiceCrud = (ICrudService<Catalog>)catalogService;
         }
 
         public async Task<Property[]> GetPropertiesAsync(BulkActionContext context)
@@ -114,7 +114,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
             {
                 if (!_namesById.TryGetValue(property.CatalogId, out ownerName))
                 {
-                    var catalog = (await _catalogService.GetByIdsAsync(new[] { property.CatalogId }, CategoryResponseGroup.Info.ToString())).FirstOrDefault();
+                    var catalog = (await _catalogServiceCrud.GetByIdsAsync(new[] { property.CatalogId }, CategoryResponseGroup.Info.ToString())).FirstOrDefault();
                     ownerName = $"{catalog?.Name} (Catalog)";
                     _namesById.Add(property.CatalogId, ownerName);
                 }

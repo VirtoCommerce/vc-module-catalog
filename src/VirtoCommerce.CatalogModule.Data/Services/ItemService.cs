@@ -22,13 +22,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 {
     public class ItemService : CrudService<CatalogProduct, ItemEntity, ProductChangingEvent, ProductChangedEvent>, IItemService
     {
-        private new readonly Func<ICatalogRepository> _repositoryFactory;
-        private new readonly IEventPublisher _eventPublisher;
         private readonly AbstractValidator<IHasProperties> _hasPropertyValidator;
-        private readonly ICrudService<Catalog> _catalogService;
+        private readonly ICrudService<Catalog> _catalogServiceCrud;
         private readonly ICategoryService _categoryService;
         private readonly IOutlineService _outlineService;
-        private new readonly IPlatformMemoryCache _platformMemoryCache;
         private readonly IBlobUrlResolver _blobUrlResolver;
         private readonly ISkuGenerator _skuGenerator;
         private readonly AbstractValidator<CatalogProduct> _productValidator;
@@ -45,16 +42,13 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             AbstractValidator<CatalogProduct> productValidator)
              : base(catalogRepositoryFactory, platformMemoryCache, eventPublisher)
         {
-            _repositoryFactory = catalogRepositoryFactory;
-            _eventPublisher = eventPublisher;
             _hasPropertyValidator = hasPropertyValidator;
             _categoryService = categoryService;
             _outlineService = outlineService;
-            _platformMemoryCache = platformMemoryCache;
             _blobUrlResolver = blobUrlResolver;
             _skuGenerator = skuGenerator;
             _productValidator = productValidator;
-            _catalogService = (ICrudService<Catalog>)catalogService;
+            _catalogServiceCrud = (ICrudService<Catalog>)catalogService;
         }
 
         #region IItemService Members
@@ -81,7 +75,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                         cacheEntry.AddExpirationToken(ItemCacheRegion.CreateChangeToken(itemIds));
                         cacheEntry.AddExpirationToken(CatalogCacheRegion.CreateChangeToken());
 
-                        products = (await repository.GetItemByIdsAsync(itemIds, respGroup))
+                        products = (await ((ICatalogRepository)repository).GetItemByIdsAsync(itemIds, respGroup))
                             .Select(x => x.ToModel(AbstractTypeFactory<CatalogProduct>.TryCreateInstance()))
                             .ToArray();
                     }
@@ -151,7 +145,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             {
                 await _eventPublisher.Publish(new ProductChangingEvent(changedEntries));
 
-                await repository.RemoveItemsAsync(ids.ToArray());
+                await ((ICatalogRepository)repository).RemoveItemsAsync(ids.ToArray());
                 await repository.UnitOfWork.CommitAsync();
 
                 ClearCache(items);
@@ -177,7 +171,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
             //TODO: refactor to do this by one call and iteration
             var catalogsIds = new { products }.GetFlatObjectsListWithInterface<IHasCatalogId>().Select(x => x.CatalogId).Where(x => x != null).Distinct().ToArray();
-            var catalogsByIdDict = (await _catalogService.GetByIdsAsync(catalogsIds)).ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase);
+            var catalogsByIdDict = (await _catalogServiceCrud.GetByIdsAsync(catalogsIds)).ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase);
 
             var categoriesIds = new { products }.GetFlatObjectsListWithInterface<IHasCategoryId>().Select(x => x.CategoryId).Where(x => x != null).Distinct().ToArray();
             var categoriesByIdDict = (await _categoryService.GetByIdsAsync(categoriesIds, CategoryResponseGroup.Full.ToString())).ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase);

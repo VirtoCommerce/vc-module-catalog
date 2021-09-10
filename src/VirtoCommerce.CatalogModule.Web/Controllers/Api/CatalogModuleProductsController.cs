@@ -24,7 +24,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
     {
         private readonly IItemService _itemsService;
         private readonly ICrudService<CatalogProduct> _itemsServiceCrud;
-        private readonly ICrudService<Catalog> _catalogService;
+        private readonly ICrudService<Catalog> _catalogServiceCrud;
         private readonly ICategoryService _categoryService;
         private readonly ISkuGenerator _skuGenerator;
         private readonly IProductAssociationSearchService _productAssociationSearchService;
@@ -43,7 +43,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             _itemsService = itemsService;
             _itemsServiceCrud = (ICrudService<CatalogProduct>)itemsService;
             _categoryService = categoryService;
-            _catalogService = (ICrudService<Catalog>)catalogService;
+            _catalogServiceCrud = (ICrudService<Catalog>)catalogService;
             _skuGenerator = skuGenerator;
             _productAssociationSearchService = productAssociationSearchService;
             _authorizationService = authorizationService;
@@ -146,7 +146,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             Entity parent = null;
             if (catalogId != null)
             {
-                parent = (await _catalogService.GetByIdsAsync(new[] { catalogId })).FirstOrDefault();
+                parent = (await _catalogServiceCrud.GetByIdsAsync(new[] { catalogId })).FirstOrDefault();
             }
             if (categoryId != null)
             {
@@ -296,7 +296,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private async Task<CatalogProduct[]> InnerSaveProducts(CatalogProduct[] products)
         {
             var toSaveList = new List<CatalogProduct>();
-            var catalogs = await _catalogService.GetByIdsAsync(products.Select(pr => pr.CatalogId).Distinct().ToArray());
+            var catalogs = await _catalogServiceCrud.GetByIdsAsync(products.Select(pr => pr.CatalogId).Distinct().ToArray());
             foreach (var product in products)
             {
                 if (product.IsTransient() && product.SeoInfos.IsNullOrEmpty())
