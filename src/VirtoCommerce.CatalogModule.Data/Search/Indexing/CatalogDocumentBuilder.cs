@@ -4,6 +4,7 @@ using System.Linq;
 using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Outlines;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.SearchModule.Core.Model;
 
@@ -24,13 +25,20 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         {
             foreach (var property in properties)
             {
-                foreach (var propValue in property.Values?.Where(x => x.Value != null) ?? Array.Empty<PropertyValue>())
+                var isCollection = property?.Multivalue == true;
+
+                // replace empty value for Boolean property with default 'False'
+                if (property?.ValueType == PropertyValueType.Boolean && property.Values.IsNullOrEmpty())
+                {
+                    document.Add(new IndexDocumentField(property.Name, false) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection, ValueType = IndexDocumentFieldValueType.Boolean, });
+                    break;
+                }
+
+                foreach (var propValue in property?.Values?.Where(x => x.Value != null) ?? Array.Empty<PropertyValue>())
                 {
                     var propertyName = propValue.PropertyName?.ToLowerInvariant();
                     if (!string.IsNullOrEmpty(propertyName))
                     {
-                        var isCollection = property?.Multivalue == true;
-
                         switch (propValue.ValueType)
                         {
                             case PropertyValueType.Boolean:
