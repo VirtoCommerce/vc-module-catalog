@@ -101,14 +101,14 @@ angular.module('virtoCommerce.catalogModule')
                     breadCrumb.id = blade.categoryId;
                     breadCrumb.name = blade.category.name;
                 } else {
+                    breadCrumb.id = blade.catalogId;
                     blade.catalog.$promise.then((data) => {
-                        breadCrumb.id = blade.catalogId;
                         breadCrumb.name = data.name;
                     });
                 }
 
                 //prevent duplicate items
-                if (!_.some(blade.breadcrumbs, function (x) { return x.id == breadCrumb.id })) {
+                if (!_.some(blade.breadcrumbs, function (x) { return x.id === breadCrumb.id })) {
                     blade.breadcrumbs.push(breadCrumb);
                 }
 
@@ -375,8 +375,8 @@ angular.module('virtoCommerce.catalogModule')
                             catalog: blade.catalog,
                             controller: 'virtoCommerce.catalogModule.exporterListController',
                             template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/export/exporter-list.tpl.html',
-                            selectedProducts: _.filter($scope.gridApi.selection.getSelectedRows(), function (x) { return x.type == 'product' }),
-                            selectedCategories: _.filter($scope.gridApi.selection.getSelectedRows(), function (x) { return x.type == 'category' }),
+                            selectedProducts: _.filter($scope.gridApi.selection.getSelectedRows(), function (x) { return x.type === 'product' }),
+                            selectedCategories: _.filter($scope.gridApi.selection.getSelectedRows(), function (x) { return x.type === 'category' }),
                             isAllSelected: $scope.gridApi.selection.getSelectAllState()
                         };
                         bladeNavigationService.showBlade(newBlade, blade);
@@ -494,7 +494,7 @@ angular.module('virtoCommerce.catalogModule')
 
                 //disable watched
                 bladeUtils.initializePagination($scope, true);
-                //сhoose the optimal amount that ensures the appearance of the scroll
+                //choose the optimal amount that ensures the appearance of the scroll
                 $scope.pageSettings.itemsPerPageCount = 50;
 
                 uiGridHelper.initialize($scope, gridOptions, function (gridApi) {
