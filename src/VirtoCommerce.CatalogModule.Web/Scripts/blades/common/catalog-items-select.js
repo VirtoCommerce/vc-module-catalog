@@ -79,7 +79,7 @@ angular.module('virtoCommerce.catalogModule')
         }
 
         //prevent duplicate items
-        if (!_.some(blade.breadcrumbs, function (x) { return x.id == breadCrumb.id })) {
+        if (!_.some(blade.breadcrumbs, function (x) { return x.id === breadCrumb.id })) {
             blade.breadcrumbs.push(breadCrumb);
         }
 
@@ -107,7 +107,7 @@ angular.module('virtoCommerce.catalogModule')
         //call callback function
         if ($scope.options.selectItemFn) {
             $scope.options.selectItemFn(listItem);
-        };
+        }
         
         var newBlade = {
             id: blade.id,
@@ -204,7 +204,7 @@ angular.module('virtoCommerce.catalogModule')
             //check already selected rows
             $timeout(function () {
                 _.each($scope.items, function (x) {
-                    if (_.some($scope.options.selectedItemIds, function (y) { return y == x.id; })) {
+                    if (_.some($scope.options.selectedItemIds, function (y) { return y === x.id; })) {
                         gridApi.selection.selectRow(x);
                     }
                 });
@@ -214,7 +214,7 @@ angular.module('virtoCommerce.catalogModule')
         gridApi.selection.on.rowSelectionChanged($scope, function (row) {
             if ($scope.options.checkItemFn) {
                 $scope.options.checkItemFn(row.entity, row.isSelected);
-            };
+            }
             if (row.isSelected) {
                 if (!_.contains($scope.options.selectedItemIds, row.entity.id)) {
                     $scope.options.selectedItemIds.push(row.entity.id);
