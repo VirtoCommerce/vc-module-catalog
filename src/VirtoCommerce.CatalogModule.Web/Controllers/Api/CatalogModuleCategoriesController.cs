@@ -8,13 +8,14 @@ using Microsoft.AspNetCore.Mvc;
 using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
-using VirtoCommerce.CatalogModule.Web.Authorization;
+using VirtoCommerce.CatalogModule.Data.Authorization;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
     [Route("api/catalog/categories")]
+    [Authorize]
     public class CatalogModuleCategoriesController : Controller
     {
         private readonly ICategoryService _categoryService;
@@ -97,7 +98,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <param name="parentCategoryId">The parent category id. (Optional)</param>
         [HttpGet]
         [Route("~/api/catalog/{catalogId}/categories/newcategory")]
-        public ActionResult<Category> GetNewCategory(string catalogId, [FromQuery]string parentCategoryId = null)
+        public ActionResult<Category> GetNewCategory(string catalogId, [FromQuery] string parentCategoryId = null)
         {
             var retVal = new Category
             {
@@ -119,8 +120,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <param name="category">The category.</param>
         [HttpPost]
         [Route("")]
-        public async Task<ActionResult> CreateOrUpdateCategory([FromBody]Category category)
-        {           
+        public async Task<ActionResult> CreateOrUpdateCategory([FromBody] Category category)
+        {
             if (category.Id == null)
             {
                 //Ensure that new category has SeoInfo
@@ -131,10 +132,13 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                     {
                         var catalog = (await _catalogService.GetByIdsAsync(new[] { category.CatalogId })).FirstOrDefault();
                         var defaultLanguage = catalog?.Languages.First(x => x.IsDefault).LanguageCode;
-                        category.SeoInfos = new[] { new SeoInfo { LanguageCode = defaultLanguage, SemanticUrl = slugUrl } };
+                        var seoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
+                        seoInfo.LanguageCode = defaultLanguage;
+                        seoInfo.SemanticUrl = slugUrl;
+                        category.SeoInfos = new[] { seoInfo };
                     }
                 }
-            }                     
+            }
 
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, category, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
             if (!authorizationResult.Succeeded)
@@ -155,7 +159,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [HttpDelete]
         [Route("")]
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
-        public async Task<ActionResult> DeleteCategory([FromQuery]string[] ids)
+        public async Task<ActionResult> DeleteCategory([FromQuery] string[] ids)
         {
             var categories = await _categoryService.GetByIdsAsync(ids, CategoryResponseGroup.Info.ToString());
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, categories, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Delete));

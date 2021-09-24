@@ -1,4 +1,4 @@
-﻿<div class="blade-static __bottom" ng-include="'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/common/templates/ok-cancel.tpl.html'"></div>
+<div class="blade-static __bottom" ng-include="'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/common/templates/ok-cancel.tpl.html'"></div>
 <div class="blade-content">
     <div class="blade-inner">
         <div class="inner-block">
@@ -6,8 +6,21 @@
                 <div class="form-group" ng-init="setForm(formScope);">
                     <label class="form-label" for="">{{ 'catalog.blades.item-property-detail.labels.property-name' | translate }}</label>
                     <div class="form-input">
-                        <input focus-on="" required class="form-control" ng-model="blade.currentEntity.name"/>
+                        <input required class="form-control" ng-model="blade.currentEntity.name" ng-model-options="{ debounce: 300 }" ui-validate-async="'doValidateNameAsync($value)'" />
                     </div>
+                    <span class="comment-text" ng-if="errorData">
+                        <img src="/images/layout/warning.svg" class="comment-icon">
+                        <span ng-if="errorData.errorMessage=='duplicate-property'">
+                            {{ 'catalog.blades.item-property-detail.labels.duplicate-property-in-product' | translate: errorData.customState }}
+                        </span>
+                        <span ng-if="errorData.errorMessage=='duplicate-property-in-variation'">
+                            {{ 'catalog.blades.item-property-detail.labels.duplicate-property-in-variation1' | translate: errorData.customState }}
+                            <a href="" ng-click="openBlade(errorData.customState)">{{errorData.customState.name}}</a>{{ 'catalog.blades.item-property-detail.labels.duplicate-property-in-variation2' | translate: errorData.customState }}
+                        </span>
+                        <span ng-if="errorData.errorMessage=='property-naming-error'">
+                            {{ 'catalog.blades.item-property-detail.labels.property-naming-error' | translate }}
+                        </span>
+                    </span>
                 </div>
                 <div class="form-group">
                     <label class="form-label">{{ 'catalog.blades.property-detail.labels.value-type' | translate }}</label>

@@ -5,21 +5,21 @@ angular.module('virtoCommerce.catalogModule')
     $scope.selectedNodeId = null; // need to initialize to null
     blade.isLoading = false;
     blade.refresh = function (item) {
-    	initialize(item);    	
+        initialize(item);    	
     };
 
     function initialize(item) {
-    	blade.headIcon = 'fa-comments';
-    	blade.item = item;
-    	blade.title = blade.item.name;
-    	blade.subtitle = 'catalog.blades.editorialReviews-list.subtitle';
-    	blade.selectNode = $scope.openBlade;
+        blade.headIcon = 'fa fa-comments';
+        blade.item = item;
+        blade.title = blade.item.name;
+        blade.subtitle = 'catalog.blades.editorialReviews-list.subtitle';
+        blade.selectNode = $scope.openBlade;
     };
 
     $scope.openBlade = function (node) {
-    	if (node) {
-    		$scope.selectedNodeId = node.id;
-    	}
+        if (node) {
+            $scope.selectedNodeId = node.id;
+        }
         var newBlade = {
             id: 'editorialReview',
             currentEntity: node,
@@ -34,55 +34,55 @@ angular.module('virtoCommerce.catalogModule')
    
 
     $scope.delete = function (data) {
-    	deleteList([data]);
+        deleteList([data]);
     };
 
     function deleteList(selection) {
-    	var dialog = {
-    		id: "confirmDelete",
-    		title: "catalog.dialogs.review-delete.title",
-    		message: "catalog.dialogs.review-delete.message",
-    		callback: function (remove) {
-    			if (remove) {
-    				bladeNavigationService.closeChildrenBlades(blade, function () {
-    					_.each(selection, function (x) {
-    						blade.item.reviews.splice(blade.item.reviews.indexOf(x), 1);
-    					});
-    				});
-    			}
-    		}
-    	};
-    	dialogService.showConfirmationDialog(dialog);
+        var dialog = {
+            id: "confirmDelete",
+            title: "catalog.dialogs.review-delete.title",
+            message: "catalog.dialogs.review-delete.message",
+            callback: function (remove) {
+                if (remove) {
+                    bladeNavigationService.closeChildrenBlades(blade, function () {
+                        _.each(selection, function (x) {
+                            blade.item.reviews.splice(blade.item.reviews.indexOf(x), 1);
+                        });
+                    });
+                }
+            }
+        };
+        dialogService.showConfirmationDialog(dialog);
     }
 
     blade.toolbarCommands = [
         {
-        	name: "platform.commands.add", icon: 'fa fa-plus',
-        	executeMethod: function () {
-        		$scope.openBlade();
-        	},
-        	canExecuteMethod: function () {
-        		return true;
-        	}
+            name: "platform.commands.add", icon: 'fas fa-plus',
+            executeMethod: function () {
+                $scope.openBlade();
+            },
+            canExecuteMethod: function () {
+                return true;
+            }
         },
-		{
-			name: "platform.commands.delete", icon: 'fa fa-trash-o',
-			executeMethod: function () { deleteList($scope.gridApi.selection.getSelectedRows()); },
-			canExecuteMethod: function () {
-				return $scope.gridApi && _.any($scope.gridApi.selection.getSelectedRows());
-			}
-		}
+        {
+            name: "platform.commands.delete", icon: 'fas fa-trash-alt',
+            executeMethod: function () { deleteList($scope.gridApi.selection.getSelectedRows()); },
+            canExecuteMethod: function () {
+                return $scope.gridApi && _.any($scope.gridApi.selection.getSelectedRows());
+            }
+        }
 
     ];
 
-	// ui-grid
+    // ui-grid
     $scope.setGridOptions = function (gridOptions) {
-    	uiGridHelper.initialize($scope, gridOptions);
+        uiGridHelper.initialize($scope, gridOptions);
     };
 
     // open blade for new review 
     if (!_.some(blade.item.reviews)) {
-    	$timeout($scope.openBlade, 60, false);
+        $timeout($scope.openBlade, 60, false);
     }
 
     initialize(blade.item);

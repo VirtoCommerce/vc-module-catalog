@@ -16,6 +16,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
 {
     public class BrowseFilterService : IBrowseFilterService
     {
+        public const string FilteredBrowsingPropertyId = "VirtoCommerce.Catalog_FilteredBrowsing_Property";
         public const string FilteredBrowsingPropertyName = "FilteredBrowsing";
 
         private readonly IStoreService _storeService;
@@ -98,7 +99,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
                 var property = store.DynamicProperties.FirstOrDefault(p => p.Name == FilteredBrowsingPropertyName);
                 if (property == null)
                 {
-                    property = new DynamicObjectProperty { Name = FilteredBrowsingPropertyName };
+                    property = AbstractTypeFactory<DynamicObjectProperty>.TryCreateInstance();
+                    property.Id = FilteredBrowsingPropertyId;
+                    property.Name = FilteredBrowsingPropertyName;
+                    property.ValueType = DynamicPropertyValueType.LongText;
+
                     store.DynamicProperties.Add(property);
                 }
 

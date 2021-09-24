@@ -63,7 +63,7 @@ angular.module('virtoCommerce.catalogModule')
 
     blade.toolbarCommands = [
         {
-            name: "Save", icon: 'fa fa-save',
+            name: "Save", icon: 'fas fa-save',
             executeMethod: $scope.saveChanges,
             canExecuteMethod: isDirty
         },
@@ -84,6 +84,6 @@ angular.module('virtoCommerce.catalogModule')
         cursor: "move"
     };
 
-    blade.headIcon = 'fa-gear';
+    blade.headIcon = 'fa fa-gear';
     initializeBlade();
 }]);

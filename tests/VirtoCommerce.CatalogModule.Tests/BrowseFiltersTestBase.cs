@@ -5,7 +5,7 @@ using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
 using VirtoCommerce.CatalogModule.Data.Search.Indexing;
 
-namespace VirtoCommerce.CatalogModule.Test
+namespace VirtoCommerce.CatalogModule.Tests
 {
     public abstract class BrowseFiltersTestBase
     {
@@ -96,7 +96,7 @@ namespace VirtoCommerce.CatalogModule.Test
 
         protected static ITermFilterBuilder GetTermFilterBuilder()
         {
-            return new TermFilterBuilder(GetBrowseFilterService());
+            return new TermFilterBuilder(GetBrowseFilterService(), null);
         }
 
         protected static IBrowseFilterService GetBrowseFilterService()

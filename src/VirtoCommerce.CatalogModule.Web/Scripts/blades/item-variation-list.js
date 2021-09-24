@@ -71,7 +71,7 @@ angular.module('virtoCommerce.catalogModule').controller('virtoCommerce.catalogM
     };
 
 
-    blade.headIcon = 'fa-dropbox';
+    blade.headIcon = 'fa fa-dropbox';
 
     if (blade.toolbarCommandsAndEvents && blade.toolbarCommandsAndEvents.toolbarCommands) {
         blade.toolbarCommands = blade.toolbarCommandsAndEvents.toolbarCommands;
@@ -85,12 +85,17 @@ angular.module('virtoCommerce.catalogModule').controller('virtoCommerce.catalogM
                 canExecuteMethod: function () { return true; }
             },
             {
-                name: "platform.commands.add", icon: 'fa fa-plus',
+                name: "platform.commands.add", icon: 'fas fa-plus',
                 executeMethod: function () {
                     items.newVariation({ itemId: blade.item.id }, function (data) {
                         // take variation properties only
                         data.properties = _.where(data.properties, { type: 'Variation' });
                         data.productType = blade.item.productType;
+
+                        if (data.productType === 'Digital'
+                            || data.productType === 'BillOfMaterials') {
+                            data.trackInventory = false;
+                        }
 
                         var newBlade = {
                             id: 'variationDetail',
@@ -109,7 +114,7 @@ angular.module('virtoCommerce.catalogModule').controller('virtoCommerce.catalogM
                 permission: 'catalog:create'
             },
             {
-                name: "platform.commands.delete", icon: 'fa fa-trash-o',
+                name: "platform.commands.delete", icon: 'fas fa-trash-alt',
                 executeMethod: function () {
                     $scope.deleteList($scope.gridApi.selection.getSelectedRows());
                 },

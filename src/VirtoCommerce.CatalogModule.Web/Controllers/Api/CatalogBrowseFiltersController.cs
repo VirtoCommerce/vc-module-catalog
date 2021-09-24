@@ -11,7 +11,6 @@ using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
-using VirtoCommerce.CatalogModule.Web.Authorization;
 using VirtoCommerce.CatalogModule.Web.Model;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.StoreModule.Core.Model;
@@ -21,6 +20,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
     [Route("api/catalog/aggregationproperties")]
     [ApiExplorerSettings(IgnoreApi = true)]
+    [Authorize]
     public class CatalogBrowseFiltersController : Controller
     {
         private const string _attributeType = "Attribute";
@@ -29,7 +29,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
         private readonly IStoreService _storeService;
         private readonly IPropertyService _propertyService;
-        private readonly IPropertySearchService _propertySearchService;
         private readonly IBrowseFilterService _browseFilterService;
         private readonly IPropertyDictionaryItemSearchService _propDictItemsSearchService;
 
@@ -37,14 +36,12 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             IStoreService storeService
             , IPropertyService propertyService
             , IBrowseFilterService browseFilterService
-            , IPropertyDictionaryItemSearchService propDictItemsSearchService
-            , IPropertySearchService propertySearchService)
+            , IPropertyDictionaryItemSearchService propDictItemsSearchService)
         {
             _storeService = storeService;
             _propertyService = propertyService;
             _browseFilterService = browseFilterService;
             _propDictItemsSearchService = propDictItemsSearchService;
-            _propertySearchService = propertySearchService;
         }
 
         /// <summary>
@@ -88,16 +85,43 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("{storeId}/properties")]
         [Authorize(ModuleConstants.Security.Permissions.CatalogBrowseFiltersUpdate)]
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
-        public async Task<ActionResult> SetAggregationProperties(string storeId, [FromBody]AggregationProperty[] browseFilterProperties)
+        public async Task<ActionResult> SetAggregationProperties(string storeId, [FromBody] AggregationProperty[] browseFilterProperties)
         {
             var store = await _storeService.GetByIdAsync(storeId, StoreResponseGroup.StoreInfo.ToString());
             if (store == null)
             {
                 return NoContent();
             }
+
+            // Add culture-specific aggregations for specific handling multivalue, multilanguage, non-dictionary properties.
+            // Look for details at PT-3044, VP-7549
+
+            var catalogProperties = await _propertyService.GetAllCatalogPropertiesAsync(store.Catalog);
+
+            var browseFilterPropertiesList = new List<AggregationProperty>();
+            foreach (var aggregationProperty in browseFilterProperties)
+            {
+                browseFilterPropertiesList.Add(aggregationProperty);
+                var catalogProperty = catalogProperties.FirstOrDefault(x => x.Name == aggregationProperty.Name);
+                // If the property is multilanguage, but not dictionary, let's add synthetic aggregation property for each store culture
+                // To allow future facet filtering.
+                if (catalogProperty!=null &&
+                    !catalogProperty.Dictionary &&
+                    catalogProperty.Multilanguage)
+                {
+                    
+                    foreach (var lang in store.Languages)
+                    {
+                        var aggregationPropertyLangSpecific=aggregationProperty.Clone() as AggregationProperty;
+                        aggregationPropertyLangSpecific.Name = $"{aggregationPropertyLangSpecific.Name}_{lang.ToLowerInvariant()}";
+                        browseFilterPropertiesList.Add(aggregationPropertyLangSpecific);
+                    }
+                }
+            }
+
             // Filter names must be unique
             // Keep the selected properties order.
-            var filters = browseFilterProperties
+            var filters = browseFilterPropertiesList
                 .Where(p => p.IsSelected)
                 .GroupBy(p => p.Name, StringComparer.OrdinalIgnoreCase)
                 .Select((g, i) => ConvertToFilter(g.First(), i))
@@ -117,8 +141,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var store = await _storeService.GetByIdAsync(storeId, StoreResponseGroup.StoreInfo.ToString());
             if (store != null)
             {
-                var catalogPropertiesSearchResult = await _propertySearchService.SearchPropertiesAsync(new PropertySearchCriteria { PropertyNames = new[] { propertyName }, CatalogId = store.Catalog, Take = 1 });
-                var property = catalogPropertiesSearchResult.Results.FirstOrDefault(p => p.Name.EqualsInvariant(propertyName) && p.Dictionary);
+                var catalogProperties = await _propertyService.GetAllCatalogPropertiesAsync(store.Catalog);
+                var property = catalogProperties.FirstOrDefault(p => p.Name.EqualsInvariant(propertyName) && p.Dictionary);
                 if (property != null)
                 {
                     var searchResult = await _propDictItemsSearchService.SearchAsync(new PropertyDictionaryItemSearchCriteria { PropertyIds = new[] { property.Id }, Take = int.MaxValue });
@@ -131,7 +155,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
         private async Task<IList<AggregationProperty>> GetAllPropertiesAsync(string catalogId, IEnumerable<string> currencies)
         {
-            var result = (await _propertySearchService.SearchPropertiesAsync(new PropertySearchCriteria { CatalogId = catalogId, Take = int.MaxValue })).Results
+            var result = (await _propertyService.GetAllCatalogPropertiesAsync(catalogId))
                             .Select(p => new AggregationProperty { Type = _attributeType, Name = p.Name })
                             .ToList();
 

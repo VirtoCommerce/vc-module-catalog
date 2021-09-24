@@ -1,5 +1,5 @@
 angular.module('virtoCommerce.catalogModule')
-    .controller('virtoCommerce.catalogModule.propertyDetailController', ['$scope', 'virtoCommerce.catalogModule.properties', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'virtoCommerce.catalogModule.valueTypes', function ($scope, properties, bladeNavigationService, dialogService, valueTypes) {
+    .controller('virtoCommerce.catalogModule.propertyDetailController', ['$scope', '$q', 'virtoCommerce.catalogModule.properties', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'virtoCommerce.catalogModule.valueTypes', 'virtoCommerce.catalogModule.propertyValidators', function ($scope, $q, properties, bladeNavigationService, dialogService, valueTypes, propertyValidators) {
         var blade = $scope.blade;
         blade.updatePermission = 'catalog:update';
         blade.origEntity = {};
@@ -8,7 +8,60 @@ angular.module('virtoCommerce.catalogModule')
         blade.subtitle = "catalog.blades.property-detail.subtitle";
         blade.availableValueTypes = valueTypes.get();
 
+        blade.hasMultivalue = true;
+        blade.hasDictionary = true;
+        blade.hasMultilanguage = true;
+
         blade.availablePropertyTypes = blade.catalogId ? ['Product', 'Variation', 'Category', 'Catalog'] : ['Product', 'Variation', 'Category'];
+
+        $scope.$watch('blade.currentEntity.valueType', function (newValue, oldValue) {
+            blade.hasMultivalue = true;
+            blade.hasDictionary = true;
+            blade.hasMultilanguage = true;
+            switch (newValue) {
+                case 'DateTime':
+                case 'Boolean':
+                case 'Integer':
+                    blade.hasMultivalue = blade.currentEntity.multivalue = false;
+                    blade.hasDictionary = blade.currentEntity.dictionary = false;
+                    blade.hasMultilanguage = blade.currentEntity.multilanguage = false;
+                    break;
+                case 'GeoPoint':
+                    blade.hasDictionary = blade.currentEntity.dictionary = false;
+                    blade.hasMultilanguage = blade.currentEntity.multilanguage = false;
+                    break;
+            }
+        });
+
+        $scope.doValidateNameAsync = value => {
+            // common property name errors validation
+            if (value && !propertyValidators.isNameValid(value)) {
+                $scope.errorData = {
+                    errorMessage: 'property-naming-error'
+                }
+                return $q.reject();
+            }
+
+            // validation for category properties
+            // skips backend property name validation for current entity edit when the old name equals new name
+            if (!blade.origEntity.categoryId || (!blade.origEntity.isNew && value === blade.origEntity.name)) {
+                $scope.errorData = null;
+                return $q.resolve();
+            }
+
+            return properties.validateCategoryPropertyName({
+                propertyName: value,
+                categoryId: blade.origEntity.categoryId
+            }).$promise.then(result => {
+                if (result.isValid) {
+                    $scope.errorData = null;
+                    return $q.resolve();
+                } else {
+                    $scope.errorData = result.errors[0];
+                    return $q.reject();
+                }
+            });
+        };
 
         blade.refresh = function (parentRefresh) {
             if (blade.currentEntityId) {
@@ -41,21 +94,24 @@ angular.module('virtoCommerce.catalogModule')
             switch (childType) {
                 case 'attr':
                     newBlade.title = 'catalog.blades.property-attributes.title';
-                    newBlade.titleValues = { name: blade.origEntity.name ? blade.origEntity.name : blade.currentEntity.name };
+                    newBlade.titleValues =
+                        { name: blade.origEntity.name ? blade.origEntity.name : blade.currentEntity.name };
                     newBlade.subtitle = 'catalog.blades.property-attributes.subtitle';
                     newBlade.controller = 'virtoCommerce.catalogModule.propertyAttributesController';
                     newBlade.template = 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-attributes.tpl.html';
                     break;
                 case 'rules':
                     newBlade.title = 'catalog.blades.property-validationRule.title';
-                    newBlade.titleValues = { name: blade.origEntity.name ? blade.origEntity.name : blade.currentEntity.name };
+                    newBlade.titleValues =
+                        { name: blade.origEntity.name ? blade.origEntity.name : blade.currentEntity.name };
                     newBlade.subtitle = 'catalog.blades.property-validationRule.subtitle';
                     newBlade.controller = 'virtoCommerce.catalogModule.propertyValidationRulesController';
                     newBlade.template = 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-validationRules.tpl.html';
                     break;
                 case 'dict':
                     newBlade.title = 'catalog.blades.property-dictionary.title';
-                    newBlade.titleValues = { name: blade.origEntity.name ? blade.origEntity.name : blade.currentEntity.name };
+                    newBlade.titleValues =
+                        { name: blade.origEntity.name ? blade.origEntity.name : blade.currentEntity.name };
                     newBlade.subtitle = 'catalog.blades.property-dictionary.subtitle';
                     newBlade.controller = 'virtoCommerce.catalogModule.propertyDictionaryListController';
                     newBlade.template = 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-dictionary-list.tpl.html';
@@ -63,7 +119,7 @@ angular.module('virtoCommerce.catalogModule')
             }
             bladeNavigationService.showBlade(newBlade, blade);
             $scope.currentChild = childType;
-        }
+        };
 
         function initializeBlade(data) {
             properties.values({ propertyId: data.id }, function (response) {
@@ -74,11 +130,14 @@ angular.module('virtoCommerce.catalogModule')
                     });
                 }
 
+                if (blade.propertyType) {
+                    data.type = blade.propertyType;
+                }
                 blade.currentEntity = angular.copy(data);
                 blade.origEntity = data;
                 blade.isLoading = false;
             });
-        };
+        }
 
         function isDirty() {
             return !angular.equals(blade.currentEntity, blade.origEntity) && blade.hasUpdatePermission();
@@ -92,15 +151,16 @@ angular.module('virtoCommerce.catalogModule')
             blade.isLoading = true;
             bladeNavigationService.closeChildrenBlades(blade);
 
+            delete blade.currentEntity.validationRule; // clear read-only property
             if (blade.currentEntity.valueType !== "ShortText" && blade.currentEntity.valueType !== "LongText") {
-                blade.currentEntity.validationRule = null;
+                delete blade.currentEntity.validationRules;
             }
 
             properties.update(blade.currentEntity, function (data, headers) {
                 blade.currentEntityId = data.id;
                 blade.refresh(true);
             });
-        };
+        }
 
         function removeProperty(prop) {
             var dialog = {
@@ -125,11 +185,11 @@ angular.module('virtoCommerce.catalogModule')
         var formScope;
         $scope.setForm = function (form) { formScope = form; }
 
-        blade.headIcon = 'fa-gear';
+        blade.headIcon = 'fa fa-gear';
 
         blade.toolbarCommands = [
             {
-                name: "platform.commands.save", icon: 'fa fa-save',
+                name: "platform.commands.save", icon: 'fas fa-save',
                 executeMethod: saveChanges,
                 canExecuteMethod: canSave
             },
@@ -141,7 +201,7 @@ angular.module('virtoCommerce.catalogModule')
                 canExecuteMethod: isDirty
             },
             {
-                name: "platform.commands.delete", icon: 'fa fa-trash-o',
+                name: "platform.commands.delete", icon: 'fas fa-trash-alt',
                 executeMethod: function () {
                     removeProperty(blade.origEntity);
                 },

@@ -4,8 +4,12 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 {
     public class Image : AssetBase
     {
-        public int SortOrder { get; set; }
+        public Image() : base(nameof(Image))
+        {
+        }
         public byte[] BinaryData { get; set; }
+
+        public string AltText { get; set; }
 
         public override void TryInheritFrom(IEntity parent)
         {

@@ -27,7 +27,8 @@ angular.module('virtoCommerce.catalogModule')
                     categoryId: blade.categoryId,
                     keyword: filter.keyword,
                     searchInVariations : filter.searchInVariations ? filter.searchInVariations : false,
-                    responseGroup: 'withCategories, withProducts',                    
+                    responseGroup: 'withCategories, withProducts',
+                    excludeProductType: $scope.options.excludeProductType,
                     sort: uiGridHelper.getSortExpression($scope),
                     skip: ($scope.pageSettings.currentPage - 1) * $scope.pageSettings.itemsPerPageCount,
                     take: $scope.pageSettings.itemsPerPageCount
@@ -46,16 +47,17 @@ angular.module('virtoCommerce.catalogModule')
             });
         }
         else {
-            catalogs.getCatalogs({}, function (results) {
+            //ToDo: Apply Infinite scrolling
+            catalogs.search({take: 1000}, function (data) {
                 blade.isLoading = false;
 
-                $scope.items = results;
+                $scope.items = data.results;
                 //Set navigation breadcrumbs
                 setBreadcrumbs();
 
             });
         }
-    }
+    };
 
     //Breadcrumbs
     function setBreadcrumbs() {
@@ -65,7 +67,7 @@ angular.module('virtoCommerce.catalogModule')
         //catalog breadcrumb by default
         var breadCrumb = {
             id: blade.catalogId ? blade.catalogId : "All",
-            name: blade.catalog ? blade.catalog.name : "All",
+            name: blade.catalog ? blade.catalog.name : "catalog.blades.catalog-items-select.bread-crumb-top",
             blade: $scope.blade
         };
 
@@ -77,14 +79,14 @@ angular.module('virtoCommerce.catalogModule')
         }
 
         //prevent duplicate items
-        if (!_.some(blade.breadcrumbs, function (x) { return x.id == breadCrumb.id })) {
+        if (!_.some(blade.breadcrumbs, function (x) { return x.id === breadCrumb.id })) {
             blade.breadcrumbs.push(breadCrumb);
         }
 
         breadCrumb.navigate = function (breadcrumb) {
             bladeNavigationService.closeBlade($scope.blade,
                         function () {
-                            if (breadcrumb.id == "All") {
+                            if (breadcrumb.id === "All") {
                                 blade.catalogId = null;
                                 blade.filter.keyword = null;
                             }
@@ -105,7 +107,7 @@ angular.module('virtoCommerce.catalogModule')
         //call callback function
         if ($scope.options.selectItemFn) {
             $scope.options.selectItemFn(listItem);
-        };
+        }
         
         var newBlade = {
             id: blade.id,
@@ -202,7 +204,7 @@ angular.module('virtoCommerce.catalogModule')
             //check already selected rows
             $timeout(function () {
                 _.each($scope.items, function (x) {
-                    if (_.some($scope.options.selectedItemIds, function (y) { return y == x.id; })) {
+                    if (_.some($scope.options.selectedItemIds, function (y) { return y === x.id; })) {
                         gridApi.selection.selectRow(x);
                     }
                 });
@@ -212,7 +214,7 @@ angular.module('virtoCommerce.catalogModule')
         gridApi.selection.on.rowSelectionChanged($scope, function (row) {
             if ($scope.options.checkItemFn) {
                 $scope.options.checkItemFn(row.entity, row.isSelected);
-            };
+            }
             if (row.isSelected) {
                 if (!_.contains($scope.options.selectedItemIds, row.entity.id)) {
                     $scope.options.selectedItemIds.push(row.entity.id);

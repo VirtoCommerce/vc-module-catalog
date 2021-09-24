@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Core.Model.Search
@@ -49,6 +48,28 @@ namespace VirtoCommerce.CatalogModule.Core.Model.Search
             set
             {
                 _productTypes = value;
+            }
+        }
+
+        /// <summary>
+        /// Exclude a specified product type from the search
+        /// </summary>
+        public string ExcludeProductType { get; set; }
+
+        private string[] _excludeProductTypes;
+        public string[] ExcludeProductTypes
+        {
+            get
+            {
+                if (_excludeProductTypes == null && !string.IsNullOrEmpty(ExcludeProductType))
+                {
+                    _excludeProductTypes = new[] { ExcludeProductType };
+                }
+                return _excludeProductTypes;
+            }
+            set
+            {
+                _excludeProductTypes = value;
             }
         }
 

@@ -6,12 +6,10 @@ using FluentValidation;
 using Microsoft.Extensions.Caching.Memory;
 using VirtoCommerce.CatalogModule.Core.Events;
 using VirtoCommerce.CatalogModule.Core.Model;
-using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Caching;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
-using VirtoCommerce.CatalogModule.Data.Validation;
 using VirtoCommerce.Platform.Core.Assets;
 using VirtoCommerce.Platform.Core.Caching;
 using VirtoCommerce.Platform.Core.Common;
@@ -25,23 +23,24 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private readonly Func<ICatalogRepository> _repositoryFactory;
         private readonly IEventPublisher _eventPublisher;
         private readonly AbstractValidator<IHasProperties> _hasPropertyValidator;
-        private readonly ICatalogSearchService _catalogSearchService;
+        private readonly ICatalogService _catalogService;
         private readonly ICategoryService _categoryService;
         private readonly IOutlineService _outlineService;
         private readonly IPlatformMemoryCache _platformMemoryCache;
         private readonly IBlobUrlResolver _blobUrlResolver;
         private readonly ISkuGenerator _skuGenerator;
+        private readonly AbstractValidator<CatalogProduct> _productValidator;
 
-        public ItemService(
-            Func<ICatalogRepository> catalogRepositoryFactory
-            , IEventPublisher eventPublisher
-            , AbstractValidator<IHasProperties> hasPropertyValidator
-            , ICatalogSearchService catalogSearchService
-            , ICategoryService categoryService
-            , IOutlineService outlineService
-            , IPlatformMemoryCache platformMemoryCache
-            , IBlobUrlResolver blobUrlResolver
-            , ISkuGenerator skuGenerator)
+        public ItemService(Func<ICatalogRepository> catalogRepositoryFactory,
+            IEventPublisher eventPublisher,
+            AbstractValidator<IHasProperties> hasPropertyValidator,
+            ICatalogService catalogService,
+            ICategoryService categoryService,
+            IOutlineService outlineService,
+            IPlatformMemoryCache platformMemoryCache,
+            IBlobUrlResolver blobUrlResolver,
+            ISkuGenerator skuGenerator,
+            AbstractValidator<CatalogProduct> productValidator)
         {
             _repositoryFactory = catalogRepositoryFactory;
             _eventPublisher = eventPublisher;
@@ -51,7 +50,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _platformMemoryCache = platformMemoryCache;
             _blobUrlResolver = blobUrlResolver;
             _skuGenerator = skuGenerator;
-            _catalogSearchService = catalogSearchService;
+            _productValidator = productValidator;
+            _catalogService = catalogService;
         }
 
         #region IItemService Members
@@ -60,7 +60,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
             var itemResponseGroup = EnumUtility.SafeParseFlags(respGroup, ItemResponseGroup.ItemLarge);
 
-            var cacheKey = CacheKey.With(GetType(), "GetByIdsAsync", string.Join("-", itemIds), itemResponseGroup.ToString(), catalogId);
+            var cacheKey = CacheKey.With(GetType(), nameof(GetByIdsAsync), string.Join("-", itemIds), itemResponseGroup.ToString(), catalogId);
             var result = await _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async (cacheEntry) =>
             {
                 var products = Array.Empty<CatalogProduct>();
@@ -72,6 +72,12 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                         //Optimize performance and CPU usage
                         repository.DisableChangesTracking();
 
+                        //It is so important to generate change tokens for all ids even for not existing objects to prevent an issue
+                        //with caching of empty results for non - existing objects that have the infinitive lifetime in the cache
+                        //and future unavailability to create objects with these ids.
+                        cacheEntry.AddExpirationToken(ItemCacheRegion.CreateChangeToken(itemIds));
+                        cacheEntry.AddExpirationToken(CatalogCacheRegion.CreateChangeToken());
+
                         products = (await repository.GetItemByIdsAsync(itemIds, respGroup))
                             .Select(x => x.ToModel(AbstractTypeFactory<CatalogProduct>.TryCreateInstance()))
                             .ToArray();
@@ -79,6 +85,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
                     if (products.Any())
                     {
+                        products = products.OrderBy(x => Array.IndexOf(itemIds, x.Id)).ToArray();
                         await LoadDependenciesAsync(products);
                         ApplyInheritanceRules(products);
 
@@ -90,13 +97,13 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                         {
                             _outlineService.FillOutlinesForObjects(productsWithVariationsList, catalogId);
                         }
+                        //Add change tokens for products with variations
+                        cacheEntry.AddExpirationToken(ItemCacheRegion.CreateChangeToken(productsWithVariationsList));
 
                         //Reduce details according to response group
                         foreach (var product in productsWithVariationsList)
                         {
                             product.ReduceDetails(itemResponseGroup.ToString());
-                            cacheEntry.AddExpirationToken(ItemCacheRegion.CreateChangeToken(product));
-                            cacheEntry.AddExpirationToken(CatalogCacheRegion.CreateChangeToken());
                         }
                     }
                 }
@@ -120,23 +127,28 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return result;
         }
 
-        public virtual async Task SaveChangesAsync(CatalogProduct[] products)
+        public virtual async Task SaveChangesAsync(CatalogProduct[] items)
         {
             var pkMap = new PrimaryKeyResolvingMap();
             var changedEntries = new List<GenericChangedEntry<CatalogProduct>>();
 
-            await ValidateProductsAsync(products);
+            await ValidateProductsAsync(items);
 
             using (var repository = _repositoryFactory())
             {
-                var dbExistProducts = await repository.GetItemByIdsAsync(products.Where(x => !x.IsTransient()).Select(x => x.Id).ToArray());
-                foreach (var product in products)
+                var dbExistProducts = await repository.GetItemByIdsAsync(items.Where(x => !x.IsTransient()).Select(x => x.Id).ToArray());
+                foreach (var product in items)
                 {
                     var modifiedEntity = AbstractTypeFactory<ItemEntity>.TryCreateInstance().FromModel(product, pkMap);
                     var originalEntity = dbExistProducts.FirstOrDefault(x => x.Id == product.Id);
 
                     if (originalEntity != null)
                     {
+                        /// This extension is allow to get around breaking changes is introduced in EF Core 3.0 that leads to throw
+                        /// Database operation expected to affect 1 row(s) but actually affected 0 row(s) exception when trying to add the new children entities with manually set keys
+                        /// https://docs.microsoft.com/en-us/ef/core/what-is-new/ef-core-3.0/breaking-changes#detectchanges-honors-store-generated-key-values
+                        repository.TrackModifiedAsAddedForNewChildEntities(originalEntity);
+
                         changedEntries.Add(new GenericChangedEntry<CatalogProduct>(product, originalEntity.ToModel(AbstractTypeFactory<CatalogProduct>.TryCreateInstance()), EntryState.Modified));
                         modifiedEntity.Patch(originalEntity);
                         //Force set ModifiedDate property to mark a product changed. Special for  partial update cases when product table not have changes
@@ -154,10 +166,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 await repository.UnitOfWork.CommitAsync();
                 pkMap.ResolvePrimaryKeys();
 
+                ClearCache(items);
+
                 await _eventPublisher.Publish(new ProductChangedEvent(changedEntries));
             }
-
-            ClearCache(products);
         }
 
         public virtual async Task DeleteAsync(string[] itemIds)
@@ -174,13 +186,13 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 await repository.RemoveItemsAsync(itemIds);
                 await repository.UnitOfWork.CommitAsync();
 
+                ClearCache(items);
+
                 await _eventPublisher.Publish(new ProductChangedEvent(changedEntries));
             }
-
-            ClearCache(items);
         }
 
-        #endregion
+        #endregion IItemService Members
 
         protected virtual void ClearCache(IEnumerable<CatalogProduct> entities)
         {
@@ -195,55 +207,60 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public virtual async Task LoadDependenciesAsync(IEnumerable<CatalogProduct> products)
         {
-            await InnerLoadDependenciesAsync(products);
-        }
+            //TODO: refactor to do this by one call and iteration
+            var catalogsIds = new { products }.GetFlatObjectsListWithInterface<IHasCatalogId>().Select(x => x.CatalogId).Where(x => x != null).Distinct().ToArray();
+            var catalogsByIdDict = (await _catalogService.GetByIdsAsync(catalogsIds)).ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase);
 
-        protected virtual async Task InnerLoadDependenciesAsync(IEnumerable<CatalogProduct> products, bool processVariations = true)
-        {
-            var catalogsByIdDict = ((await _catalogSearchService.SearchCatalogsAsync(new Core.Model.Search.CatalogSearchCriteria { Take = int.MaxValue })).Results).ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase)
-                                                                            .WithDefaultValue(null);
-            var productsCategoryIds = products.Select(x => x.CategoryId)
-                                           .Where(x => x != null).Distinct()
-                                           .ToArray();
-            var productLinksCategoryIds = products.Any(p => !p.Links.IsNullOrEmpty()) ? products.SelectMany(p => p.Links)
-                                                  .Select(l => l.CategoryId).Distinct().ToArray() : new string[] { };
+            var categoriesIds = new { products }.GetFlatObjectsListWithInterface<IHasCategoryId>().Select(x => x.CategoryId).Where(x => x != null).Distinct().ToArray();
+            var categoriesByIdDict = (await _categoryService.GetByIdsAsync(categoriesIds, CategoryResponseGroup.Full.ToString())).ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase);
 
-            var productCategoriesByIdDict = (await _categoryService.GetByIdsAsync(productsCategoryIds, CategoryResponseGroup.Full.ToString())).ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase).WithDefaultValue(null);
-            var productLinksCategoriesByIdDict = (await _categoryService.GetByIdsAsync(productLinksCategoryIds, (CategoryResponseGroup.WithProperties | CategoryResponseGroup.WithParents).ToString())).ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase).WithDefaultValue(null);
+            var allImages = new { products }.GetFlatObjectsListWithInterface<IHasImages>().Where(x => x.Images != null).SelectMany(x => x.Images);
+            foreach (var image in allImages.Where(x => !string.IsNullOrEmpty(x.Url)))
+            {
+                image.RelativeUrl = !string.IsNullOrEmpty(image.RelativeUrl) ? image.RelativeUrl : image.Url;
+                image.Url = _blobUrlResolver.GetAbsoluteUrl(image.Url);
+            }
 
             foreach (var product in products)
             {
-                if (string.IsNullOrEmpty(product.Code))
-                {
-                    product.Code = _skuGenerator.GenerateSku(product);
-                }
-                product.Catalog = catalogsByIdDict.GetValueOrThrow(product.CatalogId, $"catalog with key {product.CatalogId} doesn't exist");
-                if (product.CategoryId != null)
-                {
-                    product.Category = productCategoriesByIdDict.GetValueOrThrow(product.CategoryId, $"category with key {product.CategoryId} doesn't exist");
-                }
-
-                foreach (var link in product.Links ?? Array.Empty<CategoryLink>())
-                {
-                    link.Catalog = catalogsByIdDict.GetValueOrThrow(link.CatalogId, $"link catalog with key {link.CatalogId} doesn't exist");
-                    link.Category = productLinksCategoriesByIdDict.GetValueOrThrow(link.CategoryId, $"link category with key {link.CategoryId} doesn't exist");
-                }
+                SetProductDependencies(product, catalogsByIdDict, categoriesByIdDict);
 
                 if (product.MainProduct != null)
                 {
-                    await InnerLoadDependenciesAsync(new[] { product.MainProduct }, false);
+                    SetProductDependencies(product.MainProduct, catalogsByIdDict, categoriesByIdDict);
                 }
-                if (processVariations && !product.Variations.IsNullOrEmpty())
+                if (!product.Variations.IsNullOrEmpty())
                 {
-                    await InnerLoadDependenciesAsync(product.Variations.ToArray());
+                    foreach (var variation in product.Variations)
+                    {
+                        SetProductDependencies(variation, catalogsByIdDict, categoriesByIdDict);
+                    }
                 }
+            }
+        }
 
-                //Resolve relative urls for all product images
-                var allImages = product.GetFlatObjectsListWithInterface<IHasImages>().Where(x => x.Images != null).SelectMany(x => x.Images);
-                foreach (var image in allImages.Where(x => !string.IsNullOrEmpty(x.Url)))
+        protected virtual void SetProductDependencies(CatalogProduct product, IDictionary<string, Catalog> catalogsByIdDict, IDictionary<string, Category> categoriesByIdDict)
+        {
+            //TOD: Refactor after cover by the unit tests
+            if (string.IsNullOrEmpty(product.Code))
+            {
+                product.Code = _skuGenerator.GenerateSku(product);
+            }
+            product.Catalog = catalogsByIdDict.GetValueOrThrow(product.CatalogId, $"catalog with key {product.CatalogId} doesn't exist");
+            if (product.CategoryId != null)
+            {
+                product.Category = categoriesByIdDict.GetValueOrThrow(product.CategoryId, $"category with key {product.CategoryId} doesn't exist");
+            }
+
+            foreach (var link in product.Links ?? Array.Empty<CategoryLink>())
+            {
+                link.Catalog = catalogsByIdDict.GetValueOrThrow(link.CatalogId, $"link catalog with key {link.CatalogId} doesn't exist");
+
+                if (!string.IsNullOrEmpty(link.CategoryId))
                 {
-                    image.RelativeUrl = !string.IsNullOrEmpty(image.RelativeUrl) ? image.RelativeUrl : image.Url;
-                    image.Url = _blobUrlResolver.GetAbsoluteUrl(image.Url);
+                    link.Category = categoriesByIdDict.GetValueOrThrow(link.CategoryId, $"link category with key {link.CategoryId} doesn't exist").Clone() as Category;
+                    var necessaryGroups = CategoryResponseGroup.WithProperties | CategoryResponseGroup.WithParents | CategoryResponseGroup.WithSeo;
+                    link.Category.ReduceDetails(necessaryGroups.ToString());
                 }
             }
         }
@@ -252,10 +269,15 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
             foreach (var product in products)
             {
-                product.TryInheritFrom(product.Category ?? (IEntity)product.Catalog);
                 if (product.MainProduct != null)
                 {
+                    //need to apply inheritance rules for main product first.
+                    product.MainProduct.TryInheritFrom(product.Category ?? (IEntity)product.Catalog);
                     product.TryInheritFrom(product.MainProduct);
+                }
+                else
+                {
+                    product.TryInheritFrom(product.Category ?? (IEntity)product.Catalog);
                 }
             }
         }
@@ -268,13 +290,12 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
 
             //Validate products
-            var validator = new ProductValidator();
             foreach (var product in products)
             {
-                validator.ValidateAndThrow(product);
+                _productValidator.ValidateAndThrow(product);
             }
 
-            await InnerLoadDependenciesAsync(products, false);
+            await LoadDependenciesAsync(products);
             ApplyInheritanceRules(products);
 
             var targets = products.OfType<IHasProperties>();

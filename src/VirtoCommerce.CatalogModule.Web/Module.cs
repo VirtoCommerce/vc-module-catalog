@@ -5,11 +5,16 @@ using System.Threading.Tasks;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
+using VirtoCommerce.BulkActionsModule.Core.Models.BulkActions;
+using VirtoCommerce.BulkActionsModule.Core.Services;
+using VirtoCommerce.CatalogModule.BulkActions.Actions.CategoryChange;
+using VirtoCommerce.CatalogModule.BulkActions.Actions.PropertiesUpdate;
+using VirtoCommerce.CatalogModule.BulkActions.DataSources;
+using VirtoCommerce.CatalogModule.BulkActions.Models;
+using VirtoCommerce.CatalogModule.BulkActions.Services;
 using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Events;
 using VirtoCommerce.CatalogModule.Core.Model;
@@ -17,6 +22,7 @@ using VirtoCommerce.CatalogModule.Core.Model.Export;
 using VirtoCommerce.CatalogModule.Core.Model.OutlinePart;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
+using VirtoCommerce.CatalogModule.Data.Authorization;
 using VirtoCommerce.CatalogModule.Data.ExportImport;
 using VirtoCommerce.CatalogModule.Data.Handlers;
 using VirtoCommerce.CatalogModule.Data.Repositories;
@@ -26,7 +32,6 @@ using VirtoCommerce.CatalogModule.Data.Search.Indexing;
 using VirtoCommerce.CatalogModule.Data.Services;
 using VirtoCommerce.CatalogModule.Data.Validation;
 using VirtoCommerce.CatalogModule.Web.Authorization;
-using VirtoCommerce.CatalogModule.Web.JsonConverters;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.ExportModule.Core.Model;
 using VirtoCommerce.ExportModule.Core.Services;
@@ -34,6 +39,7 @@ using VirtoCommerce.ExportModule.Data.Extensions;
 using VirtoCommerce.ExportModule.Data.Services;
 using VirtoCommerce.Platform.Core.Bus;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.DynamicProperties;
 using VirtoCommerce.Platform.Core.ExportImport;
 using VirtoCommerce.Platform.Core.Modularity;
 using VirtoCommerce.Platform.Core.Security;
@@ -42,6 +48,7 @@ using VirtoCommerce.Platform.Data.Extensions;
 using VirtoCommerce.Platform.Security.Authorization;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
+using VirtoCommerce.StoreModule.Core.Model;
 using AuthorizationOptions = Microsoft.AspNetCore.Authorization.AuthorizationOptions;
 
 namespace VirtoCommerce.CatalogModule.Web
@@ -54,10 +61,12 @@ namespace VirtoCommerce.CatalogModule.Web
 
         public void Initialize(IServiceCollection serviceCollection)
         {
-            var configuration = serviceCollection.BuildServiceProvider().GetRequiredService<IConfiguration>();
+            serviceCollection.AddDbContext<CatalogDbContext>((provider, options) =>
+            {
+                var configuration = provider.GetRequiredService<IConfiguration>();
+                options.UseSqlServer(configuration.GetConnectionString(ModuleInfo.Id) ?? configuration.GetConnectionString("VirtoCommerce"));
+            });
             serviceCollection.AddTransient<ICatalogRepository, CatalogRepositoryImpl>();
-            var connectionString = configuration.GetConnectionString("VirtoCommerce.Catalog") ?? configuration.GetConnectionString("VirtoCommerce");
-            serviceCollection.AddDbContext<CatalogDbContext>(options => options.UseSqlServer(connectionString));
             serviceCollection.AddTransient<Func<ICatalogRepository>>(provider => () => provider.CreateScope().ServiceProvider.GetRequiredService<ICatalogRepository>());
 
             serviceCollection.AddTransient<IProductSearchService, ProductSearchService>();
@@ -80,8 +89,10 @@ namespace VirtoCommerce.CatalogModule.Web
 
             serviceCollection.AddTransient<IPropertyService, PropertyService>();
             serviceCollection.AddTransient<IPropertySearchService, PropertySearchService>();
+
             serviceCollection.AddTransient<IPropertyDictionaryItemService, PropertyDictionaryItemService>();
             serviceCollection.AddTransient<IPropertyDictionaryItemSearchService, PropertyDictionaryItemSearchService>();
+
             serviceCollection.AddTransient<IProductAssociationSearchService, ProductAssociationSearchService>();
             serviceCollection.AddTransient<IOutlineService, OutlineService>();
             serviceCollection.AddTransient<ISkuGenerator, DefaultSkuGenerator>();
@@ -92,9 +103,19 @@ namespace VirtoCommerce.CatalogModule.Web
 
             serviceCollection.AddTransient<ISeoBySlugResolver, CatalogSeoBySlugResolver>();
 
+            #region Validators
+
+            serviceCollection.AddTransient<AbstractValidator<PropertyValidationRequest>, PropertyNameValidator>();
+            serviceCollection.AddTransient<AbstractValidator<CategoryPropertyValidationRequest>, CategoryPropertyNameValidator>();
+
             PropertyValueValidator PropertyValueValidatorFactory(PropertyValidationRule rule) => new PropertyValueValidator(rule);
             serviceCollection.AddSingleton((Func<PropertyValidationRule, PropertyValueValidator>)PropertyValueValidatorFactory);
             serviceCollection.AddTransient<AbstractValidator<IHasProperties>, HasPropertiesValidator>();
+
+            serviceCollection.AddTransient<AbstractValidator<CatalogProduct>, ProductValidator>();
+            serviceCollection.AddTransient<AbstractValidator<Property>, PropertyValidator>();
+
+            #endregion Validators
 
             serviceCollection.AddTransient<CatalogExportImport>();
 
@@ -110,6 +131,7 @@ namespace VirtoCommerce.CatalogModule.Web
                     return new IdOutlinePartResolver();
                 }
             });
+            serviceCollection.AddTransient<IOutlinePartNameResolver, NameOutlinePartResolver>();
 
             serviceCollection.AddTransient<ProductDocumentChangesProvider>();
             serviceCollection.AddTransient<ProductDocumentBuilder>();
@@ -143,7 +165,17 @@ namespace VirtoCommerce.CatalogModule.Web
                 configure.AddPolicy(typeof(ExportableCatalogFull).FullName + "ExportDataPolicy", exportPolicy);
             });
 
-            #endregion
+            #endregion Add Authorization Policy for GenericExport
+
+            #region BulkActions
+
+            serviceCollection.AddTransient<ListEntryMover<Category>, CategoryMover>();
+            serviceCollection.AddTransient<ListEntryMover<CatalogProduct>, ProductMover>();
+            serviceCollection.AddTransient<IBulkPropertyUpdateManager, BulkPropertyUpdateManager>();
+            serviceCollection.AddTransient<IDataSourceFactory, DataSourceFactory>();
+            serviceCollection.AddTransient<IBulkActionFactory, CatalogBulkActionFactory>();
+
+            #endregion BulkActions
         }
 
         public void PostInitialize(IApplicationBuilder appBuilder)
@@ -157,7 +189,6 @@ namespace VirtoCommerce.CatalogModule.Web
             var permissionsProvider = appBuilder.ApplicationServices.GetRequiredService<IPermissionsRegistrar>();
             permissionsProvider.RegisterPermissions(ModuleConstants.Security.Permissions.AllPermissions.Select(x => new Permission() { GroupName = "Catalog", Name = x }).ToArray());
 
-
             //Register Permission scopes
             AbstractTypeFactory<PermissionScope>.RegisterType<SelectedCatalogScope>();
             permissionsProvider.WithAvailabeScopesForPermissions(new[] {
@@ -166,19 +197,11 @@ namespace VirtoCommerce.CatalogModule.Web
                                                                         ModuleConstants.Security.Permissions.Delete,
                                                                          }, new SelectedCatalogScope());
 
-            var mvcJsonOptions = appBuilder.ApplicationServices.GetService<IOptions<MvcNewtonsoftJsonOptions>>();
-            mvcJsonOptions.Value.SerializerSettings.Converters.Add(new SearchCriteriaJsonConverter());
-
             var inProcessBus = appBuilder.ApplicationServices.GetService<IHandlerRegistrar>();
             inProcessBus.RegisterHandler<ProductChangedEvent>(async (message, token) => await appBuilder.ApplicationServices.GetService<LogChangesChangedEventHandler>().Handle(message));
             inProcessBus.RegisterHandler<CategoryChangedEvent>(async (message, token) => await appBuilder.ApplicationServices.GetService<LogChangesChangedEventHandler>().Handle(message));
-
-            var settingsManager = appBuilder.ApplicationServices.GetService<ISettingsManager>();
-            if (settingsManager.GetValue(ModuleConstants.Settings.General.EventBasedIndexation.Name, false))
-            {
-                inProcessBus.RegisterHandler<CategoryChangedEvent>(async (message, token) => await appBuilder.ApplicationServices.GetService<IndexCategoryChangedEventHandler>().Handle(message));
-                inProcessBus.RegisterHandler<ProductChangedEvent>(async (message, token) => await appBuilder.ApplicationServices.GetService<IndexProductChangedEventHandler>().Handle(message));
-            }
+            inProcessBus.RegisterHandler<CategoryChangedEvent>(async (message, token) => await appBuilder.ApplicationServices.GetService<IndexCategoryChangedEventHandler>().Handle(message));
+            inProcessBus.RegisterHandler<ProductChangedEvent>(async (message, token) => await appBuilder.ApplicationServices.GetService<IndexProductChangedEventHandler>().Handle(message));
 
             var indexDocumentRegistrar = appBuilder.ApplicationServices.GetService<IIndexDocumentRegistrar>();
 
@@ -207,6 +230,19 @@ namespace VirtoCommerce.CatalogModule.Web
             searchRequestBuilderRegistrar.Register(KnownDocumentTypes.Product, appBuilder.ApplicationServices.GetService<ProductSearchRequestBuilder>);
             searchRequestBuilderRegistrar.Register(KnownDocumentTypes.Category, appBuilder.ApplicationServices.GetService<CategorySearchRequestBuilder>);
 
+            // Ensure that required dynamic properties are always registered in the system
+            var dynamicPropertyService = appBuilder.ApplicationServices.GetRequiredService<IDynamicPropertyService>();
+            dynamicPropertyService.SaveDynamicPropertiesAsync(new[] {
+                    new DynamicProperty
+                    {
+                        Id = BrowseFilterService.FilteredBrowsingPropertyId,
+                        Name = BrowseFilterService.FilteredBrowsingPropertyName,
+                        ObjectType = typeof(Store).FullName,
+                        ValueType = DynamicPropertyValueType.LongText,
+                        CreatedBy = "Auto"
+                    }
+                }).GetAwaiter().GetResult();
+
             #region Register types for generic Export
 
             var registrar = appBuilder.ApplicationServices.GetService<IKnownExportTypesRegistrar>();
@@ -233,13 +269,25 @@ namespace VirtoCommerce.CatalogModule.Web
             registrar.RegisterType(
                 ExportedTypeDefinitionBuilder.Build<ExportableCatalogFull, CatalogFullExportDataQuery>()
                     .WithDataSourceFactory(appBuilder.ApplicationServices.GetService<ICatalogExportPagedDataSourceFactory>())
-                    .WithMetadata(new ExportedTypeMetadata { PropertyInfos = Array.Empty<ExportedTypePropertyInfo>() }));
+                    .WithMetadata(new ExportedTypeMetadata { PropertyInfos = Array.Empty<ExportedTypePropertyInfo>() })
+                    .WithRestrictDataSelectivity());
 
-            #endregion
+            #endregion Register types for generic Export
+
+            #region BulkActions
+
+            AbstractTypeFactory<BulkActionContext>.RegisterType<CategoryChangeBulkActionContext>();
+            AbstractTypeFactory<BulkActionContext>.RegisterType<PropertiesUpdateBulkActionContext>();
+
+            RegisterBulkAction(nameof(CategoryChangeBulkAction), nameof(CategoryChangeBulkActionContext));
+            RegisterBulkAction(nameof(PropertiesUpdateBulkAction), nameof(PropertiesUpdateBulkActionContext));
+
+            #endregion BulkActions
         }
 
         public void Uninstall()
         {
+            // Method intentionally left empty.
         }
 
         public async Task ExportAsync(Stream outStream, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback,
@@ -254,6 +302,25 @@ namespace VirtoCommerce.CatalogModule.Web
         {
             await _appBuilder.ApplicationServices.GetRequiredService<CatalogExportImport>().DoImportAsync(inputStream, options,
                 progressCallback, cancellationToken);
+        }
+
+        private void RegisterBulkAction(string name, string contextTypeName)
+        {
+            var dataSourceFactory = _appBuilder.ApplicationServices.GetService<IDataSourceFactory>();
+            var actionFactory = _appBuilder.ApplicationServices.GetService<IBulkActionFactory>();
+            var permissions = new[] { ModuleConstants.Security.Permissions.CategoryChange, ModuleConstants.Security.Permissions.PropertiesUpdate };
+            var applicableTypes = new[] { nameof(CatalogProduct) };
+
+            var provider = new BulkActionProvider(
+                name,
+                contextTypeName,
+                applicableTypes,
+                dataSourceFactory,
+                actionFactory,
+                permissions);
+
+            var actionProviderStorage = _appBuilder.ApplicationServices.GetService<IBulkActionProviderStorage>();
+            actionProviderStorage.Add(provider);
         }
     }
 }

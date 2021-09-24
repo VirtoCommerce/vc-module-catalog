@@ -4,6 +4,9 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 {
     public class Asset : AssetBase
     {
+        public Asset() : base(nameof(Asset))
+        {
+        }
         public string MimeType { get; set; }
         public long Size { get; set; }
         public string ReadableSize

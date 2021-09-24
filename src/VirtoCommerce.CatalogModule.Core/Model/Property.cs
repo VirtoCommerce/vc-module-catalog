@@ -8,14 +8,14 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Core.Model
 {
-    public class Property : AuditableEntity, IInheritable, ICloneable, IHasOuterId, IHasCatalogId, IExportable
+    public class Property : AuditableEntity, IInheritable, IHasOuterId, IHasCatalogId, IExportable, ICopyable, IHasCategoryId
     {
         /// <summary>
         /// Gets or sets a value indicating whether user can change property value.
-        /// </summary>     
+        /// </summary>
         public bool IsReadOnly { get; set; }
         /// <summary>
-        /// Gets or sets a value indicating whether user can change property metadata or remove this property. 
+        /// Gets or sets a value indicating whether user can change property metadata or remove this property.
         /// </summary>
         public bool IsManageable => !IsTransient();
         /// <summary>
@@ -55,6 +55,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         public PropertyValueType ValueType { get; set; }
         public PropertyType Type { get; set; }
         public string OuterId { get; set; }
+        public string OwnerName { get; set; }
 
 
         public IList<PropertyValue> Values { get; set; } = new List<PropertyValue>();
@@ -108,8 +109,9 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                 ValidationRules = parentProperty.ValidationRules;
                 CatalogId = parentProperty.CatalogId;
                 CategoryId = parentProperty.CategoryId;
+                Hidden = parentProperty.Hidden;
 
-                foreach (var propValue in Values ?? Array.Empty<PropertyValue>())
+                foreach (var propValue in (Values ?? Array.Empty<PropertyValue>()).Where(x => x != null))
                 {
                     propValue.PropertyId = parentProperty.Id;
                     propValue.ValueType = parentProperty.ValueType;
@@ -142,8 +144,25 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         }
         #endregion
 
+
+        #region ICopyable
+        public virtual object GetCopy()
+        {
+            var result = Clone() as Property;
+            //Get copy only for property values, other members clone only
+            result.Values = Values?.Select(x => x.GetCopy()).OfType<PropertyValue>().ToList();
+            //Do not reset Id for property! Need to use the same Id for copies
+            return result;
+        }
+        #endregion
+
         #region Conditional JSON serialization for properties declared in base type
         public override bool ShouldSerializeAuditableProperties => false;
         #endregion
+
+        public override string ToString()
+        {
+            return $"{Name}, Id: {Id}";
+        }
     }
 }

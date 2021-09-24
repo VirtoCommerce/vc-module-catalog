@@ -23,19 +23,32 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         IQueryable<CategoryRelationEntity> CategoryLinks { get; }
         IQueryable<SeoInfoEntity> SeoInfos { get; }
 
+        Task<string[]> GetAllSeoDuplicatesIdsAsync();
+
         Task<string[]> GetAllChildrenCategoriesIdsAsync(string[] categoryIds);
+
         Task<CatalogEntity[]> GetCatalogsByIdsAsync(string[] catalogIds);
+
         Task<CategoryEntity[]> GetCategoriesByIdsAsync(string[] categoriesIds, string responseGroup);
+
         Task<ItemEntity[]> GetItemByIdsAsync(string[] itemIds, string responseGroup = null);
+
         Task<PropertyEntity[]> GetAllCatalogPropertiesAsync(string catalogId);
+
         Task<PropertyEntity[]> GetPropertiesByIdsAsync(string[] propIds, bool loadDictValues = false);
+
         Task<PropertyDictionaryItemEntity[]> GetPropertyDictionaryItemsByIdsAsync(string[] dictItemIds);
+
+        Task<AssociationEntity[]> GetAssociationsByIdsAsync(string[] associationIds);
 
         Task<GenericSearchResult<AssociationEntity>> SearchAssociations(ProductAssociationSearchCriteria criteria);
 
         Task RemoveItemsAsync(string[] itemIds);
+
         Task RemoveCategoriesAsync(string[] ids);
+
         Task RemoveCatalogsAsync(string[] ids);
+
         Task RemoveAllPropertyValuesAsync(string propertyId);
     }
 }

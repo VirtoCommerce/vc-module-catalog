@@ -53,8 +53,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     result.Add(catalog);
                 }
             }
-            return result.ToArray();        
-        }     
+            return result.ToArray();
+        }
 
         public virtual async Task SaveChangesAsync(Catalog[] catalogs)
         {
@@ -85,10 +85,11 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 //Save changes in database
                 await repository.UnitOfWork.CommitAsync();
                 pkMap.ResolvePrimaryKeys();
-                await _eventPublisher.Publish(new CatalogChangedEvent(changedEntries));
 
                 //Reset cached catalogs and catalogs
                 CatalogCacheRegion.ExpireRegion();
+
+                await _eventPublisher.Publish(new CatalogChangedEvent(changedEntries));
             }
         }
 
@@ -105,17 +106,18 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     await repository.RemoveCatalogsAsync(catalogs.Select(m => m.Id).ToArray());
                     await repository.UnitOfWork.CommitAsync();
 
+                    CatalogCacheRegion.ExpireRegion();
+
                     await _eventPublisher.Publish(new CatalogChangedEvent(changedEntries));
                 }
             }
-            CatalogCacheRegion.ExpireRegion();
         }
 
         #endregion
 
         protected virtual Task<IDictionary<string, Catalog>> PreloadCatalogsAsync()
         {
-            var cacheKey = CacheKey.With(GetType(), "AllCatalogs");
+            var cacheKey = CacheKey.With(GetType(), nameof(PreloadCatalogsAsync));
             return _platformMemoryCache.GetOrCreateExclusive(cacheKey, async (cacheEntry) =>
             {
                 cacheEntry.AddExpirationToken(CatalogCacheRegion.CreateChangeToken());
@@ -169,7 +171,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 var validatioResult = await _hasPropertyValidator.ValidateAsync(catalog);
                 if (!validatioResult.IsValid)
                 {
-                    throw new Exception($"Catalog properties has validation error: {string.Join(Environment.NewLine, validatioResult.Errors.Select(x => x.ToString()))}");
+                    throw new ArgumentException($"Catalog properties has validation error: {string.Join(Environment.NewLine, validatioResult.Errors.Select(x => x.ToString()))}");
                 }
             }
         }

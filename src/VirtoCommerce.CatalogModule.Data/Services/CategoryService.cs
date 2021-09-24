@@ -6,17 +6,16 @@ using FluentValidation;
 using Microsoft.Extensions.Caching.Memory;
 using VirtoCommerce.CatalogModule.Core.Events;
 using VirtoCommerce.CatalogModule.Core.Model;
-using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Caching;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Data.Validation;
-using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Assets;
 using VirtoCommerce.Platform.Core.Caching;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Events;
+using VirtoCommerce.Platform.Core.Exceptions;
 using VirtoCommerce.Platform.Data.Infrastructure;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
@@ -27,7 +26,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private readonly Func<ICatalogRepository> _repositoryFactory;
         private readonly IEventPublisher _eventPublisher;
         private readonly AbstractValidator<IHasProperties> _hasPropertyValidator;
-        private readonly ICatalogSearchService _catalogSearchService;
+        private readonly ICatalogService _catalogService;
         private readonly IOutlineService _outlineService;
         private readonly IBlobUrlResolver _blobUrlResolver;
 
@@ -36,7 +35,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             , IEventPublisher eventPublisher
             , IPlatformMemoryCache platformMemoryCache
             , AbstractValidator<IHasProperties> hasPropertyValidator
-            , ICatalogSearchService catalogSearchService
+            , ICatalogService catalogService
             , IOutlineService outlineService
             , IBlobUrlResolver blobUrlResolver)
         {
@@ -46,7 +45,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _hasPropertyValidator = hasPropertyValidator;
             _outlineService = outlineService;
             _blobUrlResolver = blobUrlResolver;
-            _catalogSearchService = catalogSearchService;
+            _catalogService = catalogService;
         }
 
         #region ICategoryService Members
@@ -88,6 +87,11 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     var modifiedEntity = AbstractTypeFactory<CategoryEntity>.TryCreateInstance().FromModel(category, pkMap);
                     if (originalEntity != null)
                     {
+                        /// This extension is allow to get around breaking changes is introduced in EF Core 3.0 that leads to throw
+                        /// Database operation expected to affect 1 row(s) but actually affected 0 row(s) exception when trying to add the new children entities with manually set keys
+                        /// https://docs.microsoft.com/en-us/ef/core/what-is-new/ef-core-3.0/breaking-changes#detectchanges-honors-store-generated-key-values
+                        repository.TrackModifiedAsAddedForNewChildEntities(originalEntity);
+
                         changedEntries.Add(new GenericChangedEntry<Category>(category, originalEntity.ToModel(AbstractTypeFactory<Category>.TryCreateInstance()), EntryState.Modified));
                         modifiedEntity.Patch(originalEntity);
                         //Force set ModifiedDate property to mark a product changed. Special for  partial update cases when product table not have changes
@@ -137,12 +141,15 @@ namespace VirtoCommerce.CatalogModule.Data.Services
            {
                cacheEntry.AddExpirationToken(CatalogCacheRegion.CreateChangeToken());
 
-               CategoryEntity[] entities;
+               var entities = new List<CategoryEntity>();
                using (var repository = _repositoryFactory())
                {
                    repository.DisableChangesTracking();
                    var categoriesIds = repository.Categories.Select(x => x.Id).ToArray();
-                   entities = await repository.GetCategoriesByIdsAsync(categoriesIds, CategoryResponseGroup.Full.ToString());
+                   foreach (var page in categoriesIds.Paginate(50))
+                   {
+                       entities.AddRange(await repository.GetCategoriesByIdsAsync(page.ToArray(), CategoryResponseGroup.Full.ToString()));
+                   }
                }
                var result = entities.Select(x => x.ToModel(AbstractTypeFactory<Category>.TryCreateInstance()))
                                     .ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase)
@@ -159,8 +166,16 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         protected virtual async Task LoadDependenciesAsync(IEnumerable<Category> categories, IDictionary<string, Category> preloadedCategoriesMap)
         {
-            var catalogsByIdDict = ((await _catalogSearchService.SearchCatalogsAsync(new Core.Model.Search.CatalogSearchCriteria { Take = int.MaxValue })).Results).ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase)
-                                                                             .WithDefaultValue(null);
+            var catalogsIds = new { categories }.GetFlatObjectsListWithInterface<IHasCatalogId>().Select(x => x.CatalogId).Where(x => x != null).Distinct().ToArray();
+            var catalogsByIdDict = (await _catalogService.GetByIdsAsync(catalogsIds)).ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase);
+            
+            //Resolve relative urls for all category assets
+            var allImages = new { categories }.GetFlatObjectsListWithInterface<IHasImages>().Where(x => x.Images != null).SelectMany(x => x.Images);
+            foreach (var image in allImages.Where(x => !string.IsNullOrEmpty(x.Url)))
+            {
+                image.RelativeUrl = !string.IsNullOrEmpty(image.RelativeUrl) ? image.RelativeUrl : image.Url;
+                image.Url = _blobUrlResolver.GetAbsoluteUrl(image.Url);
+            }
 
             foreach (var category in categories)
             {
@@ -195,19 +210,12 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     }
                 }
 
-                //Resolve relative urls for all category assets
-                var allImages = category.GetFlatObjectsListWithInterface<IHasImages>().Where(x => x.Images != null).SelectMany(x => x.Images);
-                foreach (var image in allImages.Where(x => !string.IsNullOrEmpty(x.Url)))
-                {
-                    image.RelativeUrl = !string.IsNullOrEmpty(image.RelativeUrl) ? image.RelativeUrl : image.Url;
-                    image.Url = _blobUrlResolver.GetAbsoluteUrl(image.Url);
-                }
             }
         }
 
         protected virtual void ApplyInheritanceRules(IEnumerable<Category> categories)
         {
-            foreach (var category in categories)
+            foreach (var category in categories.OrderBy(x => x.Level))
             {
                 category.TryInheritFrom(category.Parent ?? (IEntity)category.Catalog);
             }
@@ -237,7 +245,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     var validationResult = _hasPropertyValidator.Validate(category);
                     if (!validationResult.IsValid)
                     {
-                        throw new Exception($"Category properties has validation error: {string.Join(Environment.NewLine, validationResult.Errors.Select(x => x.ToString()))}");
+                        throw new PlatformException($"Category properties has validation error: {string.Join(Environment.NewLine, validationResult.Errors.Select(x => x.ToString()))}");
                     }
                 }
             }

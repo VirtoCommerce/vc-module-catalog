@@ -90,13 +90,17 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 
         private void LoadImages(IHasImages[] haveImagesObjects)
         {
-            var allImages = haveImagesObjects.SelectMany(x => x.GetFlatObjectsListWithInterface<IHasImages>())
-                .SelectMany(x => x.Images).ToArray();
+            var hasImagesObjects = haveImagesObjects.SelectMany(x => x.GetFlatObjectsListWithInterface<IHasImages>());
+            hasImagesObjects = hasImagesObjects.Where(x => !(x is Category)); // Exclude images for upper categories
+            var allImages = hasImagesObjects.SelectMany(x => x.Images).ToArray();
             foreach (var image in allImages)
             {
-                using (var stream = _blobStorageProvider.OpenRead(image.Url))
+                if (!image.HasExternalUrl) // Skip external links.
                 {
-                    image.BinaryData = stream.ReadFully();
+                    using (var stream = _blobStorageProvider.OpenRead(image.Url))
+                    {
+                        image.BinaryData = stream.ReadFully();
+                    }
                 }
             }
         }

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
+using VirtoCommerce.CatalogModule.Data.Authorization;
 using VirtoCommerce.CatalogModule.Data.ExportImport;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Security;
@@ -14,14 +14,6 @@ using VirtoCommerce.Platform.Security.Authorization;
 
 namespace VirtoCommerce.CatalogModule.Web.Authorization
 {
-    public sealed class CatalogAuthorizationRequirement : PermissionAuthorizationRequirement
-    {
-        public CatalogAuthorizationRequirement(string permission)
-            : base(permission)
-        {
-        }
-    }
-
     public sealed class CatalogAuthorizationHandler : PermissionAuthorizationHandlerBase<CatalogAuthorizationRequirement>
     {
         private readonly MvcNewtonsoftJsonOptions _jsonOptions;
@@ -85,6 +77,18 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
                         else
                         {
                             dataQuery.CatalogIds = dataQuery.CatalogIds.Intersect(allowedCatalogIds).ToArray();
+                        }
+                        context.Succeed(requirement);
+                    }
+                    else if (context.Resource is PropertyDictionaryItemSearchCriteria propertyDictionaryItemSearchCriteria)
+                    {
+                        if (propertyDictionaryItemSearchCriteria.CatalogIds.IsNullOrEmpty())
+                        {
+                            propertyDictionaryItemSearchCriteria.CatalogIds = allowedCatalogIds;
+                        }
+                        else
+                        {
+                            propertyDictionaryItemSearchCriteria.CatalogIds = propertyDictionaryItemSearchCriteria.CatalogIds.Intersect(allowedCatalogIds).ToArray();
                         }
                         context.Succeed(requirement);
                     }

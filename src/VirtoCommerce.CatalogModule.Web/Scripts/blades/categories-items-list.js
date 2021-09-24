@@ -1,6 +1,6 @@
 angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.categoriesItemsListController', [
-        '$sessionStorage', '$localStorage', '$timeout', '$scope',  'virtoCommerce.catalogModule.categories', 'virtoCommerce.catalogModule.items', 'virtoCommerce.catalogModule.listEntries', 'platformWebApp.bladeUtils', 'platformWebApp.dialogService', 'platformWebApp.authService', 'platformWebApp.uiGridHelper', 'virtoCommerce.catalogModule.catalogs',
+        '$sessionStorage', '$localStorage', '$timeout', '$scope', 'virtoCommerce.catalogModule.categories', 'virtoCommerce.catalogModule.items', 'virtoCommerce.catalogModule.listEntries', 'platformWebApp.bladeUtils', 'platformWebApp.dialogService', 'platformWebApp.authService', 'platformWebApp.uiGridHelper', 'virtoCommerce.catalogModule.catalogs',
         function ($sessionStorage, $localStorage, $timeout, $scope, categories, items, listEntries, bladeUtils, dialogService, authService, uiGridHelper, catalogs) {
             $scope.uiGridConstants = uiGridHelper.uiGridConstants;
             $scope.hasMore = true;
@@ -12,7 +12,7 @@ angular.module('virtoCommerce.catalogModule')
                 blade.catalog = catalogs.get({ id: blade.catalogId });
 
             blade.refresh = function () {
-  
+
                 blade.isLoading = true;
 
                 if ($scope.pageSettings.currentPage !== 1)
@@ -69,8 +69,7 @@ angular.module('virtoCommerce.catalogModule')
             }
 
             // Search Criteria
-            function getSearchCriteria()
-            {
+            function getSearchCriteria() {
                 var searchCriteria = {
                     catalogId: blade.catalogId,
                     categoryId: blade.categoryId,
@@ -93,8 +92,6 @@ angular.module('virtoCommerce.catalogModule')
 
                 //catalog breadcrumb by default
                 var breadCrumb = {
-                    id: blade.catalogId,
-                    name: blade.catalog.name,
                     blade: blade
                 };
 
@@ -103,19 +100,23 @@ angular.module('virtoCommerce.catalogModule')
 
                     breadCrumb.id = blade.categoryId;
                     breadCrumb.name = blade.category.name;
+                } else {
+                    breadCrumb.id = blade.catalogId;
+                    blade.catalog.$promise.then((data) => {
+                        breadCrumb.name = data.name;
+                    });
                 }
 
                 //prevent duplicate items
-                if (!_.some(blade.breadcrumbs, function (x) { return x.id == breadCrumb.id })) {
+                if (!_.some(blade.breadcrumbs, function (x) { return x.id === breadCrumb.id })) {
                     blade.breadcrumbs.push(breadCrumb);
                 }
 
-                breadCrumb.navigate = function (breadcrumb) {
+                breadCrumb.navigate = function () {
                     bladeNavigationService.closeBlade(blade,
                         function () {
                             blade.disableOpenAnimation = true;
                             bladeNavigationService.showBlade(blade, blade.parentBlade);
-                           // blade.refresh();
                         });
                 };
             }
@@ -199,6 +200,7 @@ angular.module('virtoCommerce.catalogModule')
                 });
 
                 var listCategoryLinkCount = _.where(listEntryLinks, { listEntryType: 'category' }).length;
+                let idsToDelete = categoryIds.concat(itemIds);
                 var dialog = {
                     id: "confirmDeleteItem",
                     categoryCount: categoryIds.length,
@@ -209,28 +211,20 @@ angular.module('virtoCommerce.catalogModule')
                         if (remove) {
                             bladeNavigationService.closeChildrenBlades(blade);
                             blade.isLoading = true;
+
                             if (listEntryLinks.length > 0) {
-                                listEntries.deletelinks(listEntryLinks, function (data, headers) {
+                                listEntries.deletelinks(listEntryLinks, () => {
                                     blade.refresh();
-                                    if (blade.mode === 'mappingSource')
+
+                                    if (blade.mode === 'mappingSource') {
                                         blade.parentBlade.refresh();
-                                }, function (error) {
-                                    bladeNavigationService.setError('Error ' + error.status, blade);
-                                });
+                                    }
+                                }
+                                );
                             }
-                            if (categoryIds.length > 0) {
-                                categories.remove({ ids: categoryIds }, function (data, headers) {
-                                    blade.refresh();
-                                }, function (error) {
-                                    bladeNavigationService.setError('Error ' + error.status, blade);
-                                });
-                            }
-                            if (itemIds.length > 0) {
-                                items.remove({ ids: itemIds }, function (data, headers) {
-                                    blade.refresh();
-                                }, function (error) {
-                                    bladeNavigationService.setError('Error ' + error.status, blade);
-                                });
+
+                            if (idsToDelete.length > 0) {
+                                listEntries.delete({ objectIds: idsToDelete }, () => blade.refresh());
                             }
                         }
                     }
@@ -269,11 +263,11 @@ angular.module('virtoCommerce.catalogModule')
                             categoryId: blade.parentBlade.categoryId,
                         });
                     });
-                    
+
                     listEntries.createlinks(listEntryLinks, function () {
-                            blade.refresh();
-                            blade.parentBlade.refresh();
-                        },
+                        blade.refresh();
+                        blade.parentBlade.refresh();
+                    },
                         function (error) { bladeNavigationService.setError('Error ' + error.status, blade); });
                 }
             }
@@ -329,44 +323,6 @@ angular.module('virtoCommerce.catalogModule')
                 }
             };
 
-            function generateBreadcrumbs(newBlade, listEntry, count) {
-                var newBreadcrumbs = [];
-                if (blade.catalog)
-                    newBreadcrumbs.push({
-                        id: blade.catalogId,
-                        name: blade.catalog.name,
-                        navigate: function (breadcrumb) {
-                            bladeNavigationService.closeBlade(newBlade,
-                                function () {
-                                    newBlade.disableOpenAnimation = true;
-                                    newBlade.categoryId = undefined;
-                                    newBlade.category = undefined;
-                                    newBlade.breadcrumbs = [];
-                                    bladeNavigationService.showBlade(newBlade, blade);
-                                    newBlade.refresh();
-                                });
-                        }
-                    });
-
-                for (var i = 0; i < count; i++) {
-                    newBreadcrumbs.push({
-                        id: listEntry.outline[i],
-                        name: listEntry.path[i],
-                        navigate: function (breadcrumb) {
-                            bladeNavigationService.closeBlade(newBlade,
-                                function () {
-                                    newBlade.disableOpenAnimation = true;
-                                    newBlade.categoryId = breadcrumb.id;
-                                    newBlade.category = breadcrumb;
-                                    newBlade.breadcrumbs = generateBreadcrumbs(newBlade, listEntry, i - 1);
-                                    bladeNavigationService.showBlade(newBlade, blade);
-                                    newBlade.refresh();
-                                });
-                        }
-                    })
-                }
-                return newBreadcrumbs;
-            }
 
             $scope.hasLinks = function (listEntry) {
                 return blade.catalog && blade.catalog.isVirtual &&
@@ -386,7 +342,7 @@ angular.module('virtoCommerce.catalogModule')
                 },
                 {
                     name: "platform.commands.delete",
-                    icon: 'fa fa-trash-o',
+                    icon: 'fas fa-trash-alt',
                     executeMethod: function () { deleteList($scope.gridApi.selection.getSelectedRows()); },
                     canExecuteMethod: isItemsChecked,
                     permission: 'catalog:delete'
@@ -419,18 +375,18 @@ angular.module('virtoCommerce.catalogModule')
                             catalog: blade.catalog,
                             controller: 'virtoCommerce.catalogModule.exporterListController',
                             template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/export/exporter-list.tpl.html',
-                            selectedProducts: _.filter($scope.gridApi.selection.getSelectedRows(), function (x) { return x.type == 'product' }),
-                            selectedCategories: _.filter($scope.gridApi.selection.getSelectedRows(), function (x) { return x.type == 'category' }),
+                            selectedProducts: _.filter($scope.gridApi.selection.getSelectedRows(), function (x) { return x.type === 'product' }),
+                            selectedCategories: _.filter($scope.gridApi.selection.getSelectedRows(), function (x) { return x.type === 'category' }),
                             isAllSelected: $scope.gridApi.selection.getSelectAllState()
                         };
                         bladeNavigationService.showBlade(newBlade, blade);
                     },
-                    canExecuteMethod: function () { return blade.catalogId; },
+                    canExecuteMethod: function () { return $scope.items.length && blade.catalogId; },
                     permission: 'catalog:export'
                 },
                 {
                     name: "platform.commands.cut",
-                    icon: 'fa fa-cut',
+                    icon: 'fas fa-cut',
                     executeMethod: function () {
                         cutList($scope.gridApi.selection.getSelectedRows());
                     },
@@ -439,7 +395,7 @@ angular.module('virtoCommerce.catalogModule')
                 },
                 {
                     name: "platform.commands.paste",
-                    icon: 'fa fa-clipboard',
+                    icon: 'fas fa-paste',
                     executeMethod: function () {
                         blade.isLoading = true;
                         listEntries.move({
@@ -469,7 +425,7 @@ angular.module('virtoCommerce.catalogModule')
                 if (blade.mode === 'mappingSource') {
                     var mapCommand = {
                         name: "catalog.commands.map",
-                        icon: 'fa fa-link',
+                        icon: 'fas fa-link',
                         executeMethod: function () {
                             mapChecked();
                         },
@@ -480,7 +436,7 @@ angular.module('virtoCommerce.catalogModule')
             } else if (!blade.isBrowsingLinkedCategory && authService.checkPermission('catalog:create')) {
                 blade.toolbarCommands.splice(1, 0, {
                     name: "platform.commands.add",
-                    icon: 'fa fa-plus',
+                    icon: 'fas fa-plus',
                     executeMethod: function () {
                         var newBlade = {
                             id: 'listItemChild',
@@ -538,7 +494,7 @@ angular.module('virtoCommerce.catalogModule')
 
                 //disable watched
                 bladeUtils.initializePagination($scope, true);
-                //сhoose the optimal amount that ensures the appearance of the scroll
+                //choose the optimal amount that ensures the appearance of the scroll
                 $scope.pageSettings.itemsPerPageCount = 50;
 
                 uiGridHelper.initialize($scope, gridOptions, function (gridApi) {

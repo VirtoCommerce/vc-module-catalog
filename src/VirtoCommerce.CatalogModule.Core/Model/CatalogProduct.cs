@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+using VirtoCommerce.CatalogModule.Core.Extensions;
 using VirtoCommerce.CatalogModule.Core.Serialization;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Outlines;
@@ -11,7 +12,7 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Core.Model
 {
-    public class CatalogProduct : AuditableEntity, IHasLinks, ISeoSupport, IHasOutlines, IHasDimension, IHasAssociations, IHasProperties, IHasImages, IHasAssets, IInheritable, IHasTaxType, IHasName, ICloneable, IHasOuterId, IHasCatalogId, IExportable
+    public class CatalogProduct : AuditableEntity, IHasLinks, ISeoSupport, IHasOutlines, IHasDimension, IHasAssociations, IHasProperties, IHasImages, IHasAssets, IInheritable, IHasTaxType, IHasName, IHasOuterId, IExportable, ICopyable, IHasCategoryId, IHasExcludedProperties
     {
         /// <summary>
         /// SKU code
@@ -100,8 +101,12 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
         #region IHasProperties members
         public IList<Property> Properties { get; set; }
-
         #endregion
+
+        #region IHasExcludedProperties members
+        public IList<ExcludedProperty> ExcludedProperties { get; set; }
+        #endregion
+
         [JsonIgnoreSerialization]
         [Obsolete("it's for importing data from v.2, need to use values in Properties")]
         public ICollection<PropertyValue> PropertyValues { get; set; }
@@ -139,7 +144,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
         public IList<Variation> Variations { get; set; }
         /// <summary>
-        /// Each descendant type should override this property to use other object type for seo records 
+        /// Each descendant type should override this property to use other object type for seo records
         /// </summary>
         public virtual string SeoObjectType { get; } = "CatalogProduct";
         public IList<SeoInfo> SeoInfos { get; set; }
@@ -163,11 +168,17 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
         public virtual void TryInheritFrom(IEntity parent)
         {
+            this.InheritExcludedProperties(parent as IHasExcludedProperties);
+
             if (parent is IHasProperties hasProperties)
             {
                 //Properties inheritance
                 foreach (var parentProperty in hasProperties.Properties ?? Array.Empty<Property>())
                 {
+                    if (this.HasPropertyExcluded(parentProperty.Name))
+                    {
+                        continue;
+                    }
                     if (Properties == null)
                     {
                         Properties = new List<Property>();
@@ -189,13 +200,18 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                 }
             }
 
-            if (parent is IHasTaxType hasTaxType)
+            //TODO: prevent saving the inherited simple values
+            //TaxType  inheritance
+            if (parent is IHasTaxType hasTaxType && TaxType == null)
             {
-                //TODO: prevent saving the inherited simple values
-                //TaxType  inheritance
-                if (TaxType == null)
+                TaxType = hasTaxType.TaxType;
+            }
+
+            if (!Variations.IsNullOrEmpty())
+            {
+                foreach (var variation in Variations)
                 {
-                    TaxType = hasTaxType.TaxType;
+                    variation.TryInheritFrom(this);
                 }
             }
 
@@ -250,17 +266,14 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                     existProperty.IsReadOnly = existProperty.Type != PropertyType.Variation && existProperty.Type != PropertyType.Product;
 
                     //Inherit only parent Product properties  values if own values aren't set
-                    if (parentProductProperty.Type == PropertyType.Product)
+                    if (parentProductProperty.Type == PropertyType.Product && existProperty.Values.IsNullOrEmpty() && !parentProductProperty.Values.IsNullOrEmpty())
                     {
-                        if (existProperty.Values.IsNullOrEmpty() && !parentProductProperty.Values.IsNullOrEmpty())
+                        existProperty.Values = new List<PropertyValue>();
+                        foreach (var parentPropValue in parentProductProperty.Values)
                         {
-                            existProperty.Values = new List<PropertyValue>();
-                            foreach (var parentPropValue in parentProductProperty.Values)
-                            {
-                                var propValue = AbstractTypeFactory<PropertyValue>.TryCreateInstance();
-                                propValue.TryInheritFrom(parentPropValue);
-                                existProperty.Values.Add(propValue);
-                            }
+                            var propValue = AbstractTypeFactory<PropertyValue>.TryCreateInstance();
+                            propValue.TryInheritFrom(parentPropValue);
+                            existProperty.Values.Add(propValue);
                         }
                     }
                 }
@@ -272,32 +285,27 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                 Weight = parentProduct.Weight ?? Weight;
                 WeightUnit = parentProduct.WeightUnit ?? WeightUnit;
                 PackageType = parentProduct.PackageType ?? PackageType;
-
-                if (!Variations.IsNullOrEmpty())
-                {
-                    foreach (var variation in Variations)
-                    {
-                        variation.TryInheritFrom(this);
-                    }
-                }
             }
         }
         #endregion
 
-        public virtual CatalogProduct GetCopy()
+        public virtual object GetCopy()
         {
             var result = Clone() as CatalogProduct;
 
+            result.Id = null;
+
+            result.Images = Images?.Select(x => x.GetCopy()).OfType<Image>().ToList();
+            result.Assets = Assets?.Select(x => x.GetCopy()).OfType<Asset>().ToList();
+            result.Properties = Properties?.Select(x => x.GetCopy()).OfType<Property>().ToList();
+            result.Variations = Variations?.Select(x => x.GetCopy()).OfType<Variation>().ToList();
+            result.Reviews = Reviews?.Select(x => x.GetCopy()).OfType<EditorialReview>().ToList();
+            result.Associations = Associations?.Select(x => x.GetCopy()).OfType<ProductAssociation>().ToList();
             // Clear ID for all related entities except properties
-            var allEntities = this.GetFlatObjectsListWithInterface<ISeoSupport>();
-            foreach (var entity in allEntities)
+            var allSeoSupportEntities = result.GetFlatObjectsListWithInterface<ISeoSupport>();
+            foreach (var seoSuportEntity in allSeoSupportEntities)
             {
-                var property = entity as Property;
-                if (property is null)
-                {
-                    entity.SeoInfos.Clear();
-                    entity.Id = null;
-                }
+                seoSuportEntity.SeoInfos?.Clear();
             }
             return result;
         }
@@ -361,6 +369,8 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         {
             var result = MemberwiseClone() as CatalogProduct;
 
+            // result.Catalog = (Catalog)Catalog?.Clone(); // Intentionally temporary disabled due to memory overhead
+            // result.Category = (Category)Category?.Clone(); // Intentionally temporary disabled due to memory overhead
             result.SeoInfos = SeoInfos?.Select(x => x.Clone()).OfType<SeoInfo>().ToList();
             result.Images = Images?.Select(x => x.Clone()).OfType<Image>().ToList();
             result.Assets = Assets?.Select(x => x.Clone()).OfType<Asset>().ToList();
@@ -370,9 +380,15 @@ namespace VirtoCommerce.CatalogModule.Core.Model
             result.Reviews = Reviews?.Select(x => x.Clone()).OfType<EditorialReview>().ToList();
             result.Links = Links?.Select(x => x.Clone()).OfType<CategoryLink>().ToList();
             result.Variations = Variations?.Select(x => x.Clone()).OfType<Variation>().ToList();
+            // result.Outlines = Outlines?.Select(x => x.Clone()).OfType<Outline>().ToList(); // Intentionally temporary disabled due to memory overhead
 
             return result;
         }
         #endregion
+
+        public override string ToString()
+        {
+            return $"{Name}, Id: {Id}, Code: {Code}";
+        }
     }
 }

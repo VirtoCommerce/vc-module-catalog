@@ -2,7 +2,7 @@ angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.propertyDictionaryDetailsController',
         ['$scope', 'platformWebApp.dialogService', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.propDictItems', function ($scope, dialogService, bladeNavigationService, propDictItems) {
             var blade = $scope.blade;
-            blade.headIcon = 'fa-book';
+            blade.headIcon = 'fa fa-book';
 
             $scope.isValid = true;
             $scope.blade.isLoading = false;
@@ -13,7 +13,7 @@ angular.module('virtoCommerce.catalogModule')
 
             blade.toolbarCommands = [
                 {
-                    name: "platform.commands.save", icon: 'fa fa-save',
+                    name: "platform.commands.save", icon: 'fas fa-save',
                     executeMethod: saveChanges,
                     canExecuteMethod: canSave
                 }

@@ -8,7 +8,7 @@ using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using Xunit;
 
-namespace VirtoCommerce.CatalogModule.Test
+namespace VirtoCommerce.CatalogModule.Tests
 {
     [Trait("Category", "CI")]
     public class PropertyDictionaryItemTest

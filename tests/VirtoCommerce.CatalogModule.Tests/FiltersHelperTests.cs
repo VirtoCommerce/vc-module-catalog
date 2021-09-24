@@ -1,8 +1,7 @@
-using System;
 using VirtoCommerce.CatalogModule.Data.Search.Indexing;
 using Xunit;
 
-namespace VirtoCommerce.CatalogModule.Test
+namespace VirtoCommerce.CatalogModule.Tests
 {
     [Trait("Category", "CI")]
     public class FiltersHelperTests

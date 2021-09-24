@@ -56,6 +56,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         protected virtual IList<SortingField> GetSorting(ProductIndexedSearchCriteria criteria)
         {
             var result = new List<SortingField>();
+            //For sorting by relevance have to keep sortInfo clear
+            var needClearSortInfo = false;
 
             var priorityFields = criteria.GetPriorityFields();
 
@@ -74,6 +76,9 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
                 switch (sortingField.FieldName)
                 {
+                    case "relevance":
+                        needClearSortInfo = true;
+                        break;
                     case "price":
                         if (!criteria.Pricelists.IsNullOrEmpty())
                         {
@@ -102,6 +107,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             {
                 result.AddRange(priorityFields.Select(priorityField => new SortingField(priorityField, true)));
                 result.Add(new SortingField("__sort"));
+            }
+
+            if (needClearSortInfo)
+            {
+                result.Clear();
             }
 
             return result;
@@ -164,7 +174,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 result.Add(FiltersHelper.CreateTermFilter("__type", criteria.ClassTypes));
             }
 
-            if (!criteria.WithHidden)
+            if (criteria.SearchInVariations)
+            {
+                result.Add(FiltersHelper.CreateTermFilter("is", new[] { "variation", "product" }));
+            }
+            else if (!criteria.WithHidden)
             {
                 result.Add(FiltersHelper.CreateTermFilter("status", "visible"));
             }

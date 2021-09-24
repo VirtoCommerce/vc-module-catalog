@@ -1,14 +1,9 @@
-using Moq;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using VirtoCommerce.CatalogModule.Data.Repositories;
-using VirtoCommerce.CatalogModule.Data.Services;
 using Xunit;
 using dataModel = VirtoCommerce.CatalogModule.Data.Model;
 //using domainModel = VirtoCommerce.Domain.Catalog.Model;
 
-namespace VirtoCommerce.CatalogModule.Test
+namespace VirtoCommerce.CatalogModule.Tests
 {
     [Trait("Category", "CI")]
     public class ProductAssociationSearchServiceTests

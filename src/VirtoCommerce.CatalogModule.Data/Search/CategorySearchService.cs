@@ -36,7 +36,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 var query = BuildQuery(repository, criteria);
 
                 result.TotalCount = await query.CountAsync();
-                if (criteria.Take > 0)
+                if (criteria.Take > 0 && result.TotalCount > 0)
                 {
                     var ids = await query.OrderBySortInfos(sortInfos).ThenBy(x => x.Id)
                                         .Select(x => x.Id)
@@ -70,13 +70,22 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             {
                 query = query.Where(x => x.Name.Contains(criteria.Keyword));
             }
+            else if (!string.IsNullOrEmpty(criteria.Code))
+            {
+                query = query.Where(x => x.Code == criteria.Code);
+            }
+
             if (!criteria.CatalogIds.IsNullOrEmpty())
             {
                 query = query.Where(x => criteria.CatalogIds.Contains(x.CatalogId));
             }
-            if (!string.IsNullOrEmpty(criteria.CategoryId))
+            if (!string.IsNullOrEmpty(criteria.CategoryId) && !criteria.SearchOnlyInRoot)
             {
                 query = query.Where(x => x.ParentCategoryId == criteria.CategoryId);
+            }
+            if (criteria.SearchOnlyInRoot)
+            {
+                query = query.Where(x => x.ParentCategoryId == null);
             }
             return query;
         }

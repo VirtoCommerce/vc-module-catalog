@@ -24,7 +24,7 @@ angular.module('virtoCommerce.catalogModule')
         bladeNavigationService.showBlade(newBlade, blade.parentBlade);
     }
 
-    $scope.blade.headIcon = 'fa-upload';
+    $scope.blade.headIcon = 'fa fa-upload';
 
 	initializeBlade();
 }]);

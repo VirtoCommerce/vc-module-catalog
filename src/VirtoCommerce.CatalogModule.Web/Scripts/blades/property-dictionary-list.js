@@ -2,7 +2,7 @@ angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.propertyDictionaryListController', ['$scope', '$filter', 'platformWebApp.dialogService', 'platformWebApp.settings', 'platformWebApp.bladeNavigationService', 'platformWebApp.uiGridHelper', 'virtoCommerce.catalogModule.propDictItems', 'platformWebApp.bladeUtils', function ($scope, $filter, dialogService, settings, bladeNavigationService, uiGridHelper, propDictItems, bladeUtils) {
         var blade = $scope.blade;
         $scope.blade.isLoading = false;
-        blade.headIcon = 'fa-book';
+        blade.headIcon = 'fa fa-book';
         $scope.currentEntities = [];
 
         $scope.uiGridConstants = uiGridHelper.uiGridConstants;
@@ -20,7 +20,7 @@ angular.module('virtoCommerce.catalogModule')
 
         blade.toolbarCommands = [
             {
-                name: "platform.commands.add", icon: 'fa fa-plus',
+                name: "platform.commands.add", icon: 'fas fa-plus',
                 executeMethod: function () {
                     $scope.selectNode({ values: [], isNew: true, propertyId : blade.property.id })
                 },
@@ -29,7 +29,7 @@ angular.module('virtoCommerce.catalogModule')
                 }
             },
             {
-                name: "platform.commands.delete", icon: 'fa fa-trash-o',
+                name: "platform.commands.delete", icon: 'fas fa-trash-alt',
                 executeMethod: function () {
                     $scope.deleteList($scope.gridApi.selection.getSelectedRows());
                 },

@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
@@ -6,7 +5,7 @@ using VirtoCommerce.CatalogModule.Data.Search.Indexing;
 using VirtoCommerce.SearchModule.Core.Model;
 using Xunit;
 
-namespace VirtoCommerce.CatalogModule.Test
+namespace VirtoCommerce.CatalogModule.Tests
 {
     [Trait("Category", "CI")]
     public class AggregationRequestBuilderTests : BrowseFiltersTestBase

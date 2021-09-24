@@ -39,6 +39,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 throw new ArgumentNullException(nameof(criteria));
             }
 
+            criteria = criteria.Clone() as CatalogListEntrySearchCriteria;
             criteria.Normalize();
             var result = AbstractTypeFactory<ListEntrySearchResult>.TryCreateInstance();
 
@@ -152,14 +153,17 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 TryTransformSortingInfoColumnNames(_categorySortingAliases, sortInfos);
 
                 result.TotalCount = await query.CountAsync();
-                if (criteria.Take > 0)
+                if (criteria.Take > 0 && result.TotalCount > 0)
                 {
-                    query = query.OrderBySortInfos(sortInfos).ThenBy(x => x.Id);
+                    var categoryIds = query.OrderBySortInfos(sortInfos).ThenBy(x => x.Id)
+                                        .Skip(criteria.Skip).Take(criteria.Take)
+                                        .Select(x => x.Id)
+                                        .AsNoTracking()
+                                        .ToList();
 
-                    var categoryIds = query.Select(x => x.Id).ToList();
                     var essentialResponseGroup = CategoryResponseGroup.Info | CategoryResponseGroup.WithImages | CategoryResponseGroup.WithSeo | CategoryResponseGroup.WithLinks | CategoryResponseGroup.WithParents | CategoryResponseGroup.WithProperties | CategoryResponseGroup.WithOutlines;
-                    criteria.ResponseGroup = string.Concat(criteria.ResponseGroup, ",", essentialResponseGroup.ToString());
-                    result.Results = (await _categoryService.GetByIdsAsync(categoryIds.ToArray(), criteria.ResponseGroup, criteria.CatalogId)).OrderBy(x => categoryIds.IndexOf(x.Id)).ToList();
+                    var respGroup = string.Concat(criteria.ResponseGroup, ",", essentialResponseGroup.ToString());
+                    result.Results = (await _categoryService.GetByIdsAsync(categoryIds.ToArray(), respGroup, criteria.CatalogId)).OrderBy(x => categoryIds.IndexOf(x.Id)).ToList();
                 }
             }
 
@@ -202,18 +206,17 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 TryTransformSortingInfoColumnNames(_productSortingAliases, sortInfos.ToArray());
 
                 result.TotalCount = await query.CountAsync();
-                if (criteria.Take > 0)
+                if (criteria.Take > 0 && result.TotalCount > 0)
                 {
-                    query = query.OrderBySortInfos(sortInfos).ThenBy(x => x.Id);
-
-                    var itemIds = query.Skip(criteria.Skip)
-                                       .Take(criteria.Take)
-                                       .Select(x => x.Id)
-                                       .ToList();
+                    var itemIds = query.OrderBySortInfos(sortInfos).ThenBy(x => x.Id)
+                                    .Skip(criteria.Skip).Take(criteria.Take)
+                                    .Select(x => x.Id)
+                                    .AsNoTracking()
+                                    .ToList();
 
                     var essentialResponseGroup = ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemAssets | ItemResponseGroup.Links | ItemResponseGroup.Seo | ItemResponseGroup.Outlines;
-                    criteria.ResponseGroup = string.Concat(criteria.ResponseGroup, ",", essentialResponseGroup.ToString());
-                    result.Results = (await _itemService.GetByIdsAsync(itemIds.ToArray(), criteria.ResponseGroup, criteria.CatalogId)).OrderBy(x => itemIds.IndexOf(x.Id)).ToList();
+                    var responseGroup = string.Concat(criteria.ResponseGroup, ",", essentialResponseGroup.ToString());
+                    result.Results = (await _itemService.GetByIdsAsync(itemIds.ToArray(), responseGroup, criteria.CatalogId)).OrderBy(x => itemIds.IndexOf(x.Id)).ToList();
                 }
             }
 
@@ -279,6 +282,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             if (!criteria.ProductTypes.IsNullOrEmpty())
             {
                 query = query.Where(x => criteria.ProductTypes.Contains(x.ProductType));
+            }
+
+            if (!criteria.ExcludeProductTypes.IsNullOrEmpty())
+            {
+                query = query.Where(x => !criteria.ExcludeProductTypes.Contains(x.ProductType));
             }
 
             if (criteria.OnlyBuyable != null)

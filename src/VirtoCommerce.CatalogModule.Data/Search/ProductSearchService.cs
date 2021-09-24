@@ -36,11 +36,12 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 var query = BuildQuery(repository, criteria);
 
                 result.TotalCount = await query.CountAsync();
-                if (criteria.Take > 0)
+                if (criteria.Take > 0 && result.TotalCount > 0)
                 {
                     var ids = await query.OrderBySortInfos(sortInfos).ThenBy(x => x.Id)
                                         .Select(x => x.Id)
                                         .Skip(criteria.Skip).Take(criteria.Take)
+                                        .AsNoTracking()
                                         .ToArrayAsync();
 
                     result.Results = (await _itemService.GetByIdsAsync(ids, criteria.ResponseGroup)).OrderBy(x => Array.IndexOf(ids, x.Id)).ToList();
@@ -79,10 +80,18 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             {
                 query = query.Where(x => criteria.Skus.Contains(x.Code));
             }
-
-            if (!criteria.SearchInVariations)
+            if (!string.IsNullOrEmpty(criteria.MainProductId))
+            {
+                query = query.Where(x => x.ParentId == criteria.MainProductId);
+            }
+            else if (!criteria.SearchInVariations)
             {
                 query = query.Where(x => x.ParentId == null);
+            }
+
+            if (!criteria.PropertyName.IsNullOrEmpty())
+            {
+                query = query.Where(x => x.ItemPropertyValues.Any(x => x.Name == criteria.PropertyName));
             }
 
             return query;

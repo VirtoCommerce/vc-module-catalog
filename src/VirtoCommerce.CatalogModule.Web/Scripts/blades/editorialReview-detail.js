@@ -33,7 +33,7 @@ angular.module('virtoCommerce.catalogModule')
             $scope.bladeClose();
         };
 
-        blade.headIcon = 'fa-comments';
+        blade.headIcon = 'fa fa-comments';
         blade.title = 'catalog.blades.editorialReview-detail.title';
         blade.subtitle = 'catalog.blades.editorialReview-detail.subtitle';
         blade.editAsMarkdown = true;
@@ -68,9 +68,13 @@ angular.module('virtoCommerce.catalogModule')
         });
 
         $scope.openDictionarySettingManagement = function () {
-            var newBlade = new DictionarySettingDetailBlade('Catalog.EditorialReviewTypes');
-            newBlade.parentRefresh = function (data) {
-                $scope.types = data;
+            var newBlade = {
+                id: 'settingDetailChild',
+                isApiSave: true,
+                currentEntityId: 'Catalog.EditorialReviewTypes',
+                parentRefresh: function (data) { $scope.types = data; },
+                controller: 'platformWebApp.settingDictionaryController',
+                template: '$(Platform)/Scripts/app/settings/blades/setting-dictionary.tpl.html'
             };
             bladeNavigationService.showBlade(newBlade, blade);
         };
@@ -80,7 +84,7 @@ angular.module('virtoCommerce.catalogModule')
 
         blade.toolbarCommands = [
             {
-                name: "platform.commands.save", icon: 'fa fa-save',
+                name: "platform.commands.save", icon: 'fas fa-save',
                 executeMethod: saveChanges,
                 canExecuteMethod: canSave
             },

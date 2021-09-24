@@ -1,4 +1,4 @@
-﻿angular.module('virtoCommerce.catalogModule')
+angular.module('virtoCommerce.catalogModule')
 .factory('virtoCommerce.catalogModule.items', ['$resource', function ($resource) {
     return $resource('api/catalog/products/:id', null, {
         remove: { method: 'DELETE', url: 'api/catalog/products' },
@@ -7,6 +7,7 @@
         newVariation: { method: 'GET', url: 'api/catalog/products/:itemId/getnewvariation' },
         cloneItem: { method: 'GET', url: 'api/catalog/products/:itemId/clone' },
         update: { method: 'POST' },
-        plenty: { method: 'POST', url: 'api/catalog/products/plenty', isArray: true }
+        plenty: { method: 'POST', url: 'api/catalog/products/plenty', isArray: true },
+        getByIds: { method: 'GET', url: 'api/catalog/products/', params: { ids: '@ids' }, isArray: true }
     });
 }]);

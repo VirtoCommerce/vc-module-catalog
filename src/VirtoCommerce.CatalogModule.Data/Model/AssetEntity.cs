@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.Model
@@ -24,6 +26,14 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
         [StringLength(128)]
         public string OuterId { get; set; }
+
+        public int SortOrder { get; set; }
+
+        [StringLength(1024)]
+        public string Description { get; set; }
+
+        [StringLength(64)]
+        public string Group { get; set; }
 
         #region Navigation Properties
 
@@ -49,6 +59,19 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             asset.MimeType = MimeType;
             asset.Url = Url;
             asset.Size = Size;
+            asset.SortOrder = SortOrder;
+            asset.Description = Description;
+            asset.Group = Group;
+
+            if (!(string.IsNullOrEmpty(Name) && string.IsNullOrEmpty(Description) && string.IsNullOrEmpty(LanguageCode) && string.IsNullOrEmpty(Url)))
+            {
+                var seoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
+                seoInfo.Name = Name;
+                seoInfo.MetaDescription = Description;
+                seoInfo.LanguageCode = LanguageCode;
+                seoInfo.SemanticUrl = Url;
+                asset.SeoInfos = new List<SeoInfo> {seoInfo};
+            }
 
             return asset;
         }
@@ -72,6 +95,9 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             MimeType = asset.MimeType;
             Url = asset.Url;
             Size = asset.Size;
+            Group = asset.Group;
+            SortOrder = asset.SortOrder;
+            Description = asset.Description;
 
             return this;
         }
@@ -83,6 +109,9 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             target.MimeType = MimeType;
             target.Url = Url;
             target.Size = Size;
+            target.Description = Description;
+            target.Group = Group;
+            target.SortOrder = SortOrder;
         }
     }
 }

@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentValidation;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,33 +12,41 @@ using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
-using VirtoCommerce.CatalogModule.Web.Authorization;
+using VirtoCommerce.CatalogModule.Data.Authorization;
+using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
     [Route("api/catalog/properties")]
+    [Authorize]
     public class CatalogModulePropertiesController : Controller
     {
+        private readonly AbstractValidator<PropertyValidationRequest> _propertyValidationRequestValidator;
+        private readonly AbstractValidator<CategoryPropertyValidationRequest> _categoryPropertyNameValidator;
         private readonly IPropertyService _propertyService;
         private readonly ICategoryService _categoryService;
         private readonly ICatalogService _catalogService;
         private readonly IPropertyDictionaryItemSearchService _propertyDictionarySearchService;
         private readonly IAuthorizationService _authorizationService;
+
         //Workaround: Bad design to use repository in the controller layer, need to extend in the future IPropertyService.Delete with new parameter DeleteAllValues
         public CatalogModulePropertiesController(
             IPropertyService propertyService
             , ICategoryService categoryService
             , ICatalogService catalogService
             , IPropertyDictionaryItemSearchService propertyDictionarySearchService
-            , IAuthorizationService authorizationService)
+            , IAuthorizationService authorizationService
+            , AbstractValidator<PropertyValidationRequest> propertyValidationRequestValidator
+            , AbstractValidator<CategoryPropertyValidationRequest> categoryPropertyNameValidator)
         {
             _propertyService = propertyService;
             _categoryService = categoryService;
             _catalogService = catalogService;
             _propertyDictionarySearchService = propertyDictionarySearchService;
             _authorizationService = authorizationService;
+            _propertyValidationRequestValidator = propertyValidationRequestValidator;
+            _categoryPropertyNameValidator = categoryPropertyNameValidator;
         }
-
 
         /// <summary>
         /// Gets all dictionary values that specified property can have.
@@ -47,19 +57,18 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [HttpGet]
         [Route("{propertyId}/values")]
         [Obsolete("Use POST api/catalog/properties/dictionaryitems/search instead")]
-        public async Task<ActionResult<PropertyDictionaryItem[]>> GetPropertyValues(string propertyId, [FromQuery]string keyword = null)
+        public async Task<ActionResult<PropertyDictionaryItem[]>> GetPropertyValues(string propertyId, [FromQuery] string keyword = null)
         {
             var dictValues = await _propertyDictionarySearchService.SearchAsync(new PropertyDictionaryItemSearchCriteria { Keyword = keyword, PropertyIds = new[] { propertyId }, Take = int.MaxValue });
 
             return Ok(dictValues.Results);
         }
 
-
         /// <summary>
         /// Gets property metainformation by id.
         /// </summary>
         /// <param name="propertyId">The property id.</param>
-		[HttpGet]
+        [HttpGet]
         [Route("{propertyId}")]
         public async Task<ActionResult<Property>> GetProperty(string propertyId)
         {
@@ -77,7 +86,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return Ok(property);
         }
 
-
         /// <summary>
         /// Gets the template for a new catalog property.
         /// </summary>
@@ -92,7 +100,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 Id = Guid.NewGuid().ToString(),
                 IsNew = true,
                 CatalogId = catalog?.Id,
-                Name = "new property",
+                Name = "new_property",
                 Type = PropertyType.Catalog,
                 ValueType = PropertyValueType.ShortText,
                 Attributes = new List<PropertyAttribute>(),
@@ -101,7 +109,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             return Ok(retVal);
         }
-
 
         /// <summary>
         /// Gets the template for a new category property.
@@ -118,7 +125,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 IsNew = true,
                 CategoryId = categoryId,
                 CatalogId = category?.CatalogId,
-                Name = "new property",
+                Name = "new_property",
                 Type = PropertyType.Category,
                 ValueType = PropertyValueType.ShortText,
                 Attributes = new List<PropertyAttribute>(),
@@ -128,7 +135,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return Ok(retVal);
         }
 
-
         /// <summary>
         /// Creates or updates the specified property.
         /// </summary>
@@ -137,7 +143,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [HttpPost]
         [Route("")]
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
-        public async Task<ActionResult> SaveProperty([FromBody]Property property)
+        public async Task<ActionResult> SaveProperty([FromBody] Property property)
         {
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, property, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
             if (!authorizationResult.Succeeded)
@@ -150,6 +156,36 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return NoContent();
         }
 
+        /// <summary>
+        /// Validate name for Product-level (unmanaged) property
+        /// </summary>
+        [HttpPost]
+        [Route("validate-name")]
+        public async Task<ActionResult<ValidationResult>> ValidateName([FromBody] PropertyValidationRequest request)
+        {
+            if (request == null || request.Name.IsNullOrEmpty() || request.ProductId.IsNullOrEmpty())
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            var result = await _propertyValidationRequestValidator.ValidateAsync(request);
+
+            return Ok(result);
+        }
+
+        [HttpPost]
+        [Route("validate-property-name")]
+        public async Task<ActionResult<ValidationResult>> ValidatePropertyName([FromBody] CategoryPropertyValidationRequest request)
+        {
+            if (request == null || request.PropertyName.IsNullOrEmpty() || request.CategoryId.IsNullOrEmpty())
+            {
+                return BadRequest(request);
+            }
+
+            var result = await _categoryPropertyNameValidator.ValidateAsync(request);
+
+            return Ok(result);
+        }
 
         /// <summary>
         /// Deletes property by id.

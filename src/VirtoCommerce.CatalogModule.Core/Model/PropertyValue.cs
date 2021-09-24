@@ -6,7 +6,7 @@ using VirtoCommerce.Platform.Core.Domain;
 
 namespace VirtoCommerce.CatalogModule.Core.Model
 {
-    public class PropertyValue : AuditableEntity, IHasLanguage, IInheritable, ICloneable, IHasOuterId
+    public class PropertyValue : AuditableEntity, IHasLanguage, IInheritable, ICloneable, IHasOuterId, ICopyable
     {
         public string PropertyName { get; set; }
         public string PropertyId { get; set; }
@@ -49,6 +49,15 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                 Value = parentBase.Value;
                 ValueType = parentBase.ValueType;
             }
+        }
+        #endregion
+
+        #region ICopyable
+        public virtual object GetCopy()
+        {
+            var result = Clone() as PropertyValue;
+            result.Id = null;
+            return result;
         }
         #endregion
 

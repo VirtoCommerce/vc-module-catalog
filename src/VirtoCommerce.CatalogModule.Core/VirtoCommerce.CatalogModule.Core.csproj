@@ -1,25 +1,30 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IsPackable>True</IsPackable>
         <noWarn>1591</noWarn>
         <LangVersion>latest</LangVersion>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
         <NoWarn>1701;1702;1705;1591</NoWarn>
     </PropertyGroup>
-
+    <PropertyGroup>
+        <!-- Project is not a test project -->
+        <SonarQubeTestProject>false</SonarQubeTestProject>
+    </PropertyGroup>
     <ItemGroup>
         <Folder Include="Model\ListEntry\" />
     </ItemGroup>
-
     <ItemGroup>
-      <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.0.0-rc.2" />
-      <PackageReference Include="VirtoCommerce.ExportModule.Core" Version="3.0.0-rc.2" />
-      <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.0.0-rc2-0138" />
-      <PackageReference Include="VirtoCommerce.SearchModule.Core" Version="3.0.0-rc.3" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+        <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.1.0" />
+        <PackageReference Include="VirtoCommerce.ExportModule.Core" Version="3.1.0" />
+        <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.78.0" />
+        <PackageReference Include="VirtoCommerce.SearchModule.Core" Version="3.15.0" />
     </ItemGroup>
-
 </Project>

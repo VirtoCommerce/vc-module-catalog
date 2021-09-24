@@ -1,8 +1,8 @@
-﻿angular.module('virtoCommerce.catalogModule')
+angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.aggregationPropertyDetailsController', ['$scope', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.aggregationProperties', function ($scope, bladeNavigationService, aggregationProperties) {
     var blade = $scope.blade;
     blade.updatePermission = 'store:update';
-    blade.headIcon = 'fa-gear';
+    blade.headIcon = 'fa fa-gear';
 
     var attributeType = "Attribute";
     var rangeType = "Range";

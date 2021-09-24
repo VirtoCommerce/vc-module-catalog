@@ -5,7 +5,8 @@ namespace VirtoCommerce.CatalogModule.Core.Model.Search
 {
     public class ProductSearchCriteria : SearchCriteriaBase
     {
-        public string CatalogId;
+        public string CatalogId { get; set; }
+
         private string[] _catalogIds;
         public string[] CatalogIds
         {
@@ -34,6 +35,12 @@ namespace VirtoCommerce.CatalogModule.Core.Model.Search
             set => _categoriesIds = value;
         }
         public IList<string> Skus { get; set; }
+
+        /// <summary>
+        /// Search within variations of specified main product
+        /// </summary>
+        public string MainProductId { get; set; }
+
         /// <summary>
         /// Include product variations in result
         /// </summary>
@@ -43,5 +50,10 @@ namespace VirtoCommerce.CatalogModule.Core.Model.Search
         /// </summary>
         public string[] ProductTypes { get; set; }
         public bool SearchInChildren { get; set; }
+
+        /// <summary>
+        /// Find product having property with specified property name
+        /// </summary>
+        public string PropertyName { get; set; }
     }
 }

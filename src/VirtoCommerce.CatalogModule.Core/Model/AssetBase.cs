@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
@@ -11,14 +12,24 @@ namespace VirtoCommerce.CatalogModule.Core.Model
     /// <summary>
     /// Base class for assets.
     /// </summary>
-    public abstract class AssetBase : AuditableEntity, IHasLanguage, IInheritable, ICloneable, ISeoSupport, IHasOuterId
+    public abstract class AssetBase : AuditableEntity, IHasLanguage, IInheritable, ICloneable, ISeoSupport, IHasOuterId, ICopyable
     {
-        public AssetBase()
+        protected AssetBase(string typeName)
         {
-            TypeId = GetType().Name;
+            TypeId = typeName;
         }
         public string RelativeUrl { get; set; }
         public string Url { get; set; }
+        public string Description { get; set; }
+        public int SortOrder { get; set; }
+        [JsonIgnore]
+        public bool HasExternalUrl
+        {
+            get
+            {
+                return string.IsNullOrEmpty(RelativeUrl) || Uri.IsWellFormedUriString(RelativeUrl, UriKind.Absolute);
+            }
+        }
 
         /// <summary>
         /// Gets or sets the asset type identifier.
@@ -75,7 +86,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                 Group = parentAssetBase.Group;
                 TypeId = parentAssetBase.TypeId;
                 Url = parentAssetBase.Url;
-                Url = parentAssetBase.RelativeUrl;
+                RelativeUrl = !string.IsNullOrEmpty(parentAssetBase.RelativeUrl) ? parentAssetBase.RelativeUrl : parentAssetBase.Url;
             }
         }
         #endregion
@@ -83,7 +94,18 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
         #region ISeoSupport members
         public string SeoObjectType { get { return GetType().Name; } }
+
         public IList<SeoInfo> SeoInfos { get; set; }
+       
+        #endregion
+
+        #region ICopyable members
+        public virtual object GetCopy()
+        {
+            var result = Clone() as AssetBase;
+            result.Id = null;
+            return result;
+        }
         #endregion
 
         #region ICloneable members

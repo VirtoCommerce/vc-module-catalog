@@ -1,10 +1,12 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Core.Model
 {
-    public class ProductAssociation : ValueObject, IHasOuterId, IHasImages
+    public class ProductAssociation : Entity, IHasOuterId, IHasImages, ICloneable, ICopyable
     {
         /// <summary>
         /// Association type (Accessories, Up-Sales, Cross-Sales, Related etc)
@@ -14,6 +16,10 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         public int Priority { get; set; }
 
         public int? Quantity { get; set; }
+        /// <summary>
+        /// Is a primary key of associating object
+        /// </summary>
+        public string ItemId { get; set; }
         /// <summary>
         /// Each link element can have an associated object like Product, Category, etc.
         /// Is a primary key of associated object
@@ -60,15 +66,28 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                     hasImages.Images = value;
                 }
             }
-        } 
+        }
         #endregion
 
-        protected override IEnumerable<object> GetEqualityComponents()
+        #region ICloneable
+        public virtual object Clone()
         {
-            yield return AssociatedObjectId;
-            yield return AssociatedObjectType;
-            yield return Type;
-        }
+            var result = MemberwiseClone() as ProductAssociation;
 
+            result.Images = Images?.Select(x => x.Clone()).OfType<Image>().ToList();
+
+            return result;
+        }
+        #endregion
+
+        #region ICopyable
+        public virtual object GetCopy()
+        {
+            var result = Clone() as ProductAssociation;
+            result.Id = null;
+            result.ItemId = null;
+            return result;
+        }
+        #endregion
     }
 }

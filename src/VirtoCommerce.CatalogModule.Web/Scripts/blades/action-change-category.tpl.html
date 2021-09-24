@@ -1,0 +1,27 @@
+<div class="blade-static __bottom">
+    <button class="btn" ng-click="startAction()" ng-disabled="!blade.canStartProcess">
+        <span>Execute</span>
+    </button>
+</div>
+<div class="blade-content">
+    <div class="blade-inner">
+        <div class="inner-block">
+            <form class="form" name="exportForm">
+                <div class="form-group">
+                    <ul class="list __items">
+                        <!--<li class="list-item" ng-click="selectExportedData()">
+                            <i class="list-ico fa fa-cogs"></i>
+                            <span class="list-t">{{ 'export.blades.export-settings.labels.exported-data' | translate }}</span>
+                            <span class="list-descr">{{ 'export.blades.export-settings.labels.selected' | translate: {count: blade.dataSelected, total: blade.dataTotal} }}</span>
+                        </li>-->
+                        <li class="list-item" ng-click="selectCategory()">
+                            <i class="list-ico fa fa-cogs"></i>
+                            <span class="list-t">{{ 'Select Category to move to' | translate }}</span>
+                            <span class="list-descr">{{  blade.selectedCategory ? blade.selectedCategory.name : 'Nothing' }} selected</span>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

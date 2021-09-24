@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using VirtoCommerce.Platform.Core.Common;
@@ -40,7 +41,29 @@ namespace VirtoCommerce.CatalogModule.Core.Model.Search
         /// </summary>
         public string RawQuery { get; set; }
 
+        /// <summary>
+        /// Allows to retrieve only a specific set of fields in the result hits
+        /// </summary>
+        public IList<string> IncludeFields { get; set; }
+
         [JsonProperty("searchPhrase")]
         public new string Keyword { get; set; }
+
+        public virtual CatalogIndexedSearchCriteria FromListEntryCriteria(CatalogListEntrySearchCriteria listEntryCriteria)
+        {
+            if (listEntryCriteria == null)
+            {
+                throw new ArgumentNullException(nameof(listEntryCriteria));
+            }
+
+            Keyword = listEntryCriteria.Keyword;
+            CatalogId = listEntryCriteria.CatalogId;
+            Outline = listEntryCriteria.CategoryId;
+            Skip = listEntryCriteria.Skip;
+            Take = listEntryCriteria.Take;
+            Sort = listEntryCriteria.Sort;
+
+            return this;
+        }
     }
 }

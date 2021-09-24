@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+using VirtoCommerce.CatalogModule.Core.Extensions;
 using VirtoCommerce.CoreModule.Core.Outlines;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.ExportModule.Core.Model;
@@ -9,7 +10,7 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Core.Model
 {
-    public class Category : AuditableEntity, IHasLinks, ISeoSupport, IHasOutlines, IHasImages, IHasProperties, ICloneable, IHasTaxType, IHasName, IHasOuterId, IHasCatalogId, IExportable
+    public class Category : AuditableEntity, IHasLinks, ISeoSupport, IHasOutlines, IHasImages, IHasProperties, IHasTaxType, IHasName, IHasOuterId, IExportable, IHasExcludedProperties
     {
         public Category()
         {
@@ -32,8 +33,19 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         /// <summary>
         /// Category path in physical catalog (all parent categories names concatenated. E.g. (parent1/parent2))
         /// </summary>
-        public string Path => Parent != null ? $"{Parent.Path}/{Name}" : Name;
+        public string Path
+        {
+            get
+            {
+                return _path ?? (Parent != null ? $"{Parent.Path}/{Name}" : Name);
+            }
+            set
+            {
+                _path = value;
+            }
+        }
 
+        protected string _path;
 
         public bool IsVirtual { get; set; }
         public int Level { get; set; }
@@ -52,7 +64,10 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
         #region IHasProperties members
         public IList<Property> Properties { get; set; }
+        #endregion
 
+        #region IHasExcludedProperties members
+        public IList<ExcludedProperty> ExcludedProperties { get; set; }
         #endregion
 
         #region ILinkSupport members
@@ -99,17 +114,21 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
         public virtual void TryInheritFrom(IEntity parent)
         {
+            this.InheritExcludedProperties(parent as IHasExcludedProperties);
+
             if (parent is IHasProperties hasProperties)
             {
                 //Properties inheritance
                 foreach (var parentProperty in hasProperties.Properties ?? Array.Empty<Property>())
                 {
-                    if (Properties == null)
+                    if (this.HasPropertyExcluded(parentProperty.Name))
                     {
-                        Properties = new List<Property>();
+                        continue;
                     }
+
+                    Properties ??= new List<Property>();
                     //Try to find property by type and name
-                    var existProperty = Properties.FirstOrDefault(x => x.IsSame(parentProperty, PropertyType.Product, PropertyType.Variation));
+                    var existProperty = Properties.FirstOrDefault(x => x.IsSame(parentProperty));
                     if (existProperty == null)
                     {
                         existProperty = AbstractTypeFactory<Property>.TryCreateInstance();
@@ -119,19 +138,13 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                     existProperty.IsReadOnly = existProperty.Type != PropertyType.Category;
                 }
                 //Restore order after changes
-                if (Properties != null)
-                {
-                    Properties = Properties.OrderBy(x => x.Name).ToList();
-                }
+                Properties = Properties?.OrderBy(x => x.Name).ToList();
             }
 
             if (parent is IHasTaxType hasTaxType)
             {
                 //Try to inherit taxType from parent category
-                if (TaxType == null)
-                {
-                    TaxType = hasTaxType.TaxType;
-                }
+                TaxType ??= hasTaxType.TaxType;
             }
         }
         #endregion
@@ -139,7 +152,17 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         #region ICloneable
         public virtual object Clone()
         {
-            return MemberwiseClone();
+            var result = MemberwiseClone() as Category;
+
+            result.SeoInfos = SeoInfos?.Select(x => x.Clone()).OfType<SeoInfo>().ToList();
+            result.Children = Children?.Select(x => x.Clone()).OfType<Category>().ToList();
+            result.Outlines = Outlines?.Select(x => x.Clone()).OfType<Outline>().ToList();
+            result.Parents = Parents?.Select(x => x.Clone()).OfType<Category>().ToArray();
+            result.Properties = Properties?.Select(x => x.Clone()).OfType<Property>().ToList();
+            result.Links = Links?.Select(x => x.Clone()).OfType<CategoryLink>().ToList();
+            // result.Images = Images?.Select(x => x.Clone()).OfType<Image>().ToList(); // Intentionally temporary disabled due to memory overhead
+
+            return result;
         }
         #endregion
 
@@ -150,6 +173,10 @@ namespace VirtoCommerce.CatalogModule.Core.Model
             ParentId = categoryId;
         }
 
+        /// <summary>
+        /// Reduce Category details
+        /// </summary>
+        /// <param name="responseGroup">A set of necessary groups</param>
         public virtual void ReduceDetails(string responseGroup)
         {
             //Reduce details according to response group

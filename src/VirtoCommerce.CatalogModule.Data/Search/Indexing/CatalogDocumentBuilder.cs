@@ -4,6 +4,7 @@ using System.Linq;
 using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Outlines;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.SearchModule.Core.Model;
 
@@ -18,37 +19,55 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             _settingsManager = settingsManager;
         }
 
-        protected virtual bool StoreObjectsInIndex => _settingsManager.GetValue(ModuleConstants.Settings.Search.UseFullObjectIndexStoring.Name, true);
+        protected virtual bool StoreObjectsInIndex => _settingsManager.GetValue(ModuleConstants.Settings.Search.UseFullObjectIndexStoring.Name, false);
 
         protected virtual void IndexCustomProperties(IndexDocument document, ICollection<Property> properties, ICollection<PropertyType> contentPropertyTypes)
         {
             foreach (var property in properties)
-                foreach (var propValue in property.Values?.Where(x => x.Value != null) ?? Array.Empty<PropertyValue>())
+            {
+                var isCollection = property?.Multivalue == true;
+
+                // replace empty value for Boolean property with default 'False'
+                if (property?.ValueType == PropertyValueType.Boolean && property.Values.IsNullOrEmpty())
+                {
+                    document.Add(new IndexDocumentField(property.Name, false) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection, ValueType = IndexDocumentFieldValueType.Boolean, });
+                    break;
+                }
+
+                foreach (var propValue in property?.Values?.Where(x => x.Value != null) ?? Array.Empty<PropertyValue>())
                 {
                     var propertyName = propValue.PropertyName?.ToLowerInvariant();
                     if (!string.IsNullOrEmpty(propertyName))
                     {
-                        var isCollection = property?.Multivalue == true;
-
                         switch (propValue.ValueType)
                         {
                             case PropertyValueType.Boolean:
+                                document.Add(new IndexDocumentField(propertyName, propValue.Value) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection, ValueType = IndexDocumentFieldValueType.Boolean, });
+                                break;
                             case PropertyValueType.DateTime:
+                                document.Add(new IndexDocumentField(propertyName, propValue.Value) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection, ValueType = IndexDocumentFieldValueType.DateTime, });
+                                break;
                             case PropertyValueType.Integer:
+                                document.Add(new IndexDocumentField(propertyName, propValue.Value) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection, ValueType = IndexDocumentFieldValueType.Integer, });
+                                break;
                             case PropertyValueType.Number:
-                                document.Add(new IndexDocumentField(propertyName, propValue.Value) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection });
+                                document.Add(new IndexDocumentField(propertyName, propValue.Value) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection, ValueType = IndexDocumentFieldValueType.Double, });
                                 break;
                             case PropertyValueType.LongText:
-                                document.Add(new IndexDocumentField(propertyName, propValue.Value.ToString().ToLowerInvariant()) { IsRetrievable = true, IsSearchable = true, IsCollection = isCollection });
+                                document.Add(new IndexDocumentField(propertyName, propValue.Value.ToString().ToLowerInvariant()) { IsRetrievable = true, IsSearchable = true, IsCollection = isCollection, ValueType = IndexDocumentFieldValueType.String, });
                                 break;
                             case PropertyValueType.ShortText:
                                 // Index alias when it is available instead of display value.
                                 // Do not tokenize small values as they will be used for lookups and filters.
                                 var shortTextValue = propValue.Alias ?? propValue.Value.ToString();
-                                document.Add(new IndexDocumentField(propertyName, shortTextValue) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection });
+                                document.Add(new IndexDocumentField(propertyName, shortTextValue) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection, ValueType = IndexDocumentFieldValueType.String });
+                                if (property.Multilanguage && !string.IsNullOrEmpty(propValue.LanguageCode))
+                                {
+                                    document.Add(new IndexDocumentField($"{propertyName}_{propValue.LanguageCode.ToLowerInvariant()}", shortTextValue) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection, ValueType = IndexDocumentFieldValueType.String });
+                                }
                                 break;
                             case PropertyValueType.GeoPoint:
-                                document.Add(new IndexDocumentField(propertyName, GeoPoint.TryParse((string)propValue.Value)) { IsRetrievable = true, IsSearchable = true, IsCollection = true });
+                                document.Add(new IndexDocumentField(propertyName, GeoPoint.TryParse((string)propValue.Value)) { IsRetrievable = true, IsSearchable = true, IsCollection = true, ValueType = IndexDocumentFieldValueType.GeoPoint, });
                                 break;
                         }
                     }
@@ -66,31 +85,37 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
                                 if (!string.IsNullOrWhiteSpace(stringValue)) // don't index empty values
                                 {
-                                    document.Add(new IndexDocumentField(contentField, stringValue.ToLower()) { IsRetrievable = true, IsSearchable = true, IsCollection = true });
+                                    document.Add(new IndexDocumentField(contentField, stringValue.ToLower()) { IsRetrievable = true, IsSearchable = true, IsCollection = true, ValueType = IndexDocumentFieldValueType.String, });
                                 }
 
                                 break;
                         }
                     }
                 }
+            }
         }
 
-        protected virtual string[] GetOutlineStrings(IEnumerable<Outline> outlines)
+        protected virtual string[] GetOutlineStrings(IEnumerable<Outline> outlines, bool getNameLatestItem = false)
         {
             return outlines
-                .SelectMany(ExpandOutline)
-                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .SelectMany(x => ExpandOutline(x, getNameLatestItem))
+                .Distinct()
                 .ToArray();
         }
 
-        protected virtual IEnumerable<string> ExpandOutline(Outline outline)
+        protected virtual IEnumerable<string> ExpandOutline(Outline outline, bool getNameLatestItem)
         {
             // Outline structure: catalog/category1/.../categoryN/current-item
 
             var items = outline.Items
                 .Take(outline.Items.Count - 1) // Exclude last item, which is current item ID
-                .Select(i => i.Id)
+                                               // VP-6151 Need to save outlines in index in lower case as we are converting search criteria outlines to lower case
+                .Select(i => i.Id.ToLowerInvariant())
                 .ToList();
+
+            var itemNames = outline.Items
+                .Take(outline.Items.Count - 1) // Exclude last item, which is current item ID
+                .ToDictionary(x => x.Id.ToLowerInvariant(), y => y.Name);
 
             var result = new List<string>();
 
@@ -102,7 +127,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             {
                 for (var i = items.Count; i > 0; i--)
                 {
-                    result.Add(string.Join("/", items.Take(i)));
+                    var path = !getNameLatestItem ? string.Join("/", items.Take(i)) :
+                        string.Join(ModuleConstants.OutlineDelimiter,
+                            string.Join("/", items.Take(i)), itemNames.Values.ElementAt(i - 1));
+
+                    result.Add(path);
                 }
             }
 
@@ -113,7 +142,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
                 result.AddRange(
                     items.Skip(1)
-                        .Select(i => string.Join("/", catalogId, i)));
+                        .Select(i => !getNameLatestItem ?
+                                string.Join("/", catalogId, i) :
+                                string.Join(ModuleConstants.OutlineDelimiter,
+                                    string.Join("/", catalogId, i), itemNames[i])
+                        ));
             }
 
             return result;

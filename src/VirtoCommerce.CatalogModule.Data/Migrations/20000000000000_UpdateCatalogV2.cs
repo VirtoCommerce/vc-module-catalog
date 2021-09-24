@@ -10,14 +10,14 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                 IF (EXISTS (SELECT * FROM __MigrationHistory WHERE ContextKey = 'VirtoCommerce.CatalogModule.Data.Migrations.Configuration'))
                     BEGIN
                         BEGIN
-	                        INSERT INTO [dbo].[__EFMigrationsHistory] ([MigrationId],[ProductVersion]) VALUES ('20190515064457_InitialCatalog', '2.2.3-servicing-35854')
+	                        INSERT INTO [__EFMigrationsHistory] ([MigrationId],[ProductVersion]) VALUES ('20190515064457_InitialCatalog', '2.2.3-servicing-35854')
                         END
                     END");
 
             migrationBuilder.Sql(@"IF (EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '__MigrationHistory'))
                 IF (EXISTS (SELECT * FROM __MigrationHistory WHERE ContextKey = 'VirtoCommerce.CatalogModule.Data.Migrations.Configuration'))
                     BEGIN
-                        CREATE TABLE [dbo].[CatalogSeoInfo](
+                        CREATE TABLE [CatalogSeoInfo](
 	                        [Id] [nvarchar](128) NOT NULL,
 	                        [CreatedDate] [datetime2](7) NOT NULL,
 	                        [ModifiedDate] [datetime2](7) NULL,
@@ -40,15 +40,15 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         ) ON [PRIMARY]
 
                         BEGIN
-                            ALTER TABLE [dbo].[CatalogSeoInfo]  WITH CHECK ADD  CONSTRAINT [FK_CatalogSeoInfo_Category_CategoryId] FOREIGN KEY([CategoryId])
-                            REFERENCES [dbo].[Category] ([Id])
+                            ALTER TABLE [CatalogSeoInfo]  WITH CHECK ADD  CONSTRAINT [FK_CatalogSeoInfo_Category_CategoryId] FOREIGN KEY([CategoryId])
+                            REFERENCES [Category] ([Id])
 
-                            ALTER TABLE [dbo].[CatalogSeoInfo] CHECK CONSTRAINT [FK_CatalogSeoInfo_Category_CategoryId]
+                            ALTER TABLE [CatalogSeoInfo] CHECK CONSTRAINT [FK_CatalogSeoInfo_Category_CategoryId]
 
-                            ALTER TABLE [dbo].[CatalogSeoInfo]  WITH CHECK ADD  CONSTRAINT [FK_CatalogSeoInfo_Item_ItemId] FOREIGN KEY([ItemId])
-                            REFERENCES [dbo].[Item] ([Id])
+                            ALTER TABLE [CatalogSeoInfo]  WITH CHECK ADD  CONSTRAINT [FK_CatalogSeoInfo_Item_ItemId] FOREIGN KEY([ItemId])
+                            REFERENCES [Item] ([Id])
 
-                            ALTER TABLE [dbo].[CatalogSeoInfo] CHECK CONSTRAINT [FK_CatalogSeoInfo_Item_ItemId]
+                            ALTER TABLE [CatalogSeoInfo] CHECK CONSTRAINT [FK_CatalogSeoInfo_Item_ItemId]
                         END
 	                    
 				    END");
@@ -57,9 +57,15 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                 IF (EXISTS (SELECT * FROM __MigrationHistory WHERE ContextKey = 'VirtoCommerce.CatalogModule.Data.Migrations.Configuration'))
                     BEGIN
                         INSERT INTO [CatalogSeoInfo]([Id], [CreatedDate], [ModifiedDate], [CreatedBy], [ModifiedBy], [Keyword], [StoreId], [IsActive], [Language], [Title], [MetaDescription], [MetaKeywords], [ImageAltDescription], [CategoryId])
-                            SELECT[Id], [CreatedDate], [ModifiedDate], [CreatedBy], [ModifiedBy], [Keyword], [StoreId], [IsActive], [Language], [Title], [MetaDescription], [MetaKeywords], [ImageAltDescription], [ObjectId] as CategoryId FROM [SeoUrlKeyword] WHERE ObjectType = 'Category'
+                            SELECT seo.[Id], seo.[CreatedDate], seo.[ModifiedDate], seo.[CreatedBy], seo.[ModifiedBy], seo.[Keyword], seo.[StoreId], seo.[IsActive], seo.[Language], seo.[Title], seo.[MetaDescription], seo.[MetaKeywords], seo.[ImageAltDescription], seo.[ObjectId] as CategoryId 
+                            FROM [SeoUrlKeyword] seo
+                            INNER JOIN Category ON Category.Id = seo.ObjectId
+                            WHERE seo.ObjectType = 'Category'
                         INSERT INTO [CatalogSeoInfo] ([Id], [CreatedDate], [ModifiedDate], [CreatedBy], [ModifiedBy], [Keyword], [StoreId], [IsActive], [Language], [Title], [MetaDescription], [MetaKeywords], [ImageAltDescription], [ItemId])
-                              SELECT [Id], [CreatedDate], [ModifiedDate], [CreatedBy], [ModifiedBy], [Keyword], [StoreId], [IsActive], [Language], [Title], [MetaDescription], [MetaKeywords], [ImageAltDescription], [ObjectId] as ItemId FROM [SeoUrlKeyword] WHERE ObjectType = 'CatalogProduct'
+                            SELECT seo.[Id], seo.[CreatedDate], seo.[ModifiedDate], seo.[CreatedBy], seo.[ModifiedBy], seo.[Keyword], seo.[StoreId], seo.[IsActive], seo.[Language], seo.[Title], seo.[MetaDescription], seo.[MetaKeywords], seo.[ImageAltDescription], seo.[ObjectId] as ItemId 
+                            FROM [SeoUrlKeyword] seo
+                            INNER JOIN Item ON Item.Id = seo.ObjectId
+                            WHERE seo.ObjectType = 'CatalogProduct'
 				    END");
         }
 
