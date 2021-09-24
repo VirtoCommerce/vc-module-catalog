@@ -14,16 +14,16 @@ using VirtoCommerce.Platform.Core.Assets;
 using VirtoCommerce.Platform.Core.Caching;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Events;
-using VirtoCommerce.Platform.Data.Infrastructure;
-using VirtoCommerce.Platform.Data.GenericCrud;
 using VirtoCommerce.Platform.Core.GenericCrud;
+using VirtoCommerce.Platform.Data.GenericCrud;
+using VirtoCommerce.Platform.Data.Infrastructure;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
     public class ItemService : CrudService<CatalogProduct, ItemEntity, ProductChangingEvent, ProductChangedEvent>, IItemService
     {
         private readonly AbstractValidator<IHasProperties> _hasPropertyValidator;
-        private readonly ICrudService<Catalog> _catalogServiceCrud;
+        private readonly ICrudService<Catalog> _catalogService;
         private readonly ICategoryService _categoryService;
         private readonly IOutlineService _outlineService;
         private readonly IBlobUrlResolver _blobUrlResolver;
@@ -48,7 +48,9 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _blobUrlResolver = blobUrlResolver;
             _skuGenerator = skuGenerator;
             _productValidator = productValidator;
-            _catalogServiceCrud = (ICrudService<Catalog>)catalogService;
+
+            // TODO: Remove casting after inheriting ICatalogService from ICrudService<Catalog>
+            _catalogService = (ICrudService<Catalog>)catalogService;
         }
 
         #region IItemService Members
@@ -169,19 +171,28 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public virtual async Task LoadDependenciesAsync(IEnumerable<CatalogProduct> products)
         {
-            //TODO: refactor to do this by one call and iteration
-            var catalogsIds = new { products }.GetFlatObjectsListWithInterface<IHasCatalogId>().Select(x => x.CatalogId).Where(x => x != null).Distinct().ToArray();
-            var catalogsByIdDict = (await _catalogServiceCrud.GetByIdsAsync(catalogsIds)).ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase);
+            var catalogsIds = new HashSet<string>();
+            var categoriesIds = new HashSet<string>();
 
-            var categoriesIds = new { products }.GetFlatObjectsListWithInterface<IHasCategoryId>().Select(x => x.CategoryId).Where(x => x != null).Distinct().ToArray();
-            var categoriesByIdDict = (await _categoryService.GetByIdsAsync(categoriesIds, CategoryResponseGroup.Full.ToString())).ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase);
-
-            var allImages = new { products }.GetFlatObjectsListWithInterface<IHasImages>().Where(x => x.Images != null).SelectMany(x => x.Images);
-            foreach (var image in allImages.Where(x => !string.IsNullOrEmpty(x.Url)))
+            foreach (var product in products)
             {
-                image.RelativeUrl = !string.IsNullOrEmpty(image.RelativeUrl) ? image.RelativeUrl : image.Url;
-                image.Url = _blobUrlResolver.GetAbsoluteUrl(image.Url);
+                if (product.CatalogId != null)
+                    catalogsIds.Add(product.CatalogId);
+
+                if (product.CategoryId != null)
+                    categoriesIds.Add(product.CategoryId);
+
+                if (product.Images != null)
+                    product.Images.Apply(image => LoadImageDependencies(image));
             }
+
+            var catalogsByIdDict = await _catalogService
+                .GetByIdsAsync(catalogsIds)
+                .ContinueWith(catalogs => catalogs.Result.ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase));
+
+            var categoriesByIdDict = await _categoryService
+                .GetByIdsAsync(categoriesIds.ToArray() /* TODO Remove .ToArray() */, CategoryResponseGroup.Full.ToString())
+                .ContinueWith(categories => categories.Result.ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase));
 
             foreach (var product in products)
             {
@@ -191,14 +202,21 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 {
                     SetProductDependencies(product.MainProduct, catalogsByIdDict, categoriesByIdDict);
                 }
-                if (!product.Variations.IsNullOrEmpty())
+
+                foreach (var variation in product?.Variations ?? Enumerable.Empty<Variation>())
                 {
-                    foreach (var variation in product.Variations)
-                    {
-                        SetProductDependencies(variation, catalogsByIdDict, categoriesByIdDict);
-                    }
+                    SetProductDependencies(variation, catalogsByIdDict, categoriesByIdDict);
                 }
             }
+        }
+
+        protected virtual void LoadImageDependencies(Image image)
+        {
+            if (string.IsNullOrEmpty(image.Url))
+                return;
+
+            image.RelativeUrl = !string.IsNullOrEmpty(image.RelativeUrl) ? image.RelativeUrl : image.Url;
+            image.Url = _blobUrlResolver.GetAbsoluteUrl(image.Url);
         }
 
         protected virtual void SetProductDependencies(CatalogProduct product, IDictionary<string, Catalog> catalogsByIdDict, IDictionary<string, Category> categoriesByIdDict)
@@ -208,13 +226,15 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             {
                 product.Code = _skuGenerator.GenerateSku(product);
             }
+
             product.Catalog = catalogsByIdDict.GetValueOrThrow(product.CatalogId, $"catalog with key {product.CatalogId} doesn't exist");
+
             if (product.CategoryId != null)
             {
                 product.Category = categoriesByIdDict.GetValueOrThrow(product.CategoryId, $"category with key {product.CategoryId} doesn't exist");
             }
 
-            foreach (var link in product.Links ?? Array.Empty<CategoryLink>())
+            foreach (var link in product.Links ?? Enumerable.Empty<CategoryLink>())
             {
                 link.Catalog = catalogsByIdDict.GetValueOrThrow(link.CatalogId, $"link catalog with key {link.CatalogId} doesn't exist");
 
@@ -244,11 +264,20 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
         }
 
-        protected virtual async Task ValidateProductsAsync(CatalogProduct[] products)
+        [Obsolete("Use ValidateAsync")]
+        protected virtual Task ValidateProductsAsync(CatalogProduct[] products)
         {
+            return ValidateAsync(products);
+        }
+
+        private async Task<bool> ValidateAsync(IEnumerable<CatalogProduct> products)
+        {
+            var tcs = new TaskCompletionSource<bool>();
+
             if (products == null)
             {
-                throw new ArgumentNullException(nameof(products));
+                tcs.SetException(new ArgumentNullException(nameof(products)));
+                return await tcs.Task;
             }
 
             //Validate products
@@ -260,25 +289,29 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             await LoadDependenciesAsync(products);
             ApplyInheritanceRules(products);
 
-            var targets = products.OfType<IHasProperties>();
-            foreach (var item in targets)
+            foreach (var item in products.OfType<IHasProperties>())
             {
                 var validationResult = await _hasPropertyValidator.ValidateAsync(item);
-                if (!validationResult.IsValid)
-                {
-                    throw new ValidationException($"Product properties has validation error: {string.Join(Environment.NewLine, validationResult.Errors.Select(x => x.ToString()))}");
-                }
+                if (validationResult.IsValid)
+                    continue;
+
+                tcs.SetException(new ValidationException($"Product properties has validation error: {string.Join(Environment.NewLine, validationResult.Errors.Select(x => x.ToString()))}"));
+                break;
             }
+
+            tcs.SetResult(true);
+
+            return await tcs.Task;
         }
 
-        protected async override Task<IEnumerable<ItemEntity>> LoadEntities(IRepository repository, IEnumerable<string> ids, string responseGroup)
+        protected override Task<IEnumerable<ItemEntity>> LoadEntities(IRepository repository, IEnumerable<string> ids, string responseGroup)
         {
-            return await ((ICatalogRepository)repository).GetItemByIdsAsync(ids.ToArray());
+            return ((ICatalogRepository)repository).GetItemByIdsAsync(ids.ToArray());
         }
 
         protected override Task BeforeSaveChanges(IEnumerable<CatalogProduct> models)
         {
-            return ValidateProductsAsync(models.ToArray());
+            return ValidateAsync(models);
         }
     }
 }
