@@ -1,6 +1,7 @@
 {
     "artifactKey": "VirtoCommerce.Catalog",
     "deployRepo": "vc-deploy-dev",
+    "cmPath": "platform-dev/resources/deployment-cm.yaml",
     "dev": {
         "deployAppName": "vcplatform-dev",
         "deployBranch": "dev"
@@ -8,6 +9,5 @@
     "qa": {
         "deployAppName": "vcplatform-qa",
         "deployBranch": "qa"
-    },
-    "cmPath": "platform-dev/resources/deployment-cm.yaml"
+    }
 }
