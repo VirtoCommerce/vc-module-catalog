@@ -13,7 +13,7 @@
                     <span class="list-descr">{{ 'catalog.blades.categories-items-add.menu.link.description' | translate }}</span>
                 </li>
                 <li class="list-item" ng-mouseup="addProduct(data.productType)" ng-repeat="data in availableTypes" ng-if="!blade.parentBlade.catalog.isVirtual" va-permission="catalog:create">
-                    <i class="list-ico fa {{data.icon}}"></i>
+                    <i class="list-ico {{data.icon}}"></i>
                     <span class="list-t">{{data.itemType | translate}}</span>
                     <span class="list-descr">{{data.description | translate}}</span>
                 </li>
