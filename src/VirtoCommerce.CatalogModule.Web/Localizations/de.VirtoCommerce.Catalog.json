@@ -310,6 +310,26 @@
           "language": "Sprache wählen"
         }
       },
+      "categoryEditorialReviews-list": {
+        "subtitle": "Kategoriebeschreibungen",
+        "labels": {
+          "no-reviews": "Keine Artikelbeschreibungen noch"
+        }
+      },
+      "categoryEditorialReview-detail": {
+        "title": "Beschreibung",
+        "subtitle": "Kategorie Beschreibung",
+        "labels": {
+          "language": "Sprache",
+          "type": "Typ",
+          "content": "Beschreibung Inhalt",
+          "select-language": "Sprache wählen"
+        },
+        "placeholders": {
+          "type": "Typ auswählen",
+          "language": "Sprache wählen"
+        }
+      },
       "importers-list": {
         "title": "Katalog importieren",
         "subtitle": "Daten Format & Import starten wählen"
@@ -383,6 +403,10 @@
         },
         "editorialReview": {
           "blade-subtitle": "Artikelbeschreibungen",
+          "title": "Beschreibungen"
+        },
+        "categoryEditorialReview": {
+          "blade-subtitle": "Kategoriebeschreibungen",
           "title": "Beschreibungen"
         },
         "itemAsset": {

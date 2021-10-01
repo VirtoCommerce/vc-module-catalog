@@ -161,7 +161,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                                         .AsNoTracking()
                                         .ToList();
 
-                    var essentialResponseGroup = CategoryResponseGroup.Info | CategoryResponseGroup.WithImages | CategoryResponseGroup.WithSeo | CategoryResponseGroup.WithLinks | CategoryResponseGroup.WithParents | CategoryResponseGroup.WithProperties | CategoryResponseGroup.WithOutlines;
+                    var essentialResponseGroup = CategoryResponseGroup.Info | CategoryResponseGroup.WithImages | CategoryResponseGroup.WithSeo | CategoryResponseGroup.WithLinks | CategoryResponseGroup.WithParents | CategoryResponseGroup.WithProperties | CategoryResponseGroup.WithOutlines | CategoryResponseGroup.WithReviews;
                     var respGroup = string.Concat(criteria.ResponseGroup, ",", essentialResponseGroup.ToString());
                     result.Results = (await _categoryService.GetByIdsAsync(categoryIds.ToArray(), respGroup, criteria.CatalogId)).OrderBy(x => categoryIds.IndexOf(x.Id)).ToList();
                 }

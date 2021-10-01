@@ -32,6 +32,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         public IQueryable<AssetEntity> Assets => DbContext.Set<AssetEntity>();
         public IQueryable<ItemEntity> Items => DbContext.Set<ItemEntity>();
         public IQueryable<EditorialReviewEntity> EditorialReviews => DbContext.Set<EditorialReviewEntity>();
+        public IQueryable<CategoryEditorialReviewEntity> CategoryEditorialReviews => DbContext.Set<CategoryEditorialReviewEntity>();
         public IQueryable<PropertyEntity> Properties => DbContext.Set<PropertyEntity>();
         public IQueryable<PropertyDictionaryItemEntity> PropertyDictionaryItems => DbContext.Set<PropertyDictionaryItemEntity>();
         public IQueryable<PropertyDictionaryValueEntity> PropertyDictionaryValues => DbContext.Set<PropertyDictionaryValueEntity>();
@@ -99,6 +100,11 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     if (categoryResponseGroup.HasFlag(CategoryResponseGroup.WithSeo))
                     {
                         await SeoInfos.Where(x => categoriesIds.Contains(x.CategoryId)).LoadAsync();
+                    }
+
+                    if (categoryResponseGroup.HasFlag(CategoryResponseGroup.WithReviews))
+                    {
+                        await CategoryEditorialReviews.Where(x => categoriesIds.Contains(x.CategoryId)).LoadAsync();
                     }
 
                     //Load all properties meta information and information for inheritance
@@ -413,6 +419,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     DELETE CIR FROM CategoryItemRelation CIR INNER JOIN Category C ON C.Id = CIR.CategoryId WHERE C.Id IN ({0})
                     DELETE A FROM Association A INNER JOIN Category C ON C.Id = A.AssociatedCategoryId WHERE C.Id IN ({0})
                     DELETE P FROM Property P INNER JOIN Category C ON C.Id = P.CategoryId  WHERE C.Id IN ({0})
+                    DELETE R FROM CategoryEditorialReview R INNER JOIN Category C ON C.Id = R.CategoryId WHERE C.Id IN ({0})
                     DELETE FROM Category WHERE Id IN ({0})
                 ";
 

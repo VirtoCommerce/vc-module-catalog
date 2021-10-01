@@ -396,6 +396,26 @@
           "language": "Select language"
         }
       },
+      "categoryEditorialReviews-list": {
+        "subtitle": "Category descriptions",
+        "labels": {
+          "no-reviews": "No item descriptions yet"
+        }
+      },
+      "categoryEditorialReview-detail": {
+        "title": "Description",
+        "subtitle": "Category description",
+        "labels": {
+          "language": "Language",
+          "type": "Type",
+          "content": "Description content",
+          "select-language": "Select language"
+        },
+        "placeholders": {
+          "type": "Select type",
+          "language": "Select language"
+        }
+      },
       "images": {
         "subtitle": "Manage images",
         "labels": {
@@ -594,6 +614,10 @@
       },
       "editorialReview": {
         "blade-subtitle": "Item descriptions",
+        "title": "Descriptions"
+      },
+      "categoryEditorialReview": {
+        "blade-subtitle": "Category descriptions",
         "title": "Descriptions"
       },
       "itemAsset": {

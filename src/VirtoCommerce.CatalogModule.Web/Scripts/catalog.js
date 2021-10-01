@@ -135,11 +135,11 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                 };
                 widgetService.registerWidget(dimensionsWidget, 'itemDetail');
                 //Register item editorialReview widget
-                var editorialReviewWidget = {
+                var itemEditorialReviewWidget = {
                     controller: 'virtoCommerce.catalogModule.editorialReviewWidgetController',
                     template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/editorialReviewWidget.tpl.html'
                 };
-                widgetService.registerWidget(editorialReviewWidget, 'itemDetail');
+                widgetService.registerWidget(itemEditorialReviewWidget, 'itemDetail');
 
                 //Register variation widget
                 var variationWidget = {
@@ -182,6 +182,13 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                     getLanguages: function (blade) { return _.pluck(blade.catalog.languages, 'languageCode'); }
                 };
                 widgetService.registerWidget(categorySeoWidget, 'categoryDetail');
+
+                //Register category editorialReview widget
+                var categoryEditorialReviewWidget = {
+                    controller: 'virtoCommerce.catalogModule.categoryEditorialReviewWidgetController',
+                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/categoryEditorialReviewWidget.tpl.html'
+                };
+                widgetService.registerWidget(categoryEditorialReviewWidget, 'categoryDetail');
 
                 //Register catalog widgets
                 var catalogLanguagesWidget = {
