@@ -411,6 +411,10 @@
           "length": "Länge",
           "width": "Breite",
           "height": "Höhe"
+        },
+        "videos": {
+          "blade-subtitle": "Videos",
+          "title": "Videos"
         }
       },
       "dialogs": {

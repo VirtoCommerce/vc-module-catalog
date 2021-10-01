@@ -1,0 +1,95 @@
+<div class="blade-content __medium-wide">
+    <div class="blade-inner">
+        <div class="inner-block">
+            <form class="form" name="formScope">
+                <fieldset ng-init="setForm(formScope)">
+                    <div class="form-group __info list">
+                        <label class="form-label">{{ 'catalog.blades.video-detail.labels.name' | translate }}</label>
+                        <div class="form-input">
+                            <input ng-model="blade.currentEntity.name" focus-on="" required ng-maxlength="1024" placeholder="{{ 'catalog.blades.video-detail.placeholders.name' | translate }}" />
+                        </div>
+                    </div>
+                    <div class="form-group clearfix">
+                        <div class="column">
+                            <div class="form-group __info list">
+                                <label class="form-label">{{ 'catalog.blades.video-detail.labels.upload-date' | translate }}</label>
+                                <div class="form-input __calendar">
+                                    <input ng-model="blade.currentEntity.uploadDate" required placeholder="{{ 'catalog.blades.video-detail.placeholders.upload-date' | translate }}" datepicker-popup is-open="blade.datepickers.upload" />
+                                    <button class="btn" type="button" ng-click="blade.open($event, 'upload')">
+                                        <i class="btn-ico fa fa-calendar"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group __info list">
+                        <label class="form-label">{{ 'catalog.blades.video-detail.labels.description' | translate }}</label>
+                        <div class="form-input">
+                            <textarea cols="30" rows="5" ng-model="blade.currentEntity.description" required ng-maxlength="1024" placeholder="{{ 'catalog.blades.video-detail.placeholders.description' | translate }}"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group clearfix">
+                        <div class="column">
+                            <div class="form-group __info list">
+                                <label class="form-label">{{ 'catalog.blades.video-detail.labels.duration' | translate }}</label>
+                                <div class="form-input">
+                                    <input ng-model="blade.currentEntity.duration" required maxlength="20" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="column">
+                            <div class="form-group __info list">
+                                <label class="form-label">{{ 'catalog.blades.video-detail.labels.language' | translate }}</label>
+                                <div class="form-input">
+                                    <ui-select ng-model="blade.currentEntity.languageCode" ng-disabled="disabled">
+                                        <ui-select-match allow-clear placeholder="{{'catalog.blades.video-detail.placeholders.language' | translate}}">{{ $select.selected }}</ui-select-match>
+                                        <ui-select-choices repeat="x in languages | filter: $select.search">
+                                            <span ng-bind-html="x | highlight: $select.search"></span>
+                                        </ui-select-choices>
+                                    </ui-select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group __info list" >
+                        <label class="form-label">{{ 'catalog.blades.video-detail.labels.video' | translate }}</label>
+                    </div>
+                    <div class="form-group __info list">
+                        <label class="form-label">{{ 'catalog.blades.video-detail.labels.content-url' | translate }}</label>
+                        <div class="form-input">
+                            <input ng-model="blade.currentEntity.contentUrl" required ng-maxlength="2083" placeholder="{{ 'catalog.blades.video-add.placeholders.content-url' | translate }}" />
+                        </div>
+                    </div>
+                    <div class="form-group __info list">
+                        <label class="form-label">{{ 'catalog.blades.video-detail.labels.embed-url' | translate }}</label>
+                        <div class="form-input">
+                            <input ng-model="blade.currentEntity.embedUrl" ng-maxlength="2083" />
+                        </div>
+                    </div>
+                    <div class="form-group __info list" ng-if="blade.currentEntity.embedUrl">
+                        <label class="form-label">{{ 'catalog.blades.video-detail.labels.video-preview' | translate }}</label>
+                        <div class="form-input">
+                            <iframe width="100%" height="300" src="{{ blade.currentEntity.embedUrl | trustUrl }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                    <div class="form-group __info list" >
+                        <label class="form-label">{{ 'catalog.blades.video-detail.labels.thumbnail' | translate }}</label>
+                    </div>
+                    <div class="form-group __info list">
+                        <label class="form-label">{{ 'catalog.blades.video-detail.labels.thumbnail-url' | translate }}</label>
+                        <div class="form-input">
+                            <input ng-model="blade.currentEntity.thumbnailUrl" required ng-maxlength="2083" />
+                        </div>
+                    </div>
+                    <div class="form-group __info list" ng-if="blade.currentEntity.thumbnailUrl">
+                        <label class="form-label">{{ 'catalog.blades.video-detail.labels.thumbnail-preview' | translate }}</label>
+                        <div class="form-input">
+                            <img class="image" width="50%" ng-src="{{ blade.currentEntity.thumbnailUrl }}"/>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</div>

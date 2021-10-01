@@ -20,6 +20,7 @@ using VirtoCommerce.CatalogModule.Core.Events;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Export;
 using VirtoCommerce.CatalogModule.Core.Model.OutlinePart;
+using VirtoCommerce.CatalogModule.Core.Options;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Authorization;
@@ -53,11 +54,13 @@ using AuthorizationOptions = Microsoft.AspNetCore.Authorization.AuthorizationOpt
 
 namespace VirtoCommerce.CatalogModule.Web
 {
-    public class Module : IModule, IExportSupport, IImportSupport
+    public class Module : IModule, IHasConfiguration, IExportSupport, IImportSupport
     {
         private IApplicationBuilder _appBuilder;
 
         public ManifestModuleInfo ModuleInfo { get; set; }
+
+        public IConfiguration Configuration { get; set; }
 
         public void Initialize(IServiceCollection serviceCollection)
         {
@@ -82,6 +85,10 @@ namespace VirtoCommerce.CatalogModule.Web
             serviceCollection.AddTransient<IItemService, ItemService>();
             serviceCollection.AddTransient<IProductIndexedSearchService, ProductIndexedSearchService>();
             serviceCollection.AddTransient<IAssociationService, AssociationService>();
+
+            serviceCollection.AddTransient<IVideoSearchService, VideoSearchService>();
+            serviceCollection.AddTransient<IVideoService, VideoService>();
+            serviceCollection.Configure<VideoOptions>(Configuration.GetSection(VideoOptions.SectionName));
 
             serviceCollection.AddTransient<IAggregationConverter, AggregationConverter>();
             serviceCollection.AddTransient<IBrowseFilterService, BrowseFilterService>();

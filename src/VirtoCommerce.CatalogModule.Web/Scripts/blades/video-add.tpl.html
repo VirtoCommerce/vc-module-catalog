@@ -1,0 +1,22 @@
+<div class="blade-content">
+    <div class="blade-inner">
+        <div class="inner-block">
+            <form class="form" name="formScope">
+                <fieldset ng-init="setForm(formScope)">
+                    <div class="form-group __info list">
+                        <label class="form-label">{{ 'catalog.blades.video-add.labels.content-url' | translate }}</label>
+                        <div class="form-input">
+                            <input ng-model="blade.currentEntity.contentUrl" required ng-maxlength="2083" placeholder="{{ 'catalog.blades.video-add.placeholders.content-url' | translate }}">
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!--
+Get the YouTube, Vimeo, Vine, VideoPress, TikTok, Microsoft Stream and Dailymotion video id from a url or embed string.
+https://github.com/radiovisual/get-video-id
+-->
+<script src="https://cdn.jsdelivr.net/npm/get-video-id/dist/get-video-id.min.js"></script>

@@ -519,6 +519,10 @@
                 "length": "Длина",
                 "width": "Ширина",
                 "height": "Высота"
+            },
+            "videos": {
+                "blade-subtitle": "Видео",
+                "title": "Видео"
             }
         },
         "dialogs": {
