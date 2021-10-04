@@ -28,7 +28,7 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
             var ownerIds = message.ChangedEntries
                 .Where(x => x.EntryState == EntryState.Deleted)
                 .Select(x => x.OldEntry.Id)
-                .ToArray();
+                .ToList();
             var searchCriteria = new VideoSearchCriteria
             {
                 OwnerIds = ownerIds,
