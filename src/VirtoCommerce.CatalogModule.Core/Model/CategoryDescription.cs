@@ -5,10 +5,10 @@ using VirtoCommerce.Platform.Core.Domain;
 
 namespace VirtoCommerce.CatalogModule.Core.Model
 {
-    public class CategoryEditorialReview : AuditableEntity, IHasLanguage, ICloneable, IInheritable, ICopyable
+    public class CategoryDescription : AuditableEntity, IHasLanguage, ICloneable, IInheritable, ICopyable
     {
         public string Content { get; set; }
-        public string ReviewType { get; set; }
+        public string DescriptionType { get; set; }
 
         #region ILanguageSupport Members
         public string LanguageCode { get; set; }
@@ -18,13 +18,13 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         public bool IsInherited { get; set; }
         public virtual void TryInheritFrom(IEntity parent)
         {
-            if (parent is CategoryEditorialReview parentBase)
+            if (parent is CategoryDescription parentBase)
             {
                 Id = null;
                 IsInherited = true;
                 LanguageCode = parentBase.LanguageCode;
                 Content = parentBase.Content;
-                ReviewType = parentBase.ReviewType;
+                DescriptionType = parentBase.DescriptionType;
             }
         }
         #endregion
@@ -39,7 +39,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         #region ICopyable
         public virtual object GetCopy()
         {
-            var result = Clone() as CategoryEditorialReview;
+            var result = Clone() as CategoryDescription;
             result.Id = null;
             return result;
         }

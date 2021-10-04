@@ -1,11 +1,11 @@
 angular.module('virtoCommerce.catalogModule')
-.controller('virtoCommerce.catalogModule.categoryEditorialReviewDetailController', ['$scope', 'platformWebApp.bladeNavigationService', 'FileUploader', 'platformWebApp.settings', '$timeout',
+.controller('virtoCommerce.catalogModule.categoryDescriptionDetailController', ['$scope', 'platformWebApp.bladeNavigationService', 'FileUploader', 'platformWebApp.settings', '$timeout',
     function ($scope, bladeNavigationService, FileUploader, settings, $timeout) {
         var blade = $scope.blade;
 
         function initilize() {
-            if (!blade.category.reviews) {
-                blade.category.reviews = [];
+            if (!blade.category.descriptions) {
+                blade.category.descriptions = [];
             }
             if (!blade.currentEntity) {
                 blade.currentEntity = {
@@ -25,17 +25,17 @@ angular.module('virtoCommerce.catalogModule')
         $scope.isValid = true;
 
         $scope.saveChanges = function () {
-            var existReview = _.find(blade.category.reviews, function (x) { return x == blade.origEntity; });
-            if (!existReview) {
-                blade.category.reviews.push(blade.origEntity);
+            var existDescription = _.find(blade.category.descriptions, function (x) { return x == blade.origEntity; });
+            if (!existDescription) {
+                blade.category.descriptions.push(blade.origEntity);
             };
             angular.copy(blade.currentEntity, blade.origEntity);
             $scope.bladeClose();
         };
 
         blade.headIcon = 'fa fa-comments';
-        blade.title = 'catalog.blades.categoryEditorialReview-detail.title';
-        blade.subtitle = 'catalog.blades.categoryEditorialReview-detail.subtitle';
+        blade.title = 'catalog.blades.categoryDescription-detail.title';
+        blade.subtitle = 'catalog.blades.categoryDescription-detail.subtitle';
         blade.editAsMarkdown = true;
         blade.hasAssetCreatePermission = bladeNavigationService.checkPermission('platform:asset:create');
 
@@ -60,10 +60,10 @@ angular.module('virtoCommerce.catalogModule')
             });
         }
 
-        settings.getValues({ id: 'Catalog.CategoryEditorialReviewTypes' }, function (data) {
+        settings.getValues({ id: 'Catalog.CategoryDescriptionTypes' }, function (data) {
             $scope.types = data;
-            if (!blade.currentEntity.reviewType) {
-                blade.currentEntity.reviewType = $scope.types[0];
+            if (!blade.currentEntity.descriptionType) {
+                blade.currentEntity.descriptionType = $scope.types[0];
             }
         });
 
@@ -71,7 +71,7 @@ angular.module('virtoCommerce.catalogModule')
             var newBlade = {
                 id: 'settingDetailChild',
                 isApiSave: true,
-                currentEntityId: 'Catalog.CategoryEditorialReviewTypes',
+                currentEntityId: 'Catalog.CategoryDescriptionTypes',
                 parentRefresh: function (data) { $scope.types = data; },
                 controller: 'platformWebApp.settingDictionaryController',
                 template: '$(Platform)/Scripts/app/settings/blades/setting-dictionary.tpl.html'
@@ -99,9 +99,9 @@ angular.module('virtoCommerce.catalogModule')
         ];
 
         function saveChanges() {
-            var existReview = _.find(blade.category.reviews, function (x) { return x === blade.origEntity; });
-            if (!existReview) {
-                blade.category.reviews.push(blade.origEntity);
+            var existDescription = _.find(blade.category.descriptions, function (x) { return x === blade.origEntity; });
+            if (!existDescription) {
+                blade.category.descriptions.push(blade.origEntity);
             };
 
             angular.copy(blade.currentEntity, blade.origEntity);

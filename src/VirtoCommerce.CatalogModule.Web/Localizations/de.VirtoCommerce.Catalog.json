@@ -310,13 +310,13 @@
           "language": "Sprache wählen"
         }
       },
-      "categoryEditorialReviews-list": {
+      "categoryDescriptions-list": {
         "subtitle": "Kategoriebeschreibungen",
         "labels": {
-          "no-reviews": "Keine Artikelbeschreibungen noch"
+          "no-descriptions": "Keine Artikelbeschreibungen noch"
         }
       },
-      "categoryEditorialReview-detail": {
+      "categoryDescription-detail": {
         "title": "Beschreibung",
         "subtitle": "Kategorie Beschreibung",
         "labels": {
@@ -405,7 +405,7 @@
           "blade-subtitle": "Artikelbeschreibungen",
           "title": "Beschreibungen"
         },
-        "categoryEditorialReview": {
+        "categoryDescription": {
           "blade-subtitle": "Kategoriebeschreibungen",
           "title": "Beschreibungen"
         },

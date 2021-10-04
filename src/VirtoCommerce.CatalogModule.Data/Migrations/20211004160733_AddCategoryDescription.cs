@@ -3,17 +3,17 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace VirtoCommerce.CatalogModule.Data.Migrations
 {
-    public partial class AddCategoryEditorialReview : Migration
+    public partial class AddCategoryDescription : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<bool>(
-                name: "EnableReview",
+                name: "EnableDescription",
                 table: "Category",
                 nullable: true);
 
             migrationBuilder.CreateTable(
-                name: "CategoryEditorialReview",
+                name: "CategoryDescription",
                 columns: table => new
                 {
                     Id = table.Column<string>(maxLength: 128, nullable: false),
@@ -31,9 +31,9 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CategoryEditorialReview", x => x.Id);
+                    table.PrimaryKey("PK_CategoryDescription", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_CategoryEditorialReview_Category_CategoryId",
+                        name: "FK_CategoryDescription_Category_CategoryId",
                         column: x => x.CategoryId,
                         principalTable: "Category",
                         principalColumn: "Id",
@@ -41,18 +41,18 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_CategoryEditorialReview_CategoryId",
-                table: "CategoryEditorialReview",
+                name: "IX_CategoryDescription_CategoryId",
+                table: "CategoryDescription",
                 column: "CategoryId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "CategoryEditorialReview");
+                name: "CategoryDescription");
 
             migrationBuilder.DropColumn(
-                name: "EnableReview",
+                name: "EnableDescription",
                 table: "Category");
         }
     }

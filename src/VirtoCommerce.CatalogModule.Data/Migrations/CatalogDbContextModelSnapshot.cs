@@ -216,7 +216,7 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                     b.ToTable("CatalogLanguage");
                 });
 
-            modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.CategoryEditorialReviewEntity", b =>
+            modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.CategoryDescriptionEntity", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
@@ -265,7 +265,7 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("CategoryEditorialReview");
+                    b.ToTable("CategoryDescription");
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.CategoryEntity", b =>
@@ -292,7 +292,7 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool?>("EnableReview")
+                    b.Property<bool?>("EnableDescription")
                         .HasColumnType("bit");
 
                     b.Property<DateTime?>("EndDate")
@@ -1101,10 +1101,10 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.CategoryEditorialReviewEntity", b =>
+            modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.CategoryDescriptionEntity", b =>
                 {
                     b.HasOne("VirtoCommerce.CatalogModule.Data.Model.CategoryEntity", "Category")
-                        .WithMany("CategoryEditorialReviews")
+                        .WithMany("CategoryDescriptions")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

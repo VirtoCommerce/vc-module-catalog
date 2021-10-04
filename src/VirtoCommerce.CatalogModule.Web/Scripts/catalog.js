@@ -135,11 +135,11 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                 };
                 widgetService.registerWidget(dimensionsWidget, 'itemDetail');
                 //Register item editorialReview widget
-                var itemEditorialReviewWidget = {
+                var editorialReviewWidget = {
                     controller: 'virtoCommerce.catalogModule.editorialReviewWidgetController',
                     template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/editorialReviewWidget.tpl.html'
                 };
-                widgetService.registerWidget(itemEditorialReviewWidget, 'itemDetail');
+                widgetService.registerWidget(editorialReviewWidget, 'itemDetail');
 
                 //Register variation widget
                 var variationWidget = {
@@ -183,12 +183,12 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                 };
                 widgetService.registerWidget(categorySeoWidget, 'categoryDetail');
 
-                //Register category editorialReview widget
-                var categoryEditorialReviewWidget = {
-                    controller: 'virtoCommerce.catalogModule.categoryEditorialReviewWidgetController',
-                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/categoryEditorialReviewWidget.tpl.html'
+                //Register category description widget
+                var categoryDescriptionWidget = {
+                    controller: 'virtoCommerce.catalogModule.categoryDescriptionWidgetController',
+                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/categoryDescriptionWidget.tpl.html'
                 };
-                widgetService.registerWidget(categoryEditorialReviewWidget, 'categoryDetail');
+                widgetService.registerWidget(categoryDescriptionWidget, 'categoryDetail');
 
                 //Register catalog widgets
                 var catalogLanguagesWidget = {

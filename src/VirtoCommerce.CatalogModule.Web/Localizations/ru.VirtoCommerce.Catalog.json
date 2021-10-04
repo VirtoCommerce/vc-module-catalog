@@ -356,13 +356,13 @@
             "language": "Выбрать язык"
           }
         },
-        "categoryEditorialReviews-list": {
+        "categoryDescriptions-list": {
           "subtitle": "Описание категории",
           "labels": {
-            "no-reviews": "Пока нет описания"
+            "no-descriptions": "Пока нет описания"
           }
         },
-        "categoryEditorialReview-detail": {
+        "categoryDescription-detail": {
           "title": "Описание",
           "subtitle": "Описание категории",
           "labels": {
@@ -513,7 +513,7 @@
           "blade-subtitle": "Описание элемента",
           "title": "Описание"
         },
-        "categoryEditorialReview": {
+        "categoryDescription": {
           "blade-subtitle": "Описание категории",
           "title": "Описание"
         },

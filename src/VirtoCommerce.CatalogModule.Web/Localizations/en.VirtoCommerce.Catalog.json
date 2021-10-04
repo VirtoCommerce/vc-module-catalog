@@ -396,13 +396,13 @@
           "language": "Select language"
         }
       },
-      "categoryEditorialReviews-list": {
+      "categoryDescriptions-list": {
         "subtitle": "Category descriptions",
         "labels": {
-          "no-reviews": "No item descriptions yet"
+          "no-descriptions": "No item descriptions yet"
         }
       },
-      "categoryEditorialReview-detail": {
+      "categoryDescription-detail": {
         "title": "Description",
         "subtitle": "Category description",
         "labels": {
@@ -616,7 +616,7 @@
         "blade-subtitle": "Item descriptions",
         "title": "Descriptions"
       },
-      "categoryEditorialReview": {
+      "categoryDescription": {
         "blade-subtitle": "Category descriptions",
         "title": "Descriptions"
       },

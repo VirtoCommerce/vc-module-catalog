@@ -34,7 +34,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         [StringLength(128)]
         public string OuterId { get; set; }
 
-        public bool? EnableReview { get; set; }
+        public bool? EnableDescription { get; set; }
 
         [NotMapped]
         public CategoryEntity[] AllParents
@@ -86,8 +86,8 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         public virtual ObservableCollection<SeoInfoEntity> SeoInfos { get; set; }
             = new NullCollection<SeoInfoEntity>();
 
-        public virtual ObservableCollection<CategoryEditorialReviewEntity> CategoryEditorialReviews { get; set; }
-            = new NullCollection<CategoryEditorialReviewEntity>();
+        public virtual ObservableCollection<CategoryDescriptionEntity> CategoryDescriptions { get; set; }
+            = new NullCollection<CategoryDescriptionEntity>();
 
         public virtual IList<string> ExcludedProperties { get; set; }
 
@@ -116,12 +116,12 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
             category.ParentId = ParentCategoryId;
             category.IsActive = IsActive;
-            category.EnableReview = EnableReview;
+            category.EnableDescription = EnableDescription;
             category.ExcludedProperties = ExcludedProperties?.Select(x => new ExcludedProperty(x)).ToList();
 
             category.Links = OutgoingLinks.Select(x => x.ToModel(new CategoryLink())).ToList();
             category.Images = Images.OrderBy(x => x.SortOrder).Select(x => x.ToModel(AbstractTypeFactory<Image>.TryCreateInstance())).ToList();
-            category.Reviews = CategoryEditorialReviews.Select(x => x.ToModel(AbstractTypeFactory<CategoryEditorialReview>.TryCreateInstance())).ToList();
+            category.Descriptions = CategoryDescriptions.Select(x => x.ToModel(AbstractTypeFactory<CategoryDescription>.TryCreateInstance())).ToList();
             // SeoInfos
             category.SeoInfos = SeoInfos.Select(x => x.ToModel(AbstractTypeFactory<SeoInfo>.TryCreateInstance())).ToList();
             category.Properties = Properties.Select(x => x.ToModel(AbstractTypeFactory<Property>.TryCreateInstance()))
@@ -195,7 +195,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             EndDate = DateTime.UtcNow.AddYears(100);
             StartDate = DateTime.UtcNow;
             IsActive = category.IsActive ?? true;
-            EnableReview = category.EnableReview;
+            EnableDescription = category.EnableDescription;
             ExcludedProperties = category.ExcludedProperties?
                 .Where(x => !x.IsInherited)
                 .Select(x => x.Name)
@@ -248,9 +248,9 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 SeoInfos = new ObservableCollection<SeoInfoEntity>(category.SeoInfos.Select(x => AbstractTypeFactory<SeoInfoEntity>.TryCreateInstance().FromModel(x, pkMap)));
             }
 
-            if (category.Reviews != null)
+            if (category.Descriptions != null)
             {
-                CategoryEditorialReviews = new ObservableCollection<CategoryEditorialReviewEntity>(category.Reviews.Where(x => !x.IsInherited).Select(x => AbstractTypeFactory<CategoryEditorialReviewEntity>.TryCreateInstance().FromModel(x, pkMap)));
+                CategoryDescriptions = new ObservableCollection<CategoryDescriptionEntity>(category.Descriptions.Where(x => !x.IsInherited).Select(x => AbstractTypeFactory<CategoryDescriptionEntity>.TryCreateInstance().FromModel(x, pkMap)));
             }
 
             return this;
@@ -268,7 +268,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             target.TaxType = TaxType;
             target.Priority = Priority;
             target.IsActive = IsActive;
-            target.EnableReview = EnableReview;
+            target.EnableDescription = EnableDescription;
             target.ExcludedProperties = ExcludedProperties;
 
             if (!CategoryPropertyValues.IsNullCollection())
@@ -292,9 +292,9 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 SeoInfos.Patch(target.SeoInfos, (sourceSeoInfo, targetSeoInfo) => sourceSeoInfo.Patch(targetSeoInfo));
             }
 
-            if (!CategoryEditorialReviews.IsNullCollection())
+            if (!CategoryDescriptions.IsNullCollection())
             {
-                CategoryEditorialReviews.Patch(target.CategoryEditorialReviews, (sourceReview, targetReview) => sourceReview.Patch(targetReview));
+                CategoryDescriptions.Patch(target.CategoryDescriptions, (sourceDescription, targetDescription) => sourceDescription.Patch(targetDescription));
             }
         }
     }

@@ -61,9 +61,9 @@ namespace VirtoCommerce.CatalogModule.Core
                     AllowedValues = new[] { "QuickReview", "FullReview" }
                 };
 
-                public static SettingDescriptor CategoryEditorialReviewTypes { get; } = new SettingDescriptor
+                public static SettingDescriptor CategoryDescriptionTypes { get; } = new SettingDescriptor
                 {
-                    Name = "Catalog.CategoryEditorialReviewTypes",
+                    Name = "Catalog.CategoryDescriptionTypes",
                     ValueType = SettingValueType.ShortText,
                     GroupName = "Catalog|General",
                     IsDictionary = true,
@@ -104,7 +104,7 @@ namespace VirtoCommerce.CatalogModule.Core
                                    ImageCategories,
                                    AssociationGroups,
                                    EditorialReviewTypes,
-                                   CategoryEditorialReviewTypes,
+                                   CategoryDescriptionTypes,
                                    CodesInOutline,
                                    EventBasedIndexation,
                                };

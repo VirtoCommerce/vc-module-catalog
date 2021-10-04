@@ -152,14 +152,14 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
             #endregion EditorialReview
 
-            #region CategoryEditorialReview
+            #region CategoryDescription
 
-            modelBuilder.Entity<CategoryEditorialReviewEntity>().ToTable("CategoryEditorialReview").HasKey(x => x.Id);
-            modelBuilder.Entity<CategoryEditorialReviewEntity>().Property(x => x.Id).HasMaxLength(128).ValueGeneratedOnAdd();
-            modelBuilder.Entity<CategoryEditorialReviewEntity>().HasOne(x => x.Category).WithMany(x => x.CategoryEditorialReviews)
+            modelBuilder.Entity<CategoryDescriptionEntity>().ToTable("CategoryDescription").HasKey(x => x.Id);
+            modelBuilder.Entity<CategoryDescriptionEntity>().Property(x => x.Id).HasMaxLength(128).ValueGeneratedOnAdd();
+            modelBuilder.Entity<CategoryDescriptionEntity>().HasOne(x => x.Category).WithMany(x => x.CategoryDescriptions)
                 .HasForeignKey(x => x.CategoryId).IsRequired().OnDelete(DeleteBehavior.Cascade);
 
-            #endregion CategoryEditorialReview
+            #endregion CategoryDescription
 
             #region Association
 

@@ -1,5 +1,5 @@
 angular.module('virtoCommerce.catalogModule')
-.controller('virtoCommerce.catalogModule.categoryEditorialReviewsListController', ['$timeout', '$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.uiGridHelper', 'platformWebApp.dialogService', function ($timeout, $scope, bladeNavigationService, uiGridHelper, dialogService) {
+.controller('virtoCommerce.catalogModule.categoryDescriptionsListController', ['$timeout', '$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.uiGridHelper', 'platformWebApp.dialogService', function ($timeout, $scope, bladeNavigationService, uiGridHelper, dialogService) {
     var blade = $scope.blade;
 
     $scope.selectedNodeId = null; // need to initialize to null
@@ -12,7 +12,7 @@ angular.module('virtoCommerce.catalogModule')
         blade.headIcon = 'fa fa-comments';
         blade.category = category;
         blade.title = blade.category.name;
-        blade.subtitle = 'catalog.blades.categoryEditorialReviews-list.subtitle';
+        blade.subtitle = 'catalog.blades.categoryDescriptions-list.subtitle';
         blade.selectNode = $scope.openBlade;
     };
 
@@ -21,13 +21,13 @@ angular.module('virtoCommerce.catalogModule')
             $scope.selectedNodeId = node.id;
         }
         var newBlade = {
-            id: 'categoryEditorialReview',
+            id: 'categoryDescription',
             currentEntity: node,
             category: blade.category,
             catalog: blade.catalog,
             languages: blade.catalog.languages,
-            controller: 'virtoCommerce.catalogModule.categoryEditorialReviewDetailController',
-            template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/categoryEditorialReview-detail.tpl.html'
+            controller: 'virtoCommerce.catalogModule.categoryDescriptionDetailController',
+            template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/categoryDescription-detail.tpl.html'
         };
         bladeNavigationService.showBlade(newBlade, $scope.blade);
     }        
@@ -46,7 +46,7 @@ angular.module('virtoCommerce.catalogModule')
                 if (remove) {
                     bladeNavigationService.closeChildrenBlades(blade, function () {
                         _.each(selection, function (x) {
-                            blade.category.reviews.splice(blade.category.reviews.indexOf(x), 1);
+                            blade.category.descriptions.splice(blade.category.descriptions.indexOf(x), 1);
                         });
                     });
                 }
@@ -80,8 +80,8 @@ angular.module('virtoCommerce.catalogModule')
         uiGridHelper.initialize($scope, gridOptions);
     };
 
-    // open blade for new review 
-    if (!_.some(blade.category.reviews)) {
+    // open blade for new description
+    if (!_.some(blade.category.descriptions)) {
         $timeout($scope.openBlade, 60, false);
     }
 
