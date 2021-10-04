@@ -11,6 +11,7 @@ on:
       - 'README.md'
       - 'LICENSE'
       - '**/argoDeploy.json'
+      - samples/**
     branches:
       [master, dev]
   pull_request:
@@ -22,6 +23,7 @@ on:
       - 'README.md'
       - 'LICENSE'
       - '**/argoDeploy.json'
+      - samples/**
     
 jobs:
   ci:
@@ -163,9 +165,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Print all environment variables
-        run:  env
-
       - name: Push Build Info to Jira
         if: ${{ env.CLOUD_INSTANCE_BASE_URL != 0 && env.CLIENT_ID != 0 && env.CLIENT_SECRET != 0 && steps.jira_keys.outputs.jira-keys != '' && always() }}
         id: push_build_info_to_jira
@@ -192,7 +191,7 @@ jobs:
           echo "Jira Upload Build Info response: ${{ steps.push_build_info_to_jira.outputs.response }}"
 
   deploy:
-    if: ${{ github.ref == 'refs/heads/dev' && github.event_name != 'workflow_dispatch' }}
+    if: ${{ github.event_name != 'pull_request' && github.event_name != 'workflow_dispatch' }}
     needs: ci
     runs-on: ubuntu-latest
     env:
@@ -200,93 +199,95 @@ jobs:
       CLOUD_INSTANCE_BASE_URL: ${{secrets.CLOUD_INSTANCE_BASE_URL}}
       CLIENT_ID: ${{secrets.CLIENT_ID}}
       CLIENT_SECRET: ${{secrets.CLIENT_SECRET}}
+      DEPLOYMENT_ENV: 'dev'
 
     steps: 
+      - name: Set DEPLOYMENT_ENV variable
+        if: ${{ github.ref == 'refs/heads/master' }}
+        run: echo "DEPLOYMENT_ENV=prod" >> $GITHUB_ENV
 
-    - name: Read deployment config
-      uses: VirtoCommerce/vc-github-actions/get-deploy-param@master
-      id: deployConfig
-      with:
-        envName: 'dev'
+      - name: Read deployment config
+        uses: VirtoCommerce/vc-github-actions/get-deploy-param@master
+        id: deployConfig
+        with:
+          envName: ${{ env.DEPLOYMENT_ENV }}
+          deployConfigPath: '.deployment/module/argoDeploy.json'
 
-    - name: Start deployment
-      uses: bobheadxi/deployments@master
-      id: deployment
-      with:
-        step: start
-        token: ${{ secrets.GITHUB_TOKEN }}
-        env: Development
-        no_override: false
+      - name: Start deployment
+        uses: bobheadxi/deployments@master
+        id: deployment
+        with:
+          step: start
+          token: ${{ secrets.GITHUB_TOKEN }}
+          env: ${{ steps.deployConfig.outputs.environmentName }}
+          no_override: false
 
-    - name: Update deployment-cm
-      uses: VirtoCommerce/vc-github-actions/create-deploy-pr@master
-      with:
-        deployRepo: ${{ steps.deployConfig.outputs.deployRepo }}
-        deployBranch: ${{ steps.deployConfig.outputs.deployBranch }}
-        artifactKey: ${{ steps.deployConfig.outputs.artifactKey }}
-        artifactUrl: ${{ needs.ci.outputs.artifactUrl }}
-        taskNumber: 'undefined'
-        forceCommit: 'true'
-        cmPath: ${{ steps.deployConfig.outputs.cmPath }}
+      - name: Update deployment-cm
+        uses: VirtoCommerce/vc-github-actions/create-deploy-pr@master
+        with:
+          deployRepo: ${{ steps.deployConfig.outputs.deployRepo }}
+          deployBranch: ${{ steps.deployConfig.outputs.deployBranch }}
+          artifactKey: ${{ steps.deployConfig.outputs.artifactKey }}
+          artifactUrl: ${{ needs.ci.outputs.artifactUrl }}
+          taskNumber: 'undefined'
+          forceCommit: 'true'
+          cmPath: ${{ steps.deployConfig.outputs.cmPath }}
 
-    - name: Wait for environment is up
-      shell: pwsh
-      timeout-minutes: 15
-      run: | 
-        do {
-          Start-Sleep -s 15
-          $statusBage = (Invoke-WebRequest -Uri "https://argo.govirto.com/api/badge?name=${{ steps.deployConfig.outputs.deployAppName }}").Content
-          
-          $syncedAndHealthy = $statusBage.Contains('>Healthy<') -and $statusBage.Contains('>Synced<')
-          if (-not $syncedAndHealthy) {
-            Write-Host "Sync pending..."
+      - name: Wait for environment is up
+        shell: pwsh
+        timeout-minutes: 15
+        run: | 
+          do {
+            Start-Sleep -s 15
+            $statusBage = (Invoke-WebRequest -Uri "https://argo.govirto.com/api/badge?name=${{ steps.deployConfig.outputs.deployAppName }}").Content
+            
+            $syncedAndHealthy = $statusBage.Contains('>Healthy<') -and $statusBage.Contains('>Synced<')
+            if (-not $syncedAndHealthy) {
+              Write-Host "Sync pending..."
+            }
           }
-        }
-        while (-not $syncedAndHealthy)
+          while (-not $syncedAndHealthy)
 
-    - name: DEPLOY_STATE::successful
-      if: success()
-      run: echo "DEPLOY_STATE=successful" >> $GITHUB_ENV
+      - name: DEPLOY_STATE::successful
+        if: success()
+        run: echo "DEPLOY_STATE=successful" >> $GITHUB_ENV
 
-    - name: DEPLOY_STATE::failed
-      if: failure()
-      run: echo "DEPLOY_STATE=failed"  >> $GITHUB_ENV
+      - name: DEPLOY_STATE::failed
+        if: failure()
+        run: echo "DEPLOY_STATE=failed"  >> $GITHUB_ENV
 
-    - name: Update GitHub deployment status
-      uses: bobheadxi/deployments@master
-      if: always()
-      with:
-        step: finish
-        token: ${{ secrets.GITHUB_TOKEN }}
-        status: ${{ job.status }}
-        deployment_id: ${{ steps.deployment.outputs.deployment_id }}
+      - name: Update GitHub deployment status
+        uses: bobheadxi/deployments@master
+        if: always()
+        with:
+          step: finish
+          token: ${{ secrets.GITHUB_TOKEN }}
+          status: ${{ job.status }}
+          deployment_id: ${{ steps.deployment.outputs.deployment_id }}
 
-    - name: Print all environment variables
-      run:  env
-
-    - name: Push Deployment Info to Jira
-      if: ${{ env.CLOUD_INSTANCE_BASE_URL != 0 && env.CLIENT_ID != 0 && env.CLIENT_SECRET != 0 && needs.ci.outputs.jira-keys != '' && always() }}
-      id: push_deployment_info_to_jira
-      uses: HighwayThree/jira-upload-deployment-info@master
-      env:
-        CLOUD_INSTANCE_BASE_URL: ${{secrets.CLOUD_INSTANCE_BASE_URL}}
-        CLIENT_ID: ${{secrets.CLIENT_ID}}
-        CLIENT_SECRET: ${{secrets.CLIENT_SECRET}}
-      with:
-        cloud-instance-base-url: ${{ secrets.CLOUD_INSTANCE_BASE_URL }}
-        client-id: ${{ secrets.CLIENT_ID }}
-        client-secret: ${{ secrets.CLIENT_SECRET }}
-        deployment-sequence-number: ${{ github.run_id }}
-        update-sequence-number: ${{ github.run_id }}
-        issue-keys: ${{ needs.ci.outputs.jira-keys }}
-        display-name: ${{ steps.deployConfig.outputs.deployAppName }}
-        url: 'https://vcplatform-platform.dev.govirto.com/'
-        description: 'Deployment to the Development environment'
-        last-updated: '${{github.event.head_commit.timestamp}}'
-        state: '${{ env.DEPLOY_STATE }}'
-        pipeline-id: '${{ github.repository }} ${{ github.workflow }}'
-        pipeline-display-name: 'Workflow: ${{ github.workflow }} (#${{ github.run_number }})'
-        pipeline-url: '${{github.event.repository.html_url}}/actions/runs/${{github.run_id}}'
-        environment-id: 'development'
-        environment-display-name: 'Dev'
-        environment-type: 'development'
+      - name: Push Deployment Info to Jira
+        if: ${{ env.CLOUD_INSTANCE_BASE_URL != 0 && env.CLIENT_ID != 0 && env.CLIENT_SECRET != 0 && needs.ci.outputs.jira-keys != '' && always() }}
+        id: push_deployment_info_to_jira
+        uses: HighwayThree/jira-upload-deployment-info@master
+        env:
+          CLOUD_INSTANCE_BASE_URL: ${{secrets.CLOUD_INSTANCE_BASE_URL}}
+          CLIENT_ID: ${{secrets.CLIENT_ID}}
+          CLIENT_SECRET: ${{secrets.CLIENT_SECRET}}
+        with:
+          cloud-instance-base-url: ${{ secrets.CLOUD_INSTANCE_BASE_URL }}
+          client-id: ${{ secrets.CLIENT_ID }}
+          client-secret: ${{ secrets.CLIENT_SECRET }}
+          deployment-sequence-number: ${{ github.run_id }}
+          update-sequence-number: ${{ github.run_id }}
+          issue-keys: ${{ needs.ci.outputs.jira-keys }}
+          display-name: ${{ steps.deployConfig.outputs.deployAppName }}
+          url: ${{ steps.deployConfig.outputs.environmentUrl }}
+          description: 'Deployment to the ${{ steps.deployConfig.outputs.environmentName }} environment'
+          last-updated: '${{github.event.head_commit.timestamp}}'
+          state: '${{ env.DEPLOY_STATE }}'
+          pipeline-id: '${{ github.repository }} ${{ github.workflow }}'
+          pipeline-display-name: 'Workflow: ${{ github.workflow }} (#${{ github.run_number }})'
+          pipeline-url: '${{github.event.repository.html_url}}/actions/runs/${{github.run_id}}'
+          environment-id: ${{ steps.deployConfig.outputs.environmentId }}
+          environment-display-name: ${{ steps.deployConfig.outputs.environmentName }}
+          environment-type: ${{ steps.deployConfig.outputs.environmentType }}
