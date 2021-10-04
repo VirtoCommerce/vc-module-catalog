@@ -6,7 +6,7 @@ The Catalog module presents the ability to add items to your e-commerce store.  
 
 The Catalog Module supports two types of catalogs - physical and virtual.
 
-![Catalog Overview](media/catalog-overview.png)
+![Catalog Overview](media/catalog-overview-2021.png)
 
 ### Common Catalogs
 
