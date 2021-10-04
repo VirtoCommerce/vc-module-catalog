@@ -4,9 +4,9 @@ using VirtoCommerce.Platform.Core.Events;
 
 namespace VirtoCommerce.CatalogModule.Core.Events
 {
-    public class VideoChangeEvent : GenericChangedEntryEvent<Video>
+    public class VideoChangingEvent : GenericChangedEntryEvent<Video>
     {
-        public VideoChangeEvent(IEnumerable<GenericChangedEntry<Video>> changedEntries) : base(changedEntries)
+        public VideoChangingEvent(IEnumerable<GenericChangedEntry<Video>> changedEntries) : base(changedEntries)
         {
         }
     }

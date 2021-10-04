@@ -4,6 +4,7 @@ angular.module('virtoCommerce.catalogModule')
             function ($scope, bladeNavigationService, dialogService, settings, videos) {
                 var blade = $scope.blade;
                 var parentBlade = blade.parentBlade;
+                blade.updatePermission = 'catalog:update';
                 blade.headIcon = 'fab fa-youtube';
                 blade.title = 'catalog.blades.video-detail.title';
                 blade.subtitle = 'catalog.blades.video-detail.subtitle';
@@ -122,6 +123,7 @@ angular.module('virtoCommerce.catalogModule')
                     {
                         name: "platform.commands.delete",
                         icon: 'fa fa-trash-o',
+                        permission: blade.updatePermission,
                         executeMethod: deleteEntry,
                         canExecuteMethod: function () {
                             return !blade.isNew;

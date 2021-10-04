@@ -9,14 +9,9 @@
                             <input ng-model="blade.currentEntity.contentUrl" required ng-maxlength="2083" placeholder="{{ 'catalog.blades.video-add.placeholders.content-url' | translate }}">
                         </div>
                     </div>
+                    <div class="note" ng-if="!blade.videoOptions.googleApiKey">{{ 'catalog.blades.video-add.labels.no-apikey' | translate }}</div>
                 </fieldset>
             </form>
         </div>
     </div>
 </div>
-
-<!--
-Get the YouTube, Vimeo, Vine, VideoPress, TikTok, Microsoft Stream and Dailymotion video id from a url or embed string.
-https://github.com/radiovisual/get-video-id
--->
-<script src="https://cdn.jsdelivr.net/npm/get-video-id/dist/get-video-id.min.js"></script>

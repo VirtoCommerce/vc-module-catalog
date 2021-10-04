@@ -1,12 +1,12 @@
 angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.videoListController',
-        ['$scope', '$translate', '$timeout', 'platformWebApp.bladeNavigationService', 'platformWebApp.bladeUtils', 'platformWebApp.uiGridHelper', 'virtoCommerce.catalogModule.videos',
-            function ($scope, $translate, $timeout, bladeNavigationService, bladeUtils, uiGridHelper, videos) {
+        ['$scope', '$translate', '$timeout', 'platformWebApp.bladeNavigationService', 'platformWebApp.bladeUtils', 'platformWebApp.dialogService', 'platformWebApp.uiGridHelper', 'virtoCommerce.catalogModule.videos',
+            function ($scope, $translate, $timeout, bladeNavigationService, bladeUtils, dialogService, uiGridHelper, videos) {
                 var blade = $scope.blade;
+                blade.updatePermission = 'catalog:update';
                 blade.headIcon = 'fab fa-youtube';
                 blade.title = 'catalog.blades.video-list.title';
                 blade.subtitle = 'catalog.blades.video-list.subtitle';
-                var languages = blade.catalog.languages;
 
                 blade.getSearchCriteria = function () {
                     return angular.extend(filter, {
@@ -76,15 +76,31 @@ angular.module('virtoCommerce.catalogModule')
 
                 blade.selectNode = function(item) {
                     $scope.selectedNodeId = item.id;
+                }
 
-                    var newBlade = {
-                        id: 'videoDetail',
-                        currentEntityId: item.id,
-                        currentEntity: item,
-                        controller: 'virtoCommerce.catalogModule.videoDetailController',
-                        template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/video-detail.tpl.html'
+                $scope.delete = function (item) {
+                    deleteList([item], true);
+                };
+
+                function deleteList (selection, single) {
+                    var dialog = {
+                        id: "confirmDelete",
+                        title: single ? "catalog.dialogs.video-delete.title" : "catalog.dialogs.video-list-delete.title",
+                        message: single ? "catalog.dialogs.video-delete.message" : "catalog.dialogs.video-list-delete.message",
+                        callback: function (remove) {
+                            if (remove) {
+                                blade.isLoading = true;
+                                videos.remove({ ids: selection.map(item => item.id) },
+                                    function () {
+                                        blade.refresh();
+                                    },
+                                    function (error) {
+                                        bladeNavigationService.setError('Error ' + error.status, blade);
+                                    });
+                            }
+                        }
                     };
-                    bladeNavigationService.showBlade(newBlade, blade);
+                    dialogService.showConfirmationDialog(dialog);
                 }
 
                 function addVideo() {
@@ -122,31 +138,23 @@ angular.module('virtoCommerce.catalogModule')
                     {
                         name: "platform.commands.delete",
                         icon: 'fa fa-trash-o',
-                        executeMethod: function() { $scope.removeAction(); },
+                        permission: blade.updatePermission,
+                        executeMethod: function() { deleteList($scope.gridApi.selection.getSelectedRows()); },
                         canExecuteMethod: function() {
-                            return blade.currentEntities && $scope.gridApi && $scope.gridApi.selection.getSelectedRows().length > 0;
+                            return blade.currentEntities && $scope.gridApi && _.any($scope.gridApi.selection.getSelectedRows());
                         }
                     },
                 ];
 
-                function getEntityGridIndex(item, gridApi) {
-                    var index = -1;
-                    if (gridApi) {
-                        _.each(gridApi.grid.renderContainers.body.visibleRowCache,
-                            function(row, idx) {
-                                if (_.isEqual(row.entity, item)) {
-                                    index = idx;
-                                }
-                            });
-                    }
-                    return index;
-                }
-
                 var priorityChanged = function(data) {
-                    var newIndex = getEntityGridIndex(data.rowEntity, data.gridApi);
-                    if (newIndex !== data.index) {
-                        data.gridApi.cellNav.scrollToFocus(data.rowEntity, data.colDef);
-                    }
+                    blade.isLoading = true;
+                    videos.save([data.rowEntity],
+                        function (resp) {
+                            blade.refresh();
+                        },
+                        function (error) {
+                            bladeNavigationService.setError('Error ' + error.status, blade);
+                        });
                 };
 
                 // ui-grid
@@ -154,15 +162,15 @@ angular.module('virtoCommerce.catalogModule')
                     gridOptions.enableCellEditOnFocus = false;
                     uiGridHelper.initialize($scope, gridOptions, function (gridApi) {
                         gridApi.edit.on.afterCellEdit($scope,
-                            function(rowEntity, colDef) {
-                                var index = getEntityGridIndex(rowEntity, gridApi);
-                                var data = {
-                                    rowEntity: rowEntity,
-                                    colDef: colDef,
-                                    index: index,
-                                    gridApi: gridApi
-                                };
-                                $timeout(priorityChanged, 100, true, data);
+                            function(rowEntity, colDef, newValue, oldValue) {
+                                if (newValue !== oldValue) {
+                                    var data = {
+                                        rowEntity: rowEntity,
+                                        colDef: colDef,
+                                        gridApi: gridApi
+                                    };
+                                    $timeout(priorityChanged, 100, true, data);
+                                }
                             });
                         uiGridHelper.bindRefreshOnSortChanged($scope);
                     });
@@ -187,11 +195,7 @@ angular.module('virtoCommerce.catalogModule')
             }])
     .run(['platformWebApp.ui-grid.extension', 'uiGridValidateService', function(uiGridExtension, uiGridValidateService) {
             uiGridValidateService.setValidator('minPriorityValidator',
-                function() {
-                    return function(oldValue, newValue, rowEntity, colDef) {
-                        return newValue >= 0;
-                    };
-                },
-                function() { return 'Priority value should be equal or more than zero'; });
+                () => (oldValue, newValue) => newValue >= 0,
+                () => 'Priority value should be equal or more than zero');
         }
     ]);

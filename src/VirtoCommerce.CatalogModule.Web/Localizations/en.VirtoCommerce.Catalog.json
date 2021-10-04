@@ -442,10 +442,11 @@
         "subtitle": "Create new video",
         "create": "Create",
         "labels": {
-          "content-url": "Content Url"
+          "content-url": "Content URL",
+          "no-apikey": "Google API Key is not set in platform configuration file. Video information will not be complete."
         },
         "placeholders": {
-          "content-url": "Enter video url"
+          "content-url": "Enter video URL"
         }
       },
       "video-detail": {
@@ -458,11 +459,11 @@
           "duration": "Duration",
           "language": "Language",
           "video": "Video",
-          "content-url": "Content Url",
-          "embed-url": "Embeded Url",
+          "content-url": "Content URL",
+          "embed-url": "Embeded URL",
           "video-preview": "Video Preview",
           "thumbnail": "Thumbnail",
-          "thumbnail-url": "Thumbnail Url",
+          "thumbnail-url": "Thumbnail URL",
           "thumbnail-preview": "Thumbnail Preview"
         },
         "placeholders": {
@@ -470,7 +471,7 @@
           "upload-date": "Please choose date...",
           "description": "Enter description",
           "language": "Select language",
-          "content-url": "Enter video url"
+          "content-url": "Enter video URL"
         }
       },
       "item-asset-detail": {
@@ -765,6 +766,10 @@
       "video-delete": {
         "title": "Delete confirmation",
         "message": "Are you sure you want to delete this video?"
+      },
+      "video-list-delete": {
+        "title": "Delete confirmation",
+        "message": "Are you sure you want to delete selected videos?"
       },
       "asset-save": {
         "title": "Save changes",
