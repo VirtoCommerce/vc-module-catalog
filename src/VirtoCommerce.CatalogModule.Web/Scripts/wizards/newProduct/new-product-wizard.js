@@ -3,9 +3,9 @@ angular.module('virtoCommerce.catalogModule')
         var blade = $scope.blade;
 
         if (blade.item.productType) {
-            var type = itemTypesResolverService.resolve(blade.item.productType);
-            if (type) {
-                blade.headIcon = type.icon;
+            var productType = itemTypesResolverService.resolve(blade.item.productType);
+            if (productType) {
+                blade.headIcon = productType.icon;
             }
         }
 
