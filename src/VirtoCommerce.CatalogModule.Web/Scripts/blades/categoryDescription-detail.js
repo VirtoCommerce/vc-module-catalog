@@ -28,7 +28,7 @@ angular.module('virtoCommerce.catalogModule')
             var existDescription = _.find(blade.category.descriptions, function (x) { return x == blade.origEntity; });
             if (!existDescription) {
                 blade.category.descriptions.push(blade.origEntity);
-            };
+            }
             angular.copy(blade.currentEntity, blade.origEntity);
             $scope.bladeClose();
         };
@@ -102,14 +102,13 @@ angular.module('virtoCommerce.catalogModule')
             var existDescription = _.find(blade.category.descriptions, function (x) { return x === blade.origEntity; });
             if (!existDescription) {
                 blade.category.descriptions.push(blade.origEntity);
-            };
-
+            }
             angular.copy(blade.currentEntity, blade.origEntity);
         }
 
         function isDirty() {
             return !angular.equals(blade.currentEntity, blade.origEntity);
-        };
+        }
 
         function canSave() {
             return isDirty() && formScope && formScope.$valid;

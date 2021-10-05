@@ -14,7 +14,7 @@ angular.module('virtoCommerce.catalogModule')
         blade.title = blade.category.name;
         blade.subtitle = 'catalog.blades.categoryDescriptions-list.subtitle';
         blade.selectNode = $scope.openBlade;
-    };
+    }
 
     $scope.openBlade = function (node) {
         if (node) {
