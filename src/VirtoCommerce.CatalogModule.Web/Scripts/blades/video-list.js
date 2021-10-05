@@ -159,7 +159,7 @@ angular.module('virtoCommerce.catalogModule')
 
                 // ui-grid
                 $scope.setGridOptions = function (gridOptions) {
-                    gridOptions.enableCellEditOnFocus = false;
+                    bladeUtils.initializePagination($scope, true);
                     uiGridHelper.initialize($scope, gridOptions, function (gridApi) {
                         gridApi.edit.on.afterCellEdit($scope,
                             function(rowEntity, colDef, newValue, oldValue) {
@@ -173,6 +173,10 @@ angular.module('virtoCommerce.catalogModule')
                                 }
                             });
                         uiGridHelper.bindRefreshOnSortChanged($scope);
+                    });
+
+                    $timeout(function () {
+                        blade.refresh();
                     });
                 };
 
@@ -188,10 +192,6 @@ angular.module('virtoCommerce.catalogModule')
                         return $scope.isValid = result;
                     },
                     true);
-
-                bladeUtils.initializePagination($scope, true);
-
-                blade.refresh();
             }])
     .run(['platformWebApp.ui-grid.extension', 'uiGridValidateService', function(uiGridExtension, uiGridValidateService) {
             uiGridValidateService.setValidator('minPriorityValidator',
