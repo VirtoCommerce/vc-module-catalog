@@ -315,13 +315,13 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                     itemType: 'catalog.blades.categories-items-add.menu.physical-product.title',
                     description: 'catalog.blades.categories-items-add.menu.physical-product.description',
                     productType: 'Physical',
-                    icon: 'fa-truck'
+                    icon: 'fas fa-box'
                 });
                 itemTypesResolverService.registerType({
                     itemType: 'catalog.blades.categories-items-add.menu.digital-product.title',
                     description: 'catalog.blades.categories-items-add.menu.digital-product.description',
                     productType: 'Digital',
-                    icon: 'fa-file-archive-o'
+                    icon: 'fas fa-file-download'
                 });
                 itemTypesResolverService.registerType({
                     itemType: 'catalog.blades.categories-items-add.menu.bill-of-materials-product.title',
