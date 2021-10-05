@@ -159,7 +159,6 @@ angular.module('virtoCommerce.catalogModule')
 
                 // ui-grid
                 $scope.setGridOptions = function (gridOptions) {
-                    bladeUtils.initializePagination($scope, true);
                     uiGridHelper.initialize($scope, gridOptions, function (gridApi) {
                         gridApi.edit.on.afterCellEdit($scope,
                             function(rowEntity, colDef, newValue, oldValue) {
@@ -174,10 +173,7 @@ angular.module('virtoCommerce.catalogModule')
                             });
                         uiGridHelper.bindRefreshOnSortChanged($scope);
                     });
-
-                    $timeout(function () {
-                        blade.refresh();
-                    });
+                    bladeUtils.initializePagination($scope);
                 };
 
                 $scope.priorityValid = function(entity) {
