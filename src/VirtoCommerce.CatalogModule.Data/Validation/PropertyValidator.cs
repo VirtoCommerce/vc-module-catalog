@@ -22,8 +22,6 @@ namespace VirtoCommerce.CatalogModule.Data.Validation
             RuleFor(property => property.Multilanguage).NotEqual(true).When(property => property.ValueType == PropertyValueType.Boolean);
 
             RuleFor(property => property.Dictionary).NotEqual(true).When(property => property.ValueType == PropertyValueType.Integer);
-            RuleFor(property => property.Multivalue).NotEqual(true).When(property => property.ValueType == PropertyValueType.Integer);
-
 
             RuleFor(property => property.Dictionary).NotEqual(true).When(property => property.ValueType == PropertyValueType.GeoPoint);
             RuleFor(property => property.Multilanguage).NotEqual(true).When(property => property.ValueType == PropertyValueType.GeoPoint);
