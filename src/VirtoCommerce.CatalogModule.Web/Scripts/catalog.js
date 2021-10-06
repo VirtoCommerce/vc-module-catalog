@@ -183,6 +183,13 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                 };
                 widgetService.registerWidget(categorySeoWidget, 'categoryDetail');
 
+                //Register category description widget
+                var categoryDescriptionWidget = {
+                    controller: 'virtoCommerce.catalogModule.categoryDescriptionWidgetController',
+                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/categoryDescriptionWidget.tpl.html'
+                };
+                widgetService.registerWidget(categoryDescriptionWidget, 'categoryDetail');
+
                 //Register catalog widgets
                 var catalogLanguagesWidget = {
                     controller: 'virtoCommerce.catalogModule.catalogLanguagesWidgetController',
