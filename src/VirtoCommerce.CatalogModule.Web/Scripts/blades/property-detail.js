@@ -21,11 +21,11 @@ angular.module('virtoCommerce.catalogModule')
             switch (newValue) {
                 case 'DateTime':
                 case 'Boolean':
+                case 'Integer':
                     blade.hasMultivalue = blade.currentEntity.multivalue = false;
                     blade.hasDictionary = blade.currentEntity.dictionary = false;
                     blade.hasMultilanguage = blade.currentEntity.multilanguage = false;
                     break;
-                case 'Integer':
                 case 'GeoPoint':
                     blade.hasDictionary = blade.currentEntity.dictionary = false;
                     blade.hasMultilanguage = blade.currentEntity.multilanguage = false;
