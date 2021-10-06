@@ -55,14 +55,21 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             var categoryResponseGroup = EnumUtility.SafeParseFlags(responseGroup, CategoryResponseGroup.Full);
 
             var result = new List<Category>();
-            var preloadedCategoriesByIdDict = await PreloadCategoriesAsync(catalogId);
+            var preloadedCategoriesByIdDict = await PreloadCategoriesAsync();
             foreach (var categoryId in categoryIds.Where(x => x != null))
             {
                 var category = preloadedCategoriesByIdDict[categoryId];
                 if (category != null)
                 {
                     category = category.Clone() as Category;
-                    //Reduce details according to response group
+
+                    // Fill outlines for categories on the fly, if requested 
+                    if (categoryResponseGroup.HasFlag(CategoryResponseGroup.WithOutlines))
+                    {
+                        _outlineService.FillOutlinesForObjects(new List<Category> { category }, catalogId);
+                    }
+
+                    // Reduce details according to response group
                     category.ReduceDetails(categoryResponseGroup.ToString());
                     result.Add(category);
                 }
@@ -134,48 +141,62 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         #endregion
 
+        [Obsolete("Use PreloadCategoriesAsync() instead.")]
         protected virtual async Task<IDictionary<string, Category>> PreloadCategoriesAsync(string catalogId)
         {
-            var cacheKey = CacheKey.With(GetType(), "PreloadCategories", catalogId);
-            return await _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async (cacheEntry) =>
-           {
-               cacheEntry.AddExpirationToken(CatalogCacheRegion.CreateChangeToken());
+            return await PreloadCategoriesAsync();
+        }
 
-               var entities = new List<CategoryEntity>();
-               using (var repository = _repositoryFactory())
-               {
-                   repository.DisableChangesTracking();
-                   var categoriesIds = repository.Categories.Select(x => x.Id).ToArray();
-                   foreach (var page in categoriesIds.Paginate(50))
-                   {
-                       entities.AddRange(await repository.GetCategoriesByIdsAsync(page.ToArray(), CategoryResponseGroup.Full.ToString()));
-                   }
-               }
-               var result = entities.Select(x => x.ToModel(AbstractTypeFactory<Category>.TryCreateInstance()))
+        protected virtual async Task<IDictionary<string, Category>> PreloadCategoriesAsync()
+        {
+            var cacheKey = CacheKey.With(GetType(), "PreloadCategories");
+            return await _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async (cacheEntry) =>
+            {
+                cacheEntry.AddExpirationToken(CatalogCacheRegion.CreateChangeToken());
+
+                var entities = new List<CategoryEntity>();
+                using (var repository = _repositoryFactory())
+                {
+                    repository.DisableChangesTracking();
+                    var categoriesIds = repository.Categories
+                        .Select(x => x.Id)
+                        .ToArray();
+
+                    foreach (var page in categoriesIds.Paginate(50))
+                    {
+                        entities.AddRange(await repository.GetCategoriesByIdsAsync(page.ToArray(), CategoryResponseGroup.Full.ToString()));
+                    }
+                }
+
+                var result = entities.Select(x => x.ToModel(AbstractTypeFactory<Category>.TryCreateInstance()))
                                     .ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase)
                                     .WithDefaultValue(null);
 
-               await LoadDependenciesAsync(result.Values, result);
-               ApplyInheritanceRules(result.Values);
+                // Resolve relative urls for all category assets
+                ResolveImageUrls(result.Values);
 
-               // Fill outlines for categories            
-               _outlineService.FillOutlinesForObjects(result.Values, catalogId);
-               return result;
-           });
+                await LoadDependenciesAsync(result.Values, result);
+
+                ApplyInheritanceRules(result.Values);
+
+                return result;
+            });
         }
 
-        protected virtual async Task LoadDependenciesAsync(IEnumerable<Category> categories, IDictionary<string, Category> preloadedCategoriesMap)
+        protected virtual void ResolveImageUrls(IEnumerable<Category> categories)
         {
-            var catalogsIds = new { categories }.GetFlatObjectsListWithInterface<IHasCatalogId>().Select(x => x.CatalogId).Where(x => x != null).Distinct().ToArray();
-            var catalogsByIdDict = (await _catalogService.GetByIdsAsync(catalogsIds)).ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase);
-            
-            //Resolve relative urls for all category assets
             var allImages = new { categories }.GetFlatObjectsListWithInterface<IHasImages>().Where(x => x.Images != null).SelectMany(x => x.Images);
             foreach (var image in allImages.Where(x => !string.IsNullOrEmpty(x.Url)))
             {
                 image.RelativeUrl = !string.IsNullOrEmpty(image.RelativeUrl) ? image.RelativeUrl : image.Url;
                 image.Url = _blobUrlResolver.GetAbsoluteUrl(image.Url);
             }
+        }
+
+        protected virtual async Task LoadDependenciesAsync(IEnumerable<Category> categories, IDictionary<string, Category> preloadedCategoriesMap)
+        {
+            var catalogsIds = new { categories }.GetFlatObjectsListWithInterface<IHasCatalogId>().Select(x => x.CatalogId).Where(x => x != null).Distinct().ToArray();
+            var catalogsByIdDict = (await _catalogService.GetByIdsAsync(catalogsIds)).ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase);
 
             foreach (var category in categories)
             {
@@ -209,7 +230,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                         property.Category = preloadedCategoriesMap[property.CategoryId];
                     }
                 }
-
             }
         }
 
@@ -237,7 +257,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             var groups = categories.GroupBy(x => x.CatalogId);
             foreach (var group in groups)
             {
-                await LoadDependenciesAsync(group, await PreloadCategoriesAsync(group.Key));
+                await LoadDependenciesAsync(group, await PreloadCategoriesAsync());
                 ApplyInheritanceRules(group);
 
                 foreach (var category in group)
