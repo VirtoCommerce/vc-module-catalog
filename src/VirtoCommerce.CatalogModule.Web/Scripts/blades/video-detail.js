@@ -43,7 +43,7 @@ angular.module('virtoCommerce.catalogModule')
                     blade.isLoading = true;
                     var promise = saveOrUpdate();
                     promise.catch(function (error) {
-                        bladeNavigationService.setError('Error ' + error.status, blade);
+                        bladeNavigationService.setError(error, blade);
                     }).finally(function () {
                         blade.isLoading = false;
                     });

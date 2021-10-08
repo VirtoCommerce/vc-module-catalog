@@ -24,7 +24,7 @@ angular.module('virtoCommerce.catalogModule')
                             blade.videoOptions = data;
                         },
                         function (error) {
-                            bladeNavigationService.setError('Error ' + error.status, blade);
+                            bladeNavigationService.setError(error, blade);
                         });
                     videos.search(blade.getSearchCriteria(),
                         function (data) {
@@ -33,7 +33,7 @@ angular.module('virtoCommerce.catalogModule')
                             blade.currentEntities = data.results;
                         },
                         function (error) {
-                            bladeNavigationService.setError('Error ' + error.status, blade);
+                            bladeNavigationService.setError(error, blade);
                         });
                 };
 
@@ -95,7 +95,7 @@ angular.module('virtoCommerce.catalogModule')
                                         blade.refresh();
                                     },
                                     function (error) {
-                                        bladeNavigationService.setError('Error ' + error.status, blade);
+                                        bladeNavigationService.setError(error, blade);
                                     });
                             }
                         }
@@ -153,7 +153,7 @@ angular.module('virtoCommerce.catalogModule')
                             blade.refresh();
                         },
                         function (error) {
-                            bladeNavigationService.setError('Error ' + error.status, blade);
+                            bladeNavigationService.setError(error, blade);
                         });
                 };
 

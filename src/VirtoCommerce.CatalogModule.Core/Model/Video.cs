@@ -15,7 +15,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         public string Name { get; set; }
         public string Description { get; set; }
         public int SortOrder { get; set; }
-        public DateTime UploadDate { get; set; }
+        public DateTime? UploadDate { get; set; }
         public string ThumbnailUrl { get; set; }
         public string ContentUrl { get; set; }
         public string EmbedUrl { get; set; }

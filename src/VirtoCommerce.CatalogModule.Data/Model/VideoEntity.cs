@@ -81,7 +81,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             Name = video.Name;
             Description = video.Description;
             SortOrder = video.SortOrder;
-            UploadDate = video.UploadDate;
+            UploadDate = video.UploadDate.GetValueOrDefault();
             ThumbnailUrl = video.ThumbnailUrl;
             ContentUrl = video.ContentUrl;
             EmbedUrl = video.EmbedUrl;

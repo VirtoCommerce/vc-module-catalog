@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -25,6 +27,55 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             _videoSearchService = (ISearchService<VideoSearchCriteria, VideoSearchResult, Video>)videoSearchService;
             _videoService = (ICrudService<Video>)videoService;
             _videoOptions = videoOptions.Value;
+        }
+
+        /// <summary>
+        /// Get video options from configuration
+        /// </summary>
+        [HttpGet]
+        [Route("options")]
+        [ProducesResponseType(typeof(VideoOptions), StatusCodes.Status200OK)]
+        [Authorize(ModuleConstants.Security.Permissions.Access)]
+        public ActionResult<VideoOptions> GetOptions()
+        {
+            return Ok(_videoOptions);
+        }
+
+        /// <summary>
+        /// Create video
+        /// </summary>
+        [HttpPost]
+        [Route("create")]
+        [ProducesResponseType(typeof(Video), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [Authorize(ModuleConstants.Security.Permissions.Update)]
+        public async Task<ActionResult<Video>> CreateVideo([FromBody] VideoCreateRequest createRequest)
+        {
+            if (!createRequest.SortOrder.HasValue)
+            {
+                var searchCriteria = new VideoSearchCriteria
+                {
+                    OwnerIds = new List<string> { createRequest.OwnerId },
+                    OwnerType = createRequest.OwnerType,
+                    Sort = "SortOrder:desc",
+                    Skip = 0,
+                    Take = 1
+                };
+                var searchResult = await _videoSearchService.SearchAsync(searchCriteria);
+
+                createRequest.SortOrder = searchResult.Results.Count != 0 ? searchResult.Results[0].SortOrder + 1 : 1;
+            }
+
+            try
+            {
+                var video = await ((IVideoService)_videoService).CreateVideo(createRequest);
+
+                return Ok(video);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest( new { ex.Message });
+            }
         }
 
         /// <summary>
@@ -68,18 +119,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             await _videoService.DeleteAsync(ids);
 
             return NoContent();
-        }
-
-        /// <summary>
-        /// Get video options from configuration
-        /// </summary>
-        [HttpGet]
-        [Route("options")]
-        [ProducesResponseType(typeof(VideoOptions), StatusCodes.Status200OK)]
-        [Authorize(ModuleConstants.Security.Permissions.Access)]
-        public ActionResult<VideoOptions> GetOptions()
-        {
-            return Ok(_videoOptions);
         }
     }
 }

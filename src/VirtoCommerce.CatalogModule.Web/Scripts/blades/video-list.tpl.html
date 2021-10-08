@@ -38,6 +38,7 @@
             <div class="note" ng-if="!blade.currentEntities.length">{{ 'platform.list.no-data' | translate }}</div>
         </div>
     </div>
+    <div class="blade-static __bottom" ng-if="pageSettings.itemsPerPageCount < pageSettings.totalItems" ng-include="'pagerTemplate.html'"></div>
 </div>
 
 <script type="text/ng-template" id="video-list.row.html">

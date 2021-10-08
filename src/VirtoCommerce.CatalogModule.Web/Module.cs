@@ -86,9 +86,9 @@ namespace VirtoCommerce.CatalogModule.Web
             serviceCollection.AddTransient<IProductIndexedSearchService, ProductIndexedSearchService>();
             serviceCollection.AddTransient<IAssociationService, AssociationService>();
 
+            serviceCollection.Configure<VideoOptions>(Configuration.GetSection(VideoOptions.SectionName));
             serviceCollection.AddTransient<IVideoSearchService, VideoSearchService>();
             serviceCollection.AddTransient<IVideoService, VideoService>();
-            serviceCollection.Configure<VideoOptions>(Configuration.GetSection(VideoOptions.SectionName));
 
             serviceCollection.AddTransient<IAggregationConverter, AggregationConverter>();
             serviceCollection.AddTransient<IBrowseFilterService, BrowseFilterService>();
