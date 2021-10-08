@@ -144,6 +144,11 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         protected virtual async Task<IDictionary<string, Category>> PreloadCategoryBranchAsync(string categoryId)
         {
+            if (categoryId == null)
+            {
+                return new Dictionary<string, Category>();
+            }
+
             var cacheKey = CacheKey.With(GetType(), "PreloadCategoryBranch", categoryId);
 
             return await _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async (cacheEntry) =>
@@ -288,9 +293,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 var group = new List<Category>() { category };
 
                 var branchId = category.Id ?? category.ParentId;
-                var categoryBranch = branchId != null
-                    ? await PreloadCategoryBranchAsync(branchId)
-                    : new Dictionary<string, Category>();
+                var categoryBranch = await PreloadCategoryBranchAsync(branchId);
 
                 await LoadDependenciesAsync(group, categoryBranch);
                 ApplyInheritanceRules(group);
