@@ -16,6 +16,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         IQueryable<AssetEntity> Assets { get; }
         IQueryable<VideoEntity> Videos { get; }
         IQueryable<EditorialReviewEntity> EditorialReviews { get; }
+        IQueryable<CategoryDescriptionEntity> CategoryDescriptions { get; }
         IQueryable<PropertyValueEntity> PropertyValues { get; }
         IQueryable<PropertyDictionaryValueEntity> PropertyDictionaryValues { get; }
         IQueryable<PropertyDictionaryItemEntity> PropertyDictionaryItems { get; }

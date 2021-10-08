@@ -354,7 +354,27 @@
           "language": "Выбрать язык"
         }
       },
-      "importers-list": {
+      "categoryDescriptions-list": {
+          "subtitle": "Описание категории",
+          "labels": {
+            "no-descriptions": "Пока нет описания"
+          }
+        },
+        "categoryDescription-detail": {
+          "title": "Описание",
+          "subtitle": "Описание категории",
+          "labels": {
+            "language": "Язык",
+            "type": "Тип",
+            "content": "Содержание описания",
+            "select-language": "Выбрать язык"
+          },
+          "placeholders": {
+            "type": "Выберать тип",
+            "language": "Выбрать язык"
+          }
+        },
+        "importers-list": {
         "title": "Импорт каталога",
         "subtitle": "Выберите формат данных и импортируйте"
       },
@@ -535,7 +555,10 @@
         "title": "Свойства"
       },
       "editorialReview": {
-        "blade-subtitle": "Описание элемента",
+        "blade-subtitle": "Описание элемента","title": "Описание"
+        },
+        "categoryDescription": {
+          "blade-subtitle": "Описание категории",
         "title": "Описание"
       },
       "itemAsset": {
