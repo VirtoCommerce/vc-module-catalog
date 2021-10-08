@@ -536,7 +536,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 (  
                     SELECT * 
                     FROM Category   
-                    WHERE Id = {0}
+                    WHERE Id = @categoryId
                     UNION ALL  
                     SELECT c.*
                     FROM Category c, CategoryParents cp
@@ -545,7 +545,8 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 SELECT *
                 FROM CategoryParents";
 
-            var result = await DbContext.Set<CategoryEntity>().FromSqlRaw(commandTemplate, categoryId).ToListAsync();
+            var categoryIdParam = new SqlParameter("@categoryId", categoryId);
+            var result = await DbContext.Set<CategoryEntity>().FromSqlRaw(commandTemplate, categoryIdParam).ToListAsync();
 
             if (result.Any())
             {

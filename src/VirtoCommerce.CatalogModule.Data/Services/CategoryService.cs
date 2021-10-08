@@ -58,7 +58,9 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
             foreach (var categoryId in categoryIds.Where(x => x != null))
             {
-                var category = await PreloadCategoryBranchAsync(categoryId);
+                var categoryBranch = await PreloadCategoryBranchAsync(categoryId);
+
+                var category = categoryBranch[categoryId];
 
                 if (category != null)
                 {
@@ -75,34 +77,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return result.ToArray();
         }
 
-        protected virtual async Task<Category> PreloadCategoryBranchAsync(string categoryId)
-        {
-            var cacheKey = CacheKey.With(GetType(), "PreloadCategoryBranch", categoryId);
-
-            return await _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async (cacheEntry) =>
-            {
-                cacheEntry.AddExpirationToken(CatalogCacheRegion.CreateChangeToken());
-
-                using (var repository = _repositoryFactory())
-                {
-                    repository.DisableChangesTracking();
-
-                    var entities = await repository.SearchCategoriesHierarcyAsync(categoryId);
-
-                    var result = entities.Select(x => x.ToModel(AbstractTypeFactory<Category>.TryCreateInstance()))
-                        .ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase)
-                        .WithDefaultValue(null);
-
-                    ResolveImageUrls(result.Values);
-
-                    await LoadDependenciesAsync(result.Values, result);
-
-                    ApplyInheritanceRules(result.Values);
-
-                    return result[categoryId];
-                }
-            });
-        }
 
         public virtual async Task SaveChangesAsync(Category[] categories)
         {
@@ -167,6 +141,36 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         }
 
         #endregion
+
+        protected virtual async Task<IDictionary<string, Category>> PreloadCategoryBranchAsync(string categoryId)
+        {
+            var cacheKey = CacheKey.With(GetType(), "PreloadCategoryBranch", categoryId);
+
+            return await _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async (cacheEntry) =>
+            {
+                cacheEntry.AddExpirationToken(CatalogCacheRegion.CreateChangeToken());
+
+                using (var repository = _repositoryFactory())
+                {
+                    repository.DisableChangesTracking();
+
+                    var entities = await repository.SearchCategoriesHierarcyAsync(categoryId);
+
+                    var result = entities.Select(x => x.ToModel(AbstractTypeFactory<Category>.TryCreateInstance()))
+                        .ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase)
+                        .WithDefaultValue(null);
+
+                    ResolveImageUrls(result.Values);
+
+                    await LoadDependenciesAsync(result.Values, result);
+
+                    ApplyInheritanceRules(result.Values);
+
+                    return result;
+                }
+            });
+        }
+
 
         [Obsolete("Use PreloadCategoriesAsync() instead.")]
         protected virtual async Task<IDictionary<string, Category>> PreloadCategoriesAsync(string catalogId)
@@ -274,26 +278,28 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             {
                 throw new ArgumentNullException(nameof(categories));
             }
+
             //Validate categories 
             var validator = new CategoryValidator();
             foreach (var category in categories)
             {
                 validator.ValidateAndThrow(category);
-            }
 
-            var groups = categories.GroupBy(x => x.CatalogId);
-            foreach (var group in groups)
-            {
-                await LoadDependenciesAsync(group, await PreloadCategoriesAsync());
+                var group = new List<Category>() { category };
+
+                var branchId = category.Id ?? category.ParentId;
+                var categoryBranch = branchId != null
+                    ? await PreloadCategoryBranchAsync(branchId)
+                    : new Dictionary<string, Category>();
+
+                await LoadDependenciesAsync(group, categoryBranch);
                 ApplyInheritanceRules(group);
 
-                foreach (var category in group)
+                // TODO: fix validation call
+                var validationResult = _hasPropertyValidator.Validate(category);
+                if (!validationResult.IsValid)
                 {
-                    var validationResult = _hasPropertyValidator.Validate(category);
-                    if (!validationResult.IsValid)
-                    {
-                        throw new PlatformException($"Category properties has validation error: {string.Join(Environment.NewLine, validationResult.Errors.Select(x => x.ToString()))}");
-                    }
+                    throw new PlatformException($"Category properties has validation error: {string.Join(Environment.NewLine, validationResult.Errors.Select(x => x.ToString()))}");
                 }
             }
         }
