@@ -55,19 +55,17 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             var categoryResponseGroup = EnumUtility.SafeParseFlags(responseGroup, CategoryResponseGroup.Full);
 
             var result = new List<Category>();
-            var preloadedCategoriesByIdDict = await PreloadCategoriesAsync();
+
             foreach (var categoryId in categoryIds.Where(x => x != null))
             {
-                var category = preloadedCategoriesByIdDict[categoryId];
+                var category = await PreloadCategoryBranchAsync(categoryId);
+
                 if (category != null)
                 {
                     category = category.Clone() as Category;
 
-                    // Fill outlines for categories on the fly, if requested 
-                    if (categoryResponseGroup.HasFlag(CategoryResponseGroup.WithOutlines))
-                    {
-                        _outlineService.FillOutlinesForObjects(new List<Category> { category }, catalogId);
-                    }
+                    // Fill outlines for categories on the fly
+                    _outlineService.FillOutlinesForObjects(new List<Category> { category }, catalogId);
 
                     // Reduce details according to response group
                     category.ReduceDetails(categoryResponseGroup.ToString());
@@ -75,6 +73,35 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 }
             }
             return result.ToArray();
+        }
+
+        protected virtual async Task<Category> PreloadCategoryBranchAsync(string categoryId)
+        {
+            var cacheKey = CacheKey.With(GetType(), "PreloadCategoryBranch", categoryId);
+
+            return await _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async (cacheEntry) =>
+            {
+                cacheEntry.AddExpirationToken(CatalogCacheRegion.CreateChangeToken());
+
+                using (var repository = _repositoryFactory())
+                {
+                    repository.DisableChangesTracking();
+
+                    var entities = await repository.SearchCategoriesHierarcyAsync(categoryId);
+
+                    var result = entities.Select(x => x.ToModel(AbstractTypeFactory<Category>.TryCreateInstance()))
+                        .ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase)
+                        .WithDefaultValue(null);
+
+                    ResolveImageUrls(result.Values);
+
+                    await LoadDependenciesAsync(result.Values, result);
+
+                    ApplyInheritanceRules(result.Values);
+
+                    return result[categoryId];
+                }
+            });
         }
 
         public virtual async Task SaveChangesAsync(Category[] categories)

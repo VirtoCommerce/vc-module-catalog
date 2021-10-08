@@ -104,10 +104,9 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     //Load all properties meta information and information for inheritance
                     if (categoryResponseGroup.HasFlag(CategoryResponseGroup.WithProperties))
                     {
-                        await PropertyValues.Include(x => x.DictionaryItem.DictionaryItemValues).Where(x => categoriesIds.Contains(x.CategoryId)).LoadAsync();
                         //Load category property values by separate query
                         await PropertyValues.Include(x => x.DictionaryItem.DictionaryItemValues)
-                                                               .Where(x => categoriesIds.Contains(x.CategoryId)).LoadAsync();
+                            .Where(x => categoriesIds.Contains(x.CategoryId)).LoadAsync();
 
                         var categoryPropertiesIds = await Properties.Where(x => categoriesIds.Contains(x.CategoryId))
                                                                     .Select(x => x.Id).ToArrayAsync();
@@ -530,6 +529,40 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             return result;
         }
 
+        public virtual async Task<ICollection<CategoryEntity>> SearchCategoriesHierarcyAsync(string categoryId)
+        {
+            var commandTemplate = @"
+                WITH CategoryParents AS   
+                (  
+                    SELECT * 
+                    FROM Category   
+                    WHERE Id = {0}
+                    UNION ALL  
+                    SELECT c.*
+                    FROM Category c, CategoryParents cp
+	                where c.Id = cp.ParentCategoryId 
+                )  
+                SELECT *
+                FROM CategoryParents";
+
+            var result = await DbContext.Set<CategoryEntity>().FromSqlRaw(commandTemplate, categoryId).ToListAsync();
+
+            if (result.Any())
+            {
+                await CategoryLinks.Where(x => x.TargetCategoryId == categoryId).LoadAsync();
+                await CategoryLinks.Where(x => x.SourceCategoryId == categoryId).LoadAsync();
+                await Images.Where(x => x.CategoryId == categoryId).LoadAsync();
+                await SeoInfos.Where(x => x.CategoryId == categoryId).LoadAsync();
+                await PropertyValues.Include(x => x.DictionaryItem.DictionaryItemValues).Where(x => x.CategoryId == categoryId).LoadAsync();
+
+                var categoriesIds = result.Select(x => x.Id).ToList();
+                var categoryPropertiesIds = await Properties.Where(x => categoriesIds.Contains(x.CategoryId)).Select(x => x.Id).ToArrayAsync();
+                await GetPropertiesByIdsAsync(categoryPropertiesIds);
+            }
+
+            return result;
+        }
+
         #endregion ICatalogRepository Members
 
         protected virtual string GetAssociationsCountSqlCommandText(ProductAssociationSearchCriteria criteria)
@@ -537,7 +570,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             var command = new StringBuilder();
 
             command.Append(@"
-                ;WITH Association_CTE AS
+                ; WITH Association_CTE AS
                 (
                     SELECT a.*
                     FROM Association a");

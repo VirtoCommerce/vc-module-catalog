@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
@@ -50,5 +51,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         Task RemoveCatalogsAsync(string[] ids);
 
         Task RemoveAllPropertyValuesAsync(string propertyId);
+
+        Task<ICollection<CategoryEntity>> SearchCategoriesHierarcyAsync(string categoryId);
     }
 }
