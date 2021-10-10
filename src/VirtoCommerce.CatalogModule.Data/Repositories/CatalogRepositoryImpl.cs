@@ -550,13 +550,14 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
             if (result.Any())
             {
-                await CategoryLinks.Where(x => x.TargetCategoryId == categoryId).LoadAsync();
-                await CategoryLinks.Where(x => x.SourceCategoryId == categoryId).LoadAsync();
                 await Images.Where(x => x.CategoryId == categoryId).LoadAsync();
                 await SeoInfos.Where(x => x.CategoryId == categoryId).LoadAsync();
                 await PropertyValues.Include(x => x.DictionaryItem.DictionaryItemValues).Where(x => x.CategoryId == categoryId).LoadAsync();
 
                 var categoriesIds = result.Select(x => x.Id).ToList();
+
+                await CategoryLinks.Where(x => categoriesIds.Contains(x.TargetCategoryId) || categoriesIds.Contains(x.SourceCategoryId)).LoadAsync();
+
                 var categoryPropertiesIds = await Properties.Where(x => categoriesIds.Contains(x.CategoryId)).Select(x => x.Id).ToArrayAsync();
                 await GetPropertiesByIdsAsync(categoryPropertiesIds);
             }
