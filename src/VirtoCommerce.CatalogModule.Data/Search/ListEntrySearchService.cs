@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
+using LinqKit;
 using Microsoft.EntityFrameworkCore;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.ListEntry;
@@ -12,6 +14,7 @@ using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Data.Infrastructure;
+using PredicateBuilder = VirtoCommerce.Platform.Core.Common.PredicateBuilder;
 
 namespace VirtoCommerce.CatalogModule.Data.Search
 {
@@ -255,14 +258,24 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 query = query.Where(x => x.ParentId == null);
             }
 
+            var expressions = new List<Expression<Func<ItemEntity, bool>>>();
             if (!searchCategoryIds.IsNullOrEmpty())
             {
-                query = query.Where(x => searchCategoryIds.Contains(x.CategoryId) || x.CategoryLinks.Any(link => searchCategoryIds.Contains(link.CategoryId)));
+                Expression<Func<ItemEntity, bool>> categoriesCriteria = x => searchCategoryIds.Contains(x.CategoryId) || x.CategoryLinks.Any(link => searchCategoryIds.Contains(link.CategoryId));
+                expressions.Add(categoriesCriteria);
             }
-            else if (!criteria.CatalogIds.IsNullOrEmpty())
+
+            if (!criteria.CatalogIds.IsNullOrEmpty())
             {
-                query = query.Where(x => criteria.CatalogIds.Contains(x.CatalogId) && (criteria.SearchInChildren || x.CategoryId == null)
-                    || x.CategoryLinks.Any(link => criteria.CatalogIds.Contains(link.CatalogId) && (criteria.SearchInChildren || link.CategoryId == null)));
+                Expression<Func<ItemEntity, bool>> catalogCriteria = x => criteria.CatalogIds.Contains(x.CatalogId) && (criteria.SearchInChildren || x.CategoryId == null)
+                    || x.CategoryLinks.Any(link => criteria.CatalogIds.Contains(link.CatalogId) && (criteria.SearchInChildren || link.CategoryId == null));
+                expressions.Add(catalogCriteria);
+            }
+
+            if (expressions.Any())
+            {
+                var predicate = PredicateBuilder.Or(expressions);
+                query = query.AsExpandable().Where(predicate);
             }
 
             if (!string.IsNullOrEmpty(criteria.Code))
