@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
-using LinqKit;
 using Microsoft.EntityFrameworkCore;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.ListEntry;
@@ -14,7 +12,6 @@ using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Data.Infrastructure;
-using PredicateBuilder = VirtoCommerce.Platform.Core.Common.PredicateBuilder;
 
 namespace VirtoCommerce.CatalogModule.Data.Search
 {
@@ -183,6 +180,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 repository.DisableChangesTracking();
 
                 //list of search categories
+                var rootLevelQuery = criteria.CategoryIds.IsNullOrEmpty();
                 var searchCategoryIds = criteria.CategoryIds;
                 if (criteria.SearchInChildren)
                 {
@@ -195,15 +193,25 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                     }
                     else if (!criteria.CatalogIds.IsNullOrEmpty())
                     {
-                        //If category not specified need search in all linked and children categories
-                        searchCategoryIds = repository.Categories.Where(x => criteria.CatalogIds.Contains(x.CatalogId)).Select(x => x.Id).ToArray();
-                        var allCatalogLinkedCategories = repository.CategoryLinks.Where(x => criteria.CatalogIds.Contains(x.TargetCatalogId)).Select(x => x.SourceCategoryId).ToArray();
-                        searchCategoryIds = searchCategoryIds.Concat(allCatalogLinkedCategories).Distinct().ToArray();
+                        var hasVirtualCatalog = repository.Catalogs.Where(x => criteria.CatalogIds.Contains(x.Id)).Any(x => x.Virtual);
+                        if (!hasVirtualCatalog)
+                        {
+                            // If we search from the root of a catalog and all searched catalogs are not virtual then categories conditions can safely cut off 
+                            searchCategoryIds = null;
+                        }
+                        else
+                        {
+                            // If category not specified need search in all linked and children categories
+                            // TODO: bad performance at large amount of categories
+                            searchCategoryIds = repository.Categories.Where(x => criteria.CatalogIds.Contains(x.CatalogId)).Select(x => x.Id).ToArray();
+                            var allCatalogLinkedCategories = repository.CategoryLinks.Where(x => criteria.CatalogIds.Contains(x.TargetCatalogId)).Select(x => x.SourceCategoryId).ToArray();
+                            searchCategoryIds = searchCategoryIds.Concat(allCatalogLinkedCategories).Distinct().ToArray();
+                        }
                     }
                 }
 
                 // Build the query based on the search criteria
-                var query = BuildQuery(repository.Items, criteria, searchCategoryIds);
+                var query = BuildQuery(repository.Items, criteria, searchCategoryIds, rootLevelQuery);
                 var sortInfos = BuildSortExpression(criteria);
                 //Try to replace sorting columns names
                 TryTransformSortingInfoColumnNames(_productSortingAliases, sortInfos.ToArray());
@@ -245,7 +253,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return query;
         }
 
-        protected virtual IQueryable<ItemEntity> BuildQuery(IQueryable<ItemEntity> query, CatalogListEntrySearchCriteria criteria, string[] searchCategoryIds)
+        protected virtual IQueryable<ItemEntity> BuildQuery(IQueryable<ItemEntity> query, CatalogListEntrySearchCriteria criteria, string[] searchCategoryIds, bool rootLevelQuery)
         {
             query = query.Where(x => criteria.WithHidden || x.IsActive);
 
@@ -258,24 +266,18 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 query = query.Where(x => x.ParentId == null);
             }
 
-            var expressions = new List<Expression<Func<ItemEntity, bool>>>();
             if (!searchCategoryIds.IsNullOrEmpty())
             {
-                Expression<Func<ItemEntity, bool>> categoriesCriteria = x => searchCategoryIds.Contains(x.CategoryId) || x.CategoryLinks.Any(link => searchCategoryIds.Contains(link.CategoryId));
-                expressions.Add(categoriesCriteria);
-            }
+                var catalogIds = criteria.CatalogIds ?? Array.Empty<string>();
 
-            if (!criteria.CatalogIds.IsNullOrEmpty())
-            {
-                Expression<Func<ItemEntity, bool>> catalogCriteria = x => criteria.CatalogIds.Contains(x.CatalogId) && (criteria.SearchInChildren || x.CategoryId == null)
-                    || x.CategoryLinks.Any(link => criteria.CatalogIds.Contains(link.CatalogId) && (criteria.SearchInChildren || link.CategoryId == null));
-                expressions.Add(catalogCriteria);
+                query = query.Where(x => searchCategoryIds.Contains(x.CategoryId)
+                    || x.CategoryLinks.Any(link => searchCategoryIds.Contains(link.CategoryId))
+                    || x.CategoryLinks.Any(link => catalogIds.Contains(link.CatalogId) && x.CategoryId == null && criteria.SearchInChildren && rootLevelQuery));
             }
-
-            if (expressions.Any())
+            else if (!criteria.CatalogIds.IsNullOrEmpty())
             {
-                var predicate = PredicateBuilder.Or(expressions);
-                query = query.AsExpandable().Where(predicate);
+                query = query.Where(x => criteria.CatalogIds.Contains(x.CatalogId) && (criteria.SearchInChildren || x.CategoryId == null)
+                    || x.CategoryLinks.Any(link => criteria.CatalogIds.Contains(link.CatalogId) && (criteria.SearchInChildren || link.CategoryId == null)));
             }
 
             if (!string.IsNullOrEmpty(criteria.Code))
