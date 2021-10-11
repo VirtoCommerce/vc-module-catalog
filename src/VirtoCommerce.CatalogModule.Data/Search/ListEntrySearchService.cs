@@ -180,7 +180,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 repository.DisableChangesTracking();
 
                 //list of search categories
-                var rootLevelQuery = criteria.CategoryIds.IsNullOrEmpty();
                 var searchCategoryIds = criteria.CategoryIds;
                 if (criteria.SearchInChildren)
                 {
@@ -196,7 +195,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                         var hasVirtualCatalog = repository.Catalogs.Where(x => criteria.CatalogIds.Contains(x.Id)).Any(x => x.Virtual);
                         if (!hasVirtualCatalog)
                         {
-                            // If we search from the root of a catalog and all searched catalogs are not virtual then categories conditions can safely cut off 
+                            // When searching from the root level of a catalog and all searched catalogs are not virtual then 'categoryIds' condition can safely cut off 
                             searchCategoryIds = null;
                         }
                         else
@@ -211,7 +210,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 }
 
                 // Build the query based on the search criteria
-                var query = BuildQuery(repository.Items, criteria, searchCategoryIds, rootLevelQuery);
+                var query = BuildQuery(repository.Items, criteria, searchCategoryIds);
                 var sortInfos = BuildSortExpression(criteria);
                 //Try to replace sorting columns names
                 TryTransformSortingInfoColumnNames(_productSortingAliases, sortInfos.ToArray());
@@ -253,7 +252,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return query;
         }
 
-        protected virtual IQueryable<ItemEntity> BuildQuery(IQueryable<ItemEntity> query, CatalogListEntrySearchCriteria criteria, string[] searchCategoryIds, bool rootLevelQuery)
+        protected virtual IQueryable<ItemEntity> BuildQuery(IQueryable<ItemEntity> query, CatalogListEntrySearchCriteria criteria, string[] searchCategoryIds)
         {
             query = query.Where(x => criteria.WithHidden || x.IsActive);
 
@@ -268,11 +267,13 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
             if (!searchCategoryIds.IsNullOrEmpty())
             {
+                var rootLevelQuery = criteria.CategoryIds.IsNullOrEmpty();
                 var catalogIds = criteria.CatalogIds ?? Array.Empty<string>();
 
                 query = query.Where(x => searchCategoryIds.Contains(x.CategoryId)
                     || x.CategoryLinks.Any(link => searchCategoryIds.Contains(link.CategoryId))
-                    || x.CategoryLinks.Any(link => catalogIds.Contains(link.CatalogId) && x.CategoryId == null && criteria.SearchInChildren && rootLevelQuery));
+                    // for virtual catalogs need to find all categories liked to the root level of the catalog (i.e. CategoryId == null)
+                    || x.CategoryLinks.Any(link => catalogIds.Contains(link.CatalogId) && x.CategoryId == null && rootLevelQuery));
             }
             else if (!criteria.CatalogIds.IsNullOrEmpty())
             {
