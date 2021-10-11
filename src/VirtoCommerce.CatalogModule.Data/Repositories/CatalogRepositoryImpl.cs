@@ -534,33 +534,20 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             var commandTemplate = @"
                 WITH CategoryParents AS   
                 (  
-                    SELECT * 
+                    SELECT Id, ParentCategoryId
                     FROM Category   
-                    WHERE Id = @categoryId
+                    WHERE Id = {0}
                     UNION ALL  
-                    SELECT c.*
+                    SELECT c.Id, c.ParentCategoryId
                     FROM Category c, CategoryParents cp
-	                where c.Id = cp.ParentCategoryId 
+                 where c.Id = cp.ParentCategoryId 
                 )  
-                SELECT *
+                SELECT Id
                 FROM CategoryParents";
 
-            var categoryIdParam = new SqlParameter("@categoryId", categoryId);
-            var result = await DbContext.Set<CategoryEntity>().FromSqlRaw(commandTemplate, categoryIdParam).ToListAsync();
-
-            if (result.Any())
-            {
-                await Images.Where(x => x.CategoryId == categoryId).LoadAsync();
-                await SeoInfos.Where(x => x.CategoryId == categoryId).LoadAsync();
-                await PropertyValues.Include(x => x.DictionaryItem.DictionaryItemValues).Where(x => x.CategoryId == categoryId).LoadAsync();
-
-                var categoriesIds = result.Select(x => x.Id).ToList();
-
-                await CategoryLinks.Where(x => categoriesIds.Contains(x.TargetCategoryId) || categoriesIds.Contains(x.SourceCategoryId)).LoadAsync();
-
-                var categoryPropertiesIds = await Properties.Where(x => categoriesIds.Contains(x.CategoryId)).Select(x => x.Id).ToArrayAsync();
-                await GetPropertiesByIdsAsync(categoryPropertiesIds);
-            }
+            var command = CreateCommand(commandTemplate, new List<string> { categoryId });
+            var branchIds = await DbContext.ExecuteArrayAsync<string>(command.Text, command.Parameters.ToArray());
+            var result = await GetCategoriesByIdsAsync(branchIds, CategoryResponseGroup.Full.ToString());
 
             return result;
         }
