@@ -7,7 +7,7 @@
         "deployBranch": "dev",
         "environmentId": "dev",
         "environmentName": "Development",
-        "environmentType": "Development",
+        "environmentType": "development",
         "environmentUrl": "https://vcplatform-platform.dev.govirto.com/"
     },
     "qa": {
@@ -15,7 +15,7 @@
         "deployBranch": "qa",
         "environmentId": "qa",
         "environmentName": "QA",
-        "environmentType": "Staging",
+        "environmentType": "testing",
         "environmentUrl": "https://vcplatform-platform.qa.govirto.com/"
     },
     "prod": {
@@ -23,7 +23,7 @@
         "deployBranch": "master",
         "environmentId": "prod",
         "environmentName": "Demo",
-        "environmentType": "Production",
+        "environmentType": "production",
         "environmentUrl": "https://vcplatform-platform.demo.govirto.com/"
     }
 }
