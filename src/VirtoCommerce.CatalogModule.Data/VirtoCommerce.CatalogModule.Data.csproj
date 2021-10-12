@@ -16,7 +16,6 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="FluentValidation" Version="8.6.3" />
-        <PackageReference Include="LinqKit.Microsoft.EntityFrameworkCore" Version="3.1.26" />
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
         <PackageReference Include="Hangfire" Version="1.7.14" />
         <PackageReference Include="EntityFrameworkCore.Triggers" Version="1.2.2" />
