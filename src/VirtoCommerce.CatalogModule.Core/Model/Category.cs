@@ -80,6 +80,9 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         public string SeoObjectType { get { return GetType().Name; } }
         public IList<SeoInfo> SeoInfos { get; set; }
 
+        public bool? EnableDescription { get; set; }
+        public IList<CategoryDescription> Descriptions { get; set; }
+
         #region IHasImages members
         /// <summary>
         /// Gets the default image
@@ -160,6 +163,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
             result.Parents = Parents?.Select(x => x.Clone()).OfType<Category>().ToArray();
             result.Properties = Properties?.Select(x => x.Clone()).OfType<Property>().ToList();
             result.Links = Links?.Select(x => x.Clone()).OfType<CategoryLink>().ToList();
+            result.Descriptions = Descriptions?.Select(x => x.Clone()).OfType<CategoryDescription>().ToList();
             // result.Images = Images?.Select(x => x.Clone()).OfType<Image>().ToList(); // Intentionally temporary disabled due to memory overhead
 
             return result;
@@ -205,6 +209,10 @@ namespace VirtoCommerce.CatalogModule.Core.Model
             if (!categoryResponseGroup.HasFlag(CategoryResponseGroup.WithSeo))
             {
                 SeoInfos = null;
+            }
+            if (!categoryResponseGroup.HasFlag(CategoryResponseGroup.WithDescriptions))
+            {
+                Descriptions = null;
             }
         }
     }
