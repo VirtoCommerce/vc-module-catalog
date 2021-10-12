@@ -529,6 +529,10 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             return result;
         }
 
+        /// <summary>
+        /// Returns requested category and all its parent categories to the root (up the hierarchy tree) in a plain list.
+        /// Also loads all dependencies for said categories.
+        /// </summary>
         public virtual async Task<ICollection<CategoryEntity>> SearchCategoriesHierarcyAsync(string categoryId)
         {
             var commandTemplate = @"

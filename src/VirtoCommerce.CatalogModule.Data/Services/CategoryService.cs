@@ -142,7 +142,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         #endregion
 
-        protected virtual async Task<IDictionary<string, Category>> PreloadCategoryBranchAsync(string categoryId)
+        protected async Task<IDictionary<string, Category>> PreloadCategoryBranchAsync(string categoryId)
         {
             if (categoryId == null)
             {
@@ -183,7 +183,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return await PreloadCategoriesAsync();
         }
 
-        protected virtual async Task<IDictionary<string, Category>> PreloadCategoriesAsync()
+        protected async Task<IDictionary<string, Category>> PreloadCategoriesAsync()
         {
             var cacheKey = CacheKey.With(GetType(), "PreloadCategories");
             return await _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async (cacheEntry) =>
