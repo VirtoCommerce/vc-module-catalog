@@ -53,6 +53,6 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
         Task RemoveAllPropertyValuesAsync(string propertyId);
 
-        Task<ICollection<CategoryEntity>> SearchCategoriesHierarcyAsync(string categoryId);
+        Task<ICollection<CategoryEntity>> SearchCategoriesHierarchyAsync(string categoryId);
     }
 }

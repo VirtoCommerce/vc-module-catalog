@@ -104,7 +104,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             };
 
             var categoriesBranchResult = new List<CategoryEntity> { rootCategory, level1Category, level2Category };
-            _repositoryMock.Setup(x => x.SearchCategoriesHierarcyAsync(level2Category.Id))
+            _repositoryMock.Setup(x => x.SearchCategoriesHierarchyAsync(level2Category.Id))
                 .ReturnsAsync(categoriesBranchResult);
 
             _catalogServiceMock.Setup(t => t.GetByIdsAsync(new[] { catalog.Id }, It.IsAny<string>()))
@@ -122,6 +122,18 @@ namespace VirtoCommerce.CatalogModule.Tests
             category.Properties.Should().Contain(x => x.Id == level1Property.Id);
             category.Properties.Should().Contain(x => x.Id == level2Property.Id);
         }
+
+        [Fact]
+        public async Task PreloadCategoryBranch_CategoryIdIsNull_ShouldReturnEmptyResult()
+        {
+            // Act
+            var target = GetCategoryServiceWithPlatformMemoryCache();
+            var hierarchyResult = await target.PreloadCategoryBranchAsyncStub(null);
+
+            // Assert
+            hierarchyResult.Should().HaveCount(0);
+        }
+
         private CategoryServiceStub GetCategoryServiceWithPlatformMemoryCache()
         {
             var memoryCache = new MemoryCache(Options.Create(new MemoryCacheOptions()));
@@ -146,7 +158,6 @@ namespace VirtoCommerce.CatalogModule.Tests
                 _outlineServiceMock.Object,
                 _blobUrlResolverMock.Object);
         }
-
 
 
         public class CategoryServiceStub : CategoryService

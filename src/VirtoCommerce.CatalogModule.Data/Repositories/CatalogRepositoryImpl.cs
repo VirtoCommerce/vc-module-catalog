@@ -540,7 +540,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         /// Returns requested category and all its parent categories to the root (up the hierarchy tree) in a plain list.
         /// Also loads all dependencies for said categories.
         /// </summary>
-        public virtual async Task<ICollection<CategoryEntity>> SearchCategoriesHierarcyAsync(string categoryId)
+        public virtual async Task<ICollection<CategoryEntity>> SearchCategoriesHierarchyAsync(string categoryId)
         {
             var commandTemplate = @"
                 WITH CategoryParents AS   
@@ -564,6 +564,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 await Images.Where(x => x.CategoryId == categoryId).LoadAsync();
                 await SeoInfos.Where(x => x.CategoryId == categoryId).LoadAsync();
                 await PropertyValues.Include(x => x.DictionaryItem.DictionaryItemValues).Where(x => x.CategoryId == categoryId).LoadAsync();
+                await CategoryDescriptions.Where(x => x.CategoryId == categoryId).LoadAsync();
 
                 var categoriesIds = result.Select(x => x.Id).ToList();
 

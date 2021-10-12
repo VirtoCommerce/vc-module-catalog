@@ -77,7 +77,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return result.ToArray();
         }
 
-
         public virtual async Task SaveChangesAsync(Category[] categories)
         {
             var pkMap = new PrimaryKeyResolvingMap();
@@ -142,16 +141,16 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         #endregion
 
-        protected async Task<IDictionary<string, Category>> PreloadCategoryBranchAsync(string categoryId)
+        protected Task<IDictionary<string, Category>> PreloadCategoryBranchAsync(string categoryId)
         {
             if (categoryId == null)
             {
-                return new Dictionary<string, Category>();
+                return Task.FromResult<IDictionary<string, Category>>(new Dictionary<string, Category>());
             }
 
             var cacheKey = CacheKey.With(GetType(), "PreloadCategoryBranch", categoryId);
 
-            return await _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async (cacheEntry) =>
+            return _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async (cacheEntry) =>
             {
                 cacheEntry.AddExpirationToken(CatalogCacheRegion.CreateChangeToken());
 
@@ -159,7 +158,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 {
                     repository.DisableChangesTracking();
 
-                    var entities = await repository.SearchCategoriesHierarcyAsync(categoryId);
+                    var entities = await repository.SearchCategoriesHierarchyAsync(categoryId);
 
                     var result = entities.Select(x => x.ToModel(AbstractTypeFactory<Category>.TryCreateInstance()))
                         .ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase)
@@ -176,17 +175,16 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             });
         }
 
-
         [Obsolete("Use PreloadCategoriesAsync() instead.")]
         protected virtual async Task<IDictionary<string, Category>> PreloadCategoriesAsync(string catalogId)
         {
             return await PreloadCategoriesAsync();
         }
 
-        protected async Task<IDictionary<string, Category>> PreloadCategoriesAsync()
+        protected Task<IDictionary<string, Category>> PreloadCategoriesAsync()
         {
             var cacheKey = CacheKey.With(GetType(), "PreloadCategories");
-            return await _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async (cacheEntry) =>
+            return _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async (cacheEntry) =>
             {
                 cacheEntry.AddExpirationToken(CatalogCacheRegion.CreateChangeToken());
 
@@ -298,7 +296,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 await LoadDependenciesAsync(group, categoryBranch);
                 ApplyInheritanceRules(group);
 
-                // TODO: fix validation call
+                // PT-4999: fix validation call
                 var validationResult = _hasPropertyValidator.Validate(category);
                 if (!validationResult.IsValid)
                 {
@@ -312,6 +310,5 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             CatalogCacheRegion.ExpireRegion();
             SeoInfoCacheRegion.ExpireRegion();
         }
-
     }
 }
