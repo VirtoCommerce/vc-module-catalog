@@ -267,13 +267,13 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
             if (!searchCategoryIds.IsNullOrEmpty())
             {
-                var rootLevelQuery = criteria.CategoryIds.IsNullOrEmpty();
+                var isRoot = criteria.CategoryIds.IsNullOrEmpty();
                 var catalogIds = criteria.CatalogIds ?? Array.Empty<string>();
 
                 query = query.Where(x => searchCategoryIds.Contains(x.CategoryId)
                     || x.CategoryLinks.Any(link => searchCategoryIds.Contains(link.CategoryId))
                     // for virtual catalogs need to find all categories liked to the root level of the catalog (i.e. CategoryId == null)
-                    || x.CategoryLinks.Any(link => catalogIds.Contains(link.CatalogId) && x.CategoryId == null && rootLevelQuery));
+                    || x.CategoryLinks.Any(link => catalogIds.Contains(link.CatalogId) && x.CategoryId == null && isRoot));
             }
             else if (!criteria.CatalogIds.IsNullOrEmpty())
             {
