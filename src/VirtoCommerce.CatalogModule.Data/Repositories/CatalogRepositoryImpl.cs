@@ -538,20 +538,33 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             var commandTemplate = @"
                 WITH CategoryParents AS   
                 (  
-                    SELECT Id, ParentCategoryId
+                    SELECT * 
                     FROM Category   
-                    WHERE Id = {0}
+                    WHERE Id = @categoryId
                     UNION ALL  
-                    SELECT c.Id, c.ParentCategoryId
+                    SELECT c.*
                     FROM Category c, CategoryParents cp
-                 where c.Id = cp.ParentCategoryId 
+	                where c.Id = cp.ParentCategoryId 
                 )  
-                SELECT Id
+                SELECT *
                 FROM CategoryParents";
 
-            var command = CreateCommand(commandTemplate, new List<string> { categoryId });
-            var branchIds = await DbContext.ExecuteArrayAsync<string>(command.Text, command.Parameters.ToArray());
-            var result = await GetCategoriesByIdsAsync(branchIds, CategoryResponseGroup.Full.ToString());
+            var categoryIdParam = new SqlParameter("@categoryId", categoryId);
+            var result = await DbContext.Set<CategoryEntity>().FromSqlRaw(commandTemplate, categoryIdParam).ToListAsync();
+
+            if (result.Any())
+            {
+                await Images.Where(x => x.CategoryId == categoryId).LoadAsync();
+                await SeoInfos.Where(x => x.CategoryId == categoryId).LoadAsync();
+                await PropertyValues.Include(x => x.DictionaryItem.DictionaryItemValues).Where(x => x.CategoryId == categoryId).LoadAsync();
+
+                var categoriesIds = result.Select(x => x.Id).ToList();
+
+                await CategoryLinks.Where(x => categoriesIds.Contains(x.TargetCategoryId) || categoriesIds.Contains(x.SourceCategoryId)).LoadAsync();
+
+                var categoryPropertiesIds = await Properties.Where(x => categoriesIds.Contains(x.CategoryId)).Select(x => x.Id).ToArrayAsync();
+                await GetPropertiesByIdsAsync(categoryPropertiesIds);
+            }
 
             return result;
         }
