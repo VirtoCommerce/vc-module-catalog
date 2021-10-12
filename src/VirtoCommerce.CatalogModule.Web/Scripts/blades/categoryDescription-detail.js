@@ -41,7 +41,7 @@ angular.module('virtoCommerce.catalogModule')
 
         if (blade.hasAssetCreatePermission) {
             $scope.fileUploader = new FileUploader({
-                url: 'api/platform/assets?folderUrl=catalog/' + blade.category.code,
+                url: 'api/assets?folderUrl=catalog/' + blade.category.code,
                 headers: { Accept: 'application/json' },
                 autoUpload: true,
                 removeAfterUpload: true,
