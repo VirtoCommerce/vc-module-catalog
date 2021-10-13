@@ -1,38 +1,54 @@
-using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using VirtoCommerce.CatalogModule.Data.Repositories;
-using Xunit;
+using AutoFixture;
 using MockQueryable.Moq;
-using GenFu;
+using Moq;
+using VirtoCommerce.CatalogModule.Data.Model;
+using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Data.Search.Indexing;
 using VirtoCommerce.Platform.Core.ChangeLog;
-using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.Platform.Core.Common;
+using Xunit;
 
 namespace VirtoCommerce.CatalogModule.Tests
 {
     [Trait("Category", "CI")]
     public class ProductDocumentChangesProvideTests
     {
-        const int TAKE = 10;
-        const int DAYS_OF_WEEK = 7;
+        private const int TAKE = 10;
+        private const int DAYS_OF_WEEK = 7;
+        private readonly Fixture _fixture = new Fixture();
+
+        public ProductDocumentChangesProvideTests()
+        {
+            _fixture.Register<ItemEntity>(() => _fixture.Build<ItemEntity>()
+                .With(x => x.ParentId, () => new Random().Next(0, 1) > 0 ? null : "not null")
+                .Without(x => x.Catalog)
+                .Without(x => x.Category)
+                .Without(x => x.Parent)
+                .Without(x => x.CategoryLinks)
+                .Without(x => x.Assets)
+                .Without(x => x.Images)
+                .Without(x => x.Associations)
+                .Without(x => x.ReferencedAssociations)
+                .Without(x => x.EditorialReviews)
+                .Without(x => x.ItemPropertyValues)
+                .Without(x => x.SeoInfos)
+                .Without(x => x.Childrens)
+                .With(i => i.ModifiedDate, () => DateTime.UtcNow.AddDays(new Random().Next(DAYS_OF_WEEK * 3)))
+                .Create());
+        }
 
         [Fact]
         public async Task GetTotalChangesCountAsync_DatesNulls_ChangesCountAsExpected()
         {
             // Arrange
 
-            A.Configure<ItemEntity>()
-                .Fill(i => i.ParentId)
-                .WithRandom(new string[] { null, "not null" });
-
-            var items = A.ListOf<ItemEntity>(100);
+            var items = _fixture.CreateMany<ItemEntity>(100);
             var quribleItems = items.AsQueryable().BuildMock();
             var countItemsWithoutParent = items.Count(x => x.ParentId == null);
-
 
             var catalogRepositoryMock = new Mock<ICatalogRepository>();
             var changeLogSearchServiceMock = new Mock<IChangeLogSearchService>();
@@ -50,7 +66,6 @@ namespace VirtoCommerce.CatalogModule.Tests
             Assert.Equal(countItemsWithoutParent, totalCountOfchanges);
         }
 
-
         public static IEnumerable<object[]> GetTestStartEndDatesForGetTotalChangesCountAsyncTest()
         {
             yield return new object[] { DateTime.UtcNow.AddDays(DAYS_OF_WEEK), DateTime.UtcNow.AddDays(DAYS_OF_WEEK * 2) };
@@ -58,32 +73,28 @@ namespace VirtoCommerce.CatalogModule.Tests
             yield return new object[] { DateTime.UtcNow.AddDays(DAYS_OF_WEEK), null };
         }
 
-
         [Theory]
         [MemberData(nameof(GetTestStartEndDatesForGetTotalChangesCountAsyncTest))]
         public async Task GetTotalChangesCountAsync_DatesNotNull_ChangesCountAsExpected(DateTime? startDate, DateTime? endDate)
         {
             // Arrange
 
-            A.Configure<ItemEntity>()
-                .Fill(i => i.ParentId)
-                .WithRandom(new string[] { null, "not null" })
-                .Fill(i => i.ModifiedDate, x => DateTime.UtcNow.AddDays(A.Random.Next(DAYS_OF_WEEK * 3)));
+            var items = _fixture.CreateMany<ItemEntity>(150);
 
-            var items = A.ListOf<ItemEntity>(A.Random.Next(100, 200));
             var quribleItems = items.AsQueryable().BuildMock();
             var modifiedItemsCount = items.Count(i => i.ParentId == null
                 && (startDate == null || i.ModifiedDate >= startDate)
                 && (endDate == null || i.ModifiedDate <= endDate));
 
-            A.Reset();
+            var availableStates = new EntryState[] { EntryState.Added, EntryState.Modified, EntryState.Deleted };
 
-            A.Configure<OperationLog>()
-                .Fill(x => x.OperationType).WithRandom(new EntryState[] { EntryState.Added, EntryState.Modified, EntryState.Deleted });
-            var operatoins = A.ListOf<OperationLog>(A.Random.Next(100, 200));
-            var deleteOperations = operatoins.Where(x => x.OperationType == EntryState.Deleted).ToList();
+            var operations = _fixture.Build<OperationLog>()
+                .With(x => x.OperationType, () => availableStates[new Random().Next(0, availableStates.Length - 1)])
+                .CreateMany<OperationLog>(150)
+                .ToList();
+
+            var deleteOperations = operations.Where(x => x.OperationType == EntryState.Deleted).ToList();
             var deleteOperationsCount = deleteOperations.Count;
-
 
             var catalogRepositoryMock = new Mock<ICatalogRepository>();
             var changeLogSearchServiceMock = new Mock<IChangeLogSearchService>();
@@ -112,7 +123,6 @@ namespace VirtoCommerce.CatalogModule.Tests
             Assert.Equal(expectedCount, totalCountOfchanges);
         }
 
-
         [Theory]
         [InlineData(0, TAKE)]
         [InlineData(TAKE, TAKE)]
@@ -124,11 +134,8 @@ namespace VirtoCommerce.CatalogModule.Tests
             // Arrange
             var itemsCountForGenerate = TAKE * 5;
 
-            A.Configure<ItemEntity>()
-                .Fill(i => i.ParentId)
-                .WithRandom(new string[] { null, "not null" });
+            var items = _fixture.CreateMany<ItemEntity>(itemsCountForGenerate);
 
-            var items = A.ListOf<ItemEntity>(itemsCountForGenerate);
             var quribleItems = items.AsQueryable().BuildMock();
             var countItemsWithoutParent = items.Count(x => x.ParentId == null);
 
@@ -150,8 +157,6 @@ namespace VirtoCommerce.CatalogModule.Tests
             Assert.Equal(expectedCount, indexDocumentChanges.Count);
         }
 
-
-
         public static IEnumerable<object[]> GetTestStartEndDatesForGetChangesAsyncTest()
         {
             yield return new object[] { DateTime.UtcNow.AddDays(DAYS_OF_WEEK), DateTime.UtcNow.AddDays(DAYS_OF_WEEK * 2), 0, TAKE };
@@ -163,11 +168,10 @@ namespace VirtoCommerce.CatalogModule.Tests
             yield return new object[] { null, DateTime.UtcNow.AddDays(DAYS_OF_WEEK * 2), TAKE * 2, TAKE };
             yield return new object[] { null, DateTime.UtcNow.AddDays(DAYS_OF_WEEK * 2), TAKE * 3, TAKE };
             yield return new object[] { DateTime.UtcNow.AddDays(DAYS_OF_WEEK), null, 0, TAKE };
-            yield return new object[] { DateTime.UtcNow.AddDays(DAYS_OF_WEEK*2), null, TAKE, TAKE };
+            yield return new object[] { DateTime.UtcNow.AddDays(DAYS_OF_WEEK * 2), null, TAKE, TAKE };
             yield return new object[] { DateTime.UtcNow.AddDays(DAYS_OF_WEEK), null, TAKE * 2, TAKE };
             yield return new object[] { DateTime.UtcNow.AddDays(DAYS_OF_WEEK), null, TAKE * 3, TAKE };
         }
-
 
         [Theory]
         [MemberData(nameof(GetTestStartEndDatesForGetChangesAsyncTest))]
@@ -176,25 +180,22 @@ namespace VirtoCommerce.CatalogModule.Tests
             // Arrange
             var itemsCountForGenerate = TAKE * 10;
 
-            A.Configure<ItemEntity>()
-                .Fill(i => i.ParentId)
-                .WithRandom(new string[] { null, "not null" })
-                .Fill(i => i.ModifiedDate, x => DateTime.UtcNow.AddDays(A.Random.Next(DAYS_OF_WEEK * 3)));
+            var items = _fixture.CreateMany<ItemEntity>(itemsCountForGenerate);
 
-            var items = A.ListOf<ItemEntity>(A.Random.Next(itemsCountForGenerate));
             var quribleItems = items.AsQueryable().BuildMock();
             var modifiedItemsCount = items.Count(i => i.ParentId == null
                 && (startDate == null || i.ModifiedDate >= startDate)
                 && (endDate == null || i.ModifiedDate <= endDate));
 
-            A.Reset();
+            var availableStates = new EntryState[] { EntryState.Added, EntryState.Modified, EntryState.Deleted };
 
-            A.Configure<OperationLog>()
-                .Fill(x => x.OperationType).WithRandom(new EntryState[] { EntryState.Added, EntryState.Modified, EntryState.Deleted });
-            var operatoins = A.ListOf<OperationLog>(A.Random.Next(take * 5));
-            var deleteOperations = operatoins.Where(x => x.OperationType == EntryState.Deleted).ToList();
+            var operations = _fixture.Build<OperationLog>()
+                .With(x => x.OperationType, () => availableStates[new Random().Next(0, availableStates.Length - 1)])
+                .CreateMany<OperationLog>(new Random().Next(take * 5))
+                .ToList();
+
+            var deleteOperations = operations.Where(x => x.OperationType == EntryState.Deleted).ToList();
             var deleteOperationsCount = deleteOperations.Count;
-
 
             var catalogRepositoryMock = new Mock<ICatalogRepository>();
             var changeLogSearchServiceMock = new Mock<IChangeLogSearchService>();
