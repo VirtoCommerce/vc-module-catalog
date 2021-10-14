@@ -20,6 +20,7 @@ using VirtoCommerce.CatalogModule.Core.Events;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Export;
 using VirtoCommerce.CatalogModule.Core.Model.OutlinePart;
+using VirtoCommerce.CatalogModule.Core.Options;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Authorization;
@@ -53,11 +54,13 @@ using AuthorizationOptions = Microsoft.AspNetCore.Authorization.AuthorizationOpt
 
 namespace VirtoCommerce.CatalogModule.Web
 {
-    public class Module : IModule, IExportSupport, IImportSupport
+    public class Module : IModule, IHasConfiguration, IExportSupport, IImportSupport
     {
         private IApplicationBuilder _appBuilder;
 
         public ManifestModuleInfo ModuleInfo { get; set; }
+
+        public IConfiguration Configuration { get; set; }
 
         public void Initialize(IServiceCollection serviceCollection)
         {
@@ -83,6 +86,10 @@ namespace VirtoCommerce.CatalogModule.Web
             serviceCollection.AddTransient<IProductIndexedSearchService, ProductIndexedSearchService>();
             serviceCollection.AddTransient<IAssociationService, AssociationService>();
 
+            serviceCollection.Configure<VideoOptions>(Configuration.GetSection(VideoOptions.SectionName));
+            serviceCollection.AddTransient<IVideoSearchService, VideoSearchService>();
+            serviceCollection.AddTransient<IVideoService, VideoService>();
+
             serviceCollection.AddTransient<IAggregationConverter, AggregationConverter>();
             serviceCollection.AddTransient<IBrowseFilterService, BrowseFilterService>();
             serviceCollection.AddTransient<ITermFilterBuilder, TermFilterBuilder>();
@@ -100,6 +107,7 @@ namespace VirtoCommerce.CatalogModule.Web
             serviceCollection.AddTransient<LogChangesChangedEventHandler>();
             serviceCollection.AddTransient<IndexCategoryChangedEventHandler>();
             serviceCollection.AddTransient<IndexProductChangedEventHandler>();
+            serviceCollection.AddTransient<VideoOwnerChangingEventHandler>();
 
             serviceCollection.AddTransient<ISeoBySlugResolver, CatalogSeoBySlugResolver>();
 
@@ -224,6 +232,7 @@ namespace VirtoCommerce.CatalogModule.Web
             inProcessBus.RegisterHandler<CategoryChangedEvent>(async (message, token) => await appBuilder.ApplicationServices.GetService<LogChangesChangedEventHandler>().Handle(message));
             inProcessBus.RegisterHandler<CategoryChangedEvent>(async (message, token) => await appBuilder.ApplicationServices.GetService<IndexCategoryChangedEventHandler>().Handle(message));
             inProcessBus.RegisterHandler<ProductChangedEvent>(async (message, token) => await appBuilder.ApplicationServices.GetService<IndexProductChangedEventHandler>().Handle(message));
+            inProcessBus.RegisterHandler<ProductChangingEvent>(async (message, token) => await appBuilder.ApplicationServices.GetService<VideoOwnerChangingEventHandler>().Handle(message));
 
             //Force migrations
             using (var serviceScope = appBuilder.ApplicationServices.CreateScope())

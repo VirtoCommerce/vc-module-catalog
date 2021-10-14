@@ -1,4 +1,4 @@
-# Manage Products 
+# Manage Products
 
 ## Add physical product
 
@@ -69,6 +69,9 @@ In order to view and manage the physical item details, the user should navigate 
      1. ‘Assets’ widget:
          1. Contains assets in file format and links to different groups of images if the assets were previously added;  
          1. The user can add new assets or remove the existing one.  ![Fig. Assets](media/screen-assets-widget.png)
+     1. ‘Videos’ widget enables to:
+         1. Add youtube video by setting content URL; ![Fig. Videos Add](media/screen-videos-widget.png)
+         1. Manage video properties and preview video and thumbnail.  ![Fig. Videos Edit](media/screen-videos-widget1.png)
      1. ‘Inventory’ widget enables to:
           1. Add stocked products to the system;
           1. Add reserved products;

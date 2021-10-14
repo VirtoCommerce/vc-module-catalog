@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
@@ -14,6 +15,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         IQueryable<PropertyEntity> Properties { get; }
         IQueryable<ImageEntity> Images { get; }
         IQueryable<AssetEntity> Assets { get; }
+        IQueryable<VideoEntity> Videos { get; }
         IQueryable<EditorialReviewEntity> EditorialReviews { get; }
         IQueryable<CategoryDescriptionEntity> CategoryDescriptions { get; }
         IQueryable<PropertyValueEntity> PropertyValues { get; }
@@ -51,5 +53,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         Task RemoveCatalogsAsync(string[] ids);
 
         Task RemoveAllPropertyValuesAsync(string propertyId);
+
+        Task<ICollection<CategoryEntity>> SearchCategoriesHierarchyAsync(string categoryId);
     }
 }
