@@ -103,6 +103,8 @@ namespace VirtoCommerce.CatalogModule.Web
 
             serviceCollection.AddTransient<ISeoBySlugResolver, CatalogSeoBySlugResolver>();
 
+            serviceCollection.AddTransient<IInternalListEntrySearchService, InternalListEntrySearchService>();
+
             #region Validators
 
             serviceCollection.AddTransient<AbstractValidator<PropertyValidationRequest>, PropertyNameValidator>();
