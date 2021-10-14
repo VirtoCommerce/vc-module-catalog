@@ -102,6 +102,13 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                 };
                 widgetService.registerWidget(entryImageWidget, 'itemDetail');
 
+                //Register video widget
+                var itemVideoWidget = {
+                    controller: 'virtoCommerce.catalogModule.videoWidgetController',
+                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/videoWidget.tpl.html'
+                };
+                widgetService.registerWidget(itemVideoWidget, 'itemDetail');
+
                 //Register item property widget
                 var itemPropertyWidget = {
                     controller: 'virtoCommerce.catalogModule.itemPropertyWidgetController',
@@ -134,6 +141,7 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                     template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/itemDimensionWidget.tpl.html'
                 };
                 widgetService.registerWidget(dimensionsWidget, 'itemDetail');
+
                 //Register item editorialReview widget
                 var editorialReviewWidget = {
                     controller: 'virtoCommerce.catalogModule.editorialReviewWidgetController',
@@ -149,6 +157,7 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                     template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/itemVariationWidget.tpl.html'
                 };
                 widgetService.registerWidget(variationWidget, 'itemDetail');
+
                 //Register asset widget
                 var itemAssetWidget = {
                     controller: 'virtoCommerce.catalogModule.itemAssetWidgetController',

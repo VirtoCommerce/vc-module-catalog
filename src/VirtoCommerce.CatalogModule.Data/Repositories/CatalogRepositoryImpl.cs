@@ -30,6 +30,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         public IQueryable<PropertyValueEntity> PropertyValues => DbContext.Set<PropertyValueEntity>();
         public IQueryable<ImageEntity> Images => DbContext.Set<ImageEntity>();
         public IQueryable<AssetEntity> Assets => DbContext.Set<AssetEntity>();
+        public IQueryable<VideoEntity> Videos => DbContext.Set<VideoEntity>();
         public IQueryable<ItemEntity> Items => DbContext.Set<ItemEntity>();
         public IQueryable<EditorialReviewEntity> EditorialReviews => DbContext.Set<EditorialReviewEntity>();
         public IQueryable<CategoryDescriptionEntity> CategoryDescriptions => DbContext.Set<CategoryDescriptionEntity>();

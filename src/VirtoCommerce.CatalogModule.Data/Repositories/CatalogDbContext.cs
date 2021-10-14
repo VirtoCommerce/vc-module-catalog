@@ -143,6 +143,17 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
             #endregion CatalogImage
 
+            #region Video
+
+            modelBuilder.Entity<VideoEntity>().ToTable("CatalogVideo").HasKey(x => x.Id);
+            modelBuilder.Entity<VideoEntity>().Property(x => x.Id).HasMaxLength(128).ValueGeneratedOnAdd();
+            modelBuilder.Entity<VideoEntity>()
+                .HasIndex(x => new { x.OwnerType, x.OwnerId })
+                .IsUnique(false)
+                .HasName("IX_OwnerType_OwnerId");
+
+            #endregion
+
             #region EditorialReview
 
             modelBuilder.Entity<EditorialReviewEntity>().ToTable("EditorialReview").HasKey(x => x.Id);

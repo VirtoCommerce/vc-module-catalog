@@ -72,6 +72,7 @@ User can manage simple item properties as well as complex information:
 1. Associations (associated items).
 1. Assets.
 1. Images.
+1. Videos.
 1. Variations (SKUs).
 1. Inventory
 1. Prices.
