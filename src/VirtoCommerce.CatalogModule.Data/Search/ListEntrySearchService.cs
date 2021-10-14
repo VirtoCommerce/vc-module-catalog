@@ -192,10 +192,20 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                     }
                     else if (!criteria.CatalogIds.IsNullOrEmpty())
                     {
-                        //If category not specified need search in all linked and children categories
-                        searchCategoryIds = repository.Categories.Where(x => criteria.CatalogIds.Contains(x.CatalogId)).Select(x => x.Id).ToArray();
-                        var allCatalogLinkedCategories = repository.CategoryLinks.Where(x => criteria.CatalogIds.Contains(x.TargetCatalogId)).Select(x => x.SourceCategoryId).ToArray();
-                        searchCategoryIds = searchCategoryIds.Concat(allCatalogLinkedCategories).Distinct().ToArray();
+                        var hasVirtualCatalog = repository.Catalogs.Where(x => criteria.CatalogIds.Contains(x.Id)).Any(x => x.Virtual);
+                        if (!hasVirtualCatalog)
+                        {
+                            // When searching from the root level of a catalog and all searched catalogs are not virtual then 'categoryIds' condition can safely cut off 
+                            searchCategoryIds = null;
+                        }
+                        else
+                        {
+                            // If category not specified need search in all linked and children categories
+                            // TODO: bad performance at large amount of categories
+                            searchCategoryIds = repository.Categories.Where(x => criteria.CatalogIds.Contains(x.CatalogId)).Select(x => x.Id).ToArray();
+                            var allCatalogLinkedCategories = repository.CategoryLinks.Where(x => criteria.CatalogIds.Contains(x.TargetCatalogId)).Select(x => x.SourceCategoryId).ToArray();
+                            searchCategoryIds = searchCategoryIds.Concat(allCatalogLinkedCategories).Distinct().ToArray();
+                        }
                     }
                 }
 
@@ -257,7 +267,13 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
             if (!searchCategoryIds.IsNullOrEmpty())
             {
-                query = query.Where(x => searchCategoryIds.Contains(x.CategoryId) || x.CategoryLinks.Any(link => searchCategoryIds.Contains(link.CategoryId)));
+                var isRoot = criteria.CategoryIds.IsNullOrEmpty();
+                var catalogIds = criteria.CatalogIds ?? Array.Empty<string>();
+
+                query = query.Where(x => searchCategoryIds.Contains(x.CategoryId)
+                    || x.CategoryLinks.Any(link => searchCategoryIds.Contains(link.CategoryId))
+                    // for virtual catalogs need to find all categories liked to the root level of the catalog (i.e. CategoryId == null)
+                    || x.CategoryLinks.Any(link => catalogIds.Contains(link.CatalogId) && x.CategoryId == null && isRoot));
             }
             else if (!criteria.CatalogIds.IsNullOrEmpty())
             {
