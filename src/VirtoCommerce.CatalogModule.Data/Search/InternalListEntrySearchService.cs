@@ -38,8 +38,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
             if (useIndexedSearch && !string.IsNullOrEmpty(criteria.Keyword))
             {
-                // TODO: create outline for category
-                // TODO: implement sorting
+                // PT-5120: create outline for category, implement sorting
 
                 var categoryIndexedSearchCriteria = AbstractTypeFactory<CategoryIndexedSearchCriteria>.TryCreateInstance().FromListEntryCriteria(criteria) as CategoryIndexedSearchCriteria;
                 const CategoryResponseGroup catResponseGroup = CategoryResponseGroup.Info | CategoryResponseGroup.WithOutlines;
