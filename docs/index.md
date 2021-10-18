@@ -2,210 +2,145 @@
 
 [![CI status](https://github.com/VirtoCommerce/vc-module-catalog/workflows/Module%20CI/badge.svg?branch=dev)](https://github.com/VirtoCommerce/vc-module-catalog/actions?query=workflow%3A"Module+CI") [![Quality gate](https://sonarcloud.io/api/project_badges/measure?project=VirtoCommerce_vc-module-catalog&metric=alert_status&branch=dev)](https://sonarcloud.io/dashboard?id=VirtoCommerce_vc-module-catalog) [![Reliability rating](https://sonarcloud.io/api/project_badges/measure?project=VirtoCommerce_vc-module-catalog&metric=reliability_rating&branch=dev)](https://sonarcloud.io/dashboard?id=VirtoCommerce_vc-module-catalog) [![Security rating](https://sonarcloud.io/api/project_badges/measure?project=VirtoCommerce_vc-module-catalog&metric=security_rating&branch=dev)](https://sonarcloud.io/dashboard?id=VirtoCommerce_vc-module-catalog) [![Sqale rating](https://sonarcloud.io/api/project_badges/measure?project=VirtoCommerce_vc-module-catalog&metric=sqale_rating&branch=dev)](https://sonarcloud.io/dashboard?id=VirtoCommerce_vc-module-catalog)
 
-The Catalog module presents the ability to add items to your e-commerce store.  It can be electronics, groceries, digital content or anything else. Items can be grouped into categories and catalogs. The item grouping is individual depending on the stock size, item types, vendors, etc.
+Catalog is a Virto’s module that enables adding items to your ecommerce store to market any physical goods or digital content. The items being marketed can be grouped into catalogs and categories based on various properties, such as stock balance, item types, vendor, brand, etc.
 
-The Catalog Module supports two types of catalogs - physical and virtual.
+The chart below shows how various high-level entities are linked to one another in the Virto Platform.
 
-![Catalog Overview](media/catalog-overview-2021.png)
+![Catalog Logical Overview](./media/01_catalog_logical_overview_chart_re.png)
+<p align=center>Chart 1: Logical dependencies in Virto Commerce Catalog</p>
 
-### Common Catalogs
+As shown above, you can have one or more stores which both physical and virtual catalogs are linked to. For more info on those types of catalogs, please see below and also check out our [Terminology](glossary.md) section.
 
-A (common) catalog is defined as a list of items or services that a company showcases online. Physically the catalog is a collection of items, which can be grouped into categories. An item can be assigned to only one category or be direct child of a catalog without any category.  
+***Note:*** *Fulfillment centers are relevant to physical products only. If a store markets digital content, such as software or music, it will not require any such centers.*
 
- Each trademark or product line may have its own catalog of all the offerings in that category. Or when dealing with several suppliers, in this case each supplier may have its own catalog with offered items.
+Another chart below depicts the main entities in the Catalog module with their core properties and attributes and shows the connections between them.
 
-![Fig. Catalog](media/screen-catalogs.png)
+![Catalog Core Entities and Their Linking](./media/02_catalog_overview_chart_AK.png)
+<p align=center>Chart 2: Core entities and their linking in Virto Catalog</p>
 
-#### Scenarios
+***Notes to the Chart:***
+1.	You can have any number of stores. However, each store must have at least one catalog.
+2.	A catalog may have multiple categories and/or products or may not have any at all.
+3.	*Catalog* and *Product* are logical categories that may only appear as physical or virtual for the former, and physical or digital for the latter.
+4.	While sharing some attributes in common, physical and digital products do have unique ones, such as *Track Inventory* for physical product or *User Agreement* for digital one.
 
-[View Catalogs And Physical Items Details](view-catalogs-and-physical-items.md)
+## Physical Catalogs
 
-[Add New Catalog](add-new-catalog.md)
+In a nutshell, a physical catalog is a list of products or services that a company showcases online. All products can be grouped into categories, while one product may be assigned to a single category only or be a direct child of a catalog without any category.
 
-### Virtual Catalogs
+![Physical Catalogs](./media/03_catalog_list_of_physical_catalogs.png)
+<p align=center>Figure 1: A list of physical catalogs</p>
 
-Virtual catalogs are created from one or more common catalogs. This kind of catalogs aggregates multiple base catalogs into a single catalog.
-For example, a Virtual catalog may be used to display seasonal goods that can be collected from multiple catalogs.
+***See also:***
 
-A virtual catalog must have a unique name different from other virtual catalogs and common catalogs. Though virtual catalogs are composed of items and categories from common catalogs, items from a virtual catalog cannot be added to another virtual catalog.
+[Viewing Catalogs And Physical Item Details](view-catalogs-and-physical-items.md)
 
-The major difference between a catalog and a virtual catalog is that the second one is just a view of items from common catalogs.
- Physically all items from a virtual catalog are located in common catalogs. This also means that if a modification is made to an item in the common catalog, the update will be reflected in all virtual catalogs instantly.
+[How to Add a New Catalog](add-new-catalog.md)
 
-![Fig. Virtual Catalog](media/screen-virtual-catalog.png)
+## Virtual Catalogs
 
-#### Scenarios 
+You can create virtual catalogs based on one or more physical ones. For example, a virtual catalog may be used to display seasonal goods that, in technical terms, would be various products picked from multiple physical catalogs.
 
-[Add Virtual Catalog](add-virtual-catalog.md)
+Any virtual catalog must have a unique name that is different from those of other virtual or physical catalogs. Though virtual catalogs are composed of products and categories from the physical catalogs, you cannot add products from a virtual catalog to another virtual catalog.
 
-### Categories
+Basically, a virtual catalog is none other than just a way to display (visualize) products. Technically, all items are located in physical catalogs, hence the name. This also means that if you modify any item in a physical catalog, the respective virtual catalogs will instantly get updated as well.
 
-A category is a container for other categories or items. Category in the catalog can have sub-categories.
+![Creating Virtual Catalogs](./media/04_catalog_creating_virtual_catalogs.png)
+<p align=center>Figure 2: Creating virtual catalogs based on physical ones</p>
 
-Categories allow building hierarchies and relationships between various items in the catalog. This helps customers to navigate on client side to the items they would like to purchase.
+***See also:***
 
-Large catalogs containing many items might be reasonable to organize using parent-child relations.
+[How to Add a Virtual Catalog](add-virtual-catalog.md)
 
-![Fig. Categories](media/screen-categories.png)
+## Categories
 
-#### Scenarios
+A category is basically a container for other categories, subcategories, or products.
 
-[Manage Categories](manage-categories.md)
+Categories enable building hierarchies and links between various items in the catalog, which helps the customers navigate to the items they would like to purchase.
 
-### Items (Product)
+If you have large catalogs containing many items, you might want to create multiple categories and subcategories using the parent-child structure.
 
-A product with its variations in the system is presented as a collection of products (variations).
+![List of Categories](./media/05_catalog_categories.png)
+<p align=center>Figure 3: Example of a list of categories in a consumer electronics online store</p>
 
-There are two types of products presented in the Catalog- physical products and digital products.
+***See also:***
 
-The title (main) product has variative property set of values. All product variations have the parent-child relation with the title product. Thus, variation inherits property values of the title product (e.g. description, assets etc.) but can also override the values of those properties if they differ from the title product property values.
+[How to Manage Categories](manage-categories.md)
 
-To show such a product with variations on the storefront, the title product (main) is loaded with all the related products (variations). Property values of the title product are used for product description. SKU selector for such a product with variations is built using variations properties of the title product and its variations.
-So, an item concept in Virto Commerce is a generalization of Variation/SKU or Product. An item corresponds to item in the store that can be promoted and sold.
+## Products
 
-![Fig. Product Variations](media/screen-product-variations.png)
+A product is a basic entity representing an item one can purchase in an online store. The Catalog module offers the following types of products (see also Chart 2 ): 
 
-User can manage simple item properties as well as complex information:
+- Physical products: any tangibles, such as cameras or mobile phones
+- Digital products: Intangibles such as software or music
 
-1. Custom properties.
-1. SEO information.
-1. Associations (associated items).
-1. Assets.
-1. Images.
-1. Videos.
-1. Variations (SKUs).
-1. Inventory
-1. Prices.
+***Note:*** *Both physical and digital products have their own unique attributes (see also Notes to Chart 2):*
+- Bill of materials: A special kind of product that has a list of supplementary materials required for a specific item
+- Configurable products: A fully customizable item that has unique attributes and thus cannot fall into the above types
 
-Inventory and prices management are integrated from other modules - “Virto Commerce Inventory” and “Virto Commerce Pricing” respectively.
+Any product may also have one or more variations; for consumer electronics, those could be size or color variations, among others. Technically, a variation is a separate product entity that, at the same time, is linked to its master product. For instance, if a mobile phone is a master product, its variations may include black, white, or red versions, or 5’’ and 6’’ versions (or both).
 
-![Fig. Physical Item Details](media/screen-physical-item-details.png)
+All variations inherit property values of the master product, such as description and assets, but may also override those values, when required.
 
-#### Scenarios
+You can configure the following attributes for your products:
+1.	Custom properties
+2.	SEO text
+3.	Associations (e.g., related items)
+4.	Assets 
+5.	Images
+6.	Variations  
+7.	Inventory  
+8.	Prices
 
-[Manage Products](manage-physical-products.md)
+***Note:*** *Some attributes may not be applicable to a particular type of product. E.g., bill of materials may not have any variations, while digital product has no inventory, as it is intangible.*
+
+***Note:*** *For inventory and price management, Virto Commerce offers the [Inventory](https://virtocommerce.com/docs/latest/modules/inventory/) and [Pricing](https://virtocommerce.com/docs/latest/modules/pricing/) dedicated modules.*
+
+![List of Categories](./media/06_catalog_product_profile_attributes.png)
+<p align=center>Figure 4: Product page displaying various attributes of a single product, including variations and properties</p>
+
+***See also:***
+
+[Managing Products](manage-physical-products.md)
 
 [Product Indexing](product-indexing.md)
 
-### Variations
+[Managing Product Variations](manage-product-variations.md)
 
-In case there is a need to add variations of the product, a relation should be implemented between the products as well as special type of variative properties definition added.
+## Properties
 
-Thus, a product with its variations in the system is presented as a collection of products (variations). The title (main) product is a parent variation and has all variation properties. And all other variations are related as children to the title product.
+Custom properties are additional parameters for catalog entities at various levels:
 
- Every product that has relation to the title product (variation) can inherit some property values of the title product (description, assets etc.) but can also override the values of those properties if they differ from the title product (variation) property values.
+1.	Catalog level: A property belonging to entire catalog
+2.	Category level: A property assigned to a category that may be overwritten in child categories
+3.	Product level: A property assigned to a single product or its variation
 
-To show such a product with variations on the storefront, the title product is loaded with all the related products (variations). Property values of the title product (variation) are used for the main product description.
+***Note:*** *All properties defined at a higher level are automatically inherited at all lower ones. For instance, if you assign the* ***Brand*** *property with the* ***XXX*** *value to a catalog, all categories and products within that catalog will also have* ***XXX*** as ***Brand***_._
 
-SKU selector for such a product with variations is built using variations properties of the title product and its variations.
+![List of Categories](./media/08_catalog_product_properties_arrow.png)
+<p align=center>Figure 5: Property view that displays custom properties of an item being marketed</p>
 
-![Fig. Product variations](media/screen-product-variations.png)
+***See also:***
 
-#### Scenarios
-
-[View Product Variations](view-product-variations.md)
-
-[Manage Product Variations](manage-product-variations.md)
-
-### Properties
-
-Properties (or custom properties) are the additional characteristics for your catalog entities. They can be defined at different levels of item hierarchy:
-
-1. Catalog - value assigned in catalog level.
-1. Category - value assigned in category level and can be overwritten in child categories.
-1. Product - value assigned in item or variation level.
-
-All properties defined in parent hierarchy entities are available in (inherited by) item. E.g. every item inside catalog will have property “Brand” with value “Sony” once it was defined in parent catalog and was assigned such value there.
-
-Every property has its “Assign to” trait set to one of: “catalog”, “category”, “product” or “variation”. This defines at what level the property’s value can be set.
-
-![Fig. Properties](media/screen-product-properties.png)
-
-#### Scenarios
-
-[View Properties](view-properties.md)
-
-[Manage Properties](manage-properties.md)
-
-### Linked Category
-
-Common category has the same meaning as the category in common catalogs. User can create common category and link products to it or create linked category in it.
-
-**Possible Operations**
-catalog CRUD:
-
-- properties
-
-category CRUD:
-
-- properties;
-- SEO.
-
-virtual catalog CRUD:
-
-- categories;
-- including categories from other (real) catalogs.
-
-Expandability points:
-
-- additional widgets in (virtual) catalog detail;
-- additional widgets in category detail;
-- additional widgets in item detail.
+[Managing Properties](manage-properties.md)
 
 ## VirtoCommerce Search
 
-The solution uses Search as primary tool for customer interaction. The customers expect high-level relevance, multiple-languages and near-instantaneous responses.
+Virto Commerce offers the Search tool that provides high level relevance, multiple languages, and near-instantaneous responses.
 
-### Benefits
-
-1. Document based full text search and text analysis for Products, Categories and Members;
-
-1. Search by keyword, filters, aggregations and geo-search;
-
-1. Supports multiple search engines: Elastic Search, Elastic Cloud, Azure Search and Lucence;
-
-1. Functionality, which implements the inherent complexity of information retrieval is exposed through REST API or .NET SDK;
-
-1. The supported document types (Product, Category, Member) can be easily extended by third party team.
-
-### Architecture Overview
-
-The Architecture is focused to isolate the search engine from documents and provide abilities to add new types of documents.
-
-[Search Engine Architecture Details](search-engine-architecture-details.md)
-
-[Catalog Search](catalog-search.md)
-
-### Elastic Search
-
-https://github.com/VirtoCommerce/vc-module-elastic-search
-
-### Azure Search
-
-https://github.com/VirtoCommerce/vc-module-azure-search
-
-### Lucene Search
-
-https://github.com/VirtoCommerce/vc-module-lucene-search
-
-Lucene Search Module is recommended for development purposes only, not for production usage
-
-### Search Provider Tests
-
-https://github.com/VirtoCommerce/vc-module-search/blob/master/tests/VirtoCommerce.SearchModule.Tests/SearchProviderTests.cs
+### Key Advantages:
+- Document based full text search and text analysis for Products, Categories, and Members   
+- Search by keyword, filters, aggregations, and geo-search  
+- Supports multiple search engines: Elastic Search, Elastic Cloud, Azure Search, and Lucene
+- Inherent complexity of information retrieval processed through REST API or .NET SDK
+- The supported document types can be easily extended by a third-party team
 
 ## Search Index
 
-VirtoCommerce platform provides a unified solution for indexing and searching of different types of objects. The search engine should not operate directly with the database, especially when full text search, aggregations, partial search are needed. For this reason, from the architecture point of view, it was decided to isolate the search engine from the documents that should be searched.
+The Virto Commerce platform provides a unified solution for indexing and searching for various types of objects. The Search Index is used to improve the search performance and speed.
 
-The Search Index is used to improve the search performance and speed.
+The indexing process starts automatically based on a pre-defined schedule. However, you can start the indexing process manually at any time, if required.
 
-The indexing process starts automatically based on a pre-defined schedule. But at the same time, VirtoCommerce Platform provides the possibility to start the indexing process manually if needed.
+***See also:***
 
-[Manage Search Index](manage-search-index.md)
-
-[Glossary](glossary.md)
-
-## Data Model Diagram
-
-![Fig. Data Model](media/entity-data-model.png)
+[Managing Search Index](manage-search-index.md)
