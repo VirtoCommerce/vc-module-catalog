@@ -33,7 +33,7 @@ In a nutshell, a physical catalog is a list of products or services that a compa
 
 ***See also:***
 
-[Viewing Catalogs And Physical Item Details](view-catalogs-and-physical-items.md)
+[Viewing Catalogs and Physical Item Details](view-catalogs-and-physical-items.md)
 
 [How to Add a New Catalog](add-new-catalog.md)
 
