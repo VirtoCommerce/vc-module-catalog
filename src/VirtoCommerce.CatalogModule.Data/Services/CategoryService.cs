@@ -152,7 +152,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
             return _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async (cacheEntry) =>
             {
-                cacheEntry.AddExpirationToken(CatalogCacheRegion.CreateChangeToken());
+                cacheEntry.AddExpirationToken(CategoryCacheRegion.CreateChangeTokenForKey(categoryId));
 
                 using (var repository = _repositoryFactory())
                 {
@@ -307,7 +307,23 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         protected virtual void ClearCache(IEnumerable<Category> categories)
         {
-            CatalogCacheRegion.ExpireRegion();
+            ClearCacheAsync(categories).GetAwaiter().GetResult();
+        }
+
+        private async Task ClearCacheAsync(IEnumerable<Category> categories)
+        {
+            using (var repository = _repositoryFactory())
+            {
+                var categoryIds = categories.Select(x => x.Id).ToArray();
+                var childrenCategoryIds = await repository.GetAllChildrenCategoriesIdsAsync(categoryIds);
+                var allCategoryIds = categoryIds.Union(childrenCategoryIds);
+
+                foreach (var categoryId in allCategoryIds)
+                {
+                    CategoryCacheRegion.ExpireTokenForKey(categoryId, true);
+                }
+            }
+
             SeoInfoCacheRegion.ExpireRegion();
         }
     }
