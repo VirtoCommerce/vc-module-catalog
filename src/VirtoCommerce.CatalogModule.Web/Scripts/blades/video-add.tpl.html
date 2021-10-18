@@ -1,0 +1,17 @@
+<div class="blade-content">
+    <div class="blade-inner">
+        <div class="inner-block">
+            <form class="form" name="formScope">
+                <fieldset ng-init="setForm(formScope)">
+                    <div class="form-group __info list">
+                        <label class="form-label">{{ 'catalog.blades.video-add.labels.content-url' | translate }}</label>
+                        <div class="form-input">
+                            <input ng-model="blade.currentEntity.contentUrl" required ng-maxlength="2083" placeholder="{{ 'catalog.blades.video-add.placeholders.content-url' | translate }}">
+                        </div>
+                    </div>
+                    <div class="note" ng-if="!blade.videoOptions.googleApiKey">{{ 'catalog.blades.video-add.labels.no-apikey' | translate }}</div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</div>

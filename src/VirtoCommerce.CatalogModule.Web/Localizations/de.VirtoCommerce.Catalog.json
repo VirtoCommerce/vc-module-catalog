@@ -355,6 +355,53 @@
           "image-category": "Wählen Sie aus..."
         }
       },
+      "video-list": {
+        "title": "Videos",
+        "subtitle": "Alle videos",
+        "labels": {
+          "preview": "Vors",
+          "name": "Name",
+          "language": "Sprache",
+          "priority": "Priorität"
+        }
+      },
+      "video-add": {
+        "title": "Youtube video",
+        "subtitle": "Neues Video erstellen",
+        "create": "Erschaffen",
+        "labels": {
+          "content-url": "Inhalt URL",
+          "no-apikey": "Der Google API-Schlüssel ist nicht in der Plattformkonfigurationsdatei festgelegt. Die Videoinformationen sind nicht vollständig."
+        },
+        "placeholders": {
+          "content-url": "Video URL eingeben"
+        }
+      },
+      "video-detail": {
+        "title": "Youtube video",
+        "subtitle": "Video informationen bearbeiten",
+        "labels": {
+          "name": "Video name",
+          "upload-date": "Datum des Hochladens",
+          "description": "Beschreibung",
+          "duration": "Dauer",
+          "language": "Sprache",
+          "video": "Video",
+          "content-url": "Inhalt URL",
+          "embed-url": "Eingebettete URL",
+          "video-preview": "Video Vorschau",
+          "thumbnail": "Miniaturansicht",
+          "thumbnail-url": "Miniaturansicht Url",
+          "thumbnail-preview": "Miniaturansicht Vorschau"
+        },
+        "placeholders": {
+          "name": "Name eingeben",
+          "upload-date": "Bitte Datum wählen...",
+          "description": "Beschreibung eingeben",
+          "language": "Sprache auswählen",
+          "content-url": "Video URL eingeben"
+        }
+      },
       "item-asset-detail": {
         "subtitle": "Aktivposten",
         "labels": {
@@ -435,6 +482,10 @@
           "length": "Länge",
           "width": "Breite",
           "height": "Höhe"
+        },
+        "videos": {
+          "blade-subtitle": "Videos",
+          "title": "Videos"
         }
       },
       "dialogs": {
@@ -505,6 +556,18 @@
         "image-save": {
           "title": "Bestätigung löschen",
           "message": "Die Bilder wurde geändert. Möchten Sie die Änderungen speichern?"
+        },
+        "video-save": {
+          "title": "Änderungen speichern",
+          "message": "Das Video wurde geändert. Möchten Sie die Änderungen speichern?"
+        },
+        "video-delete": {
+          "title": "Bestätigung löschen",
+          "message": "Sind Sie sicher, dass Sie die Video löschen?"
+        },
+        "video-list-delete": {
+          "title": "Bestätigung löschen",
+          "message": "Sind Sie sicher, dass Sie die ausgewählten Videos löschen?"
         },
         "asset-save": {
           "title": "Änderungen speichern",
