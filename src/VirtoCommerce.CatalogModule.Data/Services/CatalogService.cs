@@ -176,13 +176,13 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
         }
 
-        private void ClearCache(IEnumerable<Catalog> catalogs)
+        private void ClearCache(Catalog[] catalogs)
         {
             CatalogCacheRegion.ExpireRegion();
 
             foreach (var catalog in catalogs)
             {
-                CategoryCacheRegion.ExpireTokenForKey(catalog.Id);
+                CatalogTreeCacheRegion.ExpireTokenForKey(catalog.Id);
             }
         }
     }

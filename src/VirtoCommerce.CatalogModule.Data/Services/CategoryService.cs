@@ -152,7 +152,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
             return _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async (cacheEntry) =>
             {
-                cacheEntry.AddExpirationToken(CategoryCacheRegion.CreateChangeTokenForKey(categoryId));
+                cacheEntry.AddExpirationToken(CatalogTreeCacheRegion.CreateChangeTokenForKey(categoryId));
 
                 using (var repository = _repositoryFactory())
                 {
@@ -167,7 +167,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     // prepare catalog cache tokens
                     foreach (var catalogId in result.Values.Select(x => x.CatalogId).Distinct())
                     {
-                        cacheEntry.AddExpirationToken(CategoryCacheRegion.CreateChangeTokenForKey(catalogId));
+                        cacheEntry.AddExpirationToken(CatalogTreeCacheRegion.CreateChangeTokenForKey(catalogId));
                     }
 
                     ResolveImageUrls(result.Values);
@@ -326,7 +326,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
                 foreach (var categoryId in allCategoryIds)
                 {
-                    CategoryCacheRegion.ExpireTokenForKey(categoryId, true);
+                    CatalogTreeCacheRegion.ExpireTokenForKey(categoryId, true);
                 }
             }
 
