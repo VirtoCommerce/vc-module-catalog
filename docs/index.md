@@ -19,6 +19,7 @@ Another chart below depicts the main entities in the Catalog module with their c
 <p align=center>Chart 2: Core entities and their linking in Virto Catalog</p>
 
 ***Notes to the Chart:***
+
 1.	You can have any number of stores. However, each store must have at least one catalog.
 2.	A catalog may have multiple categories and/or products or may not have any at all.
 3.	*Catalog* and *Product* are logical categories that may only appear as physical or virtual for the former, and physical or digital for the latter.
@@ -83,6 +84,7 @@ Any product may also have one or more variations; for consumer electronics, thos
 All variations inherit property values of the master product, such as description and assets, but may also override those values, when required.
 
 You can configure the following attributes for your products:
+
 1.	Custom properties
 2.	SEO text
 3.	Associations (e.g., related items)
