@@ -164,6 +164,12 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                         .ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase)
                         .WithDefaultValue(null);
 
+                    // prepare catalog cache tokens
+                    foreach (var catalogId in result.Values.Select(x => x.CatalogId).Distinct())
+                    {
+                        cacheEntry.AddExpirationToken(CategoryCacheRegion.CreateChangeTokenForKey(catalogId));
+                    }
+
                     ResolveImageUrls(result.Values);
 
                     await LoadDependenciesAsync(result.Values, result);
