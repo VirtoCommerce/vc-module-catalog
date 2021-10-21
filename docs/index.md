@@ -126,7 +126,7 @@ Custom properties are additional parameters for catalog entities at various leve
 
 [Managing Properties](manage-properties.md)
 
-## VirtoCommerce Search
+## Search
 
 Virto Commerce offers the Search tool that provides high level relevance, multiple languages, and near-instantaneous responses.
 
@@ -137,7 +137,7 @@ Virto Commerce offers the Search tool that provides high level relevance, multip
 - Inherent complexity of information retrieval processed through REST API or .NET SDK
 - The supported document types can be easily extended by a third-party team
 
-## Search Index
+### Search Index
 
 The Virto Commerce platform provides a unified solution for indexing and searching for various types of objects. The Search Index is used to improve the search performance and speed.
 
