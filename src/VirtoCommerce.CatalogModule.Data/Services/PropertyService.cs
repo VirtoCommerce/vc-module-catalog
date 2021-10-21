@@ -101,7 +101,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 pkMap.ResolvePrimaryKeys();
 
                 //Reset catalog cache
-                CatalogCacheRegion.ExpireRegion();
+                ClearCache(properties);
 
                 await _eventPublisher.Publish(new PropertyChangedEvent(changedEntries));
             }
@@ -128,7 +128,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 await repository.UnitOfWork.CommitAsync();
 
                 //Reset catalog cache
-                CatalogCacheRegion.ExpireRegion();
+                ClearCache(changedEntries.Select(x => x.NewEntry));
 
                 await _eventPublisher.Publish(new PropertyChangedEvent(changedEntries));
             }
@@ -229,6 +229,54 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             foreach (var property in properties)
             {
                 _propertyValidator.ValidateAndThrow(property);
+            }
+        }
+
+        private void ClearCache(IEnumerable<Property> properties)
+        {
+            ClearCacheAsync(properties).GetAwaiter().GetResult();
+        }
+
+        private async Task ClearCacheAsync(IEnumerable<Property> properties)
+        {
+            CatalogCacheRegion.ExpireRegion();
+
+            var categoryIds = new List<string>();
+            var catalogIds = new List<string>();
+
+            foreach (var property in properties)
+            {
+                // take category first because we can clean catalog cache by ID
+                if (property.CategoryId != null)
+                {
+                    categoryIds.Add(property.CategoryId);
+                }
+                else if (property.CatalogId != null)
+                {
+                    catalogIds.Add(property.CatalogId);
+                }
+            }
+
+            if (catalogIds.Any())
+            {
+                foreach (var catalogId in catalogIds.Distinct())
+                {
+                    CatalogTreeCacheRegion.ExpireTokenForKey(catalogId);
+                }
+            }
+
+            if (categoryIds.Any())
+            {
+                using (var repository = _repositoryFactory())
+                {
+                    var childrenCategoryIds = await repository.GetAllChildrenCategoriesIdsAsync(categoryIds.ToArray());
+                    var allCategoryIds = categoryIds.Union(childrenCategoryIds).Distinct();
+
+                    foreach (var categoryId in allCategoryIds)
+                    {
+                        CatalogTreeCacheRegion.ExpireTokenForKey(categoryId, true);
+                    }
+                }
             }
         }
     }
