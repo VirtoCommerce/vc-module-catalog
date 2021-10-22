@@ -246,7 +246,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
             foreach (var property in properties)
             {
-                // take category first because we can clean catalog cache by ID
+                // look for categoryId first becasue properties that attached for catalog don't have one
+                // and we can clean catalog tree cache by catalogId without looking into categories hierarchy 
                 if (property.CategoryId != null)
                 {
                     categoryIds.Add(property.CategoryId);
