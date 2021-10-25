@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<module>
+    <id>VirtoCommerce.Catalog2</id>
+    <version>3.0.0</version>
+    <version-tag>demo</version-tag>
+    <platformVersion>3.78.0</platformVersion>
+    <dependencies>
+        <dependency id="VirtoCommerce.Catalog" version="3.0.0" />
+    </dependencies>
+    <title>Catalog module extension sample module</title>
+    <authors>
+        <author>Virto Commerce</author>
+    </authors>
+    <owners>
+        <owner>Virto Commerce</owner>
+    </owners>
+    <projectUrl>http://virtocommerce.com/</projectUrl>
+    <iconUrl>Modules/$(VirtoCommerce.Catalog)/Content/logo.png</iconUrl>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright © 2011-2021 Virto Commerce. All rights reserved</copyright>
+    <tags>catalog</tags>
+  <assemblyFile>VirtoCommerce.CatalogModule2.Web.dll</assemblyFile>
+  <moduleType>VirtoCommerce.CatalogModule2.Web.Module, VirtoCommerce.CatalogModule2.Web</moduleType>
+</module>
