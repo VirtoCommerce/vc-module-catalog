@@ -152,7 +152,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
             return _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async (cacheEntry) =>
             {
-                cacheEntry.AddExpirationToken(CatalogCacheRegion.CreateChangeToken());
+                cacheEntry.AddExpirationToken(CatalogTreeCacheRegion.CreateChangeTokenForKey(categoryId));
 
                 using (var repository = _repositoryFactory())
                 {
@@ -163,6 +163,12 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     var result = entities.Select(x => x.ToModel(AbstractTypeFactory<Category>.TryCreateInstance()))
                         .ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase)
                         .WithDefaultValue(null);
+
+                    // prepare catalog cache tokens
+                    foreach (var catalogId in result.Values.Select(x => x.CatalogId).Distinct())
+                    {
+                        cacheEntry.AddExpirationToken(CatalogTreeCacheRegion.CreateChangeTokenForKey(catalogId));
+                    }
 
                     ResolveImageUrls(result.Values);
 
@@ -307,7 +313,23 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         protected virtual void ClearCache(IEnumerable<Category> categories)
         {
-            CatalogCacheRegion.ExpireRegion();
+            ClearCacheAsync(categories).GetAwaiter().GetResult();
+        }
+
+        private async Task ClearCacheAsync(IEnumerable<Category> categories)
+        {
+            using (var repository = _repositoryFactory())
+            {
+                var categoryIds = categories.Select(x => x.Id).ToArray();
+                var childrenCategoryIds = await repository.GetAllChildrenCategoriesIdsAsync(categoryIds);
+                var allCategoryIds = categoryIds.Union(childrenCategoryIds);
+
+                foreach (var categoryId in allCategoryIds)
+                {
+                    CatalogTreeCacheRegion.ExpireTokenForKey(categoryId, true);
+                }
+            }
+
             SeoInfoCacheRegion.ExpireRegion();
         }
     }

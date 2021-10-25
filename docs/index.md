@@ -6,7 +6,7 @@ Catalog is a Virto’s module that enables adding items to your ecommerce store 
 
 The chart below shows how various high-level entities are linked to one another in the Virto Platform.
 
-![Catalog Logical Overview](./media/01_catalog_logical_overview_chart_re.png)
+![Catalog Logical Overview](./media/overview/01_catalog_logical_overview_chart.png)
 <p align=center>Chart 1: Logical dependencies in Virto Commerce Catalog</p>
 
 As shown above, you can have one or more stores which both physical and virtual catalogs are linked to. For more info on those types of catalogs, please see below and also check out our [Terminology](glossary.md) section.
@@ -15,7 +15,7 @@ As shown above, you can have one or more stores which both physical and virtual 
 
 Another chart below depicts the main entities in the Catalog module with their core properties and attributes and shows the connections between them.
 
-![Catalog Core Entities and Their Linking](./media/02_catalog_overview_chart_AK.png)
+![Catalog Core Entities and Their Linking](./media/overview/02_catalog_overview_chart_AK.png)
 <p align=center>Chart 2: Core entities and their linking in Virto Catalog</p>
 
 ***Notes to the Chart:***
@@ -29,7 +29,7 @@ Another chart below depicts the main entities in the Catalog module with their c
 
 In a nutshell, a physical catalog is a list of products or services that a company showcases online. All products can be grouped into categories, while one product may be assigned to a single category only or be a direct child of a catalog without any category.
 
-![Physical Catalogs](./media/03_catalog_list_of_physical_catalogs.png)
+![Physical Catalogs](./media/overview/03_catalog_list_of_physical_catalogs.png)
 <p align=center>Figure 1: A list of physical catalogs</p>
 
 ***See also:***
@@ -46,7 +46,7 @@ Any virtual catalog must have a unique name that is different from those of othe
 
 Basically, a virtual catalog is none other than just a way to display (visualize) products. Technically, all items are located in physical catalogs, hence the name. This also means that if you modify any item in a physical catalog, the respective virtual catalogs will instantly get updated as well.
 
-![Creating Virtual Catalogs](./media/04_catalog_creating_virtual_catalogs.png)
+![Creating Virtual Catalogs](./media/overview/04_catalog_creating_virtual_catalogs.png)
 <p align=center>Figure 2: Creating virtual catalogs based on physical ones</p>
 
 ***See also:***
@@ -61,7 +61,7 @@ Categories enable building hierarchies and links between various items in the ca
 
 If you have large catalogs containing many items, you might want to create multiple categories and subcategories using the parent-child structure.
 
-![List of Categories](./media/05_catalog_categories.png)
+![List of Categories](./media/overview/05_catalog_categories.png)
 <p align=center>Figure 3: Example of a list of categories in a consumer electronics online store</p>
 
 ***See also:***
@@ -98,7 +98,7 @@ You can configure the following attributes for your products:
 
 ***Note:*** *For inventory and price management, Virto Commerce offers the [Inventory](https://virtocommerce.com/docs/latest/modules/inventory/) and [Pricing](https://virtocommerce.com/docs/latest/modules/pricing/) dedicated modules.*
 
-![List of Categories](./media/06_catalog_product_profile_attributes.png)
+![List of Categories](./media/overview/06_catalog_product_profile_attributes.png)
 <p align=center>Figure 4: Product page displaying various attributes of a single product, including variations and properties</p>
 
 ***See also:***
@@ -119,7 +119,7 @@ Custom properties are additional parameters for catalog entities at various leve
 
 ***Note:*** *All properties defined at a higher level are automatically inherited at all lower ones. For instance, if you assign the* ***Brand*** *property with the* ***XXX*** *value to a catalog, all categories and products within that catalog will also have* ***XXX*** as ***Brand***_._
 
-![List of Categories](./media/08_catalog_product_properties_arrow.png)
+![List of Categories](./media/overview/08_catalog_product_properties_arrow.png)
 <p align=center>Figure 5: Property view that displays custom properties of an item being marketed</p>
 
 ***See also:***
