@@ -29,15 +29,20 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
                 .Where(x => x.EntryState == EntryState.Deleted)
                 .Select(x => x.OldEntry.Id)
                 .ToList();
-            var searchCriteria = new VideoSearchCriteria
+
+            if (ownerIds.Any())
             {
-                OwnerIds = ownerIds,
-                OwnerType = KnownDocumentTypes.Product
-            };
-            var searchResult = await _videoSearchService.SearchAsync(searchCriteria);
-            if (searchResult.TotalCount != 0)
-            {
-                await _videoService.DeleteAsync(searchResult.Results.Select(x => x.Id));
+                var searchCriteria = new VideoSearchCriteria
+                {
+                    OwnerIds = ownerIds,
+                    OwnerType = KnownDocumentTypes.Product
+                };
+
+                var searchResult = await _videoSearchService.SearchAsync(searchCriteria);
+                if (searchResult.TotalCount != 0)
+                {
+                    await _videoService.DeleteAsync(searchResult.Results.Select(x => x.Id));
+                }
             }
         }
     }
