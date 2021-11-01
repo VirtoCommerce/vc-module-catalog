@@ -86,8 +86,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 await repository.UnitOfWork.CommitAsync();
                 pkMap.ResolvePrimaryKeys();
 
-                //Reset cached catalogs and catalogs
-                CatalogCacheRegion.ExpireRegion();
+                //Reset cached catalogs and categories
+                ClearCache(catalogs);
 
                 await _eventPublisher.Publish(new CatalogChangedEvent(changedEntries));
             }
@@ -106,7 +106,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     await repository.RemoveCatalogsAsync(catalogs.Select(m => m.Id).ToArray());
                     await repository.UnitOfWork.CommitAsync();
 
-                    CatalogCacheRegion.ExpireRegion();
+                    ClearCache(catalogs);
 
                     await _eventPublisher.Publish(new CatalogChangedEvent(changedEntries));
                 }
@@ -173,6 +173,16 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 {
                     throw new ArgumentException($"Catalog properties has validation error: {string.Join(Environment.NewLine, validatioResult.Errors.Select(x => x.ToString()))}");
                 }
+            }
+        }
+
+        private void ClearCache(Catalog[] catalogs)
+        {
+            CatalogCacheRegion.ExpireRegion();
+
+            foreach (var catalog in catalogs)
+            {
+                CatalogTreeCacheRegion.ExpireTokenForKey(catalog.Id);
             }
         }
     }

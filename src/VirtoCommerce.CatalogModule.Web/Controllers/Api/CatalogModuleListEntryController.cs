@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,7 +14,6 @@ using VirtoCommerce.CatalogModule.Data.Authorization;
 using VirtoCommerce.CatalogModule.Data.Services;
 using VirtoCommerce.CatalogModule.Web.Model;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.Settings;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
@@ -23,37 +21,31 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
     [Authorize]
     public class CatalogModuleListEntryController : Controller
     {
-        private readonly IProductIndexedSearchService _productIndexedSearchService;
-        private readonly ICategoryIndexedSearchService _categoryIndexedSearchService;
+        private readonly IInternalListEntrySearchService _internalListEntrySearchService;
         private readonly ICategoryService _categoryService;
         private readonly ICatalogService _catalogService;
         private readonly IItemService _itemService;
         private readonly IListEntrySearchService _listEntrySearchService;
-        private readonly ISettingsManager _settingsManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly ListEntryMover<Category> _categoryMover;
         private readonly ListEntryMover<CatalogProduct> _productMover;
 
         public CatalogModuleListEntryController(
-            IProductIndexedSearchService productIndexedSearchService,
-            ICategoryIndexedSearchService categoryIndexedSearchService,
+            IInternalListEntrySearchService internalListEntrySearchService,
             IListEntrySearchService listEntrySearchService,
             ICategoryService categoryService,
             IItemService itemService,
             ICatalogService catalogService,
             IAuthorizationService authorizationService,
-            ISettingsManager settingsManager,
             ListEntryMover<Category> categoryMover,
             ListEntryMover<CatalogProduct> productMover)
         {
-            _productIndexedSearchService = productIndexedSearchService;
-            _categoryIndexedSearchService = categoryIndexedSearchService;
+            _internalListEntrySearchService = internalListEntrySearchService;
             _categoryService = categoryService;
             _authorizationService = authorizationService;
             _itemService = itemService;
             _catalogService = catalogService;
             _listEntrySearchService = listEntrySearchService;
-            _settingsManager = settingsManager;
             _categoryMover = categoryMover;
             _productMover = productMover;
         }
@@ -73,7 +65,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return Unauthorized();
             }
 
-            var result = await InnerListItemsSearchAsync(criteria);
+            var result = await _internalListEntrySearchService.InnerListEntrySearchAsync(criteria);
 
             return Ok(result);
         }
@@ -216,7 +208,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return Unauthorized();
             }
 
-            var dstCatalog = (await _catalogService.GetByIdsAsync(new[] {moveRequest.Catalog})).FirstOrDefault();
+            var dstCatalog = (await _catalogService.GetByIdsAsync(new[] { moveRequest.Catalog })).FirstOrDefault();
             if (dstCatalog.IsVirtual)
             {
                 return BadRequest("Unable to move to a virtual catalog");
@@ -251,7 +243,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             if (idsToDelete.IsNullOrEmpty())
             {
-                var listEntries = await InnerListItemsSearchAsync(criteria);
+                var listEntries = await _internalListEntrySearchService.InnerListEntrySearchAsync(criteria);
                 idsToDelete = listEntries.ListEntries
                     .Where(x => x.Type.EqualsInvariant(ProductListEntry.TypeName) || x.Type.EqualsInvariant(CategoryListEntry.TypeName))
                     .Select(x => x.Id)
@@ -295,48 +287,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var products = await _itemService.GetByIdsAsync(ids, (ItemResponseGroup.Links | ItemResponseGroup.Variations).ToString());
             var categories = await _categoryService.GetByIdsAsync(ids.Except(products.Select(x => x.Id)).ToArray(), CategoryResponseGroup.WithLinks.ToString());
             return products.OfType<T>().Concat(categories.OfType<T>()).ToList();
-        }
-
-        private async Task<ListEntrySearchResult> InnerListItemsSearchAsync(CatalogListEntrySearchCriteria criteria)
-        {
-            var result = new ListEntrySearchResult();
-            var useIndexedSearch = _settingsManager.GetValue(ModuleConstants.Settings.Search.UseCatalogIndexedSearchInManager.Name, true);
-
-            if (useIndexedSearch && !string.IsNullOrEmpty(criteria.Keyword))
-            {
-                // TODO: create outline for category
-                // TODO: implement sorting
-
-                var categoryIndexedSearchCriteria = AbstractTypeFactory<CategoryIndexedSearchCriteria>.TryCreateInstance().FromListEntryCriteria(criteria) as CategoryIndexedSearchCriteria;
-                const CategoryResponseGroup catResponseGroup = CategoryResponseGroup.Info | CategoryResponseGroup.WithOutlines;
-                categoryIndexedSearchCriteria.ResponseGroup = catResponseGroup.ToString();
-
-                var catIndexedSearchResult = await _categoryIndexedSearchService.SearchAsync(categoryIndexedSearchCriteria);
-                var totalCount = catIndexedSearchResult.TotalCount;
-                var skip = Math.Min(totalCount, criteria.Skip);
-                var take = Math.Min(criteria.Take, Math.Max(0, totalCount - criteria.Skip));
-
-                result.Results = catIndexedSearchResult.Items.Select(x => AbstractTypeFactory<CategoryListEntry>.TryCreateInstance().FromModel(x)).ToList();
-                result.TotalCount = (int)totalCount;
-
-                criteria.Skip -= (int)skip;
-                criteria.Take -= (int)take;
-
-                const ItemResponseGroup itemResponseGroup = ItemResponseGroup.ItemInfo | ItemResponseGroup.Outlines;
-
-                var productIndexedSearchCriteria = AbstractTypeFactory<ProductIndexedSearchCriteria>.TryCreateInstance().FromListEntryCriteria(criteria) as ProductIndexedSearchCriteria;
-                productIndexedSearchCriteria.ResponseGroup = itemResponseGroup.ToString();
-
-                var indexedSearchResult = await _productIndexedSearchService.SearchAsync(productIndexedSearchCriteria);
-                result.TotalCount += (int) indexedSearchResult.TotalCount;
-                result.Results.AddRange(indexedSearchResult.Items.Select(x => AbstractTypeFactory<ProductListEntry>.TryCreateInstance().FromModel(x)));
-            }
-            else
-            {
-                result = await _listEntrySearchService.SearchAsync(criteria);
-            }
-
-            return result;
         }
     }
 }
