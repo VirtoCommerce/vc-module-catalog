@@ -100,20 +100,20 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 var catalogs = await GetByIdsAsync(catalogIds);
                 if (!catalogs.IsNullOrEmpty())
                 {
-                    var changedEntriesAggregate = GetDeletedEntries(catalogs);
+                    var changedEntries = GetDeletedEntries(catalogs);
 
-                    await _eventPublisher.Publish(new CatalogChangingEvent(changedEntriesAggregate.CatalogEntries));
-                    await _eventPublisher.Publish(new CategoryChangingEvent(changedEntriesAggregate.CategoryEntries));
-                    await _eventPublisher.Publish(new ProductChangingEvent(changedEntriesAggregate.ProductEntries));
+                    await _eventPublisher.Publish(new CatalogChangingEvent(changedEntries.CatalogEntries));
+                    await _eventPublisher.Publish(new CategoryChangingEvent(changedEntries.CategoryEntries));
+                    await _eventPublisher.Publish(new ProductChangingEvent(changedEntries.ProductEntries));
 
                     await repository.RemoveCatalogsAsync(catalogs.Select(m => m.Id).ToArray());
                     await repository.UnitOfWork.CommitAsync();
 
                     ClearCache(catalogs);
 
-                    await _eventPublisher.Publish(new CatalogChangedEvent(changedEntriesAggregate.CatalogEntries));
-                    await _eventPublisher.Publish(new CategoryChangedEvent(changedEntriesAggregate.CategoryEntries));
-                    await _eventPublisher.Publish(new ProductChangedEvent(changedEntriesAggregate.ProductEntries));
+                    await _eventPublisher.Publish(new CatalogChangedEvent(changedEntries.CatalogEntries));
+                    await _eventPublisher.Publish(new CategoryChangedEvent(changedEntries.CategoryEntries));
+                    await _eventPublisher.Publish(new ProductChangedEvent(changedEntries.ProductEntries));
                 }
             }
         }
