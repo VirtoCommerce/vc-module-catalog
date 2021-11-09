@@ -3,12 +3,12 @@ using VirtoCommerce.Platform.Core.Events;
 
 namespace VirtoCommerce.CatalogModule.Core.Model
 {
-    public class CatalogChangedEntriesAggregate
+    public sealed class CatalogChangedEntriesAggregate
     {
-        public IEnumerable<GenericChangedEntry<Catalog>> CatalogEntries { get; set; }
+        public List<GenericChangedEntry<Catalog>> CatalogEntries { get; set; }
 
-        public IEnumerable<GenericChangedEntry<Category>> CategoryEntries { get; set; }
+        public List<GenericChangedEntry<Category>> CategoryEntries { get; set; }
 
-        public IEnumerable<GenericChangedEntry<CatalogProduct>> ProductEntries { get; set; }
+        public List<GenericChangedEntry<CatalogProduct>> ProductEntries { get; set; }
     }
 }

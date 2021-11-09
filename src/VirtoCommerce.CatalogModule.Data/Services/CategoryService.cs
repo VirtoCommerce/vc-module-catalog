@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using VirtoCommerce.CatalogModule.Core.Events;
 using VirtoCommerce.CatalogModule.Core.Model;
@@ -344,7 +345,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 var deletedChildrenCategoryIds = await repository.GetAllChildrenCategoriesIdsAsync(deletedCategoryIds.ToArray());
 
                 deletedCategoryIds.AddRange(deletedChildrenCategoryIds);
-                var deletedChildrenProductIds = repository.Items.Where(x => deletedCategoryIds.Contains(x.CategoryId)).Select(x => x.Id).ToList();
+                var deletedChildrenProductIds = await repository.Items.Where(x => deletedCategoryIds.Contains(x.CategoryId)).Select(x => x.Id).ToListAsync();
 
                 var deletedCategoryEntries = deletedChildrenCategoryIds.Select(id =>
                 {

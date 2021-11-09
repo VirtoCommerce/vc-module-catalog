@@ -100,7 +100,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 var catalogs = await GetByIdsAsync(catalogIds);
                 if (!catalogs.IsNullOrEmpty())
                 {
-                    var changedEntries = GetDeletedEntries(catalogs);
+                    var changedEntries = await GetDeletedEntriesAsync(catalogs);
 
                     await _eventPublisher.Publish(new CatalogChangingEvent(changedEntries.CatalogEntries));
                     await _eventPublisher.Publish(new CategoryChangingEvent(changedEntries.CategoryEntries));
@@ -191,15 +191,15 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
         }
 
-        private CatalogChangedEntriesAggregate GetDeletedEntries(Catalog[] catalogs)
+        private async Task<CatalogChangedEntriesAggregate> GetDeletedEntriesAsync(Catalog[] catalogs)
         {
             using (var repository = _repositoryFactory())
             {
                 var catalogChangedEntries = catalogs.Select(x => new GenericChangedEntry<Catalog>(x, EntryState.Deleted)).ToList();
 
                 var foundCatalogIds = catalogs.Select(x => x.Id).ToList();
-                var categoryIds = repository.Categories.Where(x => foundCatalogIds.Contains(x.CatalogId)).Select(x => x.Id).ToList();
-                var productIds = repository.Items.Where(x => foundCatalogIds.Contains(x.CatalogId)).Select(x => x.Id).ToList();
+                var categoryIds = await repository.Categories.Where(x => foundCatalogIds.Contains(x.CatalogId)).Select(x => x.Id).ToListAsync();
+                var productIds = await repository.Items.Where(x => foundCatalogIds.Contains(x.CatalogId)).Select(x => x.Id).ToListAsync();
 
                 var categoryChangedEntries = categoryIds.Select(id =>
                 {
