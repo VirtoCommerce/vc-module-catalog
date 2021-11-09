@@ -1,5 +1,5 @@
-﻿angular.module('virtoCommerce.catalogModule')
-.controller('virtoCommerce.catalogModule.itemDimensionWidgetController', ['$scope', 'virtoCommerce.catalogModule.items', 'platformWebApp.bladeNavigationService', function ($scope, items, bladeNavigationService) {
+angular.module('virtoCommerce.catalogModule')
+    .controller('virtoCommerce.catalogModule.itemDimensionWidgetController', ['$scope', 'virtoCommerce.catalogModule.items', 'platformWebApp.bladeNavigationService', 'virtoCommerce.coreModule.packageType.packageTypeApi', function ($scope, items, bladeNavigationService, packageTypeApi) {
 
     $scope.openBlade = function () {
         var blade = {
@@ -10,5 +10,16 @@
         };
         bladeNavigationService.showBlade(blade, $scope.blade);
     };
-  
+
+    $scope.$watch('blade.item.packageType', function (packageTypeId) {
+        if (packageTypeId) {
+            packageTypeApi.query({}, function (results) {
+                $scope.blade.packageType = _.find(results, function (x) { return x.id == packageTypeId; });
+            });
+        }
+        else {
+            delete $scope.blade.packageType;
+        }
+    });  
+
 }]);
