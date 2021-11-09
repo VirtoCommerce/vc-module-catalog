@@ -100,15 +100,20 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 var catalogs = await GetByIdsAsync(catalogIds);
                 if (!catalogs.IsNullOrEmpty())
                 {
-                    var changedEntries = catalogs.Select(x => new GenericChangedEntry<Catalog>(x, EntryState.Deleted));
-                    await _eventPublisher.Publish(new CatalogChangingEvent(changedEntries));
+                    var changedEntries = await GetDeletedEntriesAsync(catalogs);
+
+                    await _eventPublisher.Publish(new CatalogChangingEvent(changedEntries.CatalogEntries));
+                    await _eventPublisher.Publish(new CategoryChangingEvent(changedEntries.CategoryEntries));
+                    await _eventPublisher.Publish(new ProductChangingEvent(changedEntries.ProductEntries));
 
                     await repository.RemoveCatalogsAsync(catalogs.Select(m => m.Id).ToArray());
                     await repository.UnitOfWork.CommitAsync();
 
                     ClearCache(catalogs);
 
-                    await _eventPublisher.Publish(new CatalogChangedEvent(changedEntries));
+                    await _eventPublisher.Publish(new CatalogChangedEvent(changedEntries.CatalogEntries));
+                    await _eventPublisher.Publish(new CategoryChangedEvent(changedEntries.CategoryEntries));
+                    await _eventPublisher.Publish(new ProductChangedEvent(changedEntries.ProductEntries));
                 }
             }
         }
@@ -183,6 +188,43 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             foreach (var catalog in catalogs)
             {
                 CatalogTreeCacheRegion.ExpireTokenForKey(catalog.Id);
+            }
+        }
+
+        private async Task<CatalogChangedEntriesAggregate> GetDeletedEntriesAsync(Catalog[] catalogs)
+        {
+            using (var repository = _repositoryFactory())
+            {
+                var catalogChangedEntries = catalogs.Select(x => new GenericChangedEntry<Catalog>(x, EntryState.Deleted)).ToList();
+
+                var foundCatalogIds = catalogs.Select(x => x.Id).ToList();
+                var categoryIds = await repository.Categories.Where(x => foundCatalogIds.Contains(x.CatalogId)).Select(x => x.Id).ToListAsync();
+                var productIds = await repository.Items.Where(x => foundCatalogIds.Contains(x.CatalogId)).Select(x => x.Id).ToListAsync();
+
+                var categoryChangedEntries = categoryIds.Select(id =>
+                {
+                    var category = AbstractTypeFactory<Category>.TryCreateInstance();
+                    category.Id = id;
+                    var entry = new GenericChangedEntry<Category>(category, EntryState.Deleted);
+
+                    return entry;
+                }).ToList();
+
+                var productChangedEntries = productIds.Select(id =>
+                {
+                    var product = AbstractTypeFactory<CatalogProduct>.TryCreateInstance();
+                    product.Id = id;
+                    var entry = new GenericChangedEntry<CatalogProduct>(product, EntryState.Deleted);
+
+                    return entry;
+                }).ToList();
+
+                return new CatalogChangedEntriesAggregate
+                {
+                    CatalogEntries = catalogChangedEntries,
+                    CategoryEntries = categoryChangedEntries,
+                    ProductEntries = productChangedEntries,
+                };
             }
         }
     }

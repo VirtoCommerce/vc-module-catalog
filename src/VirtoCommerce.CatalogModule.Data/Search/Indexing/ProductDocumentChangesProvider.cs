@@ -114,7 +114,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 Take = Convert.ToInt32(take)
             };
 
-            var searchResult = (await _changeLogSearchService.SearchAsync(criteria));
+            var searchResult = await _changeLogSearchService.SearchAsync(criteria);
 
             return searchResult;
         }
@@ -130,8 +130,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 Take = 0
             };
 
-            var deletedOperations = (await _changeLogSearchService.SearchAsync(criteria)).Results;
-            var deletedCount = deletedOperations.Count;
+            var deletedOperationsResult = await _changeLogSearchService.SearchAsync(criteria);
+            var deletedCount = deletedOperationsResult.TotalCount;
             return deletedCount;
         }
 
