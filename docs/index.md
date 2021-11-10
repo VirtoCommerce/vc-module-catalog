@@ -75,7 +75,8 @@ A product is a basic entity representing an item one can purchase in an online s
 - Physical products: any tangibles, such as cameras or mobile phones
 - Digital products: Intangibles such as software or music
 
-***Note:*** *Both physical and digital products have their own unique attributes (see also Notes to Chart 2):*
+***Note:*** *Both physical and digital products have their own unique attributes (see also Notes to Chart 2).*
+
 - Bill of materials: A special kind of product that has a list of supplementary materials required for a specific item
 - Configurable products: A fully customizable item that has unique attributes and thus cannot fall into the above types
 
