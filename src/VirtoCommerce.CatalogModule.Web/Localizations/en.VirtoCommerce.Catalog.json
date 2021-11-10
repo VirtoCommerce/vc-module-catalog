@@ -324,6 +324,8 @@
           "package-type": "Package type",
           "weight-unit": "Mass units",
           "weight": "Weight",
+          "dimensions": "Dimensions",
+          "use-package-type": "Use from package type",
           "measure-unit": "Units of length",
           "max-downloads": "Maximum downloads",
           "expiration-date": "Download expiration date",
@@ -548,8 +550,8 @@
         "title": "Search results"
       },
       "item-dimensions": {
-        "title": "Item dimensions",
-        "subtitle": "change product size & weight here"
+        "title": "Item measurement",
+        "subtitle": "Change product measurement properties"
       },
       "asset-select": {
         "title": "Link images"

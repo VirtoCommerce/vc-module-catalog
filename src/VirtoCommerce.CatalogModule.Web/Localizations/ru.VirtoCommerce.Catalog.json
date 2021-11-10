@@ -283,6 +283,8 @@
           "package-type": "Тип упаковки",
           "weight-unit": "Единица веса",
           "weight": "Вес",
+          "dimensions": "Размер",
+          "use-package-type": "Как у типа упаковки",
           "measure-unit": "Единица длины",
           "max-downloads": "Максимум скачиваний",
           "expiration-date": "Дата истечения срока действия",

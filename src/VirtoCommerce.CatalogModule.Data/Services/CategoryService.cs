@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using VirtoCommerce.CatalogModule.Core.Events;
 using VirtoCommerce.CatalogModule.Core.Model;
@@ -124,18 +125,21 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         public virtual async Task DeleteAsync(string[] categoryIds)
         {
             var categories = await GetByIdsAsync(categoryIds, CategoryResponseGroup.Info.ToString());
-            var changedEntries = categories
-                .Select(c => new GenericChangedEntry<Category>(c, EntryState.Deleted))
-                .ToList();
+
+            var changedEntries = await GetDeletedEntries(categories);
 
             using (var repository = _repositoryFactory())
             {
-                await _eventPublisher.Publish(new CategoryChangingEvent(changedEntries));
+                await _eventPublisher.Publish(new CategoryChangingEvent(changedEntries.CategoryEntries));
+                await _eventPublisher.Publish(new ProductChangingEvent(changedEntries.ProductEntries));
+
                 await repository.RemoveCategoriesAsync(categoryIds);
                 await repository.UnitOfWork.CommitAsync();
 
                 ClearCache(categories);
-                await _eventPublisher.Publish(new CategoryChangedEvent(changedEntries));
+
+                await _eventPublisher.Publish(new CategoryChangedEvent(changedEntries.CategoryEntries));
+                await _eventPublisher.Publish(new ProductChangedEvent(changedEntries.ProductEntries));
             }
         }
 
@@ -331,6 +335,45 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
 
             SeoInfoCacheRegion.ExpireRegion();
+        }
+
+        private async Task<CatalogChangedEntriesAggregate> GetDeletedEntries(IList<Category> categories)
+        {
+            using (var repository = _repositoryFactory())
+            {
+                var deletedCategoryIds = categories.Select(x => x.Id).ToList();
+                var deletedChildrenCategoryIds = await repository.GetAllChildrenCategoriesIdsAsync(deletedCategoryIds.ToArray());
+
+                deletedCategoryIds.AddRange(deletedChildrenCategoryIds);
+                var deletedChildrenProductIds = await repository.Items.Where(x => deletedCategoryIds.Contains(x.CategoryId)).Select(x => x.Id).ToListAsync();
+
+                var deletedCategoryEntries = deletedChildrenCategoryIds.Select(id =>
+                {
+                    var category = AbstractTypeFactory<Category>.TryCreateInstance();
+                    category.Id = id;
+                    var entry = new GenericChangedEntry<Category>(category, EntryState.Deleted);
+
+                    return entry;
+                }).ToList();
+
+                var deletedProductEntries = deletedChildrenProductIds.Select(id =>
+                {
+                    var product = AbstractTypeFactory<CatalogProduct>.TryCreateInstance();
+                    product.Id = id;
+                    var entry = new GenericChangedEntry<CatalogProduct>(product, EntryState.Deleted);
+
+                    return entry;
+                }).ToList();
+
+                deletedCategoryEntries.AddRange(categories
+                    .Select(c => new GenericChangedEntry<Category>(c, EntryState.Deleted)));
+
+                return new CatalogChangedEntriesAggregate
+                {
+                    CategoryEntries = deletedCategoryEntries,
+                    ProductEntries = deletedProductEntries,
+                };
+            }
         }
     }
 }
