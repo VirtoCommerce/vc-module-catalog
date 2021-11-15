@@ -129,18 +129,8 @@ namespace VirtoCommerce.CatalogModule.Web
 
             serviceCollection.AddTransient<CatalogExportImport>();
 
-            serviceCollection.AddTransient<IOutlinePartResolver>(provider =>
-            {
-                var settingsManager = provider.GetService<ISettingsManager>();
-                if (settingsManager.GetValue(ModuleConstants.Settings.General.CodesInOutline.Name, false))
-                {
-                    return new CodeOutlinePartResolver();
-                }
-                else
-                {
-                    return new IdOutlinePartResolver();
-                }
-            });
+            serviceCollection.AddTransient<IOutlinePartResolver, IdOutlinePartResolver>();
+
             serviceCollection.AddTransient<IOutlinePartNameResolver, NameOutlinePartResolver>();
 
             serviceCollection.AddTransient<ProductDocumentChangesProvider>();

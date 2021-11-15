@@ -71,14 +71,6 @@ namespace VirtoCommerce.CatalogModule.Core
                     AllowedValues = new[] { "QuickReview", "FullReview" }
                 };
 
-                public static SettingDescriptor CodesInOutline { get; } = new SettingDescriptor
-                {
-                    Name = "Catalog.CodesInOutline",
-                    GroupName = "Catalog|General",
-                    ValueType = SettingValueType.Boolean,
-                    DefaultValue = false
-                };
-
                 public static SettingDescriptor UseSeoDeduplication { get; } = new SettingDescriptor
                 {
                     Name = "Catalog.UseSeoDeduplication",
@@ -105,7 +97,6 @@ namespace VirtoCommerce.CatalogModule.Core
                                    AssociationGroups,
                                    EditorialReviewTypes,
                                    CategoryDescriptionTypes,
-                                   CodesInOutline,
                                    EventBasedIndexation,
                                };
                     }
