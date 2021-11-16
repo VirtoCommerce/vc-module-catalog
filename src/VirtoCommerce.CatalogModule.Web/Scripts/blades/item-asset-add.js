@@ -29,7 +29,7 @@ angular.module('virtoCommerce.catalogModule')
                 removeAfterUpload: true
             });
 
-           	uploader.url = 'api/platform/assets?folderUrl=catalog/' + item.code;
+           	uploader.url = 'api/assets?folderUrl=catalog/' + item.code;
 
             uploader.onSuccessItem = function (fileItem, assets, status, headers) {
                 angular.forEach(assets, function (asset) {                    
