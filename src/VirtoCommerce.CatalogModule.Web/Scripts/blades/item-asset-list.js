@@ -39,7 +39,7 @@ angular.module('virtoCommerce.catalogModule')
                         title: 'catalog.blades.asset-select.title',
                         //folder: "catalog",
                         onSelect: linkAssets,
-                        controller: 'platformWebApp.assets.assetSelectController'
+                        controller: 'virtoCommerce.assetsModule.assetSelectController'
                     };
                     bladeNavigationService.showBlade(newBlade, blade);
                 },
