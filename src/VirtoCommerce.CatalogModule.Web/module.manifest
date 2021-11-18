@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <id>VirtoCommerce.Catalog</id>
-  <version>3.80.0</version>
+  <version>3.200.0</version>
   <version-tag />
-  <platformVersion>3.81.0</platformVersion>
+  <platformVersion>3.200.0</platformVersion>
   <title>Catalog module</title>
   <description>Catalog, categories, products, variations, properties management</description>
   <authors>
@@ -21,12 +21,12 @@
   <assemblyFile>VirtoCommerce.CatalogModule.Web.dll</assemblyFile>
   <moduleType>VirtoCommerce.CatalogModule.Web.Module, VirtoCommerce.CatalogModule.Web</moduleType>
   <dependencies>
-    <dependency id="VirtoCommerce.Core" version="3.1.0" />
-    <dependency id="VirtoCommerce.Search" version="3.15.0" />
-    <dependency id="VirtoCommerce.Export" version="3.4.0" />
-    <dependency id="VirtoCommerce.Store" version="3.1.0" />
-    <dependency id="VirtoCommerce.BulkActionsModule" version="3.3.0-alpha.96" />
-    <dependency id="VirtoCommerce.Assets" version="1.0.0" />
+    <dependency id="VirtoCommerce.Core" version="3.200.0" />
+    <dependency id="VirtoCommerce.Search" version="3.200.0" />
+    <dependency id="VirtoCommerce.Export" version="3.200.0" />
+    <dependency id="VirtoCommerce.Store" version="3.200.0" />
+    <dependency id="VirtoCommerce.BulkActionsModule" version="3.200.0" />
+    <dependency id="VirtoCommerce.Assets" version="3.200.0" />
   </dependencies>
   <groups>
     <group>commerce</group>
