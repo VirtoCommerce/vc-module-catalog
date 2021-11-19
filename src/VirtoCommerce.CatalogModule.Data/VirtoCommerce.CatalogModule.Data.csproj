@@ -15,7 +15,7 @@
         <SonarQubeTestProject>false</SonarQubeTestProject>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="FluentValidation" Version="8.6.3" />
+        <PackageReference Include="FluentValidation" Version="10.3.4" />
         <PackageReference Include="Google.Apis.YouTube.v3" Version="1.54.0.2434" />
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
         <PackageReference Include="Hangfire" Version="1.7.14" />
