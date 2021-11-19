@@ -270,10 +270,8 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                             .ToArrayAsync();
                         linkedCategoryIds = linkedCategoryIds.Concat(linkedProductCategoryIds).Distinct().ToArray();
                         var expandedFlatLinkedCategoryIds = linkedCategoryIds.Concat(await GetAllChildrenCategoriesIdsAsync(linkedCategoryIds)).Distinct().ToArray();
-
-                        propertyIds = propertyIds.Concat(Properties.Where(x => expandedFlatLinkedCategoryIds.Contains(x.CategoryId)).Select(x => x.Id)).Distinct().ToArray();
                         var linkedCatalogIds = await Categories.Where(x => expandedFlatLinkedCategoryIds.Contains(x.Id)).Select(x => x.CatalogId).Distinct().ToArrayAsync();
-                        propertyIds = propertyIds.Concat(Properties.Where(x => linkedCatalogIds.Contains(x.CatalogId) && x.CategoryId == null).Select(x => x.Id)).Distinct().ToArray();
+                        propertyIds = await Properties.Where(x => linkedCatalogIds.Contains(x.CatalogId)).Select(x => x.Id).Distinct().ToArrayAsync();
                     }
 
                     result = await GetPropertiesByIdsAsync(propertyIds);
