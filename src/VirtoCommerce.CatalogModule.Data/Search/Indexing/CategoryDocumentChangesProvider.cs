@@ -62,14 +62,14 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 // Get documents from repository and return them as changes
                 using (var repository = _catalogRepositoryFactory())
                 {
-                    var productIds = await repository.Categories
+                    var categoryIds = await repository.Categories
                         .OrderBy(i => i.CreatedDate)
                         .Select(i => i.Id)
                         .Skip((int)skip)
                         .Take((int)take)
                         .ToArrayAsync();
 
-                    result = productIds.Select(id =>
+                    result = categoryIds.Select(id =>
                         new IndexDocumentChange
                         {
                             DocumentId = id,
