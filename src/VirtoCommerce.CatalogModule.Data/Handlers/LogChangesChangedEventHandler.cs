@@ -45,13 +45,17 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
 
                 var hierarchyChanged = false;
 
-                if (x.OldEntry is Category oldCategory && x.NewEntry is Category newCategory)
+                if (x.EntryState == EntryState.Modified && x.OldEntry is Category oldCategory && x.NewEntry is Category newCategory)
                 {
                     hierarchyChanged = oldCategory.CatalogId != newCategory.CatalogId ||
-                        oldCategory.ParentId != newCategory.ParentId;
+                        oldCategory.ParentId != newCategory.ParentId ||
+                        oldCategory.Links?.Count != newCategory.Links?.Count;
                 }
 
-                operationLog.Detail = hierarchyChanged && x.EntryState == EntryState.Modified ? _hierarchyChanged : null;
+                if (hierarchyChanged)
+                {
+                    operationLog.Detail = _hierarchyChanged;
+                }
 
                 return operationLog;
             }).ToArray();
@@ -94,24 +98,6 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
                 });
 
                 hierarchyLogs.AddRange(categoryLogs);
-
-                //// find affected products
-                //categoryIds.AddRange(childrenCategoryIds);
-                //var childrenProductIds = await repository.Items.Where(x => categoryIds.Contains(x.CategoryId)).Select(x => x.Id).ToListAsync();
-
-                //var productLogs = childrenProductIds.Select(x =>
-                //{
-                //    var log = AbstractTypeFactory<OperationLog>.TryCreateInstance();
-
-                //    log.ObjectId = x;
-                //    log.ObjectType = nameof(CatalogProduct);
-                //    log.OperationType = EntryState.Modified;
-                //    log.Detail = _hierarchyChanged;
-
-                //    return log;
-                //});
-
-                //hierarchyLogs.AddRange(productLogs);
             }
 
             var result = operationLogs.ToList();

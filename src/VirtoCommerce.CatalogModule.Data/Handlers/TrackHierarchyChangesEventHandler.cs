@@ -8,11 +8,12 @@ using VirtoCommerce.CatalogModule.Core.Events;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Repositories;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Events;
 
 namespace VirtoCommerce.CatalogModule.Data.Handlers
 {
-    public class TrackHierarchyChangesEventHandler : IEventHandler<CategoryChangedEvent>
+    public sealed class TrackHierarchyChangesEventHandler : IEventHandler<CategoryChangedEvent>
     {
         private readonly Func<ICatalogRepository> _catalogRepositoryFactory;
         private readonly IItemService _itemService;
@@ -25,16 +26,27 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
 
         public Task Handle(CategoryChangedEvent message)
         {
-            var categories = message.ChangedEntries
-                .Where(x => x.OldEntry?.CatalogId != x.NewEntry?.CatalogId || x.OldEntry?.ParentId != x.NewEntry?.ParentId)
+            var categoryIds = message.ChangedEntries
+                .Where(x =>
+                    x.EntryState == EntryState.Modified &&
+                    x.OldEntry?.CatalogId != x.NewEntry?.CatalogId ||
+                    x.OldEntry?.ParentId != x.NewEntry?.ParentId ||
+                    x.OldEntry?.Links?.Count != x.NewEntry?.Links?.Count)
                 .Select(x => x.NewEntry.Id)
                 .ToList();
 
-            BackgroundJob.Enqueue(() => UpdateProductsAsync(categories));
+            if (categoryIds.Any())
+            {
+                BackgroundJob.Enqueue(() => UpdateProductsAsync(categoryIds));
+            }
 
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Resave products to update ModifiedDate:
+        /// a workaround to make ProductDocumentChangesProvider track changes in product hierarchy
+        /// </summary>
         [DisableConcurrentExecution(10)]
         public async Task UpdateProductsAsync(List<string> categoryIds)
         {
