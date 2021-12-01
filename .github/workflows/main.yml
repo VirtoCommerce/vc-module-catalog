@@ -1,4 +1,4 @@
-# v1.1.9
+# v1.1.10
 name: Module CI
 
 on:
@@ -118,6 +118,14 @@ jobs:
         uses: VirtoCommerce/vc-github-actions/publish-blob-release@master
         with:
           blobSAS: ${{ secrets.BLOB_TOKEN }}
+          
+      - name: Add Jira link
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: VirtoCommerce/vc-github-actions/publish-jira-link@master
+        with:
+          branchName: ${{ github.head_ref }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Add link to PR
         if: ${{ github.event_name == 'pull_request' }}
