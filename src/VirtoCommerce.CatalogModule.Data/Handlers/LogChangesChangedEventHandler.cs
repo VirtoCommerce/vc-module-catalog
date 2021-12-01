@@ -80,10 +80,10 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
                 var categoryIds = operationLogs
                     .Where(x => x.ObjectType == nameof(Category) && x.Detail == _hierarchyChanged)
                     .Select(x => x.ObjectId)
-                    .ToList();
+                    .ToArray();
 
                 // find affected categories
-                var childrenCategoryIds = await repository.GetAllChildrenCategoriesIdsAsync(categoryIds.ToArray());
+                var childrenCategoryIds = await repository.GetAllChildrenCategoriesIdsAsync(categoryIds);
 
                 var categoryLogs = childrenCategoryIds.Select(x =>
                 {
@@ -100,8 +100,7 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
                 hierarchyLogs.AddRange(categoryLogs);
             }
 
-            var result = operationLogs.ToList();
-            result.AddRange(hierarchyLogs);
+            var result = operationLogs.Concat(hierarchyLogs);
 
             await _changeLogService.SaveChangesAsync(result.ToArray());
         }
