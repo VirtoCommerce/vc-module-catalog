@@ -1,23 +1,35 @@
-﻿<div class="modal-header">
-    <h3 class="modal-title">{{ 'catalog.dialogs.catalog-items-delete.title' | translate }}</h3>
-</div>
-<div class="modal-body">
-    <div class="form-group">
-        <div class="form-error">{{ 'catalog.dialogs.catalog-items-delete.warning' | translate }}</div>
+﻿<div class="modal-window">
+    <div class="modal-window__header modal-window__header--error">
+        <div class="modal-window__title">{{ 'catalog.dialogs.catalog-items-delete.title' | translate: titleValues}}</div>
+        <button class="modal-window__header-button modal-window__header-button--no-bg" ng-disabled="{{ actionRequired }}" ng-click="cancel()" title="{{ 'platform.commands.cancel' | translate }}">
+            <i class="fa fa-times" aria-hidden="true"></i>
+        </button>
     </div>
-    <p>{{ 'catalog.dialogs.catalog-items-delete.message' | translate }}</p>
-    <ul>
-        <li ng-if="categoryCount>0">{{'catalog.dialogs.catalog-items-delete.category' | translate:{ count: (categoryCount | number:0) } }}</li>
-        <li ng-if="itemCount>0">{{'catalog.dialogs.catalog-items-delete.item' | translate:{ count: (itemCount  | number:0) } }}</li>
-        <li ng-if="listCategoryLinkCount>0">{{'catalog.dialogs.catalog-items-delete.linked-category' | translate:{ count: (listCategoryLinkCount | number:0) } }}</li>
-        <li ng-if="listItemLinkCount>0">{{'catalog.dialogs.catalog-items-delete.linked-item' | translate:{ count: (listItemLinkCount | number:0) } }} </li>
-    </ul>
-    {{ 'catalog.dialogs.catalog-items-delete.instruction' | translate }}
-    <div class="form-input __mini">
-        <input ng-model="enteredText" ng-keyup="$event.which === 13 && 'yes' === enteredText && yes()" />
+
+    <div class="modal-window__body">
+        <div class="modal-window__icon-container">
+            <img class="modal-window__dialog-icon" src="/images/dialogs/icon-error.svg" alt="">
+        </div>
+        <div class="modal-window__message-container">
+            <div class="modal-window__dialog-message"><b>{{ 'catalog.dialogs.catalog-items-delete.warning' | translate }}</b></div>
+            <div class="modal-window__dialog-message">{{ 'catalog.dialogs.catalog-items-delete.message' | translate }}</div>
+            <div class="modal-window__dialog-message">
+                <ul>
+                    <li ng-if="categoryCount > 0">{{'catalog.dialogs.catalog-items-delete.category' | translate: { count: (categoryCount | number:0) } }}</li>
+                    <li ng-if="itemCount > 0">{{'catalog.dialogs.catalog-items-delete.item' | translate: { count: (itemCount  | number:0) } }}</li>
+                    <li ng-if="listCategoryLinkCount > 0">{{'catalog.dialogs.catalog-items-delete.linked-category' | translate: { count: (listCategoryLinkCount | number:0) } }}</li>
+                    <li ng-if="listItemLinkCount > 0">{{'catalog.dialogs.catalog-items-delete.linked-item' | translate: { count: (listItemLinkCount | number:0) } }} </li>
+                </ul>
+            </div>
+            <div class="modal-window__dialog-message">{{ 'catalog.dialogs.catalog-items-delete.instruction' | translate }}</div>
+            <div class="form-input __mini">
+                <input ng-model="enteredText" ng-keyup="$event.which === 13 && 'yes' === enteredText && yes()" ng-trim="false" />
+            </div>
+        </div>
     </div>
-</div>
-<div class="modal-footer">
-    <button class="btn" ng-click="yes()" ng-class="{'__disabled': 'yes'!==enteredText}">{{ 'platform.commands.confirm' | translate }}</button>
-    <button class="btn" ng-click="cancel()">{{ 'platform.commands.cancel' | translate }}</button>
+
+    <div class="modal-window__footer">
+        <button class="modal-window__footer-button modal-window__footer-button--primary-outline" ng-class="{'__disabled': 'yes' !== enteredText}" ng-click="yes()">{{ 'platform.commands.confirm' | translate }}</button>
+        <button class="modal-window__footer-button modal-window__footer-button--primary" ng-click="cancel()">{{ 'platform.commands.cancel' | translate }}</button>
+    </div>
 </div>

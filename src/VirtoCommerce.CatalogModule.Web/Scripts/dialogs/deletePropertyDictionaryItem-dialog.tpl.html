@@ -1,13 +1,23 @@
-<div class="modal-header">
-    <h3 class="modal-title">{{ 'platform.dialogs.delete.title' | translate }}</h3>
-</div>
-<div class="modal-body">
-    <p>{{ 'catalog.dialogs.property-dictionary-item-delete.message'  | translate }}</p>
-    <div class="form-group">
-        <div class="form-error">{{ 'catalog.dialogs.property-dictionary-item-delete.warning' | translate }}</div>
+<div class="modal-window">
+    <div class="modal-window__header modal-window__header--error">
+        <div class="modal-window__title">{{ 'platform.dialogs.delete.title' | translate }}</div>
+        <button class="modal-window__header-button modal-window__header-button--no-bg" ng-disabled="{{ actionRequired }}" ng-click="cancel()" title="{{ 'platform.commands.cancel' | translate }}">
+            <i class="fa fa-times" aria-hidden="true"></i>
+        </button>
     </div>
-</div>
-<div class="modal-footer">
-    <button class="btn __cancel" ng-click="yes()">{{ 'platform.commands.confirm' | translate}}</button>
-    <button class="btn" ng-click="cancel()">{{ 'platform.commands.cancel' | translate }}</button>
+
+    <div class="modal-window__body">
+        <div class="modal-window__icon-container">
+            <img class="modal-window__dialog-icon" src="/images/dialogs/icon-error.svg" alt="">
+        </div>
+        <div class="modal-window__message-container">
+            <div class="modal-window__dialog-message"><b>{{ 'catalog.dialogs.property-dictionary-item-delete.warning' | translate }}</b></div>
+            <div class="modal-window__dialog-message">{{ 'catalog.dialogs.property-dictionary-item-delete.message'  | translate }}</div>
+        </div>
+    </div>
+
+    <div class="modal-window__footer">
+        <button class="modal-window__footer-button modal-window__footer-button--primary-outline" ng-click="yes()">{{ 'platform.commands.confirm' | translate }}</button>
+        <button class="modal-window__footer-button modal-window__footer-button--primary" ng-click="no()">{{ 'platform.commands.cancel' | translate }}</button>
+    </div>
 </div>
