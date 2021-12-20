@@ -710,13 +710,13 @@
         "title": "Confirm Delete",
         "warning": "WARNING: This change is permanent and cannot be undone. Applying this change may result in a data loss.",
         "message": "Are you sure you want to delete this catalog?",
-        "instruction": "Type Yes to delete"
+        "instruction": "Type 'yes' to delete"
       },
       "catalog-items-delete": {
         "title": "Confirm Delete",
         "warning": "WARNING: This change is permanent and cannot be undone. Applying this change may result in a data loss.",
         "message": "The following data will be deleted:",
-        "instruction": "Type Yes to delete:",
+        "instruction": "Type 'yes' to delete:",
         "item": "{{count}} Item(s)",
         "category": "{{count}} Category(ies) and any content within",
         "linked-item": "{{count}} Item(s)",
