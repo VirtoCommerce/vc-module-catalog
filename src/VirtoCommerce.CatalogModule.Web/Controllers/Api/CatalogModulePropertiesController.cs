@@ -177,7 +177,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("validate-property-name")]
         public async Task<ActionResult<ValidationResult>> ValidatePropertyName([FromBody] CategoryPropertyValidationRequest request)
         {
-            if (request == null || request.PropertyName.IsNullOrEmpty() || request.CategoryId.IsNullOrEmpty())
+            if (request == null || request.PropertyName.IsNullOrEmpty() || request.PropertyType.IsNullOrEmpty() || request.CatalogId.IsNullOrEmpty())
             {
                 return BadRequest(request);
             }
