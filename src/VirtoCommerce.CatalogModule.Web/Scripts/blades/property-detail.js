@@ -45,6 +45,13 @@ angular.module('virtoCommerce.catalogModule')
                 return $q.reject();
             }
 
+            // validation for category properties
+            // skips backend property name validation for current entity edit when the old name equals new name
+            if (!blade.origEntity.isNew && value === blade.origEntity.name) {
+                $scope.errorData = null;
+                return $q.resolve();
+            }
+
             return properties.validateCategoryPropertyName({
                 propertyName: value,
                 propertyType: blade.origEntity.type,
