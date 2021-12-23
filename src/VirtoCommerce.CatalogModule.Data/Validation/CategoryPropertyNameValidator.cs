@@ -45,7 +45,7 @@ namespace VirtoCommerce.CatalogModule.Data.Validation
             RuleFor(r => r)
                 .CustomAsync(async (r, context, _) =>
                 {
-                    (var isPropertyUniqueForHierarchy, var CategoryName) = await CheckPropertyUniquenessAsync(r);
+                    (var isPropertyUniqueForHierarchy, var categoryName) = await CheckPropertyUniquenessAsync(r);
 
                     if (!isPropertyUniqueForHierarchy)
                     {
@@ -54,7 +54,7 @@ namespace VirtoCommerce.CatalogModule.Data.Validation
                             CustomState = new
                             {
                                 PropertyName = r.PropertyName,
-                                CategoryName = CategoryName,
+                                CategoryName = categoryName,
                             },
                         });
                     }
@@ -62,6 +62,36 @@ namespace VirtoCommerce.CatalogModule.Data.Validation
         }
 
         protected virtual async Task<(bool, string)> CheckPropertyUniquenessAsync(CategoryPropertyValidationRequest request)
+        {
+            var categoryIds = await GetCategoryIds(request);
+
+            var childrenCategories = await _categoryService.GetByIdsAsync(categoryIds.ToArray(), CategoryResponseGroup.WithProperties.ToString());
+
+            var properties = childrenCategories.SelectMany(x => x.Properties);
+
+            var useIndexedSearch = await _settingsManager.GetValueAsync(catalogCore.ModuleConstants.Settings.Search.UseCatalogIndexedSearchInManager.Name, true);
+
+            // If useIndexedSearch is off and requested Category is missed, then properties would be empty
+            if (string.IsNullOrEmpty(request.CategoryId) && !useIndexedSearch)
+            {
+                properties = await _propertyService.GetAllCatalogPropertiesAsync(request.CatalogId);
+            }
+
+            var requiredPropertyType = EnumUtility.SafeParse(request.PropertyType, PropertyType.Category);
+
+            var existingProperty = properties.FirstOrDefault(x => x.Name.EqualsInvariant(request.PropertyName) && x.Type.Equals(requiredPropertyType));
+            var categoryName = string.Empty;
+
+            if (existingProperty != null)
+            {
+                categoryName = (await _categoryService.GetByIdsAsync(new[] { existingProperty.CategoryId }, CategoryResponseGroup.Info.ToString()))
+                    .FirstOrDefault()?.Name;
+            }
+
+            return (existingProperty == null, categoryName);
+        }
+
+        protected virtual async Task<string[]> GetCategoryIds(CategoryPropertyValidationRequest request)
         {
             var useIndexedSearch = await _settingsManager.GetValueAsync(catalogCore.ModuleConstants.Settings.Search.UseCatalogIndexedSearchInManager.Name, true);
 
@@ -86,28 +116,7 @@ namespace VirtoCommerce.CatalogModule.Data.Validation
                 categoryIds.AddRange(childrenCategoryIds);
             }
 
-            var childrenCategories = await _categoryService.GetByIdsAsync(categoryIds.ToArray(), CategoryResponseGroup.WithProperties.ToString());
-
-            var properties = childrenCategories.SelectMany(x => x.Properties);
-
-            // If useIndexedSearch is off and requested Category is missed, then properties would be empty
-            if (string.IsNullOrEmpty(request.CategoryId) && !useIndexedSearch)
-            {
-                properties = await _propertyService.GetAllCatalogPropertiesAsync(request.CatalogId);
-            }
-
-            var requiredPropertyType = EnumUtility.SafeParse(request.PropertyType, PropertyType.Category);
-
-            var existingProperty = properties.FirstOrDefault(x => x.Name.EqualsInvariant(request.PropertyName) && x.Type.Equals(requiredPropertyType));
-            var categoryName = string.Empty;
-
-            if (existingProperty != null)
-            {
-                categoryName = (await _categoryService.GetByIdsAsync(new[] { existingProperty.CategoryId }, CategoryResponseGroup.Info.ToString()))
-                    .FirstOrDefault()?.Name;
-            }
-
-            return (existingProperty == null, categoryName);
+            return categoryIds.ToArray();
         }
 
         protected virtual string GetOutline(CategoryPropertyValidationRequest request)
