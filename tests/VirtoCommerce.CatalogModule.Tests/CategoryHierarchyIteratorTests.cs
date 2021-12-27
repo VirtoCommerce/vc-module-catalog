@@ -14,11 +14,11 @@ using Xunit;
 
 namespace VirtoCommerce.CatalogModule.Tests
 {
-    public class CategoryIteratorTests
+    public class CategoryHierarchyIteratorTests
     {
         private readonly Fixture _fixture = new Fixture();
 
-        public CategoryIteratorTests()
+        public CategoryHierarchyIteratorTests()
         {
             _fixture.Register(() => _fixture.Build<Category>()
                 .Without(x => x.Children)
