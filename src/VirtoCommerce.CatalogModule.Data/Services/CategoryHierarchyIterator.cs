@@ -15,7 +15,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services
     public sealed class CategoryHierarchyIterator
     {
         private readonly Func<ICatalogRepository> _catalogRepositoryFactory;
-        private readonly ISettingsManager _settingsManager;
         private readonly ICategoryIndexedSearchService _categoryIndexedSearchService;
 
         private readonly int _pageSize;
@@ -40,14 +39,13 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             string categoryId)
         {
             _catalogRepositoryFactory = catalogRepositoryFactory;
-            _settingsManager = settingsManager;
             _categoryIndexedSearchService = categoryIndexedSearchService;
 
             _pageSize = Math.Max(50, pageSize);
             _catalogId = catalogId;
             _categoryId = categoryId;
 
-            _isIndexedSearchEnabled = _settingsManager.GetValue(ModuleConstants.Settings.Search.UseCatalogIndexedSearchInManager.Name, true);
+            _isIndexedSearchEnabled = settingsManager.GetValue(ModuleConstants.Settings.Search.UseCatalogIndexedSearchInManager.Name, true);
         }
 
         public bool HasMoreResults { get; private set; } = true;
