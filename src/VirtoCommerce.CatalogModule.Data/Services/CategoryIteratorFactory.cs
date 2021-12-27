@@ -22,7 +22,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _categoryIndexedSearchService = categoryIndexedSearchService;
         }
 
-        public CategoryIterator Create(int pageSize, string categoryId, string catalogId)
+        public CategoryIterator Create(int pageSize, string catalogId, string categoryId)
         {
             var result = new CategoryIterator(_catalogRepositoryFactory, _settingsManager,
                 _categoryIndexedSearchService, pageSize, catalogId, categoryId);
