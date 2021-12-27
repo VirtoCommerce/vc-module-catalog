@@ -12,7 +12,7 @@ using VirtoCommerce.Platform.Core.Settings;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
-    public sealed class CategoryIterator
+    public sealed class CategoryHierarchyIterator
     {
         private readonly Func<ICatalogRepository> _catalogRepositoryFactory;
         private readonly ISettingsManager _settingsManager;
@@ -31,7 +31,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private const int _indexedSearchRequestPageSize = 1000;
         private int _handledItemsCount = 0;
 
-        public CategoryIterator(
+        public CategoryHierarchyIterator(
             Func<ICatalogRepository> catalogRepositoryFactory,
             ISettingsManager settingsManager,
             ICategoryIndexedSearchService categoryIndexedSearchService,
@@ -54,7 +54,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public async Task<IReadOnlyCollection<string>> GetNextPageAsync()
         {
-            await EnsureThatDataIsActualAsync();
+            await LoadDataAsync();
 
             var result = _items.Skip(_pageSize * _currentPage++).Take(_pageSize);
 
@@ -66,7 +66,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         }
 
 
-        private async Task EnsureThatDataIsActualAsync()
+        private async Task LoadDataAsync()
         {
             var currentProgress = _currentPage * _pageSize;
 

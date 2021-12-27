@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentValidation;
@@ -16,19 +17,18 @@ namespace VirtoCommerce.CatalogModule.Data.Validation
         private readonly ICategoryService _categoryService;
         private readonly IPropertyService _propertyService;
         private readonly ISettingsManager _settingsManager;
-        private readonly CategoryIteratorFactory _categoryIteratorFactory;
+        private readonly Func<int, string, string, CategoryHierarchyIterator> _categoryHierarchyIteratorFactory;
 
         public CategoryPropertyNameValidator(
             ICategoryService categoryService,
             IPropertyService propertyService,
             ISettingsManager settingsManager,
-            CategoryIteratorFactory categoryIteratorFactory
-            )
+            Func<int, string, string, CategoryHierarchyIterator> categoryHierarchyIteratorFactory)
         {
             _categoryService = categoryService;
             _propertyService = propertyService;
             _settingsManager = settingsManager;
-            _categoryIteratorFactory = categoryIteratorFactory;
+            _categoryHierarchyIteratorFactory = categoryHierarchyIteratorFactory;
 
             AttachValidators();
         }
@@ -56,7 +56,7 @@ namespace VirtoCommerce.CatalogModule.Data.Validation
 
         protected virtual async Task<(bool, string)> CheckPropertyUniquenessAsync(CategoryPropertyValidationRequest request)
         {
-            var categoryIterator = _categoryIteratorFactory.Create(500, request.CatalogId, request.CategoryId);
+            var categoryIterator = _categoryHierarchyIteratorFactory(500, request.CatalogId, request.CategoryId);
             Property existingProperty;
 
             do

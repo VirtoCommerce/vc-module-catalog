@@ -16,7 +16,7 @@ namespace VirtoCommerce.CatalogModule.Tests
 {
     public class CategoryIteratorTests
     {
-        private readonly Fixture _fixture = new();
+        private readonly Fixture _fixture = new Fixture();
 
         public CategoryIteratorTests()
         {
@@ -50,7 +50,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                     Items = fakeCategories.ToArray(),
                 });
 
-            var iterator = new CategoryIterator(catalogRepositoryFactory.Object, settingsManager.Object, categoryIndexedSearchService.Object, 60, "testCatalogId", "testCategoryId");
+            var iterator = new CategoryHierarchyIterator(catalogRepositoryFactory.Object, settingsManager.Object, categoryIndexedSearchService.Object, 60, "testCatalogId", "testCategoryId");
 
             // Act
             var categoryIdsFirstCall = await iterator.GetNextPageAsync();
@@ -90,7 +90,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                 });
 
             var pageSize = 51;
-            var iterator = new CategoryIterator(catalogRepositoryFactory.Object, settingsManager.Object, categoryIndexedSearchService.Object, pageSize, "testCatalogId", "testCategoryId");
+            var iterator = new CategoryHierarchyIterator(catalogRepositoryFactory.Object, settingsManager.Object, categoryIndexedSearchService.Object, pageSize, "testCatalogId", "testCategoryId");
 
             var categoryIds = new List<string>();
             var iterationCount = 0;
@@ -137,7 +137,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                 );
 
             var pageSize = 50;
-            var iterator = new CategoryIterator(catalogRepositoryFactory.Object, settingsManager.Object, categoryIndexedSearchService.Object, pageSize, "testCatalogId", categoryId);
+            var iterator = new CategoryHierarchyIterator(catalogRepositoryFactory.Object, settingsManager.Object, categoryIndexedSearchService.Object, pageSize, "testCatalogId", categoryId);
             var categoryIds = new List<string>();
             var interationCount = 0;
 
@@ -178,7 +178,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             var categoryIndexedSearchService = new Mock<ICategoryIndexedSearchService>();
 
             var pageSize = 20;
-            var iterator = new CategoryIterator(catalogRepositoryFactory.Object, settingsManager.Object, categoryIndexedSearchService.Object, pageSize, "testCatalogId", "testCategoryId");
+            var iterator = new CategoryHierarchyIterator(catalogRepositoryFactory.Object, settingsManager.Object, categoryIndexedSearchService.Object, pageSize, "testCatalogId", "testCategoryId");
             var defaultPageSize = 50;
 
             // Act
@@ -214,7 +214,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                     Items = _fixture.CreateMany<Category>(10).ToArray(),
                 });
 
-            var iterator = new CategoryIterator(catalogRepositoryFactory.Object, settingsManager.Object, categoryIndexedSearchService.Object, 50, catalogId, categoryId);
+            var iterator = new CategoryHierarchyIterator(catalogRepositoryFactory.Object, settingsManager.Object, categoryIndexedSearchService.Object, 50, catalogId, categoryId);
 
             // Act
             await iterator.GetNextPageAsync();
@@ -233,7 +233,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             var catalogRepositoryFactory = new Mock<Func<ICatalogRepository>>();
             var categoryIndexedSearchService = new Mock<ICategoryIndexedSearchService>();
 
-            var iterator = new CategoryIterator(catalogRepositoryFactory.Object, settingsManager.Object, categoryIndexedSearchService.Object, 50, "testCatalogId", null);
+            var iterator = new CategoryHierarchyIterator(catalogRepositoryFactory.Object, settingsManager.Object, categoryIndexedSearchService.Object, 50, "testCatalogId", null);
 
             // Act
             await iterator.GetNextPageAsync();
