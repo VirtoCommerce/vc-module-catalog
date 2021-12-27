@@ -114,6 +114,8 @@ namespace VirtoCommerce.CatalogModule.Web
 
             serviceCollection.AddTransient<IInternalListEntrySearchService, InternalListEntrySearchService>();
 
+            serviceCollection.AddSingleton<CategoryIteratorFactory>();
+
             #region Validators
 
             serviceCollection.AddTransient<AbstractValidator<PropertyValidationRequest>, PropertyNameValidator>();
