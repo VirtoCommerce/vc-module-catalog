@@ -88,7 +88,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
                     _totalCount = categoriesIndexedSearchResult.TotalCount;
                 }
-                else
+                else if (!string.IsNullOrEmpty(_categoryId))
                 {
                     using var catalogRepository = _catalogRepositoryFactory();
 

@@ -223,6 +223,27 @@ namespace VirtoCommerce.CatalogModule.Tests
             Assert.Equal(expectedOutline, actualOutline);
         }
 
+        [Fact]
+        public async Task IndexSearchDisabledAndCategoryIdIsNullOrEmpty()
+        {
+            // Arrange
+            var settingsManager = new Mock<ISettingsManager>();
+            SetUseIndexedSearchSetting(settingsManager, false);
+
+            var catalogRepositoryFactory = new Mock<Func<ICatalogRepository>>();
+            var categoryIndexedSearchService = new Mock<ICategoryIndexedSearchService>();
+
+            var iterator = new CategoryIterator(catalogRepositoryFactory.Object, settingsManager.Object, categoryIndexedSearchService.Object, 50, "testCatalogId", null);
+
+            // Act
+            await iterator.GetNextPageAsync();
+
+            // Assert
+            catalogRepositoryFactory.Verify(x => x.Invoke(), Times.Never);
+            categoryIndexedSearchService.Verify(x => x.SearchAsync(It.IsAny<CategoryIndexedSearchCriteria>()), Times.Never);
+            Assert.False(iterator.HasMoreResults);
+        }
+
 
         private void SetUseIndexedSearchSetting(Mock<ISettingsManager> settingsManager, bool settingState)
         {
