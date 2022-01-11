@@ -63,9 +63,9 @@ namespace VirtoCommerce.CatalogModule.Data.Validation
             {
                 var categoryIds = await categoryIterator.GetNextPageAsync();
 
-                var childrenCategories = await _categoryService.GetByIdsAsync(categoryIds.ToArray(), CategoryResponseGroup.WithProperties.ToString());
+                var categories = await _categoryService.GetByIdsAsync(categoryIds.Append(request.CategoryId).ToArray(), CategoryResponseGroup.WithProperties.ToString());
 
-                var properties = childrenCategories.SelectMany(x => x.Properties);
+                var properties = categories.SelectMany(x => x.Properties);
 
                 var useIndexedSearch = await _settingsManager.GetValueAsync(catalogCore.ModuleConstants.Settings.Search.UseCatalogIndexedSearchInManager.Name, true);
 
