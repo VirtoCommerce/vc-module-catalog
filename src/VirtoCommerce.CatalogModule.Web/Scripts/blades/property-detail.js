@@ -149,7 +149,7 @@ angular.module('virtoCommerce.catalogModule')
         }
 
         function isSaveLocked() {
-            var result = $scope.duplicatedName === blade.currentEntity.name;
+            var result = blade.currentEntity && $scope.duplicatedName === blade.currentEntity.name;
 
             return result;
         }
