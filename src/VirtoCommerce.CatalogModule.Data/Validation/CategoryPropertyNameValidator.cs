@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentValidation;
@@ -63,7 +64,14 @@ namespace VirtoCommerce.CatalogModule.Data.Validation
             {
                 var categoryIds = await categoryIterator.GetNextPageAsync();
 
-                var categories = await _categoryService.GetByIdsAsync(categoryIds.Append(request.CategoryId).ToArray(), CategoryResponseGroup.WithProperties.ToString());
+                if (categoryIds.IsNullOrEmpty())
+                {
+                    // Category hierarchy iterator returns only child-relation category ids, excluding the category id itself
+                    // so is required to load properties for requested category too
+                    categoryIds = categoryIds.Append(request.CategoryId).ToImmutableArray();
+                }
+
+                var categories = await _categoryService.GetByIdsAsync(categoryIds.ToArray(), CategoryResponseGroup.WithProperties.ToString());
 
                 var properties = categories.SelectMany(x => x.Properties);
 
