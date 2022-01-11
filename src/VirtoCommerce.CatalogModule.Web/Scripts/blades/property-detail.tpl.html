@@ -9,8 +9,11 @@
                     </div>
                     <span class="comment-text" ng-if="errorData">
                         <img src="/images/layout/warning.svg" class="comment-icon">
-                        <span ng-if="errorData.errorMessage=='duplicate-property'">
+                        <span ng-if="errorData.errorMessage==='duplicate-property' && errorData.customState.categoryName">
                             {{ 'catalog.blades.item-property-detail.labels.duplicate-property-in-product' | translate: errorData.customState }}
+                        </span>
+                        <span ng-if="errorData.errorMessage==='duplicate-property' && !errorData.customState.categoryName">
+                            {{ 'catalog.blades.item-property-detail.labels.duplicate-property-in-catalog' | translate: errorData.customState }}
                         </span>
                         <span ng-if="errorData.errorMessage=='property-naming-error'">
                             {{ 'catalog.blades.item-property-detail.labels.property-naming-error' | translate }}

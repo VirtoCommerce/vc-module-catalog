@@ -239,6 +239,7 @@
         "labels": {
           "property-name": "Property name",
           "duplicate-property-in-product": "The property named {{propertyName}} already exists in {{categoryName}}. The name must be unique.",
+          "duplicate-property-in-catalog": "The property named {{propertyName}} already exists at the root catalog. The name must be unique.",
           "duplicate-property-in-variation1": "The property named {{propertyName}} already exists for this variation ",
           "duplicate-property-in-variation2": ". The name must be unique.",
           "property-naming-error": "The property name must begin with an alphanumeric character and can contain only Latin characters, digits, and underscores (_). If an underscore (_) is used, make sure it has an alphanumeric character before and after it.",
