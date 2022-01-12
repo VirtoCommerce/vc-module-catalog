@@ -8,8 +8,6 @@ using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Services;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.Settings;
-using catalogCore = VirtoCommerce.CatalogModule.Core;
 
 namespace VirtoCommerce.CatalogModule.Data.Validation
 {
@@ -17,18 +15,15 @@ namespace VirtoCommerce.CatalogModule.Data.Validation
     {
         private readonly ICategoryService _categoryService;
         private readonly IPropertyService _propertyService;
-        private readonly ISettingsManager _settingsManager;
         private readonly Func<int, string, string, CategoryHierarchyIterator> _categoryHierarchyIteratorFactory;
 
         public CategoryPropertyNameValidator(
             ICategoryService categoryService,
             IPropertyService propertyService,
-            ISettingsManager settingsManager,
             Func<int, string, string, CategoryHierarchyIterator> categoryHierarchyIteratorFactory)
         {
             _categoryService = categoryService;
             _propertyService = propertyService;
-            _settingsManager = settingsManager;
             _categoryHierarchyIteratorFactory = categoryHierarchyIteratorFactory;
 
             AttachValidators();
@@ -75,10 +70,9 @@ namespace VirtoCommerce.CatalogModule.Data.Validation
 
                 var properties = categories.SelectMany(x => x.Properties);
 
-                var useIndexedSearch = await _settingsManager.GetValueAsync(catalogCore.ModuleConstants.Settings.Search.UseCatalogIndexedSearchInManager.Name, true);
-
-                // If useIndexedSearch is off and requested Category is missed, then properties would be empty
-                if (string.IsNullOrEmpty(request.CategoryId) && !useIndexedSearch)
+                // If properties are empty and the requested Category missed
+                // it might meaning that catalog doesn't contains any categories and 
+                if (string.IsNullOrEmpty(request.CategoryId) && !properties.Any())
                 {
                     properties = await _propertyService.GetAllCatalogPropertiesAsync(request.CatalogId);
                 }
