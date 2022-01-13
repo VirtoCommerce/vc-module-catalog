@@ -114,6 +114,17 @@ namespace VirtoCommerce.CatalogModule.Web
 
             serviceCollection.AddTransient<IInternalListEntrySearchService, InternalListEntrySearchService>();
 
+            serviceCollection.AddSingleton<Func<int, string, string, CategoryHierarchyIterator>>(serviceProvider =>
+                (pageSize, catalogId, categoryId) =>
+                    new CategoryHierarchyIterator(
+                        serviceProvider.GetService<Func<ICatalogRepository>>(),
+                        serviceProvider.GetService<ISettingsManager>(),
+                        serviceProvider.GetService<ICategoryIndexedSearchService>(),
+                        pageSize,
+                        catalogId,
+                        categoryId
+                        ));
+
             #region Validators
 
             serviceCollection.AddTransient<AbstractValidator<PropertyValidationRequest>, PropertyNameValidator>();

@@ -47,14 +47,16 @@ angular.module('virtoCommerce.catalogModule')
 
             // validation for category properties
             // skips backend property name validation for current entity edit when the old name equals new name
-            if (!blade.origEntity.categoryId || (!blade.origEntity.isNew && value === blade.origEntity.name)) {
+            if (!blade.origEntity.isNew && value === blade.origEntity.name) {
                 $scope.errorData = null;
                 return $q.resolve();
             }
 
             return properties.validateCategoryPropertyName({
                 propertyName: value,
-                categoryId: blade.origEntity.categoryId
+                propertyType: blade.origEntity.type,
+                categoryId: blade.origEntity.categoryId,
+                catalogId: blade.origEntity.catalogId
             }).$promise.then(result => {
                 if (result.isValid) {
                     $scope.errorData = null;
@@ -142,26 +144,42 @@ angular.module('virtoCommerce.catalogModule')
             });
         }
 
+        function lockSave() {
+            $scope.duplicatedName = angular.copy(blade.currentEntity.name);
+        }
+
+        function isSaveLocked() {
+            var result = blade.currentEntity && $scope.duplicatedName === blade.currentEntity.name;
+
+            return result;
+        }
+
         function isDirty() {
             return !angular.equals(blade.currentEntity, blade.origEntity) && blade.hasUpdatePermission();
         }
 
         function canSave() {
-            return (blade.origEntity.isNew || isDirty()) && formScope && formScope.$valid;
+            return (blade.origEntity.isNew || isDirty()) && formScope && formScope.$valid && !isSaveLocked();
         }
-
+        
         function saveChanges() {
             blade.isLoading = true;
-            bladeNavigationService.closeChildrenBlades(blade);
 
-            delete blade.currentEntity.validationRule; // clear read-only property
-            if (blade.currentEntity.valueType !== "ShortText" && blade.currentEntity.valueType !== "LongText") {
-                delete blade.currentEntity.validationRules;
-            }
+            $scope.doValidateNameAsync(blade.currentEntity.name).then(() => {
+                bladeNavigationService.closeChildrenBlades(blade);
 
-            properties.update(blade.currentEntity, function (data, headers) {
-                blade.currentEntityId = data.id;
-                blade.refresh(true);
+                delete blade.currentEntity.validationRule; // clear read-only property
+                if (blade.currentEntity.valueType !== "ShortText" && blade.currentEntity.valueType !== "LongText") {
+                    delete blade.currentEntity.validationRules;
+                }
+
+                properties.update(blade.currentEntity, function (data, headers) {
+                    blade.currentEntityId = data.id;
+                    blade.refresh(true);
+                });
+            }, () => {
+                lockSave();
+                blade.isLoading = false;
             });
         }
 
