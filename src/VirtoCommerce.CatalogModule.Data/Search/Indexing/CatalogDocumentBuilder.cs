@@ -31,7 +31,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 if (property?.ValueType == PropertyValueType.Boolean && property.Values.IsNullOrEmpty())
                 {
                     document.Add(new IndexDocumentField(property.Name, false) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection, ValueType = IndexDocumentFieldValueType.Boolean, });
-                    break;
+                    continue;
                 }
 
                 foreach (var propValue in property?.Values?.Where(x => x.Value != null) ?? Array.Empty<PropertyValue>())
