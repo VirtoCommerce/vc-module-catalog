@@ -51,9 +51,9 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<ItemEntity>().HasOne(m => m.Parent).WithMany(x => x.Childrens).HasForeignKey(x => x.ParentId)
                 .OnDelete(DeleteBehavior.Restrict);
-            modelBuilder.Entity<ItemEntity>().HasIndex(x => new { x.Code, x.CatalogId }).HasName("IX_Code_CatalogId").IsUnique();
-            modelBuilder.Entity<ItemEntity>().HasIndex(x => new { x.CatalogId, x.ParentId }).IsUnique(false).HasName("IX_CatalogId_ParentId");
-            modelBuilder.Entity<ItemEntity>().HasIndex(x => new { x.CreatedDate, x.ParentId }).IncludeProperties(x => x.ModifiedDate).IsUnique(false).HasName("IX_CreatedDate_ParentId");
+            modelBuilder.Entity<ItemEntity>().HasIndex(x => new { x.Code, x.CatalogId }).HasDatabaseName("IX_Code_CatalogId").IsUnique();
+            modelBuilder.Entity<ItemEntity>().HasIndex(x => new { x.CatalogId, x.ParentId }).IsUnique(false).HasDatabaseName("IX_CatalogId_ParentId");
+            modelBuilder.Entity<ItemEntity>().HasIndex(x => new { x.CreatedDate, x.ParentId }).IncludeProperties(x => x.ModifiedDate).IsUnique(false).HasDatabaseName("IX_CreatedDate_ParentId");
 
             #endregion Item
 
@@ -76,7 +76,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 .HasForeignKey(x => x.PropertyId).IsRequired().OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<PropertyDictionaryItemEntity>().HasIndex(x => new { x.Alias, x.PropertyId })
                 .IsUnique()
-                .HasName("IX_AliasAndPropertyId");
+                .HasDatabaseName("IX_AliasAndPropertyId");
 
             #endregion PropertyDictionaryItem
 
@@ -150,7 +150,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             modelBuilder.Entity<VideoEntity>()
                 .HasIndex(x => new { x.OwnerType, x.OwnerId })
                 .IsUnique(false)
-                .HasName("IX_OwnerType_OwnerId");
+                .HasDatabaseName("IX_OwnerType_OwnerId");
 
             #endregion
 

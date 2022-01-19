@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
     <PropertyGroup>
-        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <noWarn>1591</noWarn>
         <IsPackable>False</IsPackable>
@@ -23,9 +23,9 @@
         <NoWarn>1701;1702;1705;1591</NoWarn>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.81.0" />
-        <PackageReference Include="VirtoCommerce.Platform.Data" Version="3.81.0" />
-        <PackageReference Include="VirtoCommerce.Platform.Security" Version="3.81.0" />
+        <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.200.0" />
+        <PackageReference Include="VirtoCommerce.Platform.Data" Version="3.200.0" />
+        <PackageReference Include="VirtoCommerce.Platform.Security" Version="3.200.0" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\VirtoCommerce.CatalogModule.BulkActions\VirtoCommerce.CatalogModule.BulkActions.csproj" />
