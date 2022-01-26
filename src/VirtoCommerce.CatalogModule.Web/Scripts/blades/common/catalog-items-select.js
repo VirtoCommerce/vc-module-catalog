@@ -59,6 +59,8 @@ angular.module('virtoCommerce.catalogModule')
                     $scope.items = _.where(data.results, { isVirtual: $scope.options.isVirtual });
                 }
 
+                $scope.pageSettings.totalItems = $scope.items.length;
+
                 if ($scope.options.onCatalogsLoaded) {
                     $scope.options.onCatalogsLoaded($scope.items);
                 }

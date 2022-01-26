@@ -278,7 +278,19 @@ angular.module('virtoCommerce.catalogModule')
                                 canExecuteMethod: function () {
                                     return _.any(selection);
                                 }
-                            }]
+                            },
+                            {
+                                name: "platform.commands.refresh", icon: 'fa fa-refresh',
+                                executeMethod: function (selectBlade) {
+                                    if (selectBlade.refresh) {
+                                        selectBlade.refresh();
+                                    }
+                                },
+                                canExecuteMethod: function () {
+                                    return true;
+                                }
+                            }
+                        ]
                     };
 
                     bladeNavigationService.showBlade(newBlade, blade);
