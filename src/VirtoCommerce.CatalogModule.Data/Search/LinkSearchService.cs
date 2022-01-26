@@ -107,7 +107,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return result;
         }
 
-        private IQueryable<CategoryItemRelationEntity> GetProductLinksQuery(IQueryable<CategoryItemRelationEntity> categoryItemRelations, LinkSearchCriteria criteria)
+        private static IQueryable<CategoryItemRelationEntity> GetProductLinksQuery(IQueryable<CategoryItemRelationEntity> categoryItemRelations, LinkSearchCriteria criteria)
         {
             var query = categoryItemRelations;
 
@@ -128,7 +128,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return query;
         }
 
-        private IQueryable<CategoryRelationEntity> GetCategoryLinksQuery(IQueryable<CategoryRelationEntity> categoryLinks, LinkSearchCriteria criteria)
+        private static IQueryable<CategoryRelationEntity> GetCategoryLinksQuery(IQueryable<CategoryRelationEntity> categoryLinks, LinkSearchCriteria criteria)
         {
             var query = categoryLinks;
 

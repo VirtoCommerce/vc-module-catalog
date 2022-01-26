@@ -155,9 +155,9 @@ angular.module('virtoCommerce.catalogModule')
                         if (x.category) {
                             var outline = _.first(x.category.outlines);
                             if (outline) {
-                                var names = _.pluck(outline.items, 'name');
+                                names = _.pluck(outline.items, 'name');
 
-                            };
+                            }
                         }
 
                         x.$$path = _.any(names) ? '\/' + names.join("\/") : '\/';

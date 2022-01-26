@@ -137,9 +137,9 @@ angular.module('virtoCommerce.catalogModule')
 
             // switch template option
             if ($scope.options.getBladeForCategories) {
-                var customBlade = $scope.options.getBladeForCategories(listItem, newBlade);
-                if (customBlade) {
-                    newBlade = customBlade;
+                var customCategoriesBlade = $scope.options.getBladeForCategories(listItem, newBlade);
+                if (customCategoriesBlade) {
+                    newBlade = customCategoriesBlade;
                 }
             }
 
