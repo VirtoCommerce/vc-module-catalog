@@ -12,6 +12,7 @@ angular.module('virtoCommerce.catalogModule')
         showCheckingMultiple: true,
         allowCheckingItem: true,
         allowCheckingCategory: false,
+        withProducts: true,
         selectedItemIds: [],
         gridColumns: []
     }, blade.options);
@@ -27,7 +28,8 @@ angular.module('virtoCommerce.catalogModule')
                     categoryId: blade.categoryId,
                     keyword: filter.keyword,
                     searchInVariations : filter.searchInVariations ? filter.searchInVariations : false,
-                    responseGroup: 'withCategories, withProducts',
+                    responseGroup: $scope.options.withProducts ? 'withCategories, withProducts' : 'withCategories',
+                    objectTypes: $scope.options.withProducts ? undefined : ['Category'],
                     excludeProductType: $scope.options.excludeProductType,
                     sort: uiGridHelper.getSortExpression($scope),
                     skip: ($scope.pageSettings.currentPage - 1) * $scope.pageSettings.itemsPerPageCount,
@@ -51,10 +53,18 @@ angular.module('virtoCommerce.catalogModule')
             catalogs.search({take: 1000}, function (data) {
                 blade.isLoading = false;
 
-                $scope.items = data.results;
+                if ($scope.options.isVirtual === undefined) {
+                    $scope.items = data.results;
+                } else {
+                    $scope.items = _.where(data.results, { isVirtual: $scope.options.isVirtual });
+                }
+
+                if ($scope.options.onCatalogsLoaded) {
+                    $scope.options.onCatalogsLoaded($scope.items);
+                }
+
                 //Set navigation breadcrumbs
                 setBreadcrumbs();
-
             });
         }
     };
@@ -124,6 +134,15 @@ angular.module('virtoCommerce.catalogModule')
         if ($scope.isCatalogSelectMode()) {
             newBlade.catalogId = listItem.id;
             newBlade.catalog = listItem;
+
+            // switch template option
+            if ($scope.options.getBladeForCategories) {
+                var customBlade = $scope.options.getBladeForCategories(listItem, newBlade);
+                if (customBlade) {
+                    newBlade = customBlade;
+                }
+            }
+
             bladeNavigationService.closeBlade(blade, function () {
                 bladeNavigationService.showBlade(newBlade, blade.parentBlade);
             });

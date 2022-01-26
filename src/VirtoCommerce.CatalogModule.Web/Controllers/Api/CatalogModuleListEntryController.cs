@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Authorization;
+using VirtoCommerce.CatalogModule.Data.Search;
 using VirtoCommerce.CatalogModule.Data.Services;
 using VirtoCommerce.CatalogModule.Web.Model;
 using VirtoCommerce.Platform.Core.Common;
@@ -27,12 +29,14 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly IItemService _itemService;
         private readonly IListEntrySearchService _listEntrySearchService;
         private readonly IAuthorizationService _authorizationService;
+        private readonly ILinkSearchService _linkSearchService;
         private readonly ListEntryMover<Category> _categoryMover;
         private readonly ListEntryMover<CatalogProduct> _productMover;
 
         public CatalogModuleListEntryController(
             IInternalListEntrySearchService internalListEntrySearchService,
             IListEntrySearchService listEntrySearchService,
+            ILinkSearchService linkSearchService,
             ICategoryService categoryService,
             IItemService itemService,
             ICatalogService catalogService,
@@ -42,6 +46,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         {
             _internalListEntrySearchService = internalListEntrySearchService;
             _categoryService = categoryService;
+            _linkSearchService = linkSearchService;
             _authorizationService = authorizationService;
             _itemService = itemService;
             _catalogService = catalogService;
@@ -151,6 +156,24 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             } while (haveProducts);
 
             return Ok();
+        }
+
+        [HttpPost]
+        [Route("~/api/catalog/listentrylinks/search")]
+        public async Task<ActionResult> SearchLinks([FromBody] LinkSearchCriteria criteria)
+        {
+            var entryIds = criteria.ObjectIds?.ToArray() ?? Array.Empty<string>();
+            var hasLinkEntries = await LoadCatalogEntriesAsync<IHasLinks>(entryIds);
+
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, hasLinkEntries, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Delete));
+            if (!authorizationResult.Succeeded)
+            {
+                return Unauthorized();
+            }
+
+            var result = await _linkSearchService.SearchAsync(criteria);
+
+            return Ok(result);
         }
 
         [ApiExplorerSettings(IgnoreApi = true)]

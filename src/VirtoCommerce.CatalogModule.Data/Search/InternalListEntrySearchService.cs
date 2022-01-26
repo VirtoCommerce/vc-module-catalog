@@ -39,30 +39,35 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             if (useIndexedSearch && !string.IsNullOrEmpty(criteria.Keyword))
             {
                 // PT-5120: create outline for category, implement sorting
+                if (criteria.ObjectTypes.IsNullOrEmpty() || criteria.ObjectTypes.Contains(nameof(Category)))
+                {
+                    var categoryIndexedSearchCriteria = AbstractTypeFactory<CategoryIndexedSearchCriteria>.TryCreateInstance().FromListEntryCriteria(criteria) as CategoryIndexedSearchCriteria;
+                    const CategoryResponseGroup catResponseGroup = CategoryResponseGroup.Info | CategoryResponseGroup.WithOutlines;
+                    categoryIndexedSearchCriteria.ResponseGroup = catResponseGroup.ToString();
 
-                var categoryIndexedSearchCriteria = AbstractTypeFactory<CategoryIndexedSearchCriteria>.TryCreateInstance().FromListEntryCriteria(criteria) as CategoryIndexedSearchCriteria;
-                const CategoryResponseGroup catResponseGroup = CategoryResponseGroup.Info | CategoryResponseGroup.WithOutlines;
-                categoryIndexedSearchCriteria.ResponseGroup = catResponseGroup.ToString();
+                    var catIndexedSearchResult = await _categoryIndexedSearchService.SearchAsync(categoryIndexedSearchCriteria);
+                    var totalCount = catIndexedSearchResult.TotalCount;
+                    var skip = Math.Min(totalCount, criteria.Skip);
+                    var take = Math.Min(criteria.Take, Math.Max(0, totalCount - criteria.Skip));
 
-                var catIndexedSearchResult = await _categoryIndexedSearchService.SearchAsync(categoryIndexedSearchCriteria);
-                var totalCount = catIndexedSearchResult.TotalCount;
-                var skip = Math.Min(totalCount, criteria.Skip);
-                var take = Math.Min(criteria.Take, Math.Max(0, totalCount - criteria.Skip));
+                    result.Results = catIndexedSearchResult.Items.Select(x => AbstractTypeFactory<CategoryListEntry>.TryCreateInstance().FromModel(x)).ToList();
+                    result.TotalCount = (int)totalCount;
 
-                result.Results = catIndexedSearchResult.Items.Select(x => AbstractTypeFactory<CategoryListEntry>.TryCreateInstance().FromModel(x)).ToList();
-                result.TotalCount = (int)totalCount;
+                    criteria.Skip -= (int)skip;
+                    criteria.Take -= (int)take;
+                }
 
-                criteria.Skip -= (int)skip;
-                criteria.Take -= (int)take;
+                if (criteria.ObjectTypes.IsNullOrEmpty() || criteria.ObjectTypes.Contains(nameof(CatalogProduct)))
+                {
+                    const ItemResponseGroup itemResponseGroup = ItemResponseGroup.ItemInfo | ItemResponseGroup.Outlines;
 
-                const ItemResponseGroup itemResponseGroup = ItemResponseGroup.ItemInfo | ItemResponseGroup.Outlines;
+                    var productIndexedSearchCriteria = AbstractTypeFactory<ProductIndexedSearchCriteria>.TryCreateInstance().FromListEntryCriteria(criteria) as ProductIndexedSearchCriteria;
+                    productIndexedSearchCriteria.ResponseGroup = itemResponseGroup.ToString();
 
-                var productIndexedSearchCriteria = AbstractTypeFactory<ProductIndexedSearchCriteria>.TryCreateInstance().FromListEntryCriteria(criteria) as ProductIndexedSearchCriteria;
-                productIndexedSearchCriteria.ResponseGroup = itemResponseGroup.ToString();
-
-                var indexedSearchResult = await _productIndexedSearchService.SearchAsync(productIndexedSearchCriteria);
-                result.TotalCount += (int)indexedSearchResult.TotalCount;
-                result.Results.AddRange(indexedSearchResult.Items.Select(x => AbstractTypeFactory<ProductListEntry>.TryCreateInstance().FromModel(x)));
+                    var indexedSearchResult = await _productIndexedSearchService.SearchAsync(productIndexedSearchCriteria);
+                    result.TotalCount += (int)indexedSearchResult.TotalCount;
+                    result.Results.AddRange(indexedSearchResult.Items.Select(x => AbstractTypeFactory<ProductListEntry>.TryCreateInstance().FromModel(x)));
+                }
             }
             else
             {
