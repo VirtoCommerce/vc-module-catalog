@@ -198,10 +198,10 @@ User can manage category links to virtual catalogs for the selected category:
     1. User can select a catalog from the list of virtual catalog on the first blade.
     1. List of subdirectories can be opened when clicking on a catalog record.
     1. User can select a category from the list.
-    1. Categories that are marked with the ‘Marked’ symbol, category links inside virtual catalogs and the current category (if present in the list) cannot be selected.
+    1. Categories marked with the ‘Marked’ symbol, category links inside virtual catalogs and the current category (if present in the list) cannot be selected.
 
 1. User selects catalogs or categories from the list and clicks the Confirm button;
-1. Links to the current Category are created inside selected virtual Catalogs and Categories; 
-1. User can select Links from the list and click Delete button - selected links will be deleted.
+1. Links to the current category are created inside selected virtual catalogs and categories; 
+1. User can select links from the list and click the Delete button - selected links will be deleted.
 
 ![Category links](media/screen-category-links.png)
