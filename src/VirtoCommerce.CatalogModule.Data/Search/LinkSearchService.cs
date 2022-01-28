@@ -48,17 +48,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                             .AsNoTracking()
                             .ToListAsync();
 
-                        result.Results = productLinks.Select(x =>
-                        {
-                            var enitry = AbstractTypeFactory<CategoryLink>.TryCreateInstance();
-
-                            enitry.ListEntryId = x.ItemId;
-                            enitry.ListEntryType = nameof(CatalogProduct);
-                            enitry.CatalogId = x.CatalogId;
-                            enitry.CategoryId = x.CategoryId;
-
-                            return enitry;
-                        }).ToList();
+                        result.Results = productLinks.Select(x => ToCategoryLink(x)).ToList();
                     }
                 }
                 else if (criteria.ObjectType.EqualsInvariant(nameof(Category)))
@@ -75,17 +65,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                             .AsNoTracking()
                             .ToListAsync();
 
-                        result.Results = categoryLinks.Select(x =>
-                        {
-                            var enitry = AbstractTypeFactory<CategoryLink>.TryCreateInstance();
-
-                            enitry.ListEntryId = x.SourceCategoryId;
-                            enitry.ListEntryType = nameof(Category);
-                            enitry.CatalogId = x.TargetCatalogId;
-                            enitry.CategoryId = x.TargetCategoryId;
-
-                            return enitry;
-                        }).ToList();
+                        result.Results = categoryLinks.Select(x => ToCategoryLink(x)).ToList();
                     }
                 }
             }
@@ -107,7 +87,31 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return result;
         }
 
-        private static IQueryable<CategoryItemRelationEntity> GetProductLinksQuery(IQueryable<CategoryItemRelationEntity> categoryItemRelations, LinkSearchCriteria criteria)
+        protected CategoryLink ToCategoryLink(CategoryRelationEntity productRelation)
+        {
+            var enitry = AbstractTypeFactory<CategoryLink>.TryCreateInstance();
+
+            enitry.ListEntryId = productRelation.SourceCategoryId;
+            enitry.ListEntryType = nameof(Category);
+            enitry.CatalogId = productRelation.TargetCatalogId;
+            enitry.CategoryId = productRelation.TargetCategoryId;
+
+            return enitry;
+        }
+
+        protected CategoryLink ToCategoryLink(CategoryItemRelationEntity categoryRelation)
+        {
+            var enitry = AbstractTypeFactory<CategoryLink>.TryCreateInstance();
+
+            enitry.ListEntryId = categoryRelation.ItemId;
+            enitry.ListEntryType = nameof(CatalogProduct);
+            enitry.CatalogId = categoryRelation.CatalogId;
+            enitry.CategoryId = categoryRelation.CategoryId;
+
+            return enitry;
+        }
+
+        protected IQueryable<CategoryItemRelationEntity> GetProductLinksQuery(IQueryable<CategoryItemRelationEntity> categoryItemRelations, LinkSearchCriteria criteria)
         {
             var query = categoryItemRelations;
 
@@ -128,7 +132,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return query;
         }
 
-        private static IQueryable<CategoryRelationEntity> GetCategoryLinksQuery(IQueryable<CategoryRelationEntity> categoryLinks, LinkSearchCriteria criteria)
+        protected IQueryable<CategoryRelationEntity> GetCategoryLinksQuery(IQueryable<CategoryRelationEntity> categoryLinks, LinkSearchCriteria criteria)
         {
             var query = categoryLinks;
 

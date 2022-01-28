@@ -164,7 +164,7 @@ angular.module('virtoCommerce.catalogModule')
                     });
                 }
 
-                $scope.openAddLinksBlade = function() {
+                $scope.openAddLinksBlade = function () {
                     var selection = [];
 
                     var options = {
@@ -191,7 +191,8 @@ angular.module('virtoCommerce.catalogModule')
                         },
                         // don't select items with 'marked' true or item with links (most likely virtual category link)
                         isItemSelectable: function (item) {
-                            return (!item.links || !item.links.length) && !item.marked;
+                            var isLinkToSameCategory = blade.type === "Category" ? item.id === blade.currentEntity.id : false; //prevent self-linking for categories
+                            return (!item.links || !item.links.length) && !item.marked && !isLinkToSameCategory;
                         },
                         // find linked categories to place 'Marked' mark
                         onItemsLoaded: function (loadedCategories) {
