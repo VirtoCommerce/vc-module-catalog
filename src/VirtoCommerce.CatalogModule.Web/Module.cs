@@ -113,6 +113,7 @@ namespace VirtoCommerce.CatalogModule.Web
             serviceCollection.AddTransient<ISeoBySlugResolver, CatalogSeoBySlugResolver>();
 
             serviceCollection.AddTransient<IInternalListEntrySearchService, InternalListEntrySearchService>();
+            serviceCollection.AddTransient<ILinkSearchService, LinkSearchService>();
 
             serviceCollection.AddSingleton<Func<int, string, string, CategoryHierarchyIterator>>(serviceProvider =>
                 (pageSize, catalogId, categoryId) =>

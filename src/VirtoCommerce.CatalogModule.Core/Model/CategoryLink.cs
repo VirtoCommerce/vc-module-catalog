@@ -32,6 +32,16 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         public string CategoryId { get; set; }
         public Category Category { get; set; }
 
+        /// <summary>
+        /// Gets the Id of either target Catetory or Catalog
+        /// </summary>
+        public string TargetId => Category?.Id ?? Catalog?.Id;
+
+        /// <summary>
+        /// Gets the name of either target Catetory or Catalog
+        /// </summary>
+        public string Name => Category?.Name ?? Catalog?.Name;
+
         protected override IEnumerable<object> GetEqualityComponents()
         {
             yield return EntryId;

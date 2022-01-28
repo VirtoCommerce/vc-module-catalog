@@ -635,6 +635,14 @@
             "description": "Appears only for the related variations"
           }
         }
+      },
+      "links-list": {
+        "title": "Links",
+        "labels": {
+          "no-data": "There are no links yet",
+          "add-links": "Add new link",
+          "marked": "Marked"
+        }
       }
     },
     "exporter-list": {
@@ -700,6 +708,9 @@
       "videos": {
         "blade-subtitle": "Videos",
         "title": "Videos"
+      },
+      "links": {
+        "title": "Links"
       }
     },
     "dialogs": {
@@ -806,6 +817,10 @@
       "bill-or-materials-associations-delete": {
         "title": "Confirm Delete",
         "message": "Are you sure you want to delete the selected products?"
+      },
+      "links-delete": {
+        "title": "Confirm Delete",
+        "message": "Are you sure you want to delete selected links?"
       }
     },
     "wizards": {
