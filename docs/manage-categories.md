@@ -186,3 +186,22 @@ The user can assign tags to the selected category
 1. The new tag will be added to the tags list and displayed in the ‘Available tags’ drop down  
 
 ![Add new tag](media/screen-add-new-tag.png)
+
+### 'Links' widget
+
+User can manage category links to virtual catalogs for the selected category:
+
+1. User selects the ‘Links’ widget on ‘Category details’ screen;
+1. System displays the ‘Links‘ list blade with possibility to create a new link to a virtual catalog or a category inside virtual catalog;
+1. User clicks the ‘Add’ button;
+1. System opens the ‘Select Catalog items’ blade. 
+    1. User can select a catalog from the list of virtual catalog on the first blade.
+    1. List of subdirectories can be opened when clicking on a catalog record.
+    1. User can select a category from the list.
+    1. Categories that are marked with the ‘Marked’ symbol, category links inside virtual catalogs and the current category (if present in the list) and cannot be selected.
+
+1. User selects required catalogs or categories and clicks the Confirm button;
+1. Links to the current Category are created in selected Categories and Catalogs; 
+1. User can select Links from the list and click Delete button - selected links will be deleted.
+
+![Category links](media/screen-category-links.png)
