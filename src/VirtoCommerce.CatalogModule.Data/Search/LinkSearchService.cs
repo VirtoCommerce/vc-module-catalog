@@ -26,7 +26,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             _catalogService = catalogService;
         }
 
-        public async Task<LinkSearchResult> SearchAsync(LinkSearchCriteria criteria)
+        public virtual async Task<LinkSearchResult> SearchAsync(LinkSearchCriteria criteria)
         {
             var result = new LinkSearchResult();
 
@@ -87,7 +87,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return result;
         }
 
-        protected CategoryLink ToCategoryLink(CategoryRelationEntity productRelation)
+        protected virtual CategoryLink ToCategoryLink(CategoryRelationEntity productRelation)
         {
             var enitry = AbstractTypeFactory<CategoryLink>.TryCreateInstance();
 
@@ -99,7 +99,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return enitry;
         }
 
-        protected CategoryLink ToCategoryLink(CategoryItemRelationEntity categoryRelation)
+        protected virtual CategoryLink ToCategoryLink(CategoryItemRelationEntity categoryRelation)
         {
             var enitry = AbstractTypeFactory<CategoryLink>.TryCreateInstance();
 
@@ -111,7 +111,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return enitry;
         }
 
-        protected IQueryable<CategoryItemRelationEntity> GetProductLinksQuery(IQueryable<CategoryItemRelationEntity> categoryItemRelations, LinkSearchCriteria criteria)
+        protected virtual IQueryable<CategoryItemRelationEntity> GetProductLinksQuery(IQueryable<CategoryItemRelationEntity> categoryItemRelations, LinkSearchCriteria criteria)
         {
             var query = categoryItemRelations;
 
@@ -132,7 +132,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return query;
         }
 
-        protected IQueryable<CategoryRelationEntity> GetCategoryLinksQuery(IQueryable<CategoryRelationEntity> categoryLinks, LinkSearchCriteria criteria)
+        protected virtual IQueryable<CategoryRelationEntity> GetCategoryLinksQuery(IQueryable<CategoryRelationEntity> categoryLinks, LinkSearchCriteria criteria)
         {
             var query = categoryLinks;
 
