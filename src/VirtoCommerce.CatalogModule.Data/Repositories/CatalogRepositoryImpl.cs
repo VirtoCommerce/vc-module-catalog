@@ -565,7 +565,6 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             if (result.Any())
             {
                 await Images.Where(x => x.CategoryId == categoryId).LoadAsync();
-                await SeoInfos.Where(x => x.CategoryId == categoryId).LoadAsync();
                 await PropertyValues.Include(x => x.DictionaryItem.DictionaryItemValues).Where(x => x.CategoryId == categoryId).LoadAsync();
                 await CategoryDescriptions.Where(x => x.CategoryId == categoryId).LoadAsync();
 
@@ -575,6 +574,22 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
                 var categoryPropertiesIds = await Properties.Where(x => categoriesIds.Contains(x.CategoryId)).Select(x => x.Id).ToArrayAsync();
                 await GetPropertiesByIdsAsync(categoryPropertiesIds);
+
+                //get all possible unique category links
+                var outgointCategoriesIds = result.SelectMany(x => x.OutgoingLinks.Select(y => y.TargetCategoryId)).Distinct().ToList();
+                outgointCategoriesIds.RemoveAll(x => categoriesIds.Contains(x));
+
+                var linkedCategories = new List<CategoryEntity>();
+                if (outgointCategoriesIds.Count > 0)
+                {
+                    linkedCategories = await Categories.Where(x => outgointCategoriesIds.Contains(x.Id)).ToListAsync();
+                }
+
+                categoriesIds.AddRange(outgointCategoriesIds);
+
+                await SeoInfos.Where(x => categoriesIds.Contains(x.CategoryId)).LoadAsync();
+
+                result.AddRange(linkedCategories);
             }
 
             return result;
