@@ -176,7 +176,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
                     // find link category ids to recursievly load them
                     var linkedCategoryIds = result.Values.SelectMany(x => x.Links.Select(x => x.CategoryId)).Where(x => x != null).Distinct().ToList();
-                    linkedCategoryIds.RemoveAll(x => result.Keys.Contains(x));
+                    linkedCategoryIds.RemoveAll(x => result.ContainsKey(x));
 
                     foreach (var linkedCategoryId in linkedCategoryIds)
                     {
