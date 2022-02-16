@@ -174,6 +174,19 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                         cacheEntry.AddExpirationToken(CatalogTreeCacheRegion.CreateChangeTokenForKey(catalogId));
                     }
 
+                    // find link category ids to recursievly load them
+                    var linkedCategoryIds = result.Values.SelectMany(x => x.Links.Select(x => x.CategoryId)).Where(x => x != null).Distinct().ToList();
+                    linkedCategoryIds.RemoveAll(x => result.ContainsKey(x));
+
+                    foreach (var linkedCategoryId in linkedCategoryIds)
+                    {
+                        // recursive call
+                        var linkedCategory = await PreloadCategoryBranchAsync(linkedCategoryId);
+
+                        // union two category sets (parents and linked)
+                        result.AddRange(linkedCategory);
+                    }
+
                     ResolveImageUrls(result.Values);
 
                     await LoadDependenciesAsync(result.Values, result);
@@ -324,7 +337,19 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
             using (var repository = _repositoryFactory())
             {
+                repository.DisableChangesTracking();
+
                 var categoryIds = categories.Select(x => x.Id).ToArray();
+
+                // find all links cats first
+                var linkedCategoryIds = await repository.CategoryLinks
+                    .Where(x => categoryIds.Contains(x.TargetCategoryId))
+                    .Select(x => x.SourceCategoryId)
+                    .Distinct()
+                    .ToArrayAsync();
+
+                categoryIds = categoryIds.Union(linkedCategoryIds).ToArray();
+
                 var childrenCategoryIds = await repository.GetAllChildrenCategoriesIdsAsync(categoryIds);
                 var allCategoryIds = categoryIds.Union(childrenCategoryIds);
 
