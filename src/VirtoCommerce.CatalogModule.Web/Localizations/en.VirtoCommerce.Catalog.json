@@ -10,7 +10,7 @@
       "geoPoint": {
         "title": "Geo point",
         "placeholder": "Please enter latitude and longitude",
-        "description": "Please use the following format: <strong>lat,long</strong>, e.g. 41.40338,2.17403, with no space after the comma separator."
+        "description": "Please list latitude and longitude separated with a comma without spaces, e.g. 41.40338,2.17403."
       }
     },
     "product-types": {
