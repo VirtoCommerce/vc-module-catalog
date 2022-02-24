@@ -14,7 +14,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         [NotMapped]
         public string Alias { get; set; }
 
-        [StringLength(64)]
+        [StringLength(128)]
         public string Name { get; set; }
 
         [Required]
