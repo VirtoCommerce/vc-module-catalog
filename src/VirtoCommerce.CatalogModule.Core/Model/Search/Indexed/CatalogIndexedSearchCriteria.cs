@@ -11,6 +11,8 @@ namespace VirtoCommerce.CatalogModule.Core.Model.Search
 
         public string CatalogId { get; set; }
 
+        public IEnumerable<string> CatalogIds { get; set; }
+
         /// <summary>
         /// CategoryId1/CategoryId2, no catalog should be included in the outline
         /// </summary>
@@ -58,6 +60,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model.Search
 
             Keyword = listEntryCriteria.Keyword;
             CatalogId = listEntryCriteria.CatalogId;
+            CatalogIds = listEntryCriteria.CatalogIds;
             Outline = listEntryCriteria.CategoryId;
             Skip = listEntryCriteria.Skip;
             Take = listEntryCriteria.Take;
