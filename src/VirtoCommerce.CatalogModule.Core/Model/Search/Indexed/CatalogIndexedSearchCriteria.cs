@@ -11,7 +11,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model.Search
 
         public string CatalogId { get; set; }
 
-        public IEnumerable<string> CatalogIds { get; set; }
+        public IList<string> CatalogIds { get; set; }
 
         /// <summary>
         /// CategoryId1/CategoryId2, no catalog should be included in the outline
