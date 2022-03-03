@@ -62,16 +62,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 result.Add(new IdsFilter { Values = criteria.ObjectIds });
             }
 
-            if (!string.IsNullOrEmpty(criteria.CatalogId) || (criteria.CatalogIds?.Any(x => !string.IsNullOrEmpty(x)) ?? false))
-            {
-                var catalogIds = new List<string>{criteria.CatalogId};
-                catalogIds.AddRange(criteria.CatalogIds);
-
-                catalogIds = catalogIds.Where(x => !string.IsNullOrEmpty(x)).Select(x => x.ToLowerInvariant()).ToList();
-
-                result.Add(FiltersHelper.CreateTermFilter("catalog", catalogIds));
-            }
-
+            result.AddCatalogFilters(criteria);
+            
             result.Add(FiltersHelper.CreateOutlineFilter(criteria));
 
             var terms = criteria.GetTerms();
