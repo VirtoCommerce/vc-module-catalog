@@ -38,12 +38,18 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
 
                     if (context.Resource is CatalogSearchCriteria catalogSearchCriteria)
                     {
-                        catalogSearchCriteria.CatalogIds = allowedCatalogIds;
+                        catalogSearchCriteria.CatalogIds = catalogSearchCriteria.CatalogIds?.Any() ?? false
+                            ? catalogSearchCriteria.CatalogIds.Where(x => allowedCatalogIds.Contains(x)).ToArray()
+                            : allowedCatalogIds;
+
                         context.Succeed(requirement);
                     }
                     else if (context.Resource is CatalogListEntrySearchCriteria listEntrySearchCriteria)
                     {
-                        listEntrySearchCriteria.CatalogIds = allowedCatalogIds;
+                        listEntrySearchCriteria.CatalogIds = listEntrySearchCriteria.CatalogIds?.Any() ?? false
+                            ? listEntrySearchCriteria.CatalogIds.Where(x => allowedCatalogIds.Contains(x)).ToArray()
+                            : allowedCatalogIds;
+
                         context.Succeed(requirement);
                     }
                     else if (context.Resource is Catalog catalog && !catalog.IsTransient())
