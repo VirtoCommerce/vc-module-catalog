@@ -1,7 +1,7 @@
 <div class="blade-static" ng-if="blade.currentEntities.length">
     <div class="form-group">
         <vc-item-search blade="blade"></vc-item-search>
-        
+
         <p class="form-count">{{'platform.list.count' | translate}}: <span class="count">{{pageSettings.totalItems | number:0}}</span></p>
     </div>
 </div>
@@ -48,7 +48,7 @@
     <div class="ui-grid-cell-contents">
         <div class="inner-contents">
             <i class="table-ico fa" ng-class="row.entity.isVirtual ? 'fa-cloud' : 'fa-folder'"></i>
-            <span class="table-t" ng-show="row.entity.isVirtual">{{ 'catalog.blades.catalogs-list.labels.virtual' | translate: { name: COL_FIELD } }}</span>
+            <span class="table-t" ng-show="row.entity.isVirtual">{{ 'catalog.blades.catalogs-list.labels.virtual' | translate }} {{ COL_FIELD }}</span>
             <span class="table-t" ng-hide="row.entity.isVirtual">{{COL_FIELD}}</span>
         </div>
     </div>
