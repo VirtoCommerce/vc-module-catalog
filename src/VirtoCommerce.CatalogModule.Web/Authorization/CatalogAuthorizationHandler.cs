@@ -31,7 +31,6 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
                 var userPermissions = context.User.FindPermissions(requirement.Permission, _jsonOptions.SerializerSettings);
                 if (userPermissions.Count > 0)
                 {
-
                     var allowedCatalogIdsList = new List<string>();
 
                     // Collect scope ids from all permissions
