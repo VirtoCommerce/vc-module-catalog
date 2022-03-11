@@ -7,7 +7,7 @@
         "deployBranch": "dev",
         "environmentId": "dev",
         "environmentName": "Development",
-        "environmentType": "development",
+        "environmentType": "staging",
         "environmentUrl": "https://vcplatform-platform.dev.govirto.com/"
     },
     "qa": {
