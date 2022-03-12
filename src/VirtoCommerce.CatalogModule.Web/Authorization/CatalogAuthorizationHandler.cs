@@ -28,13 +28,18 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
 
             if (!context.HasSucceeded)
             {
-                var userPermission = context.User.FindPermission(requirement.Permission, _jsonOptions.SerializerSettings);
-                if (userPermission != null)
+                var userPermissions = context.User.FindPermissions(requirement.Permission, _jsonOptions.SerializerSettings);
+                if (userPermissions.Count > 0)
                 {
-                    var allowedCatalogIds = userPermission.AssignedScopes.OfType<SelectedCatalogScope>()
-                                                          .Select(x => x.CatalogId)
-                                                          .Distinct()
-                                                          .ToArray();
+                    var allowedCatalogIdsList = new List<string>();
+
+                    // Collect scope ids from all permissions
+                    foreach (var permission in userPermissions)
+                    {
+                        allowedCatalogIdsList.AddRange(permission.AssignedScopes.OfType<SelectedCatalogScope>().Select(y => y.CatalogId));
+                    }
+
+                    var allowedCatalogIds = allowedCatalogIdsList.Distinct().ToArray();
 
                     if (context.Resource is CatalogSearchCriteria catalogSearchCriteria)
                     {
