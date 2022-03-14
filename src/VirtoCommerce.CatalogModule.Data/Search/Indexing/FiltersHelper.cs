@@ -83,7 +83,10 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         public static void AddCatalogFilters(this IList<IFilter> filters, CatalogIndexedSearchCriteria criteria)
         {
-            filters.Add(CreateTermFilter("catalog", criteria.CatalogIds));
+            if (!criteria.CatalogIds.IsNullOrEmpty())
+            {
+                filters.Add(CreateTermFilter("catalog", criteria.CatalogIds));
+            }
         }
 
         private static IFilter GetPriceRangeFilterRecursive(int pricelistNumber, string commonFieldName, IList<string> pricelists, string lower, string upper, bool includeLower, bool includeUpper)
