@@ -83,14 +83,9 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         public static void AddCatalogFilters(this IList<IFilter> filters, CatalogIndexedSearchCriteria criteria)
         {
-            if (!string.IsNullOrEmpty(criteria.CatalogId) || (criteria.CatalogIds?.Any(x => !string.IsNullOrEmpty(x)) ?? false))
+            if (!criteria.CatalogIds.IsNullOrEmpty())
             {
-                var catalogIds = new List<string> { criteria.CatalogId };
-                catalogIds.AddRange(criteria.CatalogIds);
-
-                catalogIds = catalogIds.Where(x => !string.IsNullOrEmpty(x)).Select(x => x.ToLowerInvariant()).ToList();
-
-                filters.Add(CreateTermFilter("catalog", catalogIds));
+                filters.Add(CreateTermFilter("catalog", criteria.CatalogIds));
             }
         }
 
