@@ -136,7 +136,7 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                 //Register dimensions widget
                 var dimensionsWidget = {
                     controller: 'virtoCommerce.catalogModule.itemDimensionWidgetController',
-                    isVisible: function (blade) { return blade.productType === 'Physical'; },
+                    isVisible: function (blade) { return blade.productType === 'Physical' || blade.productType === 'BillOfMaterials'; },
                     size: [2, 1],
                     template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/itemDimensionWidget.tpl.html'
                 };
