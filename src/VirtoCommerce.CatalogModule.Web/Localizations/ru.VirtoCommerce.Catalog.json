@@ -781,6 +781,7 @@
       }
     },
     "commands": {
+      "copy-id": "Копировать ID",
       "clear-all": "Очистить все",
       "add-property": "Добавить свойство",
       "gallery": "Галерея",

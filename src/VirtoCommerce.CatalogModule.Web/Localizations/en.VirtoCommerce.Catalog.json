@@ -907,6 +907,7 @@
       }
     },
     "commands": {
+      "copy-id": "Copy ID",
       "clear-all": "Clear all",
       "add-property": "Add property",
       "add-product-property": "Add a custom property",
@@ -973,6 +974,10 @@
       "UseSeoDeduplication": {
         "description": "Enable or disable detecting SEO duplicates",
         "title": "Detect SEO duplicates"
+      },
+      "AllowToCopyID": {
+        "title": "Allow to copy item's ID",
+        "description": "Enable it to see the Copy ID context menu item."
       },
       "Search": {
         "UseCatalogIndexedSearchInManager": {

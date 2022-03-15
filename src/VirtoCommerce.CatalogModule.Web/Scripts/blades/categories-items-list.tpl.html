@@ -37,6 +37,9 @@
                     <li class="menu-item" ng-click='delete(contextMenuEntity)' va-permission="catalog:delete">
                         <i class="menu-ico fas fa-trash-alt"></i> {{'platform.commands.delete' | translate}}
                     </li>
+                    <li class="menu-item" ng-if="blade.isCopyIdMenuVisible" ng-click='copyItemID(contextMenuEntity)' va-permission="catalog:read">
+                        <i class="menu-ico far fa-copy"></i> {{ 'catalog.commands.copy-id' | translate }}
+                    </li>
                 </ul>
             </div>
             <div class="note" ng-if="!items.length">{{ 'platform.list.no-data' | translate }}</div>

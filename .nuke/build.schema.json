@@ -1,0 +1,427 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Build Schema",
+  "$ref": "#/definitions/build",
+  "definitions": {
+    "build": {
+      "type": "object",
+      "properties": {
+        "ApiKey": {
+          "type": "string",
+          "description": "API key for the specified source"
+        },
+        "AppsettingsPath": {
+          "type": "string",
+          "description": "appsettings.json path"
+        },
+        "ArgoAppName": {
+          "type": "string",
+          "description": "Argo Application Name"
+        },
+        "ArgoConfigFile": {
+          "type": "string",
+          "description": "Config file for Argo Application Service"
+        },
+        "ArgoServer": {
+          "type": "string",
+          "description": "ArgoCD Server"
+        },
+        "ArgoToken": {
+          "type": "string",
+          "description": "ArgoCD Token"
+        },
+        "ArtifactsDirectory": {
+          "type": "string",
+          "description": "Path to Artifacts Directory"
+        },
+        "AzureToken": {
+          "type": "string",
+          "description": "Azure PAT"
+        },
+        "Configuration": {
+          "type": "string",
+          "description": "Configuration to build - Default is 'Debug' (local) or 'Release' (server)",
+          "enum": [
+            "Debug",
+            "Release"
+          ]
+        },
+        "Continue": {
+          "type": "boolean",
+          "description": "Indicates to continue a previously failed build attempt"
+        },
+        "CoverageReportPath": {
+          "type": "string"
+        },
+        "CustomModulePackageUri": {
+          "type": "string",
+          "description": "Full URI of module artifact"
+        },
+        "CustomVersionPrefix": {
+          "type": "string",
+          "description": "VersionTag for module.manifest and Directory.Build.props"
+        },
+        "CustomVersionSuffix": {
+          "type": "string",
+          "description": "VersionSuffix for module.manifest and Directory.Build.props"
+        },
+        "DefaultProject": {
+          "type": "string",
+          "description": "Defauld (start) project name"
+        },
+        "DiscoveryPath": {
+          "type": "string",
+          "description": "Modules discovery path"
+        },
+        "DockerConnectionString": {
+          "type": "string",
+          "description": "Connection String"
+        },
+        "DockerfilePath": {
+          "type": "string",
+          "description": "Dockerfile Path"
+        },
+        "DockerImageName": {
+          "type": "string",
+          "description": "Docker Image Name"
+        },
+        "DockerImageTag": {
+          "type": "string",
+          "description": "Docker Image Tag"
+        },
+        "DockerPassword": {
+          "type": "string",
+          "description": "Docker Password"
+        },
+        "DockerRegistryUrl": {
+          "type": "string",
+          "description": "Docker Registry Url"
+        },
+        "DockerUsername": {
+          "type": "string",
+          "description": "Docker Username"
+        },
+        "Force": {
+          "type": "boolean",
+          "description": "Force parameter for git checkout"
+        },
+        "GitHubToken": {
+          "type": "string",
+          "description": "GitHub user security token for release creation"
+        },
+        "GitHubUser": {
+          "type": "string",
+          "description": "GitHub user for release creation"
+        },
+        "GlobalModuleIgnoreFileUrl": {
+          "type": "string"
+        },
+        "GrabMigratorConfig": {
+          "type": "string",
+          "description": "Grab-migrator config file"
+        },
+        "HelmParameters": {
+          "type": "array",
+          "description": "Array of Helm parameters",
+          "items": {
+            "type": "string"
+          }
+        },
+        "Help": {
+          "type": "boolean",
+          "description": "Shows the help text for this build assembly"
+        },
+        "Host": {
+          "type": "string",
+          "description": "Host for execution. Default is 'automatic'",
+          "enum": [
+            "AppVeyor",
+            "AzurePipelines",
+            "Bamboo",
+            "Bitrise",
+            "GitHubActions",
+            "GitLab",
+            "Jenkins",
+            "Rider",
+            "SpaceAutomation",
+            "TeamCity",
+            "Terminal",
+            "TravisCI",
+            "VisualStudio",
+            "VSCode"
+          ]
+        },
+        "MainBranch": {
+          "type": "string",
+          "description": "Main branch"
+        },
+        "Module": {
+          "type": "array",
+          "description": "Install params (install -module VirtoCommerce.Core:1.2.3)",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ModulesFolderPath": {
+          "type": "string",
+          "description": "Path to folder with git clones of modules repositories"
+        },
+        "ModulesJsonDirectoryName": {
+          "type": "string",
+          "description": "Directory containing modules.json"
+        },
+        "ModulesJsonName": {
+          "type": "string",
+          "description": "Path to modules.json"
+        },
+        "ModulesJsonRepoUrl": {
+          "type": "string",
+          "description": "Modules.json repo URL"
+        },
+        "NoLogo": {
+          "type": "boolean",
+          "description": "Disables displaying the NUKE logo"
+        },
+        "NugetConfig": {
+          "type": "string",
+          "description": "Path to NuGet config"
+        },
+        "PackageJsonPath": {
+          "type": "string",
+          "description": "Path to packageJson"
+        },
+        "PackageManifestPath": {
+          "type": "string",
+          "description": "vc-package.json path"
+        },
+        "Partition": {
+          "type": "string",
+          "description": "Partition to use on CI"
+        },
+        "Plan": {
+          "type": "boolean",
+          "description": "Shows the execution plan (HTML)"
+        },
+        "Platform": {
+          "type": "boolean",
+          "description": "Install the platform"
+        },
+        "PreRelease": {
+          "type": "boolean",
+          "description": "True - prerelease, False - release"
+        },
+        "ProbingPath": {
+          "type": "string",
+          "description": "Probing path"
+        },
+        "Profile": {
+          "type": "array",
+          "description": "Defines the profiles to load",
+          "items": {
+            "type": "string"
+          }
+        },
+        "PullRequest": {
+          "type": "boolean",
+          "description": "True - Pull Request"
+        },
+        "ReleaseBranch": {
+          "type": "string",
+          "description": "Release branch"
+        },
+        "ReleaseNotes": {
+          "type": "string",
+          "description": "Path to Release Notes File"
+        },
+        "RepoName": {
+          "type": "string",
+          "description": "Repo Name"
+        },
+        "RepoOrg": {
+          "type": "string",
+          "description": "Repo Organization/User"
+        },
+        "Root": {
+          "type": "string",
+          "description": "Root directory during build execution"
+        },
+        "Skip": {
+          "type": "array",
+          "description": "List of targets to be skipped. Empty list skips all dependencies",
+          "items": {
+            "type": "string",
+            "enum": [
+              "ArgoUpdateApplication",
+              "BuildAndPush",
+              "BuildImage",
+              "ChangeVersion",
+              "Clean",
+              "ClearTemp",
+              "Compile",
+              "CompleteHotfix",
+              "CompleteRelease",
+              "Compress",
+              "DockerLogin",
+              "GetManifestGit",
+              "GrabMigrator",
+              "IncrementMinor",
+              "IncrementPatch",
+              "Init",
+              "InitPlatform",
+              "Install",
+              "InstallModules",
+              "InstallPlatform",
+              "MassPullAndBuild",
+              "MatchVersions",
+              "Pack",
+              "Publish",
+              "PublishManifestGit",
+              "PublishModuleManifest",
+              "PublishPackages",
+              "PushImage",
+              "QuickRelease",
+              "Release",
+              "Restore",
+              "SetHelmParameter",
+              "SonarQubeEnd",
+              "SonarQubeStart",
+              "StartAnalyzer",
+              "StartHotfix",
+              "StartRelease",
+              "SwaggerValidation",
+              "Test",
+              "Uninstall",
+              "Update",
+              "UpdateManifest",
+              "ValidateSwaggerSchema",
+              "WebPackBuild"
+            ]
+          }
+        },
+        "SkipDependencySolving": {
+          "type": "boolean",
+          "description": "Skip dependency solving"
+        },
+        "SonarAuthToken": {
+          "type": "string"
+        },
+        "SonarBranchName": {
+          "type": "string",
+          "description": "Branch Name for SonarQube"
+        },
+        "SonarBranchNameTarget": {
+          "type": "string",
+          "description": "Target Branch Name for SonarQube"
+        },
+        "SonarGithubRepo": {
+          "type": "string",
+          "description": "GitHub Repository for SonarQube"
+        },
+        "SonarOrg": {
+          "type": "string",
+          "description": "Sonar Organization (\"virto-commerce\" by default)"
+        },
+        "SonarPRBase": {
+          "type": "string",
+          "description": "PR Base for SonarQube"
+        },
+        "SonarPRBranch": {
+          "type": "string",
+          "description": "PR Branch for SonarQube"
+        },
+        "SonarPRNumber": {
+          "type": "string",
+          "description": "PR Number for SonarQube"
+        },
+        "SonarPRProvider": {
+          "type": "string",
+          "description": "PR Provider for SonarQube"
+        },
+        "SonarUrl": {
+          "type": "string"
+        },
+        "Source": {
+          "type": "string"
+        },
+        "SwaggerSchemaPath": {
+          "type": "string",
+          "description": "Swagger schema path"
+        },
+        "SwaggerValidatorUri": {
+          "type": "string",
+          "description": "URL of Swagger Validation API"
+        },
+        "Target": {
+          "type": "array",
+          "description": "List of targets to be invoked. Default is '{default_target}'",
+          "items": {
+            "type": "string",
+            "enum": [
+              "ArgoUpdateApplication",
+              "BuildAndPush",
+              "BuildImage",
+              "ChangeVersion",
+              "Clean",
+              "ClearTemp",
+              "Compile",
+              "CompleteHotfix",
+              "CompleteRelease",
+              "Compress",
+              "DockerLogin",
+              "GetManifestGit",
+              "GrabMigrator",
+              "IncrementMinor",
+              "IncrementPatch",
+              "Init",
+              "InitPlatform",
+              "Install",
+              "InstallModules",
+              "InstallPlatform",
+              "MassPullAndBuild",
+              "MatchVersions",
+              "Pack",
+              "Publish",
+              "PublishManifestGit",
+              "PublishModuleManifest",
+              "PublishPackages",
+              "PushImage",
+              "QuickRelease",
+              "Release",
+              "Restore",
+              "SetHelmParameter",
+              "SonarQubeEnd",
+              "SonarQubeStart",
+              "StartAnalyzer",
+              "StartHotfix",
+              "StartRelease",
+              "SwaggerValidation",
+              "Test",
+              "Uninstall",
+              "Update",
+              "UpdateManifest",
+              "ValidateSwaggerSchema",
+              "WebPackBuild"
+            ]
+          }
+        },
+        "TestsFilter": {
+          "type": "string"
+        },
+        "Verbosity": {
+          "type": "string",
+          "description": "Logging verbosity during build execution. Default is 'Normal'",
+          "enum": [
+            "Minimal",
+            "Normal",
+            "Quiet",
+            "Verbose"
+          ]
+        },
+        "Version": {
+          "type": "string",
+          "description": "Platform or Module version to install"
+        }
+      }
+    }
+  }
+}

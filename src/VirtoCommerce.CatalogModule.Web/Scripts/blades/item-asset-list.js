@@ -1,7 +1,14 @@
 angular.module('virtoCommerce.catalogModule')
-    .controller('virtoCommerce.catalogModule.itemAssetController', ['$scope', '$translate', 'platformWebApp.bladeNavigationService', '$filter', 'platformWebApp.uiGridHelper', '$timeout', function ($scope, $translate, bladeNavigationService, $filter, uiGridHelper, $timeout) {
+    .controller('virtoCommerce.catalogModule.itemAssetController', ['$scope', '$translate', 'platformWebApp.bladeNavigationService', '$filter', 'platformWebApp.uiGridHelper', '$timeout', 'platformWebApp.settings', function ($scope, $translate, bladeNavigationService, $filter, uiGridHelper, $timeout, settings) {
         var blade = $scope.blade;
         blade.headIcon = 'fa fa-chain';
+
+        blade.isCopyIdMenuVisible = false;
+        settings.getValues({ id: 'Catalog.AllowToCopyID' }, function (data) {
+            if (data && data.length > 0) {
+                blade.isCopyIdMenuVisible = data[0];
+            }
+        });
 
         blade.toolbarCommands = [
             {
@@ -61,6 +68,10 @@ angular.module('virtoCommerce.catalogModule')
         }
 
         $scope.isValid = true;
+
+        $scope.copyItemID = function (data) {
+            navigator.clipboard.writeText(data.id).then().catch(e => console.error(e));
+        };
 
         $scope.saveChanges = function () {
             blade.item.assets = blade.currentEntities;

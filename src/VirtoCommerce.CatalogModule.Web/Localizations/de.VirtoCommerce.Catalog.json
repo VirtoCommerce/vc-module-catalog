@@ -691,6 +691,7 @@
         }
       },
       "commands": {
+        "copy-id": "Kopieren ID",
         "start-export": "Export starten",
         "start-import": "Import starten",
         "clear-all": "Alle löschen",

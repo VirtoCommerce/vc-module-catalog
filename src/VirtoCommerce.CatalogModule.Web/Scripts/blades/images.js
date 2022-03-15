@@ -17,6 +17,13 @@ angular.module('virtoCommerce.catalogModule')
                     initialize(item);
                 };
 
+                blade.isCopyIdMenuVisible = false;
+                settings.getValues({ id: 'Catalog.AllowToCopyID' }, function (data) {
+                    if (data && data.length > 0) {
+                        blade.isCopyIdMenuVisible = data[0];
+                    }
+                });
+
                 function initialize(item) {
                     blade.item = item;
                     blade.title = item.name;
@@ -48,6 +55,10 @@ angular.module('virtoCommerce.catalogModule')
                     if (idx >= 0) {
                         blade.currentEntities.splice(idx, 1);
                     }
+                };
+
+                $scope.copyItemID = function (data) {
+                    navigator.clipboard.writeText(data.id).then().catch(e => console.error(e));
                 };
 
                 $scope.copyUrl = function(data) {
