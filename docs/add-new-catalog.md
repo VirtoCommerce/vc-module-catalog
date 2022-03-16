@@ -1,4 +1,4 @@
-# Add New Catalog
+# Adding New Catalog
 
 In order to add a new catalog, the user should pass through the following steps:
 
@@ -17,7 +17,7 @@ In order to add a new catalog, the user should pass through the following steps:
 1. The user confirms selection by clicking the ‘OK’ button OR cancel the operation using the ‘Cancel’ button.
 1. The default and additional languages will be added to the new catalog.
 
-## Edit default language  
+## Editing Default Language  
 
 1. The user clicks the ‘Edit’ button located next to the ‘Default language’ value;  
 
@@ -32,7 +32,7 @@ In order to add a new catalog, the user should pass through the following steps:
 
 ![Fig. New language added](media/screen-new-language-added.png)
 
-## Delete language value  
+## Deleting Language Value  
 
 1. The user selects the language and clicks the ‘Delete’ button;
 1. The system will delete the selected value from the list.  

@@ -1,4 +1,4 @@
-# View Catalogs and physical item details
+# Viewing Catalogs and Physical Item Details
 
 In order to view the list of catalogs in VirtoCommerce platform, the admin should pass through the following steps:
 

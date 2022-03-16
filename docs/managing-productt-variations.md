@@ -1,6 +1,6 @@
-# Manage Product Variations
+# Managing Product Variations
 
-## Add Product Variation
+## Adding Product Variation
 
 1. In order to add a new variation to a product, the user should first open the 'Item variations' screen and click the 'Add' button;
 1. The system will display the 'New variation' blade; 

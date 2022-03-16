@@ -1,4 +1,4 @@
-# Add Virtual Catalog
+# Adding Virtual Catalog
 
 1. The user selects the ‘Virtual catalog’ button on ‘Choose new catalog type’ screen;
 1. The system will display the ‘Virtual catalog details’ screen and the user will be prompted to enter the virtual catalog name and specify the languages;

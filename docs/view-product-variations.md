@@ -1,4 +1,4 @@
-# View Product Variations
+# Viewing Product Variations
 
 In order to view  product variations, the user should pass through the following steps:
 
@@ -12,5 +12,5 @@ In order to view  product variations, the user should pass through the following
 ![Product Variations](media/screen-product-variations2.png)
 
 
-### Asset inheritance
+### Asset Inheritance
 When a user creates a product variation it automatically inherits all assets and their properties from a parent product. All subsequent updates in the parent product assets are reflected in the variation assets. After the user edits or adds a new asset to the variation product the inheritance stops being automatic, the system makes a copy of parent assest and adds them to the variation so changes in the parent assets are no longer reflected in the variaiton's.
