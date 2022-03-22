@@ -47,7 +47,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             _jsonOptions = jsonOptions.Value;
         }
 
-
         /// <summary>
         /// Gets product by id.
         /// </summary>
@@ -57,7 +56,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("{id}")]
         public async Task<ActionResult<CatalogProduct>> GetProductById(string id, [FromQuery] string respGroup = null)
         {
-
             var product = await _itemsService.GetByIdAsync(id, respGroup);
             if (product == null)
             {
@@ -90,7 +88,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             {
                 return Unauthorized();
             }
-            //It is a important to return serialized data by such way. Instead you have a slow response time for large outputs 
+            //It is a important to return serialized data by such way. Instead you have a slow response time for large outputs
             //https://github.com/dotnet/aspnetcore/issues/19646
             var result = JsonConvert.SerializeObject(items, _jsonOptions.SerializerSettings);
 
@@ -98,7 +96,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         }
 
         /// <summary>
-        /// Gets products by plenty ids 
+        /// Gets products by plenty ids
         /// </summary>
         /// <param name="ids">Item ids</param>
         /// <param name="respGroup">Response group.</param>
@@ -109,7 +107,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         {
             return await GetProductByIds(ids, respGroup);
         }
-
 
         /// <summary>
         /// Gets the template for a new product (outside of category).
@@ -122,7 +119,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         {
             return await GetNewProductByCatalogAndCategory(catalogId, null);
         }
-
 
         /// <summary>
         /// Gets the template for a new product (inside category).
@@ -167,7 +163,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return Ok(result);
         }
 
-
         /// <summary>
         /// Gets the template for a new variation.
         /// </summary>
@@ -192,17 +187,15 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             foreach (var property in newVariation.Properties)
             {
-                // Mark variation property as required
                 if (property.Type == PropertyType.Variation)
                 {
-                    property.Required = true;
                     property.Values.Clear();
                 }
             }
+
             newVariation.Code = _skuGenerator.GenerateSku(newVariation);
             return Ok(newVariation);
         }
-
 
         [HttpGet]
         [Route("{productId}/clone")]
@@ -270,7 +263,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             await InnerSaveProducts(products);
             return Ok();
         }
-
 
         /// <summary>
         /// Deletes the specified items by id.
