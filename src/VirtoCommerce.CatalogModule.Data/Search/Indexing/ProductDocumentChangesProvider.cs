@@ -63,7 +63,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                         .Select(i => new
                         {
                             i.Id,
-                            ChangeType = IndexDocumentChangeType.Modified,
+                            ChangeType = i.CreatedDate == i.ModifiedDate ? IndexDocumentChangeType.Created : IndexDocumentChangeType.Modified,
                             ChangeDate = i.ModifiedDate ?? i.CreatedDate
                         })
                         .Skip(Convert.ToInt32(skip))
@@ -142,7 +142,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                .Select(i => new
                {
                    i.Id,
-                   ChangeType = IndexDocumentChangeType.Modified,
+                   ChangeType = i.CreatedDate == i.ModifiedDate ? IndexDocumentChangeType.Created : IndexDocumentChangeType.Modified,
                    ChangeDate = i.ModifiedDate ?? i.CreatedDate
                })
                .Skip(Convert.ToInt32(skip))
@@ -169,9 +169,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         private static IQueryable<Model.ItemEntity> BuildChangedItemsQuery(ICatalogRepository repository, DateTime? startDate, DateTime? endDate)
         {
-            return repository.Items.Where(i => i.ParentId == null
-                && (startDate == null || i.ModifiedDate >= startDate)
-                && (endDate == null || i.ModifiedDate <= endDate));
+            return repository.Items.Where(i => (startDate == null || i.ModifiedDate >= startDate) &&
+                                               (endDate == null || i.ModifiedDate <= endDate));
         }
     }
 }
