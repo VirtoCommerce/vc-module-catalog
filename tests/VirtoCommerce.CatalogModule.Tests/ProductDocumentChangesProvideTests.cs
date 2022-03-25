@@ -82,9 +82,8 @@ namespace VirtoCommerce.CatalogModule.Tests
             var items = _fixture.CreateMany<ItemEntity>(150);
 
             var quribleItems = items.AsQueryable().BuildMock();
-            var modifiedItemsCount = items.Count(i => i.ParentId == null
-                && (startDate == null || i.ModifiedDate >= startDate)
-                && (endDate == null || i.ModifiedDate <= endDate));
+            var modifiedItemsCount = items.Count(i => (startDate == null || i.ModifiedDate >= startDate)
+                                                      && (endDate == null || i.ModifiedDate <= endDate));
 
             var availableStates = new EntryState[] { EntryState.Added, EntryState.Modified, EntryState.Deleted };
 
@@ -183,9 +182,8 @@ namespace VirtoCommerce.CatalogModule.Tests
             var items = _fixture.CreateMany<ItemEntity>(itemsCountForGenerate);
 
             var quribleItems = items.AsQueryable().BuildMock();
-            var modifiedItemsCount = items.Count(i => i.ParentId == null
-                && (startDate == null || i.ModifiedDate >= startDate)
-                && (endDate == null || i.ModifiedDate <= endDate));
+            var modifiedItemsCount = items.Count(i => (startDate == null || i.ModifiedDate >= startDate)
+                                                      && (endDate == null || i.ModifiedDate <= endDate));
 
             var availableStates = new EntryState[] { EntryState.Added, EntryState.Modified, EntryState.Deleted };
 
