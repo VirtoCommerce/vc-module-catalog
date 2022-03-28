@@ -37,44 +37,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 //Index product variants by separate chunked requests for performance reason
                 if (product.MainProductId == null)
                 {
-                    const int pageSize = 50;
-                    var variationsSearchCriteria = new Core.Model.Search.ProductSearchCriteria
-                    {
-                        Take = pageSize,
-                        MainProductId = product.Id,
-                        ResponseGroup = (ItemResponseGroup.ItemInfo | ItemResponseGroup.Properties | ItemResponseGroup.Seo | ItemResponseGroup.Outlines | ItemResponseGroup.ItemAssets).ToString()
-                    };
-                    var skipCount = 0;
-                    int totalCount;
-                    do
-                    {
-                        variationsSearchCriteria.Skip = skipCount;
-                        var productVariations = await _productsSearchService.SearchProductsAsync(variationsSearchCriteria);
-                        foreach (var variation in productVariations.Results)
-                        {
-                            result.Add(CreateDocument(variation));
-                            IndexProductVariation(doc, variation);
-                        }
-                        totalCount = productVariations.TotalCount;
-                        skipCount += pageSize;
-                    }
-                    while (skipCount < totalCount);
+                    await BuildVariationsDocuments(product, result, doc);
                 }
                 else
                 {
-                    var mainProductsSearchCriteria = new Core.Model.Search.ProductSearchCriteria
-                    {
-                        Take = 1,
-                        ObjectIds = new List<string>(new[] { product.MainProductId })
-                    };
-
-                    var searchResult = await _productsSearchService.SearchProductsAsync(mainProductsSearchCriteria);
-                    var mainProduct = searchResult.Results.FirstOrDefault();
-
-                    if (mainProduct == null) continue;
-
-                    var mainProductDoc = CreateDocument(mainProduct);
-                    result.Add(mainProductDoc);
+                    await BuildMainProductDocument(product, result);
                 }
             }
 
@@ -83,6 +50,52 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             GC.Collect();
 
             return result;
+        }
+
+        protected virtual async Task BuildMainProductDocument(CatalogProduct product, List<IndexDocument> result)
+        {
+            var mainProductsSearchCriteria = new Core.Model.Search.ProductSearchCriteria
+            {
+                Take = 1,
+                ObjectIds = new List<string>(new[] { product.MainProductId })
+            };
+
+            var searchResult = await _productsSearchService.SearchProductsAsync(mainProductsSearchCriteria);
+            var mainProduct = searchResult.Results.FirstOrDefault();
+
+            if (mainProduct != null)
+            {
+                var mainProductDoc = CreateDocument(mainProduct);
+                result.Add(mainProductDoc);
+            }
+        }
+
+        protected virtual async Task BuildVariationsDocuments(CatalogProduct product, List<IndexDocument> result, IndexDocument doc)
+        {
+            const int pageSize = 50;
+            var variationsSearchCriteria = new Core.Model.Search.ProductSearchCriteria
+            {
+                Take = pageSize,
+                MainProductId = product.Id,
+                ResponseGroup = (ItemResponseGroup.ItemInfo | ItemResponseGroup.Properties | ItemResponseGroup.Seo |
+                                 ItemResponseGroup.Outlines | ItemResponseGroup.ItemAssets).ToString()
+            };
+            var skipCount = 0;
+            int totalCount;
+            do
+            {
+                variationsSearchCriteria.Skip = skipCount;
+                var productVariations = await _productsSearchService.SearchProductsAsync(variationsSearchCriteria);
+                foreach (var variation in productVariations.Results)
+                {
+                    result.Add(CreateDocument(variation));
+                    IndexProductVariation(doc, variation);
+                }
+
+                totalCount = productVariations.TotalCount;
+                skipCount += pageSize;
+            }
+            while (skipCount < totalCount);
         }
 
         protected virtual Task<CatalogProduct[]> GetProducts(IList<string> productIds)
