@@ -76,6 +76,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 query = query.Where(x => criteria.CatalogIds.Contains(x.CatalogId));
             }
 
+            if (!criteria.ObjectIds.IsNullOrEmpty())
+            {
+                query = query.Where(x => criteria.ObjectIds.Contains(x.Id));
+            }
+
             if (!criteria.Skus.IsNullOrEmpty())
             {
                 query = query.Where(x => criteria.Skus.Contains(x.Code));
@@ -93,7 +98,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             {
                 query = query.Where(x => x.ItemPropertyValues.Any(x => x.Name == criteria.PropertyName));
             }
-
+            
             return query;
         }
 

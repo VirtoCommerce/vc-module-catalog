@@ -60,6 +60,22 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                     }
                     while (skipCount < totalCount);
                 }
+                else
+                {
+                    var mainProductsSearchCriteria = new Core.Model.Search.ProductSearchCriteria
+                    {
+                        Take = 1,
+                        ObjectIds = new List<string>(new[] { product.MainProductId })
+                    };
+
+                    var searchResult = await _productsSearchService.SearchProductsAsync(mainProductsSearchCriteria);
+                    var mainProduct = searchResult.Results.FirstOrDefault();
+
+                    if (mainProduct == null) continue;
+
+                    var mainProductDoc = CreateDocument(mainProduct);
+                    result.Add(mainProductDoc);
+                }
             }
 
             // Forcibly clear products from the cache to reduce memory consumption
