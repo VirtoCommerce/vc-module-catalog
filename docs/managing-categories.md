@@ -15,6 +15,7 @@ You can add a new category to the Catalog following these simple steps:
      ![New Category Item](media/screen-new-category-item.png)
 
      ![Fig. New Category](media/screen-new-category.png)
+	 
 1. Select *Category*. This will open the *New Category* screen with the following elements:
 
       + *Name* text box

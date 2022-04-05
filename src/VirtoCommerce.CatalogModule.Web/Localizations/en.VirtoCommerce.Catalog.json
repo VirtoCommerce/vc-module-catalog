@@ -840,12 +840,12 @@
         }
       },
       "new-product": {
-        "title": "New product",
+        "title": "New Product",
         "subtitle": "Please provide all information for the product",
         "labels": {
           "sku": "SKU",
           "name": "Name",
-          "fill-properties": "Please provide properties",
+          "fill-properties": "Provide properties",
           "fill-properties-summary": "{{ count }} of {{total}} properties provided",
           "upload-images": "Upload images",
           "upload-images-summary": "{{ count }} image(s) uploaded",
@@ -871,7 +871,7 @@
         "labels": {
           "sku": "SKU",
           "name": "Name",
-          "fill-properties": "Please provide properties",
+          "fill-properties": "Provide properties",
           "fill-properties-summary": "{{ count }} of {{total}} properties provided",
           "upload-images": "Upload images",
           "upload-images-summary": "{{ count }} image(s) uploaded"

@@ -133,18 +133,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             // Index custom product properties
             IndexCustomProperties(document, product.Properties, contentPropertyTypes);
 
-            //Index product category properties
-            if (product.Category != null)
-            {
-                IndexCustomProperties(document, product.Category.Properties, contentPropertyTypes);
-            }
-
-            //Index catalog properties
-            if (product.Catalog != null)
-            {
-                IndexCustomProperties(document, product.Catalog.Properties, contentPropertyTypes);
-            }
-
             if (StoreObjectsInIndex)
             {
                 // Index serialized product

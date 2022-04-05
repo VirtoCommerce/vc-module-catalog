@@ -1,8 +1,8 @@
-# Manage Properties
+# Managing Properties
 
-## Manage Catalog Properties
+## Managing Catalog Properties
 
-### Add Catalog Property
+### Adding Catalog Property
 
 1. The user browses the Catalog Module, selects a catalog from the displayed list and clicks on the three dots located on the left side of the catalog name and selects 'Manage' option
 1. The system will open the 'Catalog details' screen
@@ -25,7 +25,7 @@
 
 ![Fig. New Property Added](media/screen-new-catalog-property-added.png)
 
-### Add Category Property
+### Adding Category Property
 
 1. The user browses the Catalog Module, selects a catalog from the displayed list, than selects a Category and clicks on the three dots located on the left side of the category name and selects 'Manage' option
 1. The system displays the 'Category details' screen
@@ -43,7 +43,7 @@
 
 ![New category Property added](media/screen-new-category-property-added.png)
 
-### Add Product Property
+### Adding Product Property
 
 1. The user browses the Catalog Module, selects a catalog from the displayed list-> selects  Categories and Items-> selects a Product and clicks on the three dots located on the left side of the category name and selects 'Manage' option or simply clicks on the selected item;
 1. The system will display the 'Physical item details' screen;
