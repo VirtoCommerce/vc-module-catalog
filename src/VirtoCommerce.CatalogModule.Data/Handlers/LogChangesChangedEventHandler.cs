@@ -19,7 +19,8 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
         private readonly IChangeLogService _changeLogService;
         private readonly Func<ICatalogRepository> _catalogRepositoryFactory;
 
-        public LogChangesChangedEventHandler(IChangeLogService changeLogService, Func<ICatalogRepository> catalogRepositoryFactory)
+        public LogChangesChangedEventHandler(IChangeLogService changeLogService,
+            Func<ICatalogRepository> catalogRepositoryFactory)
         {
             _changeLogService = changeLogService;
             _catalogRepositoryFactory = catalogRepositoryFactory;
@@ -39,17 +40,26 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
 
         protected virtual void InnerHandle<T>(GenericChangedEntryEvent<T> @event) where T : IEntity
         {
-            var logOperations = @event.ChangedEntries.Select(x =>
+            var logOperations = GetLogOperations(@event.ChangedEntries).ToArray();
+
+            //Background task is used here for performance reasons
+            BackgroundJob.Enqueue(() => LogEntityChangesInBackgroundAsync(logOperations));
+        }
+
+        protected virtual IEnumerable<OperationLog> GetLogOperations<T>(IEnumerable<GenericChangedEntry<T>> changedEntries) where T : IEntity
+        {
+            var logOperations = changedEntries.Select(x =>
             {
                 var operationLog = AbstractTypeFactory<OperationLog>.TryCreateInstance().FromChangedEntry(x);
 
                 var hierarchyChanged = false;
 
-                if (x.EntryState == EntryState.Modified && x.OldEntry is Category oldCategory && x.NewEntry is Category newCategory)
+                if (x.EntryState == EntryState.Modified && x.OldEntry is Category oldCategory &&
+                    x.NewEntry is Category newCategory)
                 {
                     hierarchyChanged = oldCategory.CatalogId != newCategory.CatalogId ||
-                        oldCategory.ParentId != newCategory.ParentId ||
-                        oldCategory.Links?.Count != newCategory.Links?.Count;
+                                       oldCategory.ParentId != newCategory.ParentId ||
+                                       oldCategory.Links?.Count != newCategory.Links?.Count;
                 }
 
                 if (hierarchyChanged)
@@ -68,10 +78,9 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
                 }
 
                 return operationLog;
-            }).ToArray();
+            });
 
-            //Background task is used here for performance reasons
-            BackgroundJob.Enqueue(() => LogEntityChangesInBackgroundAsync(logOperations));
+            return logOperations;
         }
 
         [DisableConcurrentExecution(10)]
