@@ -88,7 +88,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
                     var searchResult = await SearchDeleteOperationsInLog(startDate, endDate, originSkip, originTake);
                     var totalDeletedCount = searchResult.TotalCount;
-                    var deletedProductIndexDocumentChanges = searchResult.Results.Select(operation => ConvertOperationLogToIndexDocumentChange(operation)).ToArray();
+                    var deletedProductIndexDocumentChanges = searchResult.Results.Select(ConvertOperationLogToIndexDocumentChange).ToArray();
                     result.AddRange(deletedProductIndexDocumentChanges);
 
                     skip = originSkip - Math.Min(totalDeletedCount, originSkip);
