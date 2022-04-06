@@ -57,6 +57,16 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
                     operationLog.Detail = _hierarchyChanged;
                 }
 
+                if (x.OldEntry is CatalogProduct oldCatalogProduct)
+                {
+                    var variationChanged = !string.IsNullOrEmpty(oldCatalogProduct.MainProductId);
+
+                    if (variationChanged)
+                    {
+                        operationLog.Detail = $"MainProductId:{oldCatalogProduct.MainProductId}";
+                    }
+                }
+
                 return operationLog;
             }).ToArray();
 
