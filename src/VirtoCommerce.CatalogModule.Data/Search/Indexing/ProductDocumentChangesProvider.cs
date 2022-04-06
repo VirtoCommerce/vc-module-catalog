@@ -57,26 +57,18 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             {
                 if (startDate == null && endDate == null)
                 {
-                    var changedItems = await repository.Items
+                    result = await repository.Items
                         .Where(i => i.ParentId == null)
                         .OrderBy(i => i.CreatedDate)
-                        .Select(i => new
+                        .Select(i => new IndexDocumentChange
                         {
-                            i.Id,
+                            DocumentId = i.Id,
                             ChangeType = IndexDocumentChangeType.Modified,
                             ChangeDate = i.ModifiedDate ?? i.CreatedDate
                         })
                         .Skip(Convert.ToInt32(skip))
                         .Take(Convert.ToInt32(take))
                         .ToListAsync();
-
-                    result = changedItems.Select(item => new IndexDocumentChange
-                    {
-                        DocumentId = item.Id,
-                        ChangeType = item.ChangeType,
-                        ChangeDate = item.ChangeDate
-                    })
-                    .ToArray();
                 }
                 else
                 {
