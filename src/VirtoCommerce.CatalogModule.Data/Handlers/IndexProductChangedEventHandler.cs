@@ -4,7 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Events;
+using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Data.Search.Indexing;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Events;
 using VirtoCommerce.Platform.Core.Jobs;
 using VirtoCommerce.Platform.Core.Settings;
@@ -34,13 +36,39 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
                     throw new ArgumentNullException(nameof(message));
                 }
 
-                var indexEntries = message.ChangedEntries
-                    .Select(x => new IndexEntry { Id = x.OldEntry.Id, EntryState = x.EntryState, Type = KnownDocumentTypes.Product })
-                    .ToArray();
+                var indexEntries = new List<IndexEntry>();
 
-                IndexingJobs.EnqueueIndexAndDeleteDocuments(indexEntries,
+                foreach (var changedEntry in message.ChangedEntries)
+                {
+                    var changedProduct = changedEntry.OldEntry;
+
+                    indexEntries.Add(new IndexEntry
+                    {
+                        Id = IsVariationChanged(changedProduct, changedEntry.EntryState) ? changedProduct.MainProductId : changedProduct.Id,
+                        EntryState = IsVariationChanged(changedProduct, changedEntry.EntryState) ? EntryState.Modified : changedEntry.EntryState,
+                        Type = KnownDocumentTypes.Product,
+                    });
+
+                    if (!string.IsNullOrEmpty(changedProduct.MainProductId) &&
+                        changedEntry.EntryState is EntryState.Deleted)
+                    {
+                        indexEntries.Add(new IndexEntry
+                        {
+                            EntryState = EntryState.Modified,
+                            Id = changedProduct.MainProductId,
+                            Type = KnownDocumentTypes.Product,
+                        });
+                    }
+                }
+
+                IndexingJobs.EnqueueIndexAndDeleteDocuments(indexEntries.ToArray(),
                     JobPriority.Normal, _configurations.GetBuildersForProvider(typeof(ProductDocumentChangesProvider)).ToList());
             }
+        }
+
+        public static bool IsVariationChanged(CatalogProduct catalogProduct, EntryState entryState)
+        {
+            return !string.IsNullOrEmpty(catalogProduct.MainProductId) && entryState is not EntryState.Deleted;
         }
     }
 }
