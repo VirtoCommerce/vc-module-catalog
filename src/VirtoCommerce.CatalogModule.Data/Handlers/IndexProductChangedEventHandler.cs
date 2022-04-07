@@ -44,11 +44,12 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
 
                     indexEntries.Add(new IndexEntry
                     {
-                        Id = IsVariationChanged(changedProduct, changedEntry.EntryState) ? changedProduct.MainProductId : changedProduct.Id,
-                        EntryState = IsVariationChanged(changedProduct, changedEntry.EntryState) ? EntryState.Modified : changedEntry.EntryState,
+                        Id = IsVariationChangedButNotDeleted(changedProduct, changedEntry.EntryState) ? changedProduct.MainProductId : changedProduct.Id,
+                        EntryState = IsVariationChangedButNotDeleted(changedProduct, changedEntry.EntryState) ? EntryState.Modified : changedEntry.EntryState,
                         Type = KnownDocumentTypes.Product,
                     });
 
+                    // If variation was deleted
                     if (!string.IsNullOrEmpty(changedProduct.MainProductId) &&
                         changedEntry.EntryState is EntryState.Deleted)
                     {
@@ -66,7 +67,7 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
             }
         }
 
-        public static bool IsVariationChanged(CatalogProduct catalogProduct, EntryState entryState)
+        public static bool IsVariationChangedButNotDeleted(CatalogProduct catalogProduct, EntryState entryState)
         {
             return !string.IsNullOrEmpty(catalogProduct.MainProductId) && entryState is not EntryState.Deleted;
         }

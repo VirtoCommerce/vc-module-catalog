@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Hangfire;
+using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Events;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
@@ -73,7 +74,7 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
 
                     if (variationChanged)
                     {
-                        operationLog.Detail = $"MainProductId:{oldCatalogProduct.MainProductId}";
+                        operationLog.Detail = $"{ModuleConstants.OperationLogVariationMarker}{oldCatalogProduct.MainProductId}";
                     }
                 }
 
