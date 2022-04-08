@@ -44,19 +44,17 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
 
                     indexEntries.Add(new IndexEntry
                     {
-                        Id = IsVariationChangedButNotDeleted(changedProduct, changedEntry.EntryState) ? changedProduct.MainProductId : changedProduct.Id,
-                        EntryState = IsVariationChangedButNotDeleted(changedProduct, changedEntry.EntryState) ? EntryState.Modified : changedEntry.EntryState,
+                        Id = IsVariation(changedProduct) ? changedProduct.MainProductId : changedProduct.Id,
+                        EntryState = IsVariation(changedProduct) ? EntryState.Modified : changedEntry.EntryState,
                         Type = KnownDocumentTypes.Product,
                     });
 
-                    // If variation was deleted
-                    if (!string.IsNullOrEmpty(changedProduct.MainProductId) &&
-                        changedEntry.EntryState is EntryState.Deleted)
+                    if (IsVariationCreatedOrDeleted(changedProduct, changedEntry.EntryState))
                     {
                         indexEntries.Add(new IndexEntry
                         {
-                            EntryState = EntryState.Modified,
-                            Id = changedProduct.MainProductId,
+                            Id = changedProduct.Id,
+                            EntryState = changedEntry.EntryState,
                             Type = KnownDocumentTypes.Product,
                         });
                     }
@@ -67,9 +65,9 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
             }
         }
 
-        public static bool IsVariationChangedButNotDeleted(CatalogProduct catalogProduct, EntryState entryState)
-        {
-            return !string.IsNullOrEmpty(catalogProduct.MainProductId) && entryState is not EntryState.Deleted;
-        }
+        private static bool IsVariationCreatedOrDeleted(CatalogProduct catalogProduct, EntryState entryState)
+            => IsVariation(catalogProduct) && entryState is EntryState.Added or EntryState.Deleted;
+
+        private static bool IsVariation(CatalogProduct catalogProduct) => !string.IsNullOrEmpty(catalogProduct.MainProductId);
     }
 }
