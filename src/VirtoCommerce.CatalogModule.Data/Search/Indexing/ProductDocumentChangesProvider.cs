@@ -200,7 +200,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
                 var changedVariations = changeLogSearchResult
                     .Results
-                    .Where(x => x.Detail.StartsWith(ModuleConstants.OperationLogVariationMarker)).ToList();
+                    .Where(x => x.Detail?.StartsWith(ModuleConstants.OperationLogVariationMarker) ?? false).ToList();
 
                 foreach (var changedVariation in changedVariations)
                 {
