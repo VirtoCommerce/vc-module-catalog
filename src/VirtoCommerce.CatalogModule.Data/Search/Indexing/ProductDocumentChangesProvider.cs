@@ -161,16 +161,13 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             var changeLogSearchResult = await _changeLogSearchService.SearchAsync(changeLogSearchCriteria);
             var addedItems = changeLogSearchResult.Results;
 
-            if (addedItems.Any())
+            foreach (var addedItem in addedItems)
             {
-                foreach (var addedItem in addedItems)
-                {
-                    var resultItem = result.FirstOrDefault(x => x.DocumentId == addedItem.ObjectId);
+                var resultItem = result.FirstOrDefault(x => x.DocumentId == addedItem.ObjectId);
 
-                    if (resultItem != null)
-                    {
-                        resultItem.ChangeType = IndexDocumentChangeType.Created;
-                    }
+                if (resultItem != null)
+                {
+                    resultItem.ChangeType = IndexDocumentChangeType.Created;
                 }
             }
 
