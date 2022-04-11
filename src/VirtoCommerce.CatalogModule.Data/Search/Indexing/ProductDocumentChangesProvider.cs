@@ -159,7 +159,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             };
 
             var changeLogSearchResult = await _changeLogSearchService.SearchAsync(changeLogSearchCriteria);
-            var addedItems = changeLogSearchResult.Results;
+            var addedItems = changeLogSearchResult?.Results ?? new List<OperationLog>();
 
             foreach (var addedItem in addedItems)
             {
@@ -189,7 +189,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
             var changeLogSearchResult = await _changeLogSearchService.SearchAsync(changeLogSearchCriteria);
 
-            if (changeLogSearchResult.TotalCount > 0)
+            if (changeLogSearchResult?.TotalCount > 0)
             {
                 changeLogSearchCriteria.Take = changeLogSearchResult.TotalCount;
 
