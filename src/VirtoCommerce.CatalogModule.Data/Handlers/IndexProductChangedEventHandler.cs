@@ -29,40 +29,41 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
 
         public async Task Handle(ProductChangedEvent message)
         {
-            if (await _settingsManager.GetValueAsync(ModuleConstants.Settings.General.EventBasedIndexation.Name, false))
+            if (!await _settingsManager.GetValueAsync(ModuleConstants.Settings.General.EventBasedIndexation.Name, false))
             {
-                if (message == null)
+                return;
+            }
+
+            if (message == null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+
+            var indexEntries = new List<IndexEntry>();
+
+            foreach (var changedEntry in message.ChangedEntries)
+            {
+                var changedProduct = changedEntry.OldEntry;
+
+                indexEntries.Add(new IndexEntry
                 {
-                    throw new ArgumentNullException(nameof(message));
-                }
+                    Id = IsVariation(changedProduct) ? changedProduct.MainProductId : changedProduct.Id,
+                    EntryState = IsVariation(changedProduct) ? EntryState.Modified : changedEntry.EntryState,
+                    Type = KnownDocumentTypes.Product,
+                });
 
-                var indexEntries = new List<IndexEntry>();
-
-                foreach (var changedEntry in message.ChangedEntries)
+                if (IsVariationCreatedOrDeleted(changedProduct, changedEntry.EntryState))
                 {
-                    var changedProduct = changedEntry.OldEntry;
-
                     indexEntries.Add(new IndexEntry
                     {
-                        Id = IsVariation(changedProduct) ? changedProduct.MainProductId : changedProduct.Id,
-                        EntryState = IsVariation(changedProduct) ? EntryState.Modified : changedEntry.EntryState,
+                        Id = changedProduct.Id,
+                        EntryState = changedEntry.EntryState,
                         Type = KnownDocumentTypes.Product,
                     });
-
-                    if (IsVariationCreatedOrDeleted(changedProduct, changedEntry.EntryState))
-                    {
-                        indexEntries.Add(new IndexEntry
-                        {
-                            Id = changedProduct.Id,
-                            EntryState = changedEntry.EntryState,
-                            Type = KnownDocumentTypes.Product,
-                        });
-                    }
                 }
-
-                IndexingJobs.EnqueueIndexAndDeleteDocuments(indexEntries.ToArray(),
-                    JobPriority.Normal, _configurations.GetBuildersForProvider(typeof(ProductDocumentChangesProvider)).ToList());
             }
+
+            IndexingJobs.EnqueueIndexAndDeleteDocuments(indexEntries.ToArray(), JobPriority.Normal, _configurations.GetBuildersForProvider(typeof(ProductDocumentChangesProvider)).ToList());
         }
 
         private static bool IsVariationCreatedOrDeleted(CatalogProduct catalogProduct, EntryState entryState)
