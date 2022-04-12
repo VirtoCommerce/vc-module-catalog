@@ -155,19 +155,27 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 EndDate = endDate,
                 OperationTypes = new[] { EntryState.Added },
                 ObjectType = ChangeLogObjectType,
-                Take = result.Length,
+                Take = 0,
             };
 
             var changeLogSearchResult = await _changeLogSearchService.SearchAsync(changeLogSearchCriteria);
-            var addedItems = changeLogSearchResult?.Results ?? new List<OperationLog>();
 
-            foreach (var addedItem in addedItems)
+            if (changeLogSearchResult?.TotalCount > 0)
             {
-                var resultItem = result.FirstOrDefault(x => x.DocumentId == addedItem.ObjectId);
+                changeLogSearchCriteria.Take = changeLogSearchResult.TotalCount;
 
-                if (resultItem != null)
+                changeLogSearchResult = await _changeLogSearchService.SearchAsync(changeLogSearchCriteria);
+
+                var addedItems = changeLogSearchResult?.Results ?? new List<OperationLog>();
+
+                foreach (var addedItem in addedItems)
                 {
-                    resultItem.ChangeType = IndexDocumentChangeType.Created;
+                    var resultItem = result.FirstOrDefault(x => x.DocumentId == addedItem.ObjectId);
+
+                    if (resultItem != null)
+                    {
+                        resultItem.ChangeType = IndexDocumentChangeType.Created;
+                    }
                 }
             }
 
