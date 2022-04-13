@@ -155,16 +155,16 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 EndDate = endDate,
                 OperationTypes = new[] { EntryState.Added },
                 ObjectType = ChangeLogObjectType,
-                Take = 0,
             };
+            var changeLogSearchSkip = 0;
+            ChangeLogSearchResult changeLogSearchResult;
 
-            var changeLogSearchResult = await _changeLogSearchService.SearchAsync(changeLogSearchCriteria);
-
-            if (changeLogSearchResult?.TotalCount > 0)
+            do
             {
-                changeLogSearchCriteria.Take = changeLogSearchResult.TotalCount;
+                changeLogSearchCriteria.Skip = changeLogSearchSkip;
 
                 changeLogSearchResult = await _changeLogSearchService.SearchAsync(changeLogSearchCriteria);
+                changeLogSearchSkip += changeLogSearchCriteria.Take;
 
                 var addedItems = changeLogSearchResult?.Results ?? new List<OperationLog>();
 
@@ -177,7 +177,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                         resultItem.ChangeType = IndexDocumentChangeType.Created;
                     }
                 }
-            }
+
+            } while (changeLogSearchSkip < changeLogSearchResult?.TotalCount);
 
             return result.ToArray();
         }
@@ -215,7 +216,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                         new IndexDocumentChange
                         {
                             DocumentId = changedVariation.Detail[ModuleConstants.OperationLogVariationMarker.Length..],
-                            ChangeType = IndexDocumentChangeType.Modified,
+                            ChangeType = IndexDocumentChangeType.Created, // Full indexation of main product once variations was modified
                             ChangeDate = changedVariation.CreatedDate,
                         },
 
