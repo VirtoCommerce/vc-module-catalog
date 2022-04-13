@@ -48,7 +48,7 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
                 indexEntries.Add(new IndexEntry
                 {
                     Id = IsVariation(changedProduct) ? changedProduct.MainProductId : changedProduct.Id,
-                    EntryState = IsVariation(changedProduct) ? EntryState.Modified : changedEntry.EntryState,
+                    EntryState = IsVariation(changedProduct) ? EntryState.Added : changedEntry.EntryState, // Full indexation of main product once variation was modified
                     Type = KnownDocumentTypes.Product,
                 });
 
