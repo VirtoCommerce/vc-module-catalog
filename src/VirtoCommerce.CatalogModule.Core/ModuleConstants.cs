@@ -159,5 +159,6 @@ namespace VirtoCommerce.CatalogModule.Core
         }
 
         public const string OutlineDelimiter = "___";
+        public const string OperationLogVariationMarker = "MainProductId:";
     }
 }

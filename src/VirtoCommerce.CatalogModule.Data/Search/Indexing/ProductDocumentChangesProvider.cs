@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CatalogModule.Data.Extensions;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Platform.Core.ChangeLog;
 using VirtoCommerce.Platform.Core.Common;
@@ -43,6 +45,9 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
                     var deletedCount = await GetTotalDeletedProductsCount(startDate, endDate);
                     result += deletedCount;
+
+                    var variationChangesCount = (await GetVariationIndexDocumentChangesAsync(startDate, endDate)).Count();
+                    result += variationChangesCount;
                 }
             }
 
@@ -57,26 +62,18 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             {
                 if (startDate == null && endDate == null)
                 {
-                    var changedItems = await repository.Items
+                    result = await repository.Items
                         .Where(i => i.ParentId == null)
                         .OrderBy(i => i.CreatedDate)
-                        .Select(i => new
+                        .Select(i => new IndexDocumentChange
                         {
-                            i.Id,
+                            DocumentId = i.Id,
                             ChangeType = IndexDocumentChangeType.Modified,
                             ChangeDate = i.ModifiedDate ?? i.CreatedDate
                         })
                         .Skip(Convert.ToInt32(skip))
                         .Take(Convert.ToInt32(take))
                         .ToListAsync();
-
-                    result = changedItems.Select(item => new IndexDocumentChange
-                    {
-                        DocumentId = item.Id,
-                        ChangeType = item.ChangeType,
-                        ChangeDate = item.ChangeDate
-                    })
-                    .ToArray();
                 }
                 else
                 {
@@ -88,14 +85,17 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
                     var searchResult = await SearchDeleteOperationsInLog(startDate, endDate, originSkip, originTake);
                     var totalDeletedCount = searchResult.TotalCount;
-                    var deletedProductIndexDocumentChanges = searchResult.Results.Select(operation => ConvertOperationLogToIndexDocumentChange(operation)).ToArray();
+                    var deletedProductIndexDocumentChanges = searchResult.Results.Select(ConvertOperationLogToIndexDocumentChange).ToArray();
                     result.AddRange(deletedProductIndexDocumentChanges);
 
                     skip = originSkip - Math.Min(totalDeletedCount, originSkip);
                     take = originTake - Math.Min(originTake, Math.Max(0, totalDeletedCount - originSkip));
 
-                    var modifiedProductIndexDocumentChanges = await GetModifiedProductIndexDocumentChanges(startDate, endDate, skip, take, repository);
-                    result.AddRange(modifiedProductIndexDocumentChanges);
+                    var modifiedAndCreatedProductIndexDocumentChanges = await GetModifiedAndCreatedProductIndexDocumentChanges(startDate, endDate, skip, take, repository);
+                    result.AddRange(modifiedAndCreatedProductIndexDocumentChanges);
+
+                    var changedVariationIndexDocumentChanges = await GetVariationIndexDocumentChangesAsync(startDate, endDate);
+                    result.AddRange(changedVariationIndexDocumentChanges);
                 }
             }
 
@@ -135,13 +135,13 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             return deletedCount;
         }
 
-        private static async Task<IndexDocumentChange[]> GetModifiedProductIndexDocumentChanges(DateTime? startDate, DateTime? endDate, long skip, long take, ICatalogRepository repository)
+        private async Task<IndexDocumentChange[]> GetModifiedAndCreatedProductIndexDocumentChanges(DateTime? startDate, DateTime? endDate, long skip, long take, ICatalogRepository repository)
         {
             var result = await BuildChangedItemsQuery(repository, startDate, endDate)
                .OrderBy(i => i.CreatedDate)
-               .Select(i => new
+               .Select(i => new IndexDocumentChange
                {
-                   i.Id,
+                   DocumentId = i.Id,
                    ChangeType = IndexDocumentChangeType.Modified,
                    ChangeDate = i.ModifiedDate ?? i.CreatedDate
                })
@@ -149,12 +149,89 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                .Take(Convert.ToInt32(take))
                .ToArrayAsync();
 
-            return result.Select(item => new IndexDocumentChange
+            var changeLogSearchCriteria = new ChangeLogSearchCriteria
             {
-                DocumentId = item.Id,
-                ChangeType = item.ChangeType,
-                ChangeDate = item.ChangeDate
-            }).ToArray();
+                StartDate = startDate,
+                EndDate = endDate,
+                OperationTypes = new[] { EntryState.Added },
+                ObjectType = ChangeLogObjectType,
+            };
+            var changeLogSearchSkip = 0;
+            ChangeLogSearchResult changeLogSearchResult;
+
+            do
+            {
+                changeLogSearchCriteria.Skip = changeLogSearchSkip;
+
+                changeLogSearchResult = await _changeLogSearchService.SearchAsync(changeLogSearchCriteria);
+                changeLogSearchSkip += changeLogSearchCriteria.Take;
+
+                var addedItems = changeLogSearchResult?.Results ?? new List<OperationLog>();
+
+                foreach (var addedItem in addedItems)
+                {
+                    var resultItem = result.FirstOrDefault(x => x.DocumentId == addedItem.ObjectId);
+
+                    if (resultItem != null)
+                    {
+                        resultItem.ChangeType = IndexDocumentChangeType.Created;
+                    }
+                }
+
+            } while (changeLogSearchSkip < changeLogSearchResult?.TotalCount);
+
+            return result.ToArray();
+        }
+
+        private async Task<IEnumerable<IndexDocumentChange>> GetVariationIndexDocumentChangesAsync(DateTime? startDate, DateTime? endDate)
+        {
+            var result = new List<IndexDocumentChange>();
+
+            var changeLogSearchCriteria = new ChangeLogSearchCriteria
+            {
+                StartDate = startDate,
+                EndDate = endDate,
+                ObjectType = ChangeLogObjectType,
+                OperationTypes = new[] { EntryState.Deleted, EntryState.Added, EntryState.Modified },
+                Take = 0,
+            };
+
+            var changeLogSearchResult = await _changeLogSearchService.SearchAsync(changeLogSearchCriteria);
+
+            if (changeLogSearchResult?.TotalCount > 0)
+            {
+                changeLogSearchCriteria.Take = changeLogSearchResult.TotalCount;
+
+                changeLogSearchResult = await _changeLogSearchService.SearchAsync(changeLogSearchCriteria);
+
+                var changedVariations = changeLogSearchResult
+                    .Results
+                    .Where(x => x.Detail?.StartsWith(ModuleConstants.OperationLogVariationMarker) ?? false).ToList();
+
+                foreach (var changedVariation in changedVariations)
+                {
+                    result.AddRange(new[] {
+
+                        // Main product change
+                        new IndexDocumentChange
+                        {
+                            DocumentId = changedVariation.Detail[ModuleConstants.OperationLogVariationMarker.Length..],
+                            ChangeType = IndexDocumentChangeType.Created, // Full indexation of main product once variations was modified
+                            ChangeDate = changedVariation.CreatedDate,
+                        },
+
+                        // Variation change
+                        new IndexDocumentChange
+                        {
+                            DocumentId = changedVariation.ObjectId,
+                            ChangeType = changedVariation.OperationType.ToIndexDocumentChangeType(),
+                            ChangeDate = changedVariation.CreatedDate,
+                        }
+                    });
+                }
+            }
+
+            return result;
         }
 
         private static IndexDocumentChange ConvertOperationLogToIndexDocumentChange(OperationLog operation)
