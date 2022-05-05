@@ -1,4 +1,4 @@
-﻿<div class="modal-window">
+<div class="modal-window">
     <div class="modal-window__header modal-window__header--error">
         <div class="modal-window__title">{{ 'catalog.dialogs.catalog-delete.title' | translate: titleValues}}</div>
         <button class="modal-window__header-button modal-window__header-button--no-bg" ng-disabled="{{ actionRequired }}" ng-click="cancel()" title="{{ 'platform.commands.cancel' | translate }}">
@@ -21,7 +21,7 @@
     </div>
 
     <div class="modal-window__footer">
-        <button class="modal-window__footer-button modal-window__footer-button--primary-outline" ng-class="{'__disabled': 'yes' !== enteredText}" ng-click="yes()">{{ 'platform.commands.confirm' | translate }}</button>
+        <button class="modal-window__footer-button modal-window__footer-button--primary-outline" ng-class="{'__disabled': 'yes' !== enteredText}" ng-click="yes()" ng-disabled="enteredText !== 'yes'">{{ 'platform.commands.confirm' | translate }}</button>
         <button class="modal-window__footer-button modal-window__footer-button--primary" ng-click="cancel()">{{ 'platform.commands.cancel' | translate }}</button>
     </div>
 </div>
