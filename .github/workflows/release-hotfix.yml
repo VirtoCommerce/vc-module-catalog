@@ -1,4 +1,4 @@
-# v3.200.2
+# v3.200.6
 name: Release hotfix
 
 on:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    uses: VirtoCommerce/.github/.github/workflows/build.yml@v3.200.2
+    uses: VirtoCommerce/.github/.github/workflows/build.yml@v3.200.6
     with:
       uploadPackage: 'true'
       uploadDocker: 'false'
@@ -16,7 +16,7 @@ jobs:
       envPAT: ${{ secrets.REPO_TOKEN }}
 
   test:
-    uses: VirtoCommerce/.github/.github/workflows/test-and-sonar.yml@v3.200.2
+    uses: VirtoCommerce/.github/.github/workflows/test-and-sonar.yml@v3.200.6
     secrets:
       sonarToken: ${{ secrets.SONAR_TOKEN }}
 
@@ -63,7 +63,7 @@ jobs:
   publish-github-release:
     needs:
       [build, test, get-metadata]
-    uses: VirtoCommerce/.github/.github/workflows/publish-github.yml@v3.200.2
+    uses: VirtoCommerce/.github/.github/workflows/publish-github.yml@v3.200.6
     with:
       fullKey: ${{ needs.get-metadata.outputs.packageFullKey }}
       shortKey: '${{ needs.get-metadata.outputs.packageShortKey }}-'
