@@ -1,4 +1,4 @@
-﻿namespace VirtoCommerce.CatalogModule.Core.Model.Search
+namespace VirtoCommerce.CatalogModule.Core.Model.Search
 {
     public class AggregationItem
     {
@@ -31,5 +31,15 @@
         /// Gets or sets the request lower bound for range aggregation value
         /// </summary>
         public string RequestedUpperBound { get; set; }
+
+        /// <summary>
+        /// Is lower bound for range included
+        /// </summary>
+        public bool IncludeLower { get; set; }
+
+        /// <summary>
+        /// Is upper bound for range included
+        /// </summary>
+        public bool IncludeUpper { get; set; }
     }
 }
