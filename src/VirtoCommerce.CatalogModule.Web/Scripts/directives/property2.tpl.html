@@ -38,9 +38,11 @@
                    ng-disabled="currentEntity.isReadOnly"
                    ng-required="currentEntity.required && !currentEntity.isReadOnly"
                    ng-model="context.currentPropValues[0].value"
+                   name="{{currentEntity.name}}"
                    ng-class="{'error': context.currentEntity.valueType.$error.pattern}"
                    placeholder="Please enter number">
         </div>
+        <va-property-messages></va-property-messages>
     </script>
 
     <script type="text/ng-template" id="Integer.html">
@@ -49,10 +51,12 @@
                    ng-disabled="currentEntity.isReadOnly"
                    ng-required="currentEntity.required && !currentEntity.isReadOnly"
                    ng-model="context.currentPropValues[0].value"
+                   name="{{currentEntity.name}}"
                    ng-class="{'error': context.currentEntity.valueType.$error.pattern}"
                    placeholder="Please enter integer"
                    type="text">
         </div>
+        <va-property-messages></va-property-messages>
     </script>
 
     <script type="text/ng-template" id="DateTime.html">
@@ -61,18 +65,23 @@
                    datepicker-popup
                    ng-required="currentEntity.required && !currentEntity.isReadOnly"
                    placeholder="{{ 'platform.genericValueInput.placeholders.date-time' | translate}}"
-                   ng-model="context.currentPropValues[0].value">
+                   ng-model="context.currentPropValues[0].value"
+                   name="{{currentEntity.name}}">
             <button ng-click="open($event, 'DateTime')" type="button" class="btn">
                 <i class="btn-ico fa fa-calendar"></i>
             </button>
         </div>
+        <va-property-messages></va-property-messages>
     </script>
 
     <script type="text/ng-template" id="Boolean.html">
         <label class="form-label __switch">
-            <input type="checkbox" ng-model="context.currentPropValues[0].value">
+            <input type="checkbox"
+                   ng-model="context.currentPropValues[0].value"
+                   name="{{currentEntity.name}}">
             <span class="switch"></span>
         </label>
+        <va-property-messages></va-property-messages>
     </script>
 
     <script type="text/ng-template" id="ShortText-multivalue.html">
@@ -106,9 +115,6 @@
             </div>
             <a ng-if="!currentEntity.isReadOnly" ng-click="context.currentPropValues.push({value:''})" style="cursor:pointer;">add value</a>
         </div>
-
-
-
     </script>
     <script type="text/ng-template" id="Integer-multivalue.html">
         <tags-input ng-model="context.currentPropValues"
@@ -116,10 +122,11 @@
                     min-tags="{{(currentEntity.required && !currentEntity.isReadOnly) ? 1 : undefined}}"
                     tags-number num-type="integer"
                     min-length="1"
-                    name="{{currentEntity.valueType}}"
+                    name="{{currentEntity.name}}"
                     display-property="value"
                     placeholder="Add number">
         </tags-input>
+        <va-property-messages></va-property-messages>
     </script>
     <script type="text/ng-template" id="Number-multivalue.html">
         <tags-input ng-model="context.currentPropValues"
@@ -127,55 +134,73 @@
                     min-tags="{{(currentEntity.required && !currentEntity.isReadOnly) ? 1 : undefined}}"
                     tags-number num-type="float"
                     min-length="1"
-                    name="{{currentEntity.valueType}}"
+                    name="{{currentEntity.name}}"
                     display-property="value"
                     placeholder="Add number">
         </tags-input>
+        <va-property-messages></va-property-messages>
     </script>
 
     <script type="text/ng-template" id="ShortText-dictionary.html">
         <div class="form-input">
-            <ui-select ng-model="context.currentPropValues[0]" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
+            <ui-select ng-model="context.currentPropValues[0]"
+                       ng-disabled="currentEntity.isReadOnly"
+                       ng-required="currentEntity.required"
+                       name="{{currentEntity.name}}">
                 <ui-select-match allow-clear="true" placeholder="{{ 'platform.genericValueInput.placeholders.short-text-dictionary' | translate }}">{{$select.selected.value}}</ui-select-match>
                 <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search} | orderBy: 'value'" refresh="loadDictionaryValues($select)" refresh-delay="200" when-scrolled="loadNextDictionaryValues($select)">
                     <span ng-bind-html="propValue.value | highlight: $select.search"></span>
                 </ui-select-choices>
             </ui-select>
         </div>
+        <va-property-messages></va-property-messages>
     </script>
     <script type="text/ng-template" id="Number-dictionary.html">
         <div class="form-input">
-            <ui-select ng-model="context.currentPropValues[0]" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
+            <ui-select ng-model="context.currentPropValues[0]"
+                       ng-disabled="currentEntity.isReadOnly"
+                       ng-required="currentEntity.required"
+                       name="{{currentEntity.name}}">
                 <ui-select-match allow-clear="true" placeholder="{{ 'platform.genericValueInput.placeholders.number' | translate }}">{{$select.selected.value}}</ui-select-match>
                 <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search} | orderBy: 'value'" refresh="loadDictionaryValues($select)" refresh-delay="200" when-scrolled="loadNextDictionaryValues($select)">
                     <span ng-bind-html="propValue.value | highlight: $select.search"></span>
                 </ui-select-choices>
             </ui-select>
         </div>
+        <va-property-messages></va-property-messages>
     </script>
 
 
     <script type="text/ng-template" id="ShortText-dictionary-multivalue.html">
         <div class="form-input">
-            <ui-select multiple ng-model="context.currentPropValues" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
+            <ui-select multiple
+                       ng-model="context.currentPropValues"
+                       ng-disabled="currentEntity.isReadOnly"
+                       ng-required="currentEntity.required"
+                       name="{{currentEntity.name}}">
                 <ui-select-match placeholder="{{ 'platform.genericValueInput.placeholders.short-text-dictionary-multivalue' | translate }}">{{$item.value}}</ui-select-match>
                 <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search} | orderBy: 'value'" refresh="loadDictionaryValues($select)" refresh-delay="200" when-scrolled="loadNextDictionaryValues($select)">
                     <span ng-bind-html="propValue.value | highlight: $select.search"></span>
                 </ui-select-choices>
             </ui-select>
         </div>
+        <va-property-messages></va-property-messages>
     </script>
     <script type="text/ng-template" id="Number-dictionary-multivalue.html">
         <div class="form-input">
-            <ui-select multiple ng-model="context.currentPropValues[0]" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
+            <ui-select multiple
+                       ng-model="context.currentPropValues[0]"
+                       ng-disabled="currentEntity.isReadOnly"
+                       ng-required="currentEntity.required"
+                       name="{{currentEntity.name}}">
                 <ui-select-match placeholder="{{ 'platform.genericValueInput.placeholders.number-multivalue' | translate }}">{{$item.value}}</ui-select-match>
                 <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search} | orderBy: 'value'" refresh="loadDictionaryValues($select)" refresh-delay="200" when-scrolled="loadNextDictionaryValues($select)">
                     <span ng-bind-html="propValue.value | highlight: $select.search"></span>
                 </ui-select-choices>
             </ui-select>
         </div>
+        <va-property-messages></va-property-messages>
     </script>
-
 
     <script type="text/ng-template" id="ShortText-multilang.html">
         <div class="form-group" ng-repeat="(language, langValuesGroup) in context.langValuesMap" ng-if="isLanguageVisible(language)">
@@ -217,10 +242,11 @@
                 <input ng-disabled="currentEntity.isReadOnly"
                        ng-required="currentEntity.required && !currentEntity.isReadOnly"
                        ng-model="langValuesGroup.currentPropValues[0].value"
-                       name="{{currentEntity.valueType}}"
+                       name="{{currentEntity.name}}"
                        class="vc-catalog"
                        placeholder="Please enter number value"
                        type="text">
+                <va-property-messages></va-property-messages>
             </div>
         </div>
     </script>
@@ -272,66 +298,90 @@
                             min-tags="{{(currentEntity.required && !currentEntity.isReadOnly) ? 1 : undefined}}"
                             allowed-tags-pattern="^[-]?[0-9]+[\.]?[0-9]*$"
                             min-length="1"
-                            name="{{currentEntity.valueType}}"
+                            name="{{currentEntity.name}}"
                             display-property="value"
                             placeholder="Add number">
                 </tags-input>
             </div>
+            <va-property-messages></va-property-messages>
         </div>
     </script>
     <script type="text/ng-template" id="ShortText-dictionary-multilang.html">
         <div class="form-input">
-            <ui-select ng-model="context.currentPropValues[0]" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
+            <ui-select ng-model="context.currentPropValues[0]"
+                       ng-disabled="currentEntity.isReadOnly"
+                       ng-required="currentEntity.required"
+                       name="{{currentEntity.name}}">
                 <ui-select-match allow-clear="true" placeholder="{{ 'platform.genericValueInput.placeholders.short-text-dictionary-multilang' | translate }}">{{$select.selected.value}}</ui-select-match>
                 <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search} | orderBy: 'value'" refresh="loadDictionaryValues($select)" refresh-delay="200" when-scrolled="loadNextDictionaryValues($select)">
                     <span ng-bind-html="propValue.value | highlight: $select.search"></span>
                 </ui-select-choices>
             </ui-select>
         </div>
+        <va-property-messages></va-property-messages>
     </script>
 
     <script type="text/ng-template" id="Number-dictionary-multilang.html">
         <div class="form-input">
-            <ui-select ng-model="context.currentPropValues[0]" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
+            <ui-select ng-model="context.currentPropValues[0]"
+                       ng-disabled="currentEntity.isReadOnly"
+                       ng-required="currentEntity.required"
+                       name="{{currentEntity.name}}">
                 <ui-select-match allow-clear="true" placeholder="{{ 'platform.genericValueInput.placeholders.number' | translate }}">{{$select.selected.value}}</ui-select-match>
                 <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search} | orderBy: 'value'" refresh="loadDictionaryValues($select)" refresh-delay="200" when-scrolled="loadNextDictionaryValues($select)">
                     <span ng-bind-html="propValue.value | highlight: $select.search"></span>
                 </ui-select-choices>
             </ui-select>
         </div>
+        <va-property-messages></va-property-messages>
     </script>
 
     <script type="text/ng-template" id="LongText-dictionary-multivalue-multilang.html">
         <div class="form-input">
-            <ui-select multiple ng-model="context.currentPropValues" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
+            <ui-select multiple
+                       ng-model="context.currentPropValues"
+                       ng-disabled="currentEntity.isReadOnly"
+                       ng-required="currentEntity.required"
+                       name="{{currentEntity.name}}">
                 <ui-select-match placeholder="{{ 'platform.genericValueInput.placeholders.long-text-dictionary-multivalue-multilang' | translate }}">{{$item.value}}</ui-select-match>
                 <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search} | orderBy: 'value'" refresh="loadDictionaryValues($select)" refresh-delay="200" when-scrolled="loadNextDictionaryValues($select)">
                     <span ng-bind-html="propValue.value | highlight: $select.search"></span>
                 </ui-select-choices>
             </ui-select>
         </div>
+        <va-property-messages></va-property-messages>
     </script>
 
     <script type="text/ng-template" id="ShortText-dictionary-multivalue-multilang.html">
         <div class="form-input">
-            <ui-select multiple ng-model="context.currentPropValues" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
+            <ui-select multiple
+                       ng-model="context.currentPropValues"
+                       ng-disabled="currentEntity.isReadOnly"
+                       ng-required="currentEntity.required"
+                       name="{{currentEntity.name}}">
                 <ui-select-match placeholder="{{ 'platform.genericValueInput.placeholders.short-text-dictionary-multivalue-multilang' | translate }}">{{$item.value}}</ui-select-match>
                 <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search} | orderBy: 'value'" refresh="loadDictionaryValues($select)" refresh-delay="200" when-scrolled="loadNextDictionaryValues($select)">
                     <span ng-bind-html="propValue.value | highlight: $select.search"></span>
                 </ui-select-choices>
-            </ui-select>
+            </ui-select>            
         </div>
+        <va-property-messages></va-property-messages>
     </script>
 
     <script type="text/ng-template" id="Number-dictionary-multivalue-multilang.html">
         <div class="form-input">
-            <ui-select multiple ng-model="context.currentPropValues" ng-disabled="currentEntity.isReadOnly" ng-required="currentEntity.required">
+            <ui-select multiple
+                       ng-model="context.currentPropValues"
+                       ng-disabled="currentEntity.isReadOnly"
+                       ng-required="currentEntity.required"
+                       name="{{currentEntity.name}}">
                 <ui-select-match placeholder="{{ 'platform.genericValueInput.placeholders.number-multivalue' | translate }}">{{$item.value}}</ui-select-match>
                 <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search} | orderBy: 'value'" refresh="loadDictionaryValues($select)" refresh-delay="200" when-scrolled="loadNextDictionaryValues($select)">
                     <span ng-bind-html="propValue.value | highlight: $select.search"></span>
                 </ui-select-choices>
             </ui-select>
         </div>
+        <va-property-messages></va-property-messages>
     </script>
     <!--GeoPoint-->
     <script type="text/ng-template" id="GeoPoint.html">
