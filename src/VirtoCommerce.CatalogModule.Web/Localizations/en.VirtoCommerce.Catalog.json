@@ -974,6 +974,10 @@
         "description": "Enable or disable detecting SEO duplicates",
         "title": "Detect SEO duplicates"
       },
+      "CategoryDescriptionTypes": {
+        "description": "Dictionary of possible types the descriptions for this category may have",
+        "title": "Category description types"
+      },
       "Search": {
         "UseCatalogIndexedSearchInManager": {
           "description": "Enable or disable indexed search for the Catalog module with advanced syntax",
