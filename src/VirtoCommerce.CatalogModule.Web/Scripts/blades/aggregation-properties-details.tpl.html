@@ -1,4 +1,4 @@
-﻿<div class="blade-content">
+<div class="blade-content">
     <div class="blade-inner">
         <div class="inner-block">
             <form class="form" name="rules">
@@ -33,12 +33,20 @@
                 <div class="form-group">
                     <label class="form-label">{{'catalog.blades.aggregation-properties-details.values-'+blade.property.type+'.label' | translate}}</label>
                     <div class="form-input">
-                        <ui-select multiple ng-model="blade.property.values">
+                        <ui-select ng-if="blade.hasPredefinedValues()"
+                                   multiple
+                                   ng-model="blade.property.values">
                             <ui-select-match placeholder="{{'catalog.blades.aggregation-properties-details.values-'+blade.property.type+'.placeholder' | translate}}">{{$item}}</ui-select-match>
                             <ui-select-choices repeat="x in blade.getValues($select.search) | filter: $select.search">
                                 <span ng-bind-html="x | highlight: $select.search"></span>
                             </ui-select-choices>
                         </ui-select>
+                        <tags-input ng-if="!blade.hasPredefinedValues()"
+                                    use-strings="true"
+                                    ng-model="blade.property.values"
+                                    display-property="value"
+                                    placeholder="{{'platform.genericValueInput.placeholders.short-text-multivalue' | translate}}">
+                        </tags-input>
                     </div>
                     <div class="table-descr">{{'catalog.blades.aggregation-properties-details.values-'+blade.property.type+'.description' | translate}}</div>
                 </div>
