@@ -11,6 +11,7 @@ jobs:
       uploadPackage: 'true'
       uploadDocker: 'false'
       forceVersionSuffix: 'false'
+      eventName: ${{ github.event_name }}
     secrets:
       envPAT: ${{ secrets.REPO_TOKEN }}
 
