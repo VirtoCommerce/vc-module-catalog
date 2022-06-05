@@ -1,4 +1,4 @@
-# v3.200.6
+# v3.200.10
 name: Release hotfix
 
 on:
@@ -6,17 +6,17 @@ on:
 
 jobs:
   build:
-    uses: VirtoCommerce/.github/.github/workflows/build.yml@v3.200.6
+    uses: VirtoCommerce/.github/.github/workflows/build.yml@v3.200.10
     with:
       uploadPackage: 'true'
       uploadDocker: 'false'
-      eventName: ${{ github.event_name }}
       forceVersionSuffix: 'false'
+      eventName: ${{ github.event_name }}
     secrets:
       envPAT: ${{ secrets.REPO_TOKEN }}
 
   test:
-    uses: VirtoCommerce/.github/.github/workflows/test-and-sonar.yml@v3.200.6
+    uses: VirtoCommerce/.github/.github/workflows/test-and-sonar.yml@v3.200.10
     secrets:
       sonarToken: ${{ secrets.SONAR_TOKEN }}
 
@@ -25,13 +25,8 @@ jobs:
     env:
       ARTIFACT_NAME: 'platform'
       DOCKER_CACHE_KEY: ''
-      DOCKER_TAR: 'platform_image.tar'
+      DOCKER_TAR: 'image.tar'
     outputs:
-      dockerShortKey: ${{ steps.cache-key.outputs.dockerShortKey }}
-      dockerFullKey: ${{ steps.cache-key.outputs.dockerFullKey }}
-      packageShortKey: ${{ steps.cache-key.outputs.packageShortKey }}
-      packageFullKey: ${{ steps.cache-key.outputs.packageFullKey }}
-      dockerTar: ${{ env.DOCKER_TAR }}
       changelog: ${{ steps.changelog.outputs.changelog }}
     steps:
 
@@ -43,32 +38,14 @@ jobs:
       id: changelog
       uses: VirtoCommerce/vc-github-actions/changelog-generator@master
 
-    - name: Get Artifact Version
-      uses: VirtoCommerce/vc-github-actions/get-image-version@master
-      id: artifactVer
-
-    - name: Set ARTIFACT_NAME
-      run: |
-        if [ '${{ steps.artifactVer.outputs.moduleId }}' != '' ]; then
-          echo "ARTIFACT_NAME=${{ steps.artifactVer.outputs.moduleId }}" >> $GITHUB_ENV
-        fi;
-
-    - name: Get cache key
-      uses: VirtoCommerce/vc-github-actions/cache-get-key@master
-      id: cache-key
-      with:
-        runnerOs: ${{ runner.os  }}
-        artifactName: ${{ env.ARTIFACT_NAME }}
-
   publish-github-release:
     needs:
       [build, test, get-metadata]
-    uses: VirtoCommerce/.github/.github/workflows/publish-github.yml@v3.200.6
+    uses: VirtoCommerce/.github/.github/workflows/publish-github.yml@v3.200.10
     with:
-      fullKey: ${{ needs.get-metadata.outputs.packageFullKey }}
-      shortKey: '${{ needs.get-metadata.outputs.packageShortKey }}-'
+      fullKey: ${{ needs.build.outputs.packageFullKey }}
       changeLog: '${{ needs.get-metadata.outputs.changeLog }}'
-      
+
     secrets:
       envPAT: ${{ secrets.GITHUB_TOKEN }}
       nugetKey: ${{ secrets.NUGET_KEY }}
