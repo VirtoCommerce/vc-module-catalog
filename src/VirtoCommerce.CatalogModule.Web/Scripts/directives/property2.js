@@ -41,6 +41,7 @@ angular.module('virtoCommerce.catalogModule').directive('vaProperty2', ['$compil
             scope.$watch('context.currentPropValues', function (newValues) {
                 //reflect only real changes
                 var currentValues = angular.copy(scope.currentEntity.values);
+
                 if (scope.currentEntity.dictionary) {
                     currentValues = _.uniq(_.map(currentValues, function (x) {
                         return {
@@ -53,11 +54,8 @@ angular.module('virtoCommerce.catalogModule').directive('vaProperty2', ['$compil
                 }
 
                 if (isValuesDifferent(newValues, currentValues)) {
-                    if (newValues[0] === undefined) {
-                        scope.currentEntity.values = null;
-                    } else {
-                        scope.currentEntity.values = newValues;
-                    }
+                    scope.currentEntity.values = angular.copy(newValues);
+
                     //reset inherited status to force property value override
                     _.each(scope.currentEntity.values, function (x) { if (x) { x.isInherited = false;}; });
 
@@ -96,15 +94,19 @@ angular.module('virtoCommerce.catalogModule').directive('vaProperty2', ['$compil
             };
 
             function isValuesDifferent(newValues, currentValues) {
-                var elementCountIsDifferent = newValues.length != currentValues.length;
-                var elementsNotEqual = _.any(newValues, function (newValue) {
-                    return _.all(currentValues, function (currentValue) {
-                        return !(newValue && currentValue.value === newValue.value && currentValue.languageCode == newValue.languageCode);
+                var nonNullNewValues = newValues.filter(x => x.value);
+                var nonNullCurrentValues = currentValues.filter(x => x.value);
+                
+                var elementCountIsDifferent = nonNullNewValues.length !== nonNullCurrentValues.length;
+
+                var elementsNotEqual = _.any(nonNullNewValues, function (newValue) {
+                    return _.all(nonNullCurrentValues, function (currentValue) {
+                        return !(newValue && currentValue.value === newValue.value && currentValue.languageCode === newValue.languageCode);
                     });
                 });
-
+                
                 return (elementCountIsDifferent || elementsNotEqual) &&
-                    (_.any(currentValues) || (newValues[0] && newValues[0].value)); //Prevent reflecting the change when null value was added to empty initial values
+                    (_.any(nonNullCurrentValues) || _.any(nonNullNewValues));
             };
 
             function needAddEmptyValue(property, values) {
