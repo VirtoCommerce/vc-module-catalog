@@ -174,6 +174,10 @@ angular.module('virtoCommerce.catalogModule')
 
                                             var itemIds = _.pluck(list, 'id');
                                             associations.delete({ ids: itemIds }, function () {
+                                                if (blade.itemsDeleted) {
+                                                    blade.itemsDeleted(itemIds)
+                                                }
+
                                                 blade.refresh();
                                             });
                                         });
@@ -240,6 +244,7 @@ angular.module('virtoCommerce.catalogModule')
                                             var newAssociations = _.map(selectedProductIds, function (id) {
                                                 return {
                                                     associatedObjectId: id,
+                                                    associatedObjectName: "test",
                                                     associatedObjectType: blade.associatedObjectType,
                                                     itemId: blade.item.id,
                                                     quantity: 1,
@@ -249,6 +254,10 @@ angular.module('virtoCommerce.catalogModule')
 
                                             blade.isLoading = true;
                                             associations.update(newAssociations, function () {
+                                                if (blade.itemsAdded) {
+                                                    blade.itemsAdded(newAssociations)
+                                                }
+
                                                 blade.refresh();
                                             });
                                         }
