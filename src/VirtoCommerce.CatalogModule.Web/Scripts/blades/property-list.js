@@ -37,10 +37,17 @@ angular.module('virtoCommerce.catalogModule')
         }
 
         $scope.isPropertyChanged = function (property) {
+            
             if (property) {
                 var oldItem = _.find(blade.currentEntity.properties, function (x) { return x.id === property.id; });
                 if (oldItem) {
-                    return !angular.equals(property, oldItem);
+                    var propValues = property.values.filter(x => x.value)
+                        .sort((x, y) => x.id.localeCompare(y.id));
+
+                    var oldValues = oldItem.values.filter(x => x.value)
+                        .sort((x, y) => x.id.localeCompare(y.id));
+                    
+                    return !angular.equals(propValues, oldValues);
                 }
             }
             return false;
@@ -127,9 +134,14 @@ angular.module('virtoCommerce.catalogModule')
         $scope.setForm = function (form) {
             formScope = form;
         }
-        const isValid = () => {
-            $scope.isValid = formScope && formScope.$valid;
+
+        var isValid = () => {
+            var isFormValid = formScope && formScope.$valid;
+            var isAnyChanges = blade.currentEntities.some(x => $scope.isPropertyChanged(x));
+
+            $scope.isValid = isFormValid && isAnyChanges;
         };
+
         $scope.$watch("blade.currentEntities", isValid, true);
         $scope.$watch("blade.currentEntity", isValid, true);
 
