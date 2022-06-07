@@ -5,7 +5,9 @@ angular.module('virtoCommerce.catalogModule')
     $scope.openBlade = function () {
         var newBlade = {
             id: "billOfMaterialsList",
-            item: blade.item,              
+            item: blade.item,
+            itemsAdded: blade.associationsAdded,
+            itemsDeleted: blade.associationsDeleted,
             controller: 'virtoCommerce.catalogModule.billOfMaterialsListController',
             template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/bill-of-materials-list.tpl.html'
         };
