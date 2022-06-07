@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core;
-using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
@@ -285,6 +284,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                             Count = (int)value.Count,
                             RequestedLowerBound = !string.IsNullOrEmpty(rangeValue.Lower) ? rangeValue.Lower : null,
                             RequestedUpperBound = !string.IsNullOrEmpty(rangeValue.Upper) ? rangeValue.Upper : null,
+                            IncludeLower = rangeValue.IncludeLower,
+                            IncludeUpper = rangeValue.IncludeUpper,
                         };
 
                         result.Add(aggregationItem);
