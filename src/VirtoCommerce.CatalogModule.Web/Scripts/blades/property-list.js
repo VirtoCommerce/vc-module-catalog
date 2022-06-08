@@ -50,9 +50,7 @@ angular.module('virtoCommerce.catalogModule')
                     return !angular.equals(propValues, oldValues);
                 }
                 else {
-                    if (property.values.length) {
-                        return true;
-                    }
+                    return property.values.length > 0;
                 }
             }
             return false;
