@@ -4,7 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Events;
+using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Data.Search.Indexing;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Events;
 using VirtoCommerce.Platform.Core.Jobs;
 using VirtoCommerce.Platform.Core.Settings;
@@ -27,20 +29,46 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
 
         public async Task Handle(ProductChangedEvent message)
         {
-            if (await _settingsManager.GetValueAsync(ModuleConstants.Settings.General.EventBasedIndexation.Name, false))
+            if (!await _settingsManager.GetValueAsync(ModuleConstants.Settings.General.EventBasedIndexation.Name, false))
             {
-                if (message == null)
-                {
-                    throw new ArgumentNullException(nameof(message));
-                }
-
-                var indexEntries = message.ChangedEntries
-                    .Select(x => new IndexEntry { Id = x.OldEntry.Id, EntryState = x.EntryState, Type = KnownDocumentTypes.Product })
-                    .ToArray();
-
-                IndexingJobs.EnqueueIndexAndDeleteDocuments(indexEntries,
-                    JobPriority.Normal, _configurations.GetBuildersForProvider(typeof(ProductDocumentChangesProvider)).ToList());
+                return;
             }
+
+            if (message == null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+
+            var indexEntries = new List<IndexEntry>();
+
+            foreach (var changedEntry in message.ChangedEntries)
+            {
+                var changedProduct = changedEntry.OldEntry;
+
+                indexEntries.Add(new IndexEntry
+                {
+                    Id = IsVariation(changedProduct) ? changedProduct.MainProductId : changedProduct.Id,
+                    EntryState = IsVariation(changedProduct) ? EntryState.Added : changedEntry.EntryState, // Full indexation of main product once variation was modified
+                    Type = KnownDocumentTypes.Product,
+                });
+
+                if (IsVariationCreatedOrDeleted(changedProduct, changedEntry.EntryState))
+                {
+                    indexEntries.Add(new IndexEntry
+                    {
+                        Id = changedProduct.Id,
+                        EntryState = changedEntry.EntryState,
+                        Type = KnownDocumentTypes.Product,
+                    });
+                }
+            }
+
+            IndexingJobs.EnqueueIndexAndDeleteDocuments(indexEntries.ToArray(), JobPriority.Normal, _configurations.GetBuildersForProvider(typeof(ProductDocumentChangesProvider)).ToList());
         }
+
+        private static bool IsVariationCreatedOrDeleted(CatalogProduct catalogProduct, EntryState entryState)
+            => IsVariation(catalogProduct) && entryState is EntryState.Added or EntryState.Deleted;
+
+        private static bool IsVariation(CatalogProduct catalogProduct) => !string.IsNullOrEmpty(catalogProduct.MainProductId);
     }
 }

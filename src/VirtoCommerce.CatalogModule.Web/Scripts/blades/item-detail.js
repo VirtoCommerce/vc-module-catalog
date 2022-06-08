@@ -196,6 +196,17 @@ angular.module('virtoCommerce.catalogModule')
             }
         });
 
+        blade.associationsAdded = function (associations) {
+            blade.currentEntity.associations = blade.currentEntity.associations.concat(associations);
+            blade.origItem.associations = blade.origItem.associations.concat(associations);
+        }
+
+        blade.associationsDeleted = function (associationIds) {
+            var predicate = (association) => { return _.contains(associationIds, association.id) };
+            blade.currentEntity.associations = _.reject(blade.currentEntity.associations, predicate);
+            blade.origItem.associations = _.reject(blade.origItem.associations, predicate);
+        }
+
         initVendors();
         blade.taxTypes = settings.getValues({ id: 'VirtoCommerce.Core.General.TaxTypes' });
 

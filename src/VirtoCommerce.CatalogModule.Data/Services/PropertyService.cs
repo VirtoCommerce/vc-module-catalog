@@ -82,6 +82,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
                     if (originalEntity != null)
                     {
+                        repository.TrackModifiedAsAddedForNewChildEntities(originalEntity);
+
                         changedEntries.Add(new GenericChangedEntry<Property>(property, originalEntity.ToModel(AbstractTypeFactory<Property>.TryCreateInstance()), EntryState.Modified));
                         modifiedEntity.Patch(originalEntity);
                         //Force set ModifiedDate property to mark a product changed. Special for  partial update cases when product table not have changes
