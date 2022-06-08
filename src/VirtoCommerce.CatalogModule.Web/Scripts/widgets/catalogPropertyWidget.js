@@ -1,11 +1,12 @@
-﻿angular.module('virtoCommerce.catalogModule')
+angular.module('virtoCommerce.catalogModule')
 .controller('virtoCommerce.catalogModule.catalogPropertyWidgetController', ['$scope', 'platformWebApp.bladeNavigationService', function ($scope, bladeNavigationService) {
 	var blade = $scope.blade;
 
 	$scope.openCatalogPropertyBlade = function () {
 		var newBlade = {
 			id: "catalogPropertyDetail",
-			currentEntity: blade.currentEntity,
+            currentEntity: blade.currentEntity,
+            originalEntity: blade.origEntity,
 			languages: _.pluck(blade.currentEntity.languages, 'languageCode'),
 			defaultLanguage: blade.currentEntity.defaultLanguage.languageCode,
 			entityType: "catalog",
