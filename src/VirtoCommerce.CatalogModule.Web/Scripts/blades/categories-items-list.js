@@ -1,7 +1,7 @@
 angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.categoriesItemsListController', [
-        '$sessionStorage', '$localStorage', '$timeout', '$scope', 'virtoCommerce.catalogModule.categories', 'virtoCommerce.catalogModule.items', 'virtoCommerce.catalogModule.listEntries', 'platformWebApp.bladeUtils', 'platformWebApp.dialogService', 'platformWebApp.authService', 'platformWebApp.uiGridHelper', 'virtoCommerce.catalogModule.catalogs',
-        function ($sessionStorage, $localStorage, $timeout, $scope, categories, items, listEntries, bladeUtils, dialogService, authService, uiGridHelper, catalogs) {
+        '$sessionStorage', '$localStorage', '$timeout', '$scope', 'virtoCommerce.catalogModule.categories', 'virtoCommerce.catalogModule.items', 'virtoCommerce.catalogModule.listEntries', 'platformWebApp.bladeUtils', 'platformWebApp.dialogService', 'platformWebApp.authService', 'platformWebApp.uiGridHelper', 'virtoCommerce.catalogModule.catalogs', 'platformWebApp.settings',
+        function ($sessionStorage, $localStorage, $timeout, $scope, categories, items, listEntries, bladeUtils, dialogService, authService, uiGridHelper, catalogs, settings) {
             $scope.uiGridConstants = uiGridHelper.uiGridConstants;
             $scope.hasMore = true;
             $scope.items = [];
@@ -10,6 +10,13 @@ angular.module('virtoCommerce.catalogModule')
             var bladeNavigationService = bladeUtils.bladeNavigationService;
             if (blade.catalogId)
                 blade.catalog = catalogs.get({ id: blade.catalogId });
+
+            blade.isCopyIdMenuVisible = false;
+            settings.getValues({ id: 'Catalog.AllowToCopyID' }, function (data) {
+                if (data && data.length > 0) {
+                    blade.isCopyIdMenuVisible = data[0];
+                }
+            });
 
             blade.refresh = function () {
 
@@ -130,6 +137,10 @@ angular.module('virtoCommerce.catalogModule')
                     $scope.gridApi.infiniteScroll.dataLoaded();
                 }
             }
+
+            $scope.copyItemID = function (data) {
+                navigator.clipboard.writeText(data.id).then().catch(e => console.error(e));
+            };
 
             $scope.edit = function (listItem) {
                 if (listItem.type === 'category') {

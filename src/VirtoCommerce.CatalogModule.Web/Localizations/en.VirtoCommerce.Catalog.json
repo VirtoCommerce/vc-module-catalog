@@ -907,6 +907,7 @@
       }
     },
     "commands": {
+      "copy-id": "Copy ID",
       "clear-all": "Clear all",
       "add-property": "Add property",
       "add-product-property": "Add a custom property",
@@ -977,6 +978,10 @@
       "CategoryDescriptionTypes": {
         "description": "Dictionary of possible types the descriptions for this category may have",
         "title": "Category description types"
+      },
+      "AllowToCopyID": {
+        "title": "Allow to copy item's ID",
+        "description": "Enable it to see the Copy ID context menu item."
       },
       "Search": {
         "UseCatalogIndexedSearchInManager": {

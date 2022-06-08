@@ -1,7 +1,7 @@
 angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.videoListController',
-        ['$scope', '$translate', '$timeout', 'platformWebApp.bladeNavigationService', 'platformWebApp.bladeUtils', 'platformWebApp.dialogService', 'platformWebApp.uiGridHelper', 'virtoCommerce.catalogModule.videos',
-            function ($scope, $translate, $timeout, bladeNavigationService, bladeUtils, dialogService, uiGridHelper, videos) {
+        ['$scope', '$translate', '$timeout', 'platformWebApp.bladeNavigationService', 'platformWebApp.bladeUtils', 'platformWebApp.dialogService', 'platformWebApp.uiGridHelper', 'virtoCommerce.catalogModule.videos', 'platformWebApp.settings',
+            function ($scope, $translate, $timeout, bladeNavigationService, bladeUtils, dialogService, uiGridHelper, videos, settings) {
                 var blade = $scope.blade;
                 blade.updatePermission = 'catalog:update';
                 blade.headIcon = 'fab fa-youtube';
@@ -16,6 +16,13 @@ angular.module('virtoCommerce.catalogModule')
                         take: $scope.pageSettings.itemsPerPageCount
                     });
                 };
+
+                blade.isCopyIdMenuVisible = false;
+                settings.getValues({ id: 'Catalog.AllowToCopyID' }, function (data) {
+                    if (data && data.length > 0) {
+                        blade.isCopyIdMenuVisible = data[0];
+                    }
+                });
 
                 blade.refresh = function () {
                     blade.isLoading = true;
@@ -61,6 +68,10 @@ angular.module('virtoCommerce.catalogModule')
                             item.$selected = true;
                         }
                     }
+                };
+
+                $scope.copyItemID = function (data) {
+                    navigator.clipboard.writeText(data.id).then().catch(e => console.error(e));
                 };
 
                 $scope.edit = function(item) {

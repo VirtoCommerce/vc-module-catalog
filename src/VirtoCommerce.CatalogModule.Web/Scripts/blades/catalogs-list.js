@@ -1,11 +1,18 @@
 angular.module('virtoCommerce.catalogModule')
-    .controller('virtoCommerce.catalogModule.catalogsListController', ['$scope', 'virtoCommerce.catalogModule.catalogs', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'platformWebApp.authService', 'platformWebApp.uiGridHelper', 'platformWebApp.bladeUtils', '$timeout',
-        function ($scope, catalogs, bladeNavigationService, dialogService, authService, uiGridHelper, bladeUtils, $timeout) {
+    .controller('virtoCommerce.catalogModule.catalogsListController', ['$scope', 'virtoCommerce.catalogModule.catalogs', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'platformWebApp.authService', 'platformWebApp.uiGridHelper', 'platformWebApp.bladeUtils', '$timeout', 'platformWebApp.settings',
+        function ($scope, catalogs, bladeNavigationService, dialogService, authService, uiGridHelper, bladeUtils, $timeout, settings) {
             $scope.uiGridConstants = uiGridHelper.uiGridConstants;
             var blade = $scope.blade;
             $scope.hasMore = true;
             blade.currentEntities = [];
             var selectedNode = null;
+
+            blade.isCopyIdMenuVisible = false;
+            settings.getValues({ id: 'Catalog.AllowToCopyID' }, function (data) {
+                if (data && data.length > 0) {
+                    blade.isCopyIdMenuVisible = data[0];
+                }
+            });
 
             blade.refresh = function () {
                 blade.isLoading = true;
@@ -95,6 +102,10 @@ angular.module('virtoCommerce.catalogModule')
 
                 bladeNavigationService.showBlade(newBlade, blade);
             }
+
+            $scope.copyItemID = function (data) {
+                navigator.clipboard.writeText(data.id).then().catch(e => console.error(e));
+            };
 
             $scope.editCatalog = function (catalog) {
                 if (catalog.isVirtual) {
