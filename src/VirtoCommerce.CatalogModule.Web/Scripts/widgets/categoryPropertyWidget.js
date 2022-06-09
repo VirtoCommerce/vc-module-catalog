@@ -1,4 +1,4 @@
-﻿angular.module('virtoCommerce.catalogModule')
+angular.module('virtoCommerce.catalogModule')
 .controller('virtoCommerce.catalogModule.categoryPropertyWidgetController', ['$scope', 'platformWebApp.bladeNavigationService', function ($scope, bladeNavigationService) {
     var blade = $scope.blade;
     $scope.propertiesCount = '...';
@@ -14,6 +14,7 @@
             categoryId: blade.currentEntity.id,
             entityType: "category",
             currentEntity: blade.currentEntity,
+            originalEntity: blade.origEntity,
             languages: _.pluck(blade.catalog.languages, 'languageCode'),
             defaultLanguage: blade.catalog.defaultLanguage.languageCode,
             propGroups: [{ title: 'catalog.properties.category', type: 'Category' }, { title: 'catalog.properties.product', type: 'Product' }, { title: 'catalog.properties.variation', type: 'Variation' }],
