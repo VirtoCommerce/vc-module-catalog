@@ -1,36 +1,38 @@
-# v3.200.10
+# v3.200.11
 name: Release hotfix
 
 on:
   workflow_dispatch:
+    inputs:
+      incrementPatch:
+        description: 'Increment patch version.'
+        required: true
+        default: true
+        type: boolean
 
 jobs:
+  test:
+    uses: VirtoCommerce/.github/.github/workflows/test-and-sonar.yml@v3.200.11
+    secrets:
+      sonarToken: ${{ secrets.SONAR_TOKEN }}
+
   build:
-    uses: VirtoCommerce/.github/.github/workflows/build.yml@v3.200.10
+    uses: VirtoCommerce/.github/.github/workflows/build.yml@v3.200.11
     with:
       uploadPackage: 'true'
       uploadDocker: 'false'
       forceVersionSuffix: 'false'
-      eventName: ${{ github.event_name }}
+      incrementPatch: ${{ inputs.incrementPatch }}
     secrets:
       envPAT: ${{ secrets.REPO_TOKEN }}
 
-  test:
-    uses: VirtoCommerce/.github/.github/workflows/test-and-sonar.yml@v3.200.10
-    secrets:
-      sonarToken: ${{ secrets.SONAR_TOKEN }}
-
   get-metadata:
     runs-on: ubuntu-latest
-    env:
-      ARTIFACT_NAME: 'platform'
-      DOCKER_CACHE_KEY: ''
-      DOCKER_TAR: 'image.tar'
     outputs:
       changelog: ${{ steps.changelog.outputs.changelog }}
     steps:
 
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 0
 
@@ -41,11 +43,36 @@ jobs:
   publish-github-release:
     needs:
       [build, test, get-metadata]
-    uses: VirtoCommerce/.github/.github/workflows/publish-github.yml@v3.200.10
+    uses: VirtoCommerce/.github/.github/workflows/publish-github.yml@v3.200.11
     with:
       fullKey: ${{ needs.build.outputs.packageFullKey }}
       changeLog: '${{ needs.get-metadata.outputs.changeLog }}'
+      incrementPatch: ${{ inputs.incrementPatch }}
 
     secrets:
       envPAT: ${{ secrets.GITHUB_TOKEN }}
       nugetKey: ${{ secrets.NUGET_KEY }}
+
+  increment-version:
+    needs:
+      [publish-github-release]
+    if: ${{ github.event.inputs.incrementPatch }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Install VirtoCommerce.GlobalTool
+      uses: VirtoCommerce/vc-github-actions/setup-vcbuild@master
+
+    - name: Setup Git Credentials
+      uses: VirtoCommerce/vc-github-actions/setup-git-credentials-github@master
+      with:
+        githubToken: ${{ secrets.REPO_TOKEN }}
+
+    - name: Increment Version
+      run: |
+        vc-build IncrementPatch
+        git add Directory.Build.props *module.manifest
+        git commit -m "ci: Auto IncrementPatch"
+        git push
