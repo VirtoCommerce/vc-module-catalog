@@ -42,10 +42,10 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// </summary>
         /// <remarks>Returns list of associations for specified products</remarks>
         /// <param name="productIds">Array of product ids</param>
-        [HttpGet]
-        [Route("multiple")]
+        [HttpPost]
+        [Route("get/multiple")]
         [Authorize(ModuleConstants.Security.Permissions.Read)]
-        public async Task<ActionResult<ProductAssociation[]>> GetProductsAssociations([FromQuery]string[] productIds)
+        public async Task<ActionResult<ProductAssociation[]>> GetProductsAssociations([FromBody] string[] productIds)
         {
             var result = await _associationService.GetAssociationsAsync(productIds);
             return Ok(result);
