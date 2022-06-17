@@ -34,10 +34,16 @@ angular.module('virtoCommerce.catalogModule')
             if ($localStorage.propertyFilter) {
                 applyFilter($localStorage.propertyFilter[authService.userName]);
             }
+
+            if (!blade.originalEntity) {
+                blade.originalEntity = {
+                    properties: blade.currentEntity.properties
+                }
+            }
         }
 
         $scope.isPropertyChanged = function (property) {
-            
+
             if (property) {
                 var oldItem = _.find(blade.originalEntity.properties, function (x) { return x.name === property.name; });
                 if (oldItem) {
