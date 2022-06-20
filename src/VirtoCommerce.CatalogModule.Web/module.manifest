@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
     <id>VirtoCommerce.Catalog</id>
-    <version>3.201.8</version>
+    <version>3.201.9</version>
     <version-tag />
     <platformVersion>3.200.0</platformVersion>
     <title>Catalog module</title>
