@@ -163,9 +163,9 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("validate-name")]
         public async Task<ActionResult<ValidationResult>> ValidateName([FromBody] PropertyValidationRequest request)
         {
-            if (request == null || request.Name.IsNullOrEmpty() || request.ProductId.IsNullOrEmpty())
+            if (request == null || request.Name.IsNullOrEmpty())
             {
-                throw new ArgumentNullException(nameof(request));
+                return BadRequest(request);
             }
 
             var result = await _propertyValidationRequestValidator.ValidateAsync(request);
