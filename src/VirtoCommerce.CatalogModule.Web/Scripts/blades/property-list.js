@@ -43,7 +43,6 @@ angular.module('virtoCommerce.catalogModule')
         }
 
         $scope.isPropertyChanged = function (property) {
-
             if (property) {
                 var oldItem = _.find(blade.originalEntity.properties, function (x) { return x.name === property.name; });
                 if (oldItem) {
@@ -146,7 +145,8 @@ angular.module('virtoCommerce.catalogModule')
 
         var isValid = () => {
             var isFormValid = formScope && formScope.$valid;
-            var isAnyChanges = blade.currentEntities.some(x => $scope.isPropertyChanged(x));
+            var isAnyChanges = blade.currentEntities.length !== blade.originalEntity.properties.length ||
+                blade.currentEntities.some(x => $scope.isPropertyChanged(x));
 
             $scope.isValid = isFormValid && isAnyChanges;
         };
