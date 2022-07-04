@@ -164,21 +164,13 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
 
                 if (properties.IsNullOrEmpty())
                 {
-                    // idle
+                    // Because no properties with same Id found
+                    return AddPropertyValues(product, property);
                 }
-                else
+
+                foreach (var productProperty in properties)
                 {
-                    if (properties == null)
-                    {
-                        // idle
-                    }
-                    else
-                    {
-                        foreach (var productProperty in properties)
-                        {
-                            productProperty.Values = new List<PropertyValue>();
-                        }
-                    }
+                    productProperty.Values = new List<PropertyValue>();
                 }
 
                 result = AddPropertyValues(product, property);
