@@ -100,16 +100,15 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("~/api/catalog/{catalogId}/categories/newcategory")]
         public ActionResult<Category> GetNewCategory(string catalogId, [FromQuery] string parentCategoryId = null)
         {
-            var retVal = new Category
-            {
-                ParentId = parentCategoryId,
-                CatalogId = catalogId,
-                Code = Guid.NewGuid().ToString().Substring(0, 5),
-                SeoInfos = new List<SeoInfo>(),
-                IsActive = true
-            };
+            var category = AbstractTypeFactory<Category>.TryCreateInstance();
 
-            return Ok(retVal);
+            category.ParentId = parentCategoryId;
+            category.CatalogId = catalogId;
+            category.Code = Guid.NewGuid().ToString().Substring(0, 5);
+            category.SeoInfos = new List<SeoInfo>();
+            category.IsActive = true;
+
+            return Ok(category);
         }
 
 
