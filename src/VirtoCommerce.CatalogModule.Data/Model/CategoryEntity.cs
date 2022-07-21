@@ -7,10 +7,11 @@ using System.Linq;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.Domain;
 
 namespace VirtoCommerce.CatalogModule.Data.Model
 {
-    public class CategoryEntity : AuditableEntity, IHasOuterId
+    public class CategoryEntity : AuditableEntity, IHasOuterId, IDataEntity<CategoryEntity, Category>
     {
         [Required]
         [StringLength(64)]

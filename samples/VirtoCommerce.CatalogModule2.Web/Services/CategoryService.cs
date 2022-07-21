@@ -10,7 +10,7 @@ using VirtoCommerce.CatalogModule.Data.Services;
 using VirtoCommerce.Platform.Core.Caching;
 using VirtoCommerce.Platform.Core.Events;
 
-namespace VirtoCommerce.CatalogModule2.Data.Services
+namespace VirtoCommerce.CatalogModule2.Web.Services
 {
     public class CategoryService2 : CategoryService
     {
@@ -48,19 +48,14 @@ namespace VirtoCommerce.CatalogModule2.Data.Services
             base.ApplyInheritanceRules(categories);
         }
 
-        protected override void ClearCache(IEnumerable<Category> categories)
+        protected override void ClearCache(IEnumerable<Category> models)
         {
-            base.ClearCache(categories);
+            base.ClearCache(models);
         }
 
-        protected override Task LoadDependenciesAsync(IEnumerable<Category> categories, IDictionary<string, Category> preloadedCategoriesMap)
+        protected override Task LoadDependencies(ICollection<Category> categories, IDictionary<string, Category> preloadedCategoriesMap)
         {
-            return base.LoadDependenciesAsync(categories, preloadedCategoriesMap);
-        }
-
-        protected override Task<IDictionary<string, Category>> PreloadCategoriesAsync(string catalogId)
-        {
-            return base.PreloadCategoriesAsync(catalogId);
+            return base.LoadDependencies(categories, preloadedCategoriesMap);
         }
 
         protected override void ResolveImageUrls(IEnumerable<Category> categories)
