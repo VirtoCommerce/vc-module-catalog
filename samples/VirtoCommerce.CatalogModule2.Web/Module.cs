@@ -20,6 +20,8 @@ using VirtoCommerce.CatalogModule2.Data.Search;
 using VirtoCommerce.CatalogModule2.Data.Search.BrowseFilters;
 using VirtoCommerce.CatalogModule2.Data.Search.Indexing;
 using VirtoCommerce.CatalogModule2.Data.Services;
+using VirtoCommerce.CatalogModule2.Web.Search;
+using VirtoCommerce.CatalogModule2.Web.Services;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Modularity;

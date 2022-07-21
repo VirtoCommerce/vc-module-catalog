@@ -28,8 +28,11 @@ namespace VirtoCommerce.CatalogModule.Data.Services
     {
         private readonly VideoOptions _videoOptions;
 
-        public VideoService(IOptions<VideoOptions> videoOptions,
-            Func<ICatalogRepository> repositoryFactory, IPlatformMemoryCache platformMemoryCache, IEventPublisher eventPublisher)
+        public VideoService(
+            IOptions<VideoOptions> videoOptions,
+            Func<ICatalogRepository> repositoryFactory,
+            IPlatformMemoryCache platformMemoryCache,
+            IEventPublisher eventPublisher)
             : base(repositoryFactory, platformMemoryCache, eventPublisher)
         {
             _videoOptions = videoOptions.Value;
@@ -38,7 +41,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         protected override async Task<IEnumerable<VideoEntity>> LoadEntities(IRepository repository, IEnumerable<string> ids, string responseGroup)
         {
             return await ((ICatalogRepository)repository).Videos
-                .Where(x => ids.Contains(x.Id)).ToListAsync();
+                .Where(x => ids.Contains(x.Id))
+                .ToListAsync();
         }
 
         public async Task<Video> CreateVideo(VideoCreateRequest createRequest)
@@ -52,15 +56,18 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             video.OwnerId = createRequest.OwnerId;
             video.OwnerType = createRequest.OwnerType;
 
-            using var service =
-                new YouTubeService(new BaseClientService.Initializer { ApiKey = _videoOptions.GoogleApiKey });
+            using var service = new YouTubeService(new BaseClientService.Initializer { ApiKey = _videoOptions.GoogleApiKey });
+
             if (!string.IsNullOrEmpty(service.ApiKey))
             {
                 var request = service.Videos.List(new[] { "snippet", "contentDetails", "player" });
                 request.Id = GetVideoId(createRequest.ContentUrl);
                 var response = await request.ExecuteAsync();
+
                 if (response.Items == null || response.Items.Count == 0)
+                {
                     throw new InvalidOperationException("Youtube video not found.");
+                }
 
                 var resource = response.Items[0];
                 var snippet = resource.Snippet;
@@ -74,8 +81,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
             else
             {
-                using var request = new HttpRequestMessage(HttpMethod.Get,
-                    $"https://www.youtube.com/oembed?url={createRequest.ContentUrl}&format=json");
+                using var request = new HttpRequestMessage(HttpMethod.Get, $"https://www.youtube.com/oembed?url={createRequest.ContentUrl}&format=json");
                 using var response = await service.HttpClient.SendAsync(request);
                 response.EnsureSuccessStatusCode();
                 var content = await response.Content.ReadAsStringAsync();
@@ -93,9 +99,12 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private static string GetVideoId(string contentUrl)
         {
             if (string.IsNullOrWhiteSpace(contentUrl))
+            {
                 return null;
+            }
 
             var parts = Regex.Split(contentUrl, @"(vi\/|v%3D|v=|\/v\/|youtu\.be\/|\/embed\/)");
+
             return parts.Length > 2 && !string.IsNullOrEmpty(parts[2])
                 ? Regex.Split(parts[2], @"[^0-9a-z_\-]", RegexOptions.IgnoreCase)[0]
                 : parts[0];
@@ -104,20 +113,28 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private static string GetEmbedUrl(string html)
         {
             if (string.IsNullOrWhiteSpace(html) || !html.Contains("<iframe", StringComparison.OrdinalIgnoreCase))
+            {
                 return null;
+            }
 
             var match = Regex.Match(html, "src=\"(.*?)\"", RegexOptions.Multiline);
+
             return match.Success ? match.Groups[1].Value : null;
         }
 
         private static string FormatDuration(string duration)
         {
             if (string.IsNullOrWhiteSpace(duration))
+            {
                 return null;
+            }
 
             var match = Regex.Match(duration, @"PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$");
+
             if (!match.Success)
+            {
                 return duration;
+            }
 
             return string.Join(":", match.Groups.Values.Skip(1)
                 .Select(grp => grp.Value)

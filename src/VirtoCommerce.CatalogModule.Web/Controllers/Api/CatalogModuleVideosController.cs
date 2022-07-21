@@ -11,21 +11,20 @@ using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Options;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
-using VirtoCommerce.Platform.Core.GenericCrud;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
     [Route("api/catalog/videos")]
     public class CatalogModuleVideosController : Controller
     {
-        private readonly ISearchService<VideoSearchCriteria, VideoSearchResult, Video> _videoSearchService;
-        private readonly ICrudService<Video> _videoService;
+        private readonly IVideoSearchService _videoSearchService;
+        private readonly IVideoService _videoService;
         private readonly VideoOptions _videoOptions;
 
         public CatalogModuleVideosController(IVideoSearchService videoSearchService, IVideoService videoService, IOptions<VideoOptions> videoOptions)
         {
-            _videoSearchService = (ISearchService<VideoSearchCriteria, VideoSearchResult, Video>)videoSearchService;
-            _videoService = (ICrudService<Video>)videoService;
+            _videoSearchService = videoSearchService;
+            _videoService = videoService;
             _videoOptions = videoOptions.Value;
         }
 
@@ -59,8 +58,9 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                     OwnerType = createRequest.OwnerType,
                     Sort = "SortOrder:desc",
                     Skip = 0,
-                    Take = 1
+                    Take = 1,
                 };
+
                 var searchResult = await _videoSearchService.SearchAsync(searchCriteria);
 
                 createRequest.SortOrder = searchResult.Results.Count != 0 ? searchResult.Results[0].SortOrder + 1 : 1;
@@ -68,7 +68,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             try
             {
-                var video = await ((IVideoService)_videoService).CreateVideo(createRequest);
+                var video = await _videoService.CreateVideo(createRequest);
 
                 return Ok(video);
             }
