@@ -12,7 +12,7 @@ using VirtoCommerce.Platform.Core.Caching;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Events;
 
-namespace VirtoCommerce.CatalogModule2.Data.Services
+namespace VirtoCommerce.CatalogModule2.Web.Services
 {
     public class VideoService2 : VideoService
     {
@@ -45,9 +45,9 @@ namespace VirtoCommerce.CatalogModule2.Data.Services
             base.ClearCache(models);
         }
 
-        protected override IChangeToken CreateCacheToken(IEnumerable<string> ids)
+        protected override IChangeToken CreateCacheToken(string id)
         {
-            return base.CreateCacheToken(ids);
+            return base.CreateCacheToken(id);
         }
 
         public override Task DeleteAsync(IEnumerable<string> ids, bool softDelete = false)
@@ -65,9 +65,9 @@ namespace VirtoCommerce.CatalogModule2.Data.Services
             return base.GetByIdAsync(id, responseGroup);
         }
 
-        public override Task<IEnumerable<Video>> GetByIdsAsync(IEnumerable<string> ids, string responseGroup = null)
+        public override Task<IReadOnlyCollection<Video>> GetAsync(List<string> ids, string responseGroup = null)
         {
-            return base.GetByIdsAsync(ids, responseGroup);
+            return base.GetAsync(ids, responseGroup);
         }
 
         protected override Task<IEnumerable<VideoEntity>> LoadEntities(IRepository repository, IEnumerable<string> ids)
