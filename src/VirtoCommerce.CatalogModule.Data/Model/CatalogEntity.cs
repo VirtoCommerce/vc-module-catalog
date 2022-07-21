@@ -5,10 +5,11 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.Domain;
 
 namespace VirtoCommerce.CatalogModule.Data.Model
 {
-    public class CatalogEntity : AuditableEntity, IHasOuterId
+    public class CatalogEntity : AuditableEntity, IHasOuterId, IDataEntity<CatalogEntity, Catalog>
     {
         public bool Virtual { get; set; }
         [Required]

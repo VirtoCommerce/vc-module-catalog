@@ -76,6 +76,7 @@ namespace VirtoCommerce.CatalogModule.Web
             serviceCollection.AddTransient<ICategorySearchService, CategorySearchService>();
 
             serviceCollection.AddTransient<ICatalogService, CatalogService>();
+            serviceCollection.AddTransient<ICatalogCrudService, CatalogService>();
             serviceCollection.AddTransient<ICatalogSearchService, CatalogSearchService>();
             serviceCollection.AddTransient<IListEntrySearchService, ListEntrySearchService>();
 
