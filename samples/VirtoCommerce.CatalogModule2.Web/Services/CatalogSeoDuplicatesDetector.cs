@@ -2,10 +2,11 @@ using System;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Data.Services;
+using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.Platform.Core.Settings;
-using VirtoCommerce.StoreModule.Core.Services;
+using VirtoCommerce.StoreModule.Core.Model;
 
-namespace VirtoCommerce.CatalogModule2.Data.Services
+namespace VirtoCommerce.CatalogModule2.Web.Services
 {
     /// <summary>
     /// Detect SEO duplicates based on store, catalog, categories relationships and structure knowledge
@@ -15,7 +16,7 @@ namespace VirtoCommerce.CatalogModule2.Data.Services
         public CatalogSeoDuplicatesDetector2(
             IItemService productService,
             ICategoryService categoryService,
-            IStoreService storeService,
+            ICrudService<Store> storeService,
             Func<ICatalogRepository> repositoryFactory,
             ISettingsManager settingsManager)
             : base(
