@@ -9,9 +9,9 @@ using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.StoreModule.Core.Model;
-using VirtoCommerce.StoreModule.Core.Services;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
@@ -22,14 +22,14 @@ namespace VirtoCommerce.CatalogModule.Data.Services
     {
         private readonly IItemService _productService;
         private readonly ICategoryService _categoryService;
-        private readonly IStoreService _storeService;
+        private readonly ICrudService<Store> _storeService;
         private readonly Func<ICatalogRepository> _repositoryFactory;
         private readonly ISettingsManager _settingsManager;
 
         public CatalogSeoDuplicatesDetector(
             IItemService productService,
             ICategoryService categoryService,
-            IStoreService storeService,
+            ICrudService<Store> storeService,
             Func<ICatalogRepository> repositoryFactory,
             ISettingsManager settingsManager)
         {
