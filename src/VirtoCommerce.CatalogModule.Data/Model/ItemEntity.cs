@@ -6,10 +6,11 @@ using System.Linq;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.Domain;
 
 namespace VirtoCommerce.CatalogModule.Data.Model
 {
-    public class ItemEntity : AuditableEntity, IHasOuterId
+    public class ItemEntity : AuditableEntity, IHasOuterId, IDataEntity<ItemEntity, CatalogProduct>
     {
         [StringLength(1024)]
         [Required]
@@ -114,7 +115,12 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
         #endregion
 
-        public virtual CatalogProduct ToModel(CatalogProduct product, bool convertChildrens = true, bool convertAssociations = true)
+        public virtual CatalogProduct ToModel(CatalogProduct product)
+        {
+            return ToModel(product, convertChildrens: true, convertAssociations: true);
+        }
+
+        public virtual CatalogProduct ToModel(CatalogProduct product, bool convertChildrens, bool convertAssociations)
         {
             if (product == null)
             {

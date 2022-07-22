@@ -83,6 +83,7 @@ namespace VirtoCommerce.CatalogModule.Web
             serviceCollection.AddTransient<ICategoryIndexedSearchService, CategoryIndexedSearchService>();
 
             serviceCollection.AddTransient<IItemService, ItemService>();
+            serviceCollection.AddTransient<IProductCrudService, ItemService>();
             serviceCollection.AddTransient<IProductIndexedSearchService, ProductIndexedSearchService>();
             serviceCollection.AddTransient<IAssociationService, AssociationService>();
 
