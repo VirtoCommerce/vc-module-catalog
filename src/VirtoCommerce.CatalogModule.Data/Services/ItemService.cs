@@ -4,13 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentValidation;
 using Microsoft.Extensions.Caching.Memory;
+using VirtoCommerce.AssetsModule.Core.Assets;
 using VirtoCommerce.CatalogModule.Core.Events;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Caching;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
-using VirtoCommerce.AssetsModule.Core.Assets;
 using VirtoCommerce.Platform.Core.Caching;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Events;
@@ -207,7 +207,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public virtual async Task LoadDependenciesAsync(IEnumerable<CatalogProduct> products)
         {
-            //TODO: refactor to do this by one call and iteration
+            // TODO: Refactor to do this by one call and iteration
             var catalogsIds = new { products }.GetFlatObjectsListWithInterface<IHasCatalogId>().Select(x => x.CatalogId).Where(x => x != null).Distinct().ToArray();
             var catalogsByIdDict = (await _catalogService.GetByIdsAsync(catalogsIds)).ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase);
 
@@ -241,7 +241,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         protected virtual void SetProductDependencies(CatalogProduct product, IDictionary<string, Catalog> catalogsByIdDict, IDictionary<string, Category> categoriesByIdDict)
         {
-            //TOD: Refactor after cover by the unit tests
+            // TODO: Refactor after covering by the unit tests
             if (string.IsNullOrEmpty(product.Code))
             {
                 product.Code = _skuGenerator.GenerateSku(product);
@@ -271,7 +271,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             {
                 if (product.MainProduct != null)
                 {
-                    //need to apply inheritance rules for main product first.
+                    // Need to apply inheritance rules for main product first.
                     product.MainProduct.TryInheritFrom(product.Category ?? (IEntity)product.Catalog);
                     product.TryInheritFrom(product.MainProduct);
                 }
@@ -289,7 +289,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 throw new ArgumentNullException(nameof(products));
             }
 
-            //Validate products
+            // Validate products
             foreach (var product in products)
             {
                 _productValidator.ValidateAndThrow(product);

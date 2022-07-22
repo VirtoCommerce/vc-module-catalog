@@ -52,7 +52,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         [JsonIgnore]
         public Category[] Parents { get; set; }
 
-        //Type of product package (set of package types with their specific dimensions) can be inherited by nested products and categories
+        // Type of product package (set of package types with their specific dimensions) can be inherited by nested products and categories
         public string PackageType { get; set; }
 
         public int Priority { get; set; }
@@ -121,7 +121,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
             if (parent is IHasProperties hasProperties)
             {
-                //Properties inheritance
+                // Properties inheritance
                 foreach (var parentProperty in hasProperties.Properties ?? Array.Empty<Property>())
                 {
                     if (this.HasPropertyExcluded(parentProperty.Name))
@@ -130,7 +130,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                     }
 
                     Properties ??= new List<Property>();
-                    //Try to find property by type and name
+                    // Try to find property by type and name
                     var existProperty = Properties.FirstOrDefault(x => x.IsSame(parentProperty));
                     if (existProperty == null)
                     {
@@ -140,13 +140,13 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                     existProperty.TryInheritFrom(parentProperty);
                     existProperty.IsReadOnly = existProperty.Type != PropertyType.Category;
                 }
-                //Restore order after changes
+                // Restore order after changes
                 Properties = Properties?.OrderBy(x => x.Name).ToList();
             }
 
             if (parent is IHasTaxType hasTaxType)
             {
-                //Try to inherit taxType from parent category
+                // Try to inherit taxType from parent category
                 TaxType ??= hasTaxType.TaxType;
             }
         }
@@ -164,7 +164,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
             result.Properties = Properties?.Select(x => x.Clone()).OfType<Property>().ToList();
             result.Links = Links?.Select(x => x.Clone()).OfType<CategoryLink>().ToList();
             result.Descriptions = Descriptions?.Select(x => x.Clone()).OfType<CategoryDescription>().ToList();
-            // result.Images = Images?.Select(x => x.Clone()).OfType<Image>().ToList(); // Intentionally temporary disabled due to memory overhead
+            //result.Images = Images?.Select(x => x.Clone()).OfType<Image>().ToList(); // Intentionally temporary disabled due to memory overhead
 
             return result;
         }
@@ -183,7 +183,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         /// <param name="responseGroup">A set of necessary groups</param>
         public virtual void ReduceDetails(string responseGroup)
         {
-            //Reduce details according to response group
+            // Reduce details according to response group
             var categoryResponseGroup = EnumUtility.SafeParseFlags(responseGroup, CategoryResponseGroup.Full);
 
             if (!categoryResponseGroup.HasFlag(CategoryResponseGroup.WithImages))

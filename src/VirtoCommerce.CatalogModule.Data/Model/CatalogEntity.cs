@@ -55,13 +55,13 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             var defaultLanguage = (new CatalogLanguageEntity { Language = string.IsNullOrEmpty(DefaultLanguage) ? "en-us" : DefaultLanguage }).ToModel(AbstractTypeFactory<CatalogLanguage>.TryCreateInstance());
             defaultLanguage.IsDefault = true;
             catalog.Languages.Add(defaultLanguage);
-            //populate additional languages
+            // Populate additional languages
             foreach (var additionalLanguage in CatalogLanguages.Where(x => x.Language != defaultLanguage.LanguageCode).Select(x => x.ToModel(AbstractTypeFactory<CatalogLanguage>.TryCreateInstance())))
             {
                 catalog.Languages.Add(additionalLanguage);
             }
 
-            //Self properties
+            // Self properties
             catalog.Properties = Properties.Where(x => x.CategoryId == null)
                 .OrderBy(x => x.Name)
                 .Select(x => x.ToModel(AbstractTypeFactory<Property>.TryCreateInstance())).ToList();
@@ -106,7 +106,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                     {
                         foreach (var propValue in property.Values)
                         {
-                            //Need populate required fields
+                            // Need populate required fields
                             propValue.PropertyName = property.Name;
                             propValue.ValueType = property.ValueType;
                             propValues.Add(propValue);
@@ -132,7 +132,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             target.Name = Name;
             target.DefaultLanguage = DefaultLanguage;
 
-            //Languages patch
+            // Languages patch
             if (!CatalogLanguages.IsNullCollection())
             {
                 var languageComparer = AnonymousComparer.Create((CatalogLanguageEntity x) => x.Language);
@@ -140,7 +140,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                                                      (sourceLang, targetlang) => sourceLang.Patch(targetlang));
             }
 
-            //Property values
+            // Property values
             if (!CatalogPropertyValues.IsNullCollection())
             {
                 CatalogPropertyValues.Patch(target.CatalogPropertyValues, (sourcePropValue, targetPropValue) => sourcePropValue.Patch(targetPropValue));
