@@ -114,22 +114,23 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             var itemIds = ids.ToArray();
             var items = await GetAsync(itemIds, ItemResponseGroup.ItemInfo.ToString(), catalogId: null);
 
-            var changedEntries = items
-                .Select(x => new GenericChangedEntry<CatalogProduct>(x, EntryState.Deleted))
-                .ToList();
-
-            await _eventPublisher.Publish(new ProductChangingEvent(changedEntries));
-
-            using (var repository = _repositoryFactory())
+            if (items.Any())
             {
-                // TODO: Implement soft delete
-                await repository.RemoveItemsAsync(itemIds);
-                await repository.UnitOfWork.CommitAsync();
+                var changedEntries = items.Select(x => new GenericChangedEntry<CatalogProduct>(x, EntryState.Deleted)).ToList();
+
+                await _eventPublisher.Publish(new ProductChangingEvent(changedEntries));
+
+                using (var repository = _repositoryFactory())
+                {
+                    // TODO: Implement soft delete
+                    await repository.RemoveItemsAsync(itemIds);
+                    await repository.UnitOfWork.CommitAsync();
+                }
+
+                ClearCache(items);
+
+                await _eventPublisher.Publish(new ProductChangedEvent(changedEntries));
             }
-
-            ClearCache(items);
-
-            await _eventPublisher.Publish(new ProductChangedEvent(changedEntries));
         }
 
 
@@ -146,7 +147,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
             if (products.Any())
             {
-                LoadDependenciesAsync(products).GetAwaiter().GetResult();
+                LoadDependencies(products).GetAwaiter().GetResult();
                 ApplyInheritanceRules(products);
 
                 var productsAndVariations = products
@@ -205,7 +206,13 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
         }
 
-        public virtual async Task LoadDependenciesAsync(IEnumerable<CatalogProduct> products)
+        [Obsolete("Use LoadDependencies()")]
+        public virtual Task LoadDependenciesAsync(IEnumerable<CatalogProduct> products)
+        {
+            return LoadDependencies(products.ToList());
+        }
+
+        protected virtual async Task LoadDependencies(IList<CatalogProduct> products)
         {
             // TODO: Refactor to do this by one call and iteration
             var catalogsIds = new { products }.GetFlatObjectsListWithInterface<IHasCatalogId>().Select(x => x.CatalogId).Where(x => x != null).Distinct().ToArray();
@@ -246,7 +253,9 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             {
                 product.Code = _skuGenerator.GenerateSku(product);
             }
+
             product.Catalog = catalogsByIdDict.GetValueOrThrow(product.CatalogId, $"catalog with key {product.CatalogId} doesn't exist");
+
             if (product.CategoryId != null)
             {
                 product.Category = categoriesByIdDict.GetValueOrThrow(product.CategoryId, $"category with key {product.CategoryId} doesn't exist");
@@ -260,7 +269,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 {
                     link.Category = categoriesByIdDict.GetValueOrThrow(link.CategoryId, $"link category with key {link.CategoryId} doesn't exist").Clone() as Category;
                     var necessaryGroups = CategoryResponseGroup.WithProperties | CategoryResponseGroup.WithParents | CategoryResponseGroup.WithSeo;
-                    link.Category.ReduceDetails(necessaryGroups.ToString());
+                    link.Category?.ReduceDetails(necessaryGroups.ToString());
                 }
             }
         }
@@ -292,16 +301,16 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             // Validate products
             foreach (var product in products)
             {
-                _productValidator.ValidateAndThrow(product);
+                await _productValidator.ValidateAndThrowAsync(product);
             }
 
-            await LoadDependenciesAsync(products);
+            await LoadDependencies(products);
             ApplyInheritanceRules(products);
 
-            var targets = products.OfType<IHasProperties>();
-            foreach (var item in targets)
+            // Validate properties
+            foreach (var product in products)
             {
-                var validationResult = await _hasPropertyValidator.ValidateAsync(item);
+                var validationResult = await _hasPropertyValidator.ValidateAsync(product);
                 if (!validationResult.IsValid)
                 {
                     throw new ValidationException($"Product properties has validation error: {string.Join(Environment.NewLine, validationResult.Errors.Select(x => x.ToString()))}");

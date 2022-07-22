@@ -109,6 +109,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
         }
 
+        // This method prevents switching to CrudService<>
         public async Task DeleteAsync(IEnumerable<string> ids, bool doDeleteValues = false)
         {
             using (var repository = _repositoryFactory())
