@@ -105,14 +105,14 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 var catalogProperty = catalogProperties.FirstOrDefault(x => x.Name == aggregationProperty.Name);
                 // If the property is multilanguage, but not dictionary, let's add synthetic aggregation property for each store culture
                 // To allow future facet filtering.
-                if (catalogProperty!=null &&
+                if (catalogProperty != null &&
                     !catalogProperty.Dictionary &&
                     catalogProperty.Multilanguage)
                 {
-                    
+
                     foreach (var lang in store.Languages)
                     {
-                        var aggregationPropertyLangSpecific=aggregationProperty.Clone() as AggregationProperty;
+                        var aggregationPropertyLangSpecific = aggregationProperty.Clone() as AggregationProperty;
                         aggregationPropertyLangSpecific.Name = $"{aggregationPropertyLangSpecific.Name}_{lang.ToLowerInvariant()}";
                         browseFilterPropertiesList.Add(aggregationPropertyLangSpecific);
                     }

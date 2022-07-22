@@ -1,7 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Export;
@@ -23,12 +20,9 @@ using VirtoCommerce.CatalogModule2.Data.Search;
 using VirtoCommerce.CatalogModule2.Data.Search.BrowseFilters;
 using VirtoCommerce.CatalogModule2.Data.Search.Indexing;
 using VirtoCommerce.CatalogModule2.Data.Services;
-using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Modularity;
-using VirtoCommerce.Platform.Core.Security;
-using VirtoCommerce.Platform.Core.Settings;
 
 namespace VirtoCommerce.CatalogModule2.Web
 {
@@ -81,7 +75,6 @@ namespace VirtoCommerce.CatalogModule2.Web
 
             serviceCollection.AddTransient<ListEntryMover<Category>, CategoryMover2>();
             serviceCollection.AddTransient<ListEntryMover<CatalogProduct>, ProductMover2>();
-
         }
 
         public void PostInitialize(IApplicationBuilder appBuilder)
@@ -124,7 +117,6 @@ namespace VirtoCommerce.CatalogModule2.Web
             AbstractTypeFactory<PropertyValueEntity>.OverrideType<PropertyValueEntity, PropertyValueEntity2>();
             AbstractTypeFactory<SeoInfoEntity>.OverrideType<SeoInfoEntity, SeoInfoEntity2>();
             AbstractTypeFactory<VideoEntity>.OverrideType<VideoEntity, VideoEntity2>();
-
         }
 
         public void Uninstall()

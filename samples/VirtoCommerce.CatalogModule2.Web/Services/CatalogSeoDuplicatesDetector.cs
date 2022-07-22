@@ -17,13 +17,13 @@ namespace VirtoCommerce.CatalogModule2.Data.Services
             ICategoryService categoryService,
             IStoreService storeService,
             Func<ICatalogRepository> repositoryFactory,
-            ISettingsManager settingsManager) : base(
+            ISettingsManager settingsManager)
+            : base(
                 productService,
                 categoryService,
                 storeService,
                 repositoryFactory,
-                settingsManager
-                )
+                settingsManager)
         {
         }
     }

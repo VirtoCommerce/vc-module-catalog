@@ -57,7 +57,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         /// </summary>
         public string ProductType { get; set; }
 
-        //Type of product package (set of package types with their specific dimensions)
+        // Type of product package (set of package types with their specific dimensions)
         public string PackageType { get; set; }
 
         #region IHaveDimension Members
@@ -172,7 +172,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
             if (parent is IHasProperties hasProperties)
             {
-                //Properties inheritance
+                // Properties inheritance
                 foreach (var parentProperty in hasProperties.Properties ?? Array.Empty<Property>())
                 {
                     if (this.HasPropertyExcluded(parentProperty.Name))
@@ -193,15 +193,15 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
                     existProperty.IsReadOnly = existProperty.Type != PropertyType.Variation && existProperty.Type != PropertyType.Product;
                 }
-                //Restore sorting order after changes
+                // Restore sorting order after changes
                 if (Properties != null)
                 {
                     Properties = Properties.OrderBy(x => x.Name).ToList();
                 }
             }
 
-            //TODO: prevent saving the inherited simple values
-            //TaxType  inheritance
+            // TODO: prevent saving the inherited simple values
+            // TaxType  inheritance
             if (parent is IHasTaxType hasTaxType && TaxType == null)
             {
                 TaxType = hasTaxType.TaxType;
@@ -218,7 +218,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
             if (parent is CatalogProduct parentProduct)
             {
                 var isVariation = GetType().IsAssignableFrom(typeof(Variation));
-                //Inherit images from parent product (if its not set)
+                // Inherit images from parent product (if not set)
                 if (Images.IsNullOrEmpty() && !parentProduct.Images.IsNullOrEmpty())
                 {
                     Images = new List<Image>();
@@ -230,7 +230,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                     }
                 }
 
-                //Inherit assets from parent product (if its not set)
+                // Inherit assets from parent product (if not set)
                 if (Assets.IsNullOrEmpty() && !parentProduct.Assets.IsNullOrEmpty())
                 {
                     Assets = new List<Asset>();
@@ -242,7 +242,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                     }
                 }
 
-                //inherit editorial reviews from main product and do not inherit if variation loaded within product
+                // Inherit editorial reviews from main product and do not inherit if variation loaded within product
                 if (!isVariation && Reviews.IsNullOrEmpty() && parentProduct.Reviews != null)
                 {
                     Reviews = new List<EditorialReview>();
@@ -253,7 +253,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                         Reviews.Add(review);
                     }
                 }
-                //inherit not overridden property values from main product
+                // Inherit not overridden property values from main product
                 foreach (var parentProductProperty in parentProduct.Properties ?? Array.Empty<Property>())
                 {
                     var existProperty = Properties.FirstOrDefault(x => x.IsSame(parentProductProperty, PropertyType.Product, PropertyType.Variation));
@@ -265,7 +265,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                     existProperty.TryInheritFrom(parentProductProperty);
                     existProperty.IsReadOnly = existProperty.Type != PropertyType.Variation && existProperty.Type != PropertyType.Product;
 
-                    //Inherit only parent Product properties  values if own values aren't set
+                    // Inherit only parent Product properties  values if own values aren't set
                     if (parentProductProperty.Type == PropertyType.Product && existProperty.Values.IsNullOrEmpty() && !parentProductProperty.Values.IsNullOrEmpty())
                     {
                         existProperty.Values = new List<PropertyValue>();
@@ -277,7 +277,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                         }
                     }
                 }
-                //TODO: prevent saving the inherited simple values
+                // TODO: prevent saving the inherited simple values
                 Width = parentProduct.Width ?? Width;
                 Height = parentProduct.Height ?? Height;
                 Length = parentProduct.Length ?? Length;
@@ -323,7 +323,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
         public virtual void ReduceDetails(string responseGroup)
         {
-            //Reduce details according to response group
+            // Reduce details according to response group
             var productResponseGroup = EnumUtility.SafeParseFlags(responseGroup, ItemResponseGroup.ItemLarge);
 
             if (!productResponseGroup.HasFlag(ItemResponseGroup.ItemAssets))
@@ -369,8 +369,8 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         {
             var result = MemberwiseClone() as CatalogProduct;
 
-            // result.Catalog = (Catalog)Catalog?.Clone(); // Intentionally temporary disabled due to memory overhead
-            // result.Category = (Category)Category?.Clone(); // Intentionally temporary disabled due to memory overhead
+            //result.Catalog = (Catalog)Catalog?.Clone(); // Intentionally temporary disabled due to memory overhead
+            //result.Category = (Category)Category?.Clone(); // Intentionally temporary disabled due to memory overhead
             result.SeoInfos = SeoInfos?.Select(x => x.Clone()).OfType<SeoInfo>().ToList();
             result.Images = Images?.Select(x => x.Clone()).OfType<Image>().ToList();
             result.Assets = Assets?.Select(x => x.Clone()).OfType<Asset>().ToList();
@@ -380,7 +380,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
             result.Reviews = Reviews?.Select(x => x.Clone()).OfType<EditorialReview>().ToList();
             result.Links = Links?.Select(x => x.Clone()).OfType<CategoryLink>().ToList();
             result.Variations = Variations?.Select(x => x.Clone()).OfType<Variation>().ToList();
-            // result.Outlines = Outlines?.Select(x => x.Clone()).OfType<Outline>().ToList(); // Intentionally temporary disabled due to memory overhead
+            //result.Outlines = Outlines?.Select(x => x.Clone()).OfType<Outline>().ToList(); // Intentionally temporary disabled due to memory overhead
 
             return result;
         }

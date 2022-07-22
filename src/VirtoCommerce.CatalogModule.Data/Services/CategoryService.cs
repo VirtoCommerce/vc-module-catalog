@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using VirtoCommerce.AssetsModule.Core.Assets;
 using VirtoCommerce.CatalogModule.Core.Events;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
@@ -12,7 +13,6 @@ using VirtoCommerce.CatalogModule.Data.Caching;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Data.Validation;
-using VirtoCommerce.AssetsModule.Core.Assets;
 using VirtoCommerce.Platform.Core.Caching;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Events;
@@ -168,22 +168,22 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                         .ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase)
                         .WithDefaultValue(null);
 
-                    // prepare catalog cache tokens
+                    // Prepare catalog cache tokens
                     foreach (var catalogId in result.Values.Select(x => x.CatalogId).Distinct())
                     {
                         cacheEntry.AddExpirationToken(CatalogTreeCacheRegion.CreateChangeTokenForKey(catalogId));
                     }
 
-                    // find link category ids to recursievly load them
+                    // Find link category ids to recursievly load them
                     var linkedCategoryIds = result.Values.SelectMany(x => x.Links.Select(x => x.CategoryId)).Where(x => x != null).Distinct().ToList();
                     linkedCategoryIds.RemoveAll(x => result.ContainsKey(x));
 
                     foreach (var linkedCategoryId in linkedCategoryIds)
                     {
-                        // recursive call
+                        // Recursive call
                         var linkedCategory = await PreloadCategoryBranchAsync(linkedCategoryId);
 
-                        // union two category sets (parents and linked)
+                        // Union two category sets (parents and linked)
                         result.AddRange(linkedCategory);
                     }
 
@@ -229,7 +229,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                                     .ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase)
                                     .WithDefaultValue(null);
 
-                // Resolve relative urls for all category assets
+                // Resolve relative URLs for all category assets
                 ResolveImageUrls(result.Values);
 
                 await LoadDependenciesAsync(result.Values, result);
@@ -260,7 +260,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 category.Catalog = catalogsByIdDict.GetValueOrThrow(category.CatalogId, $"catalog with key {category.CatalogId} doesn't exist");
                 category.IsVirtual = category.Catalog.IsVirtual;
                 category.Parents = Array.Empty<Category>();
-                //Load all parent categories
+
+                // Load all parent categories
                 if (category.ParentId != null)
                 {
                     category.Parents = TreeExtension.GetAncestors(category, x => x.ParentId != null ? preloadedCategoriesMap[x.ParentId] : null)
@@ -305,7 +306,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 throw new ArgumentNullException(nameof(categories));
             }
 
-            //Validate categories 
+            // Validate categories 
             var validator = new CategoryValidator();
             foreach (var category in categories)
             {
@@ -341,7 +342,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
                 var categoryIds = categories.Select(x => x.Id).ToArray();
 
-                // find all links cats first
+                // Find all linked categories first
                 var linkedCategoryIds = await repository.CategoryLinks
                     .Where(x => categoryIds.Contains(x.TargetCategoryId))
                     .Select(x => x.SourceCategoryId)

@@ -14,21 +14,26 @@ namespace VirtoCommerce.CatalogModule2.Data.Search
 {
     public class VideoSearchService2 : VideoSearchService
     {
-        public VideoSearchService2(Func<ICatalogRepository> repositoryFactory, IPlatformMemoryCache platformMemoryCache, IVideoService videoService) : base(repositoryFactory, platformMemoryCache, videoService)
+        public VideoSearchService2(Func<ICatalogRepository> repositoryFactory, IPlatformMemoryCache platformMemoryCache, IVideoService videoService)
+            : base(repositoryFactory, platformMemoryCache, videoService)
         {
         }
+
         protected override IQueryable<VideoEntity> BuildQuery(IRepository repository, VideoSearchCriteria criteria)
         {
             return base.BuildQuery(repository, criteria);
         }
+
         protected override IList<SortInfo> BuildSortExpression(VideoSearchCriteria criteria)
         {
             return base.BuildSortExpression(criteria);
         }
+
         protected override Task<VideoSearchResult> ProcessSearchResultAsync(VideoSearchResult result, VideoSearchCriteria criteria)
         {
             return base.ProcessSearchResultAsync(result, criteria);
         }
+
         public override Task<VideoSearchResult> SearchAsync(VideoSearchCriteria criteria)
         {
             return base.SearchAsync(criteria);

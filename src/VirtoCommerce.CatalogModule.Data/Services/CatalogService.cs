@@ -48,7 +48,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 if (catalog != null)
                 {
                     catalog = catalog.Clone() as Catalog;
-                    //Reduce details according to response group
+                    // Reduce details according to response group
                     catalog.ReduceDetails(catalogResponseGroup.ToString());
                     result.Add(catalog);
                 }
@@ -129,7 +129,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 CatalogEntity[] entities;
                 using (var repository = _repositoryFactory())
                 {
-                    //Optimize performance and CPU usage
+                    // Optimize performance and CPU usage
                     repository.DisableChangesTracking();
 
                     var ids = await repository.Catalogs.Select(x => x.Id).ToArrayAsync();

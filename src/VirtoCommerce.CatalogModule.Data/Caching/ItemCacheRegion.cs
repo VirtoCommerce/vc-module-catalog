@@ -16,6 +16,7 @@ namespace VirtoCommerce.CatalogModule.Data.Caching
             {
                 throw new ArgumentNullException(nameof(products));
             }
+
             return CreateChangeToken(products.Select(x => x.Id).ToArray());
         }
 
@@ -25,11 +26,13 @@ namespace VirtoCommerce.CatalogModule.Data.Caching
             {
                 throw new ArgumentNullException(nameof(productIds));
             }
+
             var changeTokens = new List<IChangeToken>() { CreateChangeToken() };
             foreach (var productId in productIds)
             {
                 changeTokens.Add(CreateChangeTokenForKey(productId));
             }
+
             return new CompositeChangeToken(changeTokens);
         }
 
@@ -42,7 +45,7 @@ namespace VirtoCommerce.CatalogModule.Data.Caching
 
             ExpireTokenForKey(entity.Id);
 
-            //need to also evict from cache a main product if given product is variation
+            // Need to also evict from cache a main product if given product is variation
             if (entity.MainProductId != null)
             {
                 ExpireTokenForKey(entity.MainProductId);
