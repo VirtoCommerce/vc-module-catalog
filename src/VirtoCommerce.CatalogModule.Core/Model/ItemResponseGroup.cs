@@ -63,7 +63,9 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
         ItemSmall = ItemInfo | ItemAssets | ItemEditorialReviews | Seo,
         ItemMedium = ItemSmall | ItemAssociations | ReferencedAssociations | ItemProperties,
+#pragma warning disable CS0618 // Variations can be used here
         ItemLarge = ItemMedium | Variations | Links | Inventory | Outlines,
+#pragma warning restore CS0618
         Full = ItemLarge,
     }
 }

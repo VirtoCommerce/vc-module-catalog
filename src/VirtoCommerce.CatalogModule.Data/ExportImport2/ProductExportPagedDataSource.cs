@@ -126,7 +126,9 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 
             if (DataQuery.IncludedProperties.Any(x => x.FullName.StartsWith(nameof(CatalogProduct.Variations) + ".")))
             {
-                result |= ItemResponseGroup.WithVariations;
+#pragma warning disable CS0618 // Variations can be used here
+                result |= ItemResponseGroup.Variations;
+#pragma warning restore CS0618
             }
 
             if (DataQuery.IncludedProperties.Any(x => x.FullName.StartsWith(nameof(CatalogProduct.SeoInfos) + ".")))

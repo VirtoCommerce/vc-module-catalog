@@ -313,12 +313,14 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                     ItemPropertyValues = new ObservableCollection<PropertyValueEntity>(AbstractTypeFactory<PropertyValueEntity>.TryCreateInstance().FromModels(propValues.Where(x => !x.IsEmpty), pkMap));
                 }
             }
+#pragma warning disable CS0618 // PropertyValues can be used here for backward compatibility
             else if (!product.PropertyValues.IsNullOrEmpty())
             {
                 // Backward compatibility
                 // TODO: Remove later
                 ItemPropertyValues = new ObservableCollection<PropertyValueEntity>(AbstractTypeFactory<PropertyValueEntity>.TryCreateInstance().FromModels(product.PropertyValues, pkMap));
             }
+#pragma warning restore CS0618
             #endregion
 
             #region Assets

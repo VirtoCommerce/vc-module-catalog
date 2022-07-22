@@ -13,8 +13,8 @@ using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
 using VirtoCommerce.CatalogModule.Web.Model;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.StoreModule.Core.Model;
-using VirtoCommerce.StoreModule.Core.Services;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
@@ -27,13 +27,13 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private const string _rangeType = "Range";
         private const string _priceRangeType = "PriceRange";
 
-        private readonly IStoreService _storeService;
+        private readonly ICrudService<Store> _storeService;
         private readonly IPropertyService _propertyService;
         private readonly IBrowseFilterService _browseFilterService;
         private readonly IPropertyDictionaryItemSearchService _propDictItemsSearchService;
 
         public CatalogBrowseFiltersController(
-            IStoreService storeService
+            ICrudService<Store> storeService
             , IPropertyService propertyService
             , IBrowseFilterService browseFilterService
             , IPropertyDictionaryItemSearchService propDictItemsSearchService)
