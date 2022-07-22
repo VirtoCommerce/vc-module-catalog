@@ -14,24 +14,24 @@ using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Platform.Core.Caching;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Events;
-using VirtoCommerce.Platform.Data.Infrastructure;
+using VirtoCommerce.Platform.Data.GenericCrud;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
-    public class ItemService : IItemService
+    public class ItemService : CrudService<CatalogProduct, ItemEntity, ProductChangingEvent, ProductChangedEvent>, IProductCrudService, IItemService
     {
-        private readonly Func<ICatalogRepository> _repositoryFactory;
-        private readonly IEventPublisher _eventPublisher;
+        private new readonly Func<ICatalogRepository> _repositoryFactory;
+        private new readonly IEventPublisher _eventPublisher;
         private readonly AbstractValidator<IHasProperties> _hasPropertyValidator;
         private readonly ICatalogService _catalogService;
         private readonly ICategoryService _categoryService;
         private readonly IOutlineService _outlineService;
-        private readonly IPlatformMemoryCache _platformMemoryCache;
         private readonly IBlobUrlResolver _blobUrlResolver;
         private readonly ISkuGenerator _skuGenerator;
         private readonly AbstractValidator<CatalogProduct> _productValidator;
 
-        public ItemService(Func<ICatalogRepository> catalogRepositoryFactory,
+        public ItemService(
+            Func<ICatalogRepository> catalogRepositoryFactory,
             IEventPublisher eventPublisher,
             AbstractValidator<IHasProperties> hasPropertyValidator,
             ICatalogService catalogService,
@@ -41,167 +41,167 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             IBlobUrlResolver blobUrlResolver,
             ISkuGenerator skuGenerator,
             AbstractValidator<CatalogProduct> productValidator)
+            : base(catalogRepositoryFactory, platformMemoryCache, eventPublisher)
         {
             _repositoryFactory = catalogRepositoryFactory;
             _eventPublisher = eventPublisher;
             _hasPropertyValidator = hasPropertyValidator;
             _categoryService = categoryService;
             _outlineService = outlineService;
-            _platformMemoryCache = platformMemoryCache;
             _blobUrlResolver = blobUrlResolver;
             _skuGenerator = skuGenerator;
             _productValidator = productValidator;
             _catalogService = catalogService;
         }
 
-        #region IItemService Members
+        #region IItemService compatibility
 
         public virtual async Task<CatalogProduct[]> GetByIdsAsync(string[] itemIds, string respGroup, string catalogId = null)
         {
-            var itemResponseGroup = EnumUtility.SafeParseFlags(respGroup, ItemResponseGroup.ItemLarge);
-
-            var cacheKey = CacheKey.With(GetType(), nameof(GetByIdsAsync), string.Join("-", itemIds), itemResponseGroup.ToString(), catalogId);
-            var result = await _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async (cacheEntry) =>
-            {
-                var products = Array.Empty<CatalogProduct>();
-
-                if (!itemIds.IsNullOrEmpty())
-                {
-                    using (var repository = _repositoryFactory())
-                    {
-                        //Optimize performance and CPU usage
-                        repository.DisableChangesTracking();
-
-                        //It is so important to generate change tokens for all ids even for not existing objects to prevent an issue
-                        //with caching of empty results for non - existing objects that have the infinitive lifetime in the cache
-                        //and future unavailability to create objects with these ids.
-                        cacheEntry.AddExpirationToken(ItemCacheRegion.CreateChangeToken(itemIds));
-                        cacheEntry.AddExpirationToken(CatalogCacheRegion.CreateChangeToken());
-
-                        products = (await repository.GetItemByIdsAsync(itemIds, respGroup))
-                            .Select(x => x.ToModel(AbstractTypeFactory<CatalogProduct>.TryCreateInstance()))
-                            .ToArray();
-                    }
-
-                    if (products.Any())
-                    {
-                        products = products.OrderBy(x => Array.IndexOf(itemIds, x.Id)).ToArray();
-                        await LoadDependenciesAsync(products);
-                        ApplyInheritanceRules(products);
-
-                        var productsWithVariationsList = products.Concat(products.Where(p => p.Variations != null)
-                            .SelectMany(p => p.Variations)).ToArray();
-
-                        // Fill outlines for products and variations
-                        if (itemResponseGroup.HasFlag(ItemResponseGroup.Outlines))
-                        {
-                            _outlineService.FillOutlinesForObjects(productsWithVariationsList, catalogId);
-                        }
-                        //Add change tokens for products with variations
-                        cacheEntry.AddExpirationToken(ItemCacheRegion.CreateChangeToken(productsWithVariationsList));
-
-                        //Reduce details according to response group
-                        foreach (var product in productsWithVariationsList)
-                        {
-                            product.ReduceDetails(itemResponseGroup.ToString());
-                        }
-                    }
-                }
-
-                return products;
-            });
-
-            return result.Select(x => x.Clone() as CatalogProduct).ToArray();
+            return (await GetAsync(itemIds, respGroup, catalogId)).ToArray();
         }
 
-        public virtual async Task<CatalogProduct> GetByIdAsync(string itemId, string responseGroup, string catalogId = null)
+        public virtual Task<CatalogProduct> GetByIdAsync(string itemId, string responseGroup, string catalogId = null)
         {
-            CatalogProduct result = null;
+            return GetAsync(itemId, responseGroup, catalogId);
+        }
 
-            if (!string.IsNullOrEmpty(itemId))
+        public virtual Task SaveChangesAsync(CatalogProduct[] items)
+        {
+            return SaveChangesAsync(items.AsEnumerable());
+        }
+
+        public virtual Task DeleteAsync(string[] itemIds)
+        {
+            return DeleteAsync(itemIds, softDelete: false);
+        }
+
+        #endregion
+
+        public virtual async Task<CatalogProduct> GetAsync(string id, string responseGroup, string catalogId)
+        {
+            var products = await GetAsync(new[] { id }, responseGroup, catalogId);
+
+            return products.FirstOrDefault();
+        }
+
+        public virtual async Task<IList<CatalogProduct>> GetAsync(IList<string> ids, string responseGroup, string catalogId)
+        {
+            var products = (IList<CatalogProduct>)await GetAsync(ids.ToList(), responseGroup);
+
+            // Remove outlines that don't belong to the requested catalog
+            if (products.Any() && catalogId != null && HasFlag(responseGroup, ItemResponseGroup.Outlines))
             {
-                var results = await GetByIdsAsync(new[] { itemId }, responseGroup, catalogId);
-                result = results.Any() ? results.First() : null;
+                products
+                    .Where(x => x.Variations != null)
+                    .SelectMany(x => x.Variations)
+                    .Concat(products)
+                    .Apply(product =>
+                    {
+                        product.Outlines = product.Outlines
+                            .Where(outline => outline.Items.Any(item =>
+                                item.Id.EqualsInvariant(catalogId) &&
+                                item.SeoObjectType.EqualsInvariant("catalog")))
+                            .ToList();
+                    });
             }
 
-            return result;
+            return products;
         }
 
-        public virtual async Task SaveChangesAsync(CatalogProduct[] items)
+        public override async Task DeleteAsync(IEnumerable<string> ids, bool softDelete = false)
         {
-            var pkMap = new PrimaryKeyResolvingMap();
-            var changedEntries = new List<GenericChangedEntry<CatalogProduct>>();
+            var itemIds = ids.ToArray();
+            var items = await GetAsync(itemIds, ItemResponseGroup.ItemInfo.ToString(), catalogId: null);
 
-            await ValidateProductsAsync(items);
-
-            using (var repository = _repositoryFactory())
-            {
-                var dbExistProducts = await repository.GetItemByIdsAsync(items.Where(x => !x.IsTransient()).Select(x => x.Id).ToArray());
-                foreach (var product in items)
-                {
-                    var modifiedEntity = AbstractTypeFactory<ItemEntity>.TryCreateInstance().FromModel(product, pkMap);
-                    var originalEntity = dbExistProducts.FirstOrDefault(x => x.Id == product.Id);
-
-                    if (originalEntity != null)
-                    {
-                        /// This extension is allow to get around breaking changes is introduced in EF Core 3.0 that leads to throw
-                        /// Database operation expected to affect 1 row(s) but actually affected 0 row(s) exception when trying to add the new children entities with manually set keys
-                        /// https://docs.microsoft.com/en-us/ef/core/what-is-new/ef-core-3.0/breaking-changes#detectchanges-honors-store-generated-key-values
-                        repository.TrackModifiedAsAddedForNewChildEntities(originalEntity);
-
-                        changedEntries.Add(new GenericChangedEntry<CatalogProduct>(product, originalEntity.ToModel(AbstractTypeFactory<CatalogProduct>.TryCreateInstance()), EntryState.Modified));
-                        modifiedEntity.Patch(originalEntity);
-                        //Force set ModifiedDate property to mark a product changed. Special for  partial update cases when product table not have changes
-                        originalEntity.ModifiedDate = DateTime.UtcNow;
-                    }
-                    else
-                    {
-                        repository.Add(modifiedEntity);
-                        changedEntries.Add(new GenericChangedEntry<CatalogProduct>(product, EntryState.Added));
-                    }
-                }
-
-                await _eventPublisher.Publish(new ProductChangingEvent(changedEntries));
-
-                await repository.UnitOfWork.CommitAsync();
-                pkMap.ResolvePrimaryKeys();
-
-                ClearCache(items);
-
-                await _eventPublisher.Publish(new ProductChangedEvent(changedEntries));
-            }
-        }
-
-        public virtual async Task DeleteAsync(string[] itemIds)
-        {
-            var items = await GetByIdsAsync(itemIds, ItemResponseGroup.ItemInfo.ToString());
             var changedEntries = items
-                .Select(i => new GenericChangedEntry<CatalogProduct>(i, EntryState.Deleted))
+                .Select(x => new GenericChangedEntry<CatalogProduct>(x, EntryState.Deleted))
                 .ToList();
 
+            await _eventPublisher.Publish(new ProductChangingEvent(changedEntries));
+
             using (var repository = _repositoryFactory())
             {
-                await _eventPublisher.Publish(new ProductChangingEvent(changedEntries));
-
+                // TODO: Implement soft delete
                 await repository.RemoveItemsAsync(itemIds);
                 await repository.UnitOfWork.CommitAsync();
+            }
 
-                ClearCache(items);
+            ClearCache(items);
 
-                await _eventPublisher.Publish(new ProductChangedEvent(changedEntries));
+            await _eventPublisher.Publish(new ProductChangedEvent(changedEntries));
+        }
+
+
+        protected override async Task<IEnumerable<ItemEntity>> LoadEntities(IRepository repository, IEnumerable<string> ids, string responseGroup)
+        {
+            var entities = await ((ICatalogRepository)repository).GetItemByIdsAsync(ids.ToArray(), responseGroup);
+
+            return entities;
+        }
+
+        protected override IEnumerable<CatalogProduct> ProcessModels(IEnumerable<ItemEntity> entities, string responseGroup)
+        {
+            var products = base.ProcessModels(entities, responseGroup).ToList();
+
+            if (products.Any())
+            {
+                LoadDependenciesAsync(products).GetAwaiter().GetResult();
+                ApplyInheritanceRules(products);
+
+                var productsAndVariations = products
+                    .Where(x => x.Variations != null)
+                    .SelectMany(x => x.Variations)
+                    .Concat(products)
+                    .ToList();
+
+                if (HasFlag(responseGroup, ItemResponseGroup.Outlines))
+                {
+                    _outlineService.FillOutlinesForObjects(productsAndVariations, catalogId: null);
+                }
+
+                foreach (var product in productsAndVariations)
+                {
+                    product.ReduceDetails(responseGroup);
+                }
+            }
+
+            return products;
+        }
+
+        protected virtual bool HasFlag(string responseGroup, ItemResponseGroup flag)
+        {
+            var itemResponseGroup = EnumUtility.SafeParseFlags(responseGroup, ItemResponseGroup.ItemLarge);
+
+            return itemResponseGroup.HasFlag(flag);
+        }
+
+        protected override async Task BeforeSaveChanges(IEnumerable<CatalogProduct> models)
+        {
+            var products = models.ToArray();
+            await base.BeforeSaveChanges(products);
+            await ValidateProductsAsync(products);
+        }
+
+        protected override void ConfigureCache(MemoryCacheEntryOptions cacheOptions, string id, CatalogProduct model)
+        {
+            cacheOptions.AddExpirationToken(CatalogCacheRegion.CreateChangeToken());
+            cacheOptions.AddExpirationToken(ItemCacheRegion.CreateChangeTokenForKey(id));
+
+            if (model?.Variations?.Any() == true)
+            {
+                cacheOptions.AddExpirationToken(ItemCacheRegion.CreateChangeToken(model.Variations));
             }
         }
 
-        #endregion IItemService Members
-
-        protected virtual void ClearCache(IEnumerable<CatalogProduct> entities)
+        protected override void ClearCache(IEnumerable<CatalogProduct> models)
         {
             AssociationSearchCacheRegion.ExpireRegion();
             SeoInfoCacheRegion.ExpireRegion();
 
-            foreach (var entity in entities)
+            foreach (var model in models)
             {
-                ItemCacheRegion.ExpireEntity(entity);
+                ItemCacheRegion.ExpireEntity(model);
             }
         }
 

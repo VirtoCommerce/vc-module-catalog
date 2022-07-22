@@ -1,15 +1,15 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Extensions.Primitives;
 using VirtoCommerce.CatalogModule.Core.Model;
-using VirtoCommerce.Platform.Core.Caching;
+using VirtoCommerce.Platform.Caching;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.Caching
 {
-    public class ItemCacheRegion : CancellableCacheRegion<ItemCacheRegion>
+    public class ItemCacheRegion : GenericCachingRegion<CatalogProduct>
     {
+        // TODO: Remove. This method is for backward compatibility only
         public static IChangeToken CreateChangeToken(CatalogProduct[] products)
         {
             if (products == null)
@@ -17,9 +17,10 @@ namespace VirtoCommerce.CatalogModule.Data.Caching
                 throw new ArgumentNullException(nameof(products));
             }
 
-            return CreateChangeToken(products.Select(x => x.Id).ToArray());
+            return CreateChangeToken((IEnumerable<CatalogProduct>)products);
         }
 
+        // TODO: Remove. This method is for backward compatibility only
         public static IChangeToken CreateChangeToken(string[] productIds)
         {
             if (productIds == null)
@@ -27,13 +28,7 @@ namespace VirtoCommerce.CatalogModule.Data.Caching
                 throw new ArgumentNullException(nameof(productIds));
             }
 
-            var changeTokens = new List<IChangeToken>() { CreateChangeToken() };
-            foreach (var productId in productIds)
-            {
-                changeTokens.Add(CreateChangeTokenForKey(productId));
-            }
-
-            return new CompositeChangeToken(changeTokens);
+            return CreateChangeToken((IEnumerable<string>)productIds);
         }
 
         public static void ExpireEntity(CatalogProduct entity)
