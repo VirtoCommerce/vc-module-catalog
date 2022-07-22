@@ -71,7 +71,9 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         protected virtual Task<CatalogProduct[]> GetProducts(IList<string> productIds)
         {
+#pragma warning disable CS0618 // Variations can be used here
             return _itemService.GetByIdsAsync(productIds.ToArray(), (ItemResponseGroup.Full & ~ItemResponseGroup.Variations).ToString());
+#pragma warning restore CS0618
         }
 
         protected virtual IndexDocument CreateDocument(CatalogProduct product)
