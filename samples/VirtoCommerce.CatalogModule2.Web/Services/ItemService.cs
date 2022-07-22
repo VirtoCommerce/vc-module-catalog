@@ -10,7 +10,7 @@ using VirtoCommerce.CatalogModule.Data.Services;
 using VirtoCommerce.Platform.Core.Caching;
 using VirtoCommerce.Platform.Core.Events;
 
-namespace VirtoCommerce.CatalogModule2.Data.Services
+namespace VirtoCommerce.CatalogModule2.Web.Services
 {
     public class ItemService2 : ItemService
     {
@@ -44,9 +44,9 @@ namespace VirtoCommerce.CatalogModule2.Data.Services
             base.ApplyInheritanceRules(products);
         }
 
-        protected override void ClearCache(IEnumerable<CatalogProduct> entities)
+        protected override void ClearCache(IEnumerable<CatalogProduct> models)
         {
-            base.ClearCache(entities);
+            base.ClearCache(models);
         }
 
         public override Task DeleteAsync(string[] itemIds)
@@ -64,9 +64,9 @@ namespace VirtoCommerce.CatalogModule2.Data.Services
             return base.GetByIdsAsync(itemIds, respGroup, catalogId);
         }
 
-        public override Task LoadDependenciesAsync(IEnumerable<CatalogProduct> products)
+        protected override Task LoadDependencies(IList<CatalogProduct> products)
         {
-            return base.LoadDependenciesAsync(products);
+            return base.LoadDependencies(products);
         }
 
         public override Task SaveChangesAsync(CatalogProduct[] items)

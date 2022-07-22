@@ -115,16 +115,19 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             var categoryIds = ids.ToArray();
             var categories = await GetByIdsAsync(categoryIds, CategoryResponseGroup.Info.ToString(), catalogId: null);
 
-            var changedEntries = await GetDeletedEntries(categories);
-
-            using (var repository = _repositoryFactory())
+            if (categories.Any())
             {
+                var changedEntries = await GetDeletedEntries(categories);
+
                 await _eventPublisher.Publish(new CategoryChangingEvent(changedEntries.CategoryEntries));
                 await _eventPublisher.Publish(new ProductChangingEvent(changedEntries.ProductEntries));
 
-                // TODO: Implement soft delete
-                await repository.RemoveCategoriesAsync(categoryIds);
-                await repository.UnitOfWork.CommitAsync();
+                using (var repository = _repositoryFactory())
+                {
+                    // TODO: Implement soft delete
+                    await repository.RemoveCategoriesAsync(categoryIds);
+                    await repository.UnitOfWork.CommitAsync();
+                }
 
                 await ClearCacheAsync(categories);
 
@@ -155,57 +158,66 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return categoryResponseGroup.HasFlag(flag);
         }
 
-        protected Task<IDictionary<string, Category>> PreloadCategoryBranchAsync(string categoryId)
+        protected virtual Task<IDictionary<string, Category>> PreloadCategoryBranchAsync(string categoryId)
         {
             if (categoryId == null)
             {
                 return Task.FromResult<IDictionary<string, Category>>(new Dictionary<string, Category>());
             }
 
-            var cacheKey = CacheKey.With(GetType(), "PreloadCategoryBranch", categoryId);
+            var cacheKey = CacheKey.With(GetType(), nameof(PreloadCategoryBranchAsync), categoryId);
 
-            return _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async (cacheEntry) =>
+            return _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async cacheEntry =>
             {
                 cacheEntry.AddExpirationToken(CatalogTreeCacheRegion.CreateChangeTokenForKey(categoryId));
 
-                using (var repository = _repositoryFactory())
+                var entities = await SearchCategoriesHierarchyAsync(categoryId);
+
+                var result = entities
+                    .Select(x => x.ToModel(AbstractTypeFactory<Category>.TryCreateInstance()))
+                    .ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase)
+                    .WithDefaultValue(null);
+
+                // Prepare catalog cache tokens
+                foreach (var catalogId in entities.Select(x => x.CatalogId).Distinct())
                 {
-                    repository.DisableChangesTracking();
-
-                    var entities = await repository.SearchCategoriesHierarchyAsync(categoryId);
-
-                    var result = entities.Select(x => x.ToModel(AbstractTypeFactory<Category>.TryCreateInstance()))
-                        .ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase)
-                        .WithDefaultValue(null);
-
-                    // Prepare catalog cache tokens
-                    foreach (var catalogId in result.Values.Select(x => x.CatalogId).Distinct())
-                    {
-                        cacheEntry.AddExpirationToken(CatalogTreeCacheRegion.CreateChangeTokenForKey(catalogId));
-                    }
-
-                    // Find link category ids to recursievly load them
-                    var linkedCategoryIds = result.Values.SelectMany(x => x.Links.Select(x => x.CategoryId)).Where(x => x != null).Distinct().ToList();
-                    linkedCategoryIds.RemoveAll(x => result.ContainsKey(x));
-
-                    foreach (var linkedCategoryId in linkedCategoryIds)
-                    {
-                        // Recursive call
-                        var linkedCategory = await PreloadCategoryBranchAsync(linkedCategoryId);
-
-                        // Union two category sets (parents and linked)
-                        result.AddRange(linkedCategory);
-                    }
-
-                    ResolveImageUrls(result.Values);
-
-                    await LoadDependencies(result.Values, result);
-
-                    ApplyInheritanceRules(result.Values);
-
-                    return result;
+                    cacheEntry.AddExpirationToken(CatalogTreeCacheRegion.CreateChangeTokenForKey(catalogId));
                 }
+
+                // Find linked category ids to recursively load them
+                var linkedCategoryIds = entities
+                    .SelectMany(x => x.OutgoingLinks.Select(y => y.TargetCategoryId))
+                    .Where(x => x != null)
+                    .Distinct()
+                    .Except(result.Keys)
+                    .ToList();
+
+                foreach (var linkedCategoryId in linkedCategoryIds)
+                {
+                    // Recursive call
+                    var linkedCategory = await PreloadCategoryBranchAsync(linkedCategoryId);
+
+                    // Union two category sets (parents and linked)
+                    foreach (var (key, value) in linkedCategory)
+                    {
+                        result.TryAdd(key, value);
+                    }
+                }
+
+                ResolveImageUrls(result.Values);
+                await LoadDependencies(result.Values, result);
+                ApplyInheritanceRules(result.Values);
+
+                return result;
             });
+        }
+
+        protected virtual async Task<ICollection<CategoryEntity>> SearchCategoriesHierarchyAsync(string categoryId)
+        {
+            using var repository = _repositoryFactory();
+            repository.DisableChangesTracking();
+
+            return await repository.SearchCategoriesHierarchyAsync(categoryId);
         }
 
         [Obsolete("Use PreloadCategoriesAsync() instead.")]
@@ -214,10 +226,11 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return await PreloadCategoriesAsync();
         }
 
+        [Obsolete("Use PreloadCategoryBranchAsync()")]
         protected Task<IDictionary<string, Category>> PreloadCategoriesAsync()
         {
-            var cacheKey = CacheKey.With(GetType(), "PreloadCategories");
-            return _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async (cacheEntry) =>
+            var cacheKey = CacheKey.With(GetType(), nameof(PreloadCategoriesAsync));
+            return _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async cacheEntry =>
             {
                 cacheEntry.AddExpirationToken(CatalogCacheRegion.CreateChangeToken());
 
@@ -235,15 +248,14 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     }
                 }
 
-                var result = entities.Select(x => x.ToModel(AbstractTypeFactory<Category>.TryCreateInstance()))
-                                    .ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase)
-                                    .WithDefaultValue(null);
+                var result = entities
+                    .Select(x => x.ToModel(AbstractTypeFactory<Category>.TryCreateInstance()))
+                    .ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase)
+                    .WithDefaultValue(null);
 
                 // Resolve relative URLs for all category assets
                 ResolveImageUrls(result.Values);
-
                 await LoadDependencies(result.Values, result);
-
                 ApplyInheritanceRules(result.Values);
 
                 return result;
@@ -280,12 +292,15 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 // Load all parent categories
                 if (category.ParentId != null)
                 {
-                    category.Parents = TreeExtension.GetAncestors(category, x => x.ParentId != null ? preloadedCategoriesMap[x.ParentId] : null)
-                                                    .Reverse()
-                                                    .ToArray();
+                    category.Parents = TreeExtension
+                        .GetAncestors(category, x => x.ParentId != null ? preloadedCategoriesMap[x.ParentId] : null)
+                        .Reverse()
+                        .ToArray();
+
                     category.Parent = category.Parents.LastOrDefault();
                 }
-                category.Level = category.Parents?.Count() ?? 0;
+
+                category.Level = category.Parents?.Length ?? 0;
 
                 foreach (var link in category.Links ?? Array.Empty<CategoryLink>())
                 {
@@ -324,11 +339,12 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
             // Validate categories 
             var validator = new CategoryValidator();
+
             foreach (var category in categories)
             {
-                validator.ValidateAndThrow(category);
+                await validator.ValidateAndThrowAsync(category);
 
-                var group = new List<Category>() { category };
+                var group = new List<Category> { category };
 
                 var branchId = category.Id ?? category.ParentId;
                 var categoryBranch = await PreloadCategoryBranchAsync(branchId);
@@ -337,7 +353,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 ApplyInheritanceRules(group);
 
                 // PT-4999: fix validation call
-                var validationResult = _hasPropertyValidator.Validate(category);
+                var validationResult = await _hasPropertyValidator.ValidateAsync(category);
                 if (!validationResult.IsValid)
                 {
                     throw new PlatformException($"Category properties has validation error: {string.Join(Environment.NewLine, validationResult.Errors.Select(x => x.ToString()))}");
@@ -350,7 +366,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             ClearCacheAsync(models).GetAwaiter().GetResult();
         }
 
-        private async Task ClearCacheAsync(IEnumerable<Category> categories)
+        protected virtual async Task ClearCacheAsync(IEnumerable<Category> categories)
         {
             using (var repository = _repositoryFactory())
             {
@@ -365,10 +381,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     .Distinct()
                     .ToArrayAsync();
 
-                categoryIds = categoryIds.Union(linkedCategoryIds).ToArray();
+                var categoryAndLinkedCategoryIds = categoryIds.Union(linkedCategoryIds).ToArray();
+                var childCategoryIds = await repository.GetAllChildrenCategoriesIdsAsync(categoryAndLinkedCategoryIds);
 
-                var childrenCategoryIds = await repository.GetAllChildrenCategoriesIdsAsync(categoryIds);
-                var allCategoryIds = categoryIds.Union(childrenCategoryIds);
+                var allCategoryIds = categoryAndLinkedCategoryIds.Union(childCategoryIds);
 
                 foreach (var categoryId in allCategoryIds)
                 {
@@ -379,43 +395,40 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             SeoInfoCacheRegion.ExpireRegion();
         }
 
-        private async Task<CatalogChangedEntriesAggregate> GetDeletedEntries(IList<Category> categories)
+        protected virtual async Task<CatalogChangedEntriesAggregate> GetDeletedEntries(IList<Category> categories)
         {
-            using (var repository = _repositoryFactory())
+            using var repository = _repositoryFactory();
+
+            var categoryIds = categories.Select(x => x.Id).ToArray();
+            var childCategoryIds = await repository.GetAllChildrenCategoriesIdsAsync(categoryIds);
+
+            var allCategoryIds = categoryIds.Concat(childCategoryIds).ToArray();
+
+            var productIds = await repository.Items
+                .Where(x => allCategoryIds.Contains(x.CategoryId))
+                .Select(x => x.Id)
+                .ToListAsync();
+
+            var categoryEntries = categories.Select(c => new GenericChangedEntry<Category>(c, EntryState.Deleted));
+            var childCategoryEntries = childCategoryIds.Select(CreateDeletedEntry<Category>);
+            var productEntries = productIds.Select(CreateDeletedEntry<CatalogProduct>).ToList();
+
+            return new CatalogChangedEntriesAggregate
             {
-                var deletedCategoryIds = categories.Select(x => x.Id).ToList();
-                var deletedChildrenCategoryIds = await repository.GetAllChildrenCategoriesIdsAsync(deletedCategoryIds.ToArray());
+                CategoryEntries = categoryEntries.Concat(childCategoryEntries).ToList(),
+                ProductEntries = productEntries,
+            };
+        }
 
-                deletedCategoryIds.AddRange(deletedChildrenCategoryIds);
-                var deletedChildrenProductIds = await repository.Items.Where(x => deletedCategoryIds.Contains(x.CategoryId)).Select(x => x.Id).ToListAsync();
+        protected virtual GenericChangedEntry<T> CreateDeletedEntry<T>(string id)
+            where T : IEntity
+        {
+            var entity = AbstractTypeFactory<T>.TryCreateInstance();
+            entity.Id = id;
 
-                var deletedCategoryEntries = deletedChildrenCategoryIds.Select(id =>
-                {
-                    var category = AbstractTypeFactory<Category>.TryCreateInstance();
-                    category.Id = id;
-                    var entry = new GenericChangedEntry<Category>(category, EntryState.Deleted);
+            var entry = new GenericChangedEntry<T>(entity, EntryState.Deleted);
 
-                    return entry;
-                }).ToList();
-
-                var deletedProductEntries = deletedChildrenProductIds.Select(id =>
-                {
-                    var product = AbstractTypeFactory<CatalogProduct>.TryCreateInstance();
-                    product.Id = id;
-                    var entry = new GenericChangedEntry<CatalogProduct>(product, EntryState.Deleted);
-
-                    return entry;
-                }).ToList();
-
-                deletedCategoryEntries.AddRange(categories
-                    .Select(c => new GenericChangedEntry<Category>(c, EntryState.Deleted)));
-
-                return new CatalogChangedEntriesAggregate
-                {
-                    CategoryEntries = deletedCategoryEntries,
-                    ProductEntries = deletedProductEntries,
-                };
-            }
+            return entry;
         }
     }
 }

@@ -196,7 +196,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 {
                     var property = AbstractTypeFactory<Property>.TryCreateInstance();
                     property.Name = values.Key;
-                    property.ValueType = values.FirstOrDefault().ValueType;
+                    property.ValueType = values.First().ValueType;
                     property.Values = values.ToList();
                     foreach (var propValue in property.Values)
                     {
@@ -217,7 +217,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 product.Variations = new List<Variation>();
                 foreach (var variation in Childrens)
                 {
-                    var productVariation = variation.ToModel(AbstractTypeFactory<Variation>.TryCreateInstance()) as Variation;
+                    var productVariation = (Variation)variation.ToModel(AbstractTypeFactory<Variation>.TryCreateInstance());
                     productVariation.MainProduct = product;
                     productVariation.MainProductId = product.Id;
                     product.Variations.Add(productVariation);
@@ -374,7 +374,9 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         public virtual void Patch(ItemEntity target)
         {
             if (target == null)
+            {
                 throw new ArgumentNullException(nameof(target));
+            }
 
             target.IsBuyable = IsBuyable;
             target.IsActive = IsActive;

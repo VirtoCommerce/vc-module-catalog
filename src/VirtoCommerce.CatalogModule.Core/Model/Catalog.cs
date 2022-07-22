@@ -33,10 +33,10 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         #region ICloneable members
         public virtual object Clone()
         {
-            var result = MemberwiseClone() as Catalog;
+            var result = (Catalog)MemberwiseClone();
 
-            result.Languages = Languages?.Select(x => x.Clone()).OfType<CatalogLanguage>().ToList();
-            result.Properties = Properties?.Select(x => x.Clone()).OfType<Property>().ToList();
+            result.Languages = Languages?.Select(x => x.CloneTyped()).ToList();
+            result.Properties = Properties?.Select(x => x.CloneTyped()).ToList();
 
             return result;
         }
