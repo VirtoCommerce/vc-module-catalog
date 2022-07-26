@@ -94,7 +94,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("~/api/catalog/{catalogId}/properties/getnew")]
         public async Task<ActionResult<Property>> GetNewCatalogProperty(string catalogId)
         {
-            var catalog = (await _catalogService.GetByIdsAsync(new[] { catalogId })).FirstOrDefault();
+            var catalog = await _catalogService.GetByIdAsync(catalogId);
             var retVal = new Property
             {
                 Id = Guid.NewGuid().ToString(),

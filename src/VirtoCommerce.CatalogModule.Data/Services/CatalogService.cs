@@ -19,7 +19,7 @@ using VirtoCommerce.Platform.Data.Infrastructure;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
-    public class CatalogService : CrudService<Catalog, CatalogEntity, CatalogChangingEvent, CatalogChangedEvent>, ICatalogCrudService, ICatalogService
+    public class CatalogService : CrudService<Catalog, CatalogEntity, CatalogChangingEvent, CatalogChangedEvent>, ICatalogService
     {
         private new readonly IPlatformMemoryCache _platformMemoryCache;
         private new readonly Func<ICatalogRepository> _repositoryFactory;
@@ -38,25 +38,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _platformMemoryCache = platformMemoryCache;
             _hasPropertyValidator = hasPropertyValidator;
         }
-
-        #region ICatalogService compatibility
-
-        public virtual async Task<Catalog[]> GetByIdsAsync(string[] catalogIds, string responseGroup = null)
-        {
-            return (await GetAsync(catalogIds.ToList(), responseGroup)).ToArray();
-        }
-
-        public virtual Task SaveChangesAsync(Catalog[] catalogs)
-        {
-            return SaveChangesAsync(catalogs.AsEnumerable());
-        }
-
-        public virtual Task DeleteAsync(string[] catalogIds)
-        {
-            return DeleteAsync(catalogIds, softDelete: false);
-        }
-
-        #endregion
 
         public override async Task<IReadOnlyCollection<Catalog>> GetAsync(List<string> ids, string responseGroup = null)
         {
@@ -82,8 +63,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public override async Task DeleteAsync(IEnumerable<string> ids, bool softDelete = false)
         {
-            var catalogIds = ids.ToArray();
-            var catalogs = await GetByIdsAsync(catalogIds);
+            var catalogs = await GetAsync(ids.ToList());
 
             if (catalogs.Any())
             {
@@ -200,7 +180,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
         }
 
-        protected virtual async Task<CatalogChangedEntriesAggregate> GetDeletedEntriesAsync(Catalog[] catalogs)
+        protected virtual async Task<CatalogChangedEntriesAggregate> GetDeletedEntriesAsync(IReadOnlyCollection<Catalog> catalogs)
         {
             using var repository = _repositoryFactory();
 

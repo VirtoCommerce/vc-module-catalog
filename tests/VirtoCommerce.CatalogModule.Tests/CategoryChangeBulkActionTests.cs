@@ -128,8 +128,8 @@ namespace VirtoCommerce.CatalogModule.Tests
             // arrange
             var context = new CategoryChangeBulkActionContext { CatalogId = "catalog" };
 
-            _catalogServiceMock.Setup(t => t.GetByIdsAsync(new []{ "catalog" }, It.IsAny<string>()))
-                .ReturnsAsync(new [] { new Catalog { IsVirtual = true } });
+            _catalogServiceMock.Setup(t => t.GetByIdAsync("catalog", It.IsAny<string>()))
+                .ReturnsAsync(new Catalog { IsVirtual = true });
 
             var bulkAction = BuildBulkAction(context);
 
@@ -147,8 +147,8 @@ namespace VirtoCommerce.CatalogModule.Tests
             // arrange
             var context = new CategoryChangeBulkActionContext { CatalogId = "catalog" };
 
-            _catalogServiceMock.Setup(t => t.GetByIdsAsync(new[] { "catalog" }, null))
-                .ReturnsAsync(new[] { new Catalog { IsVirtual = true } });
+            _catalogServiceMock.Setup(t => t.GetByIdAsync("catalog", null))
+                .ReturnsAsync(new Catalog { IsVirtual = true });
 
             var bulkAction = BuildBulkAction(context);
 
@@ -166,8 +166,8 @@ namespace VirtoCommerce.CatalogModule.Tests
             var context = new CategoryChangeBulkActionContext { CatalogId = "catalog" };
             var catalogService = new Mock<ICatalogService>();
 
-            catalogService.Setup(t => t.GetByIdsAsync(new[] { "catalog" }, null))
-                .ReturnsAsync(new[] { new Catalog { IsVirtual = true } });
+            catalogService.Setup(t => t.GetByIdAsync("catalog", null))
+                .ReturnsAsync(new Catalog { IsVirtual = true });
 
             var bulkAction = BuildBulkAction(context);
 

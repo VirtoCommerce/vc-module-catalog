@@ -79,8 +79,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 }
                 else
                 {
-                    var catalog = await _catalogService.GetByIdsAsync(new string[] { link.CatalogId }, CatalogResponseGroup.Info.ToString());
-                    link.Catalog = catalog.FirstOrDefault();
+                    link.Catalog = await _catalogService.GetByIdAsync(link.CatalogId, CatalogResponseGroup.Info.ToString());
                 }
             }
 
