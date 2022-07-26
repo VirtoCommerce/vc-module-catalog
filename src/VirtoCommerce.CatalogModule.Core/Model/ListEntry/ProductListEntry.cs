@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.Linq;
+using VirtoCommerce.CoreModule.Core.Outlines;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Core.Model.ListEntry
@@ -6,10 +8,11 @@ namespace VirtoCommerce.CatalogModule.Core.Model.ListEntry
     /// <summary>
     /// Product ListEntry record.
     /// </summary>
-    public class ProductListEntry : ListEntryBase
+    public class ProductListEntry : ListEntryBase, IHasOutlines
     {
         public const string TypeName = "product";
         public string ProductType { get; set; }
+        public IList<Outline> Outlines { get; set; }
 
         public override ListEntryBase FromModel(AuditableEntity entity)
         {
@@ -31,6 +34,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model.ListEntry
                     //TODO:  Use only physical catalog outline which this category belongs to
                     Outline = product.Outlines.FirstOrDefault().Items.Select(x => x.Id).ToList();
                     Path = product.Outlines.FirstOrDefault().Items.Select(x => x.Name).ToList();
+                    Outlines = product.Outlines;
                 }
 
             }
