@@ -165,7 +165,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         /// <summary>
         /// System flag used to mark that object was inherited from other
         /// </summary>
-        public bool IsInherited => false;
+        public virtual bool IsInherited => false;
 
         public virtual void TryInheritFrom(IEntity parent)
         {
