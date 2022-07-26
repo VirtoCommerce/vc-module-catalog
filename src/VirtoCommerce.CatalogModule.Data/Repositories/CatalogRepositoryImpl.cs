@@ -478,21 +478,21 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             var categoryProperty = properties.FirstOrDefault(x => x.TargetType.EqualsInvariant(PropertyType.Category.ToString()));
             var itemProperty = properties.FirstOrDefault(x => x.TargetType.EqualsInvariant(PropertyType.Product.ToString()) || x.TargetType.EqualsInvariant(PropertyType.Variation.ToString()));
 
-            string commandText;
+            FormattableString commandText;
             if (catalogProperty != null)
             {
                 commandText = $"DELETE PV FROM PropertyValue PV INNER JOIN Catalog C ON C.Id = PV.CatalogId AND C.Id = '{catalogProperty.CatalogId}' WHERE PV.Name = '{catalogProperty.Name}'";
-                await DbContext.Database.ExecuteSqlRawAsync(commandText);
+                await DbContext.Database.ExecuteSqlInterpolatedAsync(commandText);
             }
             if (categoryProperty != null)
             {
                 commandText = $"DELETE PV FROM PropertyValue PV INNER JOIN Category C ON C.Id = PV.CategoryId AND C.CatalogId = '{categoryProperty.CatalogId}' WHERE PV.Name = '{categoryProperty.Name}'";
-                await DbContext.Database.ExecuteSqlRawAsync(commandText);
+                await DbContext.Database.ExecuteSqlInterpolatedAsync(commandText);
             }
             if (itemProperty != null)
             {
                 commandText = $"DELETE PV FROM PropertyValue PV INNER JOIN Item I ON I.Id = PV.ItemId AND I.CatalogId = '{itemProperty.CatalogId}' WHERE PV.Name = '{itemProperty.Name}'";
-                await DbContext.Database.ExecuteSqlRawAsync(commandText);
+                await DbContext.Database.ExecuteSqlInterpolatedAsync(commandText);
             }
         }
 
