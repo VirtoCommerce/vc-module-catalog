@@ -18,7 +18,7 @@ using VirtoCommerce.Platform.Data.GenericCrud;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
-    public class ItemService : CrudService<CatalogProduct, ItemEntity, ProductChangingEvent, ProductChangedEvent>, IProductCrudService, IItemService
+    public class ItemService : CrudService<CatalogProduct, ItemEntity, ProductChangingEvent, ProductChangedEvent>, IItemService
     {
         private new readonly Func<ICatalogRepository> _repositoryFactory;
         private new readonly IEventPublisher _eventPublisher;
@@ -54,43 +54,14 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _catalogService = catalogService;
         }
 
-        #region IItemService compatibility
+        #region IItemService Members
 
-        public virtual async Task<CatalogProduct[]> GetByIdsAsync(string[] itemIds, string respGroup, string catalogId = null)
+        public virtual async Task<CatalogProduct[]> GetByIdsAsync(string[] itemIds, string respGroup, string catalogId)
         {
-            return (await GetAsync(itemIds, respGroup, catalogId)).ToArray();
-        }
-
-        public virtual Task<CatalogProduct> GetByIdAsync(string itemId, string responseGroup, string catalogId = null)
-        {
-            return GetAsync(itemId, responseGroup, catalogId);
-        }
-
-        public virtual Task SaveChangesAsync(CatalogProduct[] items)
-        {
-            return SaveChangesAsync(items.AsEnumerable());
-        }
-
-        public virtual Task DeleteAsync(string[] itemIds)
-        {
-            return DeleteAsync(itemIds, softDelete: false);
-        }
-
-        #endregion
-
-        public virtual async Task<CatalogProduct> GetAsync(string id, string responseGroup, string catalogId)
-        {
-            var products = await GetAsync(new[] { id }, responseGroup, catalogId);
-
-            return products.FirstOrDefault();
-        }
-
-        public virtual async Task<IList<CatalogProduct>> GetAsync(IList<string> ids, string responseGroup, string catalogId)
-        {
-            var products = (IList<CatalogProduct>)await GetAsync(ids.ToList(), responseGroup);
+            var products = await GetAsync(itemIds.ToList(), respGroup);
 
             // Remove outlines that don't belong to the requested catalog
-            if (products.Any() && catalogId != null && HasFlag(responseGroup, ItemResponseGroup.Outlines))
+            if (products.Any() && catalogId != null && HasFlag(respGroup, ItemResponseGroup.Outlines))
             {
                 products
                     .Where(x => x.Variations != null)
@@ -106,13 +77,22 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     });
             }
 
-            return products;
+            return products.ToArray();
         }
+
+        public virtual async Task<CatalogProduct> GetByIdAsync(string itemId, string responseGroup, string catalogId)
+        {
+            var products = await GetByIdsAsync(new[] { itemId }, responseGroup, catalogId);
+
+            return products.FirstOrDefault();
+        }
+
+        #endregion
 
         public override async Task DeleteAsync(IEnumerable<string> ids, bool softDelete = false)
         {
             var itemIds = ids.ToArray();
-            var items = await GetAsync(itemIds, ItemResponseGroup.ItemInfo.ToString(), catalogId: null);
+            var items = await GetByIdsAsync(itemIds, ItemResponseGroup.ItemInfo.ToString(), catalogId: null);
 
             if (items.Any())
             {

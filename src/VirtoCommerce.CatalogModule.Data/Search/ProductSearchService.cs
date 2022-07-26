@@ -42,9 +42,9 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                                         .Select(x => x.Id)
                                         .Skip(criteria.Skip).Take(criteria.Take)
                                         .AsNoTracking()
-                                        .ToArrayAsync();
+                                        .ToListAsync();
 
-                    result.Results = (await _itemService.GetByIdsAsync(ids, criteria.ResponseGroup)).OrderBy(x => Array.IndexOf(ids, x.Id)).ToList();
+                    result.Results = (await _itemService.GetAsync(ids, criteria.ResponseGroup)).OrderBy(x => ids.IndexOf(x.Id)).ToList();
                 }
             }
             return result;

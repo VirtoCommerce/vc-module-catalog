@@ -31,7 +31,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         }
 
         [Fact]
-        public async Task GetProperties_ItemService_InvokeGetByIds()
+        public async Task GetProperties_ItemService_InvokeGetAsync()
         {
             // arrange
             var context = new PropertiesUpdateBulkActionContext();
@@ -41,7 +41,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             var dataSource = new Mock<IDataSource>();
             var productId = "fakeProductId";
             var group = ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemProperties;
-            var productIds = new[] { productId };
+            var productIds = new List<string> { productId };
             var properties = new List<Property>();
             var product = Mock.Of<CatalogProduct>(
                 t => t.Id == productId && t.Properties == properties,
@@ -50,13 +50,13 @@ namespace VirtoCommerce.CatalogModule.Tests
             dataSourceFactory.Setup(t => t.Create(context)).Returns(dataSource.Object);
             dataSource.SetupSequence(t => t.FetchAsync()).ReturnsAsync(true).ReturnsAsync(false);
             dataSource.Setup(t => t.Items).Returns(products);
-            itemService.Setup(t => t.GetByIdsAsync(productIds, group.ToString(), null)).ReturnsAsync(products.ToArray());
+            itemService.Setup(t => t.GetAsync(productIds, group.ToString())).ReturnsAsync(products.ToArray());
 
             // act
             await manager.GetPropertiesAsync(context);
 
             // assert
-            itemService.Verify(t => t.GetByIdsAsync(productIds, group.ToString(), null));
+            itemService.Verify(t => t.GetAsync(productIds, group.ToString()));
         }
 
         [Theory]

@@ -36,7 +36,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 
             if (searchCriteria.ObjectIds.Any(x => !string.IsNullOrWhiteSpace(x)))
             {
-                result = _itemService.GetByIdsAsync(searchCriteria.ObjectIds.ToArray(), responseGroup.ToString()).GetAwaiter().GetResult();
+                result = _itemService.GetAsync(searchCriteria.ObjectIds.ToList(), responseGroup).GetAwaiter().GetResult().ToArray();
                 totalCount = result.Length;
             }
             else

@@ -49,12 +49,12 @@ namespace VirtoCommerce.CatalogModule2.Web.Services
             base.ClearCache(models);
         }
 
-        public override Task DeleteAsync(string[] itemIds)
+        public override Task DeleteAsync(IEnumerable<string> ids, bool softDelete = false)
         {
-            return base.DeleteAsync(itemIds);
+            return base.DeleteAsync(ids, softDelete);
         }
 
-        public override Task<CatalogProduct> GetByIdAsync(string itemId, string responseGroup, string catalogId = null)
+        public override Task<CatalogProduct> GetByIdAsync(string itemId, string responseGroup, string catalogId)
         {
             return base.GetByIdAsync(itemId, responseGroup, catalogId);
         }
@@ -69,9 +69,9 @@ namespace VirtoCommerce.CatalogModule2.Web.Services
             return base.LoadDependencies(products);
         }
 
-        public override Task SaveChangesAsync(CatalogProduct[] items)
+        public override Task SaveChangesAsync(IEnumerable<CatalogProduct> models)
         {
-            return base.SaveChangesAsync(items);
+            return base.SaveChangesAsync(models);
         }
 
         protected override void SetProductDependencies(CatalogProduct product, IDictionary<string, Catalog> catalogsByIdDict, IDictionary<string, Category> categoriesByIdDict)

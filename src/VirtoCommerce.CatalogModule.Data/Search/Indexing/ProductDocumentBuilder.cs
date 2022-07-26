@@ -69,11 +69,13 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             return result;
         }
 
-        protected virtual Task<CatalogProduct[]> GetProducts(IList<string> productIds)
+        protected virtual async Task<CatalogProduct[]> GetProducts(IList<string> productIds)
         {
 #pragma warning disable CS0618 // Variations can be used here
-            return _itemService.GetByIdsAsync(productIds.ToArray(), (ItemResponseGroup.Full & ~ItemResponseGroup.Variations).ToString());
+            var products = await _itemService.GetAsync(productIds.ToList(), (ItemResponseGroup.Full & ~ItemResponseGroup.Variations).ToString());
 #pragma warning restore CS0618
+
+            return products.ToArray();
         }
 
         protected virtual IndexDocument CreateDocument(CatalogProduct product)

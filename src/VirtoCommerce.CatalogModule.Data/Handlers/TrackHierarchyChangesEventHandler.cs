@@ -56,7 +56,7 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
                 categoryIds.AddRange(childrenCategoryIds);
                 var childrenProductIds = await repository.Items.Where(x => categoryIds.Contains(x.CategoryId)).Select(x => x.Id).ToListAsync();
 
-                var products = await _itemService.GetByIdsAsync(childrenProductIds.ToArray(), ItemResponseGroup.ItemInfo.ToString());
+                var products = await _itemService.GetAsync(childrenProductIds.ToList(), ItemResponseGroup.ItemInfo.ToString());
                 await _itemService.SaveChangesAsync(products);
             }
         }

@@ -73,9 +73,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 }
                 else if (objectType.EqualsInvariant(typeof(CatalogProduct).Name))
                 {
-                    var product =
-                        (await _productService.GetByIdsAsync(new[] { objectId }, ItemResponseGroup.ItemInfo.ToString()))
-                        .FirstOrDefault();
+                    var product = await _productService.GetByIdAsync(objectId, ItemResponseGroup.ItemInfo.ToString());
                     if (product != null)
                     {
                         catalogId = product.CatalogId;

@@ -274,12 +274,12 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             for (var i = 0; i < idsToDelete.Count; i += deleteBatchSize)
             {
-                var commonIds = idsToDelete.Skip(i).Take(deleteBatchSize).ToArray();
+                var commonIds = idsToDelete.Skip(i).Take(deleteBatchSize).ToList();
 
-                var searchProductResult = await _itemService.GetByIdsAsync(commonIds, ItemResponseGroup.None.ToString());
+                var searchProductResult = await _itemService.GetAsync(commonIds, ItemResponseGroup.None.ToString());
                 await _itemService.DeleteAsync(searchProductResult.Select(x => x.Id).ToArray());
 
-                var searchCategoryResult = await _categoryService.GetByIdsAsync(commonIds, CategoryResponseGroup.None.ToString());
+                var searchCategoryResult = await _categoryService.GetByIdsAsync(commonIds.ToArray(), CategoryResponseGroup.None.ToString());
                 await _categoryService.DeleteAsync(searchCategoryResult.Select(x => x.Id).ToArray());
             }
 

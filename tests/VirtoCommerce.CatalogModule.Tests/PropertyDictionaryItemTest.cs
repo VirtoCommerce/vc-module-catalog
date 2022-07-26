@@ -44,7 +44,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             };
             propDictionarySearchService.Setup(x => x.SearchAsync(It.IsAny<PropertyDictionaryItemSearchCriteria>()))
                 .Returns(Task.FromResult(new PropertyDictionaryItemSearchResult { TotalCount = 1, Results = new[] { greenDictItem } }));
-            productService.Setup(x => x.GetByIdAsync(It.IsAny<string>(), It.IsAny<string>(), null))
+            productService.Setup(x => x.GetByIdAsync(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(Task.FromResult(new CatalogProduct { Properties = new List<Property>() }));
             //Add the new dictionary item to the property
             await propDictionaryService.SaveChangesAsync(new[] { greenDictItem });
