@@ -41,9 +41,9 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                     var ids = await query.OrderBySortInfos(sortInfos).ThenBy(x => x.Id)
                                         .Select(x => x.Id)
                                         .Skip(criteria.Skip).Take(criteria.Take)
-                                        .ToArrayAsync();
+                                        .ToListAsync();
 
-                    result.Results = (await _categoryService.GetByIdsAsync(ids, criteria.ResponseGroup)).OrderBy(x => Array.IndexOf(ids, x.Id)).ToList();
+                    result.Results = (await _categoryService.GetAsync(ids, criteria.ResponseGroup)).OrderBy(x => ids.IndexOf(x.Id)).ToList();
                 }
             }
 

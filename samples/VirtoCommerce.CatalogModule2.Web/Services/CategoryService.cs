@@ -38,9 +38,9 @@ namespace VirtoCommerce.CatalogModule2.Web.Services
             return base.GetByIdsAsync(categoryIds, responseGroup, catalogId);
         }
 
-        public override Task DeleteAsync(string[] categoryIds)
+        public override Task DeleteAsync(IEnumerable<string> ids, bool softDelete = false)
         {
-            return base.DeleteAsync(categoryIds);
+            return base.DeleteAsync(ids, softDelete);
         }
 
         protected override void ApplyInheritanceRules(IEnumerable<Category> categories)
@@ -63,9 +63,9 @@ namespace VirtoCommerce.CatalogModule2.Web.Services
             base.ResolveImageUrls(categories);
         }
 
-        public override Task SaveChangesAsync(Category[] categories)
+        public override Task SaveChangesAsync(IEnumerable<Category> models)
         {
-            return base.SaveChangesAsync(categories);
+            return base.SaveChangesAsync(models);
         }
 
         protected override Task ValidateCategoryPropertiesAsync(IEnumerable<Category> categories)

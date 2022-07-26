@@ -22,7 +22,7 @@ using VirtoCommerce.Platform.Data.Infrastructure;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
-    public class CategoryService : CrudService<Category, CategoryEntity, CategoryChangingEvent, CategoryChangedEvent>, ICategoryCrudService, ICategoryService
+    public class CategoryService : CrudService<Category, CategoryEntity, CategoryChangingEvent, CategoryChangedEvent>, ICategoryService
     {
         private new readonly IPlatformMemoryCache _platformMemoryCache;
         private new readonly Func<ICatalogRepository> _repositoryFactory;
@@ -51,42 +51,13 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _catalogService = catalogService;
         }
 
-        #region ICategoryService compatibility
+        #region ICategoryService Members
 
-        public virtual async Task<Category[]> GetByIdsAsync(string[] categoryIds, string responseGroup, string catalogId = null)
-        {
-            return (await GetAsync(categoryIds, responseGroup, catalogId)).ToArray();
-        }
-
-        public virtual Task SaveChangesAsync(Category[] categories)
-        {
-            return SaveChangesAsync(categories.AsEnumerable());
-        }
-
-        public virtual Task DeleteAsync(string[] categoryIds)
-        {
-            return DeleteAsync(categoryIds, softDelete: false);
-        }
-
-        #endregion
-
-        public override async Task<IReadOnlyCollection<Category>> GetAsync(List<string> ids, string responseGroup = null)
-        {
-            return (IReadOnlyCollection<Category>)await GetAsync(ids, responseGroup, catalogId: null);
-        }
-
-        public virtual async Task<Category> GetAsync(string id, string responseGroup, string catalogId)
-        {
-            var categories = await GetAsync(new[] { id }, responseGroup, catalogId);
-
-            return categories.FirstOrDefault();
-        }
-
-        public virtual async Task<IList<Category>> GetAsync(IList<string> ids, string responseGroup, string catalogId)
+        public virtual async Task<Category[]> GetByIdsAsync(string[] categoryIds, string responseGroup, string catalogId)
         {
             var result = new List<Category>();
 
-            foreach (var categoryId in ids.Where(x => x != null))
+            foreach (var categoryId in categoryIds.Where(x => x != null))
             {
                 var categoryBranch = await PreloadCategoryBranchAsync(categoryId);
                 var category = categoryBranch[categoryId];
@@ -108,6 +79,13 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
 
             return result.ToArray();
+        }
+
+        #endregion
+
+        public override async Task<IReadOnlyCollection<Category>> GetAsync(List<string> ids, string responseGroup = null)
+        {
+            return await GetByIdsAsync(ids.ToArray(), responseGroup, catalogId: null);
         }
 
         public override async Task DeleteAsync(IEnumerable<string> ids, bool softDelete = false)

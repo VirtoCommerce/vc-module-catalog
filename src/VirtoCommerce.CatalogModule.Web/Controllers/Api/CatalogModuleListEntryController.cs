@@ -279,7 +279,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 var searchProductResult = await _itemService.GetAsync(commonIds, ItemResponseGroup.None.ToString());
                 await _itemService.DeleteAsync(searchProductResult.Select(x => x.Id).ToArray());
 
-                var searchCategoryResult = await _categoryService.GetByIdsAsync(commonIds.ToArray(), CategoryResponseGroup.None.ToString());
+                var searchCategoryResult = await _categoryService.GetAsync(commonIds, CategoryResponseGroup.None.ToString());
                 await _categoryService.DeleteAsync(searchCategoryResult.Select(x => x.Id).ToArray());
             }
 
@@ -309,7 +309,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 #pragma warning disable CS0618 // Variations can be used here
             var products = await _itemService.GetByIdsAsync(ids, (ItemResponseGroup.Links | ItemResponseGroup.Variations).ToString());
 #pragma warning restore CS0618
-            var categories = await _categoryService.GetByIdsAsync(ids.Except(products.Select(x => x.Id)).ToArray(), CategoryResponseGroup.WithLinks.ToString());
+            var categories = await _categoryService.GetAsync(ids.Except(products.Select(x => x.Id)).ToList(), CategoryResponseGroup.WithLinks.ToString());
             return products.OfType<T>().Concat(categories.OfType<T>()).ToList();
         }
     }

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -103,7 +102,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
             {
                 if (!_namesById.TryGetValue(property.CategoryId, out ownerName))
                 {
-                    var category = (await _categoryService.GetByIdsAsync(new[] {property.CategoryId}, CategoryResponseGroup.Info.ToString())).FirstOrDefault();
+                    var category = await _categoryService.GetByIdAsync(property.CategoryId, CategoryResponseGroup.Info.ToString());
                     ownerName = $"{category?.Name} (Category)";
                     _namesById.Add(property.CategoryId, ownerName);
                 }
@@ -112,7 +111,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
             {
                 if (!_namesById.TryGetValue(property.CatalogId, out ownerName))
                 {
-                    var catalog = (await _catalogService.GetByIdsAsync(new[] { property.CatalogId }, CategoryResponseGroup.Info.ToString())).FirstOrDefault();
+                    var catalog = await _catalogService.GetByIdAsync(property.CatalogId, CategoryResponseGroup.Info.ToString());
                     ownerName = $"{catalog?.Name} (Catalog)";
                     _namesById.Add(property.CatalogId, ownerName);
                 }

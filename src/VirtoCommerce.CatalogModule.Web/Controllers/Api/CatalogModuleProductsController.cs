@@ -147,7 +147,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             }
             if (categoryId != null)
             {
-                parent = (await _categoryService.GetByIdsAsync(new[] { categoryId }, CategoryResponseGroup.WithProperties.ToString())).FirstOrDefault();
+                parent = await _categoryService.GetByIdAsync(categoryId, CategoryResponseGroup.WithProperties.ToString());
             }
             if (parent != null)
             {
