@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><Project>
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
   <!-- These properties will be shared for all projects -->
   <PropertyGroup>
     <VersionPrefix>3.223.0</VersionPrefix>
