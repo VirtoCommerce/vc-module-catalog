@@ -187,8 +187,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         protected virtual async Task LoadDependenciesAsync(Property[] properties)
         {
-            var catalogsByIdDict = ((await _catalogSearchService.SearchCatalogsAsync(new Core.Model.Search.CatalogSearchCriteria { Take = int.MaxValue })).Results).ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase)
-                                                                           .WithDefaultValue(null);
+            var catalogsByIdDict = (await _catalogSearchService.SearchAsync(new Core.Model.Search.CatalogSearchCriteria { Take = int.MaxValue })).Results
+                .ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase)
+                .WithDefaultValue(null);
+
             foreach (var property in properties.Where(x => x.CatalogId != null))
             {
                 property.Catalog = catalogsByIdDict[property.CatalogId];

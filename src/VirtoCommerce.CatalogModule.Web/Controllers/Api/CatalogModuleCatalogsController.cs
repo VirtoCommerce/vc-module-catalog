@@ -53,7 +53,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return Unauthorized();
             }
 
-            var result = await _catalogSearchService.SearchCatalogsAsync(criteria);
+            var result = await _catalogSearchService.SearchAsync(criteria);
             return Ok(result.Results);
         }
 
@@ -67,7 +67,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return Unauthorized();
             }
 
-            var result = await _catalogSearchService.SearchCatalogsAsync(criteria);
+            var result = await _catalogSearchService.SearchAsync(criteria);
             return Ok(result);
         }
 
