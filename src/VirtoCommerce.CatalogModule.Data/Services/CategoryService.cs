@@ -53,7 +53,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         #region ICategoryService Members
 
-        public virtual async Task<Category[]> GetByIdsAsync(string[] categoryIds, string responseGroup, string catalogId)
+        public virtual async Task<Category[]> GetByIdsAsync(string[] categoryIds, string responseGroup, string catalogId = null)
         {
             var result = new List<Category>();
 
@@ -79,6 +79,16 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
 
             return result.ToArray();
+        }
+
+        public virtual Task SaveChangesAsync(Category[] categories)
+        {
+            return SaveChangesAsync(categories.AsEnumerable());
+        }
+
+        public virtual Task DeleteAsync(string[] categoryIds)
+        {
+            return DeleteAsync(categoryIds, softDelete: false);
         }
 
         #endregion

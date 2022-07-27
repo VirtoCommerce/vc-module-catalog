@@ -39,6 +39,25 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _hasPropertyValidator = hasPropertyValidator;
         }
 
+        #region ICatalogService Members
+
+        public virtual async Task<Catalog[]> GetByIdsAsync(string[] catalogIds, string responseGroup = null)
+        {
+            return (await GetAsync(catalogIds.ToList(), responseGroup)).ToArray();
+        }
+
+        public virtual Task SaveChangesAsync(Catalog[] catalogs)
+        {
+            return SaveChangesAsync(catalogs.AsEnumerable());
+        }
+
+        public virtual Task DeleteAsync(string[] catalogIds)
+        {
+            return DeleteAsync(catalogIds, softDelete: false);
+        }
+
+        #endregion
+
         public override async Task<IReadOnlyCollection<Catalog>> GetAsync(List<string> ids, string responseGroup = null)
         {
             var result = new List<Catalog>();

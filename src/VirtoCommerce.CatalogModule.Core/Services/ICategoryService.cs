@@ -6,6 +6,8 @@ namespace VirtoCommerce.CatalogModule.Core.Services
 {
     public interface ICategoryService : ICrudService<Category>
     {
-        Task<Category[]> GetByIdsAsync(string[] categoryIds, string responseGroup, string catalogId);
+        Task<Category[]> GetByIdsAsync(string[] categoryIds, string responseGroup, string catalogId = null);
+        Task SaveChangesAsync(Category[] categories);
+        Task DeleteAsync(string[] categoryIds);
     }
 }

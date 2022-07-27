@@ -56,7 +56,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         #region IItemService Members
 
-        public virtual async Task<CatalogProduct[]> GetByIdsAsync(string[] itemIds, string respGroup, string catalogId)
+        public virtual async Task<CatalogProduct[]> GetByIdsAsync(string[] itemIds, string respGroup, string catalogId = null)
         {
             var products = await GetAsync(itemIds.ToList(), respGroup);
 
@@ -80,11 +80,21 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return products.ToArray();
         }
 
-        public virtual async Task<CatalogProduct> GetByIdAsync(string itemId, string responseGroup, string catalogId)
+        public virtual async Task<CatalogProduct> GetByIdAsync(string itemId, string responseGroup, string catalogId = null)
         {
             var products = await GetByIdsAsync(new[] { itemId }, responseGroup, catalogId);
 
             return products.FirstOrDefault();
+        }
+
+        public virtual Task SaveChangesAsync(CatalogProduct[] items)
+        {
+            return SaveChangesAsync(items.AsEnumerable());
+        }
+
+        public virtual Task DeleteAsync(string[] itemIds)
+        {
+            return DeleteAsync(itemIds, softDelete: false);
         }
 
         #endregion
