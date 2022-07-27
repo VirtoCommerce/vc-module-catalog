@@ -51,7 +51,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 return new ValidationResult(new[] { failure });
             }
 
-            var searchResult = await _productSearchService.SearchProductsAsync(new ProductSearchCriteria
+            var searchResult = await _productSearchService.SearchAsync(new ProductSearchCriteria
             {
                 MainProductId = request.ProductId,
                 PropertyName = request.Name,

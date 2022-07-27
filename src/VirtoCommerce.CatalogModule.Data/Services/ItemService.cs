@@ -11,6 +11,7 @@ using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Caching;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
+using VirtoCommerce.Platform.Caching;
 using VirtoCommerce.Platform.Core.Caching;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Events;
@@ -187,6 +188,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         protected override void ClearCache(IEnumerable<CatalogProduct> models)
         {
+            GenericSearchCachingRegion<CatalogProduct>.ExpireRegion();
+
             AssociationSearchCacheRegion.ExpireRegion();
             SeoInfoCacheRegion.ExpireRegion();
 

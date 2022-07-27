@@ -150,7 +150,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 await writer.WritePropertyNameAsync("Products");
                 await writer.SerializeJsonArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
                 {
-                    var searchResult = await _productSearchService.SearchProductsAsync(new ProductSearchCriteria { Skip = skip, Take = take, ResponseGroup = ItemResponseGroup.Full.ToString() });
+                    var searchResult = await _productSearchService.SearchAsync(new ProductSearchCriteria { Skip = skip, Take = take, ResponseGroup = ItemResponseGroup.Full.ToString() });
                     LoadImages(searchResult.Results.OfType<IHasImages>().ToArray(), progressInfo, options.HandleBinaryData);
                     foreach (var item in searchResult.Results)
                     {

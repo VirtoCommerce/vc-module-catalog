@@ -49,7 +49,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                     do
                     {
                         variationsSearchCriteria.Skip = skipCount;
-                        var productVariations = await _productsSearchService.SearchProductsAsync(variationsSearchCriteria);
+                        var productVariations = await _productsSearchService.SearchAsync(variationsSearchCriteria);
                         foreach (var variation in productVariations.Results)
                         {
                             result.Add(CreateDocument(variation));

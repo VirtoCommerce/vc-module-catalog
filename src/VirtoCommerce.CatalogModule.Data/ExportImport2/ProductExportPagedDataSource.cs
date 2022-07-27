@@ -42,7 +42,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             else
             {
                 searchCriteria.ResponseGroup = responseGroup.ToString();
-                var productSearchResult = _productSearchService.SearchProductsAsync(searchCriteria).GetAwaiter().GetResult();
+                var productSearchResult = _productSearchService.SearchAsync(searchCriteria).GetAwaiter().GetResult();
                 result = productSearchResult.Results.ToArray();
                 totalCount = productSearchResult.TotalCount;
             }
