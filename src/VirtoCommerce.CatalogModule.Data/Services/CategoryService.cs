@@ -13,6 +13,7 @@ using VirtoCommerce.CatalogModule.Data.Caching;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Data.Validation;
+using VirtoCommerce.Platform.Caching;
 using VirtoCommerce.Platform.Core.Caching;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Events;
@@ -356,6 +357,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         protected virtual async Task ClearCacheAsync(IEnumerable<Category> categories)
         {
+            GenericSearchCachingRegion<Category>.ExpireRegion();
+
             using (var repository = _repositoryFactory())
             {
                 repository.DisableChangesTracking();
