@@ -263,7 +263,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                             .Distinct()
                             .ToArrayAsync();
                         //linked product categories links
-                        var linkedProductCategoryIds = await CategoryItemRelations.Where(x => x.CatalogId == catalogId)
+                        var linkedProductCategoryIds = await CategoryItemRelations.Where(x => x.CatalogId == catalogId && !string.IsNullOrEmpty(x.CategoryId))
                             .Join(Items, link => link.ItemId, item => item.Id, (link, item) => item)
                             .Select(x => x.CategoryId)
                             .Distinct()
