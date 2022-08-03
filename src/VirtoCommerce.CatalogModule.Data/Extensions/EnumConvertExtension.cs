@@ -2,19 +2,19 @@ using System;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Model;
 
-namespace VirtoCommerce.CatalogModule.Data.Extensions;
-
-public static class EnumConvertExtension
+namespace VirtoCommerce.CatalogModule.Data.Extensions
 {
-    public static IndexDocumentChangeType ToIndexDocumentChangeType(this EntryState entryState)
+    public static class EnumConvertExtension
     {
-        return entryState switch
+        public static IndexDocumentChangeType ToIndexDocumentChangeType(this EntryState entryState)
         {
-            EntryState.Added => IndexDocumentChangeType.Created,
-            EntryState.Deleted => IndexDocumentChangeType.Deleted,
-            EntryState.Modified => IndexDocumentChangeType.Modified,
-            _ => throw new ArgumentOutOfRangeException(nameof(entryState), entryState, null)
-        };
+            return entryState switch
+            {
+                EntryState.Added => IndexDocumentChangeType.Created,
+                EntryState.Deleted => IndexDocumentChangeType.Deleted,
+                EntryState.Modified => IndexDocumentChangeType.Modified,
+                _ => throw new ArgumentOutOfRangeException(nameof(entryState), entryState, null)
+            };
+        }
     }
 }
-
