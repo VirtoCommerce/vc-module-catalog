@@ -1,5 +1,5 @@
 
-.splited-element {
+.splited-element:last-child {
     border-top-color: white;
     border-top-style: solid;
     border-top-width: 1px;
