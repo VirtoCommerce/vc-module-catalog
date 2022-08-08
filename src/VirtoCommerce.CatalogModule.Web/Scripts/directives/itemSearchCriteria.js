@@ -1,4 +1,6 @@
-angular.module('virtoCommerce.catalogModule').directive('vcItemSearchCriteria', ['$localStorage', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.predefinedSearchFilters', function ($localStorage, bladeNavigationService, predefinedSearchFilters) {
+angular.module('virtoCommerce.catalogModule').
+    directive('vcItemSearchCriteria', ['$localStorage', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.predefinedSearchFilters',
+        function ($localStorage, bladeNavigationService, predefinedSearchFilters) {
     return {
         restrict: 'E',
         templateUrl: function (elem, attrs) {
