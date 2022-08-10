@@ -9,6 +9,7 @@ namespace VirtoCommerce.CatalogModule.Core
     [ExcludeFromCodeCoverage]
     public static class ModuleConstants
     {
+        public static int DefaultAggregationSize = 25;
         public static class Security
         {
             public static class Permissions
@@ -152,7 +153,7 @@ namespace VirtoCommerce.CatalogModule.Core
                     Name = "Catalog.Search.DefaultAggregationSize",
                     GroupName = "Catalog|Search",
                     ValueType = SettingValueType.Integer,
-                    DefaultValue = 25
+                    DefaultValue = ModuleConstants.DefaultAggregationSize
                 };
 
                 public static IEnumerable<SettingDescriptor> AllSettings
