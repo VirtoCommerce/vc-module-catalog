@@ -9,7 +9,7 @@ namespace VirtoCommerce.CatalogModule.Core
     [ExcludeFromCodeCoverage]
     public static class ModuleConstants
     {
-        public static int DefaultAggregationSize = 25;
+        public const int DefaultAggregationSize = 25;
         public static class Security
         {
             public static class Permissions
