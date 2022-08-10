@@ -993,7 +993,8 @@
           "title": "Store serialized catalog objects in the index"
         },
         "DefaultAggregationSize": {
-          "description": "Use this setting to store the default value for Aggregation size in Filtering properties",
+          "description": "Used for aggregations whose size is not set in store aggregation properties. Set to 0 for unlimited size.",
+
           "title": "Default value for aggregation size"
         },
         "EventBasedIndexation": {
