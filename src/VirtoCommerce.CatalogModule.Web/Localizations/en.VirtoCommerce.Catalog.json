@@ -992,6 +992,10 @@
           "description": "Store serialized catalog objects in the index and return them in search results",
           "title": "Store serialized catalog objects in the index"
         },
+        "DefaultAggregationSize": {
+          "description": "Use this setting to store the default value for Aggregation size in Filtering properties",
+          "title": "Default value for aggregation size"
+        },
         "EventBasedIndexation": {
           "Enable": {
             "title": "Enable event-based indexing for catalog entities",
