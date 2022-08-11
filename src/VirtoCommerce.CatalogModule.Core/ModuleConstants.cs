@@ -9,6 +9,7 @@ namespace VirtoCommerce.CatalogModule.Core
     [ExcludeFromCodeCoverage]
     public static class ModuleConstants
     {
+        public const int DefaultAggregationSize = 25;
         public static class Security
         {
             public static class Permissions
@@ -31,6 +32,7 @@ namespace VirtoCommerce.CatalogModule.Core
 
         public static class Settings
         {
+#pragma warning disable S3218
             public static class General
             {
                 public static SettingDescriptor CopyIDMenuItem { get; } = new SettingDescriptor
@@ -146,6 +148,14 @@ namespace VirtoCommerce.CatalogModule.Core
                     DefaultValue = default(DateTime)
                 };
 
+                public static SettingDescriptor DefaultAggregationSize { get; } = new SettingDescriptor
+                {
+                    Name = "Catalog.Search.DefaultAggregationSize",
+                    GroupName = "Catalog|Search",
+                    ValueType = SettingValueType.Integer,
+                    DefaultValue = ModuleConstants.DefaultAggregationSize
+                };
+
                 public static IEnumerable<SettingDescriptor> AllSettings
                 {
                     get
@@ -154,6 +164,7 @@ namespace VirtoCommerce.CatalogModule.Core
                         yield return UseFullObjectIndexStoring;
                         yield return IndexationDateProduct;
                         yield return IndexationDateCategory;
+                        yield return DefaultAggregationSize;
                     }
                 }
             }
@@ -165,6 +176,7 @@ namespace VirtoCommerce.CatalogModule.Core
                     return General.AllSettings.Concat(Search.AllSettings);
                 }
             }
+#pragma warning restore S3218
         }
 
         public const string OutlineDelimiter = "___";
