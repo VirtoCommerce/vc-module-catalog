@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core;
+using VirtoCommerce.CatalogModule.Core.Common;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
@@ -105,18 +106,37 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         protected virtual IList<AggregationRequest> GetPriceRangeFilterAggregationRequests(PriceRangeFilter priceRangeFilter, ProductIndexedSearchCriteria criteria, IList<IFilter> existingFilters)
         {
-            var result = priceRangeFilter.Values?.Select(v => GetPriceRangeFilterValueAggregationRequest(priceRangeFilter, v, existingFilters, criteria.Pricelists)).ToList();
-            return result;
+            var priceRangeFilters = priceRangeFilter.Values?.Select(v => GetPriceRangeFilterValueAggregationRequest(priceRangeFilter, v, existingFilters, criteria.Pricelists)).ToList();
+            var commonFieldName = StringsHelper.JoinNonEmptyStrings("_", "price", priceRangeFilter.Currency).ToLowerInvariant();
+            var ranges = priceRangeFilters.OfType<RangeAggregationRequest>().SelectMany(x => x.Values).ToList();
+            var ids = string.Join('-', ranges.Select(x => x.Id));
+
+            var result = new RangeAggregationRequest
+            {
+                Id = $"{priceRangeFilter.Key}-{ids}",
+                Filter = existingFilters.And(),
+                FieldName = commonFieldName,
+                Values = ranges,
+            };
+
+            return new List<AggregationRequest> { result };
         }
 
         protected virtual AggregationRequest GetPriceRangeFilterValueAggregationRequest(PriceRangeFilter priceRangeFilter, RangeFilterValue value, IEnumerable<IFilter> existingFilters, IList<string> pricelists)
         {
-            var valueFilter = FiltersHelper.CreatePriceRangeFilter(priceRangeFilter.Currency, pricelists, value.Lower, value.Upper, value.IncludeLower, value.IncludeUpper);
-
-            var result = new TermAggregationRequest
+            var result = new RangeAggregationRequest
             {
-                Id = $"{priceRangeFilter.Key}-{value.Id}",
-                Filter = existingFilters.And(valueFilter)
+                Values = new List<RangeAggregationRequestValue>
+                {
+                    new RangeAggregationRequestValue
+                    {
+                        Id = value.Id,
+                        IncludeLower = value.IncludeLower,
+                        IncludeUpper = value.IncludeUpper,
+                        Lower = value.Lower,
+                        Upper = value.Upper,
+                    },
+                },
             };
 
             return result;
