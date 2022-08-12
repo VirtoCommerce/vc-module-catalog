@@ -10,7 +10,7 @@ namespace VirtoCommerce.CatalogModule.Web.Model
         public bool IsSelected { get; set; }
         public string Type { get; set; }
         public string Currency { get; set; }
-        public int? Size { get; set; } = 10;
+        public int? Size { get; set; }
         public int ValuesCount => Values?.Count ?? 0;
         public IList<string> Values { get; set; }
 
