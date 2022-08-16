@@ -14,6 +14,7 @@ using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
 using VirtoCommerce.CatalogModule.Web.Model;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.GenericCrud;
+using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.StoreModule.Core.Model;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
@@ -31,17 +32,20 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly IPropertyService _propertyService;
         private readonly IBrowseFilterService _browseFilterService;
         private readonly IPropertyDictionaryItemSearchService _propDictItemsSearchService;
+        private readonly ISettingsManager _settingsManager;
 
         public CatalogBrowseFiltersController(
             ICrudService<Store> storeService
             , IPropertyService propertyService
             , IBrowseFilterService browseFilterService
-            , IPropertyDictionaryItemSearchService propDictItemsSearchService)
+            , IPropertyDictionaryItemSearchService propDictItemsSearchService
+            , ISettingsManager settingsManager)
         {
             _storeService = storeService;
             _propertyService = propertyService;
             _browseFilterService = browseFilterService;
             _propDictItemsSearchService = propDictItemsSearchService;
+            _settingsManager = settingsManager;
         }
 
         /// <summary>
@@ -101,6 +105,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var browseFilterPropertiesList = new List<AggregationProperty>();
             foreach (var aggregationProperty in browseFilterProperties)
             {
+                aggregationProperty.Size ??= _settingsManager.GetValueByDescriptor<int>(ModuleConstants.Settings.Search.DefaultAggregationSize);
                 browseFilterPropertiesList.Add(aggregationProperty);
                 var catalogProperty = catalogProperties.FirstOrDefault(x => x.Name == aggregationProperty.Name);
                 // If the property is multilanguage, but not dictionary, let's add synthetic aggregation property for each store culture
@@ -109,7 +114,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                     !catalogProperty.Dictionary &&
                     catalogProperty.Multilanguage)
                 {
-
                     foreach (var lang in store.Languages)
                     {
                         var aggregationPropertyLangSpecific = aggregationProperty.Clone() as AggregationProperty;
