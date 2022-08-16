@@ -1,6 +1,22 @@
+
+.search-criteria {
+    position: relative;
+    border-top-color: #eaedf3;
+    border-top-style: solid;
+    border-top-width: 1px;
+    background-color: white;
+    padding: 5px;
+    padding-left: 15px;
+    padding-right: 15px;
+    height: 28px;
+}
+
+.__expanded-search-criteria {
+    height: auto !important;
+}
+
 .table .table-col.__author,
-.table .table-col.__version
-{
+.table .table-col.__version {
     font-size: 12px;
     vertical-align: top;
     width: 25%;
