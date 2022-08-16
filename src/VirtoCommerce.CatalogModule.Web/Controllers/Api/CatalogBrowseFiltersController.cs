@@ -101,11 +101,12 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             // Look for details at PT-3044, VP-7549
 
             var catalogProperties = await _propertyService.GetAllCatalogPropertiesAsync(store.Catalog);
+            var defaultAggregationSize = await _settingsManager.GetValueByDescriptorAsync<int>(ModuleConstants.Settings.Search.DefaultAggregationSize);
 
             var browseFilterPropertiesList = new List<AggregationProperty>();
             foreach (var aggregationProperty in browseFilterProperties)
             {
-                aggregationProperty.Size ??= _settingsManager.GetValueByDescriptor<int>(ModuleConstants.Settings.Search.DefaultAggregationSize);
+                aggregationProperty.Size ??= defaultAggregationSize;
                 browseFilterPropertiesList.Add(aggregationProperty);
                 var catalogProperty = catalogProperties.FirstOrDefault(x => x.Name == aggregationProperty.Name);
                 // If the property is multilanguage, but not dictionary, let's add synthetic aggregation property for each store culture
