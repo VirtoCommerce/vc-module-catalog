@@ -1,4 +1,4 @@
-# v3.200.12
+# v3.200.12-fix
 name: Release hotfix
 
 on:
@@ -12,12 +12,12 @@ on:
 
 jobs:
   test:
-    uses: VirtoCommerce/.github/.github/workflows/test-and-sonar.yml@v3.200.12
+    uses: VirtoCommerce/.github/.github/workflows/test-and-sonar.yml@main
     secrets:
       sonarToken: ${{ secrets.SONAR_TOKEN }}
 
   build:
-    uses: VirtoCommerce/.github/.github/workflows/build.yml@v3.200.12
+    uses: VirtoCommerce/.github/.github/workflows/build.yml@main
     with:
       uploadPackage: 'true'
       uploadDocker: 'false'
@@ -27,7 +27,7 @@ jobs:
       envPAT: ${{ secrets.REPO_TOKEN }}
 
   get-metadata:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     outputs:
       changelog: ${{ steps.changelog.outputs.changelog }}
     steps:
@@ -43,7 +43,7 @@ jobs:
   publish-github-release:
     needs:
       [build, test, get-metadata]
-    uses: VirtoCommerce/.github/.github/workflows/publish-github.yml@v3.200.12
+    uses: VirtoCommerce/.github/.github/workflows/publish-github.yml@main
     with:
       fullKey: ${{ needs.build.outputs.packageFullKey }}
       changeLog: '${{ needs.get-metadata.outputs.changeLog }}'
@@ -57,7 +57,7 @@ jobs:
     needs:
       [publish-github-release]
     if: ${{ github.event.inputs.incrementPatch == 'true' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     steps:
     - name: Checkout
       uses: actions/checkout@v3
