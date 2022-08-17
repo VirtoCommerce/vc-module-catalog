@@ -2,7 +2,8 @@
         <a class="add" left-click-menu data-target="filterSearch{{blade.id}}" style="margin: 0 20px 0 0;">{{ filter.current ? filter.current.name : 'catalog.blades.categories-items-list.placeholders.select-filter' | translate }} <i class="form-ico fa fa-caret-down"></i></a>
         <ul class="menu __context" role="menu" id="filterSearch{{blade.id}}" style="width: 170px;">
             <li ng-repeat="x in $localStorage.catalogSearchFilters" class="splited-element menu-item">
-                <i class="menu-ico fas fa-plus" ng-if="!x.id"></i> <span ng-click='filter.current=x;filter.change();' ng-bind-html="x.name | translate"></span> <i class="fa fa-pencil" ng-click='filter.edit($event, x)' ng-if="x.id" style="position: absolute; right: 10px;"></i>
+                <i class="menu-ico fas fa-plus" ng-if="!x.id"></i> <span ng-click='filter.current=x;filter.change();' ng-bind-html="x.name | translate"></span>
+                <i class="fa fa-pencil right-alignment" ng-click='filter.edit($event, x)' ng-if="x.id"></i>
             </li>
         </ul>
         <div class="form-input" style="flex-grow: 1;">
