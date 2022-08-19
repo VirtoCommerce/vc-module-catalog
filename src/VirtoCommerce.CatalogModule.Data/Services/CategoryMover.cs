@@ -40,7 +40,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             foreach (var listEntryCategory in moveInfo.ListEntries.Where(
                 listEntry => listEntry.Type.EqualsInvariant(CategoryListEntry.TypeName)))
             {
-                var category = (await _categoryService.GetByIdsAsync(new[] { listEntryCategory.Id }, CategoryResponseGroup.Info.ToString())).FirstOrDefault();
+                var category = await _categoryService.GetByIdAsync(listEntryCategory.Id, CategoryResponseGroup.Info.ToString());
                 if (category.CatalogId != moveInfo.Catalog)
                 {
                     category.CatalogId = moveInfo.Catalog;

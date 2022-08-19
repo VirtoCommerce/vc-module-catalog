@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
+using VirtoCommerce.CatalogModule.Data.Caching;
 using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.SearchModule.Core.Extenstions;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
-using VirtoCommerce.CatalogModule.Data.Caching;
 
 namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 {
@@ -49,7 +49,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                     do
                     {
                         variationsSearchCriteria.Skip = skipCount;
-                        var productVariations = await _productsSearchService.SearchProductsAsync(variationsSearchCriteria);
+                        var productVariations = await _productsSearchService.SearchAsync(variationsSearchCriteria);
                         foreach (var variation in productVariations.Results)
                         {
                             result.Add(CreateDocument(variation));
@@ -69,9 +69,13 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             return result;
         }
 
-        protected virtual Task<CatalogProduct[]> GetProducts(IList<string> productIds)
+        protected virtual async Task<CatalogProduct[]> GetProducts(IList<string> productIds)
         {
-            return _itemService.GetByIdsAsync(productIds.ToArray(), (ItemResponseGroup.Full & ~ItemResponseGroup.Variations).ToString());
+#pragma warning disable CS0618 // Variations can be used here
+            var products = await _itemService.GetAsync(productIds.ToList(), (ItemResponseGroup.Full & ~ItemResponseGroup.Variations).ToString());
+#pragma warning restore CS0618
+
+            return products.ToArray();
         }
 
         protected virtual IndexDocument CreateDocument(CatalogProduct product)

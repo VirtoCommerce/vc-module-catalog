@@ -6,10 +6,11 @@ using System.Linq;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.Domain;
 
 namespace VirtoCommerce.CatalogModule.Data.Model
 {
-    public class ItemEntity : AuditableEntity, IHasOuterId
+    public class ItemEntity : AuditableEntity, IHasOuterId, IDataEntity<ItemEntity, CatalogProduct>
     {
         [StringLength(1024)]
         [Required]
@@ -114,7 +115,12 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
         #endregion
 
-        public virtual CatalogProduct ToModel(CatalogProduct product, bool convertChildrens = true, bool convertAssociations = true)
+        public virtual CatalogProduct ToModel(CatalogProduct product)
+        {
+            return ToModel(product, convertChildrens: true, convertAssociations: true);
+        }
+
+        public virtual CatalogProduct ToModel(CatalogProduct product, bool convertChildrens, bool convertAssociations)
         {
             if (product == null)
             {
@@ -160,11 +166,11 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             product.WeightUnit = WeightUnit;
             product.Width = Width;
 
-            //Links
+            // Links
             product.Links = CategoryLinks.Select(x => x.ToModel(AbstractTypeFactory<CategoryLink>.TryCreateInstance())).ToList();
-            //Images
+            // Images
             product.Images = Images.OrderBy(x => x.SortOrder).Select(x => x.ToModel(AbstractTypeFactory<Image>.TryCreateInstance())).ToList();
-            //Assets
+            // Assets
             product.Assets = Assets.OrderBy(x => x.CreatedDate).Select(x => x.ToModel(AbstractTypeFactory<Asset>.TryCreateInstance())).ToList();
             // EditorialReviews
             product.Reviews = EditorialReviews.Select(x => x.ToModel(AbstractTypeFactory<EditorialReview>.TryCreateInstance())).ToList();
@@ -179,7 +185,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 product.ReferencedAssociations = ReferencedAssociations.Select(x => x.ToReferencedAssociationModel(AbstractTypeFactory<ProductAssociation>.TryCreateInstance())).OrderBy(x => x.Priority).ToList();
             }
 
-            //item property values
+            // Item property values
             if (!ItemPropertyValues.IsNullOrEmpty())
             {
                 var propertyValues = ItemPropertyValues.OrderBy(x => x.DictionaryItem?.SortOrder)
@@ -190,7 +196,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 {
                     var property = AbstractTypeFactory<Property>.TryCreateInstance();
                     property.Name = values.Key;
-                    property.ValueType = values.FirstOrDefault().ValueType;
+                    property.ValueType = values.First().ValueType;
                     property.Values = values.ToList();
                     foreach (var propValue in property.Values)
                     {
@@ -211,7 +217,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 product.Variations = new List<Variation>();
                 foreach (var variation in Childrens)
                 {
-                    var productVariation = variation.ToModel(AbstractTypeFactory<Variation>.TryCreateInstance()) as Variation;
+                    var productVariation = (Variation)variation.ToModel(AbstractTypeFactory<Variation>.TryCreateInstance());
                     productVariation.MainProduct = product;
                     productVariation.MainProductId = product.Id;
                     product.Variations.Add(productVariation);
@@ -269,8 +275,8 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
             StartDate = product.StartDate == default ? DateTime.UtcNow : product.StartDate;
 
-            //Constant fields
-            //Only for main product
+            // Constant fields
+            // Only for main product
             AvailabilityRule = (int)Core.Model.AvailabilityRule.Always;
 
             CatalogId = product.CatalogId;
@@ -286,17 +292,17 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                     {
                         foreach (var propValue in property.Values)
                         {
-                            //Do not use values from inherited properties 
+                            // Do not use values from inherited properties 
                             if (propValue != null && !propValue.IsInherited)
                             {
-                                //Need populate required fields
+                                // Need populate required fields
                                 propValue.PropertyName = property.Name;
                                 propValue.ValueType = property.ValueType;
                                 propValues.Add(propValue);
                             }
                             else
                             {
-                                //Add empty property value for null values to be able remove these values from db in the lines below 
+                                // Add empty property value for null values to be able remove these values from db in the lines below 
                                 propValues.Add(new PropertyValue());
                             }
                         }
@@ -304,15 +310,17 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 }
                 if (!propValues.IsNullOrEmpty())
                 {
-                    ItemPropertyValues = new ObservableCollection<PropertyValueEntity>(AbstractTypeFactory<PropertyValueEntity>.TryCreateInstance().FromModels(propValues.Where(x=> !x.IsEmpty), pkMap));
+                    ItemPropertyValues = new ObservableCollection<PropertyValueEntity>(AbstractTypeFactory<PropertyValueEntity>.TryCreateInstance().FromModels(propValues.Where(x => !x.IsEmpty), pkMap));
                 }
             }
+#pragma warning disable CS0618 // PropertyValues can be used here for backward compatibility
             else if (!product.PropertyValues.IsNullOrEmpty())
             {
-                //Backward compatibility
-                //TODO: Remove later
+                // Backward compatibility
+                // TODO: Remove later
                 ItemPropertyValues = new ObservableCollection<PropertyValueEntity>(AbstractTypeFactory<PropertyValueEntity>.TryCreateInstance().FromModels(product.PropertyValues, pkMap));
             }
+#pragma warning restore CS0618
             #endregion
 
             #region Assets
@@ -368,7 +376,9 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         public virtual void Patch(ItemEntity target)
         {
             if (target == null)
+            {
                 throw new ArgumentNullException(nameof(target));
+            }
 
             target.IsBuyable = IsBuyable;
             target.IsActive = IsActive;

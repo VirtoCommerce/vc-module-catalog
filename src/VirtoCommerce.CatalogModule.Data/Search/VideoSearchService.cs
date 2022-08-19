@@ -9,7 +9,6 @@ using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Platform.Core.Caching;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.Platform.Data.GenericCrud;
 
 namespace VirtoCommerce.CatalogModule.Data.Search
@@ -17,7 +16,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
     public class VideoSearchService : SearchService<VideoSearchCriteria, VideoSearchResult, Video, VideoEntity>, IVideoSearchService
     {
         public VideoSearchService(Func<ICatalogRepository> repositoryFactory, IPlatformMemoryCache platformMemoryCache, IVideoService videoService)
-            : base(repositoryFactory, platformMemoryCache, (ICrudService<Video>)videoService)
+            : base(repositoryFactory, platformMemoryCache, videoService)
         {
         }
 
@@ -51,14 +50,16 @@ namespace VirtoCommerce.CatalogModule.Data.Search
         protected override IList<SortInfo> BuildSortExpression(VideoSearchCriteria criteria)
         {
             var sortInfos = criteria.SortInfos;
+
             if (sortInfos.IsNullOrEmpty())
             {
                 sortInfos = new[]
                 {
                     new SortInfo { SortColumn = nameof(VideoEntity.SortOrder) },
-                    new SortInfo { SortColumn = nameof(VideoEntity.Name) }
+                    new SortInfo { SortColumn = nameof(VideoEntity.Name) },
                 };
             }
+
             return sortInfos;
         }
     }

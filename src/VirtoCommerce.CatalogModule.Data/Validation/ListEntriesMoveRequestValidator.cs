@@ -22,7 +22,7 @@ namespace VirtoCommerce.CatalogModule.Data.Validation
                     return;
                 }
 
-                var targetCategory = (await _categoryService.GetByIdsAsync(new[] { moveInfo.Category }, CategoryResponseGroup.WithOutlines.ToString())).FirstOrDefault();
+                var targetCategory = await _categoryService.GetByIdAsync(moveInfo.Category, CategoryResponseGroup.WithOutlines.ToString());
 
                 if (targetCategory == null)
                 {

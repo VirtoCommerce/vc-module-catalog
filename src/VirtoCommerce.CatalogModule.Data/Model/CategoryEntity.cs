@@ -7,10 +7,11 @@ using System.Linq;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.Domain;
 
 namespace VirtoCommerce.CatalogModule.Data.Model
 {
-    public class CategoryEntity : AuditableEntity, IHasOuterId
+    public class CategoryEntity : AuditableEntity, IHasOuterId, IDataEntity<CategoryEntity, Category>
     {
         [Required]
         [StringLength(64)]
@@ -131,7 +132,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             {
                 property.IsReadOnly = property.Type != PropertyType.Category;
             }
-            //transform property value into transient properties
+            // Transform property value into transient properties
             if (!CategoryPropertyValues.IsNullOrEmpty())
             {
                 var propertyValues = CategoryPropertyValues.OrderBy(x => x.DictionaryItem?.SortOrder)
@@ -161,7 +162,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                     }
                     else
                     {
-                        //Just only copy values for existing self property
+                        // Just only copy values for existing self property
                         existSelfProperty.Values = transientInstanceProperty.Values;
                     }
                 }
@@ -208,19 +209,19 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 {
                     if (property.Values != null)
                     {
-                        //Do not use values from inherited properties
+                        // Do not use values from inherited properties
                         foreach (var propValue in property.Values)
                         {
                             if (propValue != null && !propValue.IsInherited)
                             {
-                                //Need populate required fields
+                                // Need populate required fields
                                 propValue.PropertyName = property.Name;
                                 propValue.ValueType = property.ValueType;
                                 propValues.Add(propValue);
                             }
                             else
                             {
-                                //Add empty property value for null values to be able remove these values from db in the lines below
+                                // Add empty property value for null values to be able remove these values from db in the lines below
                                 propValues.Add(new PropertyValue());
                             }
                         }
@@ -228,7 +229,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 }
                 if (!propValues.IsNullOrEmpty())
                 {
-                    //Skip the empty property values in order to remove the empty values from DB in the further Patch method call.
+                    // Skip the empty property values in order to remove the empty values from DB in the further Patch method call.
                     CategoryPropertyValues = new ObservableCollection<PropertyValueEntity>(AbstractTypeFactory<PropertyValueEntity>.TryCreateInstance().FromModels(propValues.Where(x => !x.IsEmpty), pkMap));
                 }
             }

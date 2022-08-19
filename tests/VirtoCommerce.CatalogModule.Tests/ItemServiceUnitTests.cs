@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentValidation;
 using FluentValidation.Results;
@@ -6,6 +7,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
+using VirtoCommerce.AssetsModule.Core.Assets;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Model;
@@ -13,7 +15,6 @@ using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Data.Services;
 using VirtoCommerce.CatalogModule.Data.Validation;
 using VirtoCommerce.Platform.Caching;
-using VirtoCommerce.AssetsModule.Core.Assets;
 using VirtoCommerce.Platform.Core.Caching;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Domain;
@@ -69,8 +70,8 @@ namespace VirtoCommerce.CatalogModule.Tests
                         .ReturnsAsync(new[] { newItemEntity });
                 });
 
-            _catalogServiceMock.Setup(x => x.GetByIdsAsync(It.IsAny<string[]>(), default)).ReturnsAsync(new Catalog[] { new Catalog() { Id = newItem.CatalogId } });
-            _categoryServiceMock.Setup(x => x.GetByIdsAsync(It.IsAny<string[]>(), It.IsAny<string>(), default)).ReturnsAsync(new Category[] { new Category() { Id = newItem.CategoryId } });
+            _catalogServiceMock.Setup(x => x.GetAsync(It.IsAny<List<string>>(), default)).ReturnsAsync(new Catalog[] { new Catalog() { Id = newItem.CatalogId } });
+            _categoryServiceMock.Setup(x => x.GetAsync(It.IsAny<List<string>>(), It.IsAny<string>())).ReturnsAsync(new Category[] { new Category() { Id = newItem.CategoryId } });
 
             //Act
             var nullItem = await service.GetByIdAsync(id, null);

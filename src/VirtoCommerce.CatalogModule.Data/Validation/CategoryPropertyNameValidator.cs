@@ -66,7 +66,7 @@ namespace VirtoCommerce.CatalogModule.Data.Validation
                     categoryIds = categoryIds.Append(request.CategoryId).ToImmutableArray();
                 }
 
-                var categories = await _categoryService.GetByIdsAsync(categoryIds.ToArray(), CategoryResponseGroup.WithProperties.ToString());
+                var categories = await _categoryService.GetAsync(categoryIds.ToList(), CategoryResponseGroup.WithProperties.ToString());
 
                 var properties = categories.SelectMany(x => x.Properties);
 
@@ -92,8 +92,7 @@ namespace VirtoCommerce.CatalogModule.Data.Validation
 
             if (existingProperty != null)
             {
-                categoryName = (await _categoryService.GetByIdsAsync(new[] { existingProperty.CategoryId }, CategoryResponseGroup.Info.ToString()))
-                    .FirstOrDefault()?.Name;
+                categoryName = (await _categoryService.GetByIdAsync(existingProperty.CategoryId, CategoryResponseGroup.Info.ToString()))?.Name;
             }
 
             return (existingProperty == null, categoryName);

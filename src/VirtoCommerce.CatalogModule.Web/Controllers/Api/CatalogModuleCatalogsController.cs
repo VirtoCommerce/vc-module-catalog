@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -54,7 +53,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return Unauthorized();
             }
 
-            var result = await _catalogSearchService.SearchCatalogsAsync(criteria);
+            var result = await _catalogSearchService.SearchAsync(criteria);
             return Ok(result.Results);
         }
 
@@ -68,7 +67,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return Unauthorized();
             }
 
-            var result = await _catalogSearchService.SearchCatalogsAsync(criteria);
+            var result = await _catalogSearchService.SearchAsync(criteria);
             return Ok(result);
         }
 
@@ -81,7 +80,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("{id}")]
         public async Task<ActionResult<Catalog>> GetCatalog(string id)
         {
-            var catalog = (await _catalogService.GetByIdsAsync(new[] { id }, CatalogResponseGroup.Full.ToString())).FirstOrDefault();
+            var catalog = await _catalogService.GetByIdAsync(id, CatalogResponseGroup.Full.ToString());
 
             if (catalog == null)
             {
@@ -185,7 +184,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         public async Task<ActionResult> DeleteCatalog(string id)
         {
-            var catalog = (await _catalogService.GetByIdsAsync(new[] { id })).FirstOrDefault();
+            var catalog = await _catalogService.GetByIdAsync(id);
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, catalog, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Delete));
             if (!authorizationResult.Succeeded)
             {

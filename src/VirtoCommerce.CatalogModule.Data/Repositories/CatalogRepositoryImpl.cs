@@ -167,7 +167,9 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                         await SeoInfos.Where(x => itemIds.Contains(x.ItemId)).LoadAsync();
                     }
 
+#pragma warning disable CS0618 // Variations can be used here
                     if (itemResponseGroup.HasFlag(ItemResponseGroup.Variations))
+#pragma warning restore CS0618
                     {
                         // TODO: Call GetItemByIds for variations recursively (need to measure performance and data amount first)
                         IQueryable<ItemEntity> variationsQuery = Items.Where(x => itemIds.Contains(x.ParentId))
