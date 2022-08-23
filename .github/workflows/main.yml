@@ -53,18 +53,13 @@ jobs:
         run: |
           echo "RELEASE_STATUS=true" >> $GITHUB_ENV
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
       - name: Install VirtoCommerce.GlobalTool
         uses: VirtoCommerce/vc-github-actions/setup-vcbuild@master
 
-      - uses: actions/setup-java@v3
-        with:
-          distribution: 'microsoft'
-          java-version: '11'
-      
       - name: Install dotnet-sonarscanner
         run: dotnet tool install --global dotnet-sonarscanner
 
