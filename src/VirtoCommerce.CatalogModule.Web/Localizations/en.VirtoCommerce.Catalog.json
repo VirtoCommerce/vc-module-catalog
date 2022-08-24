@@ -71,7 +71,7 @@
         "title-mapping": "Choose Categories and Items for mapping",
         "subtitle-mapping": "Creating a Link within your virtual catalog",
         "labels": {
-          "filter-new": "<strong>Add new filter</strong>",
+          "filter-new": "Add new filter",
           "filter-priceless": "No price",
           "filter-withPrice": "Has a defined price",
           "filter-priceRange": "Price between",
