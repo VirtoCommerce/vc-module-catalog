@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using VirtoCommerce.AssetsModule.Core.Assets;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Export;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
@@ -8,7 +9,6 @@ using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.ExportModule.Core.Model;
 using VirtoCommerce.ExportModule.Data.Services;
-using VirtoCommerce.AssetsModule.Core.Assets;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.ExportImport
@@ -36,13 +36,13 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 
             if (searchCriteria.ObjectIds.Any(x => !string.IsNullOrWhiteSpace(x)))
             {
-                result = _itemService.GetByIdsAsync(searchCriteria.ObjectIds.ToArray(), responseGroup.ToString()).GetAwaiter().GetResult();
+                result = _itemService.GetAsync(searchCriteria.ObjectIds.ToList(), responseGroup).GetAwaiter().GetResult().ToArray();
                 totalCount = result.Length;
             }
             else
             {
                 searchCriteria.ResponseGroup = responseGroup.ToString();
-                var productSearchResult = _productSearchService.SearchProductsAsync(searchCriteria).GetAwaiter().GetResult();
+                var productSearchResult = _productSearchService.SearchAsync(searchCriteria).GetAwaiter().GetResult();
                 result = productSearchResult.Results.ToArray();
                 totalCount = productSearchResult.TotalCount;
             }
@@ -126,7 +126,9 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 
             if (DataQuery.IncludedProperties.Any(x => x.FullName.StartsWith(nameof(CatalogProduct.Variations) + ".")))
             {
-                result |= ItemResponseGroup.WithVariations;
+#pragma warning disable CS0618 // Variations can be used here
+                result |= ItemResponseGroup.Variations;
+#pragma warning restore CS0618
             }
 
             if (DataQuery.IncludedProperties.Any(x => x.FullName.StartsWith(nameof(CatalogProduct.SeoInfos) + ".")))

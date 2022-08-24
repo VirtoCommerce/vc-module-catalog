@@ -9,9 +9,9 @@ using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.StoreModule.Core.Model;
-using VirtoCommerce.StoreModule.Core.Services;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
@@ -22,14 +22,14 @@ namespace VirtoCommerce.CatalogModule.Data.Services
     {
         private readonly IItemService _productService;
         private readonly ICategoryService _categoryService;
-        private readonly IStoreService _storeService;
+        private readonly ICrudService<Store> _storeService;
         private readonly Func<ICatalogRepository> _repositoryFactory;
         private readonly ISettingsManager _settingsManager;
 
         public CatalogSeoDuplicatesDetector(
             IItemService productService,
             ICategoryService categoryService,
-            IStoreService storeService,
+            ICrudService<Store> storeService,
             Func<ICatalogRepository> repositoryFactory,
             ISettingsManager settingsManager)
         {
@@ -63,9 +63,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 }
                 else if (objectType.EqualsInvariant(typeof(Category).Name))
                 {
-                    var category =
-                        (await _categoryService.GetByIdsAsync(new[] { objectId }, CategoryResponseGroup.Info.ToString()))
-                        .FirstOrDefault();
+                    var category = await _categoryService.GetByIdAsync(objectId, CategoryResponseGroup.Info.ToString());
                     if (category != null)
                     {
                         catalogId = category.CatalogId;
@@ -73,9 +71,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 }
                 else if (objectType.EqualsInvariant(typeof(CatalogProduct).Name))
                 {
-                    var product =
-                        (await _productService.GetByIdsAsync(new[] { objectId }, ItemResponseGroup.ItemInfo.ToString()))
-                        .FirstOrDefault();
+                    var product = await _productService.GetByIdAsync(objectId, ItemResponseGroup.ItemInfo.ToString());
                     if (product != null)
                     {
                         catalogId = product.CatalogId;

@@ -45,14 +45,14 @@ namespace VirtoCommerce.CatalogModule.Core.Model
             }
         }
 
-        protected string _path;
+        private string _path;
 
         public bool IsVirtual { get; set; }
         public int Level { get; set; }
         [JsonIgnore]
         public Category[] Parents { get; set; }
 
-        //Type of product package (set of package types with their specific dimensions) can be inherited by nested products and categories
+        // Type of product package (set of package types with their specific dimensions) can be inherited by nested products and categories
         public string PackageType { get; set; }
 
         public int Priority { get; set; }
@@ -97,7 +97,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                 string result = null;
                 if (Images != null && Images.Any())
                 {
-                    result = Images.OrderBy(x => x.SortOrder).FirstOrDefault()?.Url;
+                    result = Images.MinBy(x => x.SortOrder)?.Url;
                 }
                 return result;
             }
@@ -113,7 +113,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         /// <summary>
         /// System flag used to mark that object was inherited from other
         /// </summary>
-        public bool IsInherited { get; private set; }
+        public virtual bool IsInherited => false;
 
         public virtual void TryInheritFrom(IEntity parent)
         {
@@ -121,7 +121,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
             if (parent is IHasProperties hasProperties)
             {
-                //Properties inheritance
+                // Properties inheritance
                 foreach (var parentProperty in hasProperties.Properties ?? Array.Empty<Property>())
                 {
                     if (this.HasPropertyExcluded(parentProperty.Name))
@@ -130,7 +130,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                     }
 
                     Properties ??= new List<Property>();
-                    //Try to find property by type and name
+                    // Try to find property by type and name
                     var existProperty = Properties.FirstOrDefault(x => x.IsSame(parentProperty));
                     if (existProperty == null)
                     {
@@ -140,13 +140,13 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                     existProperty.TryInheritFrom(parentProperty);
                     existProperty.IsReadOnly = existProperty.Type != PropertyType.Category;
                 }
-                //Restore order after changes
+                // Restore order after changes
                 Properties = Properties?.OrderBy(x => x.Name).ToList();
             }
 
             if (parent is IHasTaxType hasTaxType)
             {
-                //Try to inherit taxType from parent category
+                // Try to inherit taxType from parent category
                 TaxType ??= hasTaxType.TaxType;
             }
         }
@@ -155,16 +155,16 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         #region ICloneable
         public virtual object Clone()
         {
-            var result = MemberwiseClone() as Category;
+            var result = (Category)MemberwiseClone();
 
-            result.SeoInfos = SeoInfos?.Select(x => x.Clone()).OfType<SeoInfo>().ToList();
-            result.Children = Children?.Select(x => x.Clone()).OfType<Category>().ToList();
-            result.Outlines = Outlines?.Select(x => x.Clone()).OfType<Outline>().ToList();
-            result.Parents = Parents?.Select(x => x.Clone()).OfType<Category>().ToArray();
-            result.Properties = Properties?.Select(x => x.Clone()).OfType<Property>().ToList();
-            result.Links = Links?.Select(x => x.Clone()).OfType<CategoryLink>().ToList();
-            result.Descriptions = Descriptions?.Select(x => x.Clone()).OfType<CategoryDescription>().ToList();
-            // result.Images = Images?.Select(x => x.Clone()).OfType<Image>().ToList(); // Intentionally temporary disabled due to memory overhead
+            result.SeoInfos = SeoInfos?.Select(x => x.CloneTyped()).ToList();
+            result.Children = Children?.Select(x => x.CloneTyped()).ToList();
+            result.Outlines = Outlines?.Select(x => x.CloneTyped()).ToList();
+            result.Parents = Parents?.Select(x => x.CloneTyped()).ToArray();
+            result.Properties = Properties?.Select(x => x.CloneTyped()).ToList();
+            result.Links = Links?.Select(x => x.CloneTyped()).ToList();
+            result.Descriptions = Descriptions?.Select(x => x.CloneTyped()).ToList();
+            //result.Images = Images?.Select(x => x.CloneTyped()).ToList(); // Intentionally temporary disabled due to memory overhead
 
             return result;
         }
@@ -183,7 +183,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         /// <param name="responseGroup">A set of necessary groups</param>
         public virtual void ReduceDetails(string responseGroup)
         {
-            //Reduce details according to response group
+            // Reduce details according to response group
             var categoryResponseGroup = EnumUtility.SafeParseFlags(responseGroup, CategoryResponseGroup.Full);
 
             if (!categoryResponseGroup.HasFlag(CategoryResponseGroup.WithImages))

@@ -17,7 +17,9 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             if (other.GetType() == typeof(CatalogFullExportDataQuery))
             {
                 SearchInVariations = true;
+#pragma warning disable CS0618 // Variations can be used here
                 ResponseGroup = (ItemResponseGroup.Full & ~ItemResponseGroup.Variations).ToString();
+#pragma warning restore CS0618
             }
             return result;
         }

@@ -66,7 +66,7 @@ If you have large catalogs containing many items, you might want to create multi
 
 ***See also:***
 
-[How to Manage Categories](manage-categories.md)
+[How to Manage Categories](managing-categories.md)
 
 ## Products
 
@@ -104,11 +104,11 @@ You can configure the following attributes for your products:
 
 ***See also:***
 
-[Managing Products](manage-physical-products.md)
+[Managing Products](managing-products.md)
 
 [Product Indexing](product-indexing.md)
 
-[Managing Product Variations](manage-product-variations.md)
+[Managing Product Variations](managing-productt-variations.md)
 
 ## Properties
 
@@ -125,7 +125,7 @@ Custom properties are additional parameters for catalog entities at various leve
 
 ***See also:***
 
-[Managing Properties](manage-properties.md)
+[Managing Properties](managing-properties.md)
 
 ## Search
 
@@ -146,4 +146,4 @@ The indexing process starts automatically based on a pre-defined schedule. Howev
 
 ***See also:***
 
-[Managing Search Index](manage-search-index.md)
+[Managing Search Index](managing-search-index.md)

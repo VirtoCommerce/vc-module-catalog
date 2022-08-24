@@ -230,7 +230,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return Unauthorized();
             }
 
-            var dstCatalog = (await _catalogService.GetByIdsAsync(new[] { moveRequest.Catalog })).FirstOrDefault();
+            var dstCatalog = await _catalogService.GetByIdAsync(moveRequest.Catalog);
             if (dstCatalog.IsVirtual)
             {
                 return BadRequest("Unable to move to a virtual catalog");
@@ -274,12 +274,12 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             for (var i = 0; i < idsToDelete.Count; i += deleteBatchSize)
             {
-                var commonIds = idsToDelete.Skip(i).Take(deleteBatchSize).ToArray();
+                var commonIds = idsToDelete.Skip(i).Take(deleteBatchSize).ToList();
 
-                var searchProductResult = await _itemService.GetByIdsAsync(commonIds, ItemResponseGroup.None.ToString());
+                var searchProductResult = await _itemService.GetAsync(commonIds, ItemResponseGroup.None.ToString());
                 await _itemService.DeleteAsync(searchProductResult.Select(x => x.Id).ToArray());
 
-                var searchCategoryResult = await _categoryService.GetByIdsAsync(commonIds, CategoryResponseGroup.None.ToString());
+                var searchCategoryResult = await _categoryService.GetAsync(commonIds, CategoryResponseGroup.None.ToString());
                 await _categoryService.DeleteAsync(searchCategoryResult.Select(x => x.Id).ToArray());
             }
 
@@ -306,8 +306,10 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
         private async Task<IList<T>> LoadCatalogEntriesAsync<T>(string[] ids)
         {
+#pragma warning disable CS0618 // Variations can be used here
             var products = await _itemService.GetByIdsAsync(ids, (ItemResponseGroup.Links | ItemResponseGroup.Variations).ToString());
-            var categories = await _categoryService.GetByIdsAsync(ids.Except(products.Select(x => x.Id)).ToArray(), CategoryResponseGroup.WithLinks.ToString());
+#pragma warning restore CS0618
+            var categories = await _categoryService.GetAsync(ids.Except(products.Select(x => x.Id)).ToList(), CategoryResponseGroup.WithLinks.ToString());
             return products.OfType<T>().Concat(categories.OfType<T>()).ToList();
         }
     }

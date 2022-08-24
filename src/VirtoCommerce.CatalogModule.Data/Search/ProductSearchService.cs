@@ -2,57 +2,39 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
+using VirtoCommerce.Platform.Core.Caching;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Data.Infrastructure;
+using VirtoCommerce.Platform.Data.GenericCrud;
 
 namespace VirtoCommerce.CatalogModule.Data.Search
 {
-    public class ProductSearchService : IProductSearchService
+    public class ProductSearchService : SearchService<ProductSearchCriteria, ProductSearchResult, CatalogProduct, ItemEntity>, IProductSearchService
     {
-        private readonly Func<ICatalogRepository> _catalogRepositoryFactory;
-        private readonly IItemService _itemService;
-        public ProductSearchService(Func<ICatalogRepository> catalogRepositoryFactory, IItemService itemService)
+        public ProductSearchService(
+            Func<ICatalogRepository> catalogRepositoryFactory,
+            IPlatformMemoryCache platformMemoryCache,
+            IItemService itemService)
+            : base(catalogRepositoryFactory, platformMemoryCache, itemService)
         {
-            _catalogRepositoryFactory = catalogRepositoryFactory;
-            _itemService = itemService;
         }
 
-        public async Task<ProductSearchResult> SearchProductsAsync(ProductSearchCriteria criteria)
+        [Obsolete("Use SearchAsync()")]
+        public Task<ProductSearchResult> SearchProductsAsync(ProductSearchCriteria criteria)
         {
-            var result = AbstractTypeFactory<ProductSearchResult>.TryCreateInstance();
-
-            using (var repository = _catalogRepositoryFactory())
-            {
-                //Optimize performance and CPU usage
-                repository.DisableChangesTracking();
-
-                var sortInfos = BuildSortExpression(criteria);
-                var query = BuildQuery(repository, criteria);
-
-                result.TotalCount = await query.CountAsync();
-                if (criteria.Take > 0 && result.TotalCount > 0)
-                {
-                    var ids = await query.OrderBySortInfos(sortInfos).ThenBy(x => x.Id)
-                                        .Select(x => x.Id)
-                                        .Skip(criteria.Skip).Take(criteria.Take)
-                                        .AsNoTracking()
-                                        .ToArrayAsync();
-
-                    result.Results = (await _itemService.GetByIdsAsync(ids, criteria.ResponseGroup)).OrderBy(x => Array.IndexOf(ids, x.Id)).ToList();
-                }
-            }
-            return result;
+            return SearchAsync(criteria);
         }
 
-        protected virtual IQueryable<ItemEntity> BuildQuery(ICatalogRepository repository, ProductSearchCriteria criteria)
+
+        protected override IQueryable<ItemEntity> BuildQuery(IRepository repository, ProductSearchCriteria criteria)
         {
-            var query = repository.Items;
+            var catalogRepository = (ICatalogRepository)repository;
+            var query = catalogRepository.Items;
 
             if (!string.IsNullOrEmpty(criteria.Keyword))
             {
@@ -65,7 +47,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
                 if (criteria.SearchInChildren)
                 {
-                    searchCategoryIds = searchCategoryIds.Concat(repository.GetAllChildrenCategoriesIdsAsync(searchCategoryIds).GetAwaiter().GetResult()).ToArray();
+                    searchCategoryIds = searchCategoryIds.Concat(catalogRepository.GetAllChildrenCategoriesIdsAsync(searchCategoryIds).GetAwaiter().GetResult()).ToArray();
                 }
 
                 query = query.Where(x => searchCategoryIds.Contains(x.CategoryId) || x.CategoryLinks.Any(link => searchCategoryIds.Contains(link.CategoryId)));
@@ -91,20 +73,21 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
             if (!criteria.PropertyName.IsNullOrEmpty())
             {
-                query = query.Where(x => x.ItemPropertyValues.Any(x => x.Name == criteria.PropertyName));
+                query = query.Where(x => x.ItemPropertyValues.Any(v => v.Name == criteria.PropertyName));
             }
 
             return query;
         }
 
-        protected virtual IList<SortInfo> BuildSortExpression(ProductSearchCriteria criteria)
+        protected override IList<SortInfo> BuildSortExpression(ProductSearchCriteria criteria)
         {
             var sortInfos = criteria.SortInfos;
+
             if (sortInfos.IsNullOrEmpty())
             {
                 sortInfos = new[]
                 {
-                    new SortInfo { SortColumn = nameof(ItemEntity.Name) }
+                    new SortInfo { SortColumn = nameof(ItemEntity.Name) },
                 };
             }
 

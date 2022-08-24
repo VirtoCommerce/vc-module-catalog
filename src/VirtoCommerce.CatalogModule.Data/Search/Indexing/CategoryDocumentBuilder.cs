@@ -33,9 +33,12 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         }
 
 
-        protected virtual Task<Category[]> GetCategories(IList<string> categoryIds)
+        protected virtual async Task<Category[]> GetCategories(IList<string> categoryIds)
         {
-            return _categoryService.GetByIdsAsync(categoryIds.ToArray(), (CategoryResponseGroup.WithProperties | CategoryResponseGroup.WithOutlines | CategoryResponseGroup.WithImages | CategoryResponseGroup.WithSeo | CategoryResponseGroup.WithLinks | CategoryResponseGroup.WithDescriptions).ToString());
+            var responseGroup = CategoryResponseGroup.WithProperties | CategoryResponseGroup.WithOutlines | CategoryResponseGroup.WithImages | CategoryResponseGroup.WithSeo | CategoryResponseGroup.WithLinks | CategoryResponseGroup.WithDescriptions;
+            var categories = await _categoryService.GetAsync(categoryIds.ToList(), responseGroup.ToString());
+
+            return categories.ToArray();
         }
 
         protected virtual IndexDocument CreateDocument(Category category)

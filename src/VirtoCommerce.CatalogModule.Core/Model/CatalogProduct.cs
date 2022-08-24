@@ -57,7 +57,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         /// </summary>
         public string ProductType { get; set; }
 
-        //Type of product package (set of package types with their specific dimensions)
+        // Type of product package (set of package types with their specific dimensions)
         public string PackageType { get; set; }
 
         #region IHaveDimension Members
@@ -125,7 +125,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                 string result = null;
                 if (Images != null && Images.Any())
                 {
-                    result = Images.OrderBy(x => x.SortOrder).FirstOrDefault()?.Url;
+                    result = Images.MinBy(x => x.SortOrder)?.Url;
                 }
                 return result;
             }
@@ -146,7 +146,8 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         /// <summary>
         /// Each descendant type should override this property to use other object type for seo records
         /// </summary>
-        public virtual string SeoObjectType { get; } = "CatalogProduct";
+        public virtual string SeoObjectType => "CatalogProduct";
+
         public IList<SeoInfo> SeoInfos { get; set; }
         public IList<EditorialReview> Reviews { get; set; }
 
@@ -164,48 +165,15 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         /// <summary>
         /// System flag used to mark that object was inherited from other
         /// </summary>
-        public bool IsInherited { get; private set; }
+        public virtual bool IsInherited => false;
 
         public virtual void TryInheritFrom(IEntity parent)
         {
             this.InheritExcludedProperties(parent as IHasExcludedProperties);
 
-            if (parent is IHasProperties hasProperties)
-            {
-                //Properties inheritance
-                foreach (var parentProperty in hasProperties.Properties ?? Array.Empty<Property>())
-                {
-                    if (this.HasPropertyExcluded(parentProperty.Name))
-                    {
-                        continue;
-                    }
-                    if (Properties == null)
-                    {
-                        Properties = new List<Property>();
-                    }
-                    var existProperty = Properties.FirstOrDefault(x => x.IsSame(parentProperty, PropertyType.Product, PropertyType.Variation));
-                    if (existProperty == null)
-                    {
-                        existProperty = AbstractTypeFactory<Property>.TryCreateInstance();
-                        Properties.Add(existProperty);
-                    }
-                    existProperty.TryInheritFrom(parentProperty);
+            InheritProperties(parent);
 
-                    existProperty.IsReadOnly = existProperty.Type != PropertyType.Variation && existProperty.Type != PropertyType.Product;
-                }
-                //Restore sorting order after changes
-                if (Properties != null)
-                {
-                    Properties = Properties.OrderBy(x => x.Name).ToList();
-                }
-            }
-
-            //TODO: prevent saving the inherited simple values
-            //TaxType  inheritance
-            if (parent is IHasTaxType hasTaxType && TaxType == null)
-            {
-                TaxType = hasTaxType.TaxType;
-            }
+            InheritTaxes(parent);
 
             if (!Variations.IsNullOrEmpty())
             {
@@ -215,69 +183,22 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                 }
             }
 
+            InheritFromCatalogProduct(parent);
+        }
+
+        protected virtual void InheritFromCatalogProduct(IEntity parent)
+        {
             if (parent is CatalogProduct parentProduct)
             {
-                var isVariation = GetType().IsAssignableFrom(typeof(Variation));
-                //Inherit images from parent product (if its not set)
-                if (Images.IsNullOrEmpty() && !parentProduct.Images.IsNullOrEmpty())
-                {
-                    Images = new List<Image>();
-                    foreach (var parentImage in parentProduct.Images)
-                    {
-                        var image = AbstractTypeFactory<Image>.TryCreateInstance();
-                        image.TryInheritFrom(parentImage);
-                        Images.Add(image);
-                    }
-                }
+                InheritImages(parentProduct);
 
-                //Inherit assets from parent product (if its not set)
-                if (Assets.IsNullOrEmpty() && !parentProduct.Assets.IsNullOrEmpty())
-                {
-                    Assets = new List<Asset>();
-                    foreach (var parentAsset in parentProduct.Assets)
-                    {
-                        var asset = AbstractTypeFactory<Asset>.TryCreateInstance();
-                        asset.TryInheritFrom(parentAsset);
-                        Assets.Add(asset);
-                    }
-                }
+                InheritAssets(parentProduct);
 
-                //inherit editorial reviews from main product and do not inherit if variation loaded within product
-                if (!isVariation && Reviews.IsNullOrEmpty() && parentProduct.Reviews != null)
-                {
-                    Reviews = new List<EditorialReview>();
-                    foreach (var parentReview in parentProduct.Reviews)
-                    {
-                        var review = AbstractTypeFactory<EditorialReview>.TryCreateInstance();
-                        review.TryInheritFrom(parentReview);
-                        Reviews.Add(review);
-                    }
-                }
-                //inherit not overridden property values from main product
-                foreach (var parentProductProperty in parentProduct.Properties ?? Array.Empty<Property>())
-                {
-                    var existProperty = Properties.FirstOrDefault(x => x.IsSame(parentProductProperty, PropertyType.Product, PropertyType.Variation));
-                    if (existProperty == null)
-                    {
-                        existProperty = AbstractTypeFactory<Property>.TryCreateInstance();
-                        Properties.Add(existProperty);
-                    }
-                    existProperty.TryInheritFrom(parentProductProperty);
-                    existProperty.IsReadOnly = existProperty.Type != PropertyType.Variation && existProperty.Type != PropertyType.Product;
+                InheritReviews(parentProduct);
 
-                    //Inherit only parent Product properties  values if own values aren't set
-                    if (parentProductProperty.Type == PropertyType.Product && existProperty.Values.IsNullOrEmpty() && !parentProductProperty.Values.IsNullOrEmpty())
-                    {
-                        existProperty.Values = new List<PropertyValue>();
-                        foreach (var parentPropValue in parentProductProperty.Values)
-                        {
-                            var propValue = AbstractTypeFactory<PropertyValue>.TryCreateInstance();
-                            propValue.TryInheritFrom(parentPropValue);
-                            existProperty.Values.Add(propValue);
-                        }
-                    }
-                }
-                //TODO: prevent saving the inherited simple values
+                InheritPropertyValues(parentProduct);
+
+                // TODO: prevent saving the inherited simple values
                 Width = parentProduct.Width ?? Width;
                 Height = parentProduct.Height ?? Height;
                 Length = parentProduct.Length ?? Length;
@@ -287,11 +208,133 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                 PackageType = parentProduct.PackageType ?? PackageType;
             }
         }
+
+        protected virtual void InheritPropertyValues(CatalogProduct parentProduct)
+        {
+            // Inherit not overridden property values from main product
+            foreach (var parentProductProperty in parentProduct.Properties ?? Array.Empty<Property>())
+            {
+                Properties ??= new List<Property>();
+                var existProperty = Properties.FirstOrDefault(x =>
+                    x.IsSame(parentProductProperty, PropertyType.Product, PropertyType.Variation));
+                if (existProperty == null)
+                {
+                    existProperty = AbstractTypeFactory<Property>.TryCreateInstance();
+                    Properties.Add(existProperty);
+                }
+
+                existProperty.TryInheritFrom(parentProductProperty);
+                existProperty.IsReadOnly = existProperty.Type != PropertyType.Variation &&
+                                           existProperty.Type != PropertyType.Product;
+
+                // Inherit only parent Product properties  values if own values aren't set
+                if (parentProductProperty.Type == PropertyType.Product && existProperty.Values.IsNullOrEmpty() &&
+                    !parentProductProperty.Values.IsNullOrEmpty())
+                {
+                    existProperty.Values = new List<PropertyValue>();
+                    foreach (var parentPropValue in parentProductProperty.Values)
+                    {
+                        var propValue = AbstractTypeFactory<PropertyValue>.TryCreateInstance();
+                        propValue.TryInheritFrom(parentPropValue);
+                        existProperty.Values.Add(propValue);
+                    }
+                }
+            }
+        }
+
+        protected virtual void InheritReviews(CatalogProduct parentProduct)
+        {
+            // Inherit editorial reviews from main product and do not inherit if variation loaded within product
+            var isVariation = GetType().IsAssignableFrom(typeof(Variation));
+            if (!isVariation && Reviews.IsNullOrEmpty() && parentProduct.Reviews != null)
+            {
+                Reviews = new List<EditorialReview>();
+                foreach (var parentReview in parentProduct.Reviews)
+                {
+                    var review = AbstractTypeFactory<EditorialReview>.TryCreateInstance();
+                    review.TryInheritFrom(parentReview);
+                    Reviews.Add(review);
+                }
+            }
+        }
+
+        protected virtual void InheritAssets(CatalogProduct parentProduct)
+        {
+            // Inherit assets from parent product (if not set)
+            if (Assets.IsNullOrEmpty() && !parentProduct.Assets.IsNullOrEmpty())
+            {
+                Assets = new List<Asset>();
+                foreach (var parentAsset in parentProduct.Assets)
+                {
+                    var asset = AbstractTypeFactory<Asset>.TryCreateInstance();
+                    asset.TryInheritFrom(parentAsset);
+                    Assets.Add(asset);
+                }
+            }
+        }
+
+        protected virtual void InheritImages(CatalogProduct parentProduct)
+        {
+            // Inherit images from parent product (if not set)
+            if (Images.IsNullOrEmpty() && !parentProduct.Images.IsNullOrEmpty())
+            {
+                Images = new List<Image>();
+                foreach (var parentImage in parentProduct.Images)
+                {
+                    var image = AbstractTypeFactory<Image>.TryCreateInstance();
+                    image.TryInheritFrom(parentImage);
+                    Images.Add(image);
+                }
+            }
+        }
+
+        protected virtual void InheritTaxes(IEntity parent)
+        {
+            // TODO: prevent saving the inherited simple values
+            // TaxType  inheritance
+            if (parent is IHasTaxType hasTaxType && TaxType == null)
+            {
+                TaxType = hasTaxType.TaxType;
+            }
+        }
+
+        protected virtual void InheritProperties(IEntity parent)
+        {
+            if (parent is IHasProperties hasProperties)
+            {
+                // Properties inheritance
+                foreach (var parentProperty in hasProperties.Properties ?? Array.Empty<Property>())
+                {
+                    if (this.HasPropertyExcluded(parentProperty.Name))
+                    {
+                        continue;
+                    }
+
+                    Properties ??= new List<Property>();
+                    var existProperty = Properties.FirstOrDefault(x =>
+                        x.IsSame(parentProperty, PropertyType.Product, PropertyType.Variation));
+                    if (existProperty == null)
+                    {
+                        existProperty = AbstractTypeFactory<Property>.TryCreateInstance();
+                        Properties.Add(existProperty);
+                    }
+
+                    existProperty.TryInheritFrom(parentProperty);
+
+                    existProperty.IsReadOnly = existProperty.Type != PropertyType.Variation &&
+                                               existProperty.Type != PropertyType.Product;
+                }
+
+                // Restore sorting order after changes
+                Properties = Properties?.OrderBy(x => x.Name).ToList();
+            }
+        }
+
         #endregion
 
         public virtual object GetCopy()
         {
-            var result = Clone() as CatalogProduct;
+            var result = this.CloneTyped();
 
             result.Id = null;
 
@@ -303,9 +346,9 @@ namespace VirtoCommerce.CatalogModule.Core.Model
             result.Associations = Associations?.Select(x => x.GetCopy()).OfType<ProductAssociation>().ToList();
             // Clear ID for all related entities except properties
             var allSeoSupportEntities = result.GetFlatObjectsListWithInterface<ISeoSupport>();
-            foreach (var seoSuportEntity in allSeoSupportEntities)
+            foreach (var seoSupportEntity in allSeoSupportEntities)
             {
-                seoSuportEntity.SeoInfos?.Clear();
+                seoSupportEntity.SeoInfos?.Clear();
             }
             return result;
         }
@@ -323,7 +366,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
         public virtual void ReduceDetails(string responseGroup)
         {
-            //Reduce details according to response group
+            // Reduce details according to response group
             var productResponseGroup = EnumUtility.SafeParseFlags(responseGroup, ItemResponseGroup.ItemLarge);
 
             if (!productResponseGroup.HasFlag(ItemResponseGroup.ItemAssets))
@@ -358,29 +401,32 @@ namespace VirtoCommerce.CatalogModule.Core.Model
             {
                 SeoInfos = null;
             }
+
+#pragma warning disable CS0618 // Variations can be used here
             if (!productResponseGroup.HasFlag(ItemResponseGroup.Variations))
             {
                 Variations = null;
             }
+#pragma warning restore CS0618
         }
 
         #region ICloneable members
         public virtual object Clone()
         {
-            var result = MemberwiseClone() as CatalogProduct;
+            var result = (CatalogProduct)MemberwiseClone();
 
-            // result.Catalog = (Catalog)Catalog?.Clone(); // Intentionally temporary disabled due to memory overhead
-            // result.Category = (Category)Category?.Clone(); // Intentionally temporary disabled due to memory overhead
-            result.SeoInfos = SeoInfos?.Select(x => x.Clone()).OfType<SeoInfo>().ToList();
-            result.Images = Images?.Select(x => x.Clone()).OfType<Image>().ToList();
-            result.Assets = Assets?.Select(x => x.Clone()).OfType<Asset>().ToList();
-            result.Properties = Properties?.Select(x => x.Clone()).OfType<Property>().ToList();
-            result.Associations = Associations?.Select(x => x.Clone()).OfType<ProductAssociation>().ToList();
-            result.ReferencedAssociations = ReferencedAssociations?.Select(x => x.Clone()).OfType<ProductAssociation>().ToList();
-            result.Reviews = Reviews?.Select(x => x.Clone()).OfType<EditorialReview>().ToList();
-            result.Links = Links?.Select(x => x.Clone()).OfType<CategoryLink>().ToList();
-            result.Variations = Variations?.Select(x => x.Clone()).OfType<Variation>().ToList();
-            // result.Outlines = Outlines?.Select(x => x.Clone()).OfType<Outline>().ToList(); // Intentionally temporary disabled due to memory overhead
+            //result.Catalog = Catalog?.CloneTyped(); // Intentionally temporary disabled due to memory overhead
+            //result.Category = Category?.CloneTyped(); // Intentionally temporary disabled due to memory overhead
+            result.SeoInfos = SeoInfos?.Select(x => x.CloneTyped()).ToList();
+            result.Images = Images?.Select(x => x.CloneTyped()).ToList();
+            result.Assets = Assets?.Select(x => x.CloneTyped()).ToList();
+            result.Properties = Properties?.Select(x => x.CloneTyped()).ToList();
+            result.Associations = Associations?.Select(x => x.CloneTyped()).ToList();
+            result.ReferencedAssociations = ReferencedAssociations?.Select(x => x.CloneTyped()).ToList();
+            result.Reviews = Reviews?.Select(x => x.CloneTyped()).ToList();
+            result.Links = Links?.Select(x => x.CloneTyped()).ToList();
+            result.Variations = Variations?.Select(x => x.CloneTyped()).ToList();
+            //result.Outlines = Outlines?.Select(x => x.CloneTyped()).ToList(); // Intentionally temporary disabled due to memory overhead
 
             return result;
         }

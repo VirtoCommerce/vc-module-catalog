@@ -42,7 +42,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("{id}")]
         public async Task<ActionResult<Category>> GetCategory(string id)
         {
-            var category = (await _categoryService.GetByIdsAsync(new[] { id }, null)).FirstOrDefault();
+            var category = await _categoryService.GetByIdAsync(id);
 
             if (category == null)
             {
@@ -65,9 +65,9 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         ///<param name="respGroup">Response group.</param>
         [HttpGet]
         [Route("")]
-        public async Task<ActionResult<Category[]>> GetCategoriesByIdsAsync([FromQuery] string[] ids, [FromQuery] string respGroup = null)
+        public async Task<ActionResult<Category[]>> GetCategoriesByIdsAsync([FromQuery] List<string> ids, [FromQuery] string respGroup = null)
         {
-            var categories = await _categoryService.GetByIdsAsync(ids, respGroup);
+            var categories = await _categoryService.GetAsync(ids, respGroup);
 
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, categories, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
             if (!authorizationResult.Succeeded)
@@ -86,7 +86,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <returns></returns>
         [HttpPost]
         [Route("plenty")]
-        public Task<ActionResult<Category[]>> GetCategoriesByPlentyIds([FromBody] string[] ids, [FromQuery] string respGroup = null)
+        public Task<ActionResult<Category[]>> GetCategoriesByPlentyIds([FromBody] List<string> ids, [FromQuery] string respGroup = null)
         {
             return GetCategoriesByIdsAsync(ids, respGroup);
         }
@@ -129,7 +129,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                     var slugUrl = category.Name.GenerateSlug();
                     if (!string.IsNullOrEmpty(slugUrl))
                     {
-                        var catalog = (await _catalogService.GetByIdsAsync(new[] { category.CatalogId })).FirstOrDefault();
+                        var catalog = await _catalogService.GetByIdAsync(category.CatalogId);
                         var defaultLanguage = catalog?.Languages.First(x => x.IsDefault).LanguageCode;
                         var seoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
                         seoInfo.LanguageCode = defaultLanguage;
@@ -158,9 +158,9 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [HttpDelete]
         [Route("")]
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
-        public async Task<ActionResult> DeleteCategory([FromQuery] string[] ids)
+        public async Task<ActionResult> DeleteCategory([FromQuery] List<string> ids)
         {
-            var categories = await _categoryService.GetByIdsAsync(ids, CategoryResponseGroup.Info.ToString());
+            var categories = await _categoryService.GetAsync(ids, CategoryResponseGroup.Info.ToString());
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, categories, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Delete));
             if (!authorizationResult.Succeeded)
             {

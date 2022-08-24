@@ -1,8 +1,9 @@
-using VirtoCommerce.Platform.Core.Caching;
+using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.Platform.Caching;
 
 namespace VirtoCommerce.CatalogModule.Data.Caching
 {
-    public class CatalogCacheRegion : CancellableCacheRegion<CatalogCacheRegion>
+    public class CatalogCacheRegion : GenericCachingRegion<Catalog>
     {
     }
 }

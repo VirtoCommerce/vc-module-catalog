@@ -485,6 +485,8 @@ angular.module('virtoCommerce.catalogModule')
             var filter = blade.filter = { keyword: blade.filterKeyword };
 
             filter.criteriaChanged = function () {
+                $scope.appliedKeyword = filter.keyword;
+                filter.appliedKeyword = filter.keyword;
                 if (!blade.catalogId && !filter.keyword) {
                     $scope.bladeClose();
                 } else if ($scope.pageSettings.currentPage > 1) {

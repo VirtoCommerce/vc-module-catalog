@@ -33,7 +33,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         /// With all product variations
         /// </summary>
         [Obsolete("Caution! Use this response group flag for loading all product variations within the main product may lead to serious problems with performance." +
-          "To load product variations need to use Core.Search.IProductSearchService  with set ProductSearchCriteria.MainProductId property instead")]
+          "To load product variations need to use Core.Search.IProductSearchService with set ProductSearchCriteria.MainProductId property instead")]
         Variations = 1 << 5,
         [Obsolete]
         WithVariations = Variations,
@@ -63,7 +63,9 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
         ItemSmall = ItemInfo | ItemAssets | ItemEditorialReviews | Seo,
         ItemMedium = ItemSmall | ItemAssociations | ReferencedAssociations | ItemProperties,
+#pragma warning disable CS0618 // Variations can be used here
         ItemLarge = ItemMedium | Variations | Links | Inventory | Outlines,
-        Full = ItemLarge
+#pragma warning restore CS0618
+        Full = ItemLarge,
     }
 }

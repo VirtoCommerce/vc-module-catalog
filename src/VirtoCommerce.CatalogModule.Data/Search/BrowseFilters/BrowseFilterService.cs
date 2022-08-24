@@ -9,8 +9,8 @@ using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.DynamicProperties;
+using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.StoreModule.Core.Model;
-using VirtoCommerce.StoreModule.Core.Services;
 
 namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
 {
@@ -19,9 +19,9 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
         public const string FilteredBrowsingPropertyId = "VirtoCommerce.Catalog_FilteredBrowsing_Property";
         public const string FilteredBrowsingPropertyName = "FilteredBrowsing";
 
-        private readonly IStoreService _storeService;
+        private readonly ICrudService<Store> _storeService;
 
-        public BrowseFilterService(IStoreService storeService)
+        public BrowseFilterService(ICrudService<Store> storeService)
         {
             _storeService = storeService;
         }

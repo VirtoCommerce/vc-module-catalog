@@ -19,6 +19,6 @@
     <releaseNotes></releaseNotes>
     <copyright>Copyright © 2011-2021 Virto Commerce. All rights reserved</copyright>
     <tags>catalog</tags>
-  <assemblyFile>VirtoCommerce.CatalogModule2.Web.dll</assemblyFile>
-  <moduleType>VirtoCommerce.CatalogModule2.Web.Module, VirtoCommerce.CatalogModule2.Web</moduleType>
+    <assemblyFile>VirtoCommerce.CatalogModule2.Web.dll</assemblyFile>
+    <moduleType>VirtoCommerce.CatalogModule2.Web.Module, VirtoCommerce.CatalogModule2.Web</moduleType>
 </module>

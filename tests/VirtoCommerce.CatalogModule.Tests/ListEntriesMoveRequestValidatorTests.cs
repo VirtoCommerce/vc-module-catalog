@@ -7,7 +7,6 @@ using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.ListEntry;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Validation;
-using VirtoCommerce.Platform.Core.Common;
 using Xunit;
 
 namespace VirtoCommerce.CatalogModule.Tests
@@ -127,7 +126,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             var outline = string.Join("/", parts.Skip(1));
 
             _categoryServiceMock
-                .Setup(x => x.GetByIdsAsync(It.Is<string[]>(ids => ids.Length == 1 && ids[0].EqualsInvariant(categoryId)), It.IsAny<string>(), null))
+                .Setup(x => x.GetByIdAsync(categoryId, It.IsAny<string>()))
                 .Returns(() =>
                     {
                         // This complex part is done to allow Category.Outline property to be calculated. It uses Category.Parent recursively, so need to create all hierarchy.
@@ -155,7 +154,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                             }
                         }
 
-                        return Task.FromResult(new[] { resultCategory });
+                        return Task.FromResult(resultCategory);
                     }
                 );
         }

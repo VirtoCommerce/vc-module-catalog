@@ -74,7 +74,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Actions.CategoryChange
         {
             var result = BulkActionResult.Success;
 
-            var dstCatalog = (await _catalogService.GetByIdsAsync(new [] { _context.CatalogId })).FirstOrDefault();
+            var dstCatalog = await _catalogService.GetByIdAsync(_context.CatalogId);
             if (dstCatalog != null && dstCatalog.IsVirtual)
             {
                 result.Succeeded = false;

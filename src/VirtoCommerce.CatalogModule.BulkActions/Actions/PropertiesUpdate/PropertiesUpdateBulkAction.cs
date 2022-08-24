@@ -47,10 +47,10 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Actions.PropertiesUpdate
             }
 
             var productQuery = entries.Where(entry => entry.Type.EqualsInvariant(ProductListEntry.TypeName));
-            var productIds = productQuery.Select(entry => entry.Id).ToArray();
-            var products = await _itemService.GetByIdsAsync(productIds, (ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemProperties).ToString());
+            var productIds = productQuery.Select(entry => entry.Id).ToList();
+            var products = await _itemService.GetAsync(productIds, (ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemProperties).ToString());
 
-            return await _bulkPropertyUpdateManager.UpdatePropertiesAsync(products, _context.Properties);
+            return await _bulkPropertyUpdateManager.UpdatePropertiesAsync(products?.ToArray(), _context.Properties);
         }
 
         public async Task<object> GetActionDataAsync()

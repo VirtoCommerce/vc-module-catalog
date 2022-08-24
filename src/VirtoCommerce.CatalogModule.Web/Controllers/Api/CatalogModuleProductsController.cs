@@ -78,9 +78,9 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         ///<param name="respGroup">Response group.</param>
         [HttpGet]
         [Route("")]
-        public async Task<ActionResult> GetProductByIds([FromQuery] string[] ids, [FromQuery] string respGroup = null)
+        public async Task<ActionResult> GetProductByIds([FromQuery] List<string> ids, [FromQuery] string respGroup = null)
         {
-            var items = await _itemsService.GetByIdsAsync(ids, respGroup);
+            var items = await _itemsService.GetAsync(ids, respGroup);
             if (items == null)
             {
                 return NotFound();
@@ -105,7 +105,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <returns></returns>
         [HttpPost]
         [Route("plenty")]
-        public async Task<ActionResult<CatalogProduct[]>> GetProductByPlentyIds([FromBody] string[] ids, [FromQuery] string respGroup = null)
+        public async Task<ActionResult<CatalogProduct[]>> GetProductByPlentyIds([FromBody] List<string> ids, [FromQuery] string respGroup = null)
         {
             return await GetProductByIds(ids, respGroup);
         }
@@ -143,11 +143,11 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             Entity parent = null;
             if (catalogId != null)
             {
-                parent = (await _catalogService.GetByIdsAsync(new[] { catalogId })).FirstOrDefault();
+                parent = await _catalogService.GetByIdAsync(catalogId);
             }
             if (categoryId != null)
             {
-                parent = (await _categoryService.GetByIdsAsync(new[] { categoryId }, CategoryResponseGroup.WithProperties.ToString())).FirstOrDefault();
+                parent = await _categoryService.GetByIdAsync(categoryId, CategoryResponseGroup.WithProperties.ToString());
             }
             if (parent != null)
             {
@@ -278,9 +278,9 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <param name="ids">The items ids.</param>
         [HttpDelete]
         [Route("")]
-        public async Task<ActionResult> DeleteProduct([FromQuery] string[] ids)
+        public async Task<ActionResult> DeleteProduct([FromQuery] List<string> ids)
         {
-            var products = await _itemsService.GetByIdsAsync(ids, ItemResponseGroup.ItemInfo.ToString());
+            var products = await _itemsService.GetAsync(ids, ItemResponseGroup.ItemInfo.ToString());
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, products, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Delete));
             if (!authorizationResult.Succeeded)
             {
@@ -293,7 +293,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private async Task<CatalogProduct[]> InnerSaveProducts(CatalogProduct[] products)
         {
             var toSaveList = new List<CatalogProduct>();
-            var catalogs = await _catalogService.GetByIdsAsync(products.Select(pr => pr.CatalogId).Distinct().ToArray());
+            var catalogs = await _catalogService.GetAsync(products.Select(pr => pr.CatalogId).Distinct().ToList());
             foreach (var product in products)
             {
                 if (product.IsTransient() && product.SeoInfos.IsNullOrEmpty())

@@ -69,10 +69,9 @@ namespace VirtoCommerce.CatalogModule.Tests
 
             // assert
             itemService.Verify(
-                t => t.GetByIdsAsync(
-                    It.IsAny<string[]>(),
-                    (ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemProperties).ToString(),
-                    null));
+                t => t.GetAsync(
+                    It.IsAny<List<string>>(),
+                    (ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemProperties).ToString()));
         }
 
         [Fact]
@@ -107,7 +106,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             var action = new Action(() =>
                 {
                     bulkAction
-                        .ExecuteAsync(new List<IEntity> { new ListEntryBase { Type = "somType"} })
+                        .ExecuteAsync(new List<IEntity> { new ListEntryBase { Type = "somType" } })
                         .GetAwaiter()
                         .GetResult();
                 });
