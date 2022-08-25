@@ -81,6 +81,18 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             return result;
         }
 
+        public static void AddCatalogFilters(this IList<IFilter> filters, CatalogIndexedSearchCriteria criteria)
+        {
+            if (!string.IsNullOrEmpty(criteria.CatalogId) || (criteria.CatalogIds?.Any(x => !string.IsNullOrEmpty(x)) ?? false))
+            {
+                var catalogIds = new List<string> { criteria.CatalogId };
+                catalogIds.AddRange(criteria.CatalogIds);
+
+                catalogIds = catalogIds.Where(x => !string.IsNullOrEmpty(x)).Select(x => x.ToLowerInvariant()).ToList();
+
+                filters.Add(CreateTermFilter("catalog", catalogIds));
+            }
+        }
 
         private static IFilter GetPriceRangeFilterRecursive(int pricelistNumber, string commonFieldName, IList<string> pricelists, string lower, string upper, bool includeLower, bool includeUpper)
         {
