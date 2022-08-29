@@ -10,7 +10,8 @@ angular.module('virtoCommerce.catalogModule')
                 objectType: "CatalogProduct",
                 responseGroup: "withProducts",
                 take: 0,
-                withHidden: true
+                withHidden: true,
+                searchInChildren: true
             };
             search.searchProducts(searchCriteria, function (data) {
                 $scope.variartionCount = data.totalCount;
