@@ -34,8 +34,8 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.0" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
         <PackageReference Include="VirtoCommerce.ExportModule.Data" Version="3.200.0" />
-        <PackageReference Include="VirtoCommerce.Platform.Data" Version="3.232.0" />
-        <PackageReference Include="VirtoCommerce.Platform.Security" Version="3.232.0" />
+        <PackageReference Include="VirtoCommerce.Platform.Data" Version="3.243.0" />
+        <PackageReference Include="VirtoCommerce.Platform.Security" Version="3.243.0" />
         <PackageReference Include="VirtoCommerce.SearchModule.Data" Version="3.208.0" />
         <PackageReference Include="VirtoCommerce.StoreModule.Core" Version="3.204.0" />
         <PackageReference Include="VirtoCommerce.AssetsModule.Core" Version="3.200.0" />
