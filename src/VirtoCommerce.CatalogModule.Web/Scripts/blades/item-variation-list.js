@@ -20,7 +20,8 @@ angular.module('virtoCommerce.catalogModule').controller('virtoCommerce.catalogM
             sort: uiGridHelper.getSortExpression($scope),
             skip: ($scope.pageSettings.currentPage - 1) * $scope.pageSettings.itemsPerPageCount,
             take: $scope.pageSettings.itemsPerPageCount,
-            withHidden: true
+            withHidden: true,
+            searchInChildren: true
         };
 
         search.searchProducts(
