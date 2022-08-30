@@ -38,6 +38,8 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             modelBuilder.Entity<CategoryEntity>().Property(x => x.ExcludedProperties).HasConversion(
                 x => x != null && x.Count > 0 ? JsonConvert.SerializeObject(x) : null,
                 x => x != null ? JsonConvert.DeserializeObject<List<string>>(x) : null);
+            modelBuilder.Entity<CategoryEntity>()
+                .HasCheckConstraint("Parent_category_check", $"{nameof(CategoryEntity.ParentCategoryId)} != {nameof(CategoryEntity.Id)}");
 
             #endregion Category
 
