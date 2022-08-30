@@ -344,6 +344,8 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                     b.HasIndex("ParentCategoryId");
 
                     b.ToTable("Category", (string)null);
+
+                    b.HasCheckConstraint("Parent_category_check", "ParentCategoryId != Id");
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.CategoryItemRelationEntity", b =>
