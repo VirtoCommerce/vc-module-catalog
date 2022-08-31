@@ -28,16 +28,16 @@
         }
       },
       "catalog-add": {
-        "title": "New catalog",
+        "title": "New Catalog",
         "subtitle": "Choose new catalog type",
         "menu": {
           "catalog": {
-            "title": "Catalog",
-            "description": "This is a central point for managing your store merchandise and creating catalogs for brans, product lines, or particular suppliers."
+            "title": "Physical Catalog",
+            "description": "This is a central point for managing your store merchandise and creating catalogs for brands, product lines, or particular suppliers."
           },
           "virtual-catalog": {
-            "title": "Virtual catalog",
-            "description": "Virtual catalogs allow you to visualize the products and categories stored in physical categories in a different way."
+            "title": "Virtual Catalog",
+            "description": "Virtual catalogs allow you to visualize products stored in physical categories in a different way."
           }
         }
       },
@@ -721,8 +721,8 @@
       "catalog-delete": {
         "title": "Confirm Delete",
         "warning": "WARNING: This change is permanent and cannot be undone. Applying this change may result in a data loss.",
-        "message": "Are you sure you want to delete this catalog?",
-        "instruction": "Type 'yes' to delete"
+        "message": "Are you sure you want to delete this catalog:",
+        "instruction": "Type 'yes' to delete:"
       },
       "catalog-items-delete": {
         "title": "Confirm Delete",
