@@ -338,7 +338,7 @@ jobs:
       moduleId: ${{ needs.ci.outputs.moduleId }}
       moduleVer: ${{ needs.ci.outputs.version }}
       argoServer: 'argo.virtocommerce.cloud'
-      matrix: '{"include":[{"envName": "prod", "confPath": "cloudDeploy.json"}]}'
+      matrix: '{"include":[{"envName": "prod", "confPath": ".deployment/module/cloudDeploy.json"}]}'
     secrets:
       envPAT: ${{ secrets.REPO_TOKEN }}
       argoLogin: ${{ secrets.ARGOCD_LOGIN }}
