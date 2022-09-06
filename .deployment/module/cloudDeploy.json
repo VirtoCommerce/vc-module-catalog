@@ -8,7 +8,7 @@
         "environmentId": "dev",
         "environmentName": "Development",
         "environmentType": "staging",
-        "environmentUrl": "https://vcptcore-qa.govirto.com/"
+        "environmentUrl": "https://vcptcore-dev.govirto.com/"
     },
     "qa": {
         "deployAppName": "vcptcore-qa",
