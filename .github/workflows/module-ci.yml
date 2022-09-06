@@ -318,9 +318,9 @@ jobs:
     uses: VirtoCommerce/.github/.github/workflows/deploy-cloud.yml@v3.200.17
     with:
       releaseSource: module
-      releaseType: GithubReleases
       moduleId: ${{ needs.ci.outputs.moduleId }}
       moduleVer: ${{ needs.ci.outputs.version }}
+      moduleBlob: ${{ needs.ci.outputs.artifactUrl }}
       jiraKeys: ${{ needs.ci.outputs.jira-keys }}
       argoServer: 'argo.virtocommerce.cloud'
       matrix: '{"include":${{ needs.ci.outputs.matrix }}}'
