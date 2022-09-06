@@ -1,4 +1,4 @@
-# v3.200.16
+# v3.200.17
 name: Module CI
 
 on:
@@ -50,6 +50,7 @@ jobs:
       jira-keys: ${{ steps.jira_keys.outputs.jira-keys }}
       version: ${{ steps.artifact_ver.outputs.shortVersion }}
       moduleId: ${{ steps.artifact_ver.outputs.moduleId }}
+      matrix: ${{ steps.deployment-matrix.outputs.matrix }}
 
     steps:
 
@@ -150,6 +151,14 @@ jobs:
           else
             echo ::set-output name=download_url::${{ steps.blobRelease.outputs.packageUrl }}
           fi;
+
+      - name: Create deployment matrix
+        if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/master'}}
+        uses: VirtoCommerce/vc-github-actions/cloud-create-deploy-matrix@master
+        id: deployment-matrix
+        with:
+          deployConfigPath: '.deployment/module/cloudDeploy.json'
+          releaseBranch: 'master'
 
       - name: Setup Git Credentials
         if: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/master') && github.event_name != 'workflow_dispatch' }}
@@ -285,33 +294,6 @@ jobs:
           status: ${{ job.status }}
           deployment_id: ${{ steps.deployment.outputs.deployment_id }}
 
-      - name: Push Deployment Info to Jira
-        if: ${{ env.CLOUD_INSTANCE_BASE_URL != 0 && env.CLIENT_ID != 0 && env.CLIENT_SECRET != 0 && needs.ci.outputs.jira-keys != '' && always() }}
-        id: push_deployment_info_to_jira
-        uses: HighwayThree/jira-upload-deployment-info@master
-        env:
-          CLOUD_INSTANCE_BASE_URL: ${{secrets.CLOUD_INSTANCE_BASE_URL}}
-          CLIENT_ID: ${{secrets.CLIENT_ID}}
-          CLIENT_SECRET: ${{secrets.CLIENT_SECRET}}
-        with:
-          cloud-instance-base-url: ${{ secrets.CLOUD_INSTANCE_BASE_URL }}
-          client-id: ${{ secrets.CLIENT_ID }}
-          client-secret: ${{ secrets.CLIENT_SECRET }}
-          deployment-sequence-number: ${{ github.run_id }}
-          update-sequence-number: ${{ github.run_id }}
-          issue-keys: ${{ needs.ci.outputs.jira-keys }}
-          display-name: ${{ steps.deployConfig.outputs.deployAppName }}
-          url: ${{ steps.deployConfig.outputs.environmentUrl }}
-          description: 'Deployment to the ${{ steps.deployConfig.outputs.environmentName }} environment'
-          last-updated: '${{github.event.head_commit.timestamp}}'
-          state: '${{ env.DEPLOY_STATE }}'
-          pipeline-id: '${{ github.repository }} ${{ github.workflow }}'
-          pipeline-display-name: 'Workflow: ${{ github.workflow }} (#${{ github.run_number }})'
-          pipeline-url: '${{github.event.repository.html_url}}/actions/runs/${{github.run_id}}'
-          environment-id: ${{ steps.deployConfig.outputs.environmentId }}
-          environment-display-name: ${{ steps.deployConfig.outputs.environmentName }}
-          environment-type: ${{ steps.deployConfig.outputs.environmentType }}
-
   module-katalon-tests:
     if: ${{ (github.ref == 'refs/heads/dev') && github.event_name == 'push' }}
     needs: 'ci'
@@ -328,18 +310,18 @@ jobs:
       envPAT: ${{ secrets.REPO_TOKEN }}
       katalonApiKey: ${{ secrets.KATALON_API_KEY }}
 
-  deploy-cloud-demo:
-    if: ${{ (github.ref == 'refs/heads/master') && github.event_name == 'push' }}
+  deploy-cloud:
+    if: ${{ ((github.ref == 'refs/heads/master') || 
+        (github.ref == 'refs/heads/dev')) && 
+        github.event_name == 'push' }}
     needs: ci
-    uses: VirtoCommerce/.github/.github/workflows/deploy-cloud.yml@v3.200.16
+    uses: VirtoCommerce/.github/.github/workflows/deploy-cloud.yml@v3.200.17
     with:
       releaseSource: module
       releaseType: GithubReleases
       moduleId: ${{ needs.ci.outputs.moduleId }}
       moduleVer: ${{ needs.ci.outputs.version }}
+      jiraKeys: ${{ needs.ci.outputs.jira-keys }}
       argoServer: 'argo.virtocommerce.cloud'
-      matrix: '{"include":[{"envName": "prod", "confPath": ".deployment/module/cloudDeploy.json"}]}'
-    secrets:
-      envPAT: ${{ secrets.REPO_TOKEN }}
-      argoLogin: ${{ secrets.ARGOCD_LOGIN }}
-      argoPassword: ${{ secrets.ARGOCD_PASSWORD }}
+      matrix: '{"include":${{ needs.ci.outputs.matrix }}}'
+    secrets: inherit
