@@ -14,10 +14,13 @@ angular.module('virtoCommerce.catalogModule')
             blade.originalProperty = blade.property;
             blade.property = angular.copy(blade.property);
 
+            if (blade.property.values == null)
+                blade.property.values = [];
             blade.values = [];
 
             aggregationProperties.getValues({ storeId: blade.storeId, propertyName: blade.originalProperty.name }, function (results) {
                 blade.values = results;
+                
                 blade.isLoading = false;
             }, function (error) {
                 bladeNavigationService.setError('Error: ' + error.status, blade);
@@ -66,6 +69,7 @@ angular.module('virtoCommerce.catalogModule')
         };
 
         $scope.saveChanges = function () {
+            blade.property.valuesCount = blade.property.values.length;
             angular.copy(blade.property, blade.originalProperty);
             $scope.bladeClose();
         };
