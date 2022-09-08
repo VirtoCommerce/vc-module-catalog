@@ -47,6 +47,7 @@ jobs:
 
     outputs:
       artifactUrl: ${{ steps.artifactUrl.outputs.download_url }}
+      blobId: ${{ steps.blobRelease.outputs.blobId }}
       jira-keys: ${{ steps.jira_keys.outputs.jira-keys }}
       version: ${{ steps.artifact_ver.outputs.shortVersion }}
       moduleId: ${{ steps.artifact_ver.outputs.moduleId }}
@@ -115,7 +116,7 @@ jobs:
         uses: VirtoCommerce/vc-github-actions/publish-nuget@master
 
       - name: Publish to Blob
-        if: ${{ github.ref == 'refs/heads/dev' || github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/master') }}
+        if: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev' || github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/master') }}
         id: blobRelease
         uses: VirtoCommerce/vc-github-actions/publish-blob-release@master
         with:
@@ -297,7 +298,7 @@ jobs:
   module-katalon-tests:
     if: ${{ (github.ref == 'refs/heads/dev') && github.event_name == 'push' }}
     needs: 'ci'
-    uses: VirtoCommerce/.github/.github/workflows/e2e.yml@main
+    uses: VirtoCommerce/.github/.github/workflows/e2e.yml@v3.200.17
     with:
       katalonRepo: 'VirtoCommerce/vc-quality-gate-katalon'
       katalonRepoBranch: 'dev'
@@ -320,7 +321,7 @@ jobs:
       releaseSource: module
       moduleId: ${{ needs.ci.outputs.moduleId }}
       moduleVer: ${{ needs.ci.outputs.version }}
-      moduleBlob: ${{ needs.ci.outputs.artifactUrl }}
+      moduleBlob: ${{ needs.ci.outputs.blobId }}
       jiraKeys: ${{ needs.ci.outputs.jira-keys }}
       argoServer: 'argo.virtocommerce.cloud'
       matrix: '{"include":${{ needs.ci.outputs.matrix }}}'
