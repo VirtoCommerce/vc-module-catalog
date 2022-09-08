@@ -14,7 +14,7 @@ jobs:
     # secrets:
     #   envPAT: ${{ secrets.REPO_TOKEN }}
     #   argoLogin: ${{ secrets.ARGOCD_LOGIN }}
-    #   argoPassword: ${{ secrets.ARGOCD_PASSWORD }}    
+    #   argoPassword: ${{ secrets.ARGOCD_PASSWORD }}
     uses: VirtoCommerce/.github/.github/workflows/deploy-cloud.yml@v3.200.17
     with:
       releaseSource: module
@@ -23,7 +23,6 @@ jobs:
       moduleBlob: 'VirtoCommerce.Catalog_3.235.0.zip'
       jiraKeys: ''
       argoServer: 'argo.virtocommerce.cloud'
-      matrix: '{"include":[{"envName":"prod","confPath":".deployment/module/cloudDeploy.json","forceCommit":"true","releaseType":"GithubReleases"},{"envName":"qa","confPath":".deployment/module/cloudDeploy.json","forceCommit":"false","releaseType":"AzureBlob"}]}'
+      matrix: '{"include":[{"envName":"qa","confPath":".deployment/module/cloudDeploy.json","forceCommit":"false","releaseType":"AzureBlob"}]}'
     secrets: inherit
 
-      
