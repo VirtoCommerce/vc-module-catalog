@@ -453,6 +453,14 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 SeoInfos.Patch(target.SeoInfos, (sourceSeoInfo, targetSeoInfo) => sourceSeoInfo.Patch(targetSeoInfo));
             }
             #endregion
+
+
+            #region Childrens
+            if (!Childrens.IsNullCollection())
+            {
+                Childrens.Patch(target.Childrens, (sourceChildren, targetChildren) => sourceChildren.Patch(targetChildren));
+            }
+            #endregion
         }
     }
 }
