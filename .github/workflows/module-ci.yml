@@ -234,7 +234,6 @@ jobs:
       customModuleUrl:  ${{ needs.ci.outputs.artifactUrl }}
       platformDockerTag: 'dev-linux-latest'
       storefrontDockerTag: 'dev-linux-latest'
-
     secrets:
       envPAT: ${{ secrets.REPO_TOKEN }}
       katalonApiKey: ${{ secrets.KATALON_API_KEY }}
