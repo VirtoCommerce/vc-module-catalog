@@ -109,7 +109,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             var priceRangeFilters = priceRangeFilter.Values?.Select(v => GetPriceRangeFilterValueAggregationRequest(priceRangeFilter, v, existingFilters, criteria.Pricelists)).ToList();
             if (priceRangeFilters == null)
             {
-                return null;
+                return new List<AggregationRequest>();
             }
 
             var commonFieldName = StringsHelper.JoinNonEmptyStrings("_", "price", priceRangeFilter.Currency).ToLowerInvariant();
