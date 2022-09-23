@@ -151,17 +151,12 @@ angular.module('virtoCommerce.catalogModule')
             blade.datepickers[which] = true;
         };
 
-        function initVendors() {
-            var maxIndexLoadCount = 10000;
-            blade.vendors = members.search({
-                sort: 'name:asc',
-                take: maxIndexLoadCount
-            });
+        blade.fetchVendors = function (criteria) {
+            return members.search(criteria);
         }
 
         blade.openVendorsManagement = function () {
             var newBlade = {
-                parentRefresh: initVendors,
                 id: 'vendorList',
                 currentEntity: { id: null },
                 controller: 'virtoCommerce.customerModule.memberListController',
@@ -205,8 +200,6 @@ angular.module('virtoCommerce.catalogModule')
             blade.currentEntity.associations = _.reject(blade.currentEntity.associations, predicate);
             blade.origItem.associations = _.reject(blade.origItem.associations, predicate);
         }
-
-        initVendors();
 
         blade.taxTypes = settings.getValues({ id: 'VirtoCommerce.Core.General.TaxTypes' });
 
