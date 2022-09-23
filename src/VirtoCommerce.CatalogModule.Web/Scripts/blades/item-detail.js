@@ -152,16 +152,15 @@ angular.module('virtoCommerce.catalogModule')
         };
 
         function initVendors() {
+            var maxIndexLoadCount = 10000;
             blade.vendors = members.search({
-                memberType: 'Vendor',
                 sort: 'name:asc',
-                take: 1000
+                take: maxIndexLoadCount
             });
         }
 
         blade.openVendorsManagement = function () {
             var newBlade = {
-                memberType: 'Vendor',
                 parentRefresh: initVendors,
                 id: 'vendorList',
                 currentEntity: { id: null },
@@ -208,6 +207,7 @@ angular.module('virtoCommerce.catalogModule')
         }
 
         initVendors();
+
         blade.taxTypes = settings.getValues({ id: 'VirtoCommerce.Core.General.TaxTypes' });
 
         blade.refresh(false);
