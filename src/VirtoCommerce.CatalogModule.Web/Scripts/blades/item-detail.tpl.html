@@ -61,14 +61,10 @@
 <script type="text/ng-template" id="vendor.html">
     <div class="form-group">
         <label class="form-label">{{ 'catalog.blades.item-detail.labels.vendor' | translate }} <a href="" ng-click="blade.openVendorsManagement()" class="form-edit" va-permission="customer:read"><i class="form-ico fa fa-pencil"></i></a></label>
-        <div class="form-input">
-            <ui-select ng-model="blade.item.vendor">
-                <ui-select-match allow-clear placeholder="{{ 'catalog.blades.item-detail.placeholders.vendor' | translate }}">{{$select.selected.name}}</ui-select-match>
-                <ui-select-choices repeat="x.id as x in blade.vendors.results | filter: {name: $select.search}">
-                    <span ng-bind-html="x.name | highlight: $select.search"></span>
-                </ui-select-choices>
-            </ui-select>
-        </div>
+        <ui-scroll-drop-down ng-model="blade.item.vendor"
+                             data="blade.fetchVendors(criteria)"
+                             placeholder="'catalog.blades.item-detail.placeholders.vendor'">
+        </ui-scroll-drop-down>
     </div>
 </script>
 <script type="text/ng-template" id="taxType.html">
