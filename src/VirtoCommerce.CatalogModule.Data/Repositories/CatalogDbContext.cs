@@ -47,6 +47,10 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
             modelBuilder.Entity<ItemEntity>().ToTable("Item").HasKey(x => x.Id);
             modelBuilder.Entity<ItemEntity>().Property(x => x.Id).HasMaxLength(128).ValueGeneratedOnAdd();
+            modelBuilder.Entity<ItemEntity>().Property(x => x.Weight).HasPrecision(18, 4);
+            modelBuilder.Entity<ItemEntity>().Property(x => x.Height).HasPrecision(18, 4);
+            modelBuilder.Entity<ItemEntity>().Property(x => x.Length).HasPrecision(18, 4);
+            modelBuilder.Entity<ItemEntity>().Property(x => x.Width).HasPrecision(18, 4);
             modelBuilder.Entity<ItemEntity>().HasOne(m => m.Catalog).WithMany().HasForeignKey(x => x.CatalogId)
                 .IsRequired().OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<ItemEntity>().HasOne(m => m.Category).WithMany().HasForeignKey(x => x.CategoryId)
