@@ -91,6 +91,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             IndexIsProperty(document, product.Code);
 
             document.AddFilterableValue("status", statusField, IndexDocumentFieldValueType.String);
+            document.AddFilterableValue("outerid", product.OuterId, IndexDocumentFieldValueType.String);
             document.AddFilterableAndSearchableValue("sku", product.Code);
             document.AddFilterableAndSearchableValue("code", product.Code);// { IsRetrievable = true, IsFilterable = true, IsCollection = true });
             document.AddFilterableAndSearchableValue("name", product.Name);
@@ -166,6 +167,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 IndexIsProperty(document, "billofmaterials");
             }
 
+            document.Add(new IndexDocumentField("outerid", variation.OuterId) { IsRetrievable = true, IsFilterable = true, IsCollection = true, ValueType = IndexDocumentFieldValueType.String, });
             document.Add(new IndexDocumentField("code", variation.Code) { IsRetrievable = true, IsFilterable = true, IsCollection = true, ValueType = IndexDocumentFieldValueType.String, });
             // add the variation code to content
             document.Add(new IndexDocumentField("__content", variation.Code) { IsRetrievable = true, IsSearchable = true, IsCollection = true, ValueType = IndexDocumentFieldValueType.String, });
