@@ -8,6 +8,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 {
     public class CatalogDbContext : DbContextWithTriggers
     {
+#pragma warning disable S109
         public CatalogDbContext(DbContextOptions<CatalogDbContext> options)
             : base(options)
         {
@@ -253,4 +254,5 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             base.OnModelCreating(modelBuilder);
         }
     }
+#pragma warning restore S109
 }
