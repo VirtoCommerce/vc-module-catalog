@@ -73,7 +73,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [HttpDelete]
         [Route("")]
         [Authorize(ModuleConstants.Security.Permissions.Delete)]
-        public async Task<ActionResult> Delete([FromQuery]string[] ids)
+        public async Task<ActionResult> Delete([FromQuery] string[] ids)
         {
             await _associationService.DeleteAssociationAsync(ids);
             return Ok(HttpStatusCode.NoContent);
@@ -86,7 +86,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [HttpPost]
         [Route("search")]
         [Authorize(ModuleConstants.Security.Permissions.Read)]
-        public async Task<ActionResult<ProductAssociationSearchResult>> Search([FromBody]ProductAssociationSearchCriteria criteria)
+        public async Task<ActionResult<ProductAssociationSearchResult>> Search([FromBody] ProductAssociationSearchCriteria criteria)
         {
             var result = await _productAssociationSearchService.SearchProductAssociationsAsync(criteria);
             return Ok(result);

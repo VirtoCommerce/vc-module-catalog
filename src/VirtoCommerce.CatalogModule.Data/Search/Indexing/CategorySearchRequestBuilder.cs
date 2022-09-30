@@ -63,7 +63,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             }
 
             result.AddCatalogFilters(criteria);
-            
+
             result.Add(FiltersHelper.CreateOutlineFilter(criteria));
 
             var terms = criteria.GetTerms();

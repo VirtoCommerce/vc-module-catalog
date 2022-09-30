@@ -16,7 +16,7 @@ namespace VirtoCommerce.CatalogModule.Web.Model
 
         public object Clone()
         {
-            var result = (AggregationProperty) MemberwiseClone();
+            var result = (AggregationProperty)MemberwiseClone();
             result.Values = Values?.ToList();
             return result;
         }

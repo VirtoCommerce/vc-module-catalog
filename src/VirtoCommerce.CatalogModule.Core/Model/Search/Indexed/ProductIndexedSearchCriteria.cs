@@ -77,13 +77,13 @@ namespace VirtoCommerce.CatalogModule.Core.Model.Search
 
         public override CatalogIndexedSearchCriteria FromListEntryCriteria(CatalogListEntrySearchCriteria listEntryCriteria)
         {
-            if(listEntryCriteria == null)
+            if (listEntryCriteria == null)
             {
                 throw new ArgumentNullException(nameof(listEntryCriteria));
             }
-            
+
             WithHidden = !listEntryCriteria.HideDirectLinkedCategories;
-         
+
             return base.FromListEntryCriteria(listEntryCriteria);
         }
     }
