@@ -1,4 +1,4 @@
-# v3.200.19
+# v3.200.20
 name: Module CI
 
 on:
@@ -52,6 +52,7 @@ jobs:
       version: ${{ steps.artifact_ver.outputs.shortVersion }}
       moduleId: ${{ steps.artifact_ver.outputs.moduleId }}
       matrix: ${{ steps.deployment-matrix.outputs.matrix }}
+      run-e2e: ${{ steps.run-e2e.outputs.result }}
 
     steps:
 
@@ -161,6 +162,16 @@ jobs:
           deployConfigPath: '.deployment/module/cloudDeploy.json'
           releaseBranch: 'master'
 
+      - name: Check commit message for version number
+        id: run-e2e
+        run: |
+          if [[ "${{ github.event.head_commit.message }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; 
+          then
+            echo "::set-output name=result::false"
+          else
+            echo "::set-output name=result::true"
+          fi
+
       - name: Setup Git Credentials
         if: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/master') && github.event_name != 'workflow_dispatch' }}
         uses: VirtoCommerce/vc-github-actions/setup-git-credentials-github@master
@@ -220,10 +231,10 @@ jobs:
           echo "Jira Upload Build Info response: ${{ steps.push_build_info_to_jira.outputs.response }}"
 
   module-katalon-tests:
-    if: ${{ ((github.ref == 'refs/heads/dev') && (github.event_name == 'push')) ||
+    if: ${{ ((github.ref == 'refs/heads/dev') && (github.event_name == 'push') && (needs.ci.outputs.run-e2e == 'true')) ||
         (github.event_name == 'workflow_dispatch')}}
     needs: 'ci'
-    uses: VirtoCommerce/.github/.github/workflows/e2e.yml@v3.200.19
+    uses: VirtoCommerce/.github/.github/workflows/e2e.yml@v3.200.20
     with:
       katalonRepo: 'VirtoCommerce/vc-quality-gate-katalon'
       katalonRepoBranch: 'dev'
@@ -243,7 +254,7 @@ jobs:
         (github.ref == 'refs/heads/dev')) && 
         github.event_name == 'push' }}
     needs: ci
-    uses: VirtoCommerce/.github/.github/workflows/deploy-cloud.yml@v3.200.19
+    uses: VirtoCommerce/.github/.github/workflows/deploy-cloud.yml@v3.200.20
     with:
       releaseSource: module
       moduleId: ${{ needs.ci.outputs.moduleId }}
