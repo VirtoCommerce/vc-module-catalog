@@ -70,7 +70,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 seoInfo.MetaDescription = Description;
                 seoInfo.LanguageCode = LanguageCode;
                 seoInfo.SemanticUrl = Url;
-                asset.SeoInfos = new List<SeoInfo> {seoInfo};
+                asset.SeoInfos = new List<SeoInfo> { seoInfo };
             }
 
             return asset;

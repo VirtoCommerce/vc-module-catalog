@@ -35,7 +35,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [HttpPost]
         [Route("search")]
         [Authorize]
-        public async Task<ActionResult<PropertyDictionaryItemSearchResult>> SearchPropertyDictionaryItems([FromBody]PropertyDictionaryItemSearchCriteria criteria)
+        public async Task<ActionResult<PropertyDictionaryItemSearchResult>> SearchPropertyDictionaryItems([FromBody] PropertyDictionaryItemSearchCriteria criteria)
         {
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, criteria, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
             if (!authorizationResult.Succeeded)
@@ -52,7 +52,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [HttpPost]
         [Route("")]
         [Authorize(ModuleConstants.Security.Permissions.Create)]
-        public async Task<ActionResult> SaveChanges([FromBody]PropertyDictionaryItem[] propertyDictItems)
+        public async Task<ActionResult> SaveChanges([FromBody] PropertyDictionaryItem[] propertyDictItems)
         {
             await _propertyDictionaryService.SaveChangesAsync(propertyDictItems);
             return Ok();

@@ -48,15 +48,15 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         {
             get
             {
-                if(_dataSources == null)
+                if (_dataSources == null)
                 {
-                    lock(_lock)
+                    lock (_lock)
                     {
                         if (_dataSources == null)
-                        { 
-                            _dataSources = _catalogDataSourceFactory.GetAllFullExportPagedDataSources(_dataQuery);                            
+                        {
+                            _dataSources = _catalogDataSourceFactory.GetAllFullExportPagedDataSources(_dataQuery);
                         }
-                    }                   
+                    }
                 }
                 return _dataSources;
             }

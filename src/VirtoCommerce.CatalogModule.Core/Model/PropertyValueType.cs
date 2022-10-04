@@ -6,8 +6,8 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         ShortText,
         LongText,
         Number,
-		DateTime,
-		Boolean,
+        DateTime,
+        Boolean,
         Integer,
         GeoPoint
     }

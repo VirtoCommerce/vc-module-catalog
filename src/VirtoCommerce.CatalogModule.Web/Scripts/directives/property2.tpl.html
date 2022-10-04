@@ -34,7 +34,7 @@
     <script type="text/ng-template" id="Number.html">
         <!--<a href="#" editable-number="val.value">{{val.value || "N/A" }}</a>-->
         <div class="form-input">
-            <input smart-float num-type="float"
+            <input smart-float num-type="float" fraction="4"
                    ng-disabled="currentEntity.isReadOnly"
                    ng-required="currentEntity.required && !currentEntity.isReadOnly"
                    ng-model="context.currentPropValues[0].value"

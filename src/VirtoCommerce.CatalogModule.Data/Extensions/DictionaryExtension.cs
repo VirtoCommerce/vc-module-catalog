@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace VirtoCommerce.CatalogModule.Data.Extensions
 {
@@ -11,7 +7,7 @@ namespace VirtoCommerce.CatalogModule.Data.Extensions
         public static TValue GetValueOrThrow<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, string exceptionMessage)
         {
             TValue value;
-            if(!dictionary.TryGetValue(key, out value))
+            if (!dictionary.TryGetValue(key, out value))
             {
                 throw new KeyNotFoundException(exceptionMessage);
             }
