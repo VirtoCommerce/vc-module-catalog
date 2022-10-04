@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using VirtoCommerce.AssetsModule.Core.Assets;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Search.Indexing;
-using VirtoCommerce.AssetsModule.Core.Assets;
 using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;

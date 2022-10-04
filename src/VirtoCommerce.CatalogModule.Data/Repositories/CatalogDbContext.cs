@@ -8,6 +8,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 {
     public class CatalogDbContext : DbContextWithTriggers
     {
+#pragma warning disable S109
         public CatalogDbContext(DbContextOptions<CatalogDbContext> options)
             : base(options)
         {
@@ -47,6 +48,10 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
             modelBuilder.Entity<ItemEntity>().ToTable("Item").HasKey(x => x.Id);
             modelBuilder.Entity<ItemEntity>().Property(x => x.Id).HasMaxLength(128).ValueGeneratedOnAdd();
+            modelBuilder.Entity<ItemEntity>().Property(x => x.Weight).HasPrecision(18, 4);
+            modelBuilder.Entity<ItemEntity>().Property(x => x.Height).HasPrecision(18, 4);
+            modelBuilder.Entity<ItemEntity>().Property(x => x.Length).HasPrecision(18, 4);
+            modelBuilder.Entity<ItemEntity>().Property(x => x.Width).HasPrecision(18, 4);
             modelBuilder.Entity<ItemEntity>().HasOne(m => m.Catalog).WithMany().HasForeignKey(x => x.CatalogId)
                 .IsRequired().OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<ItemEntity>().HasOne(m => m.Category).WithMany().HasForeignKey(x => x.CategoryId)
@@ -113,7 +118,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
             modelBuilder.Entity<PropertyValueEntity>().ToTable("PropertyValue").HasKey(x => x.Id);
             modelBuilder.Entity<PropertyValueEntity>().Property(x => x.Id).HasMaxLength(128).ValueGeneratedOnAdd();
-
+            modelBuilder.Entity<PropertyValueEntity>().Property(x => x.DecimalValue).HasPrecision(18, 4);
             modelBuilder.Entity<PropertyValueEntity>().HasOne(m => m.CatalogItem).WithMany(x => x.ItemPropertyValues)
                 .HasForeignKey(x => x.ItemId).OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<PropertyValueEntity>().HasOne(m => m.Category).WithMany(x => x.CategoryPropertyValues)
@@ -249,4 +254,5 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             base.OnModelCreating(modelBuilder);
         }
     }
+#pragma warning restore S109
 }

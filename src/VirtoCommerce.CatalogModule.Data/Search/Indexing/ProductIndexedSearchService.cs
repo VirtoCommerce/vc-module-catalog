@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using VirtoCommerce.AssetsModule.Core.Assets;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
-using VirtoCommerce.AssetsModule.Core.Assets;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.SearchModule.Core.Model;
@@ -77,7 +77,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         protected override async Task<Aggregation[]> ConvertAggregationsAsync(IList<AggregationResponse> aggregationResponses, ProductIndexedSearchCriteria criteria)
         {
             var aggregationsTasks = _aggregationConverter?.ConvertAggregationsAsync(aggregationResponses, criteria);
-            if (aggregationsTasks != null) await Task.WhenAny(aggregationsTasks);
+            if (aggregationsTasks != null)
+                await Task.WhenAny(aggregationsTasks);
             return aggregationsTasks?.Result;
         }
     }

@@ -11,7 +11,7 @@ using Xunit;
 
 namespace VirtoCommerce.CatalogModule.Tests
 {
-    
+
 
     public class BaseDataSourceTests
     {

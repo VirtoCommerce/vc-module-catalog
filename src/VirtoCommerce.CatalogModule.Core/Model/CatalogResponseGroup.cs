@@ -8,6 +8,6 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         None = 0,
         Info = 1,
         WithProperties = 1 << 2,
-        Full = Info | WithProperties 
+        Full = Info | WithProperties
     }
 }
