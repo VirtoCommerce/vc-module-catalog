@@ -42,7 +42,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         {
             get
             {
-                var retVal = new CategoryEntity[] { };
+                var retVal = Array.Empty<CategoryEntity>();
                 if (ParentCategory != null)
                 {
                     retVal = ParentCategory.AllParents.Concat(new[] { ParentCategory }).ToArray();
@@ -144,7 +144,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                     var property = AbstractTypeFactory<Property>.TryCreateInstance();
                     property.Type = PropertyType.Category;
                     property.Name = values.Key;
-                    property.ValueType = values.FirstOrDefault().ValueType;
+                    property.ValueType = values.First().ValueType;
                     property.Values = values.ToList();
                     foreach (var propValue in property.Values)
                     {
