@@ -30,6 +30,8 @@ namespace VirtoCommerce.CatalogModule.Core.Model.Search
         /// Parent category id
         /// </summary>
         public string CategoryId { get; set; }
+        
+        public string[] OuterIds { get; set; }
 
         public bool SearchOnlyInRoot { get; set; }
     }
