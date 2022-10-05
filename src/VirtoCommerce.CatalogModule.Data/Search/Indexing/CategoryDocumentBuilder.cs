@@ -55,6 +55,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             IndexIsProperty(document, category.Code);
 
             document.Add(new IndexDocumentField("status", statusField) { IsRetrievable = true, IsFilterable = true, ValueType = IndexDocumentFieldValueType.String, });
+            document.Add(new IndexDocumentField("outerid", category.OuterId) { IsRetrievable = true, IsFilterable = true, ValueType = IndexDocumentFieldValueType.String, });
             document.Add(new IndexDocumentField("code", category.Code) { IsRetrievable = true, IsFilterable = true, ValueType = IndexDocumentFieldValueType.String, });
             document.Add(new IndexDocumentField("name", category.Name) { IsRetrievable = true, IsFilterable = true, ValueType = IndexDocumentFieldValueType.String, });
             document.Add(new IndexDocumentField("createddate", category.CreatedDate) { IsRetrievable = true, IsFilterable = true, ValueType = IndexDocumentFieldValueType.DateTime, });

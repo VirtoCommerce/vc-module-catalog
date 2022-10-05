@@ -20,7 +20,9 @@ namespace VirtoCommerce.CatalogModule.Core.Model.Search
             }
             set => _catalogIds = value;
         }
+
         public string CategoryId { get; set; }
+
         private string[] _categoriesIds;
         public string[] CategoryIds
         {
@@ -34,6 +36,9 @@ namespace VirtoCommerce.CatalogModule.Core.Model.Search
             }
             set => _categoriesIds = value;
         }
+
+        public string[] OuterIds { get; set; }
+
         public IList<string> Skus { get; set; }
 
         /// <summary>
