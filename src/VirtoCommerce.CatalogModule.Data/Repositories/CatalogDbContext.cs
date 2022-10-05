@@ -1,6 +1,9 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using EntityFrameworkCore.Triggers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Newtonsoft.Json;
 using VirtoCommerce.CatalogModule.Data.Model;
 
@@ -38,7 +41,11 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 .WithMany().HasForeignKey(x => x.CatalogId).IsRequired().OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<CategoryEntity>().Property(x => x.ExcludedProperties).HasConversion(
                 x => x != null && x.Count > 0 ? JsonConvert.SerializeObject(x) : null,
-                x => x != null ? JsonConvert.DeserializeObject<List<string>>(x) : null);
+                x => x != null ? JsonConvert.DeserializeObject<List<string>>(x) : null,
+                new ValueComparer<IList<string>>(
+                    (c1, c2) => c1.SequenceEqual(c2),
+                    c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
+                    c => c.ToList())); // take a reference about value comparers here: https://learn.microsoft.com/en-us/ef/core/modeling/value-comparers?tabs=ef5#mutable-classes
             modelBuilder.Entity<CategoryEntity>()
                 .HasCheckConstraint("Parent_category_check", $"{nameof(CategoryEntity.ParentCategoryId)} != {nameof(CategoryEntity.Id)}");
 
@@ -52,6 +59,8 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             modelBuilder.Entity<ItemEntity>().Property(x => x.Height).HasPrecision(18, 4);
             modelBuilder.Entity<ItemEntity>().Property(x => x.Length).HasPrecision(18, 4);
             modelBuilder.Entity<ItemEntity>().Property(x => x.Width).HasPrecision(18, 4);
+            modelBuilder.Entity<ItemEntity>().Property(x => x.MaxQuantity).HasPrecision(18, 2);
+            modelBuilder.Entity<ItemEntity>().Property(x => x.MinQuantity).HasPrecision(18, 2);
             modelBuilder.Entity<ItemEntity>().HasOne(m => m.Catalog).WithMany().HasForeignKey(x => x.CatalogId)
                 .IsRequired().OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<ItemEntity>().HasOne(m => m.Category).WithMany().HasForeignKey(x => x.CategoryId)
