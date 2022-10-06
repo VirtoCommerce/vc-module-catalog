@@ -27,8 +27,8 @@ namespace VirtoCommerce.CatalogModule.Core.Model.ListEntry
                 if (!category.Outlines.IsNullOrEmpty())
                 {
                     //TODO:  Use only physical catalog outline which this category belongs to
-                    Outline = category.Outlines.FirstOrDefault().Items.Select(x => x.Id).ToList();
-                    Path = category.Outlines.FirstOrDefault().Items.Select(x => x.Name).ToList();
+                    Outline = category.Outlines.First().Items.Select(x => x.Id).ToList();
+                    Path = category.Outlines.First().Items.Select(x => x.Name).ToList();
                 }
             }
             return this;
