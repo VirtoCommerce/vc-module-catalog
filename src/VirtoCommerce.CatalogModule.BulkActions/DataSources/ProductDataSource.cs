@@ -13,7 +13,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.DataSources
 {
     public class ProductDataSource : BaseDataSource
     {
-        private readonly IListEntrySearchService _listEntrySearchService;
+        private readonly IInternalListEntrySearchService _internalListEntrySearchService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProductDataSource"/> class.
@@ -24,10 +24,10 @@ namespace VirtoCommerce.CatalogModule.BulkActions.DataSources
         /// <param name="dataQuery">
         /// The data query.
         /// </param>
-        public ProductDataSource(IListEntrySearchService listEntrySearchService, DataQuery dataQuery)
-            : base(listEntrySearchService, dataQuery)
+        public ProductDataSource(IInternalListEntrySearchService internalListEntrySearchService, DataQuery dataQuery)
+            : base(internalListEntrySearchService, dataQuery)
         {
-            _listEntrySearchService = listEntrySearchService;
+            _internalListEntrySearchService = internalListEntrySearchService;
         }
 
         protected override CatalogListEntrySearchCriteria BuildSearchCriteria(DataQuery dataQuery)
@@ -110,7 +110,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.DataSources
             searchCriteria.SearchInChildren = true;
             searchCriteria.SearchInVariations = true;
 
-            var result = await _listEntrySearchService.SearchAsync(searchCriteria);
+            var result = await _internalListEntrySearchService.InnerListEntrySearchAsync(searchCriteria);
             return result;
         }
     }
