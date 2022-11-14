@@ -47,6 +47,12 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 throw new ArgumentNullException(nameof(catalog));
 
             catalog.Id = Id;
+
+            catalog.CreatedDate = CreatedDate;
+            catalog.ModifiedDate = ModifiedDate;
+            catalog.CreatedBy = CreatedBy;
+            catalog.ModifiedBy = ModifiedBy;
+
             catalog.Name = Name;
             catalog.IsVirtual = Virtual;
             catalog.OuterId = OuterId;
@@ -91,6 +97,12 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             pkMap.AddPair(catalog, this);
 
             Id = catalog.Id;
+
+            CreatedDate = catalog.CreatedDate;
+            ModifiedDate = catalog.ModifiedDate;
+            CreatedBy = catalog.CreatedBy;
+            ModifiedBy = catalog.ModifiedBy;
+
             Name = catalog.Name;
             Virtual = catalog.IsVirtual;
             OuterId = catalog.OuterId;
