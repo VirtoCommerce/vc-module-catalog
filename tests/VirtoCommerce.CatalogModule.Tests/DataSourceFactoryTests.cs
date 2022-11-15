@@ -61,7 +61,7 @@ namespace VirtoCommerce.CatalogModule.Tests
 
         private IDataSourceFactory BuildDataSourceFactory()
         {
-            var searchService = new Mock<IListEntrySearchService>();
+            var searchService = new Mock<IInternalListEntrySearchService>();
             return new DataSourceFactory(searchService.Object);
         }
     }

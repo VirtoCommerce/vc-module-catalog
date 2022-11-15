@@ -151,7 +151,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
         private static Func<CatalogProduct, IEnumerable<Property>> CollectionSelector()
         {
             return product =>
-                product.Properties.Where(property => property.IsInherited && property.Type != PropertyType.Category);
+                product.Properties.Where(property => property.Id != null && property.IsInherited && property.Type != PropertyType.Category);
         }
 
         private static bool TrySetCustomProperty(IHasProperties product, Property property)
