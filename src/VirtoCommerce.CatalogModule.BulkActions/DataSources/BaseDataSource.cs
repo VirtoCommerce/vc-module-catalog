@@ -16,7 +16,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.DataSources
     {
         private readonly DataQuery _dataQuery;
 
-        private readonly IListEntrySearchService _listEntrySearchService;
+        private readonly IInternalListEntrySearchService _internalListEntrySearchService;
 
         private readonly int _pageSize = 50;
 
@@ -31,9 +31,9 @@ namespace VirtoCommerce.CatalogModule.BulkActions.DataSources
         /// <param name="dataQuery">
         /// The data query.
         /// </param>
-        public BaseDataSource(IListEntrySearchService listEntrySearchService, DataQuery dataQuery)
+        public BaseDataSource(IInternalListEntrySearchService internalListEntrySearchService, DataQuery dataQuery)
         {
-            _listEntrySearchService = listEntrySearchService;
+            _internalListEntrySearchService = internalListEntrySearchService;
             _dataQuery = dataQuery ?? throw new ArgumentNullException(nameof(dataQuery));
         }
 
@@ -50,7 +50,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.DataSources
                 else
                 {
                     var searchCriteria = BuildSearchCriteria(_dataQuery);
-                    var searchResult = await _listEntrySearchService.SearchAsync(searchCriteria);
+                    var searchResult = await _internalListEntrySearchService.InnerListEntrySearchAsync(searchCriteria);
                     Items = searchResult.ListEntries;
                 }
             }
@@ -82,7 +82,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.DataSources
                     var searchCriteria = BuildSearchCriteria(_dataQuery);
                     searchCriteria.Skip = 0;
                     searchCriteria.Take = 0;
-                    var searchResult = await _listEntrySearchService.SearchAsync(searchCriteria);
+                    var searchResult = await _internalListEntrySearchService.InnerListEntrySearchAsync(searchCriteria);
                     result = searchResult.TotalCount;
                 }
             }

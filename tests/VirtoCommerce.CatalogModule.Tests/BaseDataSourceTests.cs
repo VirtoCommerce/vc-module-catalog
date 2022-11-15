@@ -22,7 +22,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             // arrange
             var entries = new List<ListEntryBase> { new ListEntryBase() };
             var dataQuery = Mock.Of<DataQuery>(t => t.ListEntries == entries.ToArray());
-            var searchService = Mock.Of<IListEntrySearchService>();
+            var searchService = Mock.Of<IInternalListEntrySearchService>();
             var dataSource = new BaseDataSource(searchService, dataQuery);
 
             // act
@@ -38,15 +38,15 @@ namespace VirtoCommerce.CatalogModule.Tests
             // arrange
             var listEntrySearchResult = Mock.Of<ListEntrySearchResult>();
             var dataQuery = Mock.Of<DataQuery>(t => t.SearchCriteria == Mock.Of<CatalogListEntrySearchCriteria>());
-            var searchService = new Mock<IListEntrySearchService>();
-            searchService.Setup(t => t.SearchAsync(It.IsAny<CatalogListEntrySearchCriteria>())).ReturnsAsync(listEntrySearchResult);
+            var searchService = new Mock<IInternalListEntrySearchService>();
+            searchService.Setup(t => t.InnerListEntrySearchAsync(It.IsAny<CatalogListEntrySearchCriteria>())).ReturnsAsync(listEntrySearchResult);
             var dataSource = new BaseDataSource(searchService.Object, dataQuery);
 
             // act
             await dataSource.FetchAsync();
 
             // assert
-            searchService.Verify(t => t.SearchAsync(It.IsAny<CatalogListEntrySearchCriteria>()));
+            searchService.Verify(t => t.InnerListEntrySearchAsync(It.IsAny<CatalogListEntrySearchCriteria>()));
         }
 
         [Fact]
@@ -55,7 +55,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             // arrange
             var entries = new List<ListEntryBase> { new ListEntryBase() };
             var dataQuery = Mock.Of<DataQuery>(t => t.ListEntries == entries.ToArray());
-            var searchService = Mock.Of<IListEntrySearchService>();
+            var searchService = Mock.Of<IInternalListEntrySearchService>();
             var dataSource = new BaseDataSource(searchService, dataQuery);
 
             // act
@@ -70,7 +70,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         {
             // arrange
             var dataQuery = Mock.Of<DataQuery>();
-            var searchService = Mock.Of<IListEntrySearchService>();
+            var searchService = Mock.Of<IInternalListEntrySearchService>();
             var dataSource = new BaseDataSource(searchService, dataQuery);
 
             // act
@@ -86,7 +86,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         {
             // arrange
             var dataQuery = Mock.Of<DataQuery>();
-            var searchService = Mock.Of<IListEntrySearchService>();
+            var searchService = Mock.Of<IInternalListEntrySearchService>();
             var dataSource = new BaseDataSource(searchService, dataQuery);
 
             // act
@@ -102,9 +102,9 @@ namespace VirtoCommerce.CatalogModule.Tests
         {
             // arrange
             var dataQuery = Mock.Of<DataQuery>(t => t.SearchCriteria == new CatalogListEntrySearchCriteria());
-            var searchService = new Mock<IListEntrySearchService>();
+            var searchService = new Mock<IInternalListEntrySearchService>();
             var listEntrySearchResult = new ListEntrySearchResult { TotalCount = 1 };
-            searchService.Setup(t => t.SearchAsync(It.IsAny<CatalogListEntrySearchCriteria>())).ReturnsAsync(listEntrySearchResult);
+            searchService.Setup(t => t.InnerListEntrySearchAsync(It.IsAny<CatalogListEntrySearchCriteria>())).ReturnsAsync(listEntrySearchResult);
 
             var dataSource = new BaseDataSource(searchService.Object, dataQuery);
 
@@ -121,7 +121,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         {
             // arrange
             var dataQuery = Mock.Of<DataQuery>(t => t.ListEntries == new[] { new ListEntryBase() });
-            var searchService = new Mock<IListEntrySearchService>();
+            var searchService = new Mock<IInternalListEntrySearchService>();
 
             var dataSource = new BaseDataSource(searchService.Object, dataQuery);
 
