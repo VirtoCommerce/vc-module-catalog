@@ -47,10 +47,10 @@ angular.module('virtoCommerce.catalogModule')
                 var oldItem = _.find(blade.originalEntity.properties, function (x) { return x.name === property.name; });
                 if (oldItem) {
                     var propValues = property.values.filter(x => x.value)
-                        .sort((x, y) => x.id.localeCompare(y.id));
+                        .sort((x, y) => x.valueId.localeCompare(y.valueId));
 
                     var oldValues = oldItem.values.filter(x => x.value)
-                        .sort((x, y) => x.id.localeCompare(y.id));
+                        .sort((x, y) => x.valueId.localeCompare(y.valueId));
 
                     return !angular.equals(propValues, oldValues);
                 }
