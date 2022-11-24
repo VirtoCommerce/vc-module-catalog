@@ -119,7 +119,6 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 {
                     if (property.Values != null)
                     {
-                        // Do not use values from inherited properties
                         var propertyValues = property.Values.Where(pv => pv != null).ToList();
 
                         if (propertyValues.Any())
