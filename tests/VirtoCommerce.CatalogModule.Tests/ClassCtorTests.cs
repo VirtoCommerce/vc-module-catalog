@@ -36,7 +36,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             var action = new Action(
                 () =>
                 {
-                    new BaseDataSource(Mock.Of<IListEntrySearchService>(), null);
+                    new BaseDataSource(Mock.Of<IInternalListEntrySearchService>(), null);
                 });
 
             // assert
