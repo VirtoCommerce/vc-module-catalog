@@ -63,7 +63,7 @@ angular.module('virtoCommerce.catalogModule')
 
         $scope.comparePropValues = function (x, y) {
             if (!x.valueId) {
-                x.value.localeCompare(y.value);
+                return x.value.localeCompare(y.value);
             }
 
             return x.valueId.localeCompare(y.valueId);
