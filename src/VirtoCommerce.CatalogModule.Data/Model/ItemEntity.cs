@@ -286,39 +286,33 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             if (!product.Properties.IsNullOrEmpty())
             {
                 var propValues = new List<PropertyValue>();
-                var forceSavePropertyValues = false;
-
                 foreach (var property in product.Properties.Where(x => x.Type == PropertyType.Product || x.Type == PropertyType.Variation))
                 {
                     if (property.Values != null)
                     {
-                        // Do not use values from inherited properties
-                        var propertyValues = property.Values.Where(pv => pv != null && !pv.IsInherited).ToList();
-
-                        if (propertyValues.Any())
+                        foreach (var propValue in property.Values)
                         {
-                            foreach (var propValue in propertyValues)
+                            // Do not use values from inherited properties 
+                            if (propValue != null && !propValue.IsInherited)
                             {
                                 // Need populate required fields
                                 propValue.PropertyName = property.Name;
                                 propValue.ValueType = property.ValueType;
                                 propValues.Add(propValue);
                             }
-                        }
-                        else
-                        {
-                            // Set true to be able to remove property values from database
-                            forceSavePropertyValues = true;
+                            else
+                            {
+                                // Add empty property value for null values to be able remove these values from db in the lines below 
+                                propValues.Add(new PropertyValue());
+                            }
                         }
                     }
                 }
-
-                if (forceSavePropertyValues || propValues.Any())
+                if (!propValues.IsNullOrEmpty())
                 {
-                    ItemPropertyValues = new ObservableCollection<PropertyValueEntity>(AbstractTypeFactory<PropertyValueEntity>.TryCreateInstance().FromModels(propValues, pkMap));
+                    ItemPropertyValues = new ObservableCollection<PropertyValueEntity>(AbstractTypeFactory<PropertyValueEntity>.TryCreateInstance().FromModels(propValues.Where(x => !x.IsEmpty), pkMap));
                 }
             }
-
 #pragma warning disable CS0618 // PropertyValues can be used here for backward compatibility
             else if (!product.PropertyValues.IsNullOrEmpty())
             {

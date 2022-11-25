@@ -113,32 +113,20 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             if (!catalog.Properties.IsNullOrEmpty())
             {
                 var propValues = new List<PropertyValue>();
-                var forceSavePropertyValues = false;
-
                 foreach (var property in catalog.Properties)
                 {
                     if (property.Values != null)
                     {
-                        var propertyValues = property.Values.Where(pv => pv != null).ToList();
-
-                        if (propertyValues.Any())
+                        foreach (var propValue in property.Values)
                         {
-                            foreach (var propValue in propertyValues)
-                            {
-                                // Need populate required fields
-                                propValue.PropertyName = property.Name;
-                                propValue.ValueType = property.ValueType;
-                                propValues.Add(propValue);
-                            }
-                        }
-                        else
-                        {
-                            // Set true to be able to remove property values from database
-                            forceSavePropertyValues = true;
+                            // Need populate required fields
+                            propValue.PropertyName = property.Name;
+                            propValue.ValueType = property.ValueType;
+                            propValues.Add(propValue);
                         }
                     }
                 }
-                if (forceSavePropertyValues || propValues.Any())
+                if (!propValues.IsNullOrEmpty())
                 {
                     CatalogPropertyValues = new ObservableCollection<PropertyValueEntity>(AbstractTypeFactory<PropertyValueEntity>.TryCreateInstance().FromModels(propValues, pkMap));
                 }
