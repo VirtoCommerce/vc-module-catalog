@@ -47,10 +47,10 @@ angular.module('virtoCommerce.catalogModule')
                 var oldItem = _.find(blade.originalEntity.properties, function (x) { return x.name === property.name; });
                 if (oldItem) {
                     var propValues = property.values.filter(x => x.value)
-                        .sort((x, y) => x.valueId.localeCompare(y.valueId));
+                        .sort((x, y) => $scope.comparePropValues(x,y));
 
                     var oldValues = oldItem.values.filter(x => x.value)
-                        .sort((x, y) => x.valueId.localeCompare(y.valueId));
+                        .sort((x, y) => $scope.comparePropValues(x,y));
 
                     return !angular.equals(propValues, oldValues);
                 }
@@ -59,6 +59,14 @@ angular.module('virtoCommerce.catalogModule')
                 }
             }
             return false;
+        }
+
+        $scope.comparePropValues = function (x, y) {
+            if (!x.valueId) {
+                x.value.localeCompare(y.value);
+            }
+
+            return x.valueId.localeCompare(y.valueId);
         }
 
         $scope.isPropertyVisible = function (property) {
