@@ -205,32 +205,36 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             if (!category.Properties.IsNullOrEmpty())
             {
                 var propValues = new List<PropertyValue>();
+                var forceSavePropertyValues = false;
+
                 foreach (var property in category.Properties.Where(x => x.Type == PropertyType.Category))
                 {
                     if (property.Values != null)
                     {
                         // Do not use values from inherited properties
-                        foreach (var propValue in property.Values)
+                        var propertyValues = property.Values.Where(pv => pv != null && !pv.IsInherited).ToList();
+
+                        if (propertyValues.Any())
                         {
-                            if (propValue != null && !propValue.IsInherited)
+                            foreach (var propValue in propertyValues)
                             {
                                 // Need populate required fields
                                 propValue.PropertyName = property.Name;
                                 propValue.ValueType = property.ValueType;
                                 propValues.Add(propValue);
                             }
-                            else
-                            {
-                                // Add empty property value for null values to be able remove these values from db in the lines below
-                                propValues.Add(new PropertyValue());
-                            }
+                        }
+                        else
+                        {
+                            // Set true to be able to remove property values from database
+                            forceSavePropertyValues = true;
                         }
                     }
                 }
-                if (!propValues.IsNullOrEmpty())
+
+                if (forceSavePropertyValues || propValues.Any())
                 {
-                    // Skip the empty property values in order to remove the empty values from DB in the further Patch method call.
-                    CategoryPropertyValues = new ObservableCollection<PropertyValueEntity>(AbstractTypeFactory<PropertyValueEntity>.TryCreateInstance().FromModels(propValues.Where(x => !x.IsEmpty), pkMap));
+                    CategoryPropertyValues = new ObservableCollection<PropertyValueEntity>(AbstractTypeFactory<PropertyValueEntity>.TryCreateInstance().FromModels(propValues, pkMap));
                 }
             }
 
