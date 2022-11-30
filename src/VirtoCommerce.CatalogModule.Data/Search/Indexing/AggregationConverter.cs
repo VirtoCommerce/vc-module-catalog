@@ -330,30 +330,37 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 // There can be many properties with the same name
                 var properties = allProperties.Where(p => p.Name.EqualsInvariant(aggregation.Field)).ToArray();
 
-                if (properties.Any())
+                if (!properties.Any())
                 {
-                    var allPropertyLabels = properties.SelectMany(p => p.DisplayNames)
-                                                      .Select(n => new AggregationLabel { Language = n.LanguageCode, Label = n.Name })
-                                                      .ToArray();
+                    continue;
+                }
 
-                    aggregation.Labels = GetFirstLabelForEachLanguage(allPropertyLabels);
+                var allPropertyLabels = properties.SelectMany(p => p.DisplayNames)
+                    .Select(n => new AggregationLabel { Language = n.LanguageCode, Label = n.Name })
+                    .ToArray();
 
-                    var dictionaryItemsSearchResult = await _propDictItemsSearchService.SearchAsync(new PropertyDictionaryItemSearchCriteria { PropertyIds = properties.Select(x => x.Id).ToArray(), Take = int.MaxValue });
-                    var allDictItemsMap = dictionaryItemsSearchResult.Results.GroupBy(x => x.Alias)
-                                                                     .ToDictionary(x => x.Key, x => x.SelectMany(dictItem => dictItem.LocalizedValues)
-                                                                                                     .Select(localizedValue => new AggregationLabel { Language = localizedValue.LanguageCode, Label = localizedValue.Value }));
+                aggregation.Labels = GetFirstLabelForEachLanguage(allPropertyLabels);
 
-                    foreach (var aggregationItem in aggregation.Items)
+                var dictionaryItemsSearchResult = await _propDictItemsSearchService.SearchAsync(
+                    new PropertyDictionaryItemSearchCriteria { PropertyIds = properties.Select(x => x.Id).ToArray(), Take = int.MaxValue });
+                var allDictItemsMap = dictionaryItemsSearchResult.Results.GroupBy(x => x.Alias)
+                    .ToDictionary(x => x.Key,
+                        x => x.SelectMany(dictItem => dictItem.LocalizedValues)
+                            .Select(localizedValue => new AggregationLabel { Language = localizedValue.LanguageCode, Label = localizedValue.Value })
+                            .ToArray(),
+                        StringComparer.OrdinalIgnoreCase);
+
+                foreach (var aggregationItem in aggregation.Items)
+                {
+                    var alias = aggregationItem.Value?.ToString();
+                    if (string.IsNullOrEmpty(alias) || !allDictItemsMap.ContainsKey(alias))
                     {
-                        var alias = aggregationItem.Value?.ToString();
-                        if (!string.IsNullOrEmpty(alias))
-                        {
-                            if (allDictItemsMap.TryGetValue(alias, out var labels))
-                            {
-                                aggregationItem.Labels = GetFirstLabelForEachLanguage(labels.ToArray());
-                            }
-                        }
+                        continue;
                     }
+
+                    var pair = allDictItemsMap.First(x => allDictItemsMap.Comparer.Equals(x.Key, alias));
+                    aggregationItem.Value = pair.Key;
+                    aggregationItem.Labels = GetFirstLabelForEachLanguage(pair.Value);
                 }
             }
         }
