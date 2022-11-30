@@ -53,7 +53,7 @@ angular.module('virtoCommerce.catalogModule').directive('vaProperty2', ['$compil
                     }), function (x) { return x.valueId; });
                 }
 
-                if (newValues) { 
+                if (newValues) {
                     newValues = newValues.filter(x=>x);
                 }
 
@@ -65,7 +65,6 @@ angular.module('virtoCommerce.catalogModule').directive('vaProperty2', ['$compil
 
                     ngModelController.$setViewValue(scope.currentEntity);
                 }
-               
             }, true);
 
 
