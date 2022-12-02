@@ -53,6 +53,10 @@ angular.module('virtoCommerce.catalogModule').directive('vaProperty2', ['$compil
                     }), function (x) { return x.valueId; });
                 }
 
+                if (newValues) {
+                    newValues = newValues.filter(x=>x);
+                }
+
                 if (isValuesDifferent(newValues, currentValues)) {
                     scope.currentEntity.values = angular.copy(newValues);
 
@@ -60,9 +64,6 @@ angular.module('virtoCommerce.catalogModule').directive('vaProperty2', ['$compil
                     _.each(scope.currentEntity.values, function (x) { if (x) { x.isInherited = false;}; });
 
                     ngModelController.$setViewValue(scope.currentEntity);
-                }
-                if (newValues[0] === undefined) {
-                    scope.currentEntity.values = [];
                 }
             }, true);
 
