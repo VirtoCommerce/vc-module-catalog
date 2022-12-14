@@ -13,6 +13,11 @@
         "description": "Введите Координаты Широты/Долготы (по одной в строке в формате: широта, долгота [без пробелов], например 41.40338, 2.17403"
       }
     },
+    "product-types": {
+      "Physical": "Физический",
+      "Digital": "Цифровой",
+      "BillOfMaterials": "Продукт с перечнем материалов"
+    },
     "blades": {
       "catalogs-list": {
         "title": "Каталог",
@@ -92,7 +97,8 @@
           "is-active": "Активна",
           "name": "Название",
           "code": "Код",
-          "tax-type": "Вид налога"
+          "tax-type": "Вид налога",
+          "priority": "Приоритет"
         },
         "validations": {
           "code": "Код не может содержать $+;=%{}[]|/@ ~!^*&()?:'<>, символы"
@@ -100,7 +106,8 @@
         "placeholders": {
           "name": "Введите название категории",
           "code": "Введите код категории",
-          "select": "Выбрать..."
+          "select": "Выбрать...",
+          "priority": "Введите число"
         }
       },
       "categories-items-add": {
@@ -122,6 +129,10 @@
           "digital-product": {
             "title": "Цифровой продукт",
             "description": "Предоставление скидки на заказываемый товар, может быть использовано в рамках целевого продвижения и т.д. Так как продукт цифровой, при покупке он загружается, доставка не предусмотрена."
+          },
+          "bill-of-materials-product": {
+            "title": "Продукт с перечнем материалов",
+            "description": "Это физический продукт, который также включает в себя перечень материалов (список вспомогательных предметов). Он может быть использован для целевых акций и требует физической доставки."
           }
         },
         "catalog-item-name": "Каталог",
@@ -196,7 +207,16 @@
       "property-list": {
         "subtitle": "Список свойств",
         "labels": {
-          "empty-list": "Нет"
+          "empty-list": "Нет",
+          "modified": "(изменен)",
+          "add-filter": "Фильтр",
+          "reset-filter": "Сбросить фильтр",
+          "excluded": "Свойства исключенные из наследования",
+          "hide-empty-values": "Скрывать пустые поля",
+          "show-empty-values": "Показывать пустые поля"
+        },
+        "placeholders": {
+          "excluded": "Выберите свойства"
         },
         "validations": {
           "required": "Это поле обязательно для заполнения",
@@ -205,12 +225,24 @@
           "pattern": "Это поле не соответствует шаблону"
         }
       },
+      "property-selector": {
+        "title": "Выбор свойств для редактирования",
+        "labels": {
+          "applied-filter": "Применить фильтр",
+          "new-filter": "Новый фильтр"
+        }
+      },
       "item-property-detail": {
         "title": "Изменить свойства продукта",
         "title-new": "Новое свойство продукта",
         "subtitle": "Введите информацию о свойстве",
         "labels": {
           "property-name": "Название свойства",
+          "duplicate-property-in-product": "Свойство с именем {{propertyName}} уже существует в {{categoryName}}. Имя должно быть уникальным.",
+          "duplicate-property-in-catalog": "Свойство с именем {{propertyName}} уже существует в корневом каталоге. Имя должно быть уникальным.",
+          "duplicate-property-in-variation1": "Свойство с именем {{propertyName}} уже существует для этого варианта ",
+          "duplicate-property-in-variation2": ". Имя должно быть уникальным.",
+          "property-naming-error": "Имя свойства должно начинаться с буквенно-цифрового символа и может содержать только латинские символы, цифры и подчеркивания (_). Если используется подчёркивание (_), убедитесь, что оно имеет буквенно-цифровой символ до и после него.",
           "value-type": "Тип значения"
         }
       },
@@ -253,9 +285,12 @@
           "current-values": "Текущее значение",
           "value": "Значение",
           "alias": "Альтернативное значение",
+          "sort-order": "Порядок сортировки",
           "language-edit": "Редактировать значение",
           "language-add": "Новое значение",
-          "dictionary-edit": "Редактирование значения словаря"
+          "dictionary-edit": "Редактирование значения словаря",
+          "priority": "Приоритет",
+          "priority-description": "Сначала будет использоваться наименьшее значение."
         },
         "validations": {
           "required": "Обязательное поле",
@@ -263,12 +298,16 @@
         },
         "placeholders": {
           "value": "Введите значение",
-          "alias": "Введите альтернативное значение"
+          "alias": "Введите альтернативное значение",
+          "priority": "Введите приоритет"
         }
       },
       "item-detail": {
         "subtitle-variation": "Информация о вариации",
+        "subtitle-variation": "Детали о вариации",
         "labels": {
+          "id": "ID",
+          "outer-id": "Внешний ID",
           "sku": "SKU",
           "priority": "Приоритет",
           "name": "Название продукта",
@@ -319,6 +358,7 @@
         "title": "Выберите категории",
         "title-association": "Выберите элементы для связи",
         "subtitle-association": "Добавление Связей к продукту",
+        "bread-crumb-top": "Все каталоги",
         "labels": {
           "picture": "Картинка",
           "name": "Название",
@@ -352,37 +392,29 @@
           "select-language": "Выбрать язык"
         },
         "placeholders": {
-          "type": "Выберать тип",
+          "type": "Выбрать тип",
           "language": "Выбрать язык"
         }
       },
       "categoryDescriptions-list": {
-          "subtitle": "Описание категории",
-          "labels": {
-            "no-descriptions": "Пока нет описания"
-          }
-        },
-        "categoryDescription-detail": {
-          "title": "Описание",
-          "subtitle": "Описание категории",
-          "labels": {
-            "language": "Язык",
-            "type": "Тип",
-            "content": "Содержание описания",
-            "select-language": "Выбрать язык"
-          },
-          "placeholders": {
-            "type": "Выберать тип",
-            "language": "Выбрать язык"
-          }
-        },
-        "importers-list": {
-        "title": "Импорт каталога",
-        "subtitle": "Выберите формат данных и импортируйте"
+        "subtitle": "Описание категории",
+        "labels": {
+          "no-descriptions": "Пока нет описания"
+        }
       },
-      "exporter-list": {
-        "title": "Export data",
-        "subtitle": "Формат данных и начало выбора экспорта"
+      "categoryDescription-detail": {
+        "title": "Описание",
+        "subtitle": "Описание категории",
+        "labels": {
+          "language": "Язык",
+          "type": "Тип",
+          "content": "Содержание описания",
+          "select-language": "Выбрать язык"
+        },
+        "placeholders": {
+          "type": "Выберать тип",
+          "language": "Выбрать язык"
+        }
       },
       "images": {
         "subtitle": "Управление изображениями",
@@ -391,17 +423,28 @@
           "copy-url-prompt": "Скопировать в буфер обмена: Ctrl+C, Enter",
           "select-images": "Выбрать изображения",
           "select-image-category": "Выбрать категориию изображения",
+          "name": "Имя",
           "image-category": "Категория изображения",
           "drag-drop-comment": "Переместить изображения сюда",
           "progress": "Прогресс",
           "make-default-image": "Перетащите изображение в верхний левый угол области изображений, чтобы сделать его изображением по умолчанию.",
           "language": "Язык",
-          "preview": "Предварительный просмотр"
+          "preview": "Предварительный просмотр",
+          "external-link": "Внешняя ссылка",
+          "altText": "Альтернативный текст изображения",
+          "description": "Описание"
         },
         "placeholders": {
           "image-url": "Вставьте URL изображения здесь",
+          "name": "Введите имя",
           "image-category": "Выбрать...",
-          "language": "Выберите язык"
+          "language": "Выберите язык",
+          "altText": "Введите текст",
+          "description": "Введите описание"
+        },
+        "descr": {
+          "external-link": "Использовать внешний URL-адрес образа вместо его загрузки",
+          "external-link-warning": "\"Пример: http(s)://ваш_ресурс.png\". По соображениям безопасности необходимо использовать изображения, поддерживающие URL-схему Фронта."
         }
       },
       "video-list": {
@@ -452,17 +495,29 @@
         }
       },
       "item-asset-detail": {
-        "subtitle": "свойства ресурса",
         "labels": {
-          "copy-url-prompt": "Скопировать в буфер обмена: Ctrl+C, Enter",
-          "select-files": "Выбрать файлы",
-          "drag-drop-comment": "Переместить файлы сюда",
-          "name": "Название",
-          "progress": "Прогресс",
-          "type": "Тип",
-          "actions": "Действия",
-          "remove": "Удалить",
-          "copy-link": "Скопировать ссылку"
+          "category": "Категория",
+          "language": "Язык",
+          "description": "Мета-информация"
+        },
+        "placeholders": {
+          "category": "Выбрать...",
+          "language": "Выберите язык",
+          "description": "Введите описание"
+        }
+      },
+      "item-asset-list": {
+        "subtitle": "Item assets",
+        "labels": {
+          "copy-url-prompt": "Copy to clipboard: Ctrl+C, Enter",
+          "select-files": "Select files",
+          "drag-drop-comment": "Drag and drop your files here",
+          "name": "Name",
+          "progress": "Progress",
+          "type": "Type",
+          "actions": "Actions",
+          "remove": "Remove",
+          "copy-link": "Copy link"
         }
       },
       "item-associations-list": {
@@ -536,11 +591,67 @@
           "description": "Границы будут автоматически отсортированы перед сохранением. Диапазоны цен построены следующим образом: Менее [граница 1], [граница 1] до [граница 2], ... , Более [граница N]"
         }
       },
-      "currency-list": {
+      "importers-list": {
+        "title": "Импорт каталога",
+        "subtitle": "Выберите формат данных и импортируйте"
+      },
+      "exporter-list": {
+        "title": "Export data",
+        "subtitle": "Формат данных и начало выбора экспорта"
+      },
+      "exporter": {
+        "productTitle": "Экспорт каталога продукции",
+        "productSubtitle": "Экспорт каталога продукции в JSON или CSV"
+      },
+      "bill-of-materials-list": {
+        "title": "Перечень материалов продукта",
+        "subtitle": "Добавить или удалить перечень материалов",
+        "no-data": "Еще нет продукции",
         "labels": {
-          "no-currencies": "Нет валют"
+          "picture": "Изображение",
+          "name": "Имя",
+          "category": "Категория",
+          "quantity": "Количество"
+        }
+      },
+      "property-type-list": {
+        "title": "Новое свойство",
+        "subtitle": "Выберите тип свойства",
+        "lables": {
+          "Product": {
+            "title": "Свойства продукта",
+            "description": "Отображается только для смежных продуктов"
+          },
+          "Category": {
+            "title": "Свойство каталога",
+            "description": "Отображается только для соответствующего каталога"
+          },
+          "Catalog": {
+            "title": "Свойство каталога",
+            "description": "Отображается только для этого каталога"
+          },
+          "Variation": {
+            "title": "Свойство вариации",
+            "description": "Отображается только для соответствующих вариаций"
+          }
+        }
+      },
+      "links-list": {
+        "title": "Ссылки",
+        "labels": {
+          "no-data": "Пока нет ссылок",
+          "add-links": "Добавить ссылку",
+          "marked": "Отмечен"
         }
       }
+    },
+    "exporter-list": {
+      "title": "Типы экспорта",
+      "subtitle": "Выберите любой из доступных типов экспорта ниже"
+    },
+    "exporter": {
+      "productTitle": "Экспортный каталог продукции",
+      "productSubtitle": "Экспорт каталога продукции в JSON или CSV"
     },
     "widgets": {
       "catalogLanguages": {
@@ -557,10 +668,11 @@
         "title": "Свойства"
       },
       "editorialReview": {
-        "blade-subtitle": "Описание элемента","title": "Описание"
-        },
-        "categoryDescription": {
-          "blade-subtitle": "Описание категории",
+        "blade-subtitle": "Описание элемента",
+        "title": "Описание"
+      },
+      "categoryDescription": {
+        "blade-subtitle": "Описание категории",
         "title": "Описание"
       },
       "itemAsset": {
@@ -590,9 +702,15 @@
         "width": "Ширина",
         "height": "Высота"
       },
+      "billOfMaterials": {
+        "title": "Перечень материалов"
+      },
       "videos": {
         "blade-subtitle": "Видео",
         "title": "Видео"
+      },
+      "links": {
+        "title": "Ссылки"
       }
     },
     "dialogs": {
@@ -695,6 +813,14 @@
       "language-save": {
         "title": "Сохранение изменений",
         "message": "Язык был изменен. Вы хотите сохранить изменения?"
+      },
+      "bill-or-materials-associations-delete": {
+        "title": "Подтвердите удаление",
+        "message": "Вы уверены, что хотите удалить выбранные продукты?"
+      },
+      "links-delete": {
+        "title": "Подтвердите удаление",
+        "message": "Вы уверены, что хотите удалить выбранные ссылки?"
       }
     },
     "wizards": {
@@ -784,6 +910,8 @@
       "copy-id": "Копировать ID",
       "clear-all": "Очистить все",
       "add-property": "Добавить свойство",
+      "add-product-property": "Добавить пользовательское свойство",
+      "add-variation-property": "Добавить пользовательское свойство",
       "gallery": "Галерея",
       "map": "Карта",
       "open-item": "Открыть элемент"
@@ -797,6 +925,146 @@
       },
       "category-scope": {
         "title": "Только для выбранных категорий"
+      }
+    },
+    "selectors": {
+      "titles": {
+        "catalogs": "Каталоги",
+        "categories": "Категории",
+        "search-in-variations": "Поиск по вариациям продуктов",
+        "search-in-children": "Поиск в подчиненных категориях"
+      },
+      "labels": {
+        "select": "Выбрать",
+        "selected": "Выбираются: "
+      },
+      "placeholders": {
+        "catalog-lists": "Выберите каталог…"
+      },
+      "blades": {
+        "titles": {
+          "select-categories": "Выберите категории…"
+        }
+      }
+    }
+  },
+  "permissions": {
+    "catalog:access": "Доступ к меню каталога",
+    "catalog:create": "Создание данных, связанных с каталогом",
+    "catalog:read": "Просмотреть данные, относящиеся к каталогу",
+    "catalog:update": "Обновлять данные, относящиеся к каталогу",
+    "catalog:delete": "Удалять данные, относящиеся к каталогу",
+    "catalog:export": "Экспорировать каталог",
+    "catalog:import": "Импортировать каталог"
+  },
+  "settings": {
+    "Catalog": {
+      "ImageCategories": {
+        "description": "Словарь возможных категорий изображений для этого элемента",
+        "title": "Изображение категорий"
+      },
+      "AssociationGroups": {
+        "description": "Группы ассоциаций продуктов каталога",
+        "title": "Названия групп ассоциаций"
+      },
+      "EditorialReviewTypes": {
+        "description": "Словарь возможных типов, которые могут быть в описаниях этого предмета",
+        "title": "Типы описаний элементов"
+      },
+      "UseSeoDeduplication": {
+        "description": "Включить или отключить обнаружение дубликатов SEO",
+        "title": "Обнаружение дубликатов SEO"
+      },
+      "CategoryDescriptionTypes": {
+        "description": "Словарь возможных типов, которые могут иметь описания для этой категории",
+        "title": "Типы описания категорий"
+      },
+      "AllowToCopyID": {
+        "title": "Разрешить копирование ID элемента",
+        "description": "Показывать контекстное меню Копировать ID"
+      },
+      "Search": {
+        "UseCatalogIndexedSearchInManager": {
+          "description": "Включить или отключить индексированный поиск для модуля «Каталог» с расширенным синтаксисом",
+          "title": "Использовать индексированный поиск для каталога"
+        },
+        "UseFullObjectIndexStoring": {
+          "description": "Хранить сериализованные объекты каталога в индексе и возвращать их в результатах поиска.",
+          "title": "Хранить сериализованные объекты каталога в индексе"
+        },
+        "DefaultAggregationSize": {
+          "description": "\nИспользуется для агрегаций, размер которых не задан в свойствах агрегации магазина. Установите 0 для неограниченного размера.",
+          "title": "Значение по умолчанию для размера агрегата"
+        },
+        "EventBasedIndexation": {
+          "Enable": {
+            "title": "Включить индексацию событий для объектов каталога",
+            "description": "\nЛюбые изменения объекта каталога вызовут фоновую задачу, которая применит эти изменения к поисковому индексу."
+          }
+        }
+      }
+    },
+    "VirtoCommerce": {
+      "Search": {
+        "IndexingJobs": {
+          "IndexationDate": {
+            "Product": {
+              "title": "Дата и время индексации продукции",
+              "description": "Дата и время выполнения задачи индексации продукта"
+            },
+            "Category": {
+              "title": "Дата и время индексации категории",
+              "description": "Дата и время выполнения задачи индексации категории"
+            }
+          }
+        }
+      }
+    }
+  },
+  "module": {
+    "VirtoCommerce.Catalog": {
+      "description": "Экспортировать или импортировать каталоги, категории, продукты и свойства с двоичными изображениями, если поставить флажок"
+    }
+  },
+  "export": {
+    "types": {
+      "VirtoCommerce.CatalogModule.Core.Model.Export.ExportableProduct": {
+        "name": "Продукция",
+        "description": "Каталог данных о продуктах со связанными объектами. Поддерживает JSON и CSV."
+      },
+      "VirtoCommerce.CatalogModule.Core.Model.Export.ExportableCatalogFull": {
+        "name": "Каталог",
+        "description": "Данные каталога со связанными объектами Поддерживает JSON"
+      }
+    },
+    "groups": {
+      "VirtoCommerce.CatalogModule.Core.Model.Export": {
+        "name": "Каталог",
+        "description": "Каталоги, Категории и Продукция"
+      }
+    }
+  },
+  "CategoryChangeBulkAction": "Массовое изменение категории",
+  "PropertiesUpdateBulkAction": "Массовое обновление свойств",
+  "virtoCommerce.catalogBulkActionsModule": {
+    "blades": {
+      "hello-world": {
+        "title": "Привет мир"
+      },
+      "action-progress": {
+        "title": "Прогресс задачи"
+      }
+    },
+    "actions": {
+      "types": {
+        "CategoryChangeBulkAction": {
+          "title": "Изменить категорию",
+          "subtitle": "Переместить продукты в другую категорию"
+        },
+        "PropertiesUpdateBulkAction": {
+          "title": "Изменить свойства",
+          "subtitle": "Обновить одно или несколько свойств"
+        }
       }
     }
   }
