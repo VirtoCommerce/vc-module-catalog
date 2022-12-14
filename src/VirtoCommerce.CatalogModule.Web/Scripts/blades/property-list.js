@@ -44,12 +44,12 @@ angular.module('virtoCommerce.catalogModule')
 
         $scope.isPropertyChanged = function (property) {
             if (property) {
-                var oldItem = _.find(blade.originalEntity.properties, function (x) { return x.name === property.name; });
+                let oldItem = _.find(blade.originalEntity.properties, function (x) { return x.name === property.name; });
                 if (oldItem) {
-                    var propValues = property.values.filter(x => x.value)
+                    let propValues = property.values.filter(x => x.value)
                         .sort((x, y) => $scope.comparePropValues(x,y));
 
-                    var oldValues = oldItem.values.filter(x => x.value)
+                    let oldValues = oldItem.values.filter(x => x.value)
                         .sort((x, y) => $scope.comparePropValues(x,y));
 
                     return !angular.equals(propValues, oldValues);
@@ -63,7 +63,11 @@ angular.module('virtoCommerce.catalogModule')
 
         $scope.comparePropValues = function (x, y) {
             if (!x.valueId) {
-                return x.value.localeCompare(y.value);
+                if (x.value.localeCompare != undefined)
+                    return x.value.localeCompare(y.value);
+                if (x.value == y.value)
+                    return 0;
+                return x.value < y.value ? -1 : 1
             }
 
             return x.valueId.localeCompare(y.valueId);
