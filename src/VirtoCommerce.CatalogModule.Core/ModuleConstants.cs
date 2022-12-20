@@ -106,6 +106,7 @@ namespace VirtoCommerce.CatalogModule.Core
                                    AssociationGroups,
                                    EditorialReviewTypes,
                                    CategoryDescriptionTypes,
+                                   UseSeoDeduplication,
                                    EventBasedIndexation,
                                    CopyIDMenuItem
                                };
