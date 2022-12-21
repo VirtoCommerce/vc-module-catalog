@@ -122,16 +122,6 @@ public class CategoryTreeService : ICategoryTreeService
         return ids;
     }
 
-    protected virtual IList<string> RestoreNullId(IList<string> ids)
-    {
-        if (ids.Count == 1 && ids.First() == _rootId)
-        {
-            ids = new string[] { null };
-        }
-
-        return ids;
-    }
-
     protected virtual IList<TreeNode> ReplaceNullId(IList<TreeNode> nodes)
     {
         if (nodes.Count == 1 && nodes.First().Id == null)
@@ -140,6 +130,16 @@ public class CategoryTreeService : ICategoryTreeService
         }
 
         return nodes;
+    }
+
+    protected virtual IList<string> RestoreNullId(IList<string> ids)
+    {
+        if (ids.Count == 1 && ids.First() == _rootId)
+        {
+            ids = new string[] { null };
+        }
+
+        return ids;
     }
 
     protected virtual IList<TreeNode> RestoreNullId(IList<TreeNode> nodes)
