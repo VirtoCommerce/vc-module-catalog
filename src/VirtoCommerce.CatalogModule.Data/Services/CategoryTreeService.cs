@@ -9,6 +9,7 @@ using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Platform.Caching;
 using VirtoCommerce.Platform.Core.Caching;
+using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.Services;
 
@@ -16,6 +17,8 @@ public class CategoryTreeService : ICategoryTreeService
 {
     private readonly Func<ICatalogRepository> _catalogRepositoryFactory;
     private readonly IPlatformMemoryCache _platformMemoryCache;
+
+    private const int _batchSize = 100;
     private static readonly string _rootId = Guid.NewGuid().ToString();
 
     public CategoryTreeService(
@@ -52,12 +55,18 @@ public class CategoryTreeService : ICategoryTreeService
     {
         using var repository = _catalogRepositoryFactory();
 
-        // TODO: Implement batch loading for large number of IDs
-        var childCategoriesQuery = GetChildCategoriesQuery(repository, catalogId, ids, onlyActive);
-        var linkedCategoriesQuery = GetLinkedCategoriesQuery(repository, catalogId, ids, onlyActive);
-        var query = childCategoriesQuery.Union(linkedCategoriesQuery);
+        var relations = new List<Relation>();
 
-        var relations = await query.ToArrayAsync();
+        foreach (var enumerable in ids.Paginate(_batchSize))
+        {
+            var idsBatch = enumerable.ToList();
+            var childCategoriesQuery = GetChildCategoriesQuery(repository, catalogId, idsBatch, onlyActive);
+            var linkedCategoriesQuery = GetLinkedCategoriesQuery(repository, catalogId, idsBatch, onlyActive);
+            var query = childCategoriesQuery.Union(linkedCategoriesQuery);
+
+            var relationsBatch = await query.ToArrayAsync();
+            relations.AddRange(relationsBatch);
+        }
 
         return relations
             .GroupBy(x => x.ParentId)
