@@ -33,6 +33,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		VirtoCommerce.CatalogModule.sln.DotSettings = VirtoCommerce.CatalogModule.sln.DotSettings
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtoCommerce.CatalogModule.Data.SqlServer", "src\VirtoCommerce.CatalogModule.Data.SqlServer\VirtoCommerce.CatalogModule.Data.SqlServer.csproj", "{4E5425B3-78F7-4148-AE66-9A61F4FD9C78}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtoCommerce.CatalogModule.Data.MySql", "src\VirtoCommerce.CatalogModule.Data.MySql\VirtoCommerce.CatalogModule.Data.MySql.csproj", "{5513FAA6-D1A8-4265-AB57-8D7A408F1A97}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtoCommerce.CatalogModule.Data.PostgreSql", "src\VirtoCommerce.CatalogModule.Data.PostgreSql\VirtoCommerce.CatalogModule.Data.PostgreSql.csproj", "{67C8590A-4EA0-48EF-9E58-288BE1F9ED51}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +69,18 @@ Global
 		{1097E6EF-4249-4D23-90C7-71DBE372B68B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1097E6EF-4249-4D23-90C7-71DBE372B68B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1097E6EF-4249-4D23-90C7-71DBE372B68B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E5425B3-78F7-4148-AE66-9A61F4FD9C78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E5425B3-78F7-4148-AE66-9A61F4FD9C78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E5425B3-78F7-4148-AE66-9A61F4FD9C78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E5425B3-78F7-4148-AE66-9A61F4FD9C78}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5513FAA6-D1A8-4265-AB57-8D7A408F1A97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5513FAA6-D1A8-4265-AB57-8D7A408F1A97}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5513FAA6-D1A8-4265-AB57-8D7A408F1A97}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5513FAA6-D1A8-4265-AB57-8D7A408F1A97}.Release|Any CPU.Build.0 = Release|Any CPU
+		{67C8590A-4EA0-48EF-9E58-288BE1F9ED51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67C8590A-4EA0-48EF-9E58-288BE1F9ED51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67C8590A-4EA0-48EF-9E58-288BE1F9ED51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67C8590A-4EA0-48EF-9E58-288BE1F9ED51}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -74,6 +92,9 @@ Global
 		{1F8DE36A-672B-45B6-94A8-AA5E16B3C019} = {69974A43-76F6-4E79-BE08-F85B4F99ABCA}
 		{81C74547-69F5-48C3-A57E-A90AA1C40326} = {DFA3417F-2FA2-4187-B367-F809CB5D804A}
 		{1097E6EF-4249-4D23-90C7-71DBE372B68B} = {711C14B2-B482-4A80-B4FE-2267079F4012}
+		{4E5425B3-78F7-4148-AE66-9A61F4FD9C78} = {DFA3417F-2FA2-4187-B367-F809CB5D804A}
+		{5513FAA6-D1A8-4265-AB57-8D7A408F1A97} = {DFA3417F-2FA2-4187-B367-F809CB5D804A}
+		{67C8590A-4EA0-48EF-9E58-288BE1F9ED51} = {DFA3417F-2FA2-4187-B367-F809CB5D804A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C9B2BF9E-097A-48E6-A338-9176A75C0AA2}

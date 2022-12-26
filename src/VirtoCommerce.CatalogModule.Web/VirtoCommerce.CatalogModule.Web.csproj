@@ -25,6 +25,9 @@
     <ItemGroup>
         <ProjectReference Include="..\VirtoCommerce.CatalogModule.BulkActions\VirtoCommerce.CatalogModule.BulkActions.csproj" />
         <ProjectReference Include="..\VirtoCommerce.CatalogModule.Core\VirtoCommerce.CatalogModule.Core.csproj" />
+        <ProjectReference Include="..\VirtoCommerce.CatalogModule.Data.MySql\VirtoCommerce.CatalogModule.Data.MySql.csproj" />
+        <ProjectReference Include="..\VirtoCommerce.CatalogModule.Data.PostgreSql\VirtoCommerce.CatalogModule.Data.PostgreSql.csproj" />
+        <ProjectReference Include="..\VirtoCommerce.CatalogModule.Data.SqlServer\VirtoCommerce.CatalogModule.Data.SqlServer.csproj" />
         <ProjectReference Include="..\VirtoCommerce.CatalogModule.Data\VirtoCommerce.CatalogModule.Data.csproj" />
     </ItemGroup>
 </Project>
