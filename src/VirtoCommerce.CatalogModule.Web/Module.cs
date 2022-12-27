@@ -86,6 +86,19 @@ namespace VirtoCommerce.CatalogModule.Web
                 }
             });
 
+            switch (databaseProvider)
+            {
+                case "MySql":
+                    serviceCollection.AddTransient<ICatalogRawDatabaseCommand, MySqlCatalogRawDatabaseCommand>();
+                    break;
+                case "PostgreSql":
+                    serviceCollection.AddTransient<ICatalogRawDatabaseCommand, PostgreSqlCatalogRawDatabaseCommand>();
+                    break;
+                default:
+                    serviceCollection.AddTransient<ICatalogRawDatabaseCommand, SqlServerCatalogRawDatabaseCommand>();
+                    break;
+            }
+
             serviceCollection.AddTransient<ICatalogRepository, CatalogRepositoryImpl>();
             serviceCollection.AddTransient<Func<ICatalogRepository>>(provider => () => provider.CreateScope().ServiceProvider.GetRequiredService<ICatalogRepository>());
 
@@ -228,21 +241,6 @@ namespace VirtoCommerce.CatalogModule.Web
             serviceCollection.AddTransient<IBulkActionFactory, CatalogBulkActionFactory>();
 
             #endregion BulkActions
-
-            #region ICatalogRawDatabaseCommand
-            switch (databaseProvider)
-            {
-                case "MySql":
-                    serviceCollection.AddTransient<ICatalogRawDatabaseCommand, MySqlCatalogRawDatabaseCommand>();
-                    break;
-                case "PostgreSql":
-                    serviceCollection.AddTransient<ICatalogRawDatabaseCommand, PostgreSqlCatalogRawDatabaseCommand>();
-                    break;
-                default:
-                    serviceCollection.AddTransient<ICatalogRawDatabaseCommand, SqlServerCatalogRawDatabaseCommand>();
-                    break;
-            }
-            #endregion
 
             serviceCollection.AddTransient<ICategoryTreeService, CategoryTreeService>();
         }
