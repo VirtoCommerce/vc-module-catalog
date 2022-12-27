@@ -370,6 +370,11 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             await _rawDatabaseCommand.RemoveAllPropertyValuesAsync(DbContext, catalogProperty, categoryProperty, itemProperty);
         }
 
+        /// <summary>
+        /// Searchs associations by specific search criterias. 
+        /// </summary>
+        /// <param name="criteria"></param>
+        /// <returns>Returns SearchResult total count and items.</returns>
         public virtual Task<GenericSearchResult<AssociationEntity>> SearchAssociations(ProductAssociationSearchCriteria criteria)
         {
             return _rawDatabaseCommand.SearchAssociations(DbContext, criteria);
