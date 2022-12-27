@@ -46,15 +46,15 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql
 
             const string commandTemplate = @"
                     WITH cte AS (
-	                    SELECT
-		                    Id,
-		                    Keyword,
-		                    StoreId,
-		                    ROW_NUMBER() OVER ( PARTITION BY Keyword, StoreId ORDER BY StoreId) row_num
-	                    FROM CatalogSeoInfo
+                        SELECT
+                            ""Id"",
+                            ""Keyword"",
+                            ""StoreId"",
+                            ROW_NUMBER() OVER ( PARTITION BY ""Keyword"", ""StoreId"" ORDER BY ""StoreId"") ""row_num""
+                        FROM ""CatalogSeoInfo""
                     )
-                    SELECT Id FROM cte
-                    WHERE row_num > 1
+                    SELECT ""Id"" FROM cte
+                    WHERE ""row_num"" > 1
                 ";
 
             var command = CreateCommand(commandTemplate, Array.Empty<string>());
@@ -224,18 +224,15 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql
         public virtual async Task<ICollection<CategoryEntity>> SearchCategoriesHierarchyAsync(CatalogDbContext dbContext, string categoryId)
         {
             var commandTemplate = @"
-                WITH CategoryParents AS   
-                (  
-                    SELECT * 
-                    FROM Category   
-                    WHERE Id = @categoryId
-                    UNION ALL  
-                    SELECT c.*
-                    FROM Category c, CategoryParents cp
-                    where c.Id = cp.ParentCategoryId 
-                )  
-                SELECT *
-                FROM CategoryParents";
+            WITH RECURSIVE cp AS (
+                SELECT * FROM ""Category"" WHERE ""Id"" = @categoryId
+            UNION ALL
+                SELECT c.* FROM ""Category"" AS c
+                    JOIN cp
+                        ON c.""Id"" = cp.""ParentCategoryId""
+            )
+            SELECT * FROM cp
+            ";
 
             var categoryIdParam = new NpgsqlParameter("@categoryId", categoryId);
             var result = await dbContext.Set<CategoryEntity>().FromSqlRaw(commandTemplate, categoryIdParam).ToListAsync();
