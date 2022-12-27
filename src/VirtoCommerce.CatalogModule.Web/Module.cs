@@ -229,7 +229,7 @@ namespace VirtoCommerce.CatalogModule.Web
 
             #endregion BulkActions
 
-            #region
+            #region ICatalogRawDatabaseCommand
             switch (databaseProvider)
             {
                 case "MySql":
@@ -243,6 +243,8 @@ namespace VirtoCommerce.CatalogModule.Web
                     break;
             }
             #endregion
+
+            serviceCollection.AddTransient<ICategoryTreeService, CategoryTreeService>();
         }
 
         public void PostInitialize(IApplicationBuilder appBuilder)
