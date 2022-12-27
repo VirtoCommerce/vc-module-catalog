@@ -1,9 +1,5 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using VirtoCommerce.CatalogModule.Core.Model.Search;
-using VirtoCommerce.CatalogModule.Data.Model;
-using VirtoCommerce.CatalogModule.Data.Repositories;
-using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule2.Data.Repositories
 {
