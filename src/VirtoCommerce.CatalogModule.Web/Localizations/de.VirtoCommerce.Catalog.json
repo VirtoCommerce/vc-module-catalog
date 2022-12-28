@@ -13,7 +13,7 @@
         "subtitle": "Kataloge verwalten",
         "labels": {
           "name": "Name",
-          "virtual": "{{name}} (virtuell)"
+          "virtual": "(virtuell)"
         }
       },
       "catalog-add": {
@@ -278,7 +278,7 @@
           "picture": "Bild",
           "name": "Name",
           "sku": "Art.-Nr.",
-          "virtual": "{{name}} (virtuell)"
+          "virtual": "(virtuell)"
         }
       },
       "item-variation-list": {
