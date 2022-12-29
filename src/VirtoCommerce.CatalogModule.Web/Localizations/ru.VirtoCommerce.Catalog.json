@@ -24,7 +24,7 @@
         "subtitle": "Управление каталогами",
         "labels": {
           "name": "Имя",
-          "virtual": "(виртуальное)"
+          "virtual": "Виртуальное"
         }
       },
       "catalog-add": {
@@ -363,7 +363,7 @@
           "picture": "Картинка",
           "name": "Название",
           "sku": "SKU",
-          "virtual": "(виртуальное)"
+          "virtual": "Виртуальное"
         }
       },
       "item-variation-list": {
