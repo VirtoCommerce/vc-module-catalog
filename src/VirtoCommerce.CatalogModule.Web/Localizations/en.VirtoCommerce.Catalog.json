@@ -24,7 +24,7 @@
         "subtitle": "Manage catalogs",
         "labels": {
           "name": "Name",
-          "virtual": "{{name}} (virtual)"
+          "virtual": "Virtual"
         }
       },
       "catalog-add": {
@@ -363,7 +363,7 @@
           "picture": "Pic",
           "name": "Name",
           "sku": "SKU",
-          "virtual": "{{name}} (virtual)"
+          "virtual": "Virtual"
         }
       },
       "item-variation-list": {
