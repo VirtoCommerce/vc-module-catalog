@@ -27,6 +27,7 @@ angular.module('virtoCommerce.catalogModule')
                     break;
                 case 'Integer':
                 case 'GeoPoint':
+                case 'Number':
                     blade.hasDictionary = blade.currentEntity.dictionary = false;
                     blade.hasMultilanguage = blade.currentEntity.multilanguage = false;
                     break;
