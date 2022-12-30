@@ -288,7 +288,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 var propValues = new List<PropertyValue>();
                 var forceSavePropertyValues = false;
 
-                foreach (var property in product.Properties.Where(x => x.Type == PropertyType.Product || x.Type == PropertyType.Variation ))
+                foreach (var property in product.Properties.Where(x => x.Type == PropertyType.Product || x.Type == PropertyType.Variation))
                 {
                     if (property.Values != null)
                     {
