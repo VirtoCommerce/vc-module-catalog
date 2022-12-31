@@ -188,7 +188,10 @@ angular.module('virtoCommerce.catalogModule')
 
                     if (listItem.type === 'category') {
                         if (blade.catalog && blade.catalog.isVirtual
-                            && _.some(listItem.links, function (x) { return x.categoryId === blade.categoryId; })) {
+                            && _.some(listItem.links, function (x) {
+                                return x.categoryId === blade.categoryId
+                                    || !x.categoryId && !blade.categoryId;
+                            })) {
                             deletingLink = true;
                         } else {
                             categoryIds.push(listItem.id);
