@@ -297,9 +297,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 await _productValidator.ValidateAndThrowAsync(product);
             }
 
-            await LoadDependencies(products);
-            ApplyInheritanceRules(products);
-
             // Validate properties
             foreach (var product in products)
             {
