@@ -339,24 +339,33 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
         public virtual async Task<string[]> GetAllChildrenCategoriesIdsAsync(string[] categoryIds)
         {
-            string[] result = null;
+            var result = new List<string>();
 
             if (!categoryIds.IsNullOrEmpty())
             {
-                const string commandTemplate = @"
+                var skip = 0;
+                do
+                {
+                    const string commandTemplate = @"
                     WITH cte AS (
                         SELECT a.Id FROM Category a  WHERE Id IN ({0})
                         UNION ALL
                         SELECT a.Id FROM Category a JOIN cte c ON a.ParentCategoryId = c.Id
                     )
                     SELECT Id FROM cte WHERE Id NOT IN ({0})
-                ";
+                    ";
 
-                var getAllChildrenCategoriesCommand = CreateCommand(commandTemplate, categoryIds);
-                result = await DbContext.ExecuteArrayAsync<string>(getAllChildrenCategoriesCommand.Text, getAllChildrenCategoriesCommand.Parameters.ToArray());
+                    var getAllChildrenCategoriesCommand = CreateCommand(commandTemplate, categoryIds.Skip(skip).Take(batchSize));
+                    var subResult = await DbContext.ExecuteArrayAsync<string>(getAllChildrenCategoriesCommand.Text, getAllChildrenCategoriesCommand.Parameters.ToArray());
+
+                    result.AddRange(subResult);
+
+                    skip += batchSize;
+                }
+                while (skip < categoryIds.Length);
             }
 
-            return result ?? new string[0];
+            return result.ToArray();
         }
 
         public virtual async Task RemoveItemsAsync(string[] itemIds)
@@ -412,12 +421,14 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             {
                 var categoryIds = (await GetAllChildrenCategoriesIdsAsync(ids)).Concat(ids).ToArray();
 
-                var itemIds = await Items.Where(i => categoryIds.Contains(i.CategoryId)).Select(i => i.Id).ToArrayAsync();
-                await RemoveItemsAsync(itemIds);
-
                 var skip = 0;
                 do
                 {
+                    var subCategoryIds = categoryIds.Skip(skip).Take(batchSize);
+
+                    var itemIds = await Items.Where(i => subCategoryIds.Contains(i.CategoryId)).Select(i => i.Id).ToArrayAsync();
+                    await RemoveItemsAsync(itemIds);
+
                     const string commandTemplate = @"
                     DELETE SEO FROM CatalogSeoInfo SEO INNER JOIN Category C ON C.Id = SEO.CategoryId WHERE C.Id IN ({0})
                     DELETE CI FROM CatalogImage CI INNER JOIN Category C ON C.Id = CI.CategoryId WHERE C.Id IN ({0})
@@ -430,7 +441,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     DELETE FROM Category WHERE Id IN ({0})
                 ";
 
-                    await ExecuteStoreQueryAsync(commandTemplate, categoryIds.Skip(skip).Take(batchSize));
+                    await ExecuteStoreQueryAsync(commandTemplate, subCategoryIds);
 
                     skip += batchSize;
                 }
