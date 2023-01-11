@@ -4,9 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CatalogModule.Data.Extensions;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Platform.Core.ChangeLog;
-using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
 
@@ -97,7 +97,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                     new IndexDocumentChange
                     {
                         DocumentId = o.ObjectId,
-                        ChangeType = o.OperationType == EntryState.Deleted ? IndexDocumentChangeType.Deleted : IndexDocumentChangeType.Modified,
+                        ChangeType = o.OperationType.ToIndexDocumentChangeType(),
                         ChangeDate = o.ModifiedDate ?? o.CreatedDate,
                     }
                 ).ToArray();
