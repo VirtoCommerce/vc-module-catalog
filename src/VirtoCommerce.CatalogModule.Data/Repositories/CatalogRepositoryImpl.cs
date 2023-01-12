@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using VirtoCommerce.CatalogModule.Core.Model;
@@ -372,10 +373,12 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         {
             if (!itemIds.IsNullOrEmpty())
             {
-                var skip = 0;
-                do
+                using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
-                    const string commandTemplate = @"
+                    var skip = 0;
+                    do
+                    {
+                        const string commandTemplate = @"
                         DELETE SEO FROM CatalogSeoInfo SEO INNER JOIN Item I ON I.Id = SEO.ItemId
                         WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
 
@@ -405,11 +408,14 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                         DELETE  FROM Item  WHERE Id IN ({0})
                     ";
 
-                    await ExecuteStoreQueryAsync(commandTemplate, itemIds.Skip(skip).Take(batchSize));
+                        await ExecuteStoreQueryAsync(commandTemplate, itemIds.Skip(skip).Take(batchSize));
 
-                    skip += batchSize;
+                        skip += batchSize;
+                    }
+                    while (skip < itemIds.Length);
+
+                    scope.Complete();
                 }
-                while (skip < itemIds.Length);
 
                 //TODO: Notify about removed entities by event or trigger
             }
@@ -419,17 +425,19 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         {
             if (!ids.IsNullOrEmpty())
             {
-                var categoryIds = (await GetAllChildrenCategoriesIdsAsync(ids)).Concat(ids).ToArray();
-
-                var skip = 0;
-                do
+                using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
-                    var subCategoryIds = categoryIds.Skip(skip).Take(batchSize);
+                    var categoryIds = (await GetAllChildrenCategoriesIdsAsync(ids)).Concat(ids).ToArray();
 
-                    var itemIds = await Items.Where(i => subCategoryIds.Contains(i.CategoryId)).Select(i => i.Id).ToArrayAsync();
-                    await RemoveItemsAsync(itemIds);
+                    var skip = 0;
+                    do
+                    {
+                        var subCategoryIds = categoryIds.Skip(skip).Take(batchSize);
 
-                    const string commandTemplate = @"
+                        var itemIds = await Items.Where(i => subCategoryIds.Contains(i.CategoryId)).Select(i => i.Id).ToArrayAsync();
+                        await RemoveItemsAsync(itemIds);
+
+                        const string commandTemplate = @"
                     DELETE SEO FROM CatalogSeoInfo SEO INNER JOIN Category C ON C.Id = SEO.CategoryId WHERE C.Id IN ({0})
                     DELETE CI FROM CatalogImage CI INNER JOIN Category C ON C.Id = CI.CategoryId WHERE C.Id IN ({0})
                     DELETE PV FROM PropertyValue PV INNER JOIN Category C ON C.Id = PV.CategoryId WHERE C.Id IN ({0})
@@ -438,14 +446,18 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     DELETE A FROM Association A INNER JOIN Category C ON C.Id = A.AssociatedCategoryId WHERE C.Id IN ({0})
                     DELETE P FROM Property P INNER JOIN Category C ON C.Id = P.CategoryId  WHERE C.Id IN ({0})
                     DELETE D FROM CategoryDescription D INNER JOIN Category C ON C.Id = D.CategoryId WHERE C.Id IN ({0})
+                    UPDATE Category SET ParentCategoryId = NULL WHERE ParentCategoryId IN ({0})
                     DELETE FROM Category WHERE Id IN ({0})
                 ";
 
-                    await ExecuteStoreQueryAsync(commandTemplate, subCategoryIds);
+                        await ExecuteStoreQueryAsync(commandTemplate, subCategoryIds);
 
-                    skip += batchSize;
+                        skip += batchSize;
+                    }
+                    while (skip < categoryIds.Length);
+
+                    scope.Complete();
                 }
-                while (skip < categoryIds.Length);
 
                 //TODO: Notify about removed entities by event or trigger
             }
@@ -455,16 +467,18 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         {
             if (!ids.IsNullOrEmpty())
             {
-                var itemIds = await Items.Where(i => ids.Contains(i.CatalogId)).Select(i => i.Id).ToArrayAsync();
-                await RemoveItemsAsync(itemIds);
-
-                var categoryIds = await Categories.Where(c => ids.Contains(c.CatalogId)).Select(c => c.Id).ToArrayAsync();
-                await RemoveCategoriesAsync(categoryIds);
-
-                var skip = 0;
-                do
+                using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
-                    const string commandTemplate = @"
+                    var itemIds = await Items.Where(i => ids.Contains(i.CatalogId)).Select(i => i.Id).ToArrayAsync();
+                    await RemoveItemsAsync(itemIds);
+
+                    var categoryIds = await Categories.Where(c => ids.Contains(c.CatalogId)).Select(c => c.Id).ToArrayAsync();
+                    await RemoveCategoriesAsync(categoryIds);
+
+                    var skip = 0;
+                    do
+                    {
+                        const string commandTemplate = @"
                     DELETE CL FROM CatalogLanguage CL INNER JOIN Catalog C ON C.Id = CL.CatalogId WHERE C.Id IN ({0})
                     DELETE CR FROM CategoryRelation CR INNER JOIN Catalog C ON C.Id = CR.TargetCatalogId WHERE C.Id IN ({0})
                     DELETE PV FROM PropertyValue PV INNER JOIN Catalog C ON C.Id = PV.CatalogId WHERE C.Id IN ({0})
@@ -472,10 +486,13 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     DELETE FROM Catalog WHERE Id IN ({0})
                 ";
 
-                    await ExecuteStoreQueryAsync(commandTemplate, ids.Skip(skip).Take(batchSize));
-                    skip += batchSize;
+                        await ExecuteStoreQueryAsync(commandTemplate, ids.Skip(skip).Take(batchSize));
+                        skip += batchSize;
+                    }
+                    while (skip < ids.Length);
+
+                    scope.Complete();
                 }
-                while (skip < ids.Length);
 
                 //TODO: Notify about removed entities by event or trigger
             }
@@ -489,26 +506,31 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         /// <param name="propertyId"></param>
         public virtual async Task RemoveAllPropertyValuesAsync(string propertyId)
         {
-            var properties = await GetPropertiesByIdsAsync(new[] { propertyId });
-            var catalogProperty = properties.FirstOrDefault(x => x.TargetType.EqualsInvariant(PropertyType.Catalog.ToString()));
-            var categoryProperty = properties.FirstOrDefault(x => x.TargetType.EqualsInvariant(PropertyType.Category.ToString()));
-            var itemProperty = properties.FirstOrDefault(x => x.TargetType.EqualsInvariant(PropertyType.Product.ToString()) || x.TargetType.EqualsInvariant(PropertyType.Variation.ToString()));
+            using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                var properties = await GetPropertiesByIdsAsync(new[] { propertyId });
+                var catalogProperty = properties.FirstOrDefault(x => x.TargetType.EqualsInvariant(PropertyType.Catalog.ToString()));
+                var categoryProperty = properties.FirstOrDefault(x => x.TargetType.EqualsInvariant(PropertyType.Category.ToString()));
+                var itemProperty = properties.FirstOrDefault(x => x.TargetType.EqualsInvariant(PropertyType.Product.ToString()) || x.TargetType.EqualsInvariant(PropertyType.Variation.ToString()));
 
-            FormattableString commandText;
-            if (catalogProperty != null)
-            {
-                commandText = $"DELETE PV FROM PropertyValue PV INNER JOIN Catalog C ON C.Id = PV.CatalogId AND C.Id = '{catalogProperty.CatalogId}' WHERE PV.Name = '{catalogProperty.Name}'";
-                await DbContext.Database.ExecuteSqlInterpolatedAsync(commandText);
-            }
-            if (categoryProperty != null)
-            {
-                commandText = $"DELETE PV FROM PropertyValue PV INNER JOIN Category C ON C.Id = PV.CategoryId AND C.CatalogId = '{categoryProperty.CatalogId}' WHERE PV.Name = '{categoryProperty.Name}'";
-                await DbContext.Database.ExecuteSqlInterpolatedAsync(commandText);
-            }
-            if (itemProperty != null)
-            {
-                commandText = $"DELETE PV FROM PropertyValue PV INNER JOIN Item I ON I.Id = PV.ItemId AND I.CatalogId = '{itemProperty.CatalogId}' WHERE PV.Name = '{itemProperty.Name}'";
-                await DbContext.Database.ExecuteSqlInterpolatedAsync(commandText);
+                FormattableString commandText;
+                if (catalogProperty != null)
+                {
+                    commandText = $"DELETE PV FROM PropertyValue PV INNER JOIN Catalog C ON C.Id = PV.CatalogId AND C.Id = '{catalogProperty.CatalogId}' WHERE PV.Name = '{catalogProperty.Name}'";
+                    await DbContext.Database.ExecuteSqlInterpolatedAsync(commandText);
+                }
+                if (categoryProperty != null)
+                {
+                    commandText = $"DELETE PV FROM PropertyValue PV INNER JOIN Category C ON C.Id = PV.CategoryId AND C.CatalogId = '{categoryProperty.CatalogId}' WHERE PV.Name = '{categoryProperty.Name}'";
+                    await DbContext.Database.ExecuteSqlInterpolatedAsync(commandText);
+                }
+                if (itemProperty != null)
+                {
+                    commandText = $"DELETE PV FROM PropertyValue PV INNER JOIN Item I ON I.Id = PV.ItemId AND I.CatalogId = '{itemProperty.CatalogId}' WHERE PV.Name = '{itemProperty.Name}'";
+                    await DbContext.Database.ExecuteSqlInterpolatedAsync(commandText);
+                }
+
+                scope.Complete();
             }
         }
 
