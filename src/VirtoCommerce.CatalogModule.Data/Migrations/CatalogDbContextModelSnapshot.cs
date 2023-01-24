@@ -511,6 +511,10 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasMaxLength(128)
                         .HasColumnType("nvarchar(128)");
 
+                    b.Property<string>("RelativeUrl")
+                        .HasMaxLength(2083)
+                        .HasColumnType("nvarchar(2083)");
+
                     b.Property<int>("SortOrder")
                         .HasColumnType("int");
 
@@ -599,6 +603,7 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("MaxQuantity")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("MeasureUnit")
@@ -606,6 +611,7 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasColumnType("nvarchar(32)");
 
                     b.Property<decimal>("MinQuantity")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("ModifiedBy")
