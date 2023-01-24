@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using VirtoCommerce.AssetsModule.Core.Assets;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
@@ -12,6 +13,9 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         [StringLength(2083)]
         [Required]
         public string Url { get; set; }
+
+        [StringLength(2083)]
+        public string RelativeUrl { get; set; }
 
         [StringLength(1024)]
         public string Name { get; set; }
@@ -59,7 +63,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             image.Name = Name;
             image.SortOrder = SortOrder;
             image.Url = Url;
-            image.RelativeUrl = Url;
+            image.RelativeUrl = RelativeUrl;
             image.Description = Description;
             image.AltText = AltText;
 
@@ -98,7 +102,8 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             SortOrder = image.SortOrder;
             AltText = image.AltText;
             Description = image.Description;
-            Url = !string.IsNullOrEmpty(image.RelativeUrl) ? image.RelativeUrl : image.Url;
+            RelativeUrl = !string.IsNullOrEmpty(image.RelativeUrl) ? image.RelativeUrl : image.Url;
+            Url = image.Url;
 
             return this;
         }
