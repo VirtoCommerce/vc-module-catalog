@@ -14,9 +14,6 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         [Required]
         public string Url { get; set; }
 
-        [StringLength(2083)]
-        public string RelativeUrl { get; set; }
-
         [StringLength(1024)]
         public string Name { get; set; }
 
@@ -63,7 +60,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             image.Name = Name;
             image.SortOrder = SortOrder;
             image.Url = Url;
-            image.RelativeUrl = RelativeUrl;
+            image.RelativeUrl = Url;
             image.Description = Description;
             image.AltText = AltText;
 
@@ -102,8 +99,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             SortOrder = image.SortOrder;
             AltText = image.AltText;
             Description = image.Description;
-            RelativeUrl = !string.IsNullOrEmpty(image.RelativeUrl) ? image.RelativeUrl : image.Url;
-            Url = image.Url;
+            Url = !string.IsNullOrEmpty(image.RelativeUrl) ? image.RelativeUrl : image.Url;
 
             return this;
         }

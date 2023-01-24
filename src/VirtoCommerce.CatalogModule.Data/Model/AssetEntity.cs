@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Polly.Caching;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace VirtoCommerce.CatalogModule.Data.Model
 {
@@ -58,6 +60,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             asset.Name = Name;
             asset.MimeType = MimeType;
             asset.Url = Url;
+            asset.RelativeUrl = Url;
             asset.Size = Size;
             asset.SortOrder = SortOrder;
             asset.Description = Description;
@@ -93,7 +96,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             LanguageCode = asset.LanguageCode;
             Name = asset.Name;
             MimeType = asset.MimeType;
-            Url = asset.Url;
+            Url = !string.IsNullOrEmpty(asset.RelativeUrl) ? asset.RelativeUrl : asset.Url;
             Size = asset.Size;
             Group = asset.Group;
             SortOrder = asset.SortOrder;
