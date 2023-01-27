@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Transactions;
 using Microsoft.EntityFrameworkCore;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
@@ -324,33 +325,48 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             return _rawDatabaseCommand.GetAllChildrenCategoriesIdsAsync(DbContext, categoryIds);
         }
 
-        public virtual Task RemoveItemsAsync(string[] itemIds)
+        public virtual async Task RemoveItemsAsync(string[] itemIds)
         {
-            return _rawDatabaseCommand.RemoveItemsAsync(DbContext, itemIds);
-        }
-
-        public async virtual Task RemoveCategoriesAsync(string[] ids)
-        {
-            if (!ids.IsNullOrEmpty())
+            using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                var allCategoryIds = (await GetAllChildrenCategoriesIdsAsync(ids)).Concat(ids).ToArray();
+                await _rawDatabaseCommand.RemoveItemsAsync(DbContext, itemIds);
 
-                var itemIds = await Items.Where(i => allCategoryIds.Contains(i.CategoryId)).Select(i => i.Id).ToArrayAsync();
-                await RemoveItemsAsync(itemIds);
-
-                await _rawDatabaseCommand.RemoveCategoriesAsync(DbContext, allCategoryIds);
+                scope.Complete();
             }
         }
 
-        public async virtual Task RemoveCatalogsAsync(string[] ids)
+        public virtual async Task RemoveCategoriesAsync(string[] ids)
         {
-            var itemIds = await Items.Where(i => ids.Contains(i.CatalogId)).Select(i => i.Id).ToArrayAsync();
-            await RemoveItemsAsync(itemIds);
+            if (!ids.IsNullOrEmpty())
+            {
+                using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                {
+                    var allCategoryIds = (await GetAllChildrenCategoriesIdsAsync(ids)).Concat(ids).ToArray();
 
-            var categoryIds = await Categories.Where(c => ids.Contains(c.CatalogId)).Select(c => c.Id).ToArrayAsync();
-            await RemoveCategoriesAsync(categoryIds);
+                    var itemIds = await Items.Where(i => allCategoryIds.Contains(i.CategoryId)).Select(i => i.Id).ToArrayAsync();
+                    await RemoveItemsAsync(itemIds);
 
-            await _rawDatabaseCommand.RemoveCatalogsAsync(DbContext, ids);
+                    await _rawDatabaseCommand.RemoveCategoriesAsync(DbContext, allCategoryIds);
+
+                    scope.Complete();
+                }
+            }
+        }
+
+        public virtual async Task RemoveCatalogsAsync(string[] ids)
+        {
+            using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                var itemIds = await Items.Where(i => ids.Contains(i.CatalogId)).Select(i => i.Id).ToArrayAsync();
+                await RemoveItemsAsync(itemIds);
+
+                var categoryIds = await Categories.Where(c => ids.Contains(c.CatalogId)).Select(c => c.Id).ToArrayAsync();
+                await RemoveCategoriesAsync(categoryIds);
+
+                await _rawDatabaseCommand.RemoveCatalogsAsync(DbContext, ids);
+
+                scope.Complete();
+            }
         }
 
         /// <summary>
@@ -361,13 +377,18 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         /// <param name="propertyId"></param>
         public virtual async Task RemoveAllPropertyValuesAsync(string propertyId)
         {
-            var properties = await GetPropertiesByIdsAsync(new[] { propertyId });
+            using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                var properties = await GetPropertiesByIdsAsync(new[] { propertyId });
 
-            var catalogProperty = properties.FirstOrDefault(x => x.TargetType.EqualsInvariant(PropertyType.Catalog.ToString()));
-            var categoryProperty = properties.FirstOrDefault(x => x.TargetType.EqualsInvariant(PropertyType.Category.ToString()));
-            var itemProperty = properties.FirstOrDefault(x => x.TargetType.EqualsInvariant(PropertyType.Product.ToString()) || x.TargetType.EqualsInvariant(PropertyType.Variation.ToString()));
+                var catalogProperty = properties.FirstOrDefault(x => x.TargetType.EqualsInvariant(PropertyType.Catalog.ToString()));
+                var categoryProperty = properties.FirstOrDefault(x => x.TargetType.EqualsInvariant(PropertyType.Category.ToString()));
+                var itemProperty = properties.FirstOrDefault(x => x.TargetType.EqualsInvariant(PropertyType.Product.ToString()) || x.TargetType.EqualsInvariant(PropertyType.Variation.ToString()));
 
-            await _rawDatabaseCommand.RemoveAllPropertyValuesAsync(DbContext, catalogProperty, categoryProperty, itemProperty);
+                await _rawDatabaseCommand.RemoveAllPropertyValuesAsync(DbContext, catalogProperty, categoryProperty, itemProperty);
+
+                scope.Complete();
+            }
         }
 
         /// <summary>
@@ -410,10 +431,5 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         }
 
         #endregion ICatalogRepository Members
-
-
-
-
-
     }
 }
