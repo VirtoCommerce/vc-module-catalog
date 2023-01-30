@@ -221,6 +221,13 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 image.Url = _blobUrlResolver.GetAbsoluteUrl(image.Url);
             }
 
+            var allAssets = new { products }.GetFlatObjectsListWithInterface<IHasAssets>().Where(x => x.Assets != null).SelectMany(x => x.Assets);
+            foreach (var asset in allAssets.Where(x => !string.IsNullOrEmpty(x.Url)))
+            {
+                asset.RelativeUrl = !string.IsNullOrEmpty(asset.RelativeUrl) ? asset.RelativeUrl : asset.Url;
+                asset.Url = _blobUrlResolver.GetAbsoluteUrl(asset.Url);
+            }
+
             foreach (var product in products)
             {
                 SetProductDependencies(product, catalogsByIdDict, categoriesByIdDict);
