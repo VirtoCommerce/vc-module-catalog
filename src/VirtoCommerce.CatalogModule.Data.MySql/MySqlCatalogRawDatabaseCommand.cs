@@ -4,6 +4,7 @@ using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Data.Extensions;
 
 namespace VirtoCommerce.CatalogModule.Data.MySql
 {
@@ -52,9 +53,17 @@ namespace VirtoCommerce.CatalogModule.Data.MySql
             return result.ToArray();
         }
 
-        public Task<string[]> GetAllSeoDuplicatesIdsAsync(CatalogDbContext dbContext)
+        public async Task<string[]> GetAllSeoDuplicatesIdsAsync(CatalogDbContext dbContext)
         {
-            throw new NotImplementedException();
+            const string commandTemplate = @"
+                        SELECT cs.Id from CatalogSeoInfo as cs where cs.Id not in (
+                        SELECT b.Id from (SELECT MIN(c.Id)  as Id FROM CatalogSeoInfo as c GROUP BY c.Keyword, c.StoreId) b)
+                ";
+
+            var command = CreateCommand(commandTemplate, Array.Empty<string>());
+            var result = await dbContext.ExecuteArrayAsync<string>(command.Text, command.Parameters.ToArray());
+
+            return result ?? Array.Empty<string>();
         }
 
         public Task<GenericSearchResult<AssociationEntity>> SearchAssociations(CatalogDbContext dbContext, ProductAssociationSearchCriteria criteria)
