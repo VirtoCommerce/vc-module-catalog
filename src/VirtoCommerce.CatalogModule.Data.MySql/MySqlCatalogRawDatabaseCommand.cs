@@ -66,9 +66,54 @@ namespace VirtoCommerce.CatalogModule.Data.MySql
             return result ?? Array.Empty<string>();
         }
 
-        public Task<GenericSearchResult<AssociationEntity>> SearchAssociations(CatalogDbContext dbContext, ProductAssociationSearchCriteria criteria)
+        public async Task<GenericSearchResult<AssociationEntity>> SearchAssociations(CatalogDbContext dbContext, ProductAssociationSearchCriteria criteria)
         {
-            throw new NotImplementedException();
+            var result = new GenericSearchResult<AssociationEntity>();
+
+            var query = dbContext.Set<AssociationEntity>().Where(item => criteria.ObjectIds.Contains(item.ItemId));
+
+            if (!string.IsNullOrEmpty(criteria.Group))
+            {
+                query = query.Where(item => item.AssociationType == criteria.Group);
+            }
+
+            if (!criteria.AssociatedObjectIds.IsNullOrEmpty())
+            {
+                query = query.Where(item => criteria.AssociatedObjectIds.Contains(item.AssociatedItemId));
+            }
+
+            if (!string.IsNullOrEmpty(criteria.Keyword))
+            {
+                query = query.Where(item => EF.Functions.Like(item.Item.Name, $"%{criteria.Keyword}%"));
+            }
+
+            var resultList = await query.ToListAsync();
+
+            // Search by tags if any
+            if (!criteria.Tags.IsNullOrEmpty())
+            {
+                var tags = new HashSet<string>(criteria.Tags);
+
+                resultList.RemoveAll(item => item.Tags.IsNullOrEmpty() || !tags.Intersect(item.Tags.Split(';')).Any());
+            }
+
+            // Substitute associations with category with related items associations
+            var categoryAssociations = resultList.Where(item => item.AssociatedCategoryId != null).ToList();
+
+            foreach (var a in categoryAssociations)
+            {
+                resultList.Remove(a);
+            }
+
+            // Just in case remove all associations without associated item
+            resultList.RemoveAll(item => item.AssociatedItemId == null);
+
+            result.TotalCount = resultList.Count;
+            result.Results = criteria.Take > 0
+                ? resultList.OrderBy(item => item.Id).ThenBy(item => item.Priority).Skip(criteria.Skip).Take(criteria.Take).ToList()
+                : new List<AssociationEntity>();
+
+            return result;
         }
 
         public async Task<ICollection<CategoryEntity>> SearchCategoriesHierarchyAsync(CatalogDbContext dbContext, string categoryId)
