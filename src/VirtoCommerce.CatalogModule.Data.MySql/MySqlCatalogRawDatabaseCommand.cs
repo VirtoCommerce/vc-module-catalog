@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using MySqlConnector;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Data.Model;
@@ -66,6 +67,48 @@ namespace VirtoCommerce.CatalogModule.Data.MySql
             return result ?? Array.Empty<string>();
         }
 
+        protected virtual async Task<List<AssociationEntity>> GetCategoriesAssociationsAsync(CatalogDbContext dbContext, IReadOnlyDictionary<string, string> associationsToCategories)
+        {
+            if (associationsToCategories.IsNullOrEmpty())
+            {
+                return new List<AssociationEntity>();
+            }
+            var result = new List<AssociationEntity>();
+
+            var commandTemplate =
+                @"SELECT CONVERT( UUID(), char(128) ) AS Id,
+                         AssociationType, Priority, Quantity, Tags, OuterId, a.ItemId AS ItemId,
+                         itemIds.ItemId AS AssociatedItemId,
+                         AssociatedCategoryId,
+                         CreatedDate,
+                         ModifiedDate,
+                         CreatedBy,
+                         ModifiedBy  FROM (
+                                      SELECT AssociationId, ItemId FROM (
+                                              SELECT t2.Id CategoryId, @associationId AssociationId  FROM(
+                                              SELECT @r AS _id,
+                                              (SELECT @r:= ParentCategoryId FROM Category WHERE Id = _id) AS _parent_id,
+                                                         @l:= @l + 1 AS level
+                                               FROM(SELECT @r:= @categoryId, @l:= 0) val, Category
+                                               WHERE @r IS NOT NULL) t1
+                                               JOIN Category t2 ON t1._id = t2.Id) cat JOIN (
+                 SELECT CategoryId, Id AS ItemId FROM Item WHERE ParentId IS NULL) items ON cat.CategoryId = items.CategoryId) itemIds
+                 JOIN( SELECT* FROM Association WHERE Id = @associationId) a
+                 ON itemIds.AssociationId = a.Id";
+
+            // I haven't found a way to get all associations in one query. As such do it in a cycle for each association to category
+            foreach (var pair in associationsToCategories)
+            {
+                var associationIdParam = new MySqlParameter("@associationId", pair.Key);
+                var categoryIdParam = new MySqlParameter("@categoryId", pair.Value);
+                var items = await dbContext.Set<AssociationEntity>().FromSqlRaw(commandTemplate, associationIdParam, categoryIdParam).ToListAsync();
+
+                result.AddRange(items);
+            }
+
+            return result;
+        }
+
         public async Task<GenericSearchResult<AssociationEntity>> SearchAssociations(CatalogDbContext dbContext, ProductAssociationSearchCriteria criteria)
         {
             var result = new GenericSearchResult<AssociationEntity>();
@@ -87,6 +130,7 @@ namespace VirtoCommerce.CatalogModule.Data.MySql
                 query = query.Where(item => EF.Functions.Like(item.Item.Name, $"%{criteria.Keyword}%"));
             }
 
+            // There's no built in string_split function in MySql so we have to materialize the collection to perform the search by tags
             var resultList = await query.ToListAsync();
 
             // Search by tags if any
@@ -97,7 +141,7 @@ namespace VirtoCommerce.CatalogModule.Data.MySql
                 resultList.RemoveAll(item => item.Tags.IsNullOrEmpty() || !tags.Intersect(item.Tags.Split(';')).Any());
             }
 
-            // Substitute associations with category with related items associations
+            // Substitute associations to category with related items associations
             var categoryAssociations = resultList.Where(item => item.AssociatedCategoryId != null).ToList();
 
             foreach (var a in categoryAssociations)
@@ -105,12 +149,26 @@ namespace VirtoCommerce.CatalogModule.Data.MySql
                 resultList.Remove(a);
             }
 
-            // Just in case remove all associations without associated item
+            var itemsFromCategories = await GetCategoriesAssociationsAsync(dbContext,
+                categoryAssociations.ToDictionary(item => item.Id, item => item.AssociatedCategoryId));
+
+            resultList.AddRange(itemsFromCategories);
+
+            // Just in case remove all associations without associated item (they should be associated with categories)
             resultList.RemoveAll(item => item.AssociatedItemId == null);
 
+            // Remove duplicate associations
+            //resultList.Distinct()
+
+            // The ordering is required to get the same result list in case of multiple requests with the same search criteria
             result.TotalCount = resultList.Count;
             result.Results = criteria.Take > 0
-                ? resultList.OrderBy(item => item.Id).ThenBy(item => item.Priority).Skip(criteria.Skip).Take(criteria.Take).ToList()
+                ? resultList.OrderBy(item => item.Priority)
+                            .ThenBy(item => item.ItemId)
+                            .ThenBy(item => item.AssociatedItemId)
+                            .Skip(criteria.Skip)
+                            .Take(criteria.Take)
+                            .ToList()
                 : new List<AssociationEntity>();
 
             return result;
