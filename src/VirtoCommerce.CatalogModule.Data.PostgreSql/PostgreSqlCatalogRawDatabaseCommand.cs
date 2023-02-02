@@ -68,20 +68,19 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql
             string commandText;
             if (catalogProperty != null)
             {
-                commandText = $"DELETE PV FROM PropertyValue PV INNER JOIN Catalog C ON C.Id = PV.CatalogId AND C.Id = '{catalogProperty.CatalogId}' WHERE PV.Name = '{catalogProperty.Name}'";
+                commandText = $@"DELETE FROM ""PropertyValue"" PV USING ""Catalog"" C WHERE C.""Id"" = PV.""CatalogId"" AND C.""Id"" = '{catalogProperty.CatalogId}' AND PV.""Name"" = '{catalogProperty.Name}';";
                 await dbContext.Database.ExecuteSqlRawAsync(commandText);
             }
             if (categoryProperty != null)
             {
-                commandText = $"DELETE PV FROM PropertyValue PV INNER JOIN Category C ON C.Id = PV.CategoryId AND C.CatalogId = '{categoryProperty.CatalogId}' WHERE PV.Name = '{categoryProperty.Name}'";
+                commandText = $@"DELETE FROM ""PropertyValue"" PV USING ""Category"" C WHERE C.""Id"" = PV.""CategoryId"" AND C.""CatalogId"" = '{categoryProperty.CatalogId}' AND PV.""Name"" = '{categoryProperty.Name}';";
                 await dbContext.Database.ExecuteSqlRawAsync(commandText);
             }
             if (itemProperty != null)
             {
-                commandText = $"DELETE PV FROM PropertyValue PV INNER JOIN Item I ON I.Id = PV.ItemId AND I.CatalogId = '{itemProperty.CatalogId}' WHERE PV.Name = '{itemProperty.Name}'";
+                commandText = $@"DELETE FROM ""PropertyValue"" PV USING ""Item"" I WHERE I.""Id"" = PV.""ItemId"" AND I.""CatalogId"" = '{itemProperty.CatalogId}' AND PV.""Name"" = '{itemProperty.Name}';";
                 await dbContext.Database.ExecuteSqlRawAsync(commandText);
             }
-
         }
 
         public virtual async Task RemoveCatalogsAsync(CatalogDbContext dbContext, string[] ids)
@@ -92,12 +91,12 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql
                 do
                 {
                     const string commandTemplate = @"
-                    DELETE CL FROM CatalogLanguage CL INNER JOIN Catalog C ON C.Id = CL.CatalogId WHERE C.Id IN ({0})
-                    DELETE CR FROM CategoryRelation CR INNER JOIN Catalog C ON C.Id = CR.TargetCatalogId WHERE C.Id IN ({0})
-                    DELETE PV FROM PropertyValue PV INNER JOIN Catalog C ON C.Id = PV.CatalogId WHERE C.Id IN ({0})
-                    DELETE P FROM Property P INNER JOIN Catalog C ON C.Id = P.CatalogId  WHERE C.Id IN ({0})
-                    DELETE FROM Catalog WHERE Id IN ({0})
-                ";
+                        DELETE FROM ""CatalogLanguage"" CL USING ""Catalog"" C WHERE C.""Id"" = CL.""CatalogId"" AND C.""Id"" IN ({0});
+                        DELETE FROM ""CategoryRelation"" CR USING ""Catalog"" C WHERE C.""Id"" = CR.""TargetCatalogId"" AND C.""Id"" IN ({0});
+                        DELETE FROM ""PropertyValue"" PV USING ""Catalog"" C WHERE C.""Id"" = PV.""CatalogId"" AND C.""Id"" IN ({0});
+                        DELETE FROM ""Property"" P USING ""Catalog"" C WHERE C.""Id"" = P.""CatalogId""  AND C.""Id"" IN ({0});
+                        DELETE FROM ""Catalog"" WHERE ""Id"" IN ({0});
+                    ";
 
                     await ExecuteStoreQueryAsync(dbContext, commandTemplate, ids.Skip(skip).Take(batchSize));
                     skip += batchSize;
@@ -114,15 +113,15 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql
                 do
                 {
                     const string commandTemplate = @"
-                    DELETE SEO FROM CatalogSeoInfo SEO INNER JOIN Category C ON C.Id = SEO.CategoryId WHERE C.Id IN ({0})
-                    DELETE CI FROM CatalogImage CI INNER JOIN Category C ON C.Id = CI.CategoryId WHERE C.Id IN ({0})
-                    DELETE PV FROM PropertyValue PV INNER JOIN Category C ON C.Id = PV.CategoryId WHERE C.Id IN ({0})
-                    DELETE CR FROM CategoryRelation CR INNER JOIN Category C ON C.Id = CR.SourceCategoryId OR C.Id = CR.TargetCategoryId  WHERE C.Id IN ({0})
-                    DELETE CIR FROM CategoryItemRelation CIR INNER JOIN Category C ON C.Id = CIR.CategoryId WHERE C.Id IN ({0})
-                    DELETE A FROM Association A INNER JOIN Category C ON C.Id = A.AssociatedCategoryId WHERE C.Id IN ({0})
-                    DELETE P FROM Property P INNER JOIN Category C ON C.Id = P.CategoryId  WHERE C.Id IN ({0})
-                    DELETE D FROM CategoryDescription D INNER JOIN Category C ON C.Id = D.CategoryId WHERE C.Id IN ({0})
-                    DELETE FROM Category WHERE Id IN ({0})
+                        DELETE FROM ""CatalogSeoInfo"" SEO USING ""Category"" C WHERE C.""Id"" = SEO.""CategoryId"" AND C.""Id"" IN ({0});
+                        DELETE FROM ""CatalogImage"" CI USING ""Category"" C WHERE C.""Id"" = CI.""CategoryId"" AND C.""Id"" IN ({0});
+                        DELETE FROM ""PropertyValue"" PV USING ""Category"" C WHERE C.""Id"" = PV.""CategoryId"" AND C.""Id"" IN ({0});
+                        DELETE FROM ""CategoryRelation"" CR USING ""Category"" C WHERE (C.""Id"" = CR.""SourceCategoryId"" OR C.""Id"" = CR.""TargetCategoryId"") AND C.""Id"" IN ({0});
+                        DELETE FROM ""CategoryItemRelation"" CIR USING ""Category"" C WHERE C.""Id"" = CIR.""CategoryId"" AND C.""Id"" IN ({0});
+                        DELETE FROM ""Association"" A USING ""Category"" C WHERE C.""Id"" = A.""AssociatedCategoryId"" AND C.""Id"" IN ({0});
+                        DELETE FROM ""Property"" P USING ""Category"" C WHERE C.""Id"" = P.""CategoryId""  AND C.""Id"" IN ({0});
+                        DELETE FROM ""CategoryDescription"" D USING ""Category"" C WHERE C.""Id"" = D.""CategoryId"" AND C.""Id"" IN ({0});
+                        DELETE FROM ""Category"" WHERE ""Id"" IN ({0});
                 ";
 
                     await ExecuteStoreQueryAsync(dbContext, commandTemplate, ids.Skip(skip).Take(batchSize));
@@ -141,33 +140,33 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql
                 do
                 {
                     const string commandTemplate = @"
-                        DELETE SEO FROM CatalogSeoInfo SEO INNER JOIN Item I ON I.Id = SEO.ItemId
-                        WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
+                        DELETE FROM ""CatalogSeoInfo"" SEO USING ""Item"" I WHERE I.""Id"" = SEO.""ItemId""
+                        AND I.""Id"" IN ({0}) OR I.""ParentId"" IN ({0});
 
-                        DELETE CR FROM CategoryItemRelation  CR INNER JOIN Item I ON I.Id = CR.ItemId
-                        WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
+                        DELETE FROM ""CategoryItemRelation"" CR USING ""Item"" I WHERE I.""Id"" = CR.""ItemId""
+                        AND I.""Id"" IN ({0}) OR I.""ParentId"" IN ({0});
 
-                        DELETE CI FROM CatalogImage CI INNER JOIN Item I ON I.Id = CI.ItemId
-                        WHERE I.Id IN ({0})  OR I.ParentId IN ({0})
+                        DELETE FROM ""CatalogImage"" CI USING ""Item"" I WHERE I.""Id"" = CI.""ItemId""
+                        AND I.""Id"" IN ({0})  OR I.""ParentId"" IN ({0});
 
-                        DELETE CA FROM CatalogAsset CA INNER JOIN Item I ON I.Id = CA.ItemId
-                        WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
+                        DELETE FROM ""CatalogAsset"" CA USING ""Item"" I WHERE I.""Id"" = CA.""ItemId""
+                        AND I.""Id"" IN ({0}) OR I.""ParentId"" IN ({0});
 
-                        DELETE PV FROM PropertyValue PV INNER JOIN Item I ON I.Id = PV.ItemId
-                        WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
+                        DELETE FROM ""PropertyValue"" PV USING ""Item"" I WHERE I.""Id"" = PV.""ItemId""
+                        AND I.""Id"" IN ({0}) OR I.""ParentId"" IN ({0});
 
-                        DELETE ER FROM EditorialReview ER INNER JOIN Item I ON I.Id = ER.ItemId
-                        WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
+                        DELETE FROM ""EditorialReview"" ER USING ""Item"" I WHERE I.""Id"" = ER.""ItemId""
+                        AND I.""Id"" IN ({0}) OR I.""ParentId"" IN ({0});
 
-                        DELETE A FROM Association A INNER JOIN Item I ON I.Id = A.ItemId
-                        WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
+                        DELETE FROM ""Association"" A USING ""Item"" I WHERE I.""Id"" = A.""ItemId""
+                        AND I.""Id"" IN ({0}) OR I.""ParentId"" IN ({0});
 
-                        DELETE A FROM Association A INNER JOIN Item I ON I.Id = A.AssociatedItemId
-                        WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
+                        DELETE FROM ""Association"" A USING ""Item"" I WHERE I.""Id"" = A.""AssociatedItemId""
+                        AND I.""Id"" IN ({0}) OR I.""ParentId"" IN ({0});
 
-                        DELETE  FROM Item  WHERE ParentId IN ({0})
+                        DELETE FROM ""Item"" WHERE ""ParentId"" IN ({0});
 
-                        DELETE  FROM Item  WHERE Id IN ({0})
+                        DELETE FROM ""Item"" WHERE ""Id"" IN ({0});
                     ";
 
                     await ExecuteStoreQueryAsync(dbContext, commandTemplate, itemIds.Skip(skip).Take(batchSize));
@@ -210,7 +209,7 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql
 
             if (!criteria.AssociatedObjectIds.IsNullOrEmpty())
             {
-                commands.ForEach(x => AddArrayParameters(x, "@associatedoOjectIds", criteria.AssociatedObjectIds));
+                commands.ForEach(x => AddArrayParameters(x, "@associatedObjectIds", criteria.AssociatedObjectIds));
             }
 
             result.TotalCount = await dbContext.ExecuteScalarAsync<int>(countSqlCommand.Text, countSqlCommand.Parameters.ToArray());
@@ -245,32 +244,32 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql
             var command = new StringBuilder();
 
             command.Append(@"
-                ; WITH Association_CTE AS
+                ; WITH RECURSIVE Association_CTE AS
                 (
                     SELECT a.*
-                    FROM Association a");
+                    FROM ""Association"" a");
 
             AddAssociationsSearchCriteraToCommand(command, criteria);
 
             command.Append(@"), Category_CTE AS
                 (
-                    SELECT AssociatedCategoryId Id
+                    SELECT ""AssociatedCategoryId"" Id
                     FROM Association_CTE
-                    WHERE AssociatedCategoryId IS NOT NULL
+                    WHERE ""AssociatedCategoryId"" IS NOT NULL
                     UNION ALL
-                    SELECT c.Id
-                    FROM Category c
-                    INNER JOIN Category_CTE cte ON c.ParentCategoryId = cte.Id
+                    SELECT c.""Id""
+                    FROM ""Category"" c
+                    INNER JOIN Category_CTE cte ON c.""ParentCategoryId"" = cte.Id
                 ),
                 Item_CTE AS
                 (
-                    SELECT  i.Id
+                    SELECT  i.""Id""
                     FROM (SELECT DISTINCT Id FROM Category_CTE) c
-                    LEFT JOIN Item i ON c.Id=i.CategoryId WHERE i.ParentId IS NULL
+                    LEFT JOIN ""Item"" i ON c.Id=i.""CategoryId"" WHERE i.""ParentId"" IS NULL
                     UNION
-                    SELECT AssociatedItemId Id FROM Association_CTE
+                    SELECT ""AssociatedItemId"" Id FROM Association_CTE
                 )
-                SELECT COUNT(Id) FROM Item_CTE");
+                SELECT COUNT(""Id"") FROM Item_CTE");
 
             return command.ToString();
         }
@@ -280,61 +279,61 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql
             var command = new StringBuilder();
 
             command.Append(@"
-                    ;WITH Association_CTE AS
+                    ;WITH RECURSIVE Association_CTE AS
                     (
                         SELECT
-                             a.Id
-                            ,a.AssociationType
-                            ,a.Priority
-                            ,a.ItemId
-                            ,a.CreatedDate
-                            ,a.ModifiedDate
-                            ,a.CreatedBy
-                            ,a.ModifiedBy
-                            ,a.AssociatedItemId
-                            ,a.AssociatedCategoryId
-                            ,a.Tags
-                            ,a.Quantity
-                            ,a.OuterId
-                        FROM Association a"
+                             a.""Id""
+                            ,a.""AssociationType""
+                            ,a.""Priority""
+                            ,a.""ItemId""
+                            ,a.""CreatedDate""
+                            ,a.""ModifiedDate""
+                            ,a.""CreatedBy""
+                            ,a.""ModifiedBy""
+                            ,a.""AssociatedItemId""
+                            ,a.""AssociatedCategoryId""
+                            ,a.""Tags""
+                            ,a.""Quantity""
+                            ,a.""OuterId""
+                        FROM ""Association"" a"
             );
 
             AddAssociationsSearchCriteraToCommand(command, criteria);
 
             command.Append(@"), Category_CTE AS
                     (
-                        SELECT AssociatedCategoryId Id, AssociatedCategoryId
+                        SELECT ""AssociatedCategoryId"" Id, ""AssociatedCategoryId""
                         FROM Association_CTE
-                        WHERE AssociatedCategoryId IS NOT NULL
+                        WHERE ""AssociatedCategoryId"" IS NOT NULL
                         UNION ALL
-                        SELECT c.Id, cte.AssociatedCategoryId
-                        FROM Category c
-                        INNER JOIN Category_CTE cte ON c.ParentCategoryId = cte.Id
+                        SELECT c.""Id"", cte.""AssociatedCategoryId""
+                        FROM ""Category"" c
+                        INNER JOIN Category_CTE cte ON c.""ParentCategoryId"" = cte.Id
                     ),
                     Item_CTE AS
                     (
                         SELECT
-                            CONVERT(nvarchar(64), newid()) as Id
-                            ,a.AssociationType
-                            ,a.Priority
-                            ,a.ItemId
-                            ,a.CreatedDate
-                            ,a.ModifiedDate
-                            ,a.CreatedBy
-                            ,a.ModifiedBy
-                            ,i.Id AssociatedItemId
-                            ,a.AssociatedCategoryId
-                            ,a.Tags
-                            ,a.Quantity
-                            ,a.OuterId
+                            uuid_generate_v4()::text as Id
+                            ,a.""AssociationType""
+                            ,a.""Priority""
+                            ,a.""ItemId""
+                            ,a.""CreatedDate""
+                            ,a.""ModifiedDate""
+                            ,a.""CreatedBy""
+                            ,a.""ModifiedBy""
+                            ,i.""Id"" ""AssociatedItemId""
+                            ,a.""AssociatedCategoryId""
+                            ,a.""Tags""
+                            ,a.""Quantity""
+                            ,a.""OuterId""
                         FROM Category_CTE cat
-                        LEFT JOIN Item i ON cat.Id=i.CategoryId
-                        LEFT JOIN Association a ON cat.AssociatedCategoryId=a.AssociatedCategoryId
-                        WHERE i.ParentId IS NULL
+                        LEFT JOIN ""Item"" i ON cat.Id=i.""CategoryId""
+                        LEFT JOIN ""Association"" a ON cat.""AssociatedCategoryId""=a.""AssociatedCategoryId""
+                        WHERE i.""ParentId"" IS NULL
                         UNION
                         SELECT * FROM Association_CTE
                     )
-                    SELECT * FROM Item_CTE WHERE AssociatedItemId IS NOT NULL ORDER BY Priority ");
+                    SELECT * FROM Item_CTE WHERE ""AssociatedItemId"" IS NOT NULL ORDER BY ""Priority"" ");
 
             command.Append($"OFFSET {criteria.Skip} ROWS FETCH NEXT {criteria.Take} ROWS ONLY");
 
@@ -347,36 +346,36 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql
             if (!string.IsNullOrEmpty(criteria.Keyword))
             {
                 command.Append(@"
-                    left join Item i on i.Id = a.AssociatedItemId
+                    left join ""Item"" i on i.""Id"" = a.""AssociatedItemId""
                 ");
             }
 
             command.Append(@"
-                    WHERE ItemId IN ({0})
+                    WHERE ""ItemId"" IN ({0})
             ");
 
             // search by association type
             if (!string.IsNullOrEmpty(criteria.Group))
             {
-                command.Append("  AND AssociationType = @group");
+                command.Append("  AND \"AssociationType\" = @group");
             }
 
             // search by association tags
             if (!criteria.Tags.IsNullOrEmpty())
             {
-                command.Append("  AND exists( SELECT value FROM string_split(Tags, ';') WHERE value IN (@tags))");
+                command.Append("  AND exists( SELECT value FROM string_to_array(\"Tags\", ';') WHERE value IN (@tags))");
             }
 
             // search by keyword
             if (!string.IsNullOrEmpty(criteria.Keyword))
             {
-                command.Append("  AND i.Name like @keyword");
+                command.Append("  AND i.\"Name\" like @keyword");
             }
 
             // search by associated product ids
             if (!criteria.AssociatedObjectIds.IsNullOrEmpty())
             {
-                command.Append("  AND a.AssociatedItemId in (@associatedoOjectIds)");
+                command.Append("  AND a.\"AssociatedItemId\" in (@associatedObjectIds)");
             }
         }
 
