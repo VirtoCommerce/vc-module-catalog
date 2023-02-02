@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 using MySqlConnector;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Data.Model;
@@ -109,6 +108,41 @@ namespace VirtoCommerce.CatalogModule.Data.MySql
             return result;
         }
 
+        private class AssociationEntityComparer : IEqualityComparer<AssociationEntity>
+        {
+            public bool Equals(AssociationEntity x, AssociationEntity y)
+            {
+                if (ReferenceEquals(x, y))
+                {
+                    return true;
+                }
+
+                if (ReferenceEquals(x, null))
+                {
+                    return false;
+                }
+
+                if (ReferenceEquals(y, null))
+                {
+                    return false;
+                }
+
+                if (x.GetType() != y.GetType())
+                {
+                    return false;
+                }
+
+                return x.ItemId == y.ItemId && x.AssociatedItemId == y.AssociatedItemId;
+            }
+
+            public int GetHashCode(AssociationEntity obj)
+            {
+                return HashCode.Combine(obj.ItemId, obj.AssociatedItemId);
+            }
+        }
+
+        private static readonly AssociationEntityComparer AssociationComparer = new();
+
         public async Task<GenericSearchResult<AssociationEntity>> SearchAssociations(CatalogDbContext dbContext, ProductAssociationSearchCriteria criteria)
         {
             var result = new GenericSearchResult<AssociationEntity>();
@@ -154,16 +188,16 @@ namespace VirtoCommerce.CatalogModule.Data.MySql
 
             resultList.AddRange(itemsFromCategories);
 
-            // Just in case remove all associations without associated item (they should be associated with categories)
+            // Just in case remove all associations without associated item
             resultList.RemoveAll(item => item.AssociatedItemId == null);
 
-            // Remove duplicate associations
-            //resultList.Distinct()
+            // Remove duplicate associations if any
+            var finalResultList = resultList.Distinct(AssociationComparer).ToList();
 
             // The ordering is required to get the same result list in case of multiple requests with the same search criteria
-            result.TotalCount = resultList.Count;
+            result.TotalCount = finalResultList.Count;
             result.Results = criteria.Take > 0
-                ? resultList.OrderBy(item => item.Priority)
+                ? finalResultList.OrderBy(item => item.Priority)
                             .ThenBy(item => item.ItemId)
                             .ThenBy(item => item.AssociatedItemId)
                             .Skip(criteria.Skip)
