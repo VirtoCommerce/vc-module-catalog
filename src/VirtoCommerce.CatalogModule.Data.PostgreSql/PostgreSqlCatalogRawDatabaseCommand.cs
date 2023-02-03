@@ -1,11 +1,4 @@
 using System.Text;
-using Microsoft.EntityFrameworkCore;
-using Npgsql;
-using VirtoCommerce.CatalogModule.Core.Model.Search;
-using VirtoCommerce.CatalogModule.Data.Model;
-using VirtoCommerce.CatalogModule.Data.Repositories;
-using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Data.Extensions;
 
 namespace VirtoCommerce.CatalogModule.Data.PostgreSql
 {
@@ -397,7 +390,7 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql
             };
         }
 
-        protected NpgsqlParameter[] AddArrayParameters<T>(Command cmd, string paramNameRoot, IEnumerable<T> values)
+        protected static NpgsqlParameter[] AddArrayParameters<T>(Command cmd, string paramNameRoot, IEnumerable<T> values)
         {
             /* An array cannot be simply added as a parameter to a SqlCommand so we need to loop through things and add it manually.
              * Each item in the array will end up being it's own NpgsqlParameter so the return value for this must be used as part of the
