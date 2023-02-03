@@ -1,4 +1,3 @@
-using System.Data.SqlClient;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
@@ -192,7 +191,7 @@ namespace VirtoCommerce.CatalogModule.Data.SqlServer
 
             if (!string.IsNullOrEmpty(criteria.Group))
             {
-                commands.ForEach(x => x.Parameters.Add(new SqlParameter($"@group", criteria.Group)));
+                commands.ForEach(x => x.Parameters.Add(new Microsoft.Data.SqlClient.SqlParameter($"@group", criteria.Group)));
             }
 
             if (!criteria.Tags.IsNullOrEmpty())
@@ -203,7 +202,7 @@ namespace VirtoCommerce.CatalogModule.Data.SqlServer
             if (!string.IsNullOrEmpty(criteria.Keyword))
             {
                 var wildcardKeyword = $"%{criteria.Keyword}%";
-                commands.ForEach(x => x.Parameters.Add(new SqlParameter($"@keyword", wildcardKeyword)));
+                commands.ForEach(x => x.Parameters.Add(new Microsoft.Data.SqlClient.SqlParameter($"@keyword", wildcardKeyword)));
             }
 
             if (!criteria.AssociatedObjectIds.IsNullOrEmpty())
@@ -235,7 +234,7 @@ namespace VirtoCommerce.CatalogModule.Data.SqlServer
                 SELECT *
                 FROM CategoryParents";
 
-            var categoryIdParam = new SqlParameter("@categoryId", categoryId);
+            var categoryIdParam = new Microsoft.Data.SqlClient.SqlParameter("@categoryId", categoryId);
             var result = await dbContext.Set<CategoryEntity>().FromSqlRaw(commandTemplate, categoryIdParam).ToListAsync();
 
             return result;
@@ -389,7 +388,7 @@ namespace VirtoCommerce.CatalogModule.Data.SqlServer
 
         protected virtual Command CreateCommand(string commandTemplate, IEnumerable<string> parameterValues)
         {
-            var parameters = parameterValues.Select((v, i) => new SqlParameter($"@p{i}", v)).ToArray();
+            var parameters = parameterValues.Select((v, i) => new Microsoft.Data.SqlClient.SqlParameter($"@p{i}", v)).ToArray();
             var parameterNames = string.Join(",", parameters.Select(p => p.ParameterName));
 
             return new Command
@@ -399,20 +398,20 @@ namespace VirtoCommerce.CatalogModule.Data.SqlServer
             };
         }
 
-        protected static SqlParameter[] AddArrayParameters<T>(Command cmd, string paramNameRoot, IEnumerable<T> values)
+        protected static Microsoft.Data.SqlClient.SqlParameter[] AddArrayParameters<T>(Command cmd, string paramNameRoot, IEnumerable<T> values)
         {
             /* An array cannot be simply added as a parameter to a SqlCommand so we need to loop through things and add it manually.
-             * Each item in the array will end up being it's own SqlParameter so the return value for this must be used as part of the
+             * Each item in the array will end up being it's own Microsoft.Data.SqlClient.SqlParameter so the return value for this must be used as part of the
              * IN statement in the CommandText.
              */
-            var parameters = new List<SqlParameter>();
+            var parameters = new List<Microsoft.Data.SqlClient.SqlParameter>();
             var parameterNames = new List<string>();
             var paramNbr = 1;
             foreach (var value in values)
             {
                 var paramName = $"{paramNameRoot}{paramNbr++}";
                 parameterNames.Add(paramName);
-                var p = new SqlParameter(paramName, value);
+                var p = new Microsoft.Data.SqlClient.SqlParameter(paramName, value);
                 cmd.Parameters.Add(p);
                 parameters.Add(p);
             }
