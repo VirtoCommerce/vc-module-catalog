@@ -1,4 +1,11 @@
+using System.Data.SqlClient;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
+using VirtoCommerce.CatalogModule.Core.Model.Search;
+using VirtoCommerce.CatalogModule.Data.Model;
+using VirtoCommerce.CatalogModule.Data.Repositories;
+using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Data.Extensions;
 
 namespace VirtoCommerce.CatalogModule.Data.SqlServer
 {
