@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using EntityFrameworkCore.Triggers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -47,7 +48,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
                     c => c.ToList())); // take a reference about value comparers here: https://learn.microsoft.com/en-us/ef/core/modeling/value-comparers?tabs=ef5#mutable-classes
             modelBuilder.Entity<CategoryEntity>()
-                .HasCheckConstraint("Parent_category_check", $"{nameof(CategoryEntity.ParentCategoryId)} != {nameof(CategoryEntity.Id)}");
+                .HasCheckConstraint("Parent_category_check", $"\"{nameof(CategoryEntity.ParentCategoryId)}\" != \"{nameof(CategoryEntity.Id)}\"");
 
             #endregion Category
 
@@ -261,6 +262,22 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             #endregion SeoInfo
 
             base.OnModelCreating(modelBuilder);
+
+            // Allows configuration for an entity type for different database types.
+            // Applies configuration from all <see cref="IEntityTypeConfiguration{TEntity}" in VirtoCommerce.CatalogModule.Data.XXX project. /> 
+            switch (this.Database.ProviderName)
+            {
+                case "Pomelo.EntityFrameworkCore.MySql":
+                    modelBuilder.ApplyConfigurationsFromAssembly(Assembly.Load("VirtoCommerce.CatalogModule.Data.MySql"));
+                    break;
+                case "Npgsql.EntityFrameworkCore.PostgreSQL":
+                    modelBuilder.ApplyConfigurationsFromAssembly(Assembly.Load("VirtoCommerce.CatalogModule.Data.PostgreSql"));
+                    break;
+                case "Microsoft.EntityFrameworkCore.SqlServer":
+                    modelBuilder.ApplyConfigurationsFromAssembly(Assembly.Load("VirtoCommerce.CatalogModule.Data.SqlServer"));
+                    break;
+            }
+
         }
     }
 #pragma warning restore S109

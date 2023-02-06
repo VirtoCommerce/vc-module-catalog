@@ -26,11 +26,14 @@ using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Authorization;
 using VirtoCommerce.CatalogModule.Data.ExportImport;
 using VirtoCommerce.CatalogModule.Data.Handlers;
+using VirtoCommerce.CatalogModule.Data.MySql;
+using VirtoCommerce.CatalogModule.Data.PostgreSql;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Data.Search;
 using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
 using VirtoCommerce.CatalogModule.Data.Search.Indexing;
 using VirtoCommerce.CatalogModule.Data.Services;
+using VirtoCommerce.CatalogModule.Data.SqlServer;
 using VirtoCommerce.CatalogModule.Data.Validation;
 using VirtoCommerce.CatalogModule.Web.Authorization;
 using VirtoCommerce.CoreModule.Core.Seo;
@@ -64,11 +67,38 @@ namespace VirtoCommerce.CatalogModule.Web
 
         public void Initialize(IServiceCollection serviceCollection)
         {
+            var databaseProvider = Configuration.GetValue("DatabaseProvider", "SqlServer");
             serviceCollection.AddDbContext<CatalogDbContext>((provider, options) =>
             {
-                var configuration = provider.GetRequiredService<IConfiguration>();
-                options.UseSqlServer(configuration.GetConnectionString(ModuleInfo.Id) ?? configuration.GetConnectionString("VirtoCommerce"));
+                var connectionString = Configuration.GetConnectionString(ModuleInfo.Id) ?? Configuration.GetConnectionString("VirtoCommerce");
+
+                switch (databaseProvider)
+                {
+                    case "MySql":
+                        options.UseMySqlDatabase(connectionString);
+                        break;
+                    case "PostgreSql":
+                        options.UsePostgreSqlDatabase(connectionString);
+                        break;
+                    default:
+                        options.UseSqlServerDatabase(connectionString);
+                        break;
+                }
             });
+
+            switch (databaseProvider)
+            {
+                case "MySql":
+                    serviceCollection.AddTransient<ICatalogRawDatabaseCommand, MySqlCatalogRawDatabaseCommand>();
+                    break;
+                case "PostgreSql":
+                    serviceCollection.AddTransient<ICatalogRawDatabaseCommand, PostgreSqlCatalogRawDatabaseCommand>();
+                    break;
+                default:
+                    serviceCollection.AddTransient<ICatalogRawDatabaseCommand, SqlServerCatalogRawDatabaseCommand>();
+                    break;
+            }
+
             serviceCollection.AddTransient<ICatalogRepository, CatalogRepositoryImpl>();
             serviceCollection.AddTransient<Func<ICatalogRepository>>(provider => () => provider.CreateScope().ServiceProvider.GetRequiredService<ICatalogRepository>());
 
@@ -245,9 +275,12 @@ namespace VirtoCommerce.CatalogModule.Web
             //Force migrations
             using (var serviceScope = appBuilder.ApplicationServices.CreateScope())
             {
+                var databaseProvider = Configuration.GetValue("DatabaseProvider", "SqlServer");
                 var catalogDbContext = serviceScope.ServiceProvider.GetRequiredService<CatalogDbContext>();
-                catalogDbContext.Database.MigrateIfNotApplied(MigrationName.GetUpdateV2MigrationName(ModuleInfo.Id));
-                catalogDbContext.Database.EnsureCreated();
+                if (databaseProvider == "SqlServer")
+                {
+                    catalogDbContext.Database.MigrateIfNotApplied(MigrationName.GetUpdateV2MigrationName(ModuleInfo.Id));
+                }
                 catalogDbContext.Database.Migrate();
             }
 
@@ -309,6 +342,7 @@ namespace VirtoCommerce.CatalogModule.Web
             RegisterBulkAction(nameof(PropertiesUpdateBulkAction), nameof(PropertiesUpdateBulkActionContext));
 
             #endregion BulkActions
+
         }
 
         public void Uninstall()
@@ -316,17 +350,17 @@ namespace VirtoCommerce.CatalogModule.Web
             // Method intentionally left empty.
         }
 
-        public async Task ExportAsync(Stream outStream, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback,
+        public Task ExportAsync(Stream outStream, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback,
             ICancellationToken cancellationToken)
         {
-            await _appBuilder.ApplicationServices.GetRequiredService<CatalogExportImport>().DoExportAsync(outStream, options,
+            return _appBuilder.ApplicationServices.GetRequiredService<CatalogExportImport>().DoExportAsync(outStream, options,
                 progressCallback, cancellationToken);
         }
 
-        public async Task ImportAsync(Stream inputStream, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback,
+        public Task ImportAsync(Stream inputStream, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback,
             ICancellationToken cancellationToken)
         {
-            await _appBuilder.ApplicationServices.GetRequiredService<CatalogExportImport>().DoImportAsync(inputStream, options,
+            return _appBuilder.ApplicationServices.GetRequiredService<CatalogExportImport>().DoImportAsync(inputStream, options,
                 progressCallback, cancellationToken);
         }
 
