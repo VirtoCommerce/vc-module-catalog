@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Common;
@@ -166,6 +167,15 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                     {
                         case AttributeFilter attributeFilter:
                             aggregation = GetAttributeAggregation(attributeFilter, aggregationResponses);
+                            if (attributeFilter.Key == "__outline" ||
+                                attributeFilter.Key == "__outline_named")
+                            {
+                                FilterOutlineTerms(criteria, aggregation, false);
+                            }
+                            else if (attributeFilter.Key == "__path")
+                            {
+                                FilterOutlineTerms(criteria, aggregation, true);
+                            }
                             break;
                         case RangeFilter rangeFilter:
                             aggregation = GetRangeAggregation(rangeFilter, aggregationResponses);
@@ -189,6 +199,50 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             }
 
             return result.ToArray();
+        }
+
+        /// <summary>
+        /// Filter outline terms by current catalog and outline.
+        /// </summary>
+        /// <param name="criteria"></param>
+        /// <param name="aggregation"></param>
+        /// <param name="expandChild"></param>
+        protected virtual void FilterOutlineTerms(ProductIndexedSearchCriteria criteria, Aggregation aggregation, bool expandChild)
+        {
+            var rootOutline = string.Empty;
+
+            if (!string.IsNullOrEmpty(criteria.Outline))
+            {
+                rootOutline = criteria.Outline;
+            }
+            else if (!string.IsNullOrEmpty(criteria.CatalogId))
+            {
+                rootOutline = criteria.CatalogId;
+            }
+
+            if (!string.IsNullOrEmpty(rootOutline))
+            {
+                // Exclude direct outlines: {CatalogId}/{CategoryId}
+                var allDirectCategoryOutlines = aggregation.Items
+                    .Select(a => a.Value.ToString().Split("/")).Where(a => a.Length > 2)
+                    .Select(a => a.First() + "/" + a.Last()).ToList();
+
+                var childItems = aggregation.Items.Where(x =>
+                    !allDirectCategoryOutlines.Contains(x.Value as string) &&
+                    IsChildOutline(rootOutline, x.Value as string, expandChild));
+
+                aggregation.Items = childItems.ToArray();
+            }
+        }
+
+        protected virtual bool IsChildOutline(string rootOutline, string currentOutline, bool expandChild)
+        {
+            if (string.IsNullOrEmpty(currentOutline))
+                return false;
+
+            return currentOutline.StartsWith(rootOutline + "/") &&
+                (expandChild ? (currentOutline.IndexOf('/', rootOutline.Length + 1) == -1) :
+                               (currentOutline.IndexOf('/', rootOutline.Length + 1) != -1));
         }
 
         protected virtual Aggregation GetAttributeAggregation(AttributeFilter attributeFilter, IList<AggregationResponse> aggregationResponses)
@@ -270,7 +324,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                             {
                                 Value = aggregationIdName[0],
                                 Count = (int)v.Count,
-                                Labels = new[] { new AggregationLabel { Label = aggregationIdName[1] } }
+                                Labels = new[] { new AggregationLabel { Label = CreateLabel(aggregationIdName[1]) } }
                             };
                         }
                     }
@@ -284,6 +338,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 .ToList();
 
             return result;
+        }
+
+        private static string CreateLabel(string title)
+        {
+            return Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(title);
         }
 
         protected virtual IList<AggregationItem> GetRangeAggregationItems(string aggregationId, IList<RangeFilterValue> values, IList<AggregationResponse> aggregationResponses)
