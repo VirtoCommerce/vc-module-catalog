@@ -166,7 +166,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                     switch (filter)
                     {
                         case AttributeFilter attributeFilter:
-                            aggregation = GetAttributeAggregation(criteria, attributeFilter, aggregationResponses);
+                            aggregation = GetAttributeAggregation(attributeFilter, aggregationResponses);
+                            aggregation = FilterOutlines(criteria, attributeFilter, aggregation);
                             break;
                         case RangeFilter rangeFilter:
                             aggregation = GetRangeAggregation(rangeFilter, aggregationResponses);
@@ -190,23 +191,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             }
 
             return result.ToArray();
-        }
-
-        protected virtual Aggregation GetAttributeAggregation(ProductIndexedSearchCriteria criteria, AttributeFilter attributeFilter, IList<AggregationResponse> aggregationResponses)
-        {
-            var aggregation = GetAttributeAggregation(attributeFilter, aggregationResponses);
-
-            if (attributeFilter.Key == "__outline" ||
-                attributeFilter.Key == "__outline_named")
-            {
-                FilterOutlineTerms(criteria, aggregation, false);
-            }
-            else if (attributeFilter.Key == "__path")
-            {
-                FilterOutlineTerms(criteria, aggregation, true);
-            }
-
-            return aggregation;
         }
 
         /// <summary>
@@ -253,6 +237,21 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             return currentOutline.StartsWith(rootOutline + "/") &&
                 (expandChild ? (currentOutline.IndexOf('/', rootOutline.Length + 1) == -1) :
                                (currentOutline.IndexOf('/', rootOutline.Length + 1) != -1));
+        }
+
+        protected virtual Aggregation FilterOutlines(ProductIndexedSearchCriteria criteria, AttributeFilter attributeFilter, Aggregation aggregation)
+        {
+            if (attributeFilter.Key == "__outline" ||
+                            attributeFilter.Key == "__outline_named")
+            {
+                FilterOutlineTerms(criteria, aggregation, false);
+            }
+            else if (attributeFilter.Key == "__path")
+            {
+                FilterOutlineTerms(criteria, aggregation, true);
+            }
+
+            return aggregation;
         }
 
         protected virtual Aggregation GetAttributeAggregation(AttributeFilter attributeFilter, IList<AggregationResponse> aggregationResponses)
