@@ -166,16 +166,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                     switch (filter)
                     {
                         case AttributeFilter attributeFilter:
-                            aggregation = GetAttributeAggregation(attributeFilter, aggregationResponses);
-                            if (attributeFilter.Key == "__outline" ||
-                                attributeFilter.Key == "__outline_named")
-                            {
-                                FilterOutlineTerms(criteria, aggregation, false);
-                            }
-                            else if (attributeFilter.Key == "__path")
-                            {
-                                FilterOutlineTerms(criteria, aggregation, true);
-                            }
+                            aggregation = GetAttributeAggregation(criteria, attributeFilter, aggregationResponses);
                             break;
                         case RangeFilter rangeFilter:
                             aggregation = GetRangeAggregation(rangeFilter, aggregationResponses);
@@ -199,6 +190,23 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             }
 
             return result.ToArray();
+        }
+
+        protected virtual Aggregation GetAttributeAggregation(ProductIndexedSearchCriteria criteria, AttributeFilter attributeFilter, IList<AggregationResponse> aggregationResponses)
+        {
+            var aggregation = GetAttributeAggregation(attributeFilter, aggregationResponses);
+
+            if (attributeFilter.Key == "__outline" ||
+                attributeFilter.Key == "__outline_named")
+            {
+                FilterOutlineTerms(criteria, aggregation, false);
+            }
+            else if (attributeFilter.Key == "__path")
+            {
+                FilterOutlineTerms(criteria, aggregation, true);
+            }
+
+            return aggregation;
         }
 
         /// <summary>
@@ -238,7 +246,9 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         protected virtual bool IsChildOutline(string rootOutline, string currentOutline, bool expandChild)
         {
             if (string.IsNullOrEmpty(currentOutline))
+            {
                 return false;
+            }
 
             return currentOutline.StartsWith(rootOutline + "/") &&
                 (expandChild ? (currentOutline.IndexOf('/', rootOutline.Length + 1) == -1) :
