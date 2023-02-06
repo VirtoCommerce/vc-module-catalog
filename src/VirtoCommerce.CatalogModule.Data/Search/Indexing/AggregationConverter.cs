@@ -235,8 +235,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             }
 
             return currentOutline.StartsWith(rootOutline + "/") &&
-                (expandChild ? (currentOutline.IndexOf('/', rootOutline.Length + 1) == -1) :
-                               (currentOutline.IndexOf('/', rootOutline.Length + 1) != -1));
+                (expandChild ? (currentOutline.IndexOf('/', rootOutline.Length + 1) != -1) :
+                               (currentOutline.IndexOf('/', rootOutline.Length + 1) == -1));
         }
 
         protected virtual Aggregation FilterOutlines(ProductIndexedSearchCriteria criteria, AttributeFilter attributeFilter, Aggregation aggregation)
