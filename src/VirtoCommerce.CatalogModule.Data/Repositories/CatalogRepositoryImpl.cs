@@ -1,27 +1,25 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Data.Extensions;
 using VirtoCommerce.Platform.Data.Infrastructure;
 
 namespace VirtoCommerce.CatalogModule.Data.Repositories
 {
     public class CatalogRepositoryImpl : DbContextRepositoryBase<CatalogDbContext>, ICatalogRepository
     {
-        private const int batchSize = 500;
+        private readonly ICatalogRawDatabaseCommand _rawDatabaseCommand;
 
-        public CatalogRepositoryImpl(CatalogDbContext dbContext)
+        public CatalogRepositoryImpl(CatalogDbContext dbContext, ICatalogRawDatabaseCommand rawDatabaseCommand)
             : base(dbContext)
         {
+            _rawDatabaseCommand = rawDatabaseCommand;
         }
 
         #region ICatalogRepository Members
@@ -172,7 +170,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     if (itemResponseGroup.HasFlag(ItemResponseGroup.Variations))
 #pragma warning restore CS0618
                     {
-                        // TODO: Call GetItemByIds for variations recursively (need to measure performance and data amount first)
+                        // Call GetItemByIds for variations recursively (need to measure performance and data amount first)
                         IQueryable<ItemEntity> variationsQuery = Items.Where(x => itemIds.Contains(x.ParentId))
                                                     .Include(x => x.Images)
                                                     .Include(x => x.ItemPropertyValues).ThenInclude(x => x.DictionaryItem.DictionaryItemValues);
@@ -317,107 +315,23 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             return result;
         }
 
-        public virtual async Task<string[]> GetAllSeoDuplicatesIdsAsync()
+        public virtual Task<string[]> GetAllSeoDuplicatesIdsAsync()
         {
-            const string commandTemplate = @"
-                    WITH cte AS (
-	                    SELECT
-		                    Id,
-		                    Keyword,
-		                    StoreId,
-		                    ROW_NUMBER() OVER ( PARTITION BY Keyword, StoreId ORDER BY StoreId) row_num
-	                    FROM CatalogSeoInfo
-                    )
-                    SELECT Id FROM cte
-                    WHERE row_num > 1
-                ";
-
-            var command = CreateCommand(commandTemplate, new string[0]);
-            var result = await DbContext.ExecuteArrayAsync<string>(command.Text, command.Parameters.ToArray());
-
-            return result ?? new string[0];
+            return _rawDatabaseCommand.GetAllSeoDuplicatesIdsAsync(DbContext);
         }
 
-        public virtual async Task<string[]> GetAllChildrenCategoriesIdsAsync(string[] categoryIds)
+        public virtual Task<string[]> GetAllChildrenCategoriesIdsAsync(string[] categoryIds)
         {
-            var result = new List<string>();
-
-            if (!categoryIds.IsNullOrEmpty())
-            {
-                var skip = 0;
-                do
-                {
-                    const string commandTemplate = @"
-                    WITH cte AS (
-                        SELECT a.Id FROM Category a  WHERE Id IN ({0})
-                        UNION ALL
-                        SELECT a.Id FROM Category a JOIN cte c ON a.ParentCategoryId = c.Id
-                    )
-                    SELECT Id FROM cte WHERE Id NOT IN ({0})
-                    ";
-
-                    var getAllChildrenCategoriesCommand = CreateCommand(commandTemplate, categoryIds.Skip(skip).Take(batchSize));
-                    var subResult = await DbContext.ExecuteArrayAsync<string>(getAllChildrenCategoriesCommand.Text, getAllChildrenCategoriesCommand.Parameters.ToArray());
-
-                    result.AddRange(subResult);
-
-                    skip += batchSize;
-                }
-                while (skip < categoryIds.Length);
-            }
-
-            return result.ToArray();
+            return _rawDatabaseCommand.GetAllChildrenCategoriesIdsAsync(DbContext, categoryIds);
         }
 
         public virtual async Task RemoveItemsAsync(string[] itemIds)
         {
-            if (!itemIds.IsNullOrEmpty())
+            using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-                {
-                    var skip = 0;
-                    do
-                    {
-                        const string commandTemplate = @"
-                        DELETE SEO FROM CatalogSeoInfo SEO INNER JOIN Item I ON I.Id = SEO.ItemId
-                        WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
+                await _rawDatabaseCommand.RemoveItemsAsync(DbContext, itemIds);
 
-                        DELETE CR FROM CategoryItemRelation  CR INNER JOIN Item I ON I.Id = CR.ItemId
-                        WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
-
-                        DELETE CI FROM CatalogImage CI INNER JOIN Item I ON I.Id = CI.ItemId
-                        WHERE I.Id IN ({0})  OR I.ParentId IN ({0})
-
-                        DELETE CA FROM CatalogAsset CA INNER JOIN Item I ON I.Id = CA.ItemId
-                        WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
-
-                        DELETE PV FROM PropertyValue PV INNER JOIN Item I ON I.Id = PV.ItemId
-                        WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
-
-                        DELETE ER FROM EditorialReview ER INNER JOIN Item I ON I.Id = ER.ItemId
-                        WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
-
-                        DELETE A FROM Association A INNER JOIN Item I ON I.Id = A.ItemId
-                        WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
-
-                        DELETE A FROM Association A INNER JOIN Item I ON I.Id = A.AssociatedItemId
-                        WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
-
-                        DELETE  FROM Item  WHERE ParentId IN ({0})
-
-                        DELETE  FROM Item  WHERE Id IN ({0})
-                    ";
-
-                        await ExecuteStoreQueryAsync(commandTemplate, itemIds.Skip(skip).Take(batchSize));
-
-                        skip += batchSize;
-                    }
-                    while (skip < itemIds.Length);
-
-                    scope.Complete();
-                }
-
-                //TODO: Notify about removed entities by event or trigger
+                scope.Complete();
             }
         }
 
@@ -427,74 +341,31 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             {
                 using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
-                    var categoryIds = (await GetAllChildrenCategoriesIdsAsync(ids)).Concat(ids).ToArray();
+                    var allCategoryIds = (await GetAllChildrenCategoriesIdsAsync(ids)).Concat(ids).ToArray();
 
-                    var skip = 0;
-                    do
-                    {
-                        var subCategoryIds = categoryIds.Skip(skip).Take(batchSize);
+                    var itemIds = await Items.Where(i => allCategoryIds.Contains(i.CategoryId)).Select(i => i.Id).ToArrayAsync();
+                    await RemoveItemsAsync(itemIds);
 
-                        var itemIds = await Items.Where(i => subCategoryIds.Contains(i.CategoryId)).Select(i => i.Id).ToArrayAsync();
-                        await RemoveItemsAsync(itemIds);
-
-                        const string commandTemplate = @"
-                    DELETE SEO FROM CatalogSeoInfo SEO INNER JOIN Category C ON C.Id = SEO.CategoryId WHERE C.Id IN ({0})
-                    DELETE CI FROM CatalogImage CI INNER JOIN Category C ON C.Id = CI.CategoryId WHERE C.Id IN ({0})
-                    DELETE PV FROM PropertyValue PV INNER JOIN Category C ON C.Id = PV.CategoryId WHERE C.Id IN ({0})
-                    DELETE CR FROM CategoryRelation CR INNER JOIN Category C ON C.Id = CR.SourceCategoryId OR C.Id = CR.TargetCategoryId  WHERE C.Id IN ({0})
-                    DELETE CIR FROM CategoryItemRelation CIR INNER JOIN Category C ON C.Id = CIR.CategoryId WHERE C.Id IN ({0})
-                    DELETE A FROM Association A INNER JOIN Category C ON C.Id = A.AssociatedCategoryId WHERE C.Id IN ({0})
-                    DELETE P FROM Property P INNER JOIN Category C ON C.Id = P.CategoryId  WHERE C.Id IN ({0})
-                    DELETE D FROM CategoryDescription D INNER JOIN Category C ON C.Id = D.CategoryId WHERE C.Id IN ({0})
-                    UPDATE Category SET ParentCategoryId = NULL WHERE ParentCategoryId IN ({0})
-                    DELETE FROM Category WHERE Id IN ({0})
-                ";
-
-                        await ExecuteStoreQueryAsync(commandTemplate, subCategoryIds);
-
-                        skip += batchSize;
-                    }
-                    while (skip < categoryIds.Length);
+                    await _rawDatabaseCommand.RemoveCategoriesAsync(DbContext, allCategoryIds);
 
                     scope.Complete();
                 }
-
-                //TODO: Notify about removed entities by event or trigger
             }
         }
 
         public virtual async Task RemoveCatalogsAsync(string[] ids)
         {
-            if (!ids.IsNullOrEmpty())
+            using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-                {
-                    var itemIds = await Items.Where(i => ids.Contains(i.CatalogId)).Select(i => i.Id).ToArrayAsync();
-                    await RemoveItemsAsync(itemIds);
+                var itemIds = await Items.Where(i => ids.Contains(i.CatalogId)).Select(i => i.Id).ToArrayAsync();
+                await RemoveItemsAsync(itemIds);
 
-                    var categoryIds = await Categories.Where(c => ids.Contains(c.CatalogId)).Select(c => c.Id).ToArrayAsync();
-                    await RemoveCategoriesAsync(categoryIds);
+                var categoryIds = await Categories.Where(c => ids.Contains(c.CatalogId)).Select(c => c.Id).ToArrayAsync();
+                await RemoveCategoriesAsync(categoryIds);
 
-                    var skip = 0;
-                    do
-                    {
-                        const string commandTemplate = @"
-                    DELETE CL FROM CatalogLanguage CL INNER JOIN Catalog C ON C.Id = CL.CatalogId WHERE C.Id IN ({0})
-                    DELETE CR FROM CategoryRelation CR INNER JOIN Catalog C ON C.Id = CR.TargetCatalogId WHERE C.Id IN ({0})
-                    DELETE PV FROM PropertyValue PV INNER JOIN Catalog C ON C.Id = PV.CatalogId WHERE C.Id IN ({0})
-                    DELETE P FROM Property P INNER JOIN Catalog C ON C.Id = P.CatalogId  WHERE C.Id IN ({0})
-                    DELETE FROM Catalog WHERE Id IN ({0})
-                ";
+                await _rawDatabaseCommand.RemoveCatalogsAsync(DbContext, ids);
 
-                        await ExecuteStoreQueryAsync(commandTemplate, ids.Skip(skip).Take(batchSize));
-                        skip += batchSize;
-                    }
-                    while (skip < ids.Length);
-
-                    scope.Complete();
-                }
-
-                //TODO: Notify about removed entities by event or trigger
+                scope.Complete();
             }
         }
 
@@ -509,72 +380,25 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 var properties = await GetPropertiesByIdsAsync(new[] { propertyId });
+
                 var catalogProperty = properties.FirstOrDefault(x => x.TargetType.EqualsInvariant(PropertyType.Catalog.ToString()));
                 var categoryProperty = properties.FirstOrDefault(x => x.TargetType.EqualsInvariant(PropertyType.Category.ToString()));
                 var itemProperty = properties.FirstOrDefault(x => x.TargetType.EqualsInvariant(PropertyType.Product.ToString()) || x.TargetType.EqualsInvariant(PropertyType.Variation.ToString()));
 
-                FormattableString commandText;
-                if (catalogProperty != null)
-                {
-                    commandText = $"DELETE PV FROM PropertyValue PV INNER JOIN Catalog C ON C.Id = PV.CatalogId AND C.Id = '{catalogProperty.CatalogId}' WHERE PV.Name = '{catalogProperty.Name}'";
-                    await DbContext.Database.ExecuteSqlInterpolatedAsync(commandText);
-                }
-                if (categoryProperty != null)
-                {
-                    commandText = $"DELETE PV FROM PropertyValue PV INNER JOIN Category C ON C.Id = PV.CategoryId AND C.CatalogId = '{categoryProperty.CatalogId}' WHERE PV.Name = '{categoryProperty.Name}'";
-                    await DbContext.Database.ExecuteSqlInterpolatedAsync(commandText);
-                }
-                if (itemProperty != null)
-                {
-                    commandText = $"DELETE PV FROM PropertyValue PV INNER JOIN Item I ON I.Id = PV.ItemId AND I.CatalogId = '{itemProperty.CatalogId}' WHERE PV.Name = '{itemProperty.Name}'";
-                    await DbContext.Database.ExecuteSqlInterpolatedAsync(commandText);
-                }
+                await _rawDatabaseCommand.RemoveAllPropertyValuesAsync(DbContext, catalogProperty, categoryProperty, itemProperty);
 
                 scope.Complete();
             }
         }
 
-        public virtual async Task<GenericSearchResult<AssociationEntity>> SearchAssociations(ProductAssociationSearchCriteria criteria)
+        /// <summary>
+        /// Searchs associations by specific search criterias. 
+        /// </summary>
+        /// <param name="criteria"></param>
+        /// <returns>Returns SearchResult total count and items.</returns>
+        public virtual Task<GenericSearchResult<AssociationEntity>> SearchAssociations(ProductAssociationSearchCriteria criteria)
         {
-            var result = new GenericSearchResult<AssociationEntity>();
-
-            var countSqlCommand = CreateCommand(GetAssociationsCountSqlCommandText(criteria), criteria.ObjectIds);
-            var querySqlCommand = CreateCommand(GetAssociationsQuerySqlCommandText(criteria), criteria.ObjectIds);
-
-            var commands = new List<Command> { countSqlCommand };
-
-            if (criteria.Take > 0)
-            {
-                commands.Add(querySqlCommand);
-            }
-
-            if (!string.IsNullOrEmpty(criteria.Group))
-            {
-                commands.ForEach(x => x.Parameters.Add(new SqlParameter($"@group", criteria.Group)));
-            }
-
-            if (!criteria.Tags.IsNullOrEmpty())
-            {
-                commands.ForEach(x => AddArrayParameters(x, "@tags", criteria.Tags));
-            }
-
-            if (!string.IsNullOrEmpty(criteria.Keyword))
-            {
-                var wildcardKeyword = $"%{criteria.Keyword}%";
-                commands.ForEach(x => x.Parameters.Add(new SqlParameter($"@keyword", wildcardKeyword)));
-            }
-
-            if (!criteria.AssociatedObjectIds.IsNullOrEmpty())
-            {
-                commands.ForEach(x => AddArrayParameters(x, "@associatedoOjectIds", criteria.AssociatedObjectIds));
-            }
-
-            result.TotalCount = await DbContext.ExecuteScalarAsync<int>(countSqlCommand.Text, countSqlCommand.Parameters.ToArray());
-            result.Results = criteria.Take > 0
-                ? await DbContext.Set<AssociationEntity>().FromSqlRaw(querySqlCommand.Text, querySqlCommand.Parameters.ToArray()).ToListAsync()
-                : new List<AssociationEntity>();
-
-            return result;
+            return _rawDatabaseCommand.SearchAssociations(DbContext, criteria);
         }
 
         /// <summary>
@@ -583,22 +407,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         /// </summary>
         public virtual async Task<ICollection<CategoryEntity>> SearchCategoriesHierarchyAsync(string categoryId)
         {
-            var commandTemplate = @"
-                WITH CategoryParents AS   
-                (  
-                    SELECT * 
-                    FROM Category   
-                    WHERE Id = @categoryId
-                    UNION ALL  
-                    SELECT c.*
-                    FROM Category c, CategoryParents cp
-	                where c.Id = cp.ParentCategoryId 
-                )  
-                SELECT *
-                FROM CategoryParents";
-
-            var categoryIdParam = new SqlParameter("@categoryId", categoryId);
-            var result = await DbContext.Set<CategoryEntity>().FromSqlRaw(commandTemplate, categoryIdParam).ToListAsync();
+            var result = await _rawDatabaseCommand.SearchCategoriesHierarchyAsync(DbContext, categoryId);
 
             if (result.Any())
             {
@@ -618,194 +427,9 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             }
 
             return result;
+
         }
 
         #endregion ICatalogRepository Members
-
-        protected virtual string GetAssociationsCountSqlCommandText(ProductAssociationSearchCriteria criteria)
-        {
-            var command = new StringBuilder();
-
-            command.Append(@"
-                ; WITH Association_CTE AS
-                (
-                    SELECT a.*
-                    FROM Association a");
-
-            AddAssociationsSearchCriteraToCommand(command, criteria);
-
-            command.Append(@"), Category_CTE AS
-                (
-                    SELECT AssociatedCategoryId Id
-                    FROM Association_CTE
-                    WHERE AssociatedCategoryId IS NOT NULL
-                    UNION ALL
-                    SELECT c.Id
-                    FROM Category c
-                    INNER JOIN Category_CTE cte ON c.ParentCategoryId = cte.Id
-                ),
-                Item_CTE AS
-                (
-                    SELECT  i.Id
-                    FROM (SELECT DISTINCT Id FROM Category_CTE) c
-                    LEFT JOIN Item i ON c.Id=i.CategoryId WHERE i.ParentId IS NULL
-                    UNION
-                    SELECT AssociatedItemId Id FROM Association_CTE
-                )
-                SELECT COUNT(Id) FROM Item_CTE");
-
-            return command.ToString();
-        }
-
-        protected virtual string GetAssociationsQuerySqlCommandText(ProductAssociationSearchCriteria criteria)
-        {
-            var command = new StringBuilder();
-
-            command.Append(@"
-                    ;WITH Association_CTE AS
-                    (
-                        SELECT
-                             a.Id
-                            ,a.AssociationType
-                            ,a.Priority
-                            ,a.ItemId
-                            ,a.CreatedDate
-                            ,a.ModifiedDate
-                            ,a.CreatedBy
-                            ,a.ModifiedBy
-                            ,a.AssociatedItemId
-                            ,a.AssociatedCategoryId
-                            ,a.Tags
-                            ,a.Quantity
-                            ,a.OuterId
-                        FROM Association a"
-            );
-
-            AddAssociationsSearchCriteraToCommand(command, criteria);
-
-            command.Append(@"), Category_CTE AS
-                    (
-                        SELECT AssociatedCategoryId Id, AssociatedCategoryId
-                        FROM Association_CTE
-                        WHERE AssociatedCategoryId IS NOT NULL
-                        UNION ALL
-                        SELECT c.Id, cte.AssociatedCategoryId
-                        FROM Category c
-                        INNER JOIN Category_CTE cte ON c.ParentCategoryId = cte.Id
-                    ),
-                    Item_CTE AS
-                    (
-                        SELECT
-                            CONVERT(nvarchar(64), newid()) as Id
-                            ,a.AssociationType
-                            ,a.Priority
-                            ,a.ItemId
-                            ,a.CreatedDate
-                            ,a.ModifiedDate
-                            ,a.CreatedBy
-                            ,a.ModifiedBy
-                            ,i.Id AssociatedItemId
-                            ,a.AssociatedCategoryId
-                            ,a.Tags
-                            ,a.Quantity
-                            ,a.OuterId
-                        FROM Category_CTE cat
-                        LEFT JOIN Item i ON cat.Id=i.CategoryId
-                        LEFT JOIN Association a ON cat.AssociatedCategoryId=a.AssociatedCategoryId
-                        WHERE i.ParentId IS NULL
-                        UNION
-                        SELECT * FROM Association_CTE
-                    )
-                    SELECT * FROM Item_CTE WHERE AssociatedItemId IS NOT NULL ORDER BY Priority ");
-
-            command.Append($"OFFSET {criteria.Skip} ROWS FETCH NEXT {criteria.Take} ROWS ONLY");
-
-            return command.ToString();
-        }
-
-        protected virtual void AddAssociationsSearchCriteraToCommand(StringBuilder command, ProductAssociationSearchCriteria criteria)
-        {
-            // join items to search by keyword
-            if (!string.IsNullOrEmpty(criteria.Keyword))
-            {
-                command.Append(@"
-                    left join Item i on i.Id = a.AssociatedItemId
-                ");
-            }
-
-            command.Append(@"
-                    WHERE ItemId IN ({0})
-            ");
-
-            // search by association type
-            if (!string.IsNullOrEmpty(criteria.Group))
-            {
-                command.Append("  AND AssociationType = @group");
-            }
-
-            // search by association tags
-            if (!criteria.Tags.IsNullOrEmpty())
-            {
-                command.Append("  AND exists( SELECT value FROM string_split(Tags, ';') WHERE value IN (@tags))");
-            }
-
-            // search by keyword
-            if (!string.IsNullOrEmpty(criteria.Keyword))
-            {
-                command.Append("  AND i.Name like @keyword");
-            }
-
-            // search by associated product ids
-            if (!criteria.AssociatedObjectIds.IsNullOrEmpty())
-            {
-                command.Append("  AND a.AssociatedItemId in (@associatedoOjectIds)");
-            }
-        }
-
-        protected virtual async Task<int> ExecuteStoreQueryAsync(string commandTemplate, IEnumerable<string> parameterValues)
-        {
-            var command = CreateCommand(commandTemplate, parameterValues);
-            return await DbContext.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray());
-        }
-
-        protected virtual Command CreateCommand(string commandTemplate, IEnumerable<string> parameterValues)
-        {
-            var parameters = parameterValues.Select((v, i) => new SqlParameter($"@p{i}", v)).ToArray();
-            var parameterNames = string.Join(",", parameters.Select(p => p.ParameterName));
-
-            return new Command
-            {
-                Text = string.Format(commandTemplate, parameterNames),
-                Parameters = parameters.OfType<object>().ToList(),
-            };
-        }
-
-        protected SqlParameter[] AddArrayParameters<T>(Command cmd, string paramNameRoot, IEnumerable<T> values)
-        {
-            /* An array cannot be simply added as a parameter to a SqlCommand so we need to loop through things and add it manually.
-             * Each item in the array will end up being it's own SqlParameter so the return value for this must be used as part of the
-             * IN statement in the CommandText.
-             */
-            var parameters = new List<SqlParameter>();
-            var parameterNames = new List<string>();
-            var paramNbr = 1;
-            foreach (var value in values)
-            {
-                var paramName = $"{paramNameRoot}{paramNbr++}";
-                parameterNames.Add(paramName);
-                var p = new SqlParameter(paramName, value);
-                cmd.Parameters.Add(p);
-                parameters.Add(p);
-            }
-            cmd.Text = cmd.Text.Replace(paramNameRoot, string.Join(",", parameterNames));
-
-            return parameters.ToArray();
-        }
-
-        protected class Command
-        {
-            public string Text { get; set; }
-            public IList<object> Parameters { get; set; } = new List<object>();
-        }
     }
 }

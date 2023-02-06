@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Data.Model;
@@ -10,22 +9,10 @@ namespace VirtoCommerce.CatalogModule2.Data.Repositories
 {
     public class CatalogRepositoryImpl2 : CatalogRepositoryImpl
     {
-        public CatalogRepositoryImpl2(CatalogDbContext dbContext) : base(dbContext)
+        public CatalogRepositoryImpl2(CatalogDbContext dbContext, ICatalogRawDatabaseCommand rawDatabaseCommand) : base(dbContext, rawDatabaseCommand)
         {
         }
 
-        protected override void AddAssociationsSearchCriteraToCommand(StringBuilder command, ProductAssociationSearchCriteria criteria)
-        {
-            base.AddAssociationsSearchCriteraToCommand(command, criteria);
-        }
-        protected override Command CreateCommand(string commandTemplate, IEnumerable<string> parameterValues)
-        {
-            return base.CreateCommand(commandTemplate, parameterValues);
-        }
-        protected override Task<int> ExecuteStoreQueryAsync(string commandTemplate, IEnumerable<string> parameterValues)
-        {
-            return base.ExecuteStoreQueryAsync(commandTemplate, parameterValues);
-        }
         public override Task<PropertyEntity[]> GetAllCatalogPropertiesAsync(string catalogId)
         {
             return base.GetAllCatalogPropertiesAsync(catalogId);
@@ -41,14 +28,6 @@ namespace VirtoCommerce.CatalogModule2.Data.Repositories
         public override Task<AssociationEntity[]> GetAssociationsByIdsAsync(string[] associationIds)
         {
             return base.GetAssociationsByIdsAsync(associationIds);
-        }
-        protected override string GetAssociationsCountSqlCommandText(ProductAssociationSearchCriteria criteria)
-        {
-            return base.GetAssociationsCountSqlCommandText(criteria);
-        }
-        protected override string GetAssociationsQuerySqlCommandText(ProductAssociationSearchCriteria criteria)
-        {
-            return base.GetAssociationsQuerySqlCommandText(criteria);
         }
         public override Task<CatalogEntity[]> GetCatalogsByIdsAsync(string[] catalogIds)
         {
