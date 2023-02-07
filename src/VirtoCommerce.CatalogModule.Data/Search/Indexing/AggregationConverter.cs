@@ -193,6 +193,22 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             return result.ToArray();
         }
 
+        protected virtual Aggregation FilterOutlines(ProductIndexedSearchCriteria criteria, AttributeFilter attributeFilter, Aggregation aggregation)
+        {
+            switch (attributeFilter.Key)
+            {
+                case "__outline":
+                case "__outline_named":
+                    FilterOutlineTerms(criteria, aggregation, expandChild: false);
+                    break;
+                case "__path":
+                    FilterOutlineTerms(criteria, aggregation, expandChild: true);
+                    break;
+            }
+
+            return aggregation;
+        }
+
         /// <summary>
         /// Filter outline terms by current catalog and outline.
         /// </summary>
@@ -216,12 +232,15 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             {
                 // Exclude direct outlines: {CatalogId}/{CategoryId}
                 var allDirectCategoryOutlines = aggregation.Items
-                    .Select(a => a.Value.ToString().Split("/")).Where(a => a.Length > 2)
-                    .Select(a => a.First() + "/" + a.Last()).ToList();
+                    .Select(a => a.Value.ToString()?.Split("/"))
+                    .Where(a => a?.Length > 2)
+                    .Select(a => a.First() + "/" + a.Last())
+                    .ToList();
 
-                var childItems = aggregation.Items.Where(x =>
-                    !allDirectCategoryOutlines.Contains(x.Value as string) &&
-                    IsChildOutline(rootOutline, x.Value as string, expandChild));
+                var childItems = aggregation.Items
+                    .Where(x =>
+                        !allDirectCategoryOutlines.Contains(x.Value as string) &&
+                        IsChildOutline(rootOutline, x.Value as string, expandChild));
 
                 aggregation.Items = childItems.ToArray();
             }
@@ -235,23 +254,9 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             }
 
             return currentOutline.StartsWith(rootOutline + "/") &&
-                (expandChild ? (currentOutline.IndexOf('/', rootOutline.Length + 1) != -1) :
-                               (currentOutline.IndexOf('/', rootOutline.Length + 1) == -1));
-        }
-
-        protected virtual Aggregation FilterOutlines(ProductIndexedSearchCriteria criteria, AttributeFilter attributeFilter, Aggregation aggregation)
-        {
-            if (attributeFilter.Key == "__outline" ||
-                            attributeFilter.Key == "__outline_named")
-            {
-                FilterOutlineTerms(criteria, aggregation, false);
-            }
-            else if (attributeFilter.Key == "__path")
-            {
-                FilterOutlineTerms(criteria, aggregation, true);
-            }
-
-            return aggregation;
+                (expandChild
+                    ? currentOutline.IndexOf('/', rootOutline.Length + 1) != -1
+                    : currentOutline.IndexOf('/', rootOutline.Length + 1) == -1);
         }
 
         protected virtual Aggregation GetAttributeAggregation(AttributeFilter attributeFilter, IList<AggregationResponse> aggregationResponses)
@@ -349,7 +354,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             return result;
         }
 
-        private static string CreateLabel(string title)
+        protected virtual string CreateLabel(string title)
         {
             return Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(title);
         }
