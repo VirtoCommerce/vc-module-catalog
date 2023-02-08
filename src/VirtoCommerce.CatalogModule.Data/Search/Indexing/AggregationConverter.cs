@@ -270,7 +270,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                         {
                             return new AggregationItem
                             {
-                                Value = aggregationIdName[0],
+                                Value = v.Id,
                                 Count = (int)v.Count,
                                 Labels = new[] { new AggregationLabel { Label = CreateLabel(aggregationIdName[1]) } }
                             };
@@ -295,6 +295,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         protected virtual void FilterAggregationItems(Aggregation aggregation, ProductIndexedSearchCriteria criteria, AttributeFilter attributeFilter)
         {
+            if (aggregation?.Items == null)
+            {
+                return;
+            }
+
             switch (attributeFilter.Key)
             {
                 case "__outline":
