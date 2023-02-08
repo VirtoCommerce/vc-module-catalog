@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Common;
@@ -166,6 +167,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                     {
                         case AttributeFilter attributeFilter:
                             aggregation = GetAttributeAggregation(attributeFilter, aggregationResponses);
+                            FilterAggregationItems(aggregation, criteria, attributeFilter);
                             break;
                         case RangeFilter rangeFilter:
                             aggregation = GetRangeAggregation(rangeFilter, aggregationResponses);
@@ -268,9 +270,9 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                         {
                             return new AggregationItem
                             {
-                                Value = aggregationIdName[0],
+                                Value = v.Id,
                                 Count = (int)v.Count,
-                                Labels = new[] { new AggregationLabel { Label = aggregationIdName[1] } }
+                                Labels = new[] { new AggregationLabel { Label = CreateLabel(aggregationIdName[1]) } }
                             };
                         }
                     }
@@ -284,6 +286,80 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 .ToList();
 
             return result;
+        }
+
+        protected virtual string CreateLabel(string title)
+        {
+            return Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(title);
+        }
+
+        protected virtual void FilterAggregationItems(Aggregation aggregation, ProductIndexedSearchCriteria criteria, AttributeFilter attributeFilter)
+        {
+            if (aggregation?.Items == null)
+            {
+                return;
+            }
+
+            switch (attributeFilter.Key)
+            {
+                case "__outline":
+                case "__outline_named":
+                    FilterOutlineAggregationItems(aggregation, criteria, expandChild: false);
+                    break;
+                case "__path":
+                    FilterOutlineAggregationItems(aggregation, criteria, expandChild: true);
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Filter outline aggregation items by requested outline or catalog.
+        /// </summary>
+        /// <param name="aggregation"></param>
+        /// <param name="criteria"></param>
+        /// <param name="expandChild"></param>
+        protected virtual void FilterOutlineAggregationItems(Aggregation aggregation, ProductIndexedSearchCriteria criteria, bool expandChild)
+        {
+            var parentOutline = string.Empty;
+
+            if (!string.IsNullOrEmpty(criteria.Outline))
+            {
+                parentOutline = criteria.Outline;
+            }
+            else if (!string.IsNullOrEmpty(criteria.CatalogId))
+            {
+                parentOutline = criteria.CatalogId;
+            }
+
+            if (!string.IsNullOrEmpty(parentOutline))
+            {
+                // Exclude direct outlines: {CatalogId}/{CategoryId}
+                var allDirectCategoryOutlines = aggregation.Items
+                    .Select(a => a.Value.ToString()?.Split("/"))
+                    .Where(a => a?.Length > 2)
+                    .Select(a => a.First() + "/" + a.Last())
+                    .ToList();
+
+                var childItems = aggregation.Items
+                    .Where(x =>
+                        !allDirectCategoryOutlines.Contains(x.Value as string) &&
+                        IsChildOutline(x.Value as string, parentOutline, expandChild));
+
+                aggregation.Items = childItems.ToArray();
+            }
+        }
+
+        protected virtual bool IsChildOutline(string outline, string parentOutline, bool expandChild)
+        {
+            if (string.IsNullOrEmpty(outline))
+            {
+                return false;
+            }
+
+            return outline.StartsWith(parentOutline + "/") &&
+                (expandChild
+                    ? outline.IndexOf('/', parentOutline.Length + 1) != -1
+                    : outline.IndexOf('/', parentOutline.Length + 1) == -1);
         }
 
         protected virtual IList<AggregationItem> GetRangeAggregationItems(string aggregationId, IList<RangeFilterValue> values, IList<AggregationResponse> aggregationResponses)
