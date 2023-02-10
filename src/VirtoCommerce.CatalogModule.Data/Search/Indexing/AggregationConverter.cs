@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Common;
+using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
@@ -412,59 +413,77 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
             foreach (var aggregation in aggregations)
             {
-                // Add Label For Outlines 
-                if (aggregation.Field.EqualsInvariant("__outline_named"))
+                // Add Label For Outlines
+                var labelAdded = await TryAddLabelsAsyncForOutline(aggregation);
+                if (!labelAdded)
                 {
-                    aggregation.Labels = new AggregationLabel[] { new AggregationLabel { Label = "Categories" } };
-                    continue;
-                }
-
-                if (aggregation.Field.EqualsInvariant("__outline") || aggregation.Field.EqualsInvariant("__path"))
-                {
-                    aggregation.Labels = new AggregationLabel[] { new AggregationLabel { Label = "Categories" } };
-                    foreach (var aggregationItem in aggregation.Items)
-                    {
-                        aggregationItem.Labels = new AggregationLabel[] { new AggregationLabel { Label = ((string)aggregationItem.Value).Split('/').Last() } };
-                    }
-                    continue;
-                }
-
-                // There can be many properties with the same name
-                var properties = allProperties.Where(p => p.Name.EqualsInvariant(aggregation.Field)).ToArray();
-
-                if (!properties.Any())
-                {
-                    continue;
-                }
-
-                var allPropertyLabels = properties.SelectMany(p => p.DisplayNames)
-                    .Select(n => new AggregationLabel { Language = n.LanguageCode, Label = n.Name })
-                    .ToArray();
-
-                aggregation.Labels = GetFirstLabelForEachLanguage(allPropertyLabels);
-
-                var dictionaryItemsSearchResult = await _propDictItemsSearchService.SearchAsync(
-                    new PropertyDictionaryItemSearchCriteria { PropertyIds = properties.Select(x => x.Id).ToArray(), Take = int.MaxValue });
-                var allDictItemsMap = dictionaryItemsSearchResult.Results.GroupBy(x => x.Alias, StringComparer.OrdinalIgnoreCase)
-                    .ToDictionary(x => x.Key,
-                        x => x.SelectMany(dictItem => dictItem.LocalizedValues)
-                            .Select(localizedValue => new AggregationLabel { Language = localizedValue.LanguageCode, Label = localizedValue.Value })
-                            .ToArray(),
-                        StringComparer.OrdinalIgnoreCase);
-
-                foreach (var aggregationItem in aggregation.Items)
-                {
-                    var alias = aggregationItem.Value?.ToString();
-                    if (string.IsNullOrEmpty(alias) || !allDictItemsMap.ContainsKey(alias))
-                    {
-                        continue;
-                    }
-
-                    var pair = allDictItemsMap.First(x => allDictItemsMap.Comparer.Equals(x.Key, alias));
-                    aggregationItem.Value = pair.Key;
-                    aggregationItem.Labels = GetFirstLabelForEachLanguage(pair.Value);
+                    await TryAddLabelsAsyncForProperty(allProperties, aggregation);
                 }
             }
+        }
+
+        private async Task<bool> TryAddLabelsAsyncForProperty(IEnumerable<Property> allProperties, Aggregation aggregation)
+        {
+            // There can be many properties with the same name
+            var properties = allProperties.Where(p => p.Name.EqualsInvariant(aggregation.Field)).ToArray();
+
+            if (!properties.Any())
+            {
+                return false;
+            }
+
+            var allPropertyLabels = properties.SelectMany(p => p.DisplayNames)
+                .Select(n => new AggregationLabel { Language = n.LanguageCode, Label = n.Name })
+                .ToArray();
+
+            aggregation.Labels = GetFirstLabelForEachLanguage(allPropertyLabels);
+
+            var dictionaryItemsSearchResult = await _propDictItemsSearchService.SearchAsync(
+                new PropertyDictionaryItemSearchCriteria { PropertyIds = properties.Select(x => x.Id).ToArray(), Take = int.MaxValue });
+            var allDictItemsMap = dictionaryItemsSearchResult.Results.GroupBy(x => x.Alias, StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(x => x.Key,
+                    x => x.SelectMany(dictItem => dictItem.LocalizedValues)
+                        .Select(localizedValue => new AggregationLabel { Language = localizedValue.LanguageCode, Label = localizedValue.Value })
+                        .ToArray(),
+                    StringComparer.OrdinalIgnoreCase);
+
+            foreach (var aggregationItem in aggregation.Items)
+            {
+                var alias = aggregationItem.Value?.ToString();
+                if (string.IsNullOrEmpty(alias) || !allDictItemsMap.ContainsKey(alias))
+                {
+                    continue;
+                }
+
+                var pair = allDictItemsMap.First(x => allDictItemsMap.Comparer.Equals(x.Key, alias));
+                aggregationItem.Value = pair.Key;
+                aggregationItem.Labels = GetFirstLabelForEachLanguage(pair.Value);
+            }
+
+            return true;
+        }
+
+        protected virtual Task<bool> TryAddLabelsAsyncForOutline(Aggregation aggregation)
+        {
+            // Add Label For Outline Named
+            if (aggregation.Field.EqualsInvariant("__outline_named"))
+            {
+                aggregation.Labels = new AggregationLabel[] { new AggregationLabel { Label = "Categories" } };
+                return Task.FromResult(true);
+            }
+
+            // Add Label For Outline and Path
+            if (aggregation.Field.EqualsInvariant("__outline") || aggregation.Field.EqualsInvariant("__path"))
+            {
+                aggregation.Labels = new AggregationLabel[] { new AggregationLabel { Label = "Categories" } };
+                foreach (var aggregationItem in aggregation.Items)
+                {
+                    aggregationItem.Labels = new AggregationLabel[] { new AggregationLabel { Label = ((string)aggregationItem.Value).Split('/').Last() } };
+                }
+                return Task.FromResult(true);
+            }
+
+            return Task.FromResult(false);
         }
 
         private static AggregationLabel[] GetFirstLabelForEachLanguage(AggregationLabel[] labels)
