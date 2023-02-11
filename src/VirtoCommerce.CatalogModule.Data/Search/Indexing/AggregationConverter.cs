@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Common;
+using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
@@ -166,8 +167,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                     switch (filter)
                     {
                         case AttributeFilter attributeFilter:
+                            PreFilterOutlineAggregation(attributeFilter, aggregationResponses, criteria);
                             aggregation = GetAttributeAggregation(attributeFilter, aggregationResponses);
-                            FilterAggregationItems(aggregation, criteria, attributeFilter);
                             break;
                         case RangeFilter rangeFilter:
                             aggregation = GetRangeAggregation(rangeFilter, aggregationResponses);
@@ -293,21 +294,40 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             return Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(title);
         }
 
-        protected virtual void FilterAggregationItems(Aggregation aggregation, ProductIndexedSearchCriteria criteria, AttributeFilter attributeFilter)
+        /// <summary>
+        /// Prefilters __outline, __outline_named and __path based on the parentOutline
+        /// </summary>
+        /// <param name="attributeFilter"></param>
+        /// <param name="aggregationResponses"></param>
+        /// <param name="criteria"></param>
+        protected virtual void PreFilterOutlineAggregation(AttributeFilter attributeFilter, IList<AggregationResponse> aggregationResponses, ProductIndexedSearchCriteria criteria)
         {
-            if (aggregation?.Items == null)
+            var fieldName = attributeFilter.Key;
+            var aggregationResponse = aggregationResponses.FirstOrDefault(a => a.Id.EqualsInvariant(fieldName));
+
+            if (aggregationResponse == null)
             {
                 return;
             }
 
-            switch (attributeFilter.Key)
+            var parentOutline = string.Empty;
+            if (!string.IsNullOrEmpty(criteria.Outline))
+            {
+                parentOutline = criteria.Outline;
+            }
+            else if (!string.IsNullOrEmpty(criteria.CatalogId))
+            {
+                parentOutline = criteria.CatalogId;
+            }
+
+            switch (fieldName)
             {
                 case "__outline":
                 case "__outline_named":
-                    FilterOutlineAggregationItems(aggregation, criteria, expandChild: false);
+                    aggregationResponse.Values = FilterOutlineAggregationItems(aggregationResponse.Values, parentOutline, expandChild: false);
                     break;
                 case "__path":
-                    FilterOutlineAggregationItems(aggregation, criteria, expandChild: true);
+                    aggregationResponse.Values = FilterOutlineAggregationItems(aggregationResponse.Values, parentOutline, expandChild: true);
                     break;
             }
         }
@@ -318,35 +338,25 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         /// <param name="aggregation"></param>
         /// <param name="criteria"></param>
         /// <param name="expandChild"></param>
-        protected virtual void FilterOutlineAggregationItems(Aggregation aggregation, ProductIndexedSearchCriteria criteria, bool expandChild)
+        protected virtual IList<AggregationResponseValue> FilterOutlineAggregationItems(IList<AggregationResponseValue> values, string parentOutline, bool expandChild)
         {
-            var parentOutline = string.Empty;
-
-            if (!string.IsNullOrEmpty(criteria.Outline))
+            if (string.IsNullOrEmpty(parentOutline) || values.IsNullOrEmpty())
             {
-                parentOutline = criteria.Outline;
-            }
-            else if (!string.IsNullOrEmpty(criteria.CatalogId))
-            {
-                parentOutline = criteria.CatalogId;
+                return values;
             }
 
-            if (!string.IsNullOrEmpty(parentOutline))
-            {
-                // Exclude direct outlines: {CatalogId}/{CategoryId}
-                var allDirectCategoryOutlines = aggregation.Items
-                    .Select(a => a.Value.ToString()?.Split("/"))
-                    .Where(a => a?.Length > 2)
-                    .Select(a => a.First() + "/" + a.Last())
-                    .ToList();
+            // Exclude direct outlines: {CatalogId}/{CategoryId}
+            var allDirectCategoryOutlines = values
+                .Select(v => v.Id.Split("/"))
+                .Where(o => o?.Length > 2)
+                .Select(o => o.First() + "/" + o.Last()).Distinct().ToDictionary(x => x);
 
-                var childItems = aggregation.Items
-                    .Where(x =>
-                        !allDirectCategoryOutlines.Contains(x.Value as string) &&
-                        IsChildOutline(x.Value as string, parentOutline, expandChild));
+            var filteredValues = values
+                .Where(x =>
+                    IsChildOutline(x.Id, parentOutline, expandChild) &&
+                    !allDirectCategoryOutlines.ContainsKey(x.Id));
 
-                aggregation.Items = childItems.ToArray();
-            }
+            return filteredValues.ToArray();
         }
 
         protected virtual bool IsChildOutline(string outline, string parentOutline, bool expandChild)
@@ -403,42 +413,77 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
             foreach (var aggregation in aggregations)
             {
-                // There can be many properties with the same name
-                var properties = allProperties.Where(p => p.Name.EqualsInvariant(aggregation.Field)).ToArray();
+                // Add Label For Outlines
+                var labelAdded = await TryAddLabelsAsyncForOutline(aggregation);
+                if (!labelAdded)
+                {
+                    await TryAddLabelsAsyncForProperty(allProperties, aggregation);
+                }
+            }
+        }
 
-                if (!properties.Any())
+        private async Task<bool> TryAddLabelsAsyncForProperty(IEnumerable<Property> allProperties, Aggregation aggregation)
+        {
+            // There can be many properties with the same name
+            var properties = allProperties.Where(p => p.Name.EqualsInvariant(aggregation.Field)).ToArray();
+
+            if (!properties.Any())
+            {
+                return false;
+            }
+
+            var allPropertyLabels = properties.SelectMany(p => p.DisplayNames)
+                .Select(n => new AggregationLabel { Language = n.LanguageCode, Label = n.Name })
+                .ToArray();
+
+            aggregation.Labels = GetFirstLabelForEachLanguage(allPropertyLabels);
+
+            var dictionaryItemsSearchResult = await _propDictItemsSearchService.SearchAsync(
+                new PropertyDictionaryItemSearchCriteria { PropertyIds = properties.Select(x => x.Id).ToArray(), Take = int.MaxValue });
+            var allDictItemsMap = dictionaryItemsSearchResult.Results.GroupBy(x => x.Alias, StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(x => x.Key,
+                    x => x.SelectMany(dictItem => dictItem.LocalizedValues)
+                        .Select(localizedValue => new AggregationLabel { Language = localizedValue.LanguageCode, Label = localizedValue.Value })
+                        .ToArray(),
+                    StringComparer.OrdinalIgnoreCase);
+
+            foreach (var aggregationItem in aggregation.Items)
+            {
+                var alias = aggregationItem.Value?.ToString();
+                if (string.IsNullOrEmpty(alias) || !allDictItemsMap.ContainsKey(alias))
                 {
                     continue;
                 }
 
-                var allPropertyLabels = properties.SelectMany(p => p.DisplayNames)
-                    .Select(n => new AggregationLabel { Language = n.LanguageCode, Label = n.Name })
-                    .ToArray();
+                var pair = allDictItemsMap.First(x => allDictItemsMap.Comparer.Equals(x.Key, alias));
+                aggregationItem.Value = pair.Key;
+                aggregationItem.Labels = GetFirstLabelForEachLanguage(pair.Value);
+            }
 
-                aggregation.Labels = GetFirstLabelForEachLanguage(allPropertyLabels);
+            return true;
+        }
 
-                var dictionaryItemsSearchResult = await _propDictItemsSearchService.SearchAsync(
-                    new PropertyDictionaryItemSearchCriteria { PropertyIds = properties.Select(x => x.Id).ToArray(), Take = int.MaxValue });
-                var allDictItemsMap = dictionaryItemsSearchResult.Results.GroupBy(x => x.Alias, StringComparer.OrdinalIgnoreCase)
-                    .ToDictionary(x => x.Key,
-                        x => x.SelectMany(dictItem => dictItem.LocalizedValues)
-                            .Select(localizedValue => new AggregationLabel { Language = localizedValue.LanguageCode, Label = localizedValue.Value })
-                            .ToArray(),
-                        StringComparer.OrdinalIgnoreCase);
+        protected virtual Task<bool> TryAddLabelsAsyncForOutline(Aggregation aggregation)
+        {
+            // Add Label For Outline Named
+            if (aggregation.Field.EqualsInvariant("__outline_named"))
+            {
+                aggregation.Labels = new AggregationLabel[] { new AggregationLabel { Label = "Categories" } };
+                return Task.FromResult(true);
+            }
 
+            // Add Label For Outline and Path
+            if (aggregation.Field.EqualsInvariant("__outline") || aggregation.Field.EqualsInvariant("__path"))
+            {
+                aggregation.Labels = new AggregationLabel[] { new AggregationLabel { Label = "Categories" } };
                 foreach (var aggregationItem in aggregation.Items)
                 {
-                    var alias = aggregationItem.Value?.ToString();
-                    if (string.IsNullOrEmpty(alias) || !allDictItemsMap.ContainsKey(alias))
-                    {
-                        continue;
-                    }
-
-                    var pair = allDictItemsMap.First(x => allDictItemsMap.Comparer.Equals(x.Key, alias));
-                    aggregationItem.Value = pair.Key;
-                    aggregationItem.Labels = GetFirstLabelForEachLanguage(pair.Value);
+                    aggregationItem.Labels = new AggregationLabel[] { new AggregationLabel { Label = ((string)aggregationItem.Value).Split('/').Last() } };
                 }
+                return Task.FromResult(true);
             }
+
+            return Task.FromResult(false);
         }
 
         private static AggregationLabel[] GetFirstLabelForEachLanguage(AggregationLabel[] labels)
