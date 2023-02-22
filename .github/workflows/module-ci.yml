@@ -1,4 +1,4 @@
-# v3.200.23
+# v3.200.22
 name: Module CI
 
 on:
@@ -239,7 +239,7 @@ jobs:
     if: ${{ ((github.ref == 'refs/heads/dev') && (github.event_name == 'push') && (needs.ci.outputs.run-e2e == 'true')) ||
         (github.event_name == 'workflow_dispatch')}}
     needs: 'ci'
-    uses: VirtoCommerce/.github/.github/workflows/e2e.yml@v3.200.23
+    uses: VirtoCommerce/.github/.github/workflows/e2e.yml@v3.200.22
     with:
       katalonRepo: 'VirtoCommerce/vc-quality-gate-katalon'
       katalonRepoBranch: 'dev'
