@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using VirtoCommerce.AssetsModule.Core.Assets;
 using VirtoCommerce.CatalogModule.Core.Events;
@@ -56,6 +57,46 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         }
 
         #region IItemService Members
+
+        public virtual async Task<IList<CatalogProduct>> GetByCodes(string catalogId, IList<string> codes, string responseGroup)
+        {
+            var idsByCodes = await GetIdsByCodes(catalogId, codes);
+
+            return idsByCodes.Any()
+                ? await GetByIdsAsync(idsByCodes.Values.ToArray(), responseGroup, catalogId)
+                : Array.Empty<CatalogProduct>();
+        }
+
+        public virtual async Task<IDictionary<string, string>> GetIdsByCodes(string catalogId, IList<string> codes)
+        {
+            if (string.IsNullOrEmpty(catalogId))
+            {
+                throw new ArgumentException("Catalog ID is null or empty", nameof(catalogId));
+            }
+
+            if (codes.IsNullOrEmpty())
+            {
+                throw new ArgumentException("Codes collection is null or empty", nameof(codes));
+            }
+
+            if (await _catalogService.GetByIdAsync(catalogId) is null)
+            {
+                throw new ArgumentException($"Unknown catalog ID: {catalogId}", nameof(catalogId));
+            }
+
+            using var repository = _repositoryFactory();
+            var query = repository.Items.Where(x => x.CatalogId == catalogId);
+
+            query = codes.Count == 1
+                ? query.Where(x => x.Code == codes.First())
+                : query.Where(x => codes.Contains(x.Code));
+
+            var items = await query
+                .Select(x => new { x.Id, x.Code })
+                .ToListAsync();
+
+            return items.ToDictionary(x => x.Code, x => x.Id, StringComparer.OrdinalIgnoreCase);
+        }
 
         public virtual async Task<CatalogProduct[]> GetByIdsAsync(string[] itemIds, string respGroup, string catalogId = null)
         {
