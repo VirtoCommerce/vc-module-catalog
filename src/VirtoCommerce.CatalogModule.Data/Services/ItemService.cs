@@ -69,33 +69,13 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public virtual async Task<IDictionary<string, string>> GetIdsByCodes(string catalogId, IList<string> codes)
         {
-            if (string.IsNullOrEmpty(catalogId))
-            {
-                throw new ArgumentException("Catalog ID is null or empty", nameof(catalogId));
-            }
+            var cacheKeyPrefix = CacheKey.With(GetType(), nameof(GetIdsByCodes), catalogId);
 
-            if (codes.IsNullOrEmpty())
-            {
-                throw new ArgumentException("Codes collection is null or empty", nameof(codes));
-            }
+            var models = await _platformMemoryCache.GetOrLoadByIdsAsync(cacheKeyPrefix, codes,
+                missingCodes => GetIdsByCodesNoCache(catalogId, missingCodes),
+                ConfigureCache);
 
-            if (await _catalogService.GetByIdAsync(catalogId) is null)
-            {
-                throw new ArgumentException($"Unknown catalog ID: {catalogId}", nameof(catalogId));
-            }
-
-            using var repository = _repositoryFactory();
-            var query = repository.Items.Where(x => x.CatalogId == catalogId);
-
-            query = codes.Count == 1
-                ? query.Where(x => x.Code == codes.First())
-                : query.Where(x => codes.Contains(x.Code));
-
-            var items = await query
-                .Select(x => new { x.Id, x.Code })
-                .ToListAsync();
-
-            return items.ToDictionary(x => x.Code, x => x.Id, StringComparer.OrdinalIgnoreCase);
+            return models.ToDictionary(x => x.Id, x => x.ProductId, StringComparer.OrdinalIgnoreCase);
         }
 
         public virtual async Task<CatalogProduct[]> GetByIdsAsync(string[] itemIds, string respGroup, string catalogId = null)
@@ -354,6 +334,33 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     throw new ValidationException($"Product properties has validation error: {string.Join(Environment.NewLine, validationResult.Errors.Select(x => x.ToString()))}");
                 }
             }
+        }
+
+        protected virtual async Task<IEnumerable<ProductCodeCacheItem>> GetIdsByCodesNoCache(string catalogId, IList<string> codes)
+        {
+            using var repository = _repositoryFactory();
+            var query = repository.Items.Where(x => x.CatalogId == catalogId);
+
+            query = codes.Count == 1
+                ? query.Where(x => x.Code == codes.First())
+                : query.Where(x => codes.Contains(x.Code));
+
+            var items = await query
+                .Select(x => new ProductCodeCacheItem { Id = x.Code, ProductId = x.Id })
+                .ToListAsync();
+
+            return items;
+        }
+
+        protected virtual void ConfigureCache(MemoryCacheEntryOptions cacheOptions, string id, ProductCodeCacheItem model)
+        {
+            cacheOptions.AddExpirationToken(CatalogCacheRegion.CreateChangeToken());
+            cacheOptions.AddExpirationToken(ItemCacheRegion.CreateChangeTokenForKey(id));
+        }
+
+        protected class ProductCodeCacheItem : Entity
+        {
+            public string ProductId { get; set; }
         }
     }
 }
