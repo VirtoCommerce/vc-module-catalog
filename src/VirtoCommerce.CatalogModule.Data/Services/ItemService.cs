@@ -196,6 +196,28 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             await ValidateProductsAsync(products);
         }
 
+        protected virtual async Task<IEnumerable<ProductCodeCacheItem>> GetIdsByCodesNoCache(string catalogId, IList<string> codes)
+        {
+            using var repository = _repositoryFactory();
+            var query = repository.Items.Where(x => x.CatalogId == catalogId);
+
+            query = codes.Count == 1
+                ? query.Where(x => x.Code == codes.First())
+                : query.Where(x => codes.Contains(x.Code));
+
+            var items = await query
+                .Select(x => new ProductCodeCacheItem { Id = x.Code, ProductId = x.Id })
+                .ToListAsync();
+
+            return items;
+        }
+
+        protected virtual void ConfigureCache(MemoryCacheEntryOptions cacheOptions, string id, ProductCodeCacheItem model)
+        {
+            cacheOptions.AddExpirationToken(CatalogCacheRegion.CreateChangeToken());
+            cacheOptions.AddExpirationToken(ItemCacheRegion.CreateChangeTokenForKey(id));
+        }
+
         protected override void ConfigureCache(MemoryCacheEntryOptions cacheOptions, string id, CatalogProduct model)
         {
             cacheOptions.AddExpirationToken(CatalogCacheRegion.CreateChangeToken());
@@ -334,28 +356,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     throw new ValidationException($"Product properties has validation error: {string.Join(Environment.NewLine, validationResult.Errors.Select(x => x.ToString()))}");
                 }
             }
-        }
-
-        protected virtual async Task<IEnumerable<ProductCodeCacheItem>> GetIdsByCodesNoCache(string catalogId, IList<string> codes)
-        {
-            using var repository = _repositoryFactory();
-            var query = repository.Items.Where(x => x.CatalogId == catalogId);
-
-            query = codes.Count == 1
-                ? query.Where(x => x.Code == codes.First())
-                : query.Where(x => codes.Contains(x.Code));
-
-            var items = await query
-                .Select(x => new ProductCodeCacheItem { Id = x.Code, ProductId = x.Id })
-                .ToListAsync();
-
-            return items;
-        }
-
-        protected virtual void ConfigureCache(MemoryCacheEntryOptions cacheOptions, string id, ProductCodeCacheItem model)
-        {
-            cacheOptions.AddExpirationToken(CatalogCacheRegion.CreateChangeToken());
-            cacheOptions.AddExpirationToken(ItemCacheRegion.CreateChangeTokenForKey(id));
         }
 
         protected class ProductCodeCacheItem : Entity
