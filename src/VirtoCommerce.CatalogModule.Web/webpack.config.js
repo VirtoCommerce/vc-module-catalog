@@ -2,7 +2,7 @@ const glob = require("glob");
 const path = require("path");
 const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const rootPath = path.resolve(__dirname, 'dist');
 
@@ -15,9 +15,12 @@ function getEntrypoints() {
     return result;
 }
 
-module.exports = [
-    {
+module.exports = (env, argv) => {
+    const isProduction = argv.mode === 'production';
+
+    return {
         entry: getEntrypoints(),
+        devtool: isProduction ? 'source-map' : 'eval-source-map',
         output: {
             path: rootPath,
             filename: 'app.js'
@@ -26,19 +29,19 @@ module.exports = [
             rules: [
                 {
                     test: /\.css$/,
-                    loaders: [MiniCssExtractPlugin.loader, "css-loader"]
+                    use: [MiniCssExtractPlugin.loader, "css-loader"] 
                 }
             ]
         },
-        devtool: false,
         plugins: [
+            new CleanWebpackPlugin(),
             new webpack.SourceMapDevToolPlugin({
                 namespace: 'VirtoCommerce.Catalog'
             }),
-            new CleanWebpackPlugin(rootPath, { verbose: true }),
             new MiniCssExtractPlugin({
                 filename: 'style.css'
             })
         ]
-    }
-];
+    };
+};
+
