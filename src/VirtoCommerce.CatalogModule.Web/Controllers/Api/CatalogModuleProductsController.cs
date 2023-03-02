@@ -71,6 +71,14 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return Ok(product);
         }
 
+        [HttpPost("~/api/catalog/{catalogId}/products-by-codes")]
+        public async Task<ActionResult<CatalogProduct[]>> GetByCodes([FromRoute] string catalogId, [FromBody] List<string> codes, [FromQuery] string responseGroup)
+        {
+            var idsByCodes = await _itemsService.GetIdsByCodes(catalogId, codes);
+
+            return await GetProductByIds(idsByCodes.Values.ToList(), responseGroup);
+        }
+
         /// <summary>
         /// Gets products by ids
         /// </summary>

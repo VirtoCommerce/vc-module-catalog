@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using VirtoCommerce.AssetsModule.Core.Assets;
 using VirtoCommerce.CatalogModule.Core.Events;
@@ -56,6 +57,26 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         }
 
         #region IItemService Members
+
+        public virtual async Task<IList<CatalogProduct>> GetByCodes(string catalogId, IList<string> codes, string responseGroup)
+        {
+            var idsByCodes = await GetIdsByCodes(catalogId, codes);
+
+            return idsByCodes.Any()
+                ? await GetByIdsAsync(idsByCodes.Values.ToArray(), responseGroup, catalogId)
+                : Array.Empty<CatalogProduct>();
+        }
+
+        public virtual async Task<IDictionary<string, string>> GetIdsByCodes(string catalogId, IList<string> codes)
+        {
+            var cacheKeyPrefix = CacheKey.With(GetType(), nameof(GetIdsByCodes), catalogId);
+
+            var models = await _platformMemoryCache.GetOrLoadByIdsAsync(cacheKeyPrefix, codes,
+                missingCodes => GetIdsByCodesNoCache(catalogId, missingCodes),
+                ConfigureCache);
+
+            return models.ToDictionary(x => x.Id, x => x.ProductId, StringComparer.OrdinalIgnoreCase);
+        }
 
         public virtual async Task<CatalogProduct[]> GetByIdsAsync(string[] itemIds, string respGroup, string catalogId = null)
         {
@@ -173,6 +194,28 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             var products = models.ToArray();
             await base.BeforeSaveChanges(products);
             await ValidateProductsAsync(products);
+        }
+
+        protected virtual async Task<IEnumerable<ProductCodeCacheItem>> GetIdsByCodesNoCache(string catalogId, IList<string> codes)
+        {
+            using var repository = _repositoryFactory();
+            var query = repository.Items.Where(x => x.CatalogId == catalogId);
+
+            query = codes.Count == 1
+                ? query.Where(x => x.Code == codes.First())
+                : query.Where(x => codes.Contains(x.Code));
+
+            var items = await query
+                .Select(x => new ProductCodeCacheItem { Id = x.Code, ProductId = x.Id })
+                .ToListAsync();
+
+            return items;
+        }
+
+        protected virtual void ConfigureCache(MemoryCacheEntryOptions cacheOptions, string id, ProductCodeCacheItem model)
+        {
+            cacheOptions.AddExpirationToken(CatalogCacheRegion.CreateChangeToken());
+            cacheOptions.AddExpirationToken(ItemCacheRegion.CreateChangeTokenForKey(id));
         }
 
         protected override void ConfigureCache(MemoryCacheEntryOptions cacheOptions, string id, CatalogProduct model)
@@ -313,6 +356,11 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     throw new ValidationException($"Product properties has validation error: {string.Join(Environment.NewLine, validationResult.Errors.Select(x => x.ToString()))}");
                 }
             }
+        }
+
+        protected class ProductCodeCacheItem : Entity
+        {
+            public string ProductId { get; set; }
         }
     }
 }
