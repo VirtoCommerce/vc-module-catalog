@@ -37,15 +37,14 @@ module.exports = (env, argv) => {
         },
         plugins: [
             new CleanWebpackPlugin(),
-            isProduction ? 
+            isProduction ?
                 new webpack.SourceMapDevToolPlugin({
                     namespace: moduleId,
                     filename: "[file].map[query]"
                 }) :
                 new webpack.SourceMapDevToolPlugin({
                     namespace: moduleId
-                }) 
-                ,
+                }),
             new MiniCssExtractPlugin({
                 filename: "style.css"
             })
