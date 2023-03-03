@@ -20,7 +20,7 @@ module.exports = (env, argv) => {
 
     return {
         entry: getEntrypoints(),
-        devtool: isProduction ? 'source-map' : 'eval-source-map',
+        devtool: false,
         output: {
             path: rootPath,
             filename: 'app.js'
@@ -35,9 +35,15 @@ module.exports = (env, argv) => {
         },
         plugins: [
             new CleanWebpackPlugin(),
-            new webpack.SourceMapDevToolPlugin({
-                namespace: 'VirtoCommerce.Catalog'
-            }),
+            isProduction ? 
+                new webpack.SourceMapDevToolPlugin({
+                    namespace: 'VirtoCommerce.Catalog',
+                    filename: '[file].map[query]'
+                }) :
+                new webpack.SourceMapDevToolPlugin({
+                    namespace: 'VirtoCommerce.Catalog'
+                }) 
+                ,
             new MiniCssExtractPlugin({
                 filename: 'style.css'
             })

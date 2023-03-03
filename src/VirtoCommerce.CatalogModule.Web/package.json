@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "name": "asp.net",
+  "name": "vc-module",
   "private": true,
   "scripts": {
     "webpack:dev": "webpack --mode=development",
