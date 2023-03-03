@@ -1,4 +1,4 @@
-# v3.200.22
+# v3.200.24
 name: Module CI
 
 on:
@@ -56,10 +56,10 @@ jobs:
 
     steps:
 
-      - name: Set up Node 16
+      - name: Set up Node 18
         uses: actions/setup-node@v2
         with:
-            node-version: '16'
+            node-version: '18'
 
       - name: Set RELEASE_STATUS
         if: ${{ github.ref == 'refs/heads/master' && github.event_name == 'push' }}
@@ -239,7 +239,7 @@ jobs:
     if: ${{ ((github.ref == 'refs/heads/dev') && (github.event_name == 'push') && (needs.ci.outputs.run-e2e == 'true')) ||
         (github.event_name == 'workflow_dispatch')}}
     needs: 'ci'
-    uses: VirtoCommerce/.github/.github/workflows/e2e.yml@v3.200.22
+    uses: VirtoCommerce/.github/.github/workflows/e2e.yml@v3.200.24
     with:
       katalonRepo: 'VirtoCommerce/vc-quality-gate-katalon'
       katalonRepoBranch: 'dev'
@@ -259,7 +259,7 @@ jobs:
         (github.ref == 'refs/heads/dev')) && 
         github.event_name == 'push' }}
     needs: ci
-    uses: VirtoCommerce/.github/.github/workflows/deploy-cloud.yml@v3.200.22
+    uses: VirtoCommerce/.github/.github/workflows/deploy-cloud.yml@v3.200.24
     with:
       releaseSource: module
       moduleId: ${{ needs.ci.outputs.moduleId }}
