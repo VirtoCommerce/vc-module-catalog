@@ -6,7 +6,6 @@ Add-Migration Initial -Context VirtoCommerce.CatalogModule.Data.Repositories.Cat
 
 ### Entity Framework Core Commands
 ```
-
 dotnet tool install --global dotnet-ef --version 6.*
 ```
 
