@@ -166,6 +166,7 @@
         "labels": {
           "property-name": "Название свойства",
           "display-name": "Отображаемое название",
+          "display-order": "Отображение заказа",
           "required": "Обязательное поле",
           "dictionary": "Словарь",
           "multivalue": "Многозначный",
@@ -179,7 +180,8 @@
           "hidden": "Скрыто"
         },
         "placeholders": {
-          "display-name": "Введите отображаемое название..."
+          "display-name": "Введите отображаемое название...",
+          "display-order": "Отображение заказа"
         }
       },
       "property-validationRule": {
