@@ -56,7 +56,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         public PropertyType Type { get; set; }
         public string OuterId { get; set; }
         public string OwnerName { get; set; }
-
+        public int? DisplayOrder { get; set; }
 
         public IList<PropertyValue> Values { get; set; } = new List<PropertyValue>();
         public IList<PropertyAttribute> Attributes { get; set; }
@@ -110,6 +110,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                 CatalogId = parentProperty.CatalogId;
                 CategoryId = parentProperty.CategoryId;
                 Hidden = parentProperty.Hidden;
+                DisplayOrder = parentProperty.DisplayOrder;
 
                 foreach (var propValue in (Values ?? Array.Empty<PropertyValue>()).Where(x => x != null))
                 {
@@ -133,12 +134,12 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         #region ICloneable members
         public virtual object Clone()
         {
-            var result = MemberwiseClone() as Property;
+            var result = (Property)MemberwiseClone();
 
-            result.Values = Values?.Select(x => x.Clone()).OfType<PropertyValue>().ToList();
-            result.Attributes = Attributes?.Select(x => x.Clone()).OfType<PropertyAttribute>().ToList();
-            result.DisplayNames = DisplayNames?.Select(x => x.Clone()).OfType<PropertyDisplayName>().ToList();
-            result.ValidationRules = ValidationRules?.Select(x => x.Clone()).OfType<PropertyValidationRule>().ToList();
+            result.Values = Values?.Select(x => x.CloneTyped()).ToList();
+            result.Attributes = Attributes?.Select(x => x.CloneTyped()).ToList();
+            result.DisplayNames = DisplayNames?.Select(x => x.CloneTyped()).ToList();
+            result.ValidationRules = ValidationRules?.Select(x => x.CloneTyped()).ToList();
 
             return result;
         }
@@ -148,7 +149,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         #region ICopyable
         public virtual object GetCopy()
         {
-            var result = Clone() as Property;
+            var result = (Property)Clone();
             //Get copy only for property values, other members clone only
             result.Values = Values?.Select(x => x.GetCopy()).OfType<PropertyValue>().ToList();
             //Do not reset Id for property! Need to use the same Id for copies
