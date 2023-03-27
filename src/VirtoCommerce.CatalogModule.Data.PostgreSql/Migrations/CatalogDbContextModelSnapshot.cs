@@ -840,6 +840,9 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int?>("DisplayOrder")
+                        .HasColumnType("integer");
+
                     b.Property<bool>("IsEnum")
                         .HasColumnType("boolean");
 

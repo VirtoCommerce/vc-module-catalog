@@ -342,7 +342,7 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
 
                     b.ToTable("Category", (string)null);
 
-                    b.HasCheckConstraint("Parent_category_check", "ParentCategoryId != Id");
+                    b.HasCheckConstraint("Parent_category_check", "\"ParentCategoryId\" != \"Id\"");
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.CategoryItemRelationEntity", b =>
@@ -836,6 +836,9 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime(6)");
+
+                    b.Property<int?>("DisplayOrder")
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsEnum")
                         .HasColumnType("tinyint(1)");
