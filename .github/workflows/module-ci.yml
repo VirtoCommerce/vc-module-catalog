@@ -154,9 +154,9 @@ jobs:
         id: artifactUrl
         run: |
           if [ '${{ github.ref }}' = 'refs/heads/master' ]; then
-            echo "artifactUrl=${{ steps.githubRelease.outputs.downloadUrl }}" >> $GITHUB_OUTPUT
+            echo "download_url=${{ steps.githubRelease.outputs.downloadUrl }}" >> $GITHUB_OUTPUT
           else
-            echo "artifactUrl=${{ steps.blobRelease.outputs.packageUrl }}" >> $GITHUB_OUTPUT
+            echo "download_url=${{ steps.blobRelease.outputs.packageUrl }}" >> $GITHUB_OUTPUT
           fi;
 
       - name: Create deployment matrix
