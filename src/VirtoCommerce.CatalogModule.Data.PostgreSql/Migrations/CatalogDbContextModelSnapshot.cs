@@ -684,8 +684,7 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
                         .HasDatabaseName("IX_Code_CatalogId");
 
                     b.HasIndex("CreatedDate", "ParentId")
-                        .HasDatabaseName("IX_CreatedDate_ParentId")
-                        .HasAnnotation("SqlServer:Include", new[] { "ModifiedDate" });
+                        .HasDatabaseName("IX_CreatedDate_ParentId");
 
                     b.ToTable("Item", (string)null);
                 });
