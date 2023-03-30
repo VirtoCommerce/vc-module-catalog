@@ -146,6 +146,7 @@
         "labels": {
           "property-name": "Name der Eigenschaft",
           "display-name": "Anzeigename",
+          "display-order": "Bestellung anzeigen",
           "required": "Erforderlich",
           "dictionary": "Wörterbuch",
           "multivalue": "Mehrwert",
@@ -157,7 +158,8 @@
           "manage-attributes": "Eigenschaft Attribute verwalten"
         },
         "placeholders": {
-          "display-name": "Anzeigename Geben..."
+          "display-name": "Anzeigename Geben...",
+          "display-order": "Bestellung anzeigen"
         }
       },
       "property-list": {

@@ -166,6 +166,7 @@
         "labels": {
           "property-name": "Property name",
           "display-name": "Display name",
+          "display-order": "Display order",
           "required": "Required",
           "dictionary": "Dictionary",
           "multivalue": "Multi value",
@@ -179,7 +180,8 @@
           "hidden": "Hidden"
         },
         "placeholders": {
-          "display-name": "Enter display name..."
+          "display-name": "Enter display name...",
+          "display-order": "Display order"
         }
       },
       "property-validationRule": {

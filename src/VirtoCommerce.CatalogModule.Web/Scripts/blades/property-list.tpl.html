@@ -14,7 +14,7 @@
                             <a class="btn-ico fa fa-times-circle filter-quickaction" ng-click="resetFilter()"></a>
                         </span>
                     </legend>
-                    <div class="form-group list __info" ng-repeat="prop in properties = (blade.currentEntities | filter: {type:propGroup.type} | filter: isPropertyVisible | filter: isPropertyHasValues)">
+                    <div class="form-group list __info" ng-repeat="prop in properties = (blade.currentEntities | filter: {type:propGroup.type} | filter: isPropertyVisible | filter: isPropertyHasValues | orderBy: 'displayOrder')">
                         <label class="form-label">
                             {{prop.name}} {{ getPropertyDisplayName(prop) ? '(' + getPropertyDisplayName(prop) + ')' : '' }}
                             <span class="alt-description" ng-if="isPropertyChanged(prop)"> {{'catalog.blades.property-list.labels.modified' | translate }} </span>
