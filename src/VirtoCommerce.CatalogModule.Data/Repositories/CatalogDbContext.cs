@@ -70,7 +70,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<ItemEntity>().HasIndex(x => new { x.Code, x.CatalogId }).HasDatabaseName("IX_Code_CatalogId").IsUnique();
             modelBuilder.Entity<ItemEntity>().HasIndex(x => new { x.CatalogId, x.ParentId }).IsUnique(false).HasDatabaseName("IX_CatalogId_ParentId");
-            modelBuilder.Entity<ItemEntity>().HasIndex(x => new { x.CreatedDate, x.ParentId }).IncludeProperties(x => x.ModifiedDate).IsUnique(false).HasDatabaseName("IX_CreatedDate_ParentId");
+            modelBuilder.Entity<ItemEntity>().HasIndex(x => new { x.CreatedDate, x.ParentId }).IsUnique(false).HasDatabaseName("IX_CreatedDate_ParentId");
 
             #endregion Item
 

@@ -342,7 +342,7 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
 
                     b.ToTable("Category", (string)null);
 
-                    b.HasCheckConstraint("Parent_category_check", "ParentCategoryId != Id");
+                    b.HasCheckConstraint("Parent_category_check", "\"ParentCategoryId\" != \"Id\"");
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.CategoryItemRelationEntity", b =>
@@ -681,8 +681,7 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
                         .HasDatabaseName("IX_Code_CatalogId");
 
                     b.HasIndex("CreatedDate", "ParentId")
-                        .HasDatabaseName("IX_CreatedDate_ParentId")
-                        .HasAnnotation("SqlServer:Include", new[] { "ModifiedDate" });
+                        .HasDatabaseName("IX_CreatedDate_ParentId");
 
                     b.ToTable("Item", (string)null);
                 });
