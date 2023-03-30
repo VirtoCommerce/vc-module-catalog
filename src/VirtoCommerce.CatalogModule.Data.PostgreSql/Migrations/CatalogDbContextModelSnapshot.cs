@@ -684,8 +684,7 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
                         .HasDatabaseName("IX_Code_CatalogId");
 
                     b.HasIndex("CreatedDate", "ParentId")
-                        .HasDatabaseName("IX_CreatedDate_ParentId")
-                        .HasAnnotation("SqlServer:Include", new[] { "ModifiedDate" });
+                        .HasDatabaseName("IX_CreatedDate_ParentId");
 
                     b.ToTable("Item", (string)null);
                 });
@@ -839,6 +838,9 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("DisplayOrder")
+                        .HasColumnType("integer");
 
                     b.Property<bool>("IsEnum")
                         .HasColumnType("boolean");

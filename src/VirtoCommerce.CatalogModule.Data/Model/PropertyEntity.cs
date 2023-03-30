@@ -46,6 +46,8 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         [StringLength(128)]
         public string OuterId { get; set; }
 
+        public int? DisplayOrder { get; set; }
+
         #region Navigation Properties
 
         public string CatalogId { get; set; }
@@ -93,6 +95,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             property.Hidden = IsHidden;
             property.ValueType = (PropertyValueType)PropertyValueType;
             property.Type = EnumUtility.SafeParse(TargetType, PropertyType.Catalog);
+            property.DisplayOrder = DisplayOrder;
 
             property.Attributes = PropertyAttributes.Select(x => x.ToModel(AbstractTypeFactory<PropertyAttribute>.TryCreateInstance())).ToList();
             property.DisplayNames = DisplayNames.Select(x => x.ToModel(AbstractTypeFactory<PropertyDisplayName>.TryCreateInstance())).ToList();
@@ -133,6 +136,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             IsRequired = property.Required;
             IsHidden = property.Hidden;
             TargetType = property.Type.ToString();
+            DisplayOrder = property.DisplayOrder;
 
             if (property.Attributes != null)
             {
@@ -162,6 +166,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             target.TargetType = TargetType;
             target.Name = Name;
             target.IsHidden = IsHidden;
+            target.DisplayOrder = DisplayOrder;
 
             target.CatalogId = CatalogId;
             target.CategoryId = CategoryId;

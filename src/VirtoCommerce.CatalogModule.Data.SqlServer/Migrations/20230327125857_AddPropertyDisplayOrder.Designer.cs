@@ -7,68 +7,71 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 
-namespace VirtoCommerce.CatalogModule.Data.Migrations
+#nullable disable
+
+namespace VirtoCommerce.CatalogModule.Data.SqlServer.Migrations
 {
     [DbContext(typeof(CatalogDbContext))]
-    [Migration("20201125141337_AddCodeCatalogIndex")]
-    partial class AddCodeCatalogIndex
+    [Migration("20230327125857_AddPropertyDisplayOrder")]
+    partial class AddPropertyDisplayOrder
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.2")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "6.0.0")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.AssetEntity", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(1024)")
-                        .HasMaxLength(1024);
+                        .HasMaxLength(1024)
+                        .HasColumnType("nvarchar(1024)");
 
                     b.Property<string>("Group")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<string>("ItemId")
                         .IsRequired()
                         .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("LanguageCode")
-                        .HasColumnType("nvarchar(5)")
-                        .HasMaxLength(5);
+                        .HasMaxLength(5)
+                        .HasColumnType("nvarchar(5)");
 
                     b.Property<string>("MimeType")
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("ModifiedBy")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(1024)")
-                        .HasMaxLength(1024);
+                        .HasMaxLength(1024)
+                        .HasColumnType("nvarchar(1024)");
 
                     b.Property<string>("OuterId")
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<long>("Size")
                         .HasColumnType("bigint");
@@ -78,22 +81,22 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
 
                     b.Property<string>("Url")
                         .IsRequired()
-                        .HasColumnType("nvarchar(2083)")
-                        .HasMaxLength(2083);
+                        .HasMaxLength(2083)
+                        .HasColumnType("nvarchar(2083)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ItemId");
 
-                    b.ToTable("CatalogAsset");
+                    b.ToTable("CatalogAsset", (string)null);
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.AssociationEntity", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("AssociatedCategoryId")
                         .HasColumnType("nvarchar(128)");
@@ -103,12 +106,12 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
 
                     b.Property<string>("AssociationType")
                         .IsRequired()
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
@@ -118,15 +121,15 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("ModifiedBy")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("OuterId")
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<int>("Priority")
                         .HasColumnType("int");
@@ -135,8 +138,8 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Tags")
-                        .HasColumnType("nvarchar(1024)")
-                        .HasMaxLength(1024);
+                        .HasMaxLength(1024)
+                        .HasColumnType("nvarchar(1024)");
 
                     b.HasKey("Id");
 
@@ -146,127 +149,185 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
 
                     b.HasIndex("ItemId");
 
-                    b.ToTable("Association");
+                    b.ToTable("Association", (string)null);
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.CatalogEntity", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("DefaultLanguage")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<string>("ModifiedBy")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("OuterId")
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("OwnerId")
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<bool>("Virtual")
                         .HasColumnType("bit");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Catalog");
+                    b.ToTable("Catalog", (string)null);
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.CatalogLanguageEntity", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("CatalogId")
                         .IsRequired()
                         .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Language")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CatalogId");
 
-                    b.ToTable("CatalogLanguage");
+                    b.ToTable("CatalogLanguage", (string)null);
+                });
+
+            modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.CategoryDescriptionEntity", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<string>("CategoryId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<string>("Comments")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Content")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Locale")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ReviewState")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Source")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("CategoryDescription", (string)null);
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.CategoryEntity", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("CatalogId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Code")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool?>("EnableDescription")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("ExcludedProperties")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<string>("ModifiedBy")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("OuterId")
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("ParentCategoryId")
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<int>("Priority")
                         .HasColumnType("int");
@@ -275,8 +336,8 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("TaxType")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.HasKey("Id");
 
@@ -284,15 +345,17 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
 
                     b.HasIndex("ParentCategoryId");
 
-                    b.ToTable("Category");
+                    b.ToTable("Category", (string)null);
+
+                    b.HasCheckConstraint("Parent_category_check", "\"ParentCategoryId\" != \"Id\"");
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.CategoryItemRelationEntity", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("CatalogId")
                         .IsRequired()
@@ -316,15 +379,15 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
 
                     b.HasIndex("ItemId");
 
-                    b.ToTable("CategoryItemRelation");
+                    b.ToTable("CategoryItemRelation", (string)null);
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.CategoryRelationEntity", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("SourceCategoryId")
                         .IsRequired()
@@ -344,15 +407,15 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
 
                     b.HasIndex("TargetCategoryId");
 
-                    b.ToTable("CategoryRelation");
+                    b.ToTable("CategoryRelation", (string)null);
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.EditorialReviewEntity", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Comments")
                         .HasColumnType("nvarchar(max)");
@@ -361,8 +424,8 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
@@ -372,12 +435,12 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Locale")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<string>("ModifiedBy")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
@@ -389,74 +452,74 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Source")
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ItemId");
 
-                    b.ToTable("EditorialReview");
+                    b.ToTable("EditorialReview", (string)null);
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.ImageEntity", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("AltText")
-                        .HasColumnType("nvarchar(1024)")
-                        .HasMaxLength(1024);
+                        .HasMaxLength(1024)
+                        .HasColumnType("nvarchar(1024)");
 
                     b.Property<string>("CategoryId")
                         .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(1024)")
-                        .HasMaxLength(1024);
+                        .HasMaxLength(1024)
+                        .HasColumnType("nvarchar(1024)");
 
                     b.Property<string>("Group")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<string>("ItemId")
                         .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("LanguageCode")
-                        .HasColumnType("nvarchar(5)")
-                        .HasMaxLength(5);
+                        .HasMaxLength(5)
+                        .HasColumnType("nvarchar(5)");
 
                     b.Property<string>("ModifiedBy")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(1024)")
-                        .HasMaxLength(1024);
+                        .HasMaxLength(1024)
+                        .HasColumnType("nvarchar(1024)");
 
                     b.Property<string>("OuterId")
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<int>("SortOrder")
                         .HasColumnType("int");
 
                     b.Property<string>("Url")
                         .IsRequired()
-                        .HasColumnType("nvarchar(2083)")
-                        .HasMaxLength(2083);
+                        .HasMaxLength(2083)
+                        .HasColumnType("nvarchar(2083)");
 
                     b.HasKey("Id");
 
@@ -464,15 +527,15 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
 
                     b.HasIndex("ItemId");
 
-                    b.ToTable("CatalogImage");
+                    b.ToTable("CatalogImage", (string)null);
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.ItemEntity", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<int>("AvailabilityRule")
                         .HasColumnType("int");
@@ -486,12 +549,12 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
 
                     b.Property<string>("Code")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
@@ -500,8 +563,8 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("DownloadType")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<bool?>("EnableReview")
                         .HasColumnType("bit");
@@ -510,14 +573,15 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Gtin")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<bool?>("HasUserAgreement")
                         .HasColumnType("bit");
 
                     b.Property<decimal?>("Height")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -526,44 +590,47 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<decimal?>("Length")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)");
 
                     b.Property<string>("ManufacturerPartNumber")
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<int?>("MaxNumberOfDownload")
                         .HasColumnType("int");
 
                     b.Property<decimal>("MaxQuantity")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("MeasureUnit")
-                        .HasColumnType("nvarchar(32)")
-                        .HasMaxLength(32);
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
 
                     b.Property<decimal>("MinQuantity")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("ModifiedBy")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(1024)")
-                        .HasMaxLength(1024);
+                        .HasMaxLength(1024)
+                        .HasColumnType("nvarchar(1024)");
 
                     b.Property<string>("OuterId")
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("PackageType")
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("ParentId")
                         .HasColumnType("nvarchar(128)");
@@ -572,36 +639,38 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("ProductType")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<string>("ShippingType")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("TaxType")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<bool>("TrackInventory")
                         .HasColumnType("bit");
 
                     b.Property<string>("Vendor")
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<decimal?>("Weight")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)");
 
                     b.Property<string>("WeightUnit")
-                        .HasColumnType("nvarchar(32)")
-                        .HasMaxLength(32);
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
 
                     b.Property<decimal?>("Width")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)");
 
                     b.HasKey("Id");
 
@@ -610,31 +679,37 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                     b.HasIndex("ParentId");
 
                     b.HasIndex("CatalogId", "ParentId")
-                        .HasName("IX_CatalogId_ParentId");
+                        .HasDatabaseName("IX_CatalogId_ParentId");
 
                     b.HasIndex("Code", "CatalogId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("IX_Code_CatalogId");
 
-                    b.ToTable("Item");
+                    b.HasIndex("CreatedDate", "ParentId")
+                        .HasDatabaseName("IX_CreatedDate_ParentId");
+
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("CreatedDate", "ParentId"), new[] { "ModifiedDate" });
+
+                    b.ToTable("Item", (string)null);
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.PropertyAttributeEntity", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("ModifiedBy")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
@@ -644,13 +719,13 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
 
                     b.Property<string>("PropertyAttributeName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("PropertyAttributeValue")
                         .IsRequired()
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("PropertyId")
                         .IsRequired()
@@ -660,20 +735,20 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
 
                     b.HasIndex("PropertyId");
 
-                    b.ToTable("PropertyAttribute");
+                    b.ToTable("PropertyAttribute", (string)null);
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.PropertyDictionaryItemEntity", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Alias")
                         .IsRequired()
-                        .HasColumnType("nvarchar(512)")
-                        .HasMaxLength(512);
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
 
                     b.Property<string>("PropertyId")
                         .IsRequired()
@@ -688,51 +763,51 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
 
                     b.HasIndex("Alias", "PropertyId")
                         .IsUnique()
-                        .HasName("IX_AliasAndPropertyId");
+                        .HasDatabaseName("IX_AliasAndPropertyId");
 
-                    b.ToTable("PropertyDictionaryItem");
+                    b.ToTable("PropertyDictionaryItem", (string)null);
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.PropertyDictionaryValueEntity", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("DictionaryItemId")
                         .IsRequired()
                         .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Locale")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<string>("Value")
-                        .HasColumnType("nvarchar(512)")
-                        .HasMaxLength(512);
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("DictionaryItemId");
 
-                    b.ToTable("PropertyDictionaryValue");
+                    b.ToTable("PropertyDictionaryValue", (string)null);
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.PropertyDisplayNameEntity", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Locale")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(512)")
-                        .HasMaxLength(512);
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
 
                     b.Property<string>("PropertyId")
                         .IsRequired()
@@ -742,15 +817,15 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
 
                     b.HasIndex("PropertyId");
 
-                    b.ToTable("PropertyDisplayName");
+                    b.ToTable("PropertyDisplayName", (string)null);
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.PropertyEntity", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<bool>("AllowAlias")
                         .HasColumnType("bit");
@@ -762,11 +837,14 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<int?>("DisplayOrder")
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsEnum")
                         .HasColumnType("bit");
@@ -793,27 +871,27 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("ModifiedBy")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("OuterId")
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<int>("PropertyValueType")
                         .HasColumnType("int");
 
                     b.Property<string>("TargetType")
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.HasKey("Id");
 
@@ -821,15 +899,15 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Property");
+                    b.ToTable("Property", (string)null);
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.PropertyValidationRuleEntity", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<int?>("CharCountMax")
                         .HasColumnType("int");
@@ -845,22 +923,22 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("RegExp")
-                        .HasColumnType("nvarchar(2048)")
-                        .HasMaxLength(2048);
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("PropertyId");
 
-                    b.ToTable("PropertyValidationRule");
+                    b.ToTable("PropertyValidationRule", (string)null);
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.PropertyValueEntity", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<bool>("BooleanValue")
                         .HasColumnType("bit");
@@ -872,8 +950,8 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
@@ -882,7 +960,8 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<decimal>("DecimalValue")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)");
 
                     b.Property<string>("DictionaryItemId")
                         .HasColumnType("nvarchar(128)");
@@ -894,30 +973,30 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Locale")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<string>("LongTextValue")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ModifiedBy")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("OuterId")
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("ShortTextValue")
-                        .HasColumnType("nvarchar(512)")
-                        .HasMaxLength(512);
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
 
                     b.Property<int>("ValueType")
                         .HasColumnType("int");
@@ -932,29 +1011,29 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
 
                     b.HasIndex("ItemId");
 
-                    b.ToTable("PropertyValue");
+                    b.ToTable("PropertyValue", (string)null);
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.SeoInfoEntity", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("CategoryId")
                         .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("ImageAltDescription")
-                        .HasColumnType("nvarchar(255)")
-                        .HasMaxLength(255);
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -964,35 +1043,35 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
 
                     b.Property<string>("Keyword")
                         .IsRequired()
-                        .HasColumnType("nvarchar(255)")
-                        .HasMaxLength(255);
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("Language")
-                        .HasColumnType("nvarchar(5)")
-                        .HasMaxLength(5);
+                        .HasMaxLength(5)
+                        .HasColumnType("nvarchar(5)");
 
                     b.Property<string>("MetaDescription")
-                        .HasColumnType("nvarchar(1024)")
-                        .HasMaxLength(1024);
+                        .HasMaxLength(1024)
+                        .HasColumnType("nvarchar(1024)");
 
                     b.Property<string>("MetaKeywords")
-                        .HasColumnType("nvarchar(255)")
-                        .HasMaxLength(255);
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("ModifiedBy")
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("StoreId")
-                        .HasColumnType("nvarchar(128)")
-                        .HasMaxLength(128);
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Title")
-                        .HasColumnType("nvarchar(255)")
-                        .HasMaxLength(255);
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.HasKey("Id");
 
@@ -1000,7 +1079,85 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
 
                     b.HasIndex("ItemId");
 
-                    b.ToTable("CatalogSeoInfo");
+                    b.ToTable("CatalogSeoInfo", (string)null);
+                });
+
+            modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.VideoEntity", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<string>("ContentUrl")
+                        .IsRequired()
+                        .HasMaxLength(2083)
+                        .HasColumnType("nvarchar(2083)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1024)
+                        .HasColumnType("nvarchar(1024)");
+
+                    b.Property<string>("Duration")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("EmbedUrl")
+                        .HasMaxLength(2083)
+                        .HasColumnType("nvarchar(2083)");
+
+                    b.Property<string>("LanguageCode")
+                        .IsRequired()
+                        .HasMaxLength(5)
+                        .HasColumnType("nvarchar(5)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(1024)
+                        .HasColumnType("nvarchar(1024)");
+
+                    b.Property<string>("OwnerId")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<string>("OwnerType")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ThumbnailUrl")
+                        .IsRequired()
+                        .HasMaxLength(2083)
+                        .HasColumnType("nvarchar(2083)");
+
+                    b.Property<DateTime>("UploadDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnerType", "OwnerId")
+                        .HasDatabaseName("IX_OwnerType_OwnerId");
+
+                    b.ToTable("CatalogVideo", (string)null);
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.AssetEntity", b =>
@@ -1010,6 +1167,8 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("CatalogItem");
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.AssociationEntity", b =>
@@ -1029,6 +1188,12 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("AssociatedCategory");
+
+                    b.Navigation("AssociatedItem");
+
+                    b.Navigation("Item");
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.CatalogLanguageEntity", b =>
@@ -1038,6 +1203,19 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasForeignKey("CatalogId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Catalog");
+                });
+
+            modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.CategoryDescriptionEntity", b =>
+                {
+                    b.HasOne("VirtoCommerce.CatalogModule.Data.Model.CategoryEntity", "Category")
+                        .WithMany("CategoryDescriptions")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.CategoryEntity", b =>
@@ -1052,6 +1230,10 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .WithMany()
                         .HasForeignKey("ParentCategoryId")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Catalog");
+
+                    b.Navigation("ParentCategory");
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.CategoryItemRelationEntity", b =>
@@ -1072,6 +1254,12 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Catalog");
+
+                    b.Navigation("CatalogItem");
+
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.CategoryRelationEntity", b =>
@@ -1091,6 +1279,12 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .WithMany("IncomingLinks")
                         .HasForeignKey("TargetCategoryId")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("SourceCategory");
+
+                    b.Navigation("TargetCatalog");
+
+                    b.Navigation("TargetCategory");
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.EditorialReviewEntity", b =>
@@ -1100,6 +1294,8 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("CatalogItem");
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.ImageEntity", b =>
@@ -1113,6 +1309,10 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .WithMany("Images")
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("CatalogItem");
+
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.ItemEntity", b =>
@@ -1132,6 +1332,12 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .WithMany("Childrens")
                         .HasForeignKey("ParentId")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Catalog");
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Parent");
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.PropertyAttributeEntity", b =>
@@ -1141,6 +1347,8 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasForeignKey("PropertyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Property");
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.PropertyDictionaryItemEntity", b =>
@@ -1150,6 +1358,8 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasForeignKey("PropertyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Property");
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.PropertyDictionaryValueEntity", b =>
@@ -1159,6 +1369,8 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasForeignKey("DictionaryItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("DictionaryItem");
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.PropertyDisplayNameEntity", b =>
@@ -1168,6 +1380,8 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasForeignKey("PropertyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Property");
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.PropertyEntity", b =>
@@ -1181,6 +1395,10 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .WithMany("Properties")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Catalog");
+
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.PropertyValidationRuleEntity", b =>
@@ -1190,6 +1408,8 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasForeignKey("PropertyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Property");
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.PropertyValueEntity", b =>
@@ -1213,6 +1433,14 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .WithMany("ItemPropertyValues")
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Catalog");
+
+                    b.Navigation("CatalogItem");
+
+                    b.Navigation("Category");
+
+                    b.Navigation("DictionaryItem");
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.SeoInfoEntity", b =>
@@ -1226,6 +1454,75 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .WithMany("SeoInfos")
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Item");
+                });
+
+            modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.CatalogEntity", b =>
+                {
+                    b.Navigation("CatalogLanguages");
+
+                    b.Navigation("CatalogPropertyValues");
+
+                    b.Navigation("IncomingLinks");
+
+                    b.Navigation("Properties");
+                });
+
+            modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.CategoryEntity", b =>
+                {
+                    b.Navigation("CategoryDescriptions");
+
+                    b.Navigation("CategoryPropertyValues");
+
+                    b.Navigation("Images");
+
+                    b.Navigation("IncomingLinks");
+
+                    b.Navigation("OutgoingLinks");
+
+                    b.Navigation("Properties");
+
+                    b.Navigation("SeoInfos");
+                });
+
+            modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.ItemEntity", b =>
+                {
+                    b.Navigation("Assets");
+
+                    b.Navigation("Associations");
+
+                    b.Navigation("CategoryLinks");
+
+                    b.Navigation("Childrens");
+
+                    b.Navigation("EditorialReviews");
+
+                    b.Navigation("Images");
+
+                    b.Navigation("ItemPropertyValues");
+
+                    b.Navigation("ReferencedAssociations");
+
+                    b.Navigation("SeoInfos");
+                });
+
+            modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.PropertyDictionaryItemEntity", b =>
+                {
+                    b.Navigation("DictionaryItemValues");
+                });
+
+            modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.PropertyEntity", b =>
+                {
+                    b.Navigation("DictionaryItems");
+
+                    b.Navigation("DisplayNames");
+
+                    b.Navigation("PropertyAttributes");
+
+                    b.Navigation("ValidationRules");
                 });
 #pragma warning restore 612, 618
         }
