@@ -164,7 +164,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var entryIds = criteria.ObjectIds?.ToArray() ?? Array.Empty<string>();
             var hasLinkEntries = await LoadCatalogEntriesAsync<IHasLinks>(entryIds);
 
-            var authorizationResult = await _authorizationService.AuthorizeAsync(User, hasLinkEntries, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Delete));
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, hasLinkEntries, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
             if (!authorizationResult.Succeeded)
             {
                 return Unauthorized();
