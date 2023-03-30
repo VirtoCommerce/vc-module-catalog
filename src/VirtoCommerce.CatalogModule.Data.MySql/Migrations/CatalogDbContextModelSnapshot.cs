@@ -837,6 +837,9 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<int?>("DisplayOrder")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsEnum")
                         .HasColumnType("tinyint(1)");
 
