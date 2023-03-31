@@ -4,8 +4,8 @@
   <version>3.265.0</version>
   <version-tag />
   <platformVersion>3.286.0</platformVersion>
-  <title>Catalog module</title>
-  <description>Catalog, categories, products, variations, properties management</description>
+  <title>Catalog</title>
+  <description>Easily manage your products, categories, variations, and properties</description>
   <authors>
     <author>Virto Commerce</author>
   </authors>
