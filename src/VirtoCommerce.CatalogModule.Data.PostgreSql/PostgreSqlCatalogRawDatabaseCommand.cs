@@ -93,6 +93,7 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql
                     const string commandTemplate = @"
                         DELETE FROM ""CatalogLanguage"" CL USING ""Catalog"" C WHERE C.""Id"" = CL.""CatalogId"" AND C.""Id"" IN ({0});
                         DELETE FROM ""CategoryRelation"" CR USING ""Catalog"" C WHERE C.""Id"" = CR.""TargetCatalogId"" AND C.""Id"" IN ({0});
+                        DELETE FROM ""CategoryItemRelation"" CIR USING ""Catalog"" C WHERE C.""Id"" = CIR.""CatalogId"" AND C.""Id"" IN ({0});
                         DELETE FROM ""PropertyValue"" PV USING ""Catalog"" C WHERE C.""Id"" = PV.""CatalogId"" AND C.""Id"" IN ({0});
                         DELETE FROM ""Property"" P USING ""Catalog"" C WHERE C.""Id"" = P.""CatalogId""  AND C.""Id"" IN ({0});
                         DELETE FROM ""Catalog"" WHERE ""Id"" IN ({0});
