@@ -121,7 +121,7 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql
                         DELETE FROM ""CategoryItemRelation"" WHERE ""CategoryId"" IN ({0});
                         DELETE FROM ""Association"" WHERE ""AssociatedCategoryId"" IN ({0});
                         DELETE FROM ""Property"" WHERE ""CategoryId"" IN ({0});
-                        DELETE FROM ""CategoryDescription"" ""CategoryId"" IN ({0});
+                        DELETE FROM ""CategoryDescription"" WHERE ""CategoryId"" IN ({0});
                         DELETE FROM ""Category"" WHERE ""Id"" IN ({0});
                         ";
 
