@@ -47,14 +47,16 @@ angular.module('virtoCommerce.catalogModule')
                             } else {
                                 prop.group = 'Extended properties';
                             }
-                            
+
+                            if (prop.valueType === 'Boolean') {
+                                prop.values.push({ value: false, isInherited: false });
+                            }
                         });
                     blade.isLoading = false;
                 });
         }
 
         $scope.startAction = function () {
-
             var progressBlade = {
                 id: 'actionProgress',
                 title: 'virtoCommerce.catalogBulkActionsModule.blades.action-progress.title',
