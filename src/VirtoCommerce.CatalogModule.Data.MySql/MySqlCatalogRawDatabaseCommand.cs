@@ -255,12 +255,12 @@ namespace VirtoCommerce.CatalogModule.Data.MySql
                 do
                 {
                     const string commandTemplate = @"
-                    DELETE FROM CatalogLanguage WHERE CatalogId IN ({0})
-                    DELETE FROM CategoryRelation WHERE TargetCatalogId IN ({0})
-                    DELETE FROM CategoryItemRelation WHERE CatalogId IN ({0})
-                    DELETE FROM PropertyValue WHERE CatalogId IN ({0})
-                    DELETE FROM Property WHERE CatalogId IN ({0})
-                    DELETE FROM Catalog WHERE Id IN ({0})
+                    DELETE FROM CatalogLanguage WHERE CatalogId IN ({0});
+                    DELETE FROM CategoryRelation WHERE TargetCatalogId IN ({0});
+                    DELETE FROM CategoryItemRelation WHERE CatalogId IN ({0});
+                    DELETE FROM PropertyValue WHERE CatalogId IN ({0});
+                    DELETE FROM Property WHERE CatalogId IN ({0});
+                    DELETE FROM Catalog WHERE Id IN ({0});
                     ";
 
                     await ExecuteStoreQueryAsync(dbContext, commandTemplate, ids.Skip(skip).Take(BatchSize));
@@ -279,15 +279,15 @@ namespace VirtoCommerce.CatalogModule.Data.MySql
                 do
                 {
                     const string commandTemplate = @"
-                    DELETE FROM CatalogSeoInfo WHERE CategoryId IN ({0})
-                    DELETE FROM CatalogImage WHERE CategoryId IN ({0})
-                    DELETE FROM PropertyValue WHERE CategoryId IN ({0})
-                    DELETE CR FROM CategoryRelation CR INNER JOIN Category C ON C.Id = CR.SourceCategoryId OR C.Id = CR.TargetCategoryId WHERE C.Id IN ({0})
-                    DELETE FROM CategoryItemRelation WHERE CategoryId IN ({0})
-                    DELETE FROM Association WHERE AssociatedCategoryId IN ({0})
-                    DELETE FROM Property WHERE CategoryId IN ({0})
-                    DELETE FROM CategoryDescription WHERE CategoryId IN ({0})
-                    DELETE FROM Category WHERE Id IN ({0})
+                    DELETE FROM CatalogSeoInfo WHERE CategoryId IN ({0});
+                    DELETE FROM CatalogImage WHERE CategoryId IN ({0});
+                    DELETE FROM PropertyValue WHERE CategoryId IN ({0});
+                    DELETE CR FROM CategoryRelation CR INNER JOIN Category C ON C.Id = CR.SourceCategoryId OR C.Id = CR.TargetCategoryId WHERE C.Id IN ({0});
+                    DELETE FROM CategoryItemRelation WHERE CategoryId IN ({0});
+                    DELETE FROM Association WHERE AssociatedCategoryId IN ({0});
+                    DELETE FROM Property WHERE CategoryId IN ({0});
+                    DELETE FROM CategoryDescription WHERE CategoryId IN ({0});
+                    DELETE FROM Category WHERE Id IN ({0});
                     ";
 
                     await ExecuteStoreQueryAsync(dbContext, commandTemplate, ids.Skip(skip).Take(BatchSize));
