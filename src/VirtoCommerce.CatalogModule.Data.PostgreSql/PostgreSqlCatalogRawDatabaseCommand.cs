@@ -91,12 +91,13 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql
                 do
                 {
                     const string commandTemplate = @"
-                        DELETE FROM ""CatalogLanguage"" CL USING ""Catalog"" C WHERE C.""Id"" = CL.""CatalogId"" AND C.""Id"" IN ({0});
-                        DELETE FROM ""CategoryRelation"" CR USING ""Catalog"" C WHERE C.""Id"" = CR.""TargetCatalogId"" AND C.""Id"" IN ({0});
-                        DELETE FROM ""PropertyValue"" PV USING ""Catalog"" C WHERE C.""Id"" = PV.""CatalogId"" AND C.""Id"" IN ({0});
-                        DELETE FROM ""Property"" P USING ""Catalog"" C WHERE C.""Id"" = P.""CatalogId""  AND C.""Id"" IN ({0});
+                        DELETE FROM ""CatalogLanguage"" WHERE ""CatalogId"" IN ({0});
+                        DELETE FROM ""CategoryRelation""WHERE ""TargetCatalogId"" IN ({0});
+                        DELETE FROM ""CategoryItemRelation"" WHERE ""CatalogId"" IN ({0});
+                        DELETE FROM ""PropertyValue"" WHERE ""CatalogId"" IN ({0});
+                        DELETE FROM ""Property"" WHERE ""CatalogId"" IN ({0});
                         DELETE FROM ""Catalog"" WHERE ""Id"" IN ({0});
-                    ";
+                        ";
 
                     await ExecuteStoreQueryAsync(dbContext, commandTemplate, ids.Skip(skip).Take(batchSize));
                     skip += batchSize;
@@ -113,16 +114,16 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql
                 do
                 {
                     const string commandTemplate = @"
-                        DELETE FROM ""CatalogSeoInfo"" SEO USING ""Category"" C WHERE C.""Id"" = SEO.""CategoryId"" AND C.""Id"" IN ({0});
-                        DELETE FROM ""CatalogImage"" CI USING ""Category"" C WHERE C.""Id"" = CI.""CategoryId"" AND C.""Id"" IN ({0});
-                        DELETE FROM ""PropertyValue"" PV USING ""Category"" C WHERE C.""Id"" = PV.""CategoryId"" AND C.""Id"" IN ({0});
+                        DELETE FROM ""CatalogSeoInfo"" WHERE ""CategoryId"" IN ({0});
+                        DELETE FROM ""CatalogImage"" WHERE ""CategoryId"" IN ({0});
+                        DELETE FROM ""PropertyValue"" WHERE ""CategoryId"" IN ({0});
                         DELETE FROM ""CategoryRelation"" CR USING ""Category"" C WHERE (C.""Id"" = CR.""SourceCategoryId"" OR C.""Id"" = CR.""TargetCategoryId"") AND C.""Id"" IN ({0});
-                        DELETE FROM ""CategoryItemRelation"" CIR USING ""Category"" C WHERE C.""Id"" = CIR.""CategoryId"" AND C.""Id"" IN ({0});
-                        DELETE FROM ""Association"" A USING ""Category"" C WHERE C.""Id"" = A.""AssociatedCategoryId"" AND C.""Id"" IN ({0});
-                        DELETE FROM ""Property"" P USING ""Category"" C WHERE C.""Id"" = P.""CategoryId""  AND C.""Id"" IN ({0});
-                        DELETE FROM ""CategoryDescription"" D USING ""Category"" C WHERE C.""Id"" = D.""CategoryId"" AND C.""Id"" IN ({0});
+                        DELETE FROM ""CategoryItemRelation"" WHERE ""CategoryId"" IN ({0});
+                        DELETE FROM ""Association"" WHERE ""AssociatedCategoryId"" IN ({0});
+                        DELETE FROM ""Property"" WHERE ""CategoryId"" IN ({0});
+                        DELETE FROM ""CategoryDescription"" WHERE ""CategoryId"" IN ({0});
                         DELETE FROM ""Category"" WHERE ""Id"" IN ({0});
-                ";
+                        ";
 
                     await ExecuteStoreQueryAsync(dbContext, commandTemplate, ids.Skip(skip).Take(batchSize));
 
