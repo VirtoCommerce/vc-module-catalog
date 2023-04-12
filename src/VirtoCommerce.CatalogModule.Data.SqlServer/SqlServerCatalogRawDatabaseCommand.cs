@@ -115,7 +115,7 @@ namespace VirtoCommerce.CatalogModule.Data.SqlServer
                     DELETE FROM CatalogSeoInfo WHERE CategoryId IN ({0})
                     DELETE FROM CatalogImage WHERE CategoryId IN ({0})
                     DELETE FROM PropertyValue WHERE CategoryId IN ({0})
-                    DELETE FROM CategoryRelation CR INNER JOIN Category C ON C.Id = CR.SourceCategoryId OR C.Id = CR.TargetCategoryId WHERE C.Id IN ({0})
+                    DELETE CR FROM CategoryRelation CR INNER JOIN Category C ON C.Id = CR.SourceCategoryId OR C.Id = CR.TargetCategoryId WHERE C.Id IN ({0})
                     DELETE FROM CategoryItemRelation WHERE CategoryId IN ({0})
                     DELETE FROM Association WHERE AssociatedCategoryId IN ({0})
                     DELETE FROM Property WHERE CategoryId IN ({0})
