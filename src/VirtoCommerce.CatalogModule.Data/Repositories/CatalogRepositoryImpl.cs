@@ -438,17 +438,17 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                         await RemoveItemsAsync(itemIds);
 
                         const string commandTemplate = @"
-                    DELETE SEO FROM CatalogSeoInfo SEO INNER JOIN Category C ON C.Id = SEO.CategoryId WHERE C.Id IN ({0})
-                    DELETE CI FROM CatalogImage CI INNER JOIN Category C ON C.Id = CI.CategoryId WHERE C.Id IN ({0})
-                    DELETE PV FROM PropertyValue PV INNER JOIN Category C ON C.Id = PV.CategoryId WHERE C.Id IN ({0})
-                    DELETE CR FROM CategoryRelation CR INNER JOIN Category C ON C.Id = CR.SourceCategoryId OR C.Id = CR.TargetCategoryId  WHERE C.Id IN ({0})
-                    DELETE CIR FROM CategoryItemRelation CIR INNER JOIN Category C ON C.Id = CIR.CategoryId WHERE C.Id IN ({0})
-                    DELETE A FROM Association A INNER JOIN Category C ON C.Id = A.AssociatedCategoryId WHERE C.Id IN ({0})
-                    DELETE P FROM Property P INNER JOIN Category C ON C.Id = P.CategoryId  WHERE C.Id IN ({0})
-                    DELETE D FROM CategoryDescription D INNER JOIN Category C ON C.Id = D.CategoryId WHERE C.Id IN ({0})
-                    UPDATE Category SET ParentCategoryId = NULL WHERE ParentCategoryId IN ({0})
-                    DELETE FROM Category WHERE Id IN ({0})
-                ";
+                        DELETE FROM CatalogSeoInfo WHERE CategoryId IN ({0})
+                        DELETE FROM CatalogImage WHERE CategoryId IN ({0})
+                        DELETE FROM PropertyValue WHERE CategoryId IN ({0})
+                        DELETE CR FROM CategoryRelation CR INNER JOIN Category C ON C.Id = CR.SourceCategoryId OR C.Id = CR.TargetCategoryId WHERE C.Id IN ({0})
+                        DELETE FROM CategoryItemRelation WHERE CategoryId IN ({0})
+                        DELETE FROM Association WHERE AssociatedCategoryId IN ({0})
+                        DELETE FROM Property WHERE CategoryId IN ({0})
+                        DELETE FROM CategoryDescription WHERE CategoryId IN ({0})
+                        UPDATE Category SET ParentCategoryId = NULL WHERE ParentCategoryId IN ({0})
+                        DELETE FROM Category WHERE Id IN ({0})
+                        ";
 
                         await ExecuteStoreQueryAsync(commandTemplate, subCategoryIds);
 
@@ -479,12 +479,13 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     do
                     {
                         const string commandTemplate = @"
-                    DELETE CL FROM CatalogLanguage CL INNER JOIN Catalog C ON C.Id = CL.CatalogId WHERE C.Id IN ({0})
-                    DELETE CR FROM CategoryRelation CR INNER JOIN Catalog C ON C.Id = CR.TargetCatalogId WHERE C.Id IN ({0})
-                    DELETE PV FROM PropertyValue PV INNER JOIN Catalog C ON C.Id = PV.CatalogId WHERE C.Id IN ({0})
-                    DELETE P FROM Property P INNER JOIN Catalog C ON C.Id = P.CatalogId  WHERE C.Id IN ({0})
-                    DELETE FROM Catalog WHERE Id IN ({0})
-                ";
+                        DELETE FROM CatalogLanguage WHERE CatalogId IN ({0})
+                        DELETE FROM CategoryRelation WHERE TargetCatalogId IN ({0})
+                        DELETE FROM CategoryItemRelation WHERE CatalogId IN ({0})
+                        DELETE FROM PropertyValue WHERE CatalogId IN ({0})
+                        DELETE FROM Property WHERE CatalogId IN ({0})
+                        DELETE FROM Catalog WHERE Id IN ({0})
+                        ";
 
                         await ExecuteStoreQueryAsync(commandTemplate, ids.Skip(skip).Take(batchSize));
                         skip += batchSize;
