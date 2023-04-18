@@ -31,22 +31,30 @@
     </div>
 </script>
 <script type="text/ng-template" id="startDate.html">
+    <i class="form-ico fa fa-question-circle __link __lightblue" ng-click="blade.setting.startDate_descrVisible=!blade.setting.startDate_descrVisible"></i>
     <div class="form-input __calendar">
         <input placeholder="{{ 'catalog.blades.item-detail.placeholders.start-date' | translate }}" ng-model="blade.item.startDate" datepicker-popup is-open="blade.datepickers.str" />
         <button class="btn" type="button" ng-click="blade.open($event,'str')">
             <i class="btn-ico fa fa-calendar"></i>
         </button>
     </div>
-    <div class="list __info list-descr">{{ 'catalog.blades.item-detail.descr.start-date' | translate }}</div>
+    <div ng-if="blade.setting.startDate_descrVisible">
+        <div class="list __info list-descr">{{ 'catalog.blades.item-detail.descr.start-date' | translate }}</div>
+        <a href="" ng-click="blade.setting.startDate_descrVisible = null;">Hide</a>
+    </div>
 </script>
 <script type="text/ng-template" id="endDate.html">
+    <i class="form-ico fa fa-question-circle __link __lightblue" ng-click="blade.setting.endDate_descrVisible=!blade.setting.endDate_descrVisible"></i>
     <div class="form-input __calendar">
         <input placeholder="{{ 'catalog.blades.item-detail.placeholders.end-date' | translate }}" ng-model="blade.item.endDate" datepicker-popup is-open="blade.datepickers.end" />
         <button class="btn" type="button" ng-click="blade.open($event,'end')">
             <i class="btn-ico fa fa-calendar"></i>
         </button>
     </div>
-    <div class="list __info list-descr">{{ 'catalog.blades.item-detail.descr.end-date' | translate }}</div>
+    <div ng-if="blade.setting.endDate_descrVisible">
+        <div class="list __info list-descr">{{ 'catalog.blades.item-detail.descr.end-date' | translate }}</div>
+        <a href="" ng-click="blade.setting.startDate_descrVisible = null;">Hide</a>
+    </div>
 </script>
 <script type="text/ng-template" id="downloadType.html">
     <div class="form-input">

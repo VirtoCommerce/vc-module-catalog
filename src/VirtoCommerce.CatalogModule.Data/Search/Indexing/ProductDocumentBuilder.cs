@@ -93,7 +93,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             document.AddFilterableValue("status", statusField, IndexDocumentFieldValueType.String);
             document.AddFilterableValue("outerid", product.OuterId, IndexDocumentFieldValueType.String);
             document.AddFilterableAndSearchableValue("sku", product.Code);
-            document.AddFilterableAndSearchableValue("code", product.Code);// { IsRetrievable = true, IsFilterable = true, IsCollection = true });
+            document.AddFilterableAndSearchableValue("code", product.Code);
             document.AddFilterableAndSearchableValue("name", product.Name);
             document.AddFilterableValue("startdate", product.StartDate, IndexDocumentFieldValueType.DateTime);
             document.AddFilterableValue("enddate", product.EndDate ?? DateTime.MaxValue, IndexDocumentFieldValueType.DateTime);
@@ -105,6 +105,9 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             document.AddFilterableValue("productType", product.ProductType ?? string.Empty, IndexDocumentFieldValueType.String);
             document.AddFilterableValue("mainProductId", product.MainProductId ?? string.Empty, IndexDocumentFieldValueType.String);
             document.AddFilterableValue("gtin", product.Gtin ?? string.Empty, IndexDocumentFieldValueType.String);
+
+            document.AddFilterableValue("availability", GetProductAvailability(product), IndexDocumentFieldValueType.String);
+
 
             // Add priority in virtual categories to search index
             if (product.Links != null)
@@ -166,7 +169,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 document.Add(new IndexDocumentField("type", "billofmaterials") { IsRetrievable = true, IsFilterable = true, IsCollection = true, ValueType = IndexDocumentFieldValueType.String, });
                 IndexIsProperty(document, "billofmaterials");
             }
-            
+
             document.Add(new IndexDocumentField("code", variation.Code) { IsRetrievable = true, IsFilterable = true, IsCollection = true, ValueType = IndexDocumentFieldValueType.String, });
             // add the variation code to content
             document.Add(new IndexDocumentField("__content", variation.Code) { IsRetrievable = true, IsSearchable = true, IsCollection = true, ValueType = IndexDocumentFieldValueType.String, });
@@ -179,6 +182,26 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         protected virtual void IndexIsProperty(IndexDocument document, string value)
         {
             document.Add(new IndexDocumentField("is", value) { IsRetrievable = true, IsFilterable = true, IsCollection = true, ValueType = IndexDocumentFieldValueType.String, });
+        }
+
+        protected virtual string GetProductAvailability(CatalogProduct product)
+        {
+            if (!product.IsActive.GetValueOrDefault(true))
+            {
+                return "SoldOut";
+            }
+
+            if (!product.IsBuyable.GetValueOrDefault(true))
+            {
+                return "OutOfStock";
+            }
+
+            if (!product.TrackInventory.GetValueOrDefault(true))
+            {
+                return "InStock";
+            }
+
+            return null;
         }
     }
 }
