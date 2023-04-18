@@ -170,7 +170,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 IndexIsProperty(document, "billofmaterials");
             }
 
-            document.Add(new IndexDocumentField("code", variation.Code) { IsRetrievable = true, IsFilterable = true, IsCollection = true, ValueType = IndexDocumentFieldValueType.String, });
             // add the variation code to content
             document.Add(new IndexDocumentField("__content", variation.Code) { IsRetrievable = true, IsSearchable = true, IsCollection = true, ValueType = IndexDocumentFieldValueType.String, });
             // add the variationId to __variations
