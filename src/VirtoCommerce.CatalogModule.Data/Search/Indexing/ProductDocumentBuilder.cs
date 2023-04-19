@@ -106,7 +106,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             document.AddFilterableValue("mainProductId", product.MainProductId ?? string.Empty, IndexDocumentFieldValueType.String);
             document.AddFilterableValue("gtin", product.Gtin ?? string.Empty, IndexDocumentFieldValueType.String);
 
-            document.AddFilterableValue("availability", GetProductAvailability(product), IndexDocumentFieldValueType.String);
+            var productAvailability = GetProductAvailability(product);
+            if (!string.IsNullOrEmpty(productAvailability))
+            {
+                document.AddFilterableValue("availability", productAvailability, IndexDocumentFieldValueType.String);
+            }
 
 
             // Add priority in virtual categories to search index
