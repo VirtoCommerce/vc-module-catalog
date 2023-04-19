@@ -433,7 +433,6 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                     spanAllColumns: true,
                     templateUrl: "taxType.html"
                 }
-               
                 ]);
 
                 metaFormsService.registerMetaFields("productDetail2", [
@@ -484,9 +483,6 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                     colSpan: 3,
                     templateUrl: "endDate.html"
                 },
-
-                    
-
                 {
                     colSpan: 3,
                     title: "catalog.blades.item-detail.labels.download-type",
@@ -500,7 +496,6 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                     colSpan: 3,
                     valueType: "Boolean"
                 },
-
                 {
                     name: 'maxNumberOfDownload',
                     title: "catalog.blades.item-detail.labels.max-downloads",
