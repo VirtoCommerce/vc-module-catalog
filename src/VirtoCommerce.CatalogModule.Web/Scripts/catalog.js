@@ -419,88 +419,9 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                     templateUrl: "sku.html"
                 },
                 {
-                    name: '_priority',
-                    title: "catalog.blades.item-detail.labels.priority",
-                    placeholder: "catalog.blades.item-detail.placeholders.priority",
-                    colSpan: 3,
-                    valueType: "Integer"
-                },
-                {
                     title: "catalog.blades.item-detail.labels.gtin",
-                    colSpan: 6,
+                    colSpan: 3,
                     templateUrl: "gtin.html"
-                }]);
-
-                metaFormsService.registerMetaFields("productDetail2", [{
-                    title: "catalog.blades.item-detail.labels.start-date",
-                    colSpan: 3,
-                    templateUrl: "startDate.html"
-                },
-                {
-                    title: "catalog.blades.item-detail.labels.end-date",
-                    colSpan: 3,
-                    templateUrl: "endDate.html"
-                },
-                {
-                    name: 'isBuyable',
-                    title: "catalog.blades.item-detail.labels.can-be-purchased",
-                    colSpan: 2,
-                    valueType: "Boolean"
-                },
-                {
-                    name: 'isActive',
-                    title: "catalog.blades.item-detail.labels.store-visible",
-                    colSpan: 2,
-                    valueType: "Boolean"
-                },
-                {
-                    name: 'trackInventory',
-                    title: "catalog.blades.item-detail.labels.track-inventory",
-                    isVisibleFn: blade => blade.item.productType !== 'Digital',
-                    colSpan: 2,
-                    valueType: "Boolean"
-                },
-                {
-                    name: 'hasUserAgreement',
-                    title: "catalog.blades.item-detail.labels.has-user-agreement",
-                    isVisibleFn: blade => blade.item.productType === 'Digital',
-                    colSpan: 2,
-                    valueType: "Boolean"
-                },
-                {
-                    name: 'minQuantity',
-                    title: "catalog.blades.item-detail.labels.min-quantity",
-                    isVisibleFn: blade => blade.item.productType !== 'Digital',
-                    colSpan: 3,
-                    valueType: "Integer"
-                },
-                {
-                    name: 'maxQuantity',
-                    title: "catalog.blades.item-detail.labels.max-quantity",
-                    isVisibleFn: blade => blade.item.productType !== 'Digital',
-                    colSpan: 3,
-                    valueType: "Integer"
-                },
-                {
-                    colSpan: 2,
-                    title: "catalog.blades.item-detail.labels.download-type",
-                    isVisibleFn: blade => blade.item.productType === 'Digital',
-                    templateUrl: "downloadType.html"
-                },
-                {
-                    name: 'maxNumberOfDownload',
-                    title: "catalog.blades.item-detail.labels.max-downloads",
-                    isVisibleFn: blade => blade.item.productType === 'Digital',
-                    colSpan: 2,
-                    valueType: "Integer"
-                },
-                {
-                    name: 'downloadExpiration',
-                    title: "catalog.blades.item-detail.labels.expiration-date",
-                    placeholder: "catalog.blades.item-detail.placeholders.expiration-date",
-                    isVisibleFn: blade => blade.item.productType === 'Digital',
-                    colSpan: 2,
-                    valueType: "DateTime"
                 },
                 {
                     colSpan: 3,
@@ -511,6 +432,84 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                     colSpan: 3,
                     spanAllColumns: true,
                     templateUrl: "taxType.html"
+                }
+                ]);
+
+                metaFormsService.registerMetaFields("productDetail2", [
+                {
+                    name: 'isActive',
+                    title: "catalog.blades.item-detail.labels.store-visible",
+                    colSpan: 2,
+                    valueType: "Boolean"
+                },
+                {
+                    name: 'isBuyable',
+                    title: "catalog.blades.item-detail.labels.can-be-purchased",
+                    colSpan: 2,
+                    valueType: "Boolean"
+                },
+                {
+                    name: 'trackInventory',
+                    title: "catalog.blades.item-detail.labels.track-inventory",
+                    colSpan: 2,
+                    valueType: "Boolean"
+                },
+                {
+                    name: 'minQuantity',
+                    title: "catalog.blades.item-detail.labels.min-quantity",
+                    colSpan: 2,
+                    valueType: "Integer"
+                },
+                {
+                    name: 'maxQuantity',
+                    title: "catalog.blades.item-detail.labels.max-quantity",
+                    colSpan: 2,
+                    valueType: "Integer"
+                },
+                {
+                    name: '_priority',
+                    title: "catalog.blades.item-detail.labels.priority",
+                    placeholder: "catalog.blades.item-detail.placeholders.priority",
+                    colSpan: 2,
+                    valueType: "Integer"
+                },
+                {
+                    title: "catalog.blades.item-detail.labels.start-date",
+                    colSpan: 3,
+                    templateUrl: "startDate.html"
+                },
+                {
+                    title: "catalog.blades.item-detail.labels.end-date",
+                    colSpan: 3,
+                    templateUrl: "endDate.html"
+                },
+                {
+                    colSpan: 3,
+                    title: "catalog.blades.item-detail.labels.download-type",
+                    isVisibleFn: blade => blade.item.productType === 'Digital',
+                    templateUrl: "downloadType.html"
+                },
+                {
+                    name: 'hasUserAgreement',
+                    title: "catalog.blades.item-detail.labels.has-user-agreement",
+                    isVisibleFn: blade => blade.item.productType === 'Digital',
+                    colSpan: 3,
+                    valueType: "Boolean"
+                },
+                {
+                    name: 'maxNumberOfDownload',
+                    title: "catalog.blades.item-detail.labels.max-downloads",
+                    isVisibleFn: blade => blade.item.productType === 'Digital',
+                    colSpan: 3,
+                    valueType: "Integer"
+                },
+                {
+                    name: 'downloadExpiration',
+                    title: "catalog.blades.item-detail.labels.expiration-date",
+                    placeholder: "catalog.blades.item-detail.placeholders.expiration-date",
+                    isVisibleFn: blade => blade.item.productType === 'Digital',
+                    colSpan: 3,
+                    valueType: "DateTime"
                 }]);
 
                 metaFormsService.registerMetaFields('VirtoCommerce.CatalogModule.Core.Model.Export.ExportableProduct' + 'ExportFilter', [

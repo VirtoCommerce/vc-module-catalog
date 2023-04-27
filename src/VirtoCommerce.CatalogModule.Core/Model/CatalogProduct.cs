@@ -15,21 +15,46 @@ namespace VirtoCommerce.CatalogModule.Core.Model
     public class CatalogProduct : AuditableEntity, IHasLinks, ISeoSupport, IHasOutlines, IHasDimension, IHasAssociations, IHasProperties, IHasImages, IHasAssets, IInheritable, IHasTaxType, IHasName, IHasOuterId, IExportable, ICopyable, IHasCategoryId, IHasExcludedProperties
     {
         /// <summary>
-        /// SKU code
+        /// The type of product. Can be "Physical", "Digital", etc.
+        /// </summary>
+        public string ProductType { get; set; }
+
+        /// <summary>
+        /// The Stock Keeping Unit (SKU) code for the product.
         /// </summary>
         public string Code { get; set; }
-        public string ManufacturerPartNumber { get; set; }
+
         /// <summary>
-        /// Global Trade Item Number (GTIN). These identifiers include UPC (in North America), EAN (in Europe), JAN (in Japan), and ISBN (for books).
+        /// The manufacturer's part number for the product.
+        /// </summary>
+        public string ManufacturerPartNumber { get; set; }
+
+        /// <summary>
+        /// The Global Trade Item Number (GTIN) for the product. This can include UPC (in North America), EAN (in Europe), JAN (in Japan), and ISBN (for books).
         /// </summary>
         public string Gtin { get; set; }
+
+        /// <summary>
+        /// The name of the product.
+        /// </summary>
         public string Name { get; set; }
 
+        /// <summary>
+        /// The ID of the catalog to which this product belongs.
+        /// </summary>
         public string CatalogId { get; set; }
+
+        /// <summary>
+        /// The catalog to which this product belongs.
+        /// </summary>
         [JsonIgnore]
         public Catalog Catalog { get; set; }
 
+        /// <summary>
+        /// The ID of the category to which this product belongs.
+        /// </summary>
         public string CategoryId { get; set; }
+
         [JsonIgnore]
         public Category Category { get; set; }
         /// <summary>
@@ -42,60 +67,142 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         public string Path => Category?.Path;
 
         public string TitularItemId => MainProductId;
+        /// <summary>
+        /// The ID of the main product associated with this product variation.
+        /// </summary>
         public string MainProductId { get; set; }
+
+        /// <summary>
+        /// The main product associated with this product variation.
+        /// </summary>
         [JsonIgnore]
         public CatalogProduct MainProduct { get; set; }
-        public bool? IsBuyable { get; set; }
+
+        /// <summary>
+        /// Specifies whether the product is currently visible on the store for customers to view and purchase.
+        /// If set to false, the product is currently sold out.
+        /// </summary>
         public bool? IsActive { get; set; }
+
+        /// <summary>
+        ///  Specifies whether the product is currently visible on the store for customers to view and purchase.
+        ///  If set to false, the product is currently ouf of stock.
+        /// </summary>
+        public bool? IsBuyable { get; set; }
+
+        /// <summary>
+        /// Indicates whether the inventory service is tracking the availability of this product.
+        /// If set to false, the product is considered in stock without any inventory limitations.
+        /// </summary>
         public bool? TrackInventory { get; set; }
+
+        /// <summary>
+        /// The date and time when the product was last indexed for search.
+        /// </summary>
         public DateTime? IndexingDate { get; set; }
+
+        /// <summary>
+        /// The maximum quantity of the product that can be purchased in a single order. A value of 0 indicates that there are no limitations on the maximum quantity.
+        /// </summary>
         public int? MaxQuantity { get; set; }
+
+        /// <summary>
+        /// The minimum quantity of the product that must be purchased in a single order. A value of 0 indicates that there are no limitations on the minimum quantity.
+        /// </summary>
         public int? MinQuantity { get; set; }
 
         /// <summary>
-        /// Can be Physical, Digital or Subscription.
+        /// First listed date and time. If you do not specify an end date, the product will be active until you deactivate it.If you do not specify an end date, the product will be active until you deactivate it.If you do not specify a start date, the product will become active immediately once you save it.
         /// </summary>
-        public string ProductType { get; set; }
+        public DateTime StartDate { get; set; }
 
-        // Type of product package (set of package types with their specific dimensions)
+        /// <summary>
+        /// Listing expires on the specific date and time. If you do not specify an end date, the product will be active until you deactivate it.
+        /// </summary>
+        public DateTime? EndDate { get; set; }
+
+        /// <summary>
+        /// The type of package for this product, which determines the product's specific dimensions.
+        /// </summary>
         public string PackageType { get; set; }
 
         #region IHaveDimension Members
+        /// <summary>
+        /// The unit of measurement for the product's weight.
+        /// </summary>
         public string WeightUnit { get; set; }
+
+        /// <summary>
+        /// The weight of the product, in the unit specified by the WeightUnit property.
+        /// </summary>
         public decimal? Weight { get; set; }
 
+        /// <summary>
+        /// The unit of measurement for the product's height, length, and width.
+        /// </summary>
         public string MeasureUnit { get; set; }
+
+        /// <summary>
+        /// The height of the product, in the unit specified by the MeasureUnit property.
+        /// </summary>
         public decimal? Height { get; set; }
+
+        /// <summary>
+        /// The length of the product, in the unit specified by the MeasureUnit property.
+        /// </summary>
         public decimal? Length { get; set; }
+
+        /// <summary>
+        /// The width of the product, in the unit specified by the MeasureUnit property.
+        /// </summary>
         public decimal? Width { get; set; }
         #endregion
 
         public bool? EnableReview { get; set; }
 
-
-
         /// <summary>
-        /// re-downloads limit
+        /// The maximum number of times the product can be downloaded. A value of 0 indicates no limit.
         /// </summary>
         public int? MaxNumberOfDownload { get; set; }
-        public DateTime? DownloadExpiration { get; set; }
+
         /// <summary>
-        /// DownloadType: {Standard Product, Software, Music}
+        /// The date and time when the download link or access to the product will expire.
+        /// </summary>
+        public DateTime? DownloadExpiration { get; set; }
+
+        /// <summary>
+        /// The type of product download. Valid values include: "Standard Product", "Software", and "Music".
         /// </summary>
         public string DownloadType { get; set; }
+
+        /// <summary>
+        /// Indicates whether the product requires the user to agree to any terms or conditions before downloading.
+        /// </summary>
         public bool? HasUserAgreement { get; set; }
 
+        /// <summary>
+        /// Specifies the type of shipping option available for the product.
+        /// </summary>
         public string ShippingType { get; set; }
+
+        /// <summary>
+        /// Specifies the type of tax applied to the product.
+        /// </summary>
         public string TaxType { get; set; }
 
-        public string Vendor { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime? EndDate { get; set; }
         /// <summary>
-        /// Product order position in catalog
+        /// ID of the vendor associated with the product.
+        /// </summary>
+        public string Vendor { get; set; }
+
+        /// <summary>
+        /// Indicates the position of the product in the catalog for ordering purposes.
         /// </summary>
         public int Priority { get; set; }
 
+        /// <summary>
+        /// An external identifier for the product that can be used for integration with external systems.
+        /// </summary>
         public string OuterId { get; set; }
 
 
