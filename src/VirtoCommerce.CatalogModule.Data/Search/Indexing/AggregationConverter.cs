@@ -157,6 +157,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         {
             var result = new List<Aggregation>();
 
+            var terms = new List<string>(aggregationResponses.Select(r => r.Id).Distinct());
+
             var browseFilters = await _browseFilterService.GetBrowseFiltersAsync(criteria);
             if (browseFilters != null && aggregationResponses?.Any() == true)
             {
@@ -169,14 +171,32 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                         case AttributeFilter attributeFilter:
                             PreFilterOutlineAggregation(attributeFilter, aggregationResponses, criteria);
                             aggregation = GetAttributeAggregation(attributeFilter, aggregationResponses);
+                            terms.Remove(filter.Key);
                             break;
                         case RangeFilter rangeFilter:
                             aggregation = GetRangeAggregation(rangeFilter, aggregationResponses);
+                            RemoveRange(terms, rangeFilter.Key);
                             break;
                         case PriceRangeFilter priceRangeFilter:
                             aggregation = GetPriceRangeAggregation(priceRangeFilter, aggregationResponses);
+                            RemoveRange(terms, priceRangeFilter.Key);
                             break;
                     }
+
+                    if (aggregation?.Items?.Any() == true)
+                    {
+                        result.Add(aggregation);
+                    }
+
+                    terms.Remove(filter.Key);
+                }
+            }
+
+            if (terms.Any())
+            {
+                foreach (var fieldName in terms)
+                {
+                    var aggregation = GetAttributeAggregation(new AttributeFilter { Key = fieldName }, aggregationResponses);
 
                     if (aggregation?.Items?.Any() == true)
                     {
@@ -192,6 +212,17 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             }
 
             return result.ToArray();
+        }
+
+        private static void RemoveRange(List<string> terms, string fieldName)
+        {
+            for (var i = terms.Count - 1; i >= 0; i--)
+            {
+                if (terms[i].StartsWith($"{fieldName}-", StringComparison.OrdinalIgnoreCase))
+                {
+                    terms.RemoveAt(i);
+                }
+            }
         }
 
         protected virtual Aggregation GetAttributeAggregation(AttributeFilter attributeFilter, IList<AggregationResponse> aggregationResponses)
