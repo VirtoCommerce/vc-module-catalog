@@ -157,7 +157,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         {
             var result = new List<Aggregation>();
 
-            var terms = new List<string>(aggregationResponses.Select(r => r.Id).Distinct());
+            var termNames = new List<string>(aggregationResponses.Select(r => r.Id).Distinct());
 
             var browseFilters = await _browseFilterService.GetBrowseFiltersAsync(criteria);
             if (browseFilters != null && aggregationResponses?.Any() == true)
@@ -171,15 +171,15 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                         case AttributeFilter attributeFilter:
                             PreFilterOutlineAggregation(attributeFilter, aggregationResponses, criteria);
                             aggregation = GetAttributeAggregation(attributeFilter, aggregationResponses);
-                            terms.Remove(filter.Key);
+                            termNames.Remove(filter.Key);
                             break;
                         case RangeFilter rangeFilter:
                             aggregation = GetRangeAggregation(rangeFilter, aggregationResponses);
-                            RemoveRange(terms, rangeFilter.Key);
+                            RemoveRange(termNames, rangeFilter.Key);
                             break;
                         case PriceRangeFilter priceRangeFilter:
                             aggregation = GetPriceRangeAggregation(priceRangeFilter, aggregationResponses);
-                            RemoveRange(terms, priceRangeFilter.Key);
+                            RemoveRange(termNames, priceRangeFilter.Key);
                             break;
                     }
 
@@ -188,13 +188,13 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                         result.Add(aggregation);
                     }
 
-                    terms.Remove(filter.Key);
+                    termNames.Remove(filter.Key);
                 }
             }
 
-            if (terms.Any())
+            if (termNames.Any())
             {
-                foreach (var fieldName in terms)
+                foreach (var fieldName in termNames)
                 {
                     var aggregation = GetAttributeAggregation(new AttributeFilter { Key = fieldName }, aggregationResponses);
 
