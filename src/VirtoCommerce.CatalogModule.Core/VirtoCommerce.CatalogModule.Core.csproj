@@ -22,6 +22,6 @@
         <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.202.0" />
         <PackageReference Include="VirtoCommerce.ExportModule.Core" Version="3.200.0" />
         <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.286.0" />
-        <PackageReference Include="VirtoCommerce.SearchModule.Core" Version="3.208.0" />
+        <PackageReference Include="VirtoCommerce.SearchModule.Core" Version="3.222.0-alpha.703-pt-11848" />
     </ItemGroup>
 </Project>
