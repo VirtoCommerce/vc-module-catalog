@@ -155,12 +155,17 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         public virtual async Task<Aggregation[]> ConvertAggregationsAsync(IList<AggregationResponse> aggregationResponses, ProductIndexedSearchCriteria criteria)
         {
+            if (aggregationResponses == null && !aggregationResponses.Any())
+            {
+                return Array.Empty<Aggregation>();
+            }
+
             var result = new List<Aggregation>();
 
-            var termNames = new List<string>(aggregationResponses.Select(r => r.Id).Distinct());
+            var termNames = aggregationResponses.Select(r => r.Id).Distinct().ToList();
 
             var browseFilters = await _browseFilterService.GetBrowseFiltersAsync(criteria);
-            if (browseFilters != null && aggregationResponses?.Any() == true)
+            if (browseFilters != null)
             {
                 foreach (var filter in browseFilters)
                 {
@@ -216,13 +221,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         private static void RemoveRange(List<string> terms, string fieldName)
         {
-            for (var i = terms.Count - 1; i >= 0; i--)
-            {
-                if (terms[i].StartsWith($"{fieldName}-", StringComparison.OrdinalIgnoreCase))
-                {
-                    terms.RemoveAt(i);
-                }
-            }
+            terms.RemoveAll(term => term.StartsWith($"{fieldName}-", StringComparison.OrdinalIgnoreCase));
         }
 
         protected virtual Aggregation GetAttributeAggregation(AttributeFilter attributeFilter, IList<AggregationResponse> aggregationResponses)
