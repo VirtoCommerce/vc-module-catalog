@@ -155,7 +155,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         public virtual async Task<Aggregation[]> ConvertAggregationsAsync(IList<AggregationResponse> aggregationResponses, ProductIndexedSearchCriteria criteria)
         {
-            if (aggregationResponses == null && !aggregationResponses.Any())
+            if (aggregationResponses == null || !aggregationResponses.Any())
             {
                 return Array.Empty<Aggregation>();
             }
