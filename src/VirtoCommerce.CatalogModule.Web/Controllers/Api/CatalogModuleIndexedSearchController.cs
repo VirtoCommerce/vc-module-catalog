@@ -45,7 +45,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [HttpPost("products/suggestions")]
         public Task<SuggestionResponse> GetProductSuggestions(SuggestionRequest request)
         {
-            return _productSuggestionService.GetSuggestions(request);
+            return _productSuggestionService.GetSuggestionsAsync(request);
         }
 
         [HttpPost]

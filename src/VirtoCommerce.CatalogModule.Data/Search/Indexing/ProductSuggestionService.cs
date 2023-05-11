@@ -15,7 +15,7 @@ public class ProductSuggestionService : IProductSuggestionService
         _searchProvider = searchProvider;
     }
 
-    public async Task<SuggestionResponse> GetSuggestions(SuggestionRequest request)
+    public async Task<SuggestionResponse> GetSuggestionsAsync(SuggestionRequest request)
     {
         if (_searchProvider is not ISupportSuggestions supportSuggestions)
         {

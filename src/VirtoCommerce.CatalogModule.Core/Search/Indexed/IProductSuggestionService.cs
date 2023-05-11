@@ -5,5 +5,5 @@ namespace VirtoCommerce.CatalogModule.Core.Search.Indexed;
 
 public interface IProductSuggestionService
 {
-    Task<SuggestionResponse> GetSuggestions(SuggestionRequest request);
+    Task<SuggestionResponse> GetSuggestionsAsync(SuggestionRequest request);
 }
