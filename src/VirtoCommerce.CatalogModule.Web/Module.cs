@@ -22,6 +22,7 @@ using VirtoCommerce.CatalogModule.Core.Model.Export;
 using VirtoCommerce.CatalogModule.Core.Model.OutlinePart;
 using VirtoCommerce.CatalogModule.Core.Options;
 using VirtoCommerce.CatalogModule.Core.Search;
+using VirtoCommerce.CatalogModule.Core.Search.Indexed;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Authorization;
 using VirtoCommerce.CatalogModule.Data.ExportImport;
@@ -114,6 +115,7 @@ namespace VirtoCommerce.CatalogModule.Web
 
             serviceCollection.AddTransient<IItemService, ItemService>();
             serviceCollection.AddTransient<IProductIndexedSearchService, ProductIndexedSearchService>();
+            serviceCollection.AddSingleton<IProductSuggestionService, ProductSuggestionService>();
             serviceCollection.AddTransient<IAssociationService, AssociationService>();
 
             serviceCollection.Configure<VideoOptions>(Configuration.GetSection(VideoOptions.SectionName));
@@ -254,7 +256,7 @@ namespace VirtoCommerce.CatalogModule.Web
 
             //Register module permissions
             var permissionsProvider = appBuilder.ApplicationServices.GetRequiredService<IPermissionsRegistrar>();
-            permissionsProvider.RegisterPermissions(ModuleConstants.Security.Permissions.AllPermissions.Select(x => new Permission() { GroupName = "Catalog", Name = x }).ToArray());
+            permissionsProvider.RegisterPermissions(ModuleConstants.Security.Permissions.AllPermissions.Select(x => new Permission { GroupName = "Catalog", Name = x }).ToArray());
 
             //Register Permission scopes
             AbstractTypeFactory<PermissionScope>.RegisterType<SelectedCatalogScope>();
