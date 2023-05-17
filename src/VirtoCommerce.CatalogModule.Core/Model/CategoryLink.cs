@@ -30,6 +30,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         [JsonIgnore]
         public Catalog Catalog { get; set; }
         public string CategoryId { get; set; }
+        [JsonIgnore]
         public Category Category { get; set; }
 
         /// <summary>
