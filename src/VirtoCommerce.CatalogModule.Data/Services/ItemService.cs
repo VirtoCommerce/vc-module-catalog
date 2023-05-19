@@ -209,10 +209,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
             // TODO: Refactor to do this by one call and iteration
             var catalogsIds = new { products }.GetFlatObjectsListWithInterface<IHasCatalogId>().Select(x => x.CatalogId).Where(x => x != null).Distinct().ToList();
-            var catalogsByIdDict = (await _catalogService.GetAsync(catalogsIds)).ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase);
+            var catalogsByIdDict = (await _catalogService.GetNoCloneAsync(catalogsIds)).ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase);
 
             var categoriesIds = new { products }.GetFlatObjectsListWithInterface<IHasCategoryId>().Select(x => x.CategoryId).Where(x => x != null).Distinct().ToList();
-            var categoriesByIdDict = (await _categoryService.GetAsync(categoriesIds, CategoryResponseGroup.Full.ToString())).ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase);
+            var categoriesByIdDict = (await _categoryService.GetNoCloneAsync(categoriesIds)).ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase);
 
             var allImages = new { products }.GetFlatObjectsListWithInterface<IHasImages>().Where(x => x.Images != null).SelectMany(x => x.Images);
             foreach (var image in allImages.Where(x => !string.IsNullOrEmpty(x.Url)))
@@ -260,9 +260,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
                 if (!string.IsNullOrEmpty(link.CategoryId))
                 {
-                    link.Category = categoriesByIdDict.GetValueOrThrow(link.CategoryId, $"link category with key {link.CategoryId} doesn't exist").Clone() as Category;
-                    var necessaryGroups = CategoryResponseGroup.WithProperties | CategoryResponseGroup.WithParents | CategoryResponseGroup.WithSeo;
-                    link.Category?.ReduceDetails(necessaryGroups.ToString());
+                    link.Category = categoriesByIdDict.GetValueOrThrow(link.CategoryId, $"link category with key {link.CategoryId} doesn't exist");
                 }
             }
         }

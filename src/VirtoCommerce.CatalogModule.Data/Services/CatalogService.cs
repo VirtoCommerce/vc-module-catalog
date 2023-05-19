@@ -81,6 +81,15 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return result;
         }
 
+        public virtual async Task<IList<Catalog>> GetNoCloneAsync(IList<string> ids)
+        {
+            var catalogsByIds = await PreloadCatalogsAsync();
+
+            return catalogsByIds.Values
+                .Where(x => ids.Contains(x.Id, StringComparer.OrdinalIgnoreCase))
+                .ToList();
+        }
+
         public override async Task DeleteAsync(IEnumerable<string> ids, bool softDelete = false)
         {
             var catalogs = await GetAsync(ids.ToList());

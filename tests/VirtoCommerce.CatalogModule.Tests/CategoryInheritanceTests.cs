@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using FluentValidation;
@@ -104,10 +105,11 @@ namespace VirtoCommerce.CatalogModule.Tests
             };
 
             var categoriesBranchResult = new List<CategoryEntity> { rootCategory, level1Category, level2Category };
-            _repositoryMock.Setup(x => x.SearchCategoriesHierarchyAsync(level2Category.Id))
-                .ReturnsAsync(categoriesBranchResult);
 
-            _catalogServiceMock.Setup(t => t.GetAsync(new List<string> { catalog.Id }, It.IsAny<string>()))
+            _repositoryMock.Setup(x => x.GetCategoriesByIdsAsync(It.IsAny<string[]>(), It.IsAny<string>()))
+                .ReturnsAsync((string[] ids, string responseGroup) => categoriesBranchResult.Where(x => ids.Contains(x.Id)).ToArray());
+
+            _catalogServiceMock.Setup(t => t.GetNoCloneAsync(new[] { catalog.Id }))
                 .ReturnsAsync(new[] { catalog });
 
             // Act
