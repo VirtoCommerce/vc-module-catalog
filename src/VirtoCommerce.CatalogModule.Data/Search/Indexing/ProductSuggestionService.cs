@@ -12,7 +12,7 @@ public class ProductSuggestionService : IProductSuggestionService
 {
     private readonly ISearchProvider _searchProvider;
 
-    protected virtual string ProductSuggestonField => nameof(CatalogProduct.Name);
+    protected virtual string ProductSuggestonField => nameof(CatalogProduct.Name).ToLowerInvariant();
 
     public ProductSuggestionService(ISearchProvider searchProvider)
     {
