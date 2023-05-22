@@ -31,6 +31,10 @@ namespace VirtoCommerce.CatalogModule2.Data.Search.Indexing
         {
             return base.GetOutlineStrings(outlines, getNameLatestItem);
         }
+        protected override Task<CatalogProduct[]> GetProducts(IList<string> productIds)
+        {
+            return base.GetProducts(productIds);
+        }
         protected override void IndexCustomProperties(IndexDocument document, ICollection<Property> properties, ICollection<PropertyType> contentPropertyTypes)
         {
             base.IndexCustomProperties(document, properties, contentPropertyTypes);
