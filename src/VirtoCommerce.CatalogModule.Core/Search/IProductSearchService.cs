@@ -10,5 +10,7 @@ namespace VirtoCommerce.CatalogModule.Core.Search
     {
         [Obsolete("Use SearchAsync()")]
         Task<ProductSearchResult> SearchProductsAsync(ProductSearchCriteria criteria);
+
+        Task<ProductSearchResult> SearchNoCloneAsync(ProductSearchCriteria criteria);
     }
 }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.Platform.Core.GenericCrud;
@@ -10,5 +11,6 @@ namespace VirtoCommerce.CatalogModule.Core.Services
         Task<CatalogProduct> GetByIdAsync(string itemId, string responseGroup, string catalogId = null);
         Task SaveChangesAsync(CatalogProduct[] items);
         Task DeleteAsync(string[] itemIds);
+        Task<IList<CatalogProduct>> GetNoCloneAsync(IList<string> ids, string responseGroup);
     }
 }

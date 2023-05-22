@@ -124,6 +124,37 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
         }
 
+        public override async Task<IReadOnlyCollection<CatalogProduct>> GetAsync(List<string> ids, string responseGroup = null)
+        {
+            return await InternalGetAsync(ids, responseGroup, clone: true) as IReadOnlyCollection<CatalogProduct>;
+        }
+
+        public virtual Task<IList<CatalogProduct>> GetNoCloneAsync(IList<string> ids, string responseGroup)
+        {
+            return InternalGetAsync(ids, responseGroup, clone: false);
+        }
+
+
+        private async Task<IList<CatalogProduct>> InternalGetAsync(IList<string> ids, string responseGroup, bool clone)
+        {
+            var cacheKeyPrefix = CacheKey.With(GetType(), nameof(InternalGetAsync), responseGroup);
+
+            var models = await _platformMemoryCache.GetOrLoadByIdsAsync(cacheKeyPrefix, ids,
+                missingIds => GetByIdsNoCache(missingIds, responseGroup),
+                ConfigureCache);
+
+            if (clone)
+            {
+                return models
+                    .Select(x => x.CloneTyped())
+                    .OrderBy(x => ids.IndexOf(x.Id))
+                    .ToList();
+            }
+
+            return models
+                .OrderBy(x => ids.IndexOf(x.Id))
+                .ToList();
+        }
 
         protected override async Task<IEnumerable<ItemEntity>> LoadEntities(IRepository repository, IEnumerable<string> ids, string responseGroup)
         {
