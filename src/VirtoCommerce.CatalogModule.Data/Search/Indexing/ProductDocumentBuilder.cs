@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Caching;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.SearchModule.Core.Extenstions;
 using VirtoCommerce.SearchModule.Core.Model;
@@ -37,26 +39,20 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 //Index product variants by separate chunked requests for performance reason
                 if (product.MainProductId == null)
                 {
-                    const int pageSize = 50;
-                    var variationsSearchCriteria = new Core.Model.Search.ProductSearchCriteria
-                    {
-                        Take = pageSize,
-                        MainProductId = product.Id,
-                        ResponseGroup = (ItemResponseGroup.ItemInfo | ItemResponseGroup.Properties | ItemResponseGroup.Seo | ItemResponseGroup.Outlines | ItemResponseGroup.ItemAssets).ToString()
-                    };
+                    var variationSearchCriteria = GetVariationSearchCriteria(product);
                     var skipCount = 0;
                     int totalCount;
                     do
                     {
-                        variationsSearchCriteria.Skip = skipCount;
-                        var productVariations = await _productsSearchService.SearchNoCloneAsync(variationsSearchCriteria);
+                        variationSearchCriteria.Skip = skipCount;
+                        var productVariations = await _productsSearchService.SearchNoCloneAsync(variationSearchCriteria);
                         foreach (var variation in productVariations.Results)
                         {
-                            result.Add(CreateDocument(variation));
+                            result.Add(CreateDocument(variation, product));
                             IndexProductVariation(doc, variation);
                         }
                         totalCount = productVariations.TotalCount;
-                        skipCount += pageSize;
+                        skipCount += variationSearchCriteria.Take;
                     }
                     while (skipCount < totalCount);
                 }
@@ -76,6 +72,28 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 #pragma warning restore CS0618
 
             return products.ToArray();
+        }
+
+        protected virtual ProductSearchCriteria GetVariationSearchCriteria(CatalogProduct product)
+        {
+            var criteria = AbstractTypeFactory<ProductSearchCriteria>.TryCreateInstance();
+
+            criteria.MainProductId = product.Id;
+            criteria.ResponseGroup = (ItemResponseGroup.ItemInfo | ItemResponseGroup.Properties | ItemResponseGroup.Seo | ItemResponseGroup.Outlines | ItemResponseGroup.ItemAssets).ToString();
+            criteria.Take = 50;
+
+            return criteria;
+        }
+
+        /// <summary>
+        /// The mainProduct argument contains more information than variation.MainProduct
+        /// </summary>
+        /// <param name="variation"></param>
+        /// <param name="mainProduct"></param>
+        /// <returns></returns>
+        protected virtual IndexDocument CreateDocument(CatalogProduct variation, CatalogProduct mainProduct)
+        {
+            return CreateDocument(variation);
         }
 
         protected virtual IndexDocument CreateDocument(CatalogProduct product)
