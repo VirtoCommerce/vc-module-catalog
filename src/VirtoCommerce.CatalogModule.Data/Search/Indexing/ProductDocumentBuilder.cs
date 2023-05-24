@@ -49,7 +49,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                     do
                     {
                         variationsSearchCriteria.Skip = skipCount;
-                        var productVariations = await _productsSearchService.SearchAsync(variationsSearchCriteria);
+                        var productVariations = await _productsSearchService.SearchNoCloneAsync(variationsSearchCriteria);
                         foreach (var variation in productVariations.Results)
                         {
                             result.Add(CreateDocument(variation));
@@ -72,7 +72,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         protected virtual async Task<CatalogProduct[]> GetProducts(IList<string> productIds)
         {
 #pragma warning disable CS0618 // Variations can be used here
-            var products = await _itemService.GetAsync(productIds.ToList(), (ItemResponseGroup.Full & ~ItemResponseGroup.Variations).ToString());
+            var products = await _itemService.GetNoCloneAsync(productIds.ToList(), (ItemResponseGroup.Full & ~ItemResponseGroup.Variations).ToString());
 #pragma warning restore CS0618
 
             return products.ToArray();

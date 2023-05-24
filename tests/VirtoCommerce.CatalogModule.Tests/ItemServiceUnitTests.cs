@@ -70,8 +70,13 @@ namespace VirtoCommerce.CatalogModule.Tests
                         .ReturnsAsync(new[] { newItemEntity });
                 });
 
-            _catalogServiceMock.Setup(x => x.GetAsync(It.IsAny<List<string>>(), default)).ReturnsAsync(new Catalog[] { new Catalog() { Id = newItem.CatalogId } });
-            _categoryServiceMock.Setup(x => x.GetAsync(It.IsAny<List<string>>(), It.IsAny<string>())).ReturnsAsync(new Category[] { new Category() { Id = newItem.CategoryId } });
+            _catalogServiceMock
+                .Setup(x => x.GetNoCloneAsync(It.IsAny<IList<string>>(), It.IsAny<string>()))
+                .ReturnsAsync(new[] { new Catalog { Id = newItem.CatalogId } });
+
+            _categoryServiceMock
+                .Setup(x => x.GetNoCloneAsync(It.IsAny<IList<string>>(), It.IsAny<string>()))
+                .ReturnsAsync(new[] { new Category { Id = newItem.CategoryId } });
 
             //Act
             var nullItem = await service.GetByIdAsync(id, null);
