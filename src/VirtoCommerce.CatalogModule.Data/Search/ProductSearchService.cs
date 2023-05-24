@@ -36,7 +36,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
         public override Task<ProductSearchResult> SearchAsync(ProductSearchCriteria criteria)
         {
-            return InternalSearchNoCloneAsync(criteria, clone: true);
+            return InternalSearchAsync(criteria, clone: true);
         }
 
         /// <summary>
@@ -44,13 +44,13 @@ namespace VirtoCommerce.CatalogModule.Data.Search
         /// </summary>
         public Task<ProductSearchResult> SearchNoCloneAsync(ProductSearchCriteria criteria)
         {
-            return InternalSearchNoCloneAsync(criteria, clone: false);
+            return InternalSearchAsync(criteria, clone: false);
         }
 
 
-        protected virtual async Task<ProductSearchResult> InternalSearchNoCloneAsync(ProductSearchCriteria criteria, bool clone)
+        protected virtual async Task<ProductSearchResult> InternalSearchAsync(ProductSearchCriteria criteria, bool clone)
         {
-            var cacheKey = CacheKey.With(GetType(), nameof(InternalSearchNoCloneAsync), criteria.GetCacheKey());
+            var cacheKey = CacheKey.With(GetType(), nameof(InternalSearchAsync), criteria.GetCacheKey());
 
             var idsResult = await _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async cacheOptions =>
             {
