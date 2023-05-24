@@ -40,7 +40,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
         }
 
         /// <summary>
-        /// Returns data from the cache without cloning, which consumes less memory, but returned data must not be modified.
+        /// Returns data from the cache without cloning. This consumes less memory, but returned data must not be modified.
         /// </summary>
         public Task<ProductSearchResult> SearchNoCloneAsync(ProductSearchCriteria criteria)
         {

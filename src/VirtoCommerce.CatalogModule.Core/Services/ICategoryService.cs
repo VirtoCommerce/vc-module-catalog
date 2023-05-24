@@ -12,7 +12,7 @@ namespace VirtoCommerce.CatalogModule.Core.Services
         Task DeleteAsync(string[] categoryIds);
 
         /// <summary>
-        /// Returns data from the cache without cloning, which consumes less memory, but returned data must not be modified.
+        /// Returns data from the cache without cloning. This consumes less memory, but returned data must not be modified.
         /// </summary>
         Task<IList<Category>> GetNoCloneAsync(IList<string> ids, string responseGroup = null);
     }

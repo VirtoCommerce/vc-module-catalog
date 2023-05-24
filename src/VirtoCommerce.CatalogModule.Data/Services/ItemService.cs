@@ -151,7 +151,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         }
 
         /// <summary>
-        /// Returns data from the cache without cloning, which consumes less memory, but returned data must not be modified.
+        /// Returns data from the cache without cloning. This consumes less memory, but returned data must not be modified.
         /// </summary>
         public virtual Task<IList<CatalogProduct>> GetNoCloneAsync(IList<string> ids, string responseGroup)
         {
