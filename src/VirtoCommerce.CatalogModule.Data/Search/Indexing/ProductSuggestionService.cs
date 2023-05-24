@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CatalogModule.Core.Model.Search.Indexed;
 using VirtoCommerce.CatalogModule.Core.Search.Indexed;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Model;
@@ -19,17 +20,26 @@ public class ProductSuggestionService : IProductSuggestionService
         _searchProvider = searchProvider;
     }
 
-    public async Task<SuggestionResponse> GetSuggestionsAsync(SuggestionRequest request)
+    public async Task<SuggestionResponse> GetSuggestionsAsync(ProductSuggestionRequest request)
     {
         if (_searchProvider is not ISupportSuggestions supportSuggestions)
         {
             return AbstractTypeFactory<SuggestionResponse>.TryCreateInstance();
         }
 
-        // product suggestion only works with the predefined Product field
-        request.Fields = new List<string> { ProductSuggestonField };
+        var searchSuggestionResuest = AbstractTypeFactory<SuggestionRequest>.TryCreateInstance();
+        searchSuggestionResuest.Query = request.Query;
+        searchSuggestionResuest.Size = request.Size;
 
-        var result = await supportSuggestions.GetSuggestionsAsync(KnownDocumentTypes.Product, request);
+        if (!string.IsNullOrWhiteSpace(request.CatalogId))
+        {
+            searchSuggestionResuest.QueryContext = new Dictionary<string, object> { { "catalog", request.CatalogId } };
+        }
+
+        // product suggestion only works with the predefined Product field
+        searchSuggestionResuest.Fields = new List<string> { ProductSuggestonField };
+
+        var result = await supportSuggestions.GetSuggestionsAsync(KnownDocumentTypes.Product, searchSuggestionResuest);
 
         return result;
     }

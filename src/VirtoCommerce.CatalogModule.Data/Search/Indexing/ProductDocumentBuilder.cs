@@ -90,11 +90,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             IndexIsProperty(document, string.IsNullOrEmpty(product.MainProductId) ? "product" : "variation");
             IndexIsProperty(document, product.Code);
 
-            AddSuggestableValue(document, "name", product.Name);
             document.AddFilterableValue("status", statusField, IndexDocumentFieldValueType.String);
             document.AddFilterableValue("outerid", product.OuterId, IndexDocumentFieldValueType.String);
             document.AddFilterableAndSearchableValue("sku", product.Code);
             document.AddFilterableAndSearchableValue("code", product.Code);
+            document.AddSuggestableValue("name", product.Name);
             document.AddFilterableValue("startdate", product.StartDate, IndexDocumentFieldValueType.DateTime);
             document.AddFilterableValue("enddate", product.EndDate ?? DateTime.MaxValue, IndexDocumentFieldValueType.DateTime);
             document.AddFilterableValue("createddate", product.CreatedDate, IndexDocumentFieldValueType.DateTime);
@@ -205,22 +205,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             }
 
             return null;
-        }
-
-        private static void AddSuggestableValue(IndexDocument document, string name, string value)
-        {
-            if (!string.IsNullOrWhiteSpace(value))
-            {
-                document.Add(new IndexDocumentField(name, value)
-                {
-                    IsRetrievable = true,
-                    IsFilterable = true,
-                    IsSuggestable = true,
-                    ValueType = IndexDocumentFieldValueType.String,
-                });
-
-                document.AddSearchableValue(value);
-            }
         }
     }
 }
