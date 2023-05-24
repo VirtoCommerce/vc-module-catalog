@@ -80,7 +80,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, property, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
             if (!authorizationResult.Succeeded)
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             return Ok(property);
@@ -148,7 +148,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, property, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
             if (!authorizationResult.Succeeded)
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             await _propertyService.SaveChangesAsync(new[] { property });
@@ -203,7 +203,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, property, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Delete));
             if (!authorizationResult.Succeeded)
             {
-                return Unauthorized();
+                return Forbid();
             }
             await _propertyService.DeleteAsync(new[] { id }, doDeleteValues);
             return NoContent();

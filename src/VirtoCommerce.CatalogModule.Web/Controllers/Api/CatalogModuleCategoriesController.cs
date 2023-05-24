@@ -52,7 +52,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, category, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
             if (!authorizationResult.Succeeded)
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             return Ok(category);
@@ -72,7 +72,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, categories, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
             if (!authorizationResult.Succeeded)
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             return Ok(categories);
@@ -142,7 +142,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, category, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
             if (!authorizationResult.Succeeded)
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             await _categoryService.SaveChangesAsync(new[] { category });
@@ -164,7 +164,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, categories, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Delete));
             if (!authorizationResult.Succeeded)
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             await _categoryService.DeleteAsync(ids);

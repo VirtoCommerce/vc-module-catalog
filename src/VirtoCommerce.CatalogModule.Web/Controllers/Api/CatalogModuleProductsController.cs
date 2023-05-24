@@ -66,7 +66,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, product, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
             if (!authorizationResult.Succeeded)
             {
-                return Unauthorized();
+                return Forbid();
             }
             return Ok(product);
         }
@@ -96,7 +96,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, items, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
             if (!authorizationResult.Succeeded)
             {
-                return Unauthorized();
+                return Forbid();
             }
             //It is a important to return serialized data by such way. Instead you have a slow response time for large outputs 
             //https://github.com/dotnet/aspnetcore/issues/19646
@@ -250,7 +250,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, product, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
             if (!authorizationResult.Succeeded)
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var result = (await InnerSaveProducts(new[] { product })).FirstOrDefault();
@@ -272,7 +272,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, products, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
             if (!authorizationResult.Succeeded)
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             await InnerSaveProducts(products);
@@ -292,7 +292,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, products, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Delete));
             if (!authorizationResult.Succeeded)
             {
-                return Unauthorized();
+                return Forbid();
             }
             await _itemsService.DeleteAsync(ids);
             return Ok();
