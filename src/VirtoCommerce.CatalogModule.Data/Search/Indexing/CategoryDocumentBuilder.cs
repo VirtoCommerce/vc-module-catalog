@@ -36,7 +36,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         protected virtual async Task<Category[]> GetCategories(IList<string> categoryIds)
         {
             var responseGroup = CategoryResponseGroup.WithProperties | CategoryResponseGroup.WithOutlines | CategoryResponseGroup.WithImages | CategoryResponseGroup.WithSeo | CategoryResponseGroup.WithLinks | CategoryResponseGroup.WithDescriptions;
-            var categories = await _categoryService.GetAsync(categoryIds.ToList(), responseGroup.ToString());
+            var categories = await _categoryService.GetNoCloneAsync(categoryIds.ToList(), responseGroup.ToString());
 
             return categories.ToArray();
         }
