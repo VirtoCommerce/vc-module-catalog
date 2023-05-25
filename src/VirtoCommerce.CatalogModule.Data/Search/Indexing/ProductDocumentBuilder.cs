@@ -94,7 +94,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             document.AddFilterableValue("outerid", product.OuterId, IndexDocumentFieldValueType.String);
             document.AddFilterableAndSearchableValue("sku", product.Code);
             document.AddFilterableAndSearchableValue("code", product.Code);
-            document.AddFilterableAndSearchableValue("name", product.Name);
+            document.AddSuggestableValue("name", product.Name);
             document.AddFilterableValue("startdate", product.StartDate, IndexDocumentFieldValueType.DateTime);
             document.AddFilterableValue("enddate", product.EndDate ?? DateTime.MaxValue, IndexDocumentFieldValueType.DateTime);
             document.AddFilterableValue("createddate", product.CreatedDate, IndexDocumentFieldValueType.DateTime);

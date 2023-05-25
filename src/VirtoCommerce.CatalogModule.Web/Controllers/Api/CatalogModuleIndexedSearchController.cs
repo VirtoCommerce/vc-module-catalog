@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
+using VirtoCommerce.CatalogModule.Core.Model.Search.Indexed;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Search.Indexed;
 using VirtoCommerce.SearchModule.Core.Model;
@@ -43,7 +44,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         }
 
         [HttpPost("products/suggestions")]
-        public Task<SuggestionResponse> GetProductSuggestions(SuggestionRequest request)
+        public Task<SuggestionResponse> GetProductSuggestions(ProductSuggestionRequest request)
         {
             return _productSuggestionService.GetSuggestionsAsync(request);
         }
