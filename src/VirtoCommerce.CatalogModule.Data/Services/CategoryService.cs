@@ -99,6 +99,27 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return await GetByIdsAsync(ids.ToArray(), responseGroup, catalogId: null);
         }
 
+        /// <summary>
+        /// Returns data from the cache without cloning. This consumes less memory, but returned data must not be modified.
+        /// </summary>
+        public virtual async Task<IList<Category>> GetNoCloneAsync(IList<string> ids, string responseGroup = null)
+        {
+            var result = new List<Category>();
+
+            foreach (var categoryId in ids.Where(x => x != null))
+            {
+                var categoryBranch = await PreloadCategoryBranchAsync(categoryId);
+
+                if (categoryBranch.TryGetValue(categoryId, out var category) && category != null)
+                {
+                    _outlineService.FillOutlinesForObjects(new List<Category> { category }, catalogId: null);
+                    result.Add(category);
+                }
+            }
+
+            return result.ToArray();
+        }
+
         public override async Task DeleteAsync(IEnumerable<string> ids, bool softDelete = false)
         {
             var categoryIds = ids.ToArray();
@@ -206,7 +227,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             using var repository = _repositoryFactory();
             repository.DisableChangesTracking();
 
-            return await repository.SearchCategoriesHierarchyAsync(categoryId);
+            return (await LoadEntities(repository, new[] { categoryId }, CategoryResponseGroup.Full.ToString())).ToArray();
         }
 
         [Obsolete("Use PreloadCategoriesAsync() instead.")]
@@ -270,7 +291,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         protected virtual async Task LoadDependencies(ICollection<Category> categories, IDictionary<string, Category> preloadedCategoriesMap)
         {
             var catalogsIds = new { categories }.GetFlatObjectsListWithInterface<IHasCatalogId>().Select(x => x.CatalogId).Where(x => x != null).Distinct().ToList();
-            var catalogsByIdDict = (await _catalogService.GetAsync(catalogsIds)).ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase);
+            var catalogsByIdDict = (await _catalogService.GetNoCloneAsync(catalogsIds)).ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase);
 
             foreach (var category in categories)
             {
@@ -281,11 +302,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 // Load all parent categories
                 if (category.ParentId != null)
                 {
-                    category.Parents = TreeExtension
-                        .GetAncestors(category, x => x.ParentId != null ? preloadedCategoriesMap[x.ParentId] : null)
-                        .Reverse()
-                        .ToArray();
-
+                    category.Parents = (await GetParentsAsync(category, preloadedCategoriesMap)).ToArray();
                     category.Parent = category.Parents.LastOrDefault();
                 }
 
@@ -296,7 +313,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     link.Catalog = catalogsByIdDict.GetValueOrThrow(link.CatalogId, $"link catalog with key {link.CatalogId} doesn't exist");
                     if (link.CategoryId != null)
                     {
-                        link.Category = preloadedCategoriesMap[link.CategoryId];
+                        link.Category = await GetCategoryAsync(link.CategoryId, preloadedCategoriesMap);
                     }
                 }
 
@@ -305,10 +322,42 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     property.Catalog = property.CatalogId != null ? catalogsByIdDict[property.CatalogId] : null;
                     if (property.CategoryId != null)
                     {
-                        property.Category = preloadedCategoriesMap[property.CategoryId];
+                        property.Category = await GetCategoryAsync(property.CategoryId, preloadedCategoriesMap);
                     }
                 }
             }
+        }
+
+        private async Task<IList<Category>> GetParentsAsync(Category category, IDictionary<string, Category> preloadedCategoriesMap)
+        {
+            var list = new List<Category>();
+
+            for (var parent = await GetCategoryAsync(category.ParentId, preloadedCategoriesMap);
+                 parent != null;
+                 parent = await GetCategoryAsync(parent.ParentId, preloadedCategoriesMap))
+            {
+                list.Insert(0, parent);
+            }
+
+            return list;
+        }
+
+        private async Task<Category> GetCategoryAsync(string id, IDictionary<string, Category> preloadedCategoriesMap)
+        {
+            if (id is null)
+            {
+                return null;
+            }
+
+            if (preloadedCategoriesMap.TryGetValue(id, out var result) && result != null)
+            {
+                return result;
+            }
+
+            result = (await PreloadCategoryBranchAsync(id))[id];
+            preloadedCategoriesMap[id] = result;
+
+            return result;
         }
 
         protected virtual void ApplyInheritanceRules(IEnumerable<Category> categories)
