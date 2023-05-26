@@ -82,25 +82,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return result.ToArray();
         }
 
-        public virtual async Task<IList<Category>> GetNoCloneAsync(IList<string> ids)
-        {
-            var result = new List<Category>();
-
-            foreach (var categoryId in ids.Where(x => x != null))
-            {
-                var categoryBranch = await PreloadCategoryBranchAsync(categoryId);
-                var category = categoryBranch[categoryId];
-
-                if (category != null)
-                {
-                    _outlineService.FillOutlinesForObjects(new List<Category> { category }, catalogId: null);
-                    result.Add(category);
-                }
-            }
-
-            return result.ToArray();
-        }
-
         public virtual Task SaveChangesAsync(Category[] categories)
         {
             return SaveChangesAsync(categories.AsEnumerable());
@@ -245,7 +226,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
             using var repository = _repositoryFactory();
             repository.DisableChangesTracking();
-            var entities = await LoadEntities(repository, new[] { categoryId }, CategoryResponseGroup.Full.ToString());
 
             return (await LoadEntities(repository, new[] { categoryId }, CategoryResponseGroup.Full.ToString())).ToArray();
         }
