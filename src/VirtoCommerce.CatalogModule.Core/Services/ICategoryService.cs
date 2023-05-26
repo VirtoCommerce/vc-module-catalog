@@ -10,6 +10,10 @@ namespace VirtoCommerce.CatalogModule.Core.Services
         Task<Category[]> GetByIdsAsync(string[] categoryIds, string responseGroup, string catalogId = null);
         Task SaveChangesAsync(Category[] categories);
         Task DeleteAsync(string[] categoryIds);
-        Task<IList<Category>> GetNoCloneAsync(IList<string> ids);
+
+        /// <summary>
+        /// Returns data from the cache without cloning. This consumes less memory, but returned data must not be modified.
+        /// </summary>
+        Task<IList<Category>> GetNoCloneAsync(IList<string> ids, string responseGroup = null);
     }
 }

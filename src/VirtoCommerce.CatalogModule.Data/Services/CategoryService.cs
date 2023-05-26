@@ -118,6 +118,27 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return await GetByIdsAsync(ids.ToArray(), responseGroup, catalogId: null);
         }
 
+        /// <summary>
+        /// Returns data from the cache without cloning. This consumes less memory, but returned data must not be modified.
+        /// </summary>
+        public virtual async Task<IList<Category>> GetNoCloneAsync(IList<string> ids, string responseGroup = null)
+        {
+            var result = new List<Category>();
+
+            foreach (var categoryId in ids.Where(x => x != null))
+            {
+                var categoryBranch = await PreloadCategoryBranchAsync(categoryId);
+
+                if (categoryBranch.TryGetValue(categoryId, out var category) && category != null)
+                {
+                    _outlineService.FillOutlinesForObjects(new List<Category> { category }, catalogId: null);
+                    result.Add(category);
+                }
+            }
+
+            return result.ToArray();
+        }
+
         public override async Task DeleteAsync(IEnumerable<string> ids, bool softDelete = false)
         {
             var categoryIds = ids.ToArray();
@@ -226,7 +247,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             repository.DisableChangesTracking();
             var entities = await LoadEntities(repository, new[] { categoryId }, CategoryResponseGroup.Full.ToString());
 
-            return entities.ToArray();
+            return (await LoadEntities(repository, new[] { categoryId }, CategoryResponseGroup.Full.ToString())).ToArray();
         }
 
         [Obsolete("Use PreloadCategoriesAsync() instead.")]
@@ -353,8 +374,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 return result;
             }
 
-            preloadedCategoriesMap = await PreloadCategoryBranchAsync(id);
-            result = preloadedCategoriesMap[id];
+            result = (await PreloadCategoryBranchAsync(id))[id];
+            preloadedCategoriesMap[id] = result;
 
             return result;
         }

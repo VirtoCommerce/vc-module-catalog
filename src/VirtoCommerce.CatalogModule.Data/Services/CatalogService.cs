@@ -40,8 +40,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _hasPropertyValidator = hasPropertyValidator;
         }
 
-        #region ICatalogService Members
-
         public virtual async Task<Catalog[]> GetByIdsAsync(string[] catalogIds, string responseGroup = null)
         {
             return (await GetAsync(catalogIds.ToList(), responseGroup)).ToArray();
@@ -55,39 +53,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         public virtual Task DeleteAsync(string[] catalogIds)
         {
             return DeleteAsync(catalogIds, softDelete: false);
-        }
-
-        #endregion
-
-        public override async Task<IReadOnlyCollection<Catalog>> GetAsync(List<string> ids, string responseGroup = null)
-        {
-            var result = new List<Catalog>();
-            var catalogsByIds = await PreloadCatalogsAsync();
-
-            foreach (var catalogId in ids.Where(x => x != null))
-            {
-                var catalog = catalogsByIds[catalogId];
-                if (catalog != null)
-                {
-                    catalog = catalog.CloneTyped();
-
-                    // Reduce details according to response group
-                    catalog.ReduceDetails(responseGroup);
-
-                    result.Add(catalog);
-                }
-            }
-
-            return result;
-        }
-
-        public virtual async Task<IList<Catalog>> GetNoCloneAsync(IList<string> ids)
-        {
-            var catalogsByIds = await PreloadCatalogsAsync();
-
-            return catalogsByIds.Values
-                .Where(x => ids.Contains(x.Id, StringComparer.OrdinalIgnoreCase))
-                .ToList();
         }
 
         public override async Task DeleteAsync(IEnumerable<string> ids, bool softDelete = false)
@@ -117,6 +82,43 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
         }
 
+        public override async Task<IReadOnlyCollection<Catalog>> GetAsync(List<string> ids, string responseGroup = null)
+        {
+            return await InternalGetAsync(ids, responseGroup, clone: true) as IReadOnlyCollection<Catalog>;
+        }
+
+        /// <summary>
+        /// Returns data from the cache without cloning. This consumes less memory, but returned data must not be modified.
+        /// </summary>
+        public virtual Task<IList<Catalog>> GetNoCloneAsync(IList<string> ids, string responseGroup = null)
+        {
+            return InternalGetAsync(ids, responseGroup, clone: false);
+        }
+
+
+        protected virtual async Task<IList<Catalog>> InternalGetAsync(IList<string> ids, string responseGroup, bool clone)
+        {
+            var result = new List<Catalog>();
+            var catalogsByIds = await PreloadCatalogsAsync();
+
+            foreach (var catalogId in ids.Where(x => x != null))
+            {
+                if (catalogsByIds.TryGetValue(catalogId, out var catalog) && catalog != null)
+                {
+                    if (clone)
+                    {
+                        catalog = catalog.CloneTyped();
+
+                        // Reduce details according to response group
+                        catalog.ReduceDetails(responseGroup);
+                    }
+
+                    result.Add(catalog);
+                }
+            }
+
+            return result;
+        }
 
         protected override async Task BeforeSaveChanges(IEnumerable<Catalog> models)
         {

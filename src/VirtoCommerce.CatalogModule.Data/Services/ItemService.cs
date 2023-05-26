@@ -129,13 +129,16 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return await InternalGetAsync(ids, responseGroup, clone: true) as IReadOnlyCollection<CatalogProduct>;
         }
 
+        /// <summary>
+        /// Returns data from the cache without cloning. This consumes less memory, but returned data must not be modified.
+        /// </summary>
         public virtual Task<IList<CatalogProduct>> GetNoCloneAsync(IList<string> ids, string responseGroup)
         {
             return InternalGetAsync(ids, responseGroup, clone: false);
         }
 
 
-        private async Task<IList<CatalogProduct>> InternalGetAsync(IList<string> ids, string responseGroup, bool clone)
+        protected virtual async Task<IList<CatalogProduct>> InternalGetAsync(IList<string> ids, string responseGroup, bool clone)
         {
             var cacheKeyPrefix = CacheKey.With(GetType(), nameof(InternalGetAsync), responseGroup);
 

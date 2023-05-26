@@ -11,6 +11,9 @@ namespace VirtoCommerce.CatalogModule.Core.Search
         [Obsolete("Use SearchAsync()")]
         Task<ProductSearchResult> SearchProductsAsync(ProductSearchCriteria criteria);
 
+        /// <summary>
+        /// Returns data from the cache without cloning. This consumes less memory, but returned data must not be modified.
+        /// </summary>
         Task<ProductSearchResult> SearchNoCloneAsync(ProductSearchCriteria criteria);
     }
 }

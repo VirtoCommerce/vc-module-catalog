@@ -37,9 +37,23 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return SearchAsync(criteria);
         }
 
-        public async Task<ProductSearchResult> SearchNoCloneAsync(ProductSearchCriteria criteria)
+        public override Task<ProductSearchResult> SearchAsync(ProductSearchCriteria criteria)
         {
-            var cacheKey = CacheKey.With(GetType(), nameof(SearchAsync), criteria.GetCacheKey());
+            return InternalSearchAsync(criteria, clone: true);
+        }
+
+        /// <summary>
+        /// Returns data from the cache without cloning. This consumes less memory, but returned data must not be modified.
+        /// </summary>
+        public Task<ProductSearchResult> SearchNoCloneAsync(ProductSearchCriteria criteria)
+        {
+            return InternalSearchAsync(criteria, clone: false);
+        }
+
+
+        protected virtual async Task<ProductSearchResult> InternalSearchAsync(ProductSearchCriteria criteria, bool clone)
+        {
+            var cacheKey = CacheKey.With(GetType(), nameof(InternalSearchAsync), criteria.GetCacheKey());
 
             var idsResult = await _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async cacheOptions =>
             {
@@ -49,15 +63,24 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
             var result = AbstractTypeFactory<ProductSearchResult>.TryCreateInstance();
             result.TotalCount = idsResult.TotalCount;
-            result.Results = idsResult.Results.Any()
-                ? (await _itemService.GetNoCloneAsync(idsResult.Results.ToList(), criteria.ResponseGroup))
-                .OrderBy(x => idsResult.Results.IndexOf(x.Id))
-                .ToList()
-                : Array.Empty<CatalogProduct>();
+
+            if (idsResult.Results.IsNullOrEmpty())
+            {
+                result.Results = Array.Empty<CatalogProduct>();
+            }
+            else
+            {
+                IEnumerable<CatalogProduct> products = clone
+                    ? await _itemService.GetAsync(idsResult.Results.ToList(), criteria.ResponseGroup)
+                    : await _itemService.GetNoCloneAsync(idsResult.Results, criteria.ResponseGroup);
+
+                result.Results = products
+                    .OrderBy(x => idsResult.Results.IndexOf(x.Id))
+                    .ToList();
+            }
 
             return await ProcessSearchResultAsync(result, criteria);
         }
-
 
         protected virtual IChangeToken CreateCacheToken(ProductSearchCriteria criteria)
         {

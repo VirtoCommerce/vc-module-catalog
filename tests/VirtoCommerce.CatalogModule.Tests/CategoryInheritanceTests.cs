@@ -106,10 +106,12 @@ namespace VirtoCommerce.CatalogModule.Tests
 
             var categoriesBranchResult = new List<CategoryEntity> { rootCategory, level1Category, level2Category };
 
-            _repositoryMock.Setup(x => x.GetCategoriesByIdsAsync(It.IsAny<string[]>(), It.IsAny<string>()))
-                .ReturnsAsync((string[] ids, string responseGroup) => categoriesBranchResult.Where(x => ids.Contains(x.Id)).ToArray());
+            _repositoryMock
+                .Setup(x => x.GetCategoriesByIdsAsync(It.IsAny<string[]>(), It.IsAny<string>()))
+                .ReturnsAsync((string[] ids, string _) => categoriesBranchResult.Where(x => ids.Contains(x.Id)).ToArray());
 
-            _catalogServiceMock.Setup(t => t.GetNoCloneAsync(new[] { catalog.Id }))
+            _catalogServiceMock
+                .Setup(t => t.GetNoCloneAsync(new[] { catalog.Id }, It.IsAny<string>()))
                 .ReturnsAsync(new[] { catalog });
 
             // Act
