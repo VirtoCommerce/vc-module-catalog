@@ -66,7 +66,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, criteria, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
             if (!authorizationResult.Succeeded)
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var result = await _internalListEntrySearchService.InnerListEntrySearchAsync(criteria);
@@ -89,7 +89,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, hasLinkEntries, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
             if (!authorizationResult.Succeeded)
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             foreach (var link in links)
@@ -137,7 +137,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 var authorizationResult = await _authorizationService.AuthorizeAsync(User, hasLinkEntries, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
                 if (!authorizationResult.Succeeded)
                 {
-                    return Unauthorized();
+                    return Forbid();
                 }
 
                 foreach (var hasLinkEntry in hasLinkEntries)
@@ -167,7 +167,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, hasLinkEntries, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
             if (!authorizationResult.Succeeded)
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var result = await _linkSearchService.SearchAsync(criteria);
@@ -198,7 +198,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, hasLinkEntries, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Delete));
             if (!authorizationResult.Succeeded)
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             foreach (var link in links)
@@ -227,7 +227,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, moveRequest, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
             if (!authorizationResult.Succeeded)
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var dstCatalog = await _catalogService.GetByIdAsync(moveRequest.Catalog);
@@ -258,7 +258,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, criteria, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Delete));
             if (!authorizationResult.Succeeded)
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var idsToDelete = criteria.ObjectIds?.ToList() ?? new List<string>();
