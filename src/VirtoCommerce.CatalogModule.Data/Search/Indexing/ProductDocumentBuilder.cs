@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Caching;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.SearchModule.Core.Extenstions;
 using VirtoCommerce.SearchModule.Core.Model;
@@ -37,26 +39,20 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 //Index product variants by separate chunked requests for performance reason
                 if (product.MainProductId == null)
                 {
-                    const int pageSize = 50;
-                    var variationsSearchCriteria = new Core.Model.Search.ProductSearchCriteria
-                    {
-                        Take = pageSize,
-                        MainProductId = product.Id,
-                        ResponseGroup = (ItemResponseGroup.ItemInfo | ItemResponseGroup.Properties | ItemResponseGroup.Seo | ItemResponseGroup.Outlines | ItemResponseGroup.ItemAssets).ToString()
-                    };
+                    var variationsSearchCriteria = GetVariationSearchCriteria(product);
                     var skipCount = 0;
                     int totalCount;
                     do
                     {
                         variationsSearchCriteria.Skip = skipCount;
-                        var productVariations = await _productsSearchService.SearchAsync(variationsSearchCriteria);
+                        var productVariations = await _productsSearchService.SearchNoCloneAsync(variationsSearchCriteria);
                         foreach (var variation in productVariations.Results)
                         {
-                            result.Add(CreateDocument(variation));
+                            result.Add(CreateDocument(variation, product));
                             IndexProductVariation(doc, variation);
                         }
                         totalCount = productVariations.TotalCount;
-                        skipCount += pageSize;
+                        skipCount += variationsSearchCriteria.Take;
                     }
                     while (skipCount < totalCount);
                 }
@@ -72,10 +68,29 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         protected virtual async Task<CatalogProduct[]> GetProducts(IList<string> productIds)
         {
 #pragma warning disable CS0618 // Variations can be used here
-            var products = await _itemService.GetAsync(productIds.ToList(), (ItemResponseGroup.Full & ~ItemResponseGroup.Variations).ToString());
+            var products = await _itemService.GetNoCloneAsync(productIds.ToList(), (ItemResponseGroup.Full & ~ItemResponseGroup.Variations).ToString());
 #pragma warning restore CS0618
 
             return products.ToArray();
+        }
+
+        protected virtual ProductSearchCriteria GetVariationSearchCriteria(CatalogProduct product)
+        {
+            var criteria = AbstractTypeFactory<ProductSearchCriteria>.TryCreateInstance();
+
+            criteria.MainProductId = product.Id;
+            criteria.ResponseGroup = (ItemResponseGroup.ItemInfo | ItemResponseGroup.Properties | ItemResponseGroup.Seo | ItemResponseGroup.Outlines | ItemResponseGroup.ItemAssets).ToString();
+            criteria.Take = 50;
+
+            return criteria;
+        }
+
+        /// <summary>
+        /// The mainProduct argument contains more information than variation.MainProduct
+        /// </summary>
+        protected virtual IndexDocument CreateDocument(CatalogProduct variation, CatalogProduct mainProduct)
+        {
+            return CreateDocument(variation);
         }
 
         protected virtual IndexDocument CreateDocument(CatalogProduct product)
@@ -94,7 +109,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             document.AddFilterableValue("outerid", product.OuterId, IndexDocumentFieldValueType.String);
             document.AddFilterableAndSearchableValue("sku", product.Code);
             document.AddFilterableAndSearchableValue("code", product.Code);
-            document.AddFilterableAndSearchableValue("name", product.Name);
+            document.AddSuggestableValue("name", product.Name);
             document.AddFilterableValue("startdate", product.StartDate, IndexDocumentFieldValueType.DateTime);
             document.AddFilterableValue("enddate", product.EndDate ?? DateTime.MaxValue, IndexDocumentFieldValueType.DateTime);
             document.AddFilterableValue("createddate", product.CreatedDate, IndexDocumentFieldValueType.DateTime);
