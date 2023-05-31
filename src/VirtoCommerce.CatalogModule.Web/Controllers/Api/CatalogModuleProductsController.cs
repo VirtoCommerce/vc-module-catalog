@@ -86,6 +86,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         ///<param name="respGroup">Response group.</param>
         [HttpGet]
         [Route("")]
+        [ProducesResponseType(typeof(IEnumerable<CatalogProduct>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
         public async Task<ActionResult> GetProductByIds([FromQuery] List<string> ids, [FromQuery] string respGroup = null)
         {
             var items = await _itemsService.GetAsync(ids, respGroup);
