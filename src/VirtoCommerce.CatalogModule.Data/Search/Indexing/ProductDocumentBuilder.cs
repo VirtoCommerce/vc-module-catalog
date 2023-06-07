@@ -79,7 +79,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             var criteria = AbstractTypeFactory<ProductSearchCriteria>.TryCreateInstance();
 
             criteria.MainProductId = product.Id;
-            criteria.ResponseGroup = (ItemResponseGroup.ItemInfo | ItemResponseGroup.Properties | ItemResponseGroup.Seo | ItemResponseGroup.Outlines | ItemResponseGroup.ItemAssets).ToString();
+            criteria.ResponseGroup = (ItemResponseGroup.ItemInfo | ItemResponseGroup.Properties | ItemResponseGroup.Seo | ItemResponseGroup.Outlines | ItemResponseGroup.ItemAssets | ItemResponseGroup.ItemEditorialReviews).ToString();
             criteria.Take = 50;
 
             return criteria;
@@ -160,6 +160,9 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             // Index custom product properties
             IndexCustomProperties(document, product.Properties, contentPropertyTypes);
 
+            // Index editorial reviews
+            IndexDescriptions(document, product.Reviews);
+
             if (StoreObjectsInIndex)
             {
                 // Index serialized product
@@ -195,6 +198,16 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             document.Add(new IndexDocumentField("__variations", variation.Id) { IsRetrievable = true, IsSearchable = true, IsCollection = true, ValueType = IndexDocumentFieldValueType.String, });
 
             IndexCustomProperties(document, variation.Properties, new[] { PropertyType.Variation });
+            IndexDescriptions(document, variation.Reviews);
+        }
+
+        protected virtual void IndexDescriptions(IndexDocument document, IList<EditorialReview> reviews)
+        {
+            foreach (var review in reviews.Where(x => !string.IsNullOrEmpty(x?.Content)))
+            {
+                var descriptionField = $"description_{review.ReviewType.ToLowerInvariant()}_{review.LanguageCode.ToLowerInvariant()}";
+                document.Add(new IndexDocumentField(descriptionField, review.Content) { IsRetrievable = true, IsCollection = true, ValueType = IndexDocumentFieldValueType.String, });
+            }
         }
 
         protected virtual void IndexIsProperty(IndexDocument document, string value)
