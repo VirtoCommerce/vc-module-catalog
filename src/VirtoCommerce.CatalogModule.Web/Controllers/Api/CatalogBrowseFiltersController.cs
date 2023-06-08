@@ -13,9 +13,9 @@ using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
 using VirtoCommerce.CatalogModule.Web.Model;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.StoreModule.Core.Model;
+using VirtoCommerce.StoreModule.Core.Services;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
@@ -28,18 +28,18 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private const string _rangeType = "Range";
         private const string _priceRangeType = "PriceRange";
 
-        private readonly ICrudService<Store> _storeService;
+        private readonly IStoreService _storeService;
         private readonly IPropertyService _propertyService;
         private readonly IBrowseFilterService _browseFilterService;
         private readonly IPropertyDictionaryItemSearchService _propDictItemsSearchService;
         private readonly ISettingsManager _settingsManager;
 
         public CatalogBrowseFiltersController(
-            ICrudService<Store> storeService
-            , IPropertyService propertyService
-            , IBrowseFilterService browseFilterService
-            , IPropertyDictionaryItemSearchService propDictItemsSearchService
-            , ISettingsManager settingsManager)
+            IStoreService storeService,
+            IPropertyService propertyService,
+            IBrowseFilterService browseFilterService,
+            IPropertyDictionaryItemSearchService propDictItemsSearchService,
+            ISettingsManager settingsManager)
         {
             _storeService = storeService;
             _propertyService = propertyService;
@@ -62,7 +62,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         public async Task<ActionResult<AggregationProperty[]>> GetAggregationProperties(string storeId)
         {
-            var store = await _storeService.GetByIdAsync(storeId, StoreResponseGroup.StoreInfo.ToString());
+            var store = await _storeService.GetNoCloneAsync(storeId, StoreResponseGroup.StoreInfo.ToString());
             if (store == null)
             {
                 return NoContent();
@@ -91,7 +91,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         public async Task<ActionResult> SetAggregationProperties(string storeId, [FromBody] AggregationProperty[] browseFilterProperties)
         {
-            var store = await _storeService.GetByIdAsync(storeId, StoreResponseGroup.StoreInfo.ToString());
+            var store = await _storeService.GetNoCloneAsync(storeId, StoreResponseGroup.StoreInfo.ToString());
             if (store == null)
             {
                 return NoContent();
@@ -101,7 +101,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             // Look for details at PT-3044, VP-7549
 
             var catalogProperties = await _propertyService.GetAllCatalogPropertiesAsync(store.Catalog);
-            var defaultAggregationSize = await _settingsManager.GetValueByDescriptorAsync<int>(ModuleConstants.Settings.Search.DefaultAggregationSize);
+            var defaultAggregationSize = await _settingsManager.GetValueAsync<int>(ModuleConstants.Settings.Search.DefaultAggregationSize);
 
             var browseFilterPropertiesList = new List<AggregationProperty>();
             foreach (var aggregationProperty in browseFilterProperties)
@@ -117,7 +117,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 {
                     foreach (var lang in store.Languages)
                     {
-                        var aggregationPropertyLangSpecific = aggregationProperty.Clone() as AggregationProperty;
+                        var aggregationPropertyLangSpecific = aggregationProperty.CloneTyped();
                         aggregationPropertyLangSpecific.Name = $"{aggregationPropertyLangSpecific.Name}_{lang.ToLowerInvariant()}";
                         browseFilterPropertiesList.Add(aggregationPropertyLangSpecific);
                     }
@@ -143,7 +143,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         public async Task<ActionResult<string[]>> GetPropertyValues(string storeId, string propertyName)
         {
             var result = Array.Empty<string>();
-            var store = await _storeService.GetByIdAsync(storeId, StoreResponseGroup.StoreInfo.ToString());
+            var store = await _storeService.GetNoCloneAsync(storeId, StoreResponseGroup.StoreInfo.ToString());
             if (store != null)
             {
                 var catalogProperties = await _propertyService.GetAllCatalogPropertiesAsync(store.Catalog);
@@ -180,46 +180,35 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var allFilters = await _browseFilterService.GetStoreAggregationsAsync(storeId);
             if (allFilters != null)
             {
-                AggregationProperty property = null;
-
                 foreach (var filter in allFilters)
                 {
-                    var attributeFilter = filter as AttributeFilter;
-                    var rangeFilter = filter as RangeFilter;
-                    var priceRangeFilter = filter as PriceRangeFilter;
-
-                    if (attributeFilter != null)
+                    var property = filter switch
                     {
-                        property = new AggregationProperty
+                        AttributeFilter attributeFilter => new AggregationProperty
                         {
                             IsSelected = true,
                             Type = _attributeType,
                             Name = attributeFilter.Key,
                             Values = attributeFilter.Values?.Select(v => v.Id).OrderBy(v => v, StringComparer.OrdinalIgnoreCase).ToArray(),
                             Size = attributeFilter.FacetSize,
-                        };
-                    }
-                    else if (rangeFilter != null)
-                    {
-                        property = new AggregationProperty
+                        },
+                        RangeFilter rangeFilter => new AggregationProperty
                         {
                             IsSelected = true,
                             Type = _rangeType,
                             Name = rangeFilter.Key,
                             Values = GetRangeBounds(rangeFilter.Values),
-                        };
-                    }
-                    else if (priceRangeFilter != null)
-                    {
-                        property = new AggregationProperty
+                        },
+                        PriceRangeFilter priceRangeFilter => new AggregationProperty
                         {
                             IsSelected = true,
                             Type = _priceRangeType,
                             Name = $"Price {priceRangeFilter.Currency}",
                             Values = GetRangeBounds(priceRangeFilter.Values),
                             Currency = priceRangeFilter.Currency,
-                        };
-                    }
+                        },
+                        _ => null
+                    };
 
                     if (property != null)
                     {

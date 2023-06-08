@@ -71,20 +71,20 @@ namespace VirtoCommerce.CatalogModule.Tests
                 });
 
             _catalogServiceMock
-                .Setup(x => x.GetNoCloneAsync(It.IsAny<IList<string>>(), It.IsAny<string>()))
+                .Setup(x => x.GetAsync(It.IsAny<IList<string>>(), It.IsAny<string>(), false))
                 .ReturnsAsync(new[] { new Catalog { Id = newItem.CatalogId } });
 
             _categoryServiceMock
-                .Setup(x => x.GetNoCloneAsync(It.IsAny<IList<string>>(), It.IsAny<string>()))
+                .Setup(x => x.GetAsync(It.IsAny<IList<string>>(), It.IsAny<string>(), false))
                 .ReturnsAsync(new[] { new Category { Id = newItem.CategoryId } });
 
             //Act
-            var nullItem = await service.GetByIdAsync(id, null);
+            var nullItem = await service.GetByIdAsync(id);
             await service.SaveChangesAsync(new[] { newItem });
-            var Item = await service.GetByIdAsync(id, null);
+            var item = await service.GetByIdAsync(id);
 
             //Assert
-            Assert.NotEqual(nullItem, Item);
+            Assert.NotEqual(nullItem, item);
         }
 
         private ItemService GetItemServiceWithPlatformMemoryCache()
@@ -104,12 +104,12 @@ namespace VirtoCommerce.CatalogModule.Tests
                 .ReturnsAsync(new ValidationResult());
 
             return new ItemService(() => catalogRepository,
+                platformMemoryCache,
                 _eventPublisherMock.Object,
                 _hasPropertyValidatorMock.Object,
                 _catalogServiceMock.Object,
                 _categoryServiceMock.Object,
                 _outlineServiceMock.Object,
-                platformMemoryCache,
                 _blobUrlResolverMock.Object,
                 _skuGeneratorMock.Object,
                 new ProductValidator(new PropertyValidator()));

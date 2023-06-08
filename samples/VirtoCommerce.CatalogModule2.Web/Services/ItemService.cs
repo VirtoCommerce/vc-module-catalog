@@ -15,41 +15,41 @@ namespace VirtoCommerce.CatalogModule2.Web.Services
     public class ItemService2 : ItemService
     {
         public ItemService2(
-            Func<ICatalogRepository> catalogRepositoryFactory,
+            Func<ICatalogRepository> repositoryFactory,
+            IPlatformMemoryCache platformMemoryCache,
             IEventPublisher eventPublisher,
             AbstractValidator<IHasProperties> hasPropertyValidator,
             ICatalogService catalogService,
             ICategoryService categoryService,
             IOutlineService outlineService,
-            IPlatformMemoryCache platformMemoryCache,
             IBlobUrlResolver blobUrlResolver,
             ISkuGenerator skuGenerator,
             AbstractValidator<CatalogProduct> productValidator)
             : base(
-                catalogRepositoryFactory,
+                repositoryFactory,
+                platformMemoryCache,
                 eventPublisher,
                 hasPropertyValidator,
                 catalogService,
                 categoryService,
                 outlineService,
-                platformMemoryCache,
                 blobUrlResolver,
                 skuGenerator,
                 productValidator)
         {
         }
 
-        protected override void ApplyInheritanceRules(IEnumerable<CatalogProduct> products)
+        protected override void ApplyInheritanceRules(IList<CatalogProduct> products)
         {
             base.ApplyInheritanceRules(products);
         }
 
-        protected override void ClearCache(IEnumerable<CatalogProduct> models)
+        protected override void ClearCache(IList<CatalogProduct> models)
         {
             base.ClearCache(models);
         }
 
-        public override Task DeleteAsync(IEnumerable<string> ids, bool softDelete = false)
+        public override Task DeleteAsync(IList<string> ids, bool softDelete = false)
         {
             return base.DeleteAsync(ids, softDelete);
         }
@@ -59,9 +59,9 @@ namespace VirtoCommerce.CatalogModule2.Web.Services
             return base.GetByIdAsync(itemId, responseGroup, catalogId);
         }
 
-        public override Task<CatalogProduct[]> GetByIdsAsync(string[] itemIds, string respGroup, string catalogId = null)
+        public override Task<IList<CatalogProduct>> GetByIdsAsync(IList<string> ids, string responseGroup, string catalogId)
         {
-            return base.GetByIdsAsync(itemIds, respGroup, catalogId);
+            return base.GetByIdsAsync(ids, responseGroup, catalogId);
         }
 
         protected override Task LoadDependencies(IList<CatalogProduct> products)
@@ -69,7 +69,7 @@ namespace VirtoCommerce.CatalogModule2.Web.Services
             return base.LoadDependencies(products);
         }
 
-        public override Task SaveChangesAsync(IEnumerable<CatalogProduct> models)
+        public override Task SaveChangesAsync(IList<CatalogProduct> models)
         {
             return base.SaveChangesAsync(models);
         }
@@ -79,7 +79,7 @@ namespace VirtoCommerce.CatalogModule2.Web.Services
             base.SetProductDependencies(product, catalogsByIdDict, categoriesByIdDict);
         }
 
-        protected override Task ValidateProductsAsync(CatalogProduct[] products)
+        protected override Task ValidateProductsAsync(IList<CatalogProduct> products)
         {
             return base.ValidateProductsAsync(products);
         }

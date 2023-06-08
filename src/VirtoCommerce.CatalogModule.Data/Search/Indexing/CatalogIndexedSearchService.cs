@@ -68,7 +68,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
             if (documents?.Any() == true)
             {
-                var returnObjectsFromIndex = _settingsManager.GetValue(ModuleConstants.Settings.Search.UseFullObjectIndexStoring.Name, false);
+                var returnObjectsFromIndex = _settingsManager.GetValue<bool>(ModuleConstants.Settings.Search.UseFullObjectIndexStoring);
                 var itemsMap = documents.ToDictionary(doc => doc.Id.ToString(), doc => returnObjectsFromIndex ? doc.GetObjectFieldValue<TItem>() : null);
 
                 var missingObjectIds = itemsMap

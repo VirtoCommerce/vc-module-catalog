@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
@@ -10,6 +10,7 @@ using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Platform.Core.Caching;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.Platform.Data.GenericCrud;
 
 namespace VirtoCommerce.CatalogModule.Data.Search
@@ -19,15 +20,10 @@ namespace VirtoCommerce.CatalogModule.Data.Search
         public CategorySearchService(
             Func<ICatalogRepository> catalogRepositoryFactory,
             IPlatformMemoryCache platformMemoryCache,
-            ICategoryService categoryService)
-            : base(catalogRepositoryFactory, platformMemoryCache, categoryService)
+            ICategoryService crudService,
+            IOptions<CrudOptions> crudOptions)
+            : base(catalogRepositoryFactory, platformMemoryCache, crudService, crudOptions)
         {
-        }
-
-        [Obsolete("Use SearchAsync()")]
-        public Task<CategorySearchResult> SearchCategoriesAsync(CategorySearchCriteria criteria)
-        {
-            return SearchAsync(criteria);
         }
 
 

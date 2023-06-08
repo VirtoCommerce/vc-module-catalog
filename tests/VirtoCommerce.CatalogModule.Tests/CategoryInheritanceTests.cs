@@ -111,7 +111,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                 .ReturnsAsync((string[] ids, string _) => categoriesBranchResult.Where(x => ids.Contains(x.Id)).ToArray());
 
             _catalogServiceMock
-                .Setup(t => t.GetNoCloneAsync(new[] { catalog.Id }, It.IsAny<string>()))
+                .Setup(t => t.GetAsync(new[] { catalog.Id }, It.IsAny<string>(), false))
                 .ReturnsAsync(new[] { catalog });
 
             // Act
@@ -166,16 +166,18 @@ namespace VirtoCommerce.CatalogModule.Tests
 
         public class CategoryServiceStub : CategoryService
         {
-            public CategoryServiceStub(Func<ICatalogRepository> catalogRepositoryFactory,
+            public CategoryServiceStub(
+                Func<ICatalogRepository> repositoryFactory,
                 IEventPublisher eventPublisher,
                 IPlatformMemoryCache platformMemoryCache,
                 AbstractValidator<IHasProperties> hasPropertyValidator,
                 ICatalogService catalogService,
                 IOutlineService outlineService,
-                IBlobUrlResolver blobUrlResolver) :
-                base(catalogRepositoryFactory,
-                    eventPublisher,
+                IBlobUrlResolver blobUrlResolver)
+                : base(
+                    repositoryFactory,
                     platformMemoryCache,
+                    eventPublisher,
                     hasPropertyValidator,
                     catalogService,
                     outlineService,

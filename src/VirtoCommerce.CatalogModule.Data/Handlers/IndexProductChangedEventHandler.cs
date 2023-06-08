@@ -10,26 +10,31 @@ using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Events;
 using VirtoCommerce.Platform.Core.Jobs;
 using VirtoCommerce.Platform.Core.Settings;
+using VirtoCommerce.SearchModule.Core.BackgroundJobs;
+using VirtoCommerce.SearchModule.Core.Extensions;
 using VirtoCommerce.SearchModule.Core.Model;
-using VirtoCommerce.SearchModule.Data.BackgroundJobs;
-using VirtoCommerce.SearchModule.Data.Services;
 
 namespace VirtoCommerce.CatalogModule.Data.Handlers
 {
     public class IndexProductChangedEventHandler : IEventHandler<ProductChangedEvent>
     {
         private readonly ISettingsManager _settingsManager;
+        private readonly IIndexingJobService _indexingJobService;
         private readonly IEnumerable<IndexDocumentConfiguration> _configurations;
 
-        public IndexProductChangedEventHandler(ISettingsManager settingsManager, IEnumerable<IndexDocumentConfiguration> configurations)
+        public IndexProductChangedEventHandler(
+            ISettingsManager settingsManager,
+            IIndexingJobService indexingJobService,
+            IEnumerable<IndexDocumentConfiguration> configurations)
         {
             _settingsManager = settingsManager;
+            _indexingJobService = indexingJobService;
             _configurations = configurations;
         }
 
         public async Task Handle(ProductChangedEvent message)
         {
-            if (!await _settingsManager.GetValueAsync(ModuleConstants.Settings.General.EventBasedIndexation.Name, false))
+            if (!await _settingsManager.GetValueAsync<bool>(ModuleConstants.Settings.General.EventBasedIndexation))
             {
                 return;
             }
@@ -63,7 +68,8 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
                 }
             }
 
-            IndexingJobs.EnqueueIndexAndDeleteDocuments(indexEntries.ToArray(), JobPriority.Normal, _configurations.GetBuildersForProvider(typeof(ProductDocumentChangesProvider)).ToList());
+            _indexingJobService.EnqueueIndexAndDeleteDocuments(indexEntries, JobPriority.Normal,
+                _configurations.GetDocumentBuilders(KnownDocumentTypes.Product, typeof(ProductDocumentChangesProvider)).ToList());
         }
 
         private static bool IsVariationCreatedOrDeleted(CatalogProduct catalogProduct, EntryState entryState)

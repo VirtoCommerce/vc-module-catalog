@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
@@ -11,73 +10,22 @@ using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Platform.Core.Caching;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.Platform.Data.GenericCrud;
 
 namespace VirtoCommerce.CatalogModule.Data.Search
 {
     public class ProductSearchService : SearchService<ProductSearchCriteria, ProductSearchResult, CatalogProduct, ItemEntity>, IProductSearchService
     {
-        private readonly IItemService _itemService;
-
         public ProductSearchService(
-            Func<ICatalogRepository> catalogRepositoryFactory,
+            Func<ICatalogRepository> repositoryFactory,
             IPlatformMemoryCache platformMemoryCache,
-            IItemService itemService)
-            : base(catalogRepositoryFactory, platformMemoryCache, itemService)
+            IItemService crudService,
+            IOptions<CrudOptions> crudOptions)
+            : base(repositoryFactory, platformMemoryCache, crudService, crudOptions)
         {
-            _itemService = itemService;
         }
 
-        [Obsolete("Use SearchAsync()")]
-        public Task<ProductSearchResult> SearchProductsAsync(ProductSearchCriteria criteria)
-        {
-            return SearchAsync(criteria);
-        }
-
-        public override Task<ProductSearchResult> SearchAsync(ProductSearchCriteria criteria)
-        {
-            return InternalSearchAsync(criteria, clone: true);
-        }
-
-        /// <summary>
-        /// Returns data from the cache without cloning. This consumes less memory, but returned data must not be modified.
-        /// </summary>
-        public Task<ProductSearchResult> SearchNoCloneAsync(ProductSearchCriteria criteria)
-        {
-            return InternalSearchAsync(criteria, clone: false);
-        }
-
-
-        protected virtual async Task<ProductSearchResult> InternalSearchAsync(ProductSearchCriteria criteria, bool clone)
-        {
-            var cacheKey = CacheKey.With(GetType(), nameof(InternalSearchAsync), criteria.GetCacheKey());
-
-            var idsResult = await _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async cacheOptions =>
-            {
-                cacheOptions.AddExpirationToken(CreateCacheToken(criteria));
-                return await SearchIdsNoCacheAsync(criteria);
-            });
-
-            var result = AbstractTypeFactory<ProductSearchResult>.TryCreateInstance();
-            result.TotalCount = idsResult.TotalCount;
-
-            if (idsResult.Results.IsNullOrEmpty())
-            {
-                result.Results = Array.Empty<CatalogProduct>();
-            }
-            else
-            {
-                IEnumerable<CatalogProduct> products = clone
-                    ? await _itemService.GetAsync(idsResult.Results.ToList(), criteria.ResponseGroup)
-                    : await _itemService.GetNoCloneAsync(idsResult.Results, criteria.ResponseGroup);
-
-                result.Results = products
-                    .OrderBy(x => idsResult.Results.IndexOf(x.Id))
-                    .ToList();
-            }
-
-            return await ProcessSearchResultAsync(result, criteria);
-        }
 
         protected override IQueryable<ItemEntity> BuildQuery(IRepository repository, ProductSearchCriteria criteria)
         {

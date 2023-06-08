@@ -21,26 +21,26 @@ namespace VirtoCommerce.CatalogModule2.Web.Services
             Func<ICatalogRepository> repositoryFactory,
             IPlatformMemoryCache platformMemoryCache,
             IEventPublisher eventPublisher)
-            : base(videoOptions, repositoryFactory, platformMemoryCache, eventPublisher)
+            : base(repositoryFactory, platformMemoryCache, eventPublisher, videoOptions)
         {
         }
 
-        protected override Task AfterDeleteAsync(IEnumerable<Video> models, IEnumerable<GenericChangedEntry<Video>> changedEntries)
+        protected override Task AfterDeleteAsync(IList<Video> models, IList<GenericChangedEntry<Video>> changedEntries)
         {
             return base.AfterDeleteAsync(models, changedEntries);
         }
 
-        protected override Task AfterSaveChangesAsync(IEnumerable<Video> models, IEnumerable<GenericChangedEntry<Video>> changedEntries)
+        protected override Task AfterSaveChangesAsync(IList<Video> models, IList<GenericChangedEntry<Video>> changedEntries)
         {
             return base.AfterSaveChangesAsync(models, changedEntries);
         }
 
-        protected override Task BeforeSaveChanges(IEnumerable<Video> models)
+        protected override Task BeforeSaveChanges(IList<Video> models)
         {
             return base.BeforeSaveChanges(models);
         }
 
-        protected override void ClearCache(IEnumerable<Video> models)
+        protected override void ClearCache(IList<Video> models)
         {
             base.ClearCache(models);
         }
@@ -50,32 +50,27 @@ namespace VirtoCommerce.CatalogModule2.Web.Services
             return base.CreateCacheToken(id);
         }
 
-        public override Task DeleteAsync(IEnumerable<string> ids, bool softDelete = false)
+        public override Task DeleteAsync(IList<string> ids, bool softDelete = false)
         {
             return base.DeleteAsync(ids, softDelete);
         }
 
-        protected override GenericChangedEntryEvent<Video> EventFactory<TEvent>(IEnumerable<GenericChangedEntry<Video>> changedEntries)
+        protected override GenericChangedEntryEvent<Video> EventFactory<TEvent>(IList<GenericChangedEntry<Video>> changedEntries)
         {
             return base.EventFactory<TEvent>(changedEntries);
         }
 
-        public override Task<Video> GetByIdAsync(string id, string responseGroup = null)
+        public override Task<IList<Video>> GetAsync(IList<string> ids, string responseGroup = null, bool clone = true)
         {
-            return base.GetByIdAsync(id, responseGroup);
+            return base.GetAsync(ids, responseGroup, clone);
         }
 
-        public override Task<IReadOnlyCollection<Video>> GetAsync(List<string> ids, string responseGroup = null)
-        {
-            return base.GetAsync(ids, responseGroup);
-        }
-
-        protected override Task<IEnumerable<VideoEntity>> LoadEntities(IRepository repository, IEnumerable<string> ids)
+        protected override Task<IList<VideoEntity>> LoadEntities(IRepository repository, IList<string> ids)
         {
             return base.LoadEntities(repository, ids);
         }
 
-        protected override Task<IEnumerable<VideoEntity>> LoadEntities(IRepository repository, IEnumerable<string> ids, string responseGroup)
+        protected override Task<IList<VideoEntity>> LoadEntities(IRepository repository, IList<string> ids, string responseGroup)
         {
             return base.LoadEntities(repository, ids, responseGroup);
         }
@@ -85,12 +80,12 @@ namespace VirtoCommerce.CatalogModule2.Web.Services
             return base.ProcessModel(responseGroup, entity, model);
         }
 
-        public override Task SaveChangesAsync(IEnumerable<Video> models)
+        public override Task SaveChangesAsync(IList<Video> models)
         {
             return base.SaveChangesAsync(models);
         }
 
-        protected override Task SoftDelete(IRepository repository, IEnumerable<string> ids)
+        protected override Task SoftDelete(IRepository repository, IList<string> ids)
         {
             return base.SoftDelete(repository, ids);
         }

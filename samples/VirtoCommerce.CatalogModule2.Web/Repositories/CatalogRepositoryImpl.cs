@@ -9,43 +9,44 @@ namespace VirtoCommerce.CatalogModule2.Data.Repositories
 {
     public class CatalogRepositoryImpl2 : CatalogRepositoryImpl
     {
-        public CatalogRepositoryImpl2(CatalogDbContext dbContext, ICatalogRawDatabaseCommand rawDatabaseCommand) : base(dbContext, rawDatabaseCommand)
+        public CatalogRepositoryImpl2(CatalogDbContext dbContext, ICatalogRawDatabaseCommand rawDatabaseCommand)
+            : base(dbContext, rawDatabaseCommand)
         {
         }
 
-        public override Task<PropertyEntity[]> GetAllCatalogPropertiesAsync(string catalogId)
+        public override Task<IList<PropertyEntity>> GetAllCatalogPropertiesAsync(string catalogId)
         {
             return base.GetAllCatalogPropertiesAsync(catalogId);
         }
-        public override Task<string[]> GetAllChildrenCategoriesIdsAsync(string[] categoryIds)
+        public override Task<IList<string>> GetAllChildrenCategoriesIdsAsync(IList<string> categoryIds)
         {
             return base.GetAllChildrenCategoriesIdsAsync(categoryIds);
         }
-        public override Task<string[]> GetAllSeoDuplicatesIdsAsync()
+        public override Task<IList<string>> GetAllSeoDuplicatesIdsAsync()
         {
             return base.GetAllSeoDuplicatesIdsAsync();
         }
-        public override Task<AssociationEntity[]> GetAssociationsByIdsAsync(string[] associationIds)
+        public override Task<IList<AssociationEntity>> GetAssociationsByIdsAsync(IList<string> associationIds)
         {
             return base.GetAssociationsByIdsAsync(associationIds);
         }
-        public override Task<CatalogEntity[]> GetCatalogsByIdsAsync(string[] catalogIds)
+        public override Task<IList<CatalogEntity>> GetCatalogsByIdsAsync(IList<string> catalogIds)
         {
             return base.GetCatalogsByIdsAsync(catalogIds);
         }
-        public override Task<CategoryEntity[]> GetCategoriesByIdsAsync(string[] categoriesIds, string responseGroup)
+        public override Task<IList<CategoryEntity>> GetCategoriesByIdsAsync(IList<string> categoriesIds, string responseGroup)
         {
             return base.GetCategoriesByIdsAsync(categoriesIds, responseGroup);
         }
-        public override Task<ItemEntity[]> GetItemByIdsAsync(string[] itemIds, string responseGroup = null)
+        public override Task<IList<ItemEntity>> GetItemByIdsAsync(IList<string> itemIds, string responseGroup = null)
         {
             return base.GetItemByIdsAsync(itemIds, responseGroup);
         }
-        public override Task<PropertyEntity[]> GetPropertiesByIdsAsync(string[] propIds, bool loadDictValues = false)
+        public override Task<IList<PropertyEntity>> GetPropertiesByIdsAsync(IList<string> propIds, bool loadDictValues = false)
         {
             return base.GetPropertiesByIdsAsync(propIds, loadDictValues);
         }
-        public override Task<PropertyDictionaryItemEntity[]> GetPropertyDictionaryItemsByIdsAsync(string[] dictItemIds)
+        public override Task<IList<PropertyDictionaryItemEntity>> GetPropertyDictionaryItemsByIdsAsync(IList<string> dictItemIds)
         {
             return base.GetPropertyDictionaryItemsByIdsAsync(dictItemIds);
         }
@@ -53,15 +54,15 @@ namespace VirtoCommerce.CatalogModule2.Data.Repositories
         {
             return base.RemoveAllPropertyValuesAsync(propertyId);
         }
-        public override Task RemoveCatalogsAsync(string[] ids)
+        public override Task RemoveCatalogsAsync(IList<string> ids)
         {
             return base.RemoveCatalogsAsync(ids);
         }
-        public override Task RemoveCategoriesAsync(string[] ids)
+        public override Task RemoveCategoriesAsync(IList<string> ids)
         {
             return base.RemoveCategoriesAsync(ids);
         }
-        public override Task RemoveItemsAsync(string[] itemIds)
+        public override Task RemoveItemsAsync(IList<string> itemIds)
         {
             return base.RemoveItemsAsync(itemIds);
         }
@@ -69,7 +70,7 @@ namespace VirtoCommerce.CatalogModule2.Data.Repositories
         {
             return base.SearchAssociations(criteria);
         }
-        public override Task<ICollection<CategoryEntity>> SearchCategoriesHierarchyAsync(string categoryId)
+        public override Task<IList<CategoryEntity>> SearchCategoriesHierarchyAsync(string categoryId)
         {
             return base.SearchCategoriesHierarchyAsync(categoryId);
         }

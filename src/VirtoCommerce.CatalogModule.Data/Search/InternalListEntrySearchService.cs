@@ -34,7 +34,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         public async Task<ListEntrySearchResult> InnerListEntrySearchAsync(CatalogListEntrySearchCriteria criteria)
         {
             var result = new ListEntrySearchResult();
-            var useIndexedSearch = _settingsManager.GetValue(ModuleConstants.Settings.Search.UseCatalogIndexedSearchInManager.Name, true);
+            var useIndexedSearch = _settingsManager.GetValue<bool>(ModuleConstants.Settings.Search.UseCatalogIndexedSearchInManager);
 
             if (useIndexedSearch && !string.IsNullOrEmpty(criteria.Keyword))
             {

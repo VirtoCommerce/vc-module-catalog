@@ -24,12 +24,6 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Actions.CategoryChange
         /// <summary>
         /// Initializes a new instance of the <see cref="CategoryChangeBulkAction"/> class.
         /// </summary>
-        /// <param name="lazyServiceProvider">
-        /// The service provider.
-        /// </param>
-        /// <param name="context">
-        /// The context.
-        /// </param>
         public CategoryChangeBulkAction(
             CategoryChangeBulkActionContext context,
             ICatalogService catalogService,
@@ -74,7 +68,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Actions.CategoryChange
         {
             var result = BulkActionResult.Success;
 
-            var dstCatalog = await _catalogService.GetByIdAsync(_context.CatalogId);
+            var dstCatalog = await _catalogService.GetNoCloneAsync(_context.CatalogId);
             if (dstCatalog != null && dstCatalog.IsVirtual)
             {
                 result.Succeeded = false;

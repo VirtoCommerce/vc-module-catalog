@@ -9,8 +9,8 @@ using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.DynamicProperties;
-using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.StoreModule.Core.Model;
+using VirtoCommerce.StoreModule.Core.Services;
 
 namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
 {
@@ -19,15 +19,15 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
         public const string FilteredBrowsingPropertyId = "VirtoCommerce.Catalog_FilteredBrowsing_Property";
         public const string FilteredBrowsingPropertyName = "FilteredBrowsing";
 
-        private readonly ICrudService<Store> _storeService;
+        private readonly IStoreService _storeService;
 
-        public BrowseFilterService(ICrudService<Store> storeService)
+        public BrowseFilterService(IStoreService storeService)
         {
             _storeService = storeService;
         }
 
-        private static readonly XmlSerializer _xmlSerializer = new XmlSerializer(typeof(FilteredBrowsing));
-        private static readonly JsonSerializer _jsonSerializer = new JsonSerializer
+        private static readonly XmlSerializer _xmlSerializer = new(typeof(FilteredBrowsing));
+        private static readonly JsonSerializer _jsonSerializer = new()
         {
             DefaultValueHandling = DefaultValueHandling.Include,
             NullValueHandling = NullValueHandling.Include,
@@ -39,7 +39,9 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
         public async Task<IList<IBrowseFilter>> GetBrowseFiltersAsync(ProductIndexedSearchCriteria criteria)
         {
             if (criteria == null)
+            {
                 throw new ArgumentNullException(nameof(criteria));
+            }
 
             var aggregations = (await GetAllAggregations(criteria))?.AsQueryable();
 
@@ -79,14 +81,16 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
         protected virtual Task<IList<IBrowseFilter>> GetAllAggregations(ProductIndexedSearchCriteria criteria)
         {
             if (criteria == null)
+            {
                 throw new ArgumentNullException(nameof(criteria));
+            }
 
             return GetStoreAggregationsAsync(criteria.StoreId);
         }
 
         protected virtual async Task<string> GetSerializedValue(string storeId)
         {
-            var store = await _storeService.GetByIdAsync(storeId, StoreResponseGroup.WithDynamicProperties.ToString());
+            var store = await _storeService.GetNoCloneAsync(storeId, StoreResponseGroup.WithDynamicProperties.ToString());
             var result = store?.GetDynamicPropertyValue(FilteredBrowsingPropertyName, string.Empty);
             return result;
         }
@@ -187,7 +191,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
                         result.AddRange(browsing.Prices);
                     }
                 }
-
             }
 
             return result?.OrderBy(f => f.Order).ToArray();

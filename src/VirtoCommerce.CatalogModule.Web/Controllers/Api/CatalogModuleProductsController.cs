@@ -10,7 +10,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Model;
-using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Authorization;
 using VirtoCommerce.CoreModule.Core.Seo;
@@ -26,26 +25,23 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly ICatalogService _catalogService;
         private readonly ICategoryService _categoryService;
         private readonly ISkuGenerator _skuGenerator;
-        private readonly IProductAssociationSearchService _productAssociationSearchService;
         private readonly IAuthorizationService _authorizationService;
         private readonly IPropertyUpdateManager _updateManager;
         private readonly MvcNewtonsoftJsonOptions _jsonOptions;
 
         public CatalogModuleProductsController(
-            IItemService itemsService
-            , ICatalogService catalogService
-            , ICategoryService categoryService
-            , ISkuGenerator skuGenerator
-            , IProductAssociationSearchService productAssociationSearchService
-            , IAuthorizationService authorizationService
-            , IPropertyUpdateManager updateManager
-            , IOptions<MvcNewtonsoftJsonOptions> jsonOptions)
+            IItemService itemsService,
+            ICategoryService categoryService,
+            ICatalogService catalogService,
+            ISkuGenerator skuGenerator,
+            IAuthorizationService authorizationService,
+            IPropertyUpdateManager updateManager,
+            IOptions<MvcNewtonsoftJsonOptions> jsonOptions)
         {
             _itemsService = itemsService;
             _categoryService = categoryService;
             _catalogService = catalogService;
             _skuGenerator = skuGenerator;
-            _productAssociationSearchService = productAssociationSearchService;
             _authorizationService = authorizationService;
             _updateManager = updateManager;
             _jsonOptions = jsonOptions.Value;
@@ -62,7 +58,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         public async Task<ActionResult<CatalogProduct>> GetProductById(string id, [FromQuery] string respGroup = null)
         {
 
-            var product = await _itemsService.GetByIdAsync(id, respGroup);
+            var product = await _itemsService.GetNoCloneAsync(id, respGroup);
             if (product == null)
             {
                 return NotFound();
@@ -92,7 +88,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("")]
         public async Task<ActionResult<CatalogProduct[]>> GetProductByIds([FromQuery] List<string> ids, [FromQuery] string respGroup = null)
         {
-            var items = await _itemsService.GetAsync(ids, respGroup);
+            var items = await _itemsService.GetNoCloneAsync(ids, respGroup);
             if (items == null)
             {
                 return NotFound();
@@ -188,7 +184,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("{productId}/getnewvariation")]
         public async Task<ActionResult<CatalogProduct>> GetNewVariation(string productId)
         {
-            var product = await _itemsService.GetByIdAsync(productId, null);
+            var product = await _itemsService.GetByIdAsync(productId);
             if (product == null)
             {
                 return NotFound();
@@ -219,13 +215,13 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("{productId}/clone")]
         public async Task<ActionResult<CatalogProduct>> CloneProduct(string productId)
         {
-            var product = await _itemsService.GetByIdAsync(productId, null);
+            var product = await _itemsService.GetByIdAsync(productId);
             if (product == null)
             {
                 return NotFound();
             }
 
-            var copyProduct = product.GetCopy() as CatalogProduct;
+            var copyProduct = (CatalogProduct)product.GetCopy();
 
             // Generate new SKUs and remove SEO records for product and its variations
             copyProduct.Code = _skuGenerator.GenerateSku(product);
@@ -251,7 +247,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("{productId}/{language}")]
         public async Task<ActionResult<CatalogProduct>> ProductPartialUpdate(string productId, string language, [FromBody] JObject productPatch)
         {
-            var product = await _itemsService.GetByIdAsync(productId, null);
+            var product = await _itemsService.GetByIdAsync(productId);
             if (product == null)
             {
                 return NotFound();
@@ -326,7 +322,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("")]
         public async Task<ActionResult> DeleteProduct([FromQuery] List<string> ids)
         {
-            var products = await _itemsService.GetAsync(ids, ItemResponseGroup.ItemInfo.ToString());
+            var products = await _itemsService.GetNoCloneAsync(ids, ItemResponseGroup.ItemInfo.ToString());
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, products, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Delete));
             if (!authorizationResult.Succeeded)
             {
@@ -339,7 +335,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private async Task<CatalogProduct[]> InnerSaveProducts(CatalogProduct[] products)
         {
             var toSaveList = new List<CatalogProduct>();
-            var catalogs = await _catalogService.GetAsync(products.Select(pr => pr.CatalogId).Distinct().ToList());
+            var catalogs = await _catalogService.GetNoCloneAsync(products.Select(pr => pr.CatalogId).Distinct().ToList());
             foreach (var product in products)
             {
                 if (product.IsTransient() && product.SeoInfos.IsNullOrEmpty())

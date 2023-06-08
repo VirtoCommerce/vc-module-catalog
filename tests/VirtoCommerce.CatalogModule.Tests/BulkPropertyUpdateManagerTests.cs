@@ -52,13 +52,13 @@ namespace VirtoCommerce.CatalogModule.Tests
             dataSourceFactory.Setup(t => t.Create(context)).Returns(dataSource.Object);
             dataSource.SetupSequence(t => t.FetchAsync()).ReturnsAsync(true).ReturnsAsync(false);
             dataSource.Setup(t => t.Items).Returns(products);
-            itemService.Setup(t => t.GetAsync(productIds, group.ToString())).ReturnsAsync(products.ToArray());
+            itemService.Setup(t => t.GetAsync(productIds, group.ToString(), It.IsAny<bool>())).ReturnsAsync(products.ToArray());
 
             // act
             await manager.GetPropertiesAsync(context);
 
             // assert
-            itemService.Verify(t => t.GetAsync(productIds, group.ToString()));
+            itemService.Verify(t => t.GetAsync(productIds, group.ToString(), It.IsAny<bool>()));
         }
 
         [Theory]

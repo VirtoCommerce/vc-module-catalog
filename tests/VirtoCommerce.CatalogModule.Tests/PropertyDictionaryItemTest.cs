@@ -6,6 +6,7 @@ using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
+using VirtoCommerce.Platform.Core.Common;
 using Xunit;
 
 namespace VirtoCommerce.CatalogModule.Tests
@@ -42,10 +43,14 @@ namespace VirtoCommerce.CatalogModule.Tests
                         new PropertyDictionaryItemLocalizedValue { LanguageCode = "de", Value = "grün"  }
                    }
             };
-            propDictionarySearchService.Setup(x => x.SearchAsync(It.IsAny<PropertyDictionaryItemSearchCriteria>()))
+            propDictionarySearchService
+                .Setup(x => x.SearchAsync(It.IsAny<PropertyDictionaryItemSearchCriteria>()))
                 .Returns(Task.FromResult(new PropertyDictionaryItemSearchResult { TotalCount = 1, Results = new[] { greenDictItem } }));
-            productService.Setup(x => x.GetByIdAsync(It.IsAny<string>(), It.IsAny<string>(), null))
-                .Returns(Task.FromResult(new CatalogProduct { Properties = new List<Property>() }));
+
+            productService
+                .Setup(x => x.GetAsync(It.IsAny<IList<string>>(), It.IsAny<string>(), It.IsAny<bool>()))
+                .ReturnsAsync(new[] { new CatalogProduct { Properties = new List<Property>() } });
+
             //Add the new dictionary item to the property
             await propDictionaryService.SaveChangesAsync(new[] { greenDictItem });
 
@@ -59,7 +64,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                 Name = colorProperty.Name,
                 Type = colorProperty.Type,
                 ValueType = colorProperty.ValueType,
-                Values = new List<PropertyValue> { new PropertyValue { Alias = greenDictItem.Alias, PropertyId = greenDictItem.PropertyId, ValueId = greenDictItem.Id } },
+                Values = new List<PropertyValue> { new() { Alias = greenDictItem.Alias, PropertyId = greenDictItem.PropertyId, ValueId = greenDictItem.Id } },
             });
 
             await productService.Object.SaveChangesAsync(new[] { product });

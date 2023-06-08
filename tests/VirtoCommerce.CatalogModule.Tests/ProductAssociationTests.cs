@@ -336,15 +336,15 @@ namespace VirtoCommerce.CatalogModule.Tests
 
             _catalogRepositoryMock.SetupGet(x => x.UnitOfWork).Returns(new Mock<IUnitOfWork>().Object);
 
-            _catalogRepositoryMock.Setup(x => x.Associations)
+            _catalogRepositoryMock
+                .Setup(x => x.Associations)
                 .Returns(entitiesMock.Object);
-            _catalogRepositoryMock.Setup(x => x.GetAssociationsByIdsAsync(It.IsAny<string[]>()))
-                .Returns<string[]>(ids =>
-                    Task.FromResult(entities.Where(x => ids.Contains(x.Id)).ToArray()));
 
-            ICatalogRepository func() => _catalogRepositoryMock.Object;
+            _catalogRepositoryMock
+                .Setup(x => x.GetAssociationsByIdsAsync(It.IsAny<IList<string>>()))
+                .ReturnsAsync((IList<string> ids) => entities.Where(x => ids.Contains(x.Id)).ToArray());
 
-            return func;
+            return () => _catalogRepositoryMock.Object;
         }
     }
 }

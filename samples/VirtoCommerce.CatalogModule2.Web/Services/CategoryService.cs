@@ -15,17 +15,17 @@ namespace VirtoCommerce.CatalogModule2.Web.Services
     public class CategoryService2 : CategoryService
     {
         public CategoryService2(
-            Func<ICatalogRepository> catalogRepositoryFactory,
-            IEventPublisher eventPublisher,
+            Func<ICatalogRepository> repositoryFactory,
             IPlatformMemoryCache platformMemoryCache,
+            IEventPublisher eventPublisher,
             AbstractValidator<IHasProperties> hasPropertyValidator,
             ICatalogService catalogService,
             IOutlineService outlineService,
             IBlobUrlResolver blobUrlResolver)
             : base(
-                catalogRepositoryFactory,
-                eventPublisher,
+                repositoryFactory,
                 platformMemoryCache,
+                eventPublisher,
                 hasPropertyValidator,
                 catalogService,
                 outlineService,
@@ -33,22 +33,22 @@ namespace VirtoCommerce.CatalogModule2.Web.Services
         {
         }
 
-        public override Task<Category[]> GetByIdsAsync(string[] categoryIds, string responseGroup, string catalogId = null)
+        public override Task<IList<Category>> GetByIdsAsync(IList<string> ids, string responseGroup, string catalogId)
         {
-            return base.GetByIdsAsync(categoryIds, responseGroup, catalogId);
+            return base.GetByIdsAsync(ids, responseGroup, catalogId);
         }
 
-        public override Task DeleteAsync(IEnumerable<string> ids, bool softDelete = false)
+        public override Task DeleteAsync(IList<string> ids, bool softDelete = false)
         {
             return base.DeleteAsync(ids, softDelete);
         }
 
-        protected override void ApplyInheritanceRules(IEnumerable<Category> categories)
+        protected override void ApplyInheritanceRules(ICollection<Category> categories)
         {
             base.ApplyInheritanceRules(categories);
         }
 
-        protected override void ClearCache(IEnumerable<Category> models)
+        protected override void ClearCache(IList<Category> models)
         {
             base.ClearCache(models);
         }
@@ -58,17 +58,17 @@ namespace VirtoCommerce.CatalogModule2.Web.Services
             return base.LoadDependencies(categories, preloadedCategoriesMap);
         }
 
-        protected override void ResolveImageUrls(IEnumerable<Category> categories)
+        protected override void ResolveImageUrls(ICollection<Category> categories)
         {
             base.ResolveImageUrls(categories);
         }
 
-        public override Task SaveChangesAsync(IEnumerable<Category> models)
+        public override Task SaveChangesAsync(IList<Category> models)
         {
             return base.SaveChangesAsync(models);
         }
 
-        protected override Task ValidateCategoryPropertiesAsync(IEnumerable<Category> categories)
+        protected override Task ValidateCategoryPropertiesAsync(IList<Category> categories)
         {
             return base.ValidateCategoryPropertiesAsync(categories);
         }
