@@ -245,7 +245,6 @@ namespace VirtoCommerce.CatalogModule.Web
             {
                 var catalogDbContext = serviceScope.ServiceProvider.GetRequiredService<CatalogDbContext>();
                 catalogDbContext.Database.MigrateIfNotApplied(MigrationName.GetUpdateV2MigrationName(ModuleInfo.Id));
-                catalogDbContext.Database.EnsureCreated();
                 catalogDbContext.Database.Migrate();
             }
 
