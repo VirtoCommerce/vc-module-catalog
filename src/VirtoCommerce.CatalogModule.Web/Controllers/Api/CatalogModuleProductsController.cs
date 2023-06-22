@@ -7,7 +7,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using VirtoCommerce.CatalogModule.Core;
+using VirtoCommerce.CatalogModule.Core.Extensions;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
@@ -235,6 +237,34 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             }
 
             return Ok(copyProduct);
+        }
+
+        [HttpPatch]
+        [Route("{productId}/{language}")]
+        public async Task<ActionResult<CatalogProduct>> ProductPartialUpdate(string productId, string language, [FromBody] JObject productPatch)
+        {
+            var product = await _itemsService.GetByIdAsync(productId, null);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, product, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
+            if (!authorizationResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            productPatch.ApplyTo(product, ModelState, language);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            await InnerSaveProducts(new[] { product });
+
+            return Ok(product);
         }
 
         /// <summary>
