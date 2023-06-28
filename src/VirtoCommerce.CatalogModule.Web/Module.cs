@@ -213,6 +213,7 @@ namespace VirtoCommerce.CatalogModule.Web
             serviceCollection.AddTransient<ICatalogExportPagedDataSourceFactory, CatalogExportPagedDataSourceFactory>();
 
             serviceCollection.AddTransient<ISeoDuplicatesDetector, CatalogSeoDuplicatesDetector>();
+            serviceCollection.AddTransient<IPropertyUpdateManager, PropertyUpdateManager>();
 
             #region Add Authorization Policy for GenericExport
 

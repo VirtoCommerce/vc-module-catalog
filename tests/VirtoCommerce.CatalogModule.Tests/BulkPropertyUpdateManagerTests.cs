@@ -83,7 +83,8 @@ namespace VirtoCommerce.CatalogModule.Tests
             var itemService = new Mock<IItemService>();
             var categoryService = new Mock<ICategoryService>();
             var catalogService = new Mock<ICatalogService>();
-            var manager = new BulkPropertyUpdateManager(dataSourceFactory.Object, itemService.Object, categoryService.Object, catalogService.Object);
+            var singleProductUpdateManager = new Mock<IPropertyUpdateManager>();
+            var manager = new BulkPropertyUpdateManager(dataSourceFactory.Object, itemService.Object, categoryService.Object, catalogService.Object, singleProductUpdateManager.Object);
             return manager;
         }
 
@@ -92,8 +93,9 @@ namespace VirtoCommerce.CatalogModule.Tests
             var itemService = new Mock<IItemService>();
             var categoryService = new Mock<ICategoryService>();
             var catalogService = new Mock<ICatalogService>();
+            var singleProductUpdateManager = new Mock<IPropertyUpdateManager>();
 
-            var manager = new BulkPropertyUpdateManager(dataSourceFactory.Object, itemService.Object, categoryService.Object, catalogService.Object);
+            var manager = new BulkPropertyUpdateManager(dataSourceFactory.Object, itemService.Object, categoryService.Object, catalogService.Object, singleProductUpdateManager.Object);
             return manager;
         }
 
@@ -101,7 +103,9 @@ namespace VirtoCommerce.CatalogModule.Tests
         {
             var categoryService = new Mock<ICategoryService>();
             var catalogService = new Mock<ICatalogService>();
-            var manager = new BulkPropertyUpdateManager(dataSourceFactory.Object, itemService.Object, categoryService.Object, catalogService.Object);
+            var singleProductUpdateManager = new Mock<IPropertyUpdateManager>();
+
+            var manager = new BulkPropertyUpdateManager(dataSourceFactory.Object, itemService.Object, categoryService.Object, catalogService.Object, singleProductUpdateManager.Object);
             return manager;
         }
     }

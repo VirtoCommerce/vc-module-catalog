@@ -9,7 +9,6 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using VirtoCommerce.CatalogModule.Core;
-using VirtoCommerce.CatalogModule.Core.Extensions;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
@@ -29,6 +28,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly ISkuGenerator _skuGenerator;
         private readonly IProductAssociationSearchService _productAssociationSearchService;
         private readonly IAuthorizationService _authorizationService;
+        private readonly IPropertyUpdateManager _updateManager;
         private readonly MvcNewtonsoftJsonOptions _jsonOptions;
 
         public CatalogModuleProductsController(
@@ -38,6 +38,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             , ISkuGenerator skuGenerator
             , IProductAssociationSearchService productAssociationSearchService
             , IAuthorizationService authorizationService
+            , IPropertyUpdateManager updateManager
             , IOptions<MvcNewtonsoftJsonOptions> jsonOptions)
         {
             _itemsService = itemsService;
@@ -46,6 +47,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             _skuGenerator = skuGenerator;
             _productAssociationSearchService = productAssociationSearchService;
             _authorizationService = authorizationService;
+            _updateManager = updateManager;
             _jsonOptions = jsonOptions.Value;
         }
 
@@ -255,7 +257,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return Forbid();
             }
 
-            productPatch.ApplyTo(product, ModelState, language);
+            await _updateManager.TryChangeProductPropertyValues(product, productPatch, language, ModelState);
 
             if (!ModelState.IsValid)
             {
