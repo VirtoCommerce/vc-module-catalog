@@ -6,7 +6,9 @@ using VirtoCommerce.BulkActionsModule.Core.Services;
 using VirtoCommerce.CatalogModule.BulkActions.Models;
 using VirtoCommerce.CatalogModule.BulkActions.Services;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
+using VirtoCommerce.CatalogModule.Data.Services;
 using Xunit;
 
 namespace VirtoCommerce.CatalogModule.Tests
@@ -83,8 +85,10 @@ namespace VirtoCommerce.CatalogModule.Tests
             var itemService = new Mock<IItemService>();
             var categoryService = new Mock<ICategoryService>();
             var catalogService = new Mock<ICatalogService>();
-            var singleProductUpdateManager = new Mock<IPropertyUpdateManager>();
-            var manager = new BulkPropertyUpdateManager(dataSourceFactory.Object, itemService.Object, categoryService.Object, catalogService.Object, singleProductUpdateManager.Object);
+            var dictService = new Mock<IPropertyDictionaryItemSearchService>();
+            var singleProductUpdateManager = new PropertyUpdateManager(dictService.Object);
+
+            var manager = new BulkPropertyUpdateManager(dataSourceFactory.Object, itemService.Object, categoryService.Object, catalogService.Object, singleProductUpdateManager);
             return manager;
         }
 
@@ -93,9 +97,10 @@ namespace VirtoCommerce.CatalogModule.Tests
             var itemService = new Mock<IItemService>();
             var categoryService = new Mock<ICategoryService>();
             var catalogService = new Mock<ICatalogService>();
-            var singleProductUpdateManager = new Mock<IPropertyUpdateManager>();
+            var dictService = new Mock<IPropertyDictionaryItemSearchService>();
+            var singleProductUpdateManager = new PropertyUpdateManager(dictService.Object);
 
-            var manager = new BulkPropertyUpdateManager(dataSourceFactory.Object, itemService.Object, categoryService.Object, catalogService.Object, singleProductUpdateManager.Object);
+            var manager = new BulkPropertyUpdateManager(dataSourceFactory.Object, itemService.Object, categoryService.Object, catalogService.Object, singleProductUpdateManager);
             return manager;
         }
 
@@ -103,9 +108,10 @@ namespace VirtoCommerce.CatalogModule.Tests
         {
             var categoryService = new Mock<ICategoryService>();
             var catalogService = new Mock<ICatalogService>();
-            var singleProductUpdateManager = new Mock<IPropertyUpdateManager>();
+            var dictService = new Mock<IPropertyDictionaryItemSearchService>();
+            var singleProductUpdateManager = new PropertyUpdateManager(dictService.Object);
 
-            var manager = new BulkPropertyUpdateManager(dataSourceFactory.Object, itemService.Object, categoryService.Object, catalogService.Object, singleProductUpdateManager.Object);
+            var manager = new BulkPropertyUpdateManager(dataSourceFactory.Object, itemService.Object, categoryService.Object, catalogService.Object, singleProductUpdateManager);
             return manager;
         }
     }
