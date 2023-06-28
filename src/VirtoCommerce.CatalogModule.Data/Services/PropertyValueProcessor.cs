@@ -76,7 +76,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         private void SearchInDictionary()
         {
-            var allValues = _context.CurrentDictionaryItems;
+            var allValues = _context.GetCurrentDictionaryItems();
             _context.MappedValues = _context.ConvertedValues
                 .Select(x => new MappedValue
                 {
@@ -127,8 +127,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             internal IEnumerable<object> ConvertedValues { get; set; }
             internal IEnumerable<MappedValue> MappedValues { get; set; }
 
-            internal IEnumerable<PropertyDictionaryItem> CurrentDictionaryItems =>
-                DictionaryItems.Where(x => x.PropertyId == Property.Id).ToArray();
+            internal IEnumerable<PropertyDictionaryItem> GetCurrentDictionaryItems()
+            {
+                return DictionaryItems.Where(x => x.PropertyId == Property.Id).ToArray();
+            }
         }
 
         internal class MappedValue
