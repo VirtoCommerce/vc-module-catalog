@@ -31,128 +31,25 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             // by getting all properties for category line entries (including outline) + all inherited product line entry properties
             var result = new List<Property>
                          {
-                             new Property
-                             {
-                                 Name = nameof(CatalogProduct.Name),
-                                 Type = PropertyType.Product,
-                                 ValueType = PropertyValueType.LongText,
-                                 Required = true
-                             },
-                             new Property
-                             {
-                                 Name = nameof(CatalogProduct.StartDate),
-                                 Type = PropertyType.Product,
-                                 ValueType = PropertyValueType.DateTime,
-                                 Required = true,
-                             },
-                             new Property
-                             {
-                                 Name = nameof(CatalogProduct.EndDate),
-                                 Type = PropertyType.Product,
-                                 ValueType = PropertyValueType.DateTime,
-                             },
-                             new Property
-                             {
-                                 Name = nameof(CatalogProduct.Priority),
-                                 Type = PropertyType.Product,
-                                 ValueType = PropertyValueType.Integer,
-                                 Required = true,
-                             },
-                             new Property
-                             {
-                                 Name = nameof(CatalogProduct.EnableReview),
-                                 Type = PropertyType.Product,
-                                 ValueType = PropertyValueType.Boolean,
-                             },
-                             new Property
-                             {
-                                 Name = nameof(CatalogProduct.IsActive),
-                                 Type = PropertyType.Product,
-                                 ValueType = PropertyValueType.Boolean,
-                             },
-                             new Property
-                             {
-                                 Name = nameof(CatalogProduct.IsBuyable),
-                                 Type = PropertyType.Product,
-                                 ValueType = PropertyValueType.Boolean,
-                             },
-                             new Property
-                             {
-                                 Name = nameof(CatalogProduct.TrackInventory),
-                                 Type = PropertyType.Product,
-                                 ValueType = PropertyValueType.Boolean,
-                             },
-                             new Property
-                             {
-                                 Name = nameof(CatalogProduct.MinQuantity),
-                                 Type = PropertyType.Product,
-                                 ValueType = PropertyValueType.Integer,
-                             },
-                             new Property
-                             {
-                                 Name = nameof(CatalogProduct.MaxQuantity),
-                                 Type = PropertyType.Product,
-                                 ValueType = PropertyValueType.Integer,
-                             },
-                             new Property
-                             {
-                                 Name = nameof(CatalogProduct.Vendor),
-                                 Type = PropertyType.Product,
-                                 ValueType = PropertyValueType.ShortText,
-                                 Dictionary = true
-                             },
-                             new Property
-                             {
-                                 Name = nameof(CatalogProduct.WeightUnit),
-                                 Type = PropertyType.Product,
-                                 ValueType = PropertyValueType.ShortText,
-                                 Dictionary = true
-                             },
-                             new Property
-                             {
-                                 Name = nameof(CatalogProduct.Weight),
-                                 Type = PropertyType.Product,
-                                 ValueType = PropertyValueType.Number,
-                             },
-                             new Property
-                             {
-                                 Name = nameof(CatalogProduct.MeasureUnit),
-                                 Type = PropertyType.Product,
-                                 ValueType = PropertyValueType.ShortText,
-                                 Dictionary = true
-                             },
-                             new Property
-                             {
-                                 Name = nameof(CatalogProduct.PackageType),
-                                 Type = PropertyType.Product,
-                                 ValueType = PropertyValueType.ShortText,
-                                 Dictionary = true
-                             },
-                             new Property
-                             {
-                                 Name = nameof(CatalogProduct.Height),
-                                 Type = PropertyType.Product,
-                                 ValueType = PropertyValueType.Number,
-                             },
-                             new Property
-                             {
-                                 Name = nameof(CatalogProduct.Width),
-                                 Type = PropertyType.Product,
-                                 ValueType = PropertyValueType.Number,
-                             },
-                             new Property
-                             {
-                                 Name = nameof(CatalogProduct.Length),
-                                 Type = PropertyType.Product,
-                                 ValueType = PropertyValueType.Number,
-                             },
-                             new Property
-                             {
-                                 Name = nameof(CatalogProduct.TaxType),
-                                 Type = PropertyType.Product,
-                                 ValueType = PropertyValueType.Number,
-                                 Dictionary = true
-                             },
+                             new Property { Name = nameof(CatalogProduct.Name), Type = PropertyType.Product, ValueType = PropertyValueType.LongText, Required = true },
+                             new Property { Name = nameof(CatalogProduct.StartDate), Type = PropertyType.Product, ValueType = PropertyValueType.DateTime, Required = true },
+                             new Property { Name = nameof(CatalogProduct.EndDate), Type = PropertyType.Product, ValueType = PropertyValueType.DateTime, },
+                             new Property { Name = nameof(CatalogProduct.Priority), Type = PropertyType.Product, ValueType = PropertyValueType.Integer, Required = true },
+                             new Property { Name = nameof(CatalogProduct.EnableReview), Type = PropertyType.Product, ValueType = PropertyValueType.Boolean },
+                             new Property { Name = nameof(CatalogProduct.IsActive), Type = PropertyType.Product, ValueType = PropertyValueType.Boolean },
+                             new Property { Name = nameof(CatalogProduct.IsBuyable), Type = PropertyType.Product, ValueType = PropertyValueType.Boolean },
+                             new Property { Name = nameof(CatalogProduct.TrackInventory), Type = PropertyType.Product, ValueType = PropertyValueType.Boolean },
+                             new Property { Name = nameof(CatalogProduct.MinQuantity), Type = PropertyType.Product, ValueType = PropertyValueType.Integer },
+                             new Property { Name = nameof(CatalogProduct.MaxQuantity), Type = PropertyType.Product, ValueType = PropertyValueType.Integer },
+                             new Property { Name = nameof(CatalogProduct.Vendor), Type = PropertyType.Product, ValueType = PropertyValueType.ShortText, Dictionary = true },
+                             new Property { Name = nameof(CatalogProduct.WeightUnit), Type = PropertyType.Product, ValueType = PropertyValueType.ShortText, Dictionary = true },
+                             new Property { Name = nameof(CatalogProduct.Weight), Type = PropertyType.Product, ValueType = PropertyValueType.Number },
+                             new Property { Name = nameof(CatalogProduct.MeasureUnit), Type = PropertyType.Product, ValueType = PropertyValueType.ShortText, Dictionary = true },
+                             new Property { Name = nameof(CatalogProduct.PackageType), Type = PropertyType.Product, ValueType = PropertyValueType.ShortText, Dictionary = true },
+                             new Property { Name = nameof(CatalogProduct.Height), Type = PropertyType.Product, ValueType = PropertyValueType.Number },
+                             new Property { Name = nameof(CatalogProduct.Width), Type = PropertyType.Product, ValueType = PropertyValueType.Number },
+                             new Property { Name = nameof(CatalogProduct.Length), Type = PropertyType.Product, ValueType = PropertyValueType.Number },
+                             new Property { Name = nameof(CatalogProduct.TaxType), Type = PropertyType.Product, ValueType = PropertyValueType.Number, Dictionary = true }
                          };
 
             return result;
@@ -181,7 +78,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return hasChanges;
         }
 
-        public async Task TryChangeProductPropertyValues(CatalogProduct product, JObject source, string language, ModelStateDictionary modelState)
+        public Task TryChangeProductPropertyValues(CatalogProduct product, JObject source, string language,
+            ModelStateDictionary modelState)
         {
             if (source == null)
             {
@@ -198,6 +96,11 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 throw new ArgumentNullException(nameof(modelState));
             }
 
+            return TryChangeProductPropertyValuesInternal(product, source, language, modelState);
+        }
+
+        private async Task TryChangeProductPropertyValuesInternal(CatalogProduct product, JObject source, string language, ModelStateDictionary modelState)
+        {
             var allProperties = product.Properties.Union(product.Category.Properties.Where(x => x.Type == PropertyType.Product)).Union(GetStandardProperties());
             var mapper = new PropertyValuesMapper(_propertyDictionarySearchService);
 

@@ -9,7 +9,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 {
     class PropertyValueProcessor
     {
-        private Context _context;
+        private readonly Context _context;
 
         private PropertyValueProcessor(Context context)
         {
@@ -76,7 +76,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         private void SearchInDictionary()
         {
-            var allValues = _context.GetDictionaryItems;
+            var allValues = _context.CurrentDictionaryItems;
             _context.MappedValues = _context.ConvertedValues
                 .Select(x => new MappedValue
                 {
@@ -127,7 +127,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             internal IEnumerable<object> ConvertedValues { get; set; }
             internal IEnumerable<MappedValue> MappedValues { get; set; }
 
-            internal IEnumerable<PropertyDictionaryItem> GetDictionaryItems =>
+            internal IEnumerable<PropertyDictionaryItem> CurrentDictionaryItems =>
                 DictionaryItems.Where(x => x.PropertyId == Property.Id).ToArray();
         }
 
