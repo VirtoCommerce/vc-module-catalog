@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -202,10 +203,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
             foreach (var propertyItem in source.Properties())
             {
-                var property = allProperties.FirstOrDefault(x => x.Name == propertyItem.Name);
+                var property = allProperties.FirstOrDefault(x => x.Name.EqualsInvariant(propertyItem.Name));
                 if (property == null)
                 {
-                    modelState.AddModelError(property.Name, $"Property '{property.Name}' is not allowed.");
+                    modelState.AddModelError(propertyItem.Name, $"Property '{propertyItem.Name}' is not allowed.");
                 }
                 else
                 {
@@ -243,6 +244,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     return AddPropertyValues(product, property);
                 }
 
+                Debug.Assert(properties != null);
                 foreach (var productProperty in properties)
                 {
                     productProperty.Values = new List<PropertyValue>();
