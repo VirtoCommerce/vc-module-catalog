@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json.Linq;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
@@ -32,7 +31,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
         }
 
-        public async Task<List<Property>> GetResultProperties(CatalogProduct product, JObject source, string language, ModelStateDictionary modelState)
+        public async Task<List<Property>> GetResultProperties(CatalogProduct product, JObject source, string language)
         {
             var dictionaries = await GetDictionaryItems();
 

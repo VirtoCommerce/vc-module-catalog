@@ -257,11 +257,11 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return Forbid();
             }
 
-            await _updateManager.TryChangeProductPropertyValues(product, productPatch, language, ModelState);
+            var result = await _updateManager.TryChangeProductPropertyValues(product, productPatch, language);
 
-            if (!ModelState.IsValid)
+            if (!result.Succeeded)
             {
-                return BadRequest(ModelState);
+                return BadRequest(result);
             }
 
             await InnerSaveProducts(new[] { product });

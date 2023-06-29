@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json.Linq;
 using VirtoCommerce.CatalogModule.Core.Extensions;
 using VirtoCommerce.CatalogModule.Core.Model;
@@ -78,8 +77,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return hasChanges;
         }
 
-        public Task TryChangeProductPropertyValues(CatalogProduct product, JObject source, string language,
-            ModelStateDictionary modelState)
+        public Task<ChangeProductPropertiesResult> TryChangeProductPropertyValues(CatalogProduct product, JObject source, string language)
         {
             if (source == null)
             {
@@ -91,25 +89,22 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 throw new ArgumentNullException(nameof(product));
             }
 
-            if (modelState == null)
-            {
-                throw new ArgumentNullException(nameof(modelState));
-            }
-
-            return TryChangeProductPropertyValuesInternal(product, source, language, modelState);
+            return TryChangeProductPropertyValuesInternal(product, source, language);
         }
 
-        private async Task TryChangeProductPropertyValuesInternal(CatalogProduct product, JObject source, string language, ModelStateDictionary modelState)
+        private async Task<ChangeProductPropertiesResult> TryChangeProductPropertyValuesInternal(CatalogProduct product, JObject source, string language)
         {
             var allProperties = product.Properties.Union(product.Category.Properties.Where(x => x.Type == PropertyType.Product)).Union(GetStandardProperties());
             var mapper = new PropertyValuesMapper(_propertyDictionarySearchService);
 
-            foreach (var propertyItem in source.Properties())
+            var result = new ChangeProductPropertiesResult();
+
+            foreach (var propertyName in source.Properties().Select(x => x.Name))
             {
-                var property = allProperties.FirstOrDefault(x => x.Name.EqualsInvariant(propertyItem.Name));
+                var property = allProperties.FirstOrDefault(x => x.Name.EqualsInvariant(propertyName));
                 if (property == null)
                 {
-                    modelState.AddModelError(propertyItem.Name, $"Property '{propertyItem.Name}' is not allowed.");
+                    result.Errors.Add($"Property '{propertyName}' is not allowed.");
                 }
                 else
                 {
@@ -117,12 +112,12 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 }
             }
 
-            if (!modelState.IsValid)
+            if (!result.Succeeded)
             {
-                return;
+                return result;
             }
 
-            var propertiesToSet = await mapper.GetResultProperties(product, source, language, modelState);
+            var propertiesToSet = await mapper.GetResultProperties(product, source, language);
 
             foreach (var property in propertiesToSet)
             {
@@ -131,6 +126,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     TrySetCustomProperty(product, property);
                 }
             }
+
+            return result;
         }
 
         private static bool TrySetCustomProperty(IHasProperties product, Property property)
