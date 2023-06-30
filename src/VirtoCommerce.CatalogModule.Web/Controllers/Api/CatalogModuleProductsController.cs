@@ -215,7 +215,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return Ok(newVariation);
         }
 
-
         [HttpGet]
         [Route("{productId}/clone")]
         public async Task<ActionResult<CatalogProduct>> CloneProduct(string productId)
@@ -241,6 +240,13 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return Ok(copyProduct);
         }
 
+        /// <summary>
+        /// Updates only given properties
+        /// </summary>
+        /// <param name="productId">Product ID</param>
+        /// <param name="language">Language for properties to change</param>
+        /// <param name="productPatch">JSON object in a key-value format</param>
+        /// <returns></returns>
         [HttpPatch]
         [Route("{productId}/{language}")]
         public async Task<ActionResult<CatalogProduct>> ProductPartialUpdate(string productId, string language, [FromBody] JObject productPatch)
