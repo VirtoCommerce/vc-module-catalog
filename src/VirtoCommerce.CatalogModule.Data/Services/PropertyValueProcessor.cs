@@ -7,7 +7,7 @@ using VirtoCommerce.CatalogModule.Core.Model;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
-    class PropertyValueProcessor
+    internal class PropertyValueProcessor
     {
         private readonly Context _context;
 
@@ -106,14 +106,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 ValueType = _context.Property.ValueType,
                 ValueId = x.DictionaryValue?.Id,
                 PropertyName = _context.Property.Name,
-                //Id = ,
-                //CreatedBy = ,
-                //CreatedDate = ,
-                //IsInherited = ,
-                //ModifiedBy = ,
-                //ModifiedDate = ,
-                //OuterId = ,
-                //Property = ,
                 PropertyId = _context.Property.Id
             }).ToList();
         }

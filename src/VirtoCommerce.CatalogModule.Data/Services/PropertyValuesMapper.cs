@@ -10,7 +10,7 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
-    class PropertyValuesMapper
+    internal class PropertyValuesMapper
     {
         private readonly IPropertyDictionaryItemSearchService _propertyDictionarySearchService;
 
