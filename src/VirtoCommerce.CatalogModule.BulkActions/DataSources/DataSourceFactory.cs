@@ -3,7 +3,6 @@ using VirtoCommerce.BulkActionsModule.Core.Models.BulkActions;
 using VirtoCommerce.BulkActionsModule.Core.Services;
 using VirtoCommerce.CatalogModule.BulkActions.Models;
 using VirtoCommerce.CatalogModule.Core.Search;
-using VirtoCommerce.CatalogModule.Data.Services;
 
 namespace VirtoCommerce.CatalogModule.BulkActions.DataSources
 {
