@@ -351,9 +351,8 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
         protected virtual void InheritReviews(CatalogProduct parentProduct)
         {
-            // Inherit editorial reviews from main product and do not inherit if variation loaded within product
-            var isVariation = GetType().IsAssignableFrom(typeof(Variation));
-            if (!isVariation && Reviews.IsNullOrEmpty() && parentProduct.Reviews != null)
+            // Inherit editorial reviews from main product
+            if (Reviews.IsNullOrEmpty() && parentProduct.Reviews != null)
             {
                 Reviews = new List<EditorialReview>();
                 foreach (var parentReview in parentProduct.Reviews)
