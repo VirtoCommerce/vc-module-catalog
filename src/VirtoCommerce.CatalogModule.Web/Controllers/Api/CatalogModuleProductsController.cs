@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Search;
@@ -27,6 +28,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly ISkuGenerator _skuGenerator;
         private readonly IProductAssociationSearchService _productAssociationSearchService;
         private readonly IAuthorizationService _authorizationService;
+        private readonly IPropertyUpdateManager _updateManager;
         private readonly MvcNewtonsoftJsonOptions _jsonOptions;
 
         public CatalogModuleProductsController(
@@ -36,6 +38,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             , ISkuGenerator skuGenerator
             , IProductAssociationSearchService productAssociationSearchService
             , IAuthorizationService authorizationService
+            , IPropertyUpdateManager updateManager
             , IOptions<MvcNewtonsoftJsonOptions> jsonOptions)
         {
             _itemsService = itemsService;
@@ -44,6 +47,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             _skuGenerator = skuGenerator;
             _productAssociationSearchService = productAssociationSearchService;
             _authorizationService = authorizationService;
+            _updateManager = updateManager;
             _jsonOptions = jsonOptions.Value;
         }
 
@@ -211,7 +215,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return Ok(newVariation);
         }
 
-
         [HttpGet]
         [Route("{productId}/clone")]
         public async Task<ActionResult<CatalogProduct>> CloneProduct(string productId)
@@ -235,6 +238,41 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             }
 
             return Ok(copyProduct);
+        }
+
+        /// <summary>
+        /// Updates only given properties
+        /// </summary>
+        /// <param name="productId">Product ID</param>
+        /// <param name="language">Language for properties to change</param>
+        /// <param name="productPatch">JSON object in a key-value format</param>
+        /// <returns></returns>
+        [HttpPatch]
+        [Route("{productId}/{language}")]
+        public async Task<ActionResult<CatalogProduct>> ProductPartialUpdate(string productId, string language, [FromBody] JObject productPatch)
+        {
+            var product = await _itemsService.GetByIdAsync(productId, null);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, product, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
+            if (!authorizationResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            var result = await _updateManager.TryChangeProductPropertyValues(product, productPatch, language);
+
+            if (!result.Succeeded)
+            {
+                return BadRequest(result);
+            }
+
+            await InnerSaveProducts(new[] { product });
+
+            return Ok(product);
         }
 
         /// <summary>
