@@ -12,6 +12,11 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         public Catalog Catalog { get; set; }
 
         public bool IsDefault { get; set; }
+
+        /// <summary>
+        /// Lowest number wins
+        /// </summary>
+        public int Priority { get; set; }
         #region IHasLanguageCode members
         public string LanguageCode { get; set; }
 
