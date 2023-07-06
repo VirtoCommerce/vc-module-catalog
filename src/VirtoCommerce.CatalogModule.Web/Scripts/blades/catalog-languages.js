@@ -15,7 +15,7 @@ angular.module('virtoCommerce.catalogModule')
             // intialize priority
             var startPosition = 1;
             var needToInitialize = _.every(data.languages, function (x) {
-                return x.priority == 0;
+                return x.priority === 0;
             });
             if (needToInitialize) {
                 _.each(data.languages, function (x) {
@@ -43,7 +43,10 @@ angular.module('virtoCommerce.catalogModule')
                 return x.priority;
             });
 
-            startPosition = _.max(valuesUnion, function (x) { return x.priority; }).priority;
+            startPosition = _.max(valuesUnion, function (x) {
+                return x.priority;
+            }).priority;
+
             _.each($scope.languages, function (x) {
                 var language = _.find(valuesUnion, function (y) {
                     return y.languageCode === x;
@@ -161,7 +164,10 @@ angular.module('virtoCommerce.catalogModule')
                     });
 
                     if (!presentLanguage) {
-                        var priority = _.max(blade.currentEntity.valuesUnion, function (x) { return x.priority; }).priority;
+                        var priority = _.max(blade.currentEntity.valuesUnion, function (v) {
+                            return v.priority;
+                        }).priority;
+
                         blade.currentEntity.valuesUnion.push({
                             isActive: false,
                             languageCode: x,
