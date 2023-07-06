@@ -52,10 +52,11 @@ angular.module('virtoCommerce.catalogModule')
                     return y.languageCode === x;
                 });
                 if (!language) {
+                    startPosition++;
                     valuesUnion.push({
                         isActive: false,
                         languageCode: x,
-                        priority: ++startPosition,
+                        priority: startPosition,
                     });
                 }
             });
@@ -126,6 +127,20 @@ angular.module('virtoCommerce.catalogModule')
         $scope.bladeClose();
     }
 
+    $scope.setActive = function (item) {
+        var list = _.filter($scope.blade.currentEntity.valuesUnion, function (x) {
+            return x.isActive;
+        });
+
+        // can't disable last active element
+        if (list.length === 1 && list[0].languageCode === item.languageCode && list[0].isActive)
+        {
+            return;
+        }
+
+        item.isActive = !item.isActive;
+    }
+
     $scope.saveChanges = function () {
         if (!blade.hasUpdatePermission()) return;
 
@@ -168,10 +183,11 @@ angular.module('virtoCommerce.catalogModule')
                             return v.priority;
                         }).priority;
 
+                        priority++;
                         blade.currentEntity.valuesUnion.push({
                             isActive: false,
                             languageCode: x,
-                            priority: ++priority
+                            priority: priority
                         });
                     }
                 });

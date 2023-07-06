@@ -18,7 +18,7 @@
           </thead>
           <tbody ui-sortable="sortableOptions" ng-model="blade.currentEntity.valuesUnion">
             <tr class="table-item" ng-repeat="x in blade.currentEntity.valuesUnion">
-              <td class="table-col" ng-click="x.isActive=!x.isActive">
+              <td class="table-col" ng-click="setActive(x)">
                 <div class="ui-grid-selection-row-header-buttons ui-grid-icon-ok" ng-class="{'ui-grid-row-selected': x.isActive}">&nbsp;</div>
               </td>
               <td class="table-col">
