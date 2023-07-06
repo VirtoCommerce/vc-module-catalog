@@ -139,6 +139,14 @@ angular.module('virtoCommerce.catalogModule')
                 if (blade.propertyType) {
                     data.type = blade.propertyType;
                 }
+
+                // sort display names by languages array
+                if (data.displayNames) {
+                    data.displayNames = _.sortBy(data.displayNames, function (x) {
+                        return _.indexOf(blade.languages, x.languageCode);
+                    });
+                }
+
                 blade.currentEntity = angular.copy(data);
                 blade.origEntity = data;
                 blade.isLoading = false;

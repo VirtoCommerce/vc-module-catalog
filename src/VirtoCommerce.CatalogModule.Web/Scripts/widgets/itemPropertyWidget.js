@@ -16,7 +16,9 @@ angular.module('virtoCommerce.catalogModule')
                 catalog: blade.catalog,
                 currentEntity: blade.currentEntity,
                 originalEntity: blade.origItem,
-                languages: _.pluck(blade.catalog.languages, 'languageCode'),
+                languages: _.pluck(_.sortBy(blade.catalog.languages, function (x) {
+                    return x.priority;
+                }), 'languageCode'),
                 defaultLanguage: blade.catalog.defaultLanguage.languageCode,
                 propGroups: [{ title: 'catalog.properties.product', type: 'Product' }, { title: 'catalog.properties.variation', type: 'Variation' }],
                 controller: 'virtoCommerce.catalogModule.propertyListController',

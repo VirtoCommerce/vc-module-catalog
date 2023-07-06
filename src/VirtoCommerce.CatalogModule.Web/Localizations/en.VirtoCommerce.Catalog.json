@@ -57,6 +57,10 @@
       "catalog-languages": {
         "subtitle": "Manage languages",
         "labels": {
+          "note": "Drag and drop to control the order. First active element becomes the default language.",
+          "language-dictionary": "Language dictionary",
+          "active": "Active",
+          "language": "Language",
           "default-language": "Default language",
           "additional-languages": "Additional languages"
         },
