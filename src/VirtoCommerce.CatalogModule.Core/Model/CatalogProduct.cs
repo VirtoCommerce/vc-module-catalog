@@ -460,7 +460,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
             }
 
             var categoryResult = product.Category == null || product.Category.IsActiveInParents;
-            return productResult && categoryResult;
+            return categoryResult;
         }
 
         public virtual object GetCopy()
