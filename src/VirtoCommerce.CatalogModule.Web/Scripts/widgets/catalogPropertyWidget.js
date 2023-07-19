@@ -7,7 +7,9 @@ angular.module('virtoCommerce.catalogModule')
 			id: "catalogPropertyDetail",
             currentEntity: blade.currentEntity,
             originalEntity: blade.origEntity,
-			languages: _.pluck(blade.currentEntity.languages, 'languageCode'),
+            languages: _.pluck(_.sortBy(blade.currentEntity.languages, function (x) {
+                return x.priority;
+            }), 'languageCode'),
 			defaultLanguage: blade.currentEntity.defaultLanguage.languageCode,
 			entityType: "catalog",
 			catalogId: blade.currentEntity.id,
