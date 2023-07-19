@@ -87,6 +87,7 @@
           "result-grouping-none": "None",
           "result-grouping-$path": "Category",
           "inactive": "Inactive",
+          "hidden": "Hidden",
           "picture": "Pic",
           "name": "Name",
           "sku": "SKU"
@@ -97,6 +98,7 @@
       },
       "category-detail": {
         "subtitle": "Category details",
+        "parent-disabled-alert": "Parent category is hidden",
         "labels": {
           "is-active": "Visible",
           "name": "Name",

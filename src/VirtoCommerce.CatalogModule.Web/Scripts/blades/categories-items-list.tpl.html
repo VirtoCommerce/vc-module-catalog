@@ -73,7 +73,7 @@
         <div class="inner-contents">
             <i class="table-ico fas fa-link" ng-if="grid.appScope.hasLinks(row.entity)" title="It's mapped to this virtual location"></i>
             <div class="table-t">{{COL_FIELD}}</div>
-            <span class="table-status" ng-if="row.entity.type==='category' && !row.entity.isActive">Inactive</span>
+            <span class="table-status" ng-if="row.entity.type==='category' && !row.entity.isActive">{{ 'catalog.blades.categories-items-list.labels.hidden' | translate }}</span>
             <div class="table-descr" ng-if="row.entity.productType">{{ 'catalog.product-types.' + row.entity.productType | translate }}</div>
         </div>
     </div>

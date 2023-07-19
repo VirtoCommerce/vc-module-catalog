@@ -362,10 +362,9 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
 
                 // category detail meta-fields
                 metaFormsService.registerMetaFields("categoryDetail", [{
-                    name: 'isActive',
                     title: "catalog.blades.category-detail.labels.is-active",
                     colSpan: 2,
-                    valueType: "Boolean"
+                    templateUrl: "isActive.html"
                 },
                 {
                     name: 'name',

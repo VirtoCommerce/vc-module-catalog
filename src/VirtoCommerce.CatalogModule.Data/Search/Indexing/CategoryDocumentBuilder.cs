@@ -117,19 +117,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         /// </summary>
         protected virtual bool IsActiveInTotal(Category category)
         {
-            bool result;
-            if (category.IsActive.HasValue && !category.IsActive.Value)
-            {
-                result = false;
-            }
-            else
-            {
-                result = category.Parent == null
-                    ? category.IsActive == true
-                    : IsActiveInTotal(category.Parent);
-            }
-
-            return result;
+            return category.IsActiveInParents;
         }
 
         protected virtual void IndexIsProperty(IndexDocument document, string value)

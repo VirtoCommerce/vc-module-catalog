@@ -1,15 +1,31 @@
 <div class="blade-content __medium-wide">
     <div class="blade-inner">
-        <div class="inner-block">
-            <form name="detailForm" class="form">
-                <va-metaform registered-inputs="blade.metaFields" blade="blade" column-count="2" ng-if="blade.currentEntity" ng-init="setForm(detailForm)"></va-metaform>
-            </form>
+      <div class="inner-block">
+        <form name="detailForm" class="form">
+          <va-metaform registered-inputs="blade.metaFields" blade="blade" column-count="2" ng-if="blade.currentEntity" ng-init="setForm(detailForm)"></va-metaform>
+        </form>
 
-            <va-widget-container group="categoryDetail" blade="blade" data="blade.currentEntity" gridster-opts="{columns: 4}" class="form-group"></va-widget-container>
-        </div>
+        <va-widget-container group="categoryDetail" blade="blade" data="blade.currentEntity" gridster-opts="{columns: 4}" class="form-group"></va-widget-container>
+      </div>
     </div>
 </div>
 
+<script type="text/ng-template" id="isActive.html">
+  <div class="form-input">
+    <label class="form-label __switch">
+      <input type="checkbox" ng-model="blade.currentEntity.isActive">
+      <span class="switch"></span>
+    </label>
+  </div>
+  <div class="form-error" ng-if="!blade.currentEntity.isActiveInParents">
+    <div class="vc-alert vc-alert--warning">
+      <svg class="vc-alert__icon">
+        <use href="/images/error.svg#icon"></use>
+      </svg>
+      <div class="vc-alert__text">{{ 'catalog.blades.category-detail.parent-disabled-alert' | translate }}</div>
+    </div>
+  </div>
+</script>
 <script type="text/ng-template" id="code.html">
     <div class="form-input">
         <input required class="form-control" ng-model="blade.currentEntity.code" placeholder="{{'catalog.blades.category-detail.placeholders.code' | translate}}" name="code" ui-validate=" 'blade.codeValidator($value)' " />

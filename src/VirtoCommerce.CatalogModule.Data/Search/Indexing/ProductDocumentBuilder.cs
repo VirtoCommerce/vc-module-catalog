@@ -100,7 +100,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             document.AddFilterableValue("__type", product.GetType().Name, IndexDocumentFieldValueType.String);
             document.AddFilterableValue("__sort", product.Name, IndexDocumentFieldValueType.String);
 
-            var statusField = product.IsActive != true || product.MainProductId != null ? "hidden" : "visible";
+            var statusField = product.IsActiveInParents ? "visible" : "hidden";
             IndexIsProperty(document, statusField);
             IndexIsProperty(document, string.IsNullOrEmpty(product.MainProductId) ? "product" : "variation");
             IndexIsProperty(document, product.Code);
