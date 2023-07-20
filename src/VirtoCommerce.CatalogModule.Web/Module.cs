@@ -140,7 +140,7 @@ namespace VirtoCommerce.CatalogModule.Web
             serviceCollection.AddTransient<IndexCategoryChangedEventHandler>();
             serviceCollection.AddTransient<IndexProductChangedEventHandler>();
             serviceCollection.AddTransient<VideoOwnerChangingEventHandler>();
-            serviceCollection.AddTransient<TrackHierarchyChangesEventHandler>();
+            serviceCollection.AddTransient<TrackSpecialChangesEventHandler>();
 
             serviceCollection.AddTransient<ISeoBySlugResolver, CatalogSeoBySlugResolver>();
 
@@ -273,7 +273,7 @@ namespace VirtoCommerce.CatalogModule.Web
             inProcessBus.RegisterHandler<CategoryChangedEvent>(async (message, token) => await appBuilder.ApplicationServices.GetService<IndexCategoryChangedEventHandler>().Handle(message));
             inProcessBus.RegisterHandler<ProductChangedEvent>(async (message, token) => await appBuilder.ApplicationServices.GetService<IndexProductChangedEventHandler>().Handle(message));
             inProcessBus.RegisterHandler<ProductChangingEvent>(async (message, token) => await appBuilder.ApplicationServices.GetService<VideoOwnerChangingEventHandler>().Handle(message));
-            inProcessBus.RegisterHandler<CategoryChangedEvent>(async (message, token) => await appBuilder.ApplicationServices.GetService<TrackHierarchyChangesEventHandler>().Handle(message));
+            inProcessBus.RegisterHandler<CategoryChangedEvent>(async (message, token) => await appBuilder.ApplicationServices.GetService<TrackSpecialChangesEventHandler>().Handle(message));
 
             //Force migrations
             using (var serviceScope = appBuilder.ApplicationServices.CreateScope())

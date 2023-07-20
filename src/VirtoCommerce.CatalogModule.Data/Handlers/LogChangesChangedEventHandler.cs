@@ -16,6 +16,7 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
     public class LogChangesChangedEventHandler : IEventHandler<ProductChangedEvent>, IEventHandler<CategoryChangedEvent>
     {
         private readonly string _hierarchyChanged = "HeirarchyChange";
+        private readonly string _visibilityChanged = "VisibilityChange";
 
         private readonly IChangeLogService _changeLogService;
         private readonly Func<ICatalogRepository> _catalogRepositoryFactory;
@@ -54,18 +55,25 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
                 var operationLog = AbstractTypeFactory<OperationLog>.TryCreateInstance().FromChangedEntry(x);
 
                 var hierarchyChanged = false;
+                var visibilityChanged = false;
 
-                if (x.EntryState == EntryState.Modified && x.OldEntry is Category oldCategory &&
-                    x.NewEntry is Category newCategory)
+                if (x.EntryState == EntryState.Modified && x.OldEntry is Category oldCategory && x.NewEntry is Category newCategory)
                 {
                     hierarchyChanged = oldCategory.CatalogId != newCategory.CatalogId ||
                                        oldCategory.ParentId != newCategory.ParentId ||
                                        oldCategory.Links?.Count != newCategory.Links?.Count;
+
+                    visibilityChanged = oldCategory.IsActive != newCategory.IsActive;
                 }
 
                 if (hierarchyChanged)
                 {
                     operationLog.Detail = _hierarchyChanged;
+                }
+
+                if (visibilityChanged)
+                {
+                    operationLog.Detail = _visibilityChanged;
                 }
 
                 if (x.OldEntry is CatalogProduct oldCatalogProduct)
@@ -93,36 +101,43 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
         // Failed job goes to "Failed" state (by default) after retries exhausted.
         public async Task LogEntityChangesInBackgroundAsync(OperationLog[] operationLogs)
         {
-            var hierarchyLogs = new List<OperationLog>();
+            var result = new List<OperationLog>();
 
             using (var repository = _catalogRepositoryFactory())
             {
-                var categoryIds = operationLogs
-                    .Where(x => x.ObjectType == nameof(Category) && x.Detail == _hierarchyChanged)
-                    .Select(x => x.ObjectId)
-                    .ToArray();
+                var hierarchyLogs = await GetChildrenCategoriesLogs(repository, operationLogs, _hierarchyChanged);
+                result = operationLogs.Concat(hierarchyLogs).ToList();
 
-                // find affected categories
-                var childrenCategoryIds = await repository.GetAllChildrenCategoriesIdsAsync(categoryIds);
-
-                var categoryLogs = childrenCategoryIds.Select(x =>
-                {
-                    var log = AbstractTypeFactory<OperationLog>.TryCreateInstance();
-
-                    log.ObjectId = x;
-                    log.ObjectType = nameof(Category);
-                    log.OperationType = EntryState.Modified;
-                    log.Detail = _hierarchyChanged;
-
-                    return log;
-                });
-
-                hierarchyLogs.AddRange(categoryLogs);
+                var visibilityLogs = await GetChildrenCategoriesLogs(repository, operationLogs, _visibilityChanged);
+                result = result.Concat(visibilityLogs).ToList();
             }
 
-            var result = operationLogs.Concat(hierarchyLogs);
-
             await _changeLogService.SaveChangesAsync(result.ToArray());
+        }
+
+        private async Task<List<OperationLog>> GetChildrenCategoriesLogs(ICatalogRepository repository, OperationLog[] operationLogs, string operationTypeMarker)
+        {
+            var categoryIds = operationLogs
+                .Where(x => x.ObjectType == nameof(Category) && x.Detail == operationTypeMarker)
+                .Select(x => x.ObjectId)
+                .ToArray();
+
+            // find affected categories
+            var childrenCategoryIds = await repository.GetAllChildrenCategoriesIdsAsync(categoryIds);
+            var result = childrenCategoryIds.Select(x =>
+            {
+                var log = AbstractTypeFactory<OperationLog>.TryCreateInstance();
+
+                log.ObjectId = x;
+                log.ObjectType = nameof(Category);
+                log.OperationType = EntryState.Modified;
+                log.Detail = operationTypeMarker;
+
+                return log;
+            })
+            .ToList();
+
+            return result;
         }
     }
 }
