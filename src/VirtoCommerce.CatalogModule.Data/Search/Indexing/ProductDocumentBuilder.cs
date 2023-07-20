@@ -15,16 +15,54 @@ using VirtoCommerce.SearchModule.Core.Services;
 
 namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 {
-    public class ProductDocumentBuilder : CatalogDocumentBuilder, IIndexDocumentBuilder
+    public class ProductDocumentBuilder : CatalogDocumentBuilder, IIndexSchemaBuilder, IIndexDocumentBuilder
     {
         private readonly IItemService _itemService;
         private readonly IProductSearchService _productsSearchService;
 
-        public ProductDocumentBuilder(ISettingsManager settingsManager, IItemService itemService, IProductSearchService productsSearchService)
-            : base(settingsManager)
+        public ProductDocumentBuilder(ISettingsManager settingsManager, IPropertySearchService propertySearchService, IItemService itemService, IProductSearchService productsSearchService)
+            : base(settingsManager, propertySearchService)
         {
             _itemService = itemService;
             _productsSearchService = productsSearchService;
+        }
+
+        public virtual async Task BuildSchemaAsync(IndexDocument schema)
+        {
+            schema.AddFilterableString("__type");
+            schema.AddFilterableString("__sort");
+            schema.AddFilterableString("status");
+            schema.AddFilterableString("outerid");
+            schema.AddFilterableStringAndContentString("sku");
+            schema.AddFilterableStringAndContentString("code");
+            schema.AddSuggestableStringAndContentString("name");
+
+            schema.AddFilterableDateTime("startdate");
+            schema.AddFilterableDateTime("enddate");
+            schema.AddFilterableDateTime("createddate");
+            schema.AddFilterableDateTime("lastmodifieddate");
+            schema.AddFilterableDateTime("modifieddate");
+
+            schema.AddFilterableInteger("priority");
+
+            schema.AddFilterableString("vendor");
+            schema.AddFilterableString("productType");
+            schema.AddFilterableString("mainProductId");
+            schema.AddFilterableString("gtin");
+            schema.AddFilterableString("availability");
+
+            schema.AddFilterableCollection("is");
+            schema.AddFilterableCollection("catalog");
+            schema.AddFilterableCollection("__outline");
+            schema.AddFilterableCollection("__outline_named");
+            schema.AddFilterableCollection("__path");
+
+            schema.AddFilterableCollection("type");
+            schema.AddSearchableCollection("__variations");
+
+            AddObjectField(schema, AbstractTypeFactory<CatalogProduct>.TryCreateInstance());
+
+            await AddCustomPropertiesAsync(schema, PropertyType.Product, PropertyType.Variation);
         }
 
         public virtual async Task<IList<IndexDocument>> GetDocumentsAsync(IList<string> documentIds)
@@ -127,7 +165,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 document.AddFilterableString("availability", productAvailability);
             }
 
-
             // Add priority in virtual categories to search index
             if (product.Links != null)
             {
@@ -151,7 +188,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
             document.AddFilterableCollection("__outline_named", GetOutlineStrings(product.Outlines, getNameLatestItem: true));
 
-            // Add the all physical and virtual paths
+            // Add all physical and virtual paths
             document.AddFilterableCollection("__path", product.Outlines.Select(x => string.Join("/", x.Items.Take(x.Items.Count - 1).Select(i => i.Id))).ToList());
 
             // Types of properties which values should be added to the searchable __content field
@@ -174,31 +211,28 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         protected virtual void IndexProductVariation(IndexDocument document, CatalogProduct variation)
         {
-            if (variation.ProductType == "Physical")
+            switch (variation.ProductType)
             {
-                document.Add(new IndexDocumentField("type", "physical", IndexDocumentFieldValueType.String) { IsRetrievable = true, IsFilterable = true, IsCollection = true });
-                IndexIsProperty(document, "physical");
-            }
-
-            if (variation.ProductType == "Digital")
-            {
-                document.Add(new IndexDocumentField("type", "digital", IndexDocumentFieldValueType.String) { IsRetrievable = true, IsFilterable = true, IsCollection = true });
-                IndexIsProperty(document, "digital");
-            }
-
-            if (variation.ProductType == "BillOfMaterials")
-            {
-                document.Add(new IndexDocumentField("type", "billofmaterials", IndexDocumentFieldValueType.String) { IsRetrievable = true, IsFilterable = true, IsCollection = true });
-                IndexIsProperty(document, "billofmaterials");
+                case "Physical":
+                case "Digital":
+                case "BillOfMaterials":
+                    IndexTypeProperty(document, variation.ProductType.ToLowerInvariant());
+                    break;
             }
 
             // add the variation code to content
-            document.Add(new IndexDocumentField("__content", variation.Code, IndexDocumentFieldValueType.String) { IsRetrievable = true, IsSearchable = true, IsCollection = true });
+            document.AddContentString(variation.Code);
             // add the variationId to __variations
-            document.Add(new IndexDocumentField("__variations", variation.Id, IndexDocumentFieldValueType.String) { IsRetrievable = true, IsSearchable = true, IsCollection = true });
+            document.AddSearchableCollection("__variations", variation.Id);
 
             IndexCustomProperties(document, variation.Properties, new[] { PropertyType.Variation });
             IndexDescriptions(document, variation.Reviews);
+        }
+
+        protected virtual void IndexTypeProperty(IndexDocument document, string value)
+        {
+            document.AddFilterableCollection("type", value);
+            IndexIsProperty(document, value);
         }
 
         protected virtual void IndexDescriptions(IndexDocument document, IList<EditorialReview> reviews)
@@ -212,7 +246,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         protected virtual void IndexIsProperty(IndexDocument document, string value)
         {
-            document.Add(new IndexDocumentField("is", value, IndexDocumentFieldValueType.String) { IsRetrievable = true, IsFilterable = true, IsCollection = true });
+            document.AddFilterableCollection("is", value);
         }
 
         protected virtual string GetProductAvailability(CatalogProduct product)
