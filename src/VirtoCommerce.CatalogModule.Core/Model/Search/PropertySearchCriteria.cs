@@ -26,5 +26,6 @@ namespace VirtoCommerce.CatalogModule.Core.Model.Search
         }
 
         public IList<string> PropertyNames { get; set; }
+        public IList<string> PropertyTypes { get; set; }
     }
 }
