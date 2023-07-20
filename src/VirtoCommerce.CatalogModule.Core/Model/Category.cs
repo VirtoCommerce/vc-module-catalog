@@ -170,15 +170,20 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         }
         #endregion
 
-        public bool IsActiveInParents
+        public bool ParentIsActive
         {
             get
             {
-                return IsActiveInParentsInner(this);
+                if (Parent is null)
+                {
+                    return true;
+                }
+
+                return ParentIsActiveInner(Parent);
             }
         }
 
-        private bool IsActiveInParentsInner(Category category)
+        private bool ParentIsActiveInner(Category category)
         {
             bool result;
 
@@ -190,7 +195,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
             {
                 result = category.Parent == null
                     ? category.IsActive == true
-                    : IsActiveInParentsInner(category.Parent);
+                    : ParentIsActiveInner(category.Parent);
             }
 
             return result;

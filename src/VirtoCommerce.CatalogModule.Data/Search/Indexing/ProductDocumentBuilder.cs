@@ -100,7 +100,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             document.AddFilterableValue("__type", product.GetType().Name, IndexDocumentFieldValueType.String);
             document.AddFilterableValue("__sort", product.Name, IndexDocumentFieldValueType.String);
 
-            var statusField = product.IsActiveInParents ? "visible" : "hidden";
+            var statusField = ParentIsActive(product) ? "visible" : "hidden";
             IndexIsProperty(document, statusField);
             IndexIsProperty(document, string.IsNullOrEmpty(product.MainProductId) ? "product" : "variation");
             IndexIsProperty(document, product.Code);
@@ -233,6 +233,14 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Product must inherit "hidden" flag from parent categories
+        /// </summary>
+        private static bool ParentIsActive(CatalogProduct product)
+        {
+            return product.IsActive == true && product.MainProductId == null && product.ParentCategoryIsActive;
         }
     }
 }

@@ -439,28 +439,17 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
         #endregion
 
-        public bool IsActiveInParents
+        public bool ParentCategoryIsActive
         {
             get
             {
-                return IsActiveInParentsInner(this);
+                if (Category is null)
+                {
+                    return true;
+                }
+
+                return Category.IsActive == true && Category.ParentIsActive;
             }
-        }
-
-        /// <summary>
-        /// Look up parent caregory visibility and combite with product visibility
-        /// </summary>
-        private static bool IsActiveInParentsInner(CatalogProduct product)
-        {
-            var productResult = product.IsActive == true && product.MainProductId == null;
-
-            if (!productResult)
-            {
-                return false;
-            }
-
-            var categoryResult = product.Category == null || product.Category.IsActiveInParents;
-            return categoryResult;
         }
 
         public virtual object GetCopy()

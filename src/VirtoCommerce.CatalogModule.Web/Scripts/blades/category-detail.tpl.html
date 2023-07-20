@@ -10,14 +10,14 @@
     </div>
 </div>
 
-<script type="text/ng-template" id="isActive.html">
+<script type="text/ng-template" id="categoryDetailIsActive.html">
   <div class="form-input">
     <label class="form-label __switch">
       <input type="checkbox" ng-model="blade.currentEntity.isActive">
       <span class="switch"></span>
     </label>
   </div>
-  <div class="form-error" ng-if="!blade.currentEntity.isActiveInParents">
+  <div class="form-error" ng-if="!blade.currentEntity.parentIsActive">
     <div class="vc-alert vc-alert--warning">
       <svg class="vc-alert__icon">
         <use href="/images/error.svg#icon"></use>
