@@ -38,7 +38,7 @@ public class CategoryTreeService : ICategoryTreeService
             async missingIds =>
             {
                 var result = await GetNodesWithChildrenNoCache(catalogId, RestoreNullId(missingIds), onlyActive);
-                return ReplaceNullId(result).AsEnumerable();
+                return ReplaceNullId(result);
             },
             ConfigureCache);
 

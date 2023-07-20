@@ -17,7 +17,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         /// <summary>
         /// Gets or sets a value indicating whether user can change property metadata or remove this property.
         /// </summary>
-        public bool IsManageable => !IsTransient();
+        public bool IsManageable => !this.IsTransient();
         /// <summary>
         /// Gets or sets a value indicating whether this instance is new. A new property should be created on server site instead of trying to update it.
         /// </summary>

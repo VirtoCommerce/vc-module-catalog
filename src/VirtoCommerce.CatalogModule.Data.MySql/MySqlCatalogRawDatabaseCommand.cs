@@ -12,9 +12,9 @@ namespace VirtoCommerce.CatalogModule.Data.MySql
     {
         private const int BatchSize = 500;
 
-        public async Task<string[]> GetAllChildrenCategoriesIdsAsync(CatalogDbContext dbContext, string[] categoryIds)
+        public async Task<IList<string>> GetAllChildrenCategoriesIdsAsync(CatalogDbContext dbContext, IList<string> categoryIds)
         {
-            if (categoryIds.Length == 0)
+            if (categoryIds.Count == 0)
             {
                 return Array.Empty<string>();
             }
@@ -53,7 +53,7 @@ namespace VirtoCommerce.CatalogModule.Data.MySql
             return result.ToArray();
         }
 
-        public async Task<string[]> GetAllSeoDuplicatesIdsAsync(CatalogDbContext dbContext)
+        public async Task<IList<string>> GetAllSeoDuplicatesIdsAsync(CatalogDbContext dbContext)
         {
             const string commandTemplate = @"
                         SELECT cs.Id from CatalogSeoInfo as cs where cs.Id not in (
@@ -72,6 +72,7 @@ namespace VirtoCommerce.CatalogModule.Data.MySql
             {
                 return new List<AssociationEntity>();
             }
+
             var result = new List<AssociationEntity>();
 
             var commandTemplate =
@@ -208,7 +209,7 @@ namespace VirtoCommerce.CatalogModule.Data.MySql
             return result;
         }
 
-        public async Task<ICollection<CategoryEntity>> SearchCategoriesHierarchyAsync(CatalogDbContext dbContext, string categoryId)
+        public async Task<IList<CategoryEntity>> SearchCategoriesHierarchyAsync(CatalogDbContext dbContext, string categoryId)
         {
             var commandTemplate = @"
                      SELECT t2.* FROM (
@@ -244,10 +245,9 @@ namespace VirtoCommerce.CatalogModule.Data.MySql
                 commandText = $"DELETE PV FROM PropertyValue PV INNER JOIN Item I ON I.Id = PV.ItemId AND I.CatalogId = '{itemProperty.CatalogId}' WHERE PV.Name = '{itemProperty.Name}'";
                 await dbContext.Database.ExecuteSqlInterpolatedAsync(commandText);
             }
-
         }
 
-        public async Task RemoveCatalogsAsync(CatalogDbContext dbContext, string[] ids)
+        public async Task RemoveCatalogsAsync(CatalogDbContext dbContext, IList<string> ids)
         {
             if (!ids.IsNullOrEmpty())
             {
@@ -266,12 +266,11 @@ namespace VirtoCommerce.CatalogModule.Data.MySql
                     await ExecuteStoreQueryAsync(dbContext, commandTemplate, ids.Skip(skip).Take(BatchSize));
                     skip += BatchSize;
                 }
-                while (skip < ids.Length);
+                while (skip < ids.Count);
             }
-
         }
 
-        public async Task RemoveCategoriesAsync(CatalogDbContext dbContext, string[] ids)
+        public async Task RemoveCategoriesAsync(CatalogDbContext dbContext, IList<string> ids)
         {
             if (!ids.IsNullOrEmpty())
             {
@@ -294,11 +293,11 @@ namespace VirtoCommerce.CatalogModule.Data.MySql
 
                     skip += BatchSize;
                 }
-                while (skip < ids.Length);
+                while (skip < ids.Count);
             }
         }
 
-        public async Task RemoveItemsAsync(CatalogDbContext dbContext, string[] itemIds)
+        public async Task RemoveItemsAsync(CatalogDbContext dbContext, IList<string> itemIds)
         {
             if (!itemIds.IsNullOrEmpty())
             {
@@ -338,8 +337,7 @@ namespace VirtoCommerce.CatalogModule.Data.MySql
                     await ExecuteStoreQueryAsync(dbContext, commandTemplate, itemIds.Skip(skip).Take(BatchSize));
 
                     skip += BatchSize;
-                } while (skip < itemIds.Length);
-
+                } while (skip < itemIds.Count);
             }
         }
 
@@ -366,6 +364,5 @@ namespace VirtoCommerce.CatalogModule.Data.MySql
             public string Text { get; set; } = string.Empty;
             public IList<object> Parameters { get; set; } = new List<object>();
         }
-
     }
 }

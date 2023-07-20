@@ -34,7 +34,7 @@ namespace VirtoCommerce.CatalogModule.Data.Validation
             RuleFor(r => r)
                 .CustomAsync(async (r, context, _) =>
                 {
-                    (var isPropertyUniqueForHierarchy, var categoryName) = await CheckPropertyUniquenessAsync(r);
+                    var (isPropertyUniqueForHierarchy, categoryName) = await CheckPropertyUniquenessAsync(r);
 
                     if (!isPropertyUniqueForHierarchy)
                     {
@@ -66,7 +66,7 @@ namespace VirtoCommerce.CatalogModule.Data.Validation
                     categoryIds = categoryIds.Append(request.CategoryId).ToImmutableArray();
                 }
 
-                var categories = await _categoryService.GetAsync(categoryIds.ToList(), CategoryResponseGroup.WithProperties.ToString());
+                var categories = await _categoryService.GetNoCloneAsync(categoryIds.ToList(), CategoryResponseGroup.WithProperties.ToString());
 
                 var properties = categories.SelectMany(x => x.Properties);
 
@@ -92,7 +92,7 @@ namespace VirtoCommerce.CatalogModule.Data.Validation
 
             if (existingProperty != null)
             {
-                categoryName = (await _categoryService.GetByIdAsync(existingProperty.CategoryId, CategoryResponseGroup.Info.ToString()))?.Name;
+                categoryName = (await _categoryService.GetNoCloneAsync(existingProperty.CategoryId, CategoryResponseGroup.Info.ToString()))?.Name;
             }
 
             return (existingProperty == null, categoryName);

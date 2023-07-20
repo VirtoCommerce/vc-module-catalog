@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
 using Moq;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
@@ -23,11 +22,9 @@ namespace VirtoCommerce.CatalogModule.Tests
 
             var catalogRepository = new Mock<ICatalogRepository>();
             catalogRepository.Setup(r => r.Items).Returns(products);
-            catalogRepository.Setup(r => r.GetItemByIdsAsync(It.IsAny<string[]>(), It.IsAny<string>()))
-                .Returns((string[] ids, ItemResponseGroup responseGroup) =>
-            {
-                return Task.FromResult(products.Where(p => ids.Contains(p.Id)).ToArray());
-            });
+            catalogRepository
+                .Setup(x => x.GetItemByIdsAsync(It.IsAny<IList<string>>(), It.IsAny<string>()))
+                .ReturnsAsync((IList<string> ids, ItemResponseGroup responseGroup) => products.Where(p => ids.Contains(p.Id)).ToArray());
             catalogRepository.Setup(r => r.Associations).Returns(associations);
 
             _associationService = new AssociationService(() => catalogRepository.Object);

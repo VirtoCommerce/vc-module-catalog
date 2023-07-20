@@ -9,12 +9,8 @@ namespace VirtoCommerce.CatalogModule.Data.Validation
 {
     public class ListEntriesMoveRequestValidator : AbstractValidator<ListEntriesMoveRequest>
     {
-        private readonly ICategoryService _categoryService;
-
         public ListEntriesMoveRequestValidator(ICategoryService categoryService)
         {
-            _categoryService = categoryService;
-
             RuleFor(x => x).CustomAsync(async (moveInfo, context, token) =>
             {
                 if (string.IsNullOrEmpty(moveInfo.Category))
@@ -22,11 +18,11 @@ namespace VirtoCommerce.CatalogModule.Data.Validation
                     return;
                 }
 
-                var targetCategory = await _categoryService.GetByIdAsync(moveInfo.Category, CategoryResponseGroup.WithOutlines.ToString());
+                var targetCategory = await categoryService.GetNoCloneAsync(moveInfo.Category, CategoryResponseGroup.WithOutlines.ToString());
 
                 if (targetCategory == null)
                 {
-                    context.AddFailure($"Destination category does not exist.");
+                    context.AddFailure("Destination category does not exist.");
                     return;
                 }
 
@@ -42,7 +38,7 @@ namespace VirtoCommerce.CatalogModule.Data.Validation
                     if (targetCategoryPath.EqualsInvariant(movedCategoryPath)
                         || targetCategoryPath.StartsWith($"{movedCategoryPath}/"))
                     {
-                        context.AddFailure($"Cannot move category under itself.");
+                        context.AddFailure("Cannot move category under itself.");
                         return;
                     }
                 }

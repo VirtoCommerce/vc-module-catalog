@@ -1,38 +1,29 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
-    <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
-        <noWarn>1591</noWarn>
-        <LangVersion>latest</LangVersion>
-        <IsPackable>True</IsPackable>
-        <PublishRepositoryUrl>true</PublishRepositoryUrl>
-        <EmbedUntrackedSources>true</EmbedUntrackedSources>
-        <IncludeSymbols>true</IncludeSymbols>
-        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    </PropertyGroup>
-    <PropertyGroup>
-        <!-- Project is not a test project -->
-        <SonarQubeTestProject>false</SonarQubeTestProject>
-    </PropertyGroup>
-    <ItemGroup>
-        <PackageReference Include="FluentValidation" Version="10.3.4" />
-        <PackageReference Include="Google.Apis.YouTube.v3" Version="1.54.0.2434" />
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-        <PackageReference Include="EntityFrameworkCore.Triggers" Version="1.2.2" />
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.0" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.0" />
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-        <PackageReference Include="VirtoCommerce.ExportModule.Data" Version="3.200.0" />
-        <PackageReference Include="VirtoCommerce.Platform.Data" Version="3.286.0" />
-        <PackageReference Include="VirtoCommerce.Platform.Security" Version="3.286.0" />
-        <PackageReference Include="VirtoCommerce.SearchModule.Data" Version="3.223.0" />
-        <PackageReference Include="VirtoCommerce.StoreModule.Core" Version="3.204.0" />
-        <PackageReference Include="VirtoCommerce.AssetsModule.Core" Version="3.200.0" />
-    </ItemGroup>
-    <ItemGroup>
-        <ProjectReference Include="..\VirtoCommerce.CatalogModule.Core\VirtoCommerce.CatalogModule.Core.csproj" />
-    </ItemGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-        <NoWarn>1701;1702;1705;1591</NoWarn>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <noWarn>1591</noWarn>
+    <LangVersion>latest</LangVersion>
+    <IsPackable>True</IsPackable>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+  <PropertyGroup>
+    <!-- Project is not a test project -->
+    <SonarQubeTestProject>false</SonarQubeTestProject>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="10.3.4" />
+    <PackageReference Include="Google.Apis.YouTube.v3" Version="1.54.0.2434" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="VirtoCommerce.AssetsModule.Core" Version="3.400.0" />
+    <PackageReference Include="VirtoCommerce.ExportModule.Data" Version="3.200.0" />
+    <PackageReference Include="VirtoCommerce.Platform.Hangfire" Version="3.400.0" />
+    <PackageReference Include="VirtoCommerce.Platform.Security" Version="3.400.0" />
+    <PackageReference Include="VirtoCommerce.StoreModule.Core" Version="3.400.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VirtoCommerce.CatalogModule.Core\VirtoCommerce.CatalogModule.Core.csproj" />
+  </ItemGroup>
 </Project>

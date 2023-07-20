@@ -43,7 +43,7 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
 
             if (searchResult.TotalCount != 0)
             {
-                await _videoService.DeleteAsync(searchResult.Results.Select(x => x.Id));
+                await _videoService.DeleteAsync(searchResult.Results.Select(x => x.Id).ToList());
             }
         }
     }

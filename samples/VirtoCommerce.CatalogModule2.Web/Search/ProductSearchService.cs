@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Options;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Model;
@@ -8,16 +9,18 @@ using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Data.Search;
 using VirtoCommerce.Platform.Core.Caching;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.GenericCrud;
 
 namespace VirtoCommerce.CatalogModule2.Web.Search
 {
     public class ProductSearchService2 : ProductSearchService
     {
         public ProductSearchService2(
-            Func<ICatalogRepository> catalogRepositoryFactory,
+            Func<ICatalogRepository> repositoryFactory,
             IPlatformMemoryCache platformMemoryCache,
-            IItemService itemService)
-            : base(catalogRepositoryFactory, platformMemoryCache, itemService)
+            IItemService crudService,
+            IOptions<CrudOptions> crudOptions)
+            : base(repositoryFactory, platformMemoryCache, crudService, crudOptions)
         {
         }
 

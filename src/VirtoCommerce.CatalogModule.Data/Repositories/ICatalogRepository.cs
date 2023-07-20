@@ -26,34 +26,34 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         IQueryable<CategoryRelationEntity> CategoryLinks { get; }
         IQueryable<SeoInfoEntity> SeoInfos { get; }
 
-        Task<string[]> GetAllSeoDuplicatesIdsAsync();
+        Task<IList<string>> GetAllSeoDuplicatesIdsAsync();
 
-        Task<string[]> GetAllChildrenCategoriesIdsAsync(string[] categoryIds);
+        Task<IList<string>> GetAllChildrenCategoriesIdsAsync(IList<string> categoryIds);
 
-        Task<CatalogEntity[]> GetCatalogsByIdsAsync(string[] catalogIds);
+        Task<IList<CatalogEntity>> GetCatalogsByIdsAsync(IList<string> catalogIds);
 
-        Task<CategoryEntity[]> GetCategoriesByIdsAsync(string[] categoriesIds, string responseGroup);
+        Task<IList<CategoryEntity>> GetCategoriesByIdsAsync(IList<string> categoriesIds, string responseGroup);
 
-        Task<ItemEntity[]> GetItemByIdsAsync(string[] itemIds, string responseGroup = null);
+        Task<IList<ItemEntity>> GetItemByIdsAsync(IList<string> itemIds, string responseGroup = null);
 
-        Task<PropertyEntity[]> GetAllCatalogPropertiesAsync(string catalogId);
+        Task<IList<PropertyEntity>> GetAllCatalogPropertiesAsync(string catalogId);
 
-        Task<PropertyEntity[]> GetPropertiesByIdsAsync(string[] propIds, bool loadDictValues = false);
+        Task<IList<PropertyEntity>> GetPropertiesByIdsAsync(IList<string> propIds, bool loadDictValues = false);
 
-        Task<PropertyDictionaryItemEntity[]> GetPropertyDictionaryItemsByIdsAsync(string[] dictItemIds);
+        Task<IList<PropertyDictionaryItemEntity>> GetPropertyDictionaryItemsByIdsAsync(IList<string> dictItemIds);
 
-        Task<AssociationEntity[]> GetAssociationsByIdsAsync(string[] associationIds);
+        Task<IList<AssociationEntity>> GetAssociationsByIdsAsync(IList<string> associationIds);
 
         Task<GenericSearchResult<AssociationEntity>> SearchAssociations(ProductAssociationSearchCriteria criteria);
 
-        Task RemoveItemsAsync(string[] itemIds);
+        Task RemoveItemsAsync(IList<string> itemIds);
 
-        Task RemoveCategoriesAsync(string[] ids);
+        Task RemoveCategoriesAsync(IList<string> ids);
 
-        Task RemoveCatalogsAsync(string[] ids);
+        Task RemoveCatalogsAsync(IList<string> ids);
 
         Task RemoveAllPropertyValuesAsync(string propertyId);
 
-        Task<ICollection<CategoryEntity>> SearchCategoriesHierarchyAsync(string categoryId);
+        Task<IList<CategoryEntity>> SearchCategoriesHierarchyAsync(string categoryId);
     }
 }

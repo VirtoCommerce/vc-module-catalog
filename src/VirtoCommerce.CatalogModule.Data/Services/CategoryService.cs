@@ -25,45 +25,49 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 {
     public class CategoryService : CrudService<Category, CategoryEntity, CategoryChangingEvent, CategoryChangedEvent>, ICategoryService
     {
-        private new readonly IPlatformMemoryCache _platformMemoryCache;
-        private new readonly Func<ICatalogRepository> _repositoryFactory;
-        private new readonly IEventPublisher _eventPublisher;
+        private readonly Func<ICatalogRepository> _repositoryFactory;
+        private readonly IPlatformMemoryCache _platformMemoryCache;
+        private readonly IEventPublisher _eventPublisher;
         private readonly AbstractValidator<IHasProperties> _hasPropertyValidator;
         private readonly ICatalogService _catalogService;
         private readonly IOutlineService _outlineService;
         private readonly IBlobUrlResolver _blobUrlResolver;
 
         public CategoryService(
-            Func<ICatalogRepository> catalogRepositoryFactory
-            , IEventPublisher eventPublisher
-            , IPlatformMemoryCache platformMemoryCache
-            , AbstractValidator<IHasProperties> hasPropertyValidator
-            , ICatalogService catalogService
-            , IOutlineService outlineService
-            , IBlobUrlResolver blobUrlResolver)
-            : base(catalogRepositoryFactory, platformMemoryCache, eventPublisher)
+            Func<ICatalogRepository> repositoryFactory,
+            IPlatformMemoryCache platformMemoryCache,
+            IEventPublisher eventPublisher,
+            AbstractValidator<IHasProperties> hasPropertyValidator,
+            ICatalogService catalogService,
+            IOutlineService outlineService,
+            IBlobUrlResolver blobUrlResolver)
+            : base(repositoryFactory, platformMemoryCache, eventPublisher)
         {
-            _repositoryFactory = catalogRepositoryFactory;
-            _eventPublisher = eventPublisher;
+            _repositoryFactory = repositoryFactory;
             _platformMemoryCache = platformMemoryCache;
+            _eventPublisher = eventPublisher;
             _hasPropertyValidator = hasPropertyValidator;
+            _catalogService = catalogService;
             _outlineService = outlineService;
             _blobUrlResolver = blobUrlResolver;
-            _catalogService = catalogService;
         }
 
-        #region ICategoryService Members
+        public override Task<IList<Category>> GetAsync(IList<string> ids, string responseGroup = null, bool clone = true)
+        {
+            return clone
+                ? GetByIdsAsync(ids, responseGroup, catalogId: null)
+                : GetNoCloneAsync(ids, responseGroup);
+        }
 
-        public virtual async Task<Category[]> GetByIdsAsync(string[] categoryIds, string responseGroup, string catalogId = null)
+        public virtual async Task<IList<Category>> GetByIdsAsync(IList<string> ids, string responseGroup, string catalogId)
         {
             var result = new List<Category>();
 
-            foreach (var categoryId in categoryIds.Where(x => x != null))
+            foreach (var categoryId in ids.Where(x => x != null))
             {
                 var categoryBranch = await PreloadCategoryBranchAsync(categoryId);
-                var category = categoryBranch[categoryId];
 
-                if (category != null)
+                if (categoryBranch.TryGetValue(categoryId, out var category) && category != null)
                 {
                     category = category.CloneTyped();
 
@@ -79,30 +83,13 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 }
             }
 
-            return result.ToArray();
-        }
-
-        public virtual Task SaveChangesAsync(Category[] categories)
-        {
-            return SaveChangesAsync(categories.AsEnumerable());
-        }
-
-        public virtual Task DeleteAsync(string[] categoryIds)
-        {
-            return DeleteAsync(categoryIds, softDelete: false);
-        }
-
-        #endregion
-
-        public override async Task<IReadOnlyCollection<Category>> GetAsync(List<string> ids, string responseGroup = null)
-        {
-            return await GetByIdsAsync(ids.ToArray(), responseGroup, catalogId: null);
+            return result;
         }
 
         /// <summary>
         /// Returns data from the cache without cloning. This consumes less memory, but returned data must not be modified.
         /// </summary>
-        public virtual async Task<IList<Category>> GetNoCloneAsync(IList<string> ids, string responseGroup = null)
+        protected virtual async Task<IList<Category>> GetNoCloneAsync(IList<string> ids, string responseGroup)
         {
             var result = new List<Category>();
 
@@ -117,13 +104,12 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 }
             }
 
-            return result.ToArray();
+            return result;
         }
 
-        public override async Task DeleteAsync(IEnumerable<string> ids, bool softDelete = false)
+        public override async Task DeleteAsync(IList<string> ids, bool softDelete = false)
         {
-            var categoryIds = ids.ToArray();
-            var categories = await GetByIdsAsync(categoryIds, CategoryResponseGroup.Info.ToString(), catalogId: null);
+            var categories = await GetAsync(ids, CategoryResponseGroup.Info.ToString());
 
             if (categories.Any())
             {
@@ -135,7 +121,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 using (var repository = _repositoryFactory())
                 {
                     // TODO: Implement soft delete
-                    await repository.RemoveCategoriesAsync(categoryIds);
+                    await repository.RemoveCategoriesAsync(ids);
                     await repository.UnitOfWork.CommitAsync();
                 }
 
@@ -147,18 +133,15 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         }
 
 
-        protected override async Task BeforeSaveChanges(IEnumerable<Category> models)
+        protected override async Task BeforeSaveChanges(IList<Category> models)
         {
-            var categories = models.ToArray();
-            await base.BeforeSaveChanges(categories);
-            await ValidateCategoryPropertiesAsync(categories);
+            await base.BeforeSaveChanges(models);
+            await ValidateCategoryPropertiesAsync(models);
         }
 
-        protected override async Task<IEnumerable<CategoryEntity>> LoadEntities(IRepository repository, IEnumerable<string> ids, string responseGroup)
+        protected override Task<IList<CategoryEntity>> LoadEntities(IRepository repository, IList<string> ids, string responseGroup)
         {
-            var entities = await ((ICatalogRepository)repository).GetCategoriesByIdsAsync(ids.ToArray(), responseGroup);
-
-            return entities;
+            return ((ICatalogRepository)repository).GetCategoriesByIdsAsync(ids, responseGroup);
         }
 
         protected virtual bool HasFlag(string responseGroup, CategoryResponseGroup flag)
@@ -222,57 +205,15 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             });
         }
 
-        protected virtual async Task<ICollection<CategoryEntity>> SearchCategoriesHierarchyAsync(string categoryId)
+        protected virtual async Task<IList<CategoryEntity>> SearchCategoriesHierarchyAsync(string categoryId)
         {
             using var repository = _repositoryFactory();
             repository.DisableChangesTracking();
 
-            return (await LoadEntities(repository, new[] { categoryId }, CategoryResponseGroup.Full.ToString())).ToArray();
+            return await LoadEntities(repository, new[] { categoryId }, CategoryResponseGroup.Full.ToString());
         }
 
-        [Obsolete("Use PreloadCategoriesAsync() instead.")]
-        protected virtual async Task<IDictionary<string, Category>> PreloadCategoriesAsync(string catalogId)
-        {
-            return await PreloadCategoriesAsync();
-        }
-
-        [Obsolete("Use PreloadCategoryBranchAsync()")]
-        protected Task<IDictionary<string, Category>> PreloadCategoriesAsync()
-        {
-            var cacheKey = CacheKey.With(GetType(), nameof(PreloadCategoriesAsync));
-            return _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async cacheEntry =>
-            {
-                cacheEntry.AddExpirationToken(CatalogCacheRegion.CreateChangeToken());
-
-                var entities = new List<CategoryEntity>();
-                using (var repository = _repositoryFactory())
-                {
-                    repository.DisableChangesTracking();
-                    var categoriesIds = repository.Categories
-                        .Select(x => x.Id)
-                        .ToArray();
-
-                    foreach (var page in categoriesIds.Paginate(50))
-                    {
-                        entities.AddRange(await repository.GetCategoriesByIdsAsync(page.ToArray(), CategoryResponseGroup.Full.ToString()));
-                    }
-                }
-
-                var result = entities
-                    .Select(x => x.ToModel(AbstractTypeFactory<Category>.TryCreateInstance()))
-                    .ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase)
-                    .WithDefaultValue(null);
-
-                // Resolve relative URLs for all category assets
-                ResolveImageUrls(result.Values);
-                await LoadDependencies(result.Values, result);
-                ApplyInheritanceRules(result.Values);
-
-                return result;
-            });
-        }
-
-        protected virtual void ResolveImageUrls(IEnumerable<Category> categories)
+        protected virtual void ResolveImageUrls(ICollection<Category> categories)
         {
             var allImages = new { categories }.GetFlatObjectsListWithInterface<IHasImages>().Where(x => x.Images != null).SelectMany(x => x.Images);
             foreach (var image in allImages.Where(x => !string.IsNullOrEmpty(x.Url)))
@@ -280,12 +221,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 image.RelativeUrl = !string.IsNullOrEmpty(image.RelativeUrl) ? image.RelativeUrl : image.Url;
                 image.Url = _blobUrlResolver.GetAbsoluteUrl(image.Url);
             }
-        }
-
-        [Obsolete("Use LoadDependencies()")]
-        protected virtual Task LoadDependenciesAsync(IEnumerable<Category> categories, IDictionary<string, Category> preloadedCategoriesMap)
-        {
-            return LoadDependencies(categories.ToList(), preloadedCategoriesMap);
         }
 
         protected virtual async Task LoadDependencies(ICollection<Category> categories, IDictionary<string, Category> preloadedCategoriesMap)
@@ -360,7 +295,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return result;
         }
 
-        protected virtual void ApplyInheritanceRules(IEnumerable<Category> categories)
+        protected virtual void ApplyInheritanceRules(ICollection<Category> categories)
         {
             foreach (var category in categories.OrderBy(x => x.Level))
             {
@@ -368,7 +303,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
         }
 
-        protected virtual async Task ValidateCategoryPropertiesAsync(IEnumerable<Category> categories)
+        protected virtual async Task ValidateCategoryPropertiesAsync(IList<Category> categories)
         {
             if (categories == null)
             {
@@ -399,7 +334,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
         }
 
-        protected override void ClearCache(IEnumerable<Category> models)
+        protected override void ClearCache(IList<Category> models)
         {
             ClearCacheAsync(models).GetAwaiter().GetResult();
         }
@@ -412,16 +347,16 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             {
                 repository.DisableChangesTracking();
 
-                var categoryIds = categories.Select(x => x.Id).ToArray();
+                var categoryIds = categories.Select(x => x.Id).ToList();
 
                 // Find all linked categories first
                 var linkedCategoryIds = await repository.CategoryLinks
                     .Where(x => categoryIds.Contains(x.TargetCategoryId))
                     .Select(x => x.SourceCategoryId)
                     .Distinct()
-                    .ToArrayAsync();
+                    .ToListAsync();
 
-                var categoryAndLinkedCategoryIds = categoryIds.Union(linkedCategoryIds).ToArray();
+                var categoryAndLinkedCategoryIds = categoryIds.Union(linkedCategoryIds).ToList();
                 var childCategoryIds = await repository.GetAllChildrenCategoriesIdsAsync(categoryAndLinkedCategoryIds);
 
                 var allCategoryIds = categoryAndLinkedCategoryIds.Union(childCategoryIds);
@@ -439,10 +374,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
             using var repository = _repositoryFactory();
 
-            var categoryIds = categories.Select(x => x.Id).ToArray();
+            var categoryIds = categories.Select(x => x.Id).ToList();
             var childCategoryIds = await repository.GetAllChildrenCategoriesIdsAsync(categoryIds);
 
-            var allCategoryIds = categoryIds.Concat(childCategoryIds).ToArray();
+            var allCategoryIds = categoryIds.Concat(childCategoryIds).ToList();
 
             var productIds = await repository.Items
                 .Where(x => allCategoryIds.Contains(x.CategoryId))

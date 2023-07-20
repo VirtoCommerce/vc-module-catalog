@@ -70,8 +70,9 @@ namespace VirtoCommerce.CatalogModule.Tests
             // assert
             itemService.Verify(
                 t => t.GetAsync(
-                    It.IsAny<List<string>>(),
-                    (ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemProperties).ToString()));
+                    It.IsAny<IList<string>>(),
+                    (ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemProperties).ToString(),
+                    It.IsAny<bool>()));
         }
 
         [Fact]
