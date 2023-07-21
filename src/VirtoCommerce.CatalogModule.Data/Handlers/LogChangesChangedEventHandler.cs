@@ -15,7 +15,7 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
 {
     public class LogChangesChangedEventHandler : IEventHandler<ProductChangedEvent>, IEventHandler<CategoryChangedEvent>
     {
-        private readonly string _hierarchyChanged = "HeirarchyChange";
+        private readonly string _hierarchyChanged = "HierarchyChange";
         private readonly string _visibilityChanged = "VisibilityChange";
 
         private readonly IChangeLogService _changeLogService;
@@ -92,30 +92,23 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
             return logOperations;
         }
 
-        [DisableConcurrentExecution(10)]
-        // "DisableConcurrentExecutionAttribute" prevents to start simultaneous job payloads.
-        // Should have short timeout, because this attribute implemented by following manner: newly started job falls into "processing" state immediately.
-        // Then it tries to receive job lock during timeout. If the lock received, the job starts payload.
-        // When the job is awaiting desired timeout for lock release, it stucks in "processing" anyway. (Therefore, you should not to set long timeouts (like 24*60*60), this will cause a lot of stucked jobs and performance degradation.)
-        // Then, if timeout is over and the lock NOT acquired, the job falls into "scheduled" state (this is default fail-retry scenario).
-        // Failed job goes to "Failed" state (by default) after retries exhausted.
         public async Task LogEntityChangesInBackgroundAsync(OperationLog[] operationLogs)
         {
             var result = new List<OperationLog>();
 
             using (var repository = _catalogRepositoryFactory())
             {
-                var hierarchyLogs = await GetChildrenCategoriesLogs(repository, operationLogs, _hierarchyChanged);
-                result = operationLogs.Concat(hierarchyLogs).ToList();
+                var hierarchyLogs = await GetChildCategoriesLogs(repository, operationLogs, _hierarchyChanged);
+                result.AddRange(hierarchyLogs);
 
-                var visibilityLogs = await GetChildrenCategoriesLogs(repository, operationLogs, _visibilityChanged);
-                result = result.Concat(visibilityLogs).ToList();
+                var visibilityLogs = await GetChildCategoriesLogs(repository, operationLogs, _visibilityChanged);
+                result.AddRange(visibilityLogs);
             }
 
             await _changeLogService.SaveChangesAsync(result.ToArray());
         }
 
-        private async Task<List<OperationLog>> GetChildrenCategoriesLogs(ICatalogRepository repository, OperationLog[] operationLogs, string operationTypeMarker)
+        private static async Task<List<OperationLog>> GetChildCategoriesLogs(ICatalogRepository repository, OperationLog[] operationLogs, string operationTypeMarker)
         {
             var categoryIds = operationLogs
                 .Where(x => x.ObjectType == nameof(Category) && x.Detail == operationTypeMarker)
@@ -123,19 +116,21 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
                 .ToArray();
 
             // find affected categories
-            var childrenCategoryIds = await repository.GetAllChildrenCategoriesIdsAsync(categoryIds);
-            var result = childrenCategoryIds.Select(x =>
-            {
-                var log = AbstractTypeFactory<OperationLog>.TryCreateInstance();
+            var childCategoryIds = await repository.GetAllChildrenCategoriesIdsAsync(categoryIds);
 
-                log.ObjectId = x;
-                log.ObjectType = nameof(Category);
-                log.OperationType = EntryState.Modified;
-                log.Detail = operationTypeMarker;
+            var result = childCategoryIds
+                .Select(x =>
+                {
+                    var log = AbstractTypeFactory<OperationLog>.TryCreateInstance();
 
-                return log;
-            })
-            .ToList();
+                    log.ObjectId = x;
+                    log.ObjectType = nameof(Category);
+                    log.OperationType = EntryState.Modified;
+                    log.Detail = operationTypeMarker;
+
+                    return log;
+                })
+                .ToList();
 
             return result;
         }

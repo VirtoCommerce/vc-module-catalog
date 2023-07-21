@@ -18,10 +18,10 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
 {
     public class IndexCategoryChangedEventHandler : IEventHandler<CategoryChangedEvent>
     {
+        private readonly Func<ICatalogRepository> _catalogRepositoryFactory;
         private readonly ISettingsManager _settingsManager;
         private readonly IIndexingJobService _indexingJobService;
         private readonly IEnumerable<IndexDocumentConfiguration> _configurations;
-        private readonly Func<ICatalogRepository> _catalogRepositoryFactory;
 
         public IndexCategoryChangedEventHandler(
             Func<ICatalogRepository> catalogRepositoryFactory,
@@ -46,7 +46,7 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
 
                 var indexEntries = message.ChangedEntries
                     .Select(x => new IndexEntry { Id = x.OldEntry.Id, EntryState = x.EntryState, Type = KnownDocumentTypes.Category })
-                    .ToArray();
+                    .ToList();
 
                 var visibilityChangedCategoryIds = message.ChangedEntries
                     .Where(x =>
@@ -58,12 +58,9 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
                 if (visibilityChangedCategoryIds.Any())
                 {
                     using var repository = _catalogRepositoryFactory();
-
-                    var childrenCategoryIds = await repository.GetAllChildrenCategoriesIdsAsync(visibilityChangedCategoryIds);
-                    var childrenCategoryEntireis = childrenCategoryIds.Select(x => new IndexEntry { Id = x, EntryState = EntryState.Modified, Type = KnownDocumentTypes.Category });
-                    indexEntries = indexEntries
-                        .Concat(childrenCategoryEntireis)
-                        .ToArray();
+                    var childCategoryIds = await repository.GetAllChildrenCategoriesIdsAsync(visibilityChangedCategoryIds);
+                    var childCategoryEntries = childCategoryIds.Select(x => new IndexEntry { Id = x, EntryState = EntryState.Modified, Type = KnownDocumentTypes.Category });
+                    indexEntries.AddRange(childCategoryEntries);
                 }
 
                 _indexingJobService.EnqueueIndexAndDeleteDocuments(indexEntries, JobPriority.Normal,

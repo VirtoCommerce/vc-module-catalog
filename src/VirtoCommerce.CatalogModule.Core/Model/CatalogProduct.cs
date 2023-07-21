@@ -442,12 +442,8 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         {
             get
             {
-                if (Category is null)
-                {
-                    return true;
-                }
-
-                return Category.IsActive == true && Category.ParentIsActive;
+                return Category is null ||
+                       Category.IsActive == true && Category.ParentIsActive;
             }
         }
 

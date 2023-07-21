@@ -31,8 +31,8 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
                     x.EntryState == EntryState.Modified &&
                     (x.OldEntry?.CatalogId != x.NewEntry?.CatalogId ||
                     x.OldEntry?.ParentId != x.NewEntry?.ParentId ||
-                    x.OldEntry?.Links?.Count != x.NewEntry?.Links?.Count) ||
-                    (x.OldEntry?.IsActive != x.NewEntry?.IsActive))
+                    x.OldEntry?.Links?.Count != x.NewEntry?.Links?.Count ||
+                    x.OldEntry?.IsActive != x.NewEntry?.IsActive))
                 .Select(x => x.NewEntry.Id)
                 .ToList();
 
@@ -48,18 +48,16 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
         /// Resave products to update ModifiedDate:
         /// a workaround to make ProductDocumentChangesProvider track changes in product hierarchy or visibility
         /// </summary>
-        [DisableConcurrentExecution(10)]
         public async Task UpdateProductsAsync(List<string> categoryIds)
         {
-            using (var repository = _catalogRepositoryFactory())
-            {
-                var childrenCategoryIds = await repository.GetAllChildrenCategoriesIdsAsync(categoryIds.ToArray());
-                categoryIds.AddRange(childrenCategoryIds);
-                var childrenProductIds = await repository.Items.Where(x => categoryIds.Contains(x.CategoryId)).Select(x => x.Id).ToListAsync();
+            using var repository = _catalogRepositoryFactory();
 
-                var products = await _itemService.GetAsync(childrenProductIds.ToList(), ItemResponseGroup.ItemInfo.ToString());
-                await _itemService.SaveChangesAsync(products);
-            }
+            var childrenCategoryIds = await repository.GetAllChildrenCategoriesIdsAsync(categoryIds.ToArray());
+            categoryIds.AddRange(childrenCategoryIds);
+            var childrenProductIds = await repository.Items.Where(x => categoryIds.Contains(x.CategoryId)).Select(x => x.Id).ToListAsync();
+
+            var products = await _itemService.GetAsync(childrenProductIds.ToList(), ItemResponseGroup.ItemInfo.ToString());
+            await _itemService.SaveChangesAsync(products);
         }
     }
 }

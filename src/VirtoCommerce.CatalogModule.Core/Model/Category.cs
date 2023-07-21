@@ -174,31 +174,9 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         {
             get
             {
-                if (Parent is null)
-                {
-                    return true;
-                }
-
-                return ParentIsActiveInner(Parent);
+                return Parent is null ||
+                       Parent.IsActive == true && Parent.ParentIsActive;
             }
-        }
-
-        private bool ParentIsActiveInner(Category category)
-        {
-            bool result;
-
-            if (category.IsActive.HasValue && !category.IsActive.Value)
-            {
-                result = false;
-            }
-            else
-            {
-                result = category.Parent == null
-                    ? category.IsActive == true
-                    : ParentIsActiveInner(category.Parent);
-            }
-
-            return result;
         }
 
         public virtual void Move(string catalogId, string categoryId)
