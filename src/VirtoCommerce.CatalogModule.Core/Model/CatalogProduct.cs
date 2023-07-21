@@ -438,6 +438,15 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
         #endregion
 
+        public bool ParentCategoryIsActive
+        {
+            get
+            {
+                return Category is null ||
+                       Category.IsActive == true && Category.ParentIsActive;
+            }
+        }
+
         public virtual object GetCopy()
         {
             var result = this.CloneTyped();

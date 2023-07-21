@@ -13,12 +13,12 @@ using VirtoCommerce.Platform.Core.Events;
 
 namespace VirtoCommerce.CatalogModule.Data.Handlers
 {
-    public sealed class TrackHierarchyChangesEventHandler : IEventHandler<CategoryChangedEvent>
+    public sealed class TrackSpecialChangesEventHandler : IEventHandler<CategoryChangedEvent>
     {
         private readonly Func<ICatalogRepository> _catalogRepositoryFactory;
         private readonly IItemService _itemService;
 
-        public TrackHierarchyChangesEventHandler(Func<ICatalogRepository> catalogRepositoryFactory, IItemService itemService)
+        public TrackSpecialChangesEventHandler(Func<ICatalogRepository> catalogRepositoryFactory, IItemService itemService)
         {
             _catalogRepositoryFactory = catalogRepositoryFactory;
             _itemService = itemService;
@@ -29,9 +29,10 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
             var categoryIds = message.ChangedEntries
                 .Where(x =>
                     x.EntryState == EntryState.Modified &&
-                    x.OldEntry?.CatalogId != x.NewEntry?.CatalogId ||
+                    (x.OldEntry?.CatalogId != x.NewEntry?.CatalogId ||
                     x.OldEntry?.ParentId != x.NewEntry?.ParentId ||
-                    x.OldEntry?.Links?.Count != x.NewEntry?.Links?.Count)
+                    x.OldEntry?.Links?.Count != x.NewEntry?.Links?.Count ||
+                    x.OldEntry?.IsActive != x.NewEntry?.IsActive))
                 .Select(x => x.NewEntry.Id)
                 .ToList();
 
@@ -45,20 +46,18 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
 
         /// <summary>
         /// Resave products to update ModifiedDate:
-        /// a workaround to make ProductDocumentChangesProvider track changes in product hierarchy
+        /// a workaround to make ProductDocumentChangesProvider track changes in product hierarchy or visibility
         /// </summary>
-        [DisableConcurrentExecution(10)]
         public async Task UpdateProductsAsync(List<string> categoryIds)
         {
-            using (var repository = _catalogRepositoryFactory())
-            {
-                var childrenCategoryIds = await repository.GetAllChildrenCategoriesIdsAsync(categoryIds.ToArray());
-                categoryIds.AddRange(childrenCategoryIds);
-                var childrenProductIds = await repository.Items.Where(x => categoryIds.Contains(x.CategoryId)).Select(x => x.Id).ToListAsync();
+            using var repository = _catalogRepositoryFactory();
 
-                var products = await _itemService.GetAsync(childrenProductIds.ToList(), ItemResponseGroup.ItemInfo.ToString());
-                await _itemService.SaveChangesAsync(products);
-            }
+            var childrenCategoryIds = await repository.GetAllChildrenCategoriesIdsAsync(categoryIds.ToArray());
+            categoryIds.AddRange(childrenCategoryIds);
+            var childrenProductIds = await repository.Items.Where(x => categoryIds.Contains(x.CategoryId)).Select(x => x.Id).ToListAsync();
+
+            var products = await _itemService.GetAsync(childrenProductIds.ToList(), ItemResponseGroup.ItemInfo.ToString());
+            await _itemService.SaveChangesAsync(products);
         }
     }
 }

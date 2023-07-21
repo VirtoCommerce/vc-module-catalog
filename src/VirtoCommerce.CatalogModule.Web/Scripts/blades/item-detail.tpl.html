@@ -12,6 +12,22 @@
         </div>
     </div>
 </div>
+<script type="text/ng-template" id="product-details-is-active.html">
+  <div class="form-input">
+    <label class="form-label __switch">
+      <input type="checkbox" ng-model="blade.currentEntity.isActive">
+      <span class="switch"></span>
+    </label>
+  </div>
+  <div class="form-error" ng-if="!blade.currentEntity.parentCategoryIsActive">
+    <div class="vc-alert vc-alert--warning">
+      <svg class="vc-alert__icon">
+        <use href="/images/error.svg#icon"></use>
+      </svg>
+      <div class="vc-alert__text">{{ 'catalog.blades.category-detail.parent-disabled-alert' | translate }}</div>
+    </div>
+  </div>
+</script>
 <script type="text/ng-template" id="name.html">
     <div class="form-input">
         <textarea class="__xsmall" ng-class="{'error': blade.formScope.itemName.$invalid && !blade.formScope.itemName.$pristine}" required cols="30" rows="1" ng-model="blade.item.name" name="itemName" placeholder="{{ 'catalog.blades.item-detail.placeholders.name' | translate }}"></textarea>

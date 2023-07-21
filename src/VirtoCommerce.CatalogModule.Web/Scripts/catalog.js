@@ -362,10 +362,9 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
 
                 // category detail meta-fields
                 metaFormsService.registerMetaFields("categoryDetail", [{
-                    name: 'isActive',
                     title: "catalog.blades.category-detail.labels.is-active",
                     colSpan: 2,
-                    valueType: "Boolean"
+                    templateUrl: "category-details-is-active.html"
                 },
                 {
                     name: 'name',
@@ -393,7 +392,13 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                 }]);
 
                 // Item detail blade has 3 metaforms: productDetail, productDetail1 and productDetail2
-                metaFormsService.registerMetaFields("productDetail", [{
+                metaFormsService.registerMetaFields("productDetail", [
+                    {
+                        title: "catalog.blades.item-detail.labels.store-visible",
+                        colSpan: 6,
+                        templateUrl: "product-details-is-active.html"
+                    },
+                    {
                     title: "catalog.blades.item-detail.labels.name",
                     colSpan: 6,
                     templateUrl: "name.html"
@@ -437,21 +442,15 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
 
                 metaFormsService.registerMetaFields("productDetail2", [
                 {
-                    name: 'isActive',
-                    title: "catalog.blades.item-detail.labels.store-visible",
-                    colSpan: 2,
-                    valueType: "Boolean"
-                },
-                {
                     name: 'isBuyable',
                     title: "catalog.blades.item-detail.labels.can-be-purchased",
-                    colSpan: 2,
+                    colSpan: 3,
                     valueType: "Boolean"
                 },
                 {
                     name: 'trackInventory',
                     title: "catalog.blades.item-detail.labels.track-inventory",
-                    colSpan: 2,
+                    colSpan: 3,
                     valueType: "Boolean"
                 },
                 {

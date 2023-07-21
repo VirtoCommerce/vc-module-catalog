@@ -4,7 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Events;
+using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Data.Search.Indexing;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Events;
 using VirtoCommerce.Platform.Core.Jobs;
 using VirtoCommerce.Platform.Core.Settings;
@@ -16,15 +18,18 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
 {
     public class IndexCategoryChangedEventHandler : IEventHandler<CategoryChangedEvent>
     {
+        private readonly Func<ICatalogRepository> _catalogRepositoryFactory;
         private readonly ISettingsManager _settingsManager;
         private readonly IIndexingJobService _indexingJobService;
         private readonly IEnumerable<IndexDocumentConfiguration> _configurations;
 
         public IndexCategoryChangedEventHandler(
+            Func<ICatalogRepository> catalogRepositoryFactory,
             ISettingsManager settingsManager,
             IIndexingJobService indexingJobService,
             IEnumerable<IndexDocumentConfiguration> configurations)
         {
+            _catalogRepositoryFactory = catalogRepositoryFactory;
             _settingsManager = settingsManager;
             _configurations = configurations;
             _indexingJobService = indexingJobService;
@@ -41,7 +46,22 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
 
                 var indexEntries = message.ChangedEntries
                     .Select(x => new IndexEntry { Id = x.OldEntry.Id, EntryState = x.EntryState, Type = KnownDocumentTypes.Category })
+                    .ToList();
+
+                var visibilityChangedCategoryIds = message.ChangedEntries
+                    .Where(x =>
+                        x.EntryState == EntryState.Modified &&
+                        x.OldEntry?.IsActive != x.NewEntry?.IsActive)
+                    .Select(x => x.NewEntry.Id)
                     .ToArray();
+
+                if (visibilityChangedCategoryIds.Any())
+                {
+                    using var repository = _catalogRepositoryFactory();
+                    var childCategoryIds = await repository.GetAllChildrenCategoriesIdsAsync(visibilityChangedCategoryIds);
+                    var childCategoryEntries = childCategoryIds.Select(x => new IndexEntry { Id = x, EntryState = EntryState.Modified, Type = KnownDocumentTypes.Category });
+                    indexEntries.AddRange(childCategoryEntries);
+                }
 
                 _indexingJobService.EnqueueIndexAndDeleteDocuments(indexEntries, JobPriority.Normal,
                     _configurations.GetDocumentBuilders(KnownDocumentTypes.Category, typeof(CategoryDocumentChangesProvider)).ToList());

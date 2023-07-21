@@ -170,6 +170,14 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         }
         #endregion
 
+        public bool ParentIsActive
+        {
+            get
+            {
+                return Parent is null ||
+                       Parent.IsActive == true && Parent.ParentIsActive;
+            }
+        }
 
         public virtual void Move(string catalogId, string categoryId)
         {
