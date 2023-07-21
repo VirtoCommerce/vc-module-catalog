@@ -1,25 +1,88 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CatalogModule.Core.Model.Search;
+using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CoreModule.Core.Outlines;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.SearchModule.Core.Model;
+using static VirtoCommerce.SearchModule.Core.Extensions.IndexDocumentExtensions;
 
 namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 {
     public abstract class CatalogDocumentBuilder
     {
         private readonly ISettingsManager _settingsManager;
+        private readonly IPropertySearchService _propertySearchService;
 
-        protected CatalogDocumentBuilder(ISettingsManager settingsManager)
+        protected CatalogDocumentBuilder(ISettingsManager settingsManager, IPropertySearchService propertySearchService)
         {
             _settingsManager = settingsManager;
+            _propertySearchService = propertySearchService;
         }
 
-        protected virtual bool StoreObjectsInIndex => _settingsManager.GetValue(ModuleConstants.Settings.Search.UseFullObjectIndexStoring.Name, false);
+        protected virtual bool StoreObjectsInIndex => _settingsManager.GetValue<bool>(ModuleConstants.Settings.Search.UseFullObjectIndexStoring);
+
+        protected virtual async Task AddCustomPropertiesAsync(IndexDocument schema, params PropertyType[] propertyTypes)
+        {
+            object booleanValue = default(bool);
+            object dateTimeValue = default(DateTime);
+            object integerValue = default(int);
+            object doubleValue = default(double);
+            object stringValue = SchemaStringValue;
+            object geoPointValue = new GeoPoint();
+
+            var searchCriteria = AbstractTypeFactory<PropertySearchCriteria>.TryCreateInstance();
+            searchCriteria.PropertyTypes = propertyTypes.Select(x => x.ToString()).ToArray();
+
+            await foreach (var searchResult in _propertySearchService.SearchBatches(searchCriteria))
+            {
+                foreach (var property in searchResult.Results)
+                {
+                    var propertyName = property.Name.ToLowerInvariant();
+                    var isCollection = property.Multivalue;
+
+                    switch (property.ValueType)
+                    {
+                        case PropertyValueType.Boolean:
+                            schema.Add(new IndexDocumentField(propertyName, booleanValue, IndexDocumentFieldValueType.Boolean) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection });
+                            break;
+                        case PropertyValueType.DateTime:
+                            schema.Add(new IndexDocumentField(propertyName, dateTimeValue, IndexDocumentFieldValueType.DateTime) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection });
+                            break;
+                        case PropertyValueType.Integer:
+                            schema.Add(new IndexDocumentField(propertyName, integerValue, IndexDocumentFieldValueType.Integer) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection });
+                            break;
+                        case PropertyValueType.Number:
+                            schema.Add(new IndexDocumentField(propertyName, doubleValue, IndexDocumentFieldValueType.Double) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection });
+                            break;
+                        case PropertyValueType.ShortText:
+                            schema.Add(new IndexDocumentField(propertyName, stringValue, IndexDocumentFieldValueType.String) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection });
+                            break;
+                        case PropertyValueType.LongText:
+                            schema.Add(new IndexDocumentField(propertyName, stringValue, IndexDocumentFieldValueType.String) { IsRetrievable = true, IsSearchable = true, IsCollection = isCollection });
+                            break;
+                        case PropertyValueType.GeoPoint:
+                            schema.Add(new IndexDocumentField(propertyName, geoPointValue, IndexDocumentFieldValueType.GeoPoint) { IsRetrievable = true, IsSearchable = true, IsCollection = true });
+                            break;
+                    }
+                }
+            }
+        }
+
+        protected virtual void AddObjectField<T>(IndexDocument schema, T value)
+            where T : IHasProperties
+        {
+            var propertyValue = new PropertyValue { Value = SchemaStringValue, ValueType = PropertyValueType.ShortText };
+            var property = new Property { Values = new List<PropertyValue> { propertyValue } };
+            propertyValue.Property = property;
+            value.Properties = new List<Property> { property };
+            schema.AddObjectFieldValue(value);
+        }
 
         protected virtual void IndexCustomProperties(IndexDocument document, ICollection<Property> properties, ICollection<PropertyType> contentPropertyTypes)
         {
@@ -38,7 +101,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             {
                 if (addField)
                 {
-                    document.Add(new IndexDocumentField(property.Name, false) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection, ValueType = IndexDocumentFieldValueType.Boolean, });
+                    document.Add(new IndexDocumentField(property.Name, false, IndexDocumentFieldValueType.Boolean) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection });
                 }
 
                 return;
@@ -52,32 +115,32 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                     switch (propValue.ValueType)
                     {
                         case PropertyValueType.Boolean:
-                            document.Add(new IndexDocumentField(propertyName, propValue.Value) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection, ValueType = IndexDocumentFieldValueType.Boolean, });
+                            document.Add(new IndexDocumentField(propertyName, propValue.Value, IndexDocumentFieldValueType.Boolean) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection });
                             break;
                         case PropertyValueType.DateTime:
-                            document.Add(new IndexDocumentField(propertyName, propValue.Value) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection, ValueType = IndexDocumentFieldValueType.DateTime, });
+                            document.Add(new IndexDocumentField(propertyName, propValue.Value, IndexDocumentFieldValueType.DateTime) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection });
                             break;
                         case PropertyValueType.Integer:
-                            document.Add(new IndexDocumentField(propertyName, propValue.Value) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection, ValueType = IndexDocumentFieldValueType.Integer, });
+                            document.Add(new IndexDocumentField(propertyName, propValue.Value, IndexDocumentFieldValueType.Integer) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection });
                             break;
                         case PropertyValueType.Number:
-                            document.Add(new IndexDocumentField(propertyName, propValue.Value) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection, ValueType = IndexDocumentFieldValueType.Double, });
+                            document.Add(new IndexDocumentField(propertyName, propValue.Value, IndexDocumentFieldValueType.Double) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection });
                             break;
                         case PropertyValueType.LongText:
-                            document.Add(new IndexDocumentField(propertyName, propValue.Value.ToString().ToLowerInvariant()) { IsRetrievable = true, IsSearchable = true, IsCollection = isCollection, ValueType = IndexDocumentFieldValueType.String, });
+                            document.Add(new IndexDocumentField(propertyName, propValue.Value.ToString().ToLowerInvariant(), IndexDocumentFieldValueType.String) { IsRetrievable = true, IsSearchable = true, IsCollection = isCollection });
                             break;
                         case PropertyValueType.ShortText:
                             // Index alias when it is available instead of display value.
                             // Do not tokenize small values as they will be used for lookups and filters.
                             var shortTextValue = propValue.Alias ?? propValue.Value.ToString();
-                            document.Add(new IndexDocumentField(propertyName, shortTextValue) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection, ValueType = IndexDocumentFieldValueType.String });
+                            document.Add(new IndexDocumentField(propertyName, shortTextValue, IndexDocumentFieldValueType.String) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection });
                             if (property.Multilanguage && !string.IsNullOrEmpty(propValue.LanguageCode))
                             {
-                                document.Add(new IndexDocumentField($"{propertyName}_{propValue.LanguageCode.ToLowerInvariant()}", shortTextValue) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection, ValueType = IndexDocumentFieldValueType.String });
+                                document.Add(new IndexDocumentField($"{propertyName}_{propValue.LanguageCode.ToLowerInvariant()}", shortTextValue, IndexDocumentFieldValueType.String) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection });
                             }
                             break;
                         case PropertyValueType.GeoPoint:
-                            document.Add(new IndexDocumentField(propertyName, GeoPoint.TryParse((string)propValue.Value)) { IsRetrievable = true, IsSearchable = true, IsCollection = true, ValueType = IndexDocumentFieldValueType.GeoPoint, });
+                            document.Add(new IndexDocumentField(propertyName, GeoPoint.TryParse((string)propValue.Value), IndexDocumentFieldValueType.GeoPoint) { IsRetrievable = true, IsSearchable = true, IsCollection = true });
                             break;
                     }
                 }
@@ -85,7 +148,9 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 // Add value to the searchable content field if property type is unknown or if it is present in the provided list
                 if (contentPropertyTypes == null || contentPropertyTypes.Contains(property.Type))
                 {
-                    var contentField = string.Concat("__content", property.Multilanguage && !string.IsNullOrWhiteSpace(propValue.LanguageCode) ? $"_{propValue.LanguageCode.ToLowerInvariant()}" : string.Empty);
+                    var contentField = property.Multilanguage && !string.IsNullOrWhiteSpace(propValue.LanguageCode)
+                        ? $"__content_{propValue.LanguageCode.ToLowerInvariant()}"
+                        : "__content";
 
                     switch (propValue.ValueType)
                     {
@@ -95,7 +160,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
                             if (!string.IsNullOrWhiteSpace(stringValue)) // don't index empty values
                             {
-                                document.Add(new IndexDocumentField(contentField, stringValue.ToLower()) { IsRetrievable = true, IsSearchable = true, IsCollection = true, ValueType = IndexDocumentFieldValueType.String, });
+                                document.Add(new IndexDocumentField(contentField, stringValue.ToLower(), IndexDocumentFieldValueType.String) { IsRetrievable = true, IsSearchable = true, IsCollection = true });
                             }
 
                             break;

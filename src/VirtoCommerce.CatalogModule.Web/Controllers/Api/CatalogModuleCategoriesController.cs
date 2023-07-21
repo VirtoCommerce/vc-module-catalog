@@ -42,7 +42,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("{id}")]
         public async Task<ActionResult<Category>> GetCategory(string id)
         {
-            var category = await _categoryService.GetByIdAsync(id);
+            var category = await _categoryService.GetNoCloneAsync(id);
 
             if (category == null)
             {
@@ -67,7 +67,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("")]
         public async Task<ActionResult<Category[]>> GetCategoriesByIdsAsync([FromQuery] List<string> ids, [FromQuery] string respGroup = null)
         {
-            var categories = await _categoryService.GetAsync(ids, respGroup);
+            var categories = await _categoryService.GetNoCloneAsync(ids, respGroup);
 
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, categories, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
             if (!authorizationResult.Succeeded)
@@ -129,7 +129,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                     var slugUrl = category.Name.GenerateSlug();
                     if (!string.IsNullOrEmpty(slugUrl))
                     {
-                        var catalog = await _catalogService.GetByIdAsync(category.CatalogId);
+                        var catalog = await _catalogService.GetNoCloneAsync(category.CatalogId);
                         var defaultLanguage = catalog?.Languages.First(x => x.IsDefault).LanguageCode;
                         var seoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
                         seoInfo.LanguageCode = defaultLanguage;
@@ -160,7 +160,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         public async Task<ActionResult> DeleteCategory([FromQuery] List<string> ids)
         {
-            var categories = await _categoryService.GetAsync(ids, CategoryResponseGroup.Info.ToString());
+            var categories = await _categoryService.GetNoCloneAsync(ids, CategoryResponseGroup.Info.ToString());
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, categories, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Delete));
             if (!authorizationResult.Succeeded)
             {

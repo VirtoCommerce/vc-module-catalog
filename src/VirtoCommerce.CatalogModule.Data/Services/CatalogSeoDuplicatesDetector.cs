@@ -9,9 +9,9 @@ using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.GenericCrud;
 using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.StoreModule.Core.Model;
+using VirtoCommerce.StoreModule.Core.Services;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
@@ -22,14 +22,14 @@ namespace VirtoCommerce.CatalogModule.Data.Services
     {
         private readonly IItemService _productService;
         private readonly ICategoryService _categoryService;
-        private readonly ICrudService<Store> _storeService;
+        private readonly IStoreService _storeService;
         private readonly Func<ICatalogRepository> _repositoryFactory;
         private readonly ISettingsManager _settingsManager;
 
         public CatalogSeoDuplicatesDetector(
             IItemService productService,
             ICategoryService categoryService,
-            ICrudService<Store> storeService,
+            IStoreService storeService,
             Func<ICatalogRepository> repositoryFactory,
             ISettingsManager settingsManager)
         {
@@ -44,7 +44,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public async Task<IEnumerable<SeoInfo>> DetectSeoDuplicatesAsync(TenantIdentity tenantIdentity)
         {
-            var useSeoDeduplication = _settingsManager.GetValue(ModuleConstants.Settings.General.UseSeoDeduplication.Name, false);
+            var useSeoDeduplication = await _settingsManager.GetValueAsync<bool>(ModuleConstants.Settings.General.UseSeoDeduplication);
             var retVal = new List<SeoInfo>();
 
             if (useSeoDeduplication)
@@ -53,25 +53,25 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 var objectType = tenantIdentity.Type;
                 var objectId = tenantIdentity.Id;
 
-                if (objectType.EqualsInvariant(typeof(Store).Name))
+                if (objectType.EqualsInvariant(nameof(Store)))
                 {
-                    var store = await _storeService.GetByIdAsync(tenantIdentity.Id);
+                    var store = await _storeService.GetNoCloneAsync(tenantIdentity.Id);
                     if (store != null)
                     {
                         catalogId = store.Catalog;
                     }
                 }
-                else if (objectType.EqualsInvariant(typeof(Category).Name))
+                else if (objectType.EqualsInvariant(nameof(Category)))
                 {
-                    var category = await _categoryService.GetByIdAsync(objectId, CategoryResponseGroup.Info.ToString());
+                    var category = await _categoryService.GetNoCloneAsync(objectId, CategoryResponseGroup.Info.ToString());
                     if (category != null)
                     {
                         catalogId = category.CatalogId;
                     }
                 }
-                else if (objectType.EqualsInvariant(typeof(CatalogProduct).Name))
+                else if (objectType.EqualsInvariant(nameof(CatalogProduct)))
                 {
-                    var product = await _productService.GetByIdAsync(objectId, ItemResponseGroup.ItemInfo.ToString());
+                    var product = await _productService.GetNoCloneAsync(objectId, ItemResponseGroup.ItemInfo.ToString());
                     if (product != null)
                     {
                         catalogId = product.CatalogId;
@@ -83,12 +83,18 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     //Get all SEO owners witch related to requested catalog and contains Seo duplicates
                     var objectsWithSeoDuplicates = await GetSeoOwnersContainsDuplicatesAsync(catalogId);
                     //Need select for each seo owner one seo defined for requested container or without it if not exist
-                    var seoInfos = objectsWithSeoDuplicates.Select(x =>
-                            x.SeoInfos.Where(s => s.StoreId == objectId || string.IsNullOrEmpty(s.StoreId))
-                                .OrderByDescending(s => s.StoreId).FirstOrDefault())
-                        .Where(x => x != null);
-                    //return only Seo infos with have duplicate slug keyword
-                    retVal = seoInfos.GroupBy(x => x.SemanticUrl).Where(x => x.Count() > 1).SelectMany(x => x).ToList();
+                    retVal = objectsWithSeoDuplicates
+                        .Select(x =>
+                            x.SeoInfos
+                                .Where(s => s.StoreId == objectId || string.IsNullOrEmpty(s.StoreId))
+                                .OrderByDescending(s => s.StoreId)
+                                .FirstOrDefault())
+                        .Where(x => x != null)
+                        //return only Seo infos that have duplicate slug keyword
+                        .GroupBy(x => x.SemanticUrl)
+                        .Where(x => x.Count() > 1)
+                        .SelectMany(x => x)
+                        .ToList();
                 }
             }
 
@@ -101,16 +107,25 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         /// Detect SEO duplicates for object belongs to catalog  (physical or virtual) based on links information
         /// </summary>
         /// <param name="catalogId"></param>
-        /// <param name="allDublicatedSeos"></param>
         /// <returns></returns>
-        private async Task<IEnumerable<ISeoSupport>> GetSeoOwnersContainsDuplicatesAsync(string catalogId)
+        private async Task<IList<ISeoSupport>> GetSeoOwnersContainsDuplicatesAsync(string catalogId)
         {
             var allDuplicates = await GetAllSeoDuplicatesAsync();
-            var productsSeo = allDuplicates.Where(x => x.ObjectType.EqualsInvariant(typeof(CatalogProduct).Name));
-            var categoriesSeo = allDuplicates.Where(x => x.ObjectType.EqualsInvariant(typeof(Category).Name));
 
-            var products = await _productService.GetByIdsAsync(productsSeo.Select(x => x.ObjectId).Distinct().ToArray(), (ItemResponseGroup.Outlines | ItemResponseGroup.Seo).ToString(), catalogId);
-            var categories = await _categoryService.GetByIdsAsync(categoriesSeo.Select(x => x.ObjectId).Distinct().ToArray(), (CategoryResponseGroup.WithOutlines | CategoryResponseGroup.WithSeo).ToString(), catalogId);
+            var productIds = allDuplicates
+                .Where(x => x.ObjectType.EqualsInvariant(nameof(CatalogProduct)))
+                .Select(x => x.ObjectId)
+                .Distinct()
+                .ToList();
+
+            var categoryIds = allDuplicates
+                .Where(x => x.ObjectType.EqualsInvariant(nameof(Category)))
+                .Select(x => x.ObjectId)
+                .Distinct()
+                .ToList();
+
+            var products = await _productService.GetByIdsAsync(productIds, (ItemResponseGroup.Outlines | ItemResponseGroup.Seo).ToString(), catalogId);
+            var categories = await _categoryService.GetByIdsAsync(categoryIds, (CategoryResponseGroup.WithOutlines | CategoryResponseGroup.WithSeo).ToString(), catalogId);
 
             var retVal = new List<ISeoSupport>();
             //Here we try to find between SEO duplicates records for products with directly or indirectly (virtual) related to requested catalog
@@ -140,16 +155,18 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return retVal;
         }
 
-        private async Task<IEnumerable<SeoInfo>> GetAllSeoDuplicatesAsync()
+        private async Task<IList<SeoInfo>> GetAllSeoDuplicatesAsync()
         {
-            using (var repository = _repositoryFactory())
-            {
-                var duplicateIds = await repository.GetAllSeoDuplicatesIdsAsync();
+            using var repository = _repositoryFactory();
+            var duplicateIds = await repository.GetAllSeoDuplicatesIdsAsync();
 
-                var duplicateSeoRecords = await repository.SeoInfos.Where(x => duplicateIds.Contains(x.Id)).ToArrayAsync();
+            var duplicateSeoRecords = await repository.SeoInfos
+                .Where(x => duplicateIds.Contains(x.Id))
+                .ToListAsync();
 
-                return duplicateSeoRecords.Select(x => x.ToModel(AbstractTypeFactory<SeoInfo>.TryCreateInstance()));
-            }
+            return duplicateSeoRecords
+                .Select(x => x.ToModel(AbstractTypeFactory<SeoInfo>.TryCreateInstance()))
+                .ToList();
         }
     }
 }

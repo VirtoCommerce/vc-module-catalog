@@ -16,18 +16,18 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         /// </summary>
         /// <param name="dbContext"></param>
         /// <returns>The array of CatalogSeoInfo Id</returns>
-        Task<string[]> GetAllSeoDuplicatesIdsAsync(CatalogDbContext dbContext);
+        Task<IList<string>> GetAllSeoDuplicatesIdsAsync(CatalogDbContext dbContext);
         /// <summary>
         /// Gets ids of all children categories recursively for specific array of parent category ids.
         /// </summary>
         /// <param name="dbContext"></param>
         /// <param name="categoryIds"></param>
         /// <returns>The array of Category Id</returns>
-        Task<string[]> GetAllChildrenCategoriesIdsAsync(CatalogDbContext dbContext, string[] categoryIds);
+        Task<IList<string>> GetAllChildrenCategoriesIdsAsync(CatalogDbContext dbContext, IList<string> categoryIds);
 
         /// <summary>
-        /// Searchs associations by specific ObjectIds and search criterias.
-        /// It should support retreving: Items and TotalCount.
+        /// Searches associations by specific ObjectIds and search criteria.
+        /// It should support retrieving: Items and TotalCount.
         /// It should support pagination: Skip and Take.
         /// It should support filters: multiple ObjectIds, Group, multiple Tags (split by ';'), Like by Keyword and multiple AssociatedObjectIds.
         /// </summary>
@@ -42,31 +42,31 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         /// <param name="dbContext"></param>
         /// <param name="categoryId"></param>
         /// <returns></returns>
-        Task<ICollection<CategoryEntity>> SearchCategoriesHierarchyAsync(CatalogDbContext dbContext, string categoryId);
+        Task<IList<CategoryEntity>> SearchCategoriesHierarchyAsync(CatalogDbContext dbContext, string categoryId);
 
         /// <summary>
-        /// Removes catalog items and relaited items from database by array of item id. Removes data from: CatalogSeoInfo, CategoryItemRelation, CatalogImage, CatalogAsset, PropertyValue, EditorialReview, Association and Item.
+        /// Removes catalog items and related items from database by array of item id. Removes data from: CatalogSeoInfo, CategoryItemRelation, CatalogImage, CatalogAsset, PropertyValue, EditorialReview, Association and Item.
         /// </summary>
         /// <param name="dbContext"></param>
         /// <param name="itemIds"></param>
         /// <returns></returns>
-        Task RemoveItemsAsync(CatalogDbContext dbContext, string[] itemIds);
+        Task RemoveItemsAsync(CatalogDbContext dbContext, IList<string> itemIds);
 
         /// <summary>
-        /// Removes category and all relaited items from database by array of catalog id. Removes data from: CatalogSeoInfo, CatalogImage, PropertyValue, CategoryRelation, CategoryItemRelation, Association, Property, CategoryDescription and Category.
+        /// Removes category and all related items from database by array of catalog id. Removes data from: CatalogSeoInfo, CatalogImage, PropertyValue, CategoryRelation, CategoryItemRelation, Association, Property, CategoryDescription and Category.
         /// </summary>
         /// <param name="dbContext"></param>
         /// <param name="ids"></param>
         /// <returns></returns>
-        Task RemoveCategoriesAsync(CatalogDbContext dbContext, string[] ids);
+        Task RemoveCategoriesAsync(CatalogDbContext dbContext, IList<string> ids);
 
         /// <summary>
-        /// Removes catalogs and all relaited items from database by array of catalog id. Removes data from: CatalogLanguage, CategoryRelation, PropertyValue, Property and Catalog.
+        /// Removes catalogs and all related items from database by array of catalog id. Removes data from: CatalogLanguage, CategoryRelation, PropertyValue, Property and Catalog.
         /// </summary>
         /// <param name="dbContext"></param>
         /// <param name="ids"></param>
         /// <returns></returns>
-        Task RemoveCatalogsAsync(CatalogDbContext dbContext, string[] ids);
+        Task RemoveCatalogsAsync(CatalogDbContext dbContext, IList<string> ids);
         /// <summary>
         /// Removes specified catalogProperty, categoryProperty and itemProperty from database.
         /// </summary>

@@ -11,7 +11,6 @@ using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.ExportImport;
-using VirtoCommerce.Platform.Data.ExportImport;
 
 namespace VirtoCommerce.CatalogModule.Data.ExportImport
 {
@@ -69,7 +68,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 progressCallback(progressInfo);
 
                 await writer.WritePropertyNameAsync("Properties");
-                await writer.SerializeJsonArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
+                await writer.SerializeArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
                 {
                     var searchResult = await _propertySearchService.SearchPropertiesAsync(new PropertySearchCriteria { Skip = skip, Take = take });
                     foreach (var item in searchResult.Results)
@@ -92,7 +91,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 progressCallback(progressInfo);
 
                 await writer.WritePropertyNameAsync("PropertyDictionaryItems");
-                await writer.SerializeJsonArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
+                await writer.SerializeArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
                     (GenericSearchResult<PropertyDictionaryItem>)await _propertyDictionarySearchService.SearchAsync(new PropertyDictionaryItemSearchCriteria { Skip = skip, Take = take })
                 , (processedCount, totalCount) =>
                 {
@@ -108,8 +107,8 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 progressCallback(progressInfo);
 
                 await writer.WritePropertyNameAsync("Catalogs");
-                await writer.SerializeJsonArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
-                    (GenericSearchResult<Catalog>)await _catalogSearchService.SearchAsync(new CatalogSearchCriteria { Skip = skip, Take = take })
+                await writer.SerializeArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
+                    (GenericSearchResult<Catalog>)await _catalogSearchService.SearchNoCloneAsync(new CatalogSearchCriteria { Skip = skip, Take = take })
                 , (processedCount, totalCount) =>
                 {
                     progressInfo.Description = $"{processedCount} of {totalCount} catalogs have been exported";
@@ -124,7 +123,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 progressCallback(progressInfo);
 
                 await writer.WritePropertyNameAsync("Categories");
-                await writer.SerializeJsonArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
+                await writer.SerializeArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
                 {
                     var searchResult = await _categorySearchService.SearchAsync(new CategorySearchCriteria { Skip = skip, Take = take });
                     LoadImages(searchResult.Results.OfType<IHasImages>().ToArray(), progressInfo, options.HandleBinaryData);
@@ -148,7 +147,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 progressCallback(progressInfo);
 
                 await writer.WritePropertyNameAsync("Products");
-                await writer.SerializeJsonArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
+                await writer.SerializeArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
                 {
                     var searchResult = await _productSearchService.SearchAsync(new ProductSearchCriteria { Skip = skip, Take = take, ResponseGroup = ItemResponseGroup.Full.ToString() });
                     LoadImages(searchResult.Results.OfType<IHasImages>().ToArray(), progressInfo, options.HandleBinaryData);
@@ -180,7 +179,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             using (var streamReader = new StreamReader(inputStream))
             using (var reader = new JsonTextReader(streamReader))
             {
-                while (reader.Read())
+                while (await reader.ReadAsync())
                 {
                     if (reader.TokenType != JsonToken.PropertyName)
                     {
@@ -233,14 +232,13 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 
         private async Task ImportCatalogsAsync(JsonTextReader reader, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
         {
-            await reader.DeserializeJsonArrayWithPagingAsync<Catalog>(_jsonSerializer, _batchSize, async (items) =>
-            {
-                await _catalogService.SaveChangesAsync(items.ToArray());
-            }, processedCount =>
-            {
-                progressInfo.Description = $"{processedCount} catalogs have been imported";
-                progressCallback(progressInfo);
-            }, cancellationToken);
+            await reader.DeserializeArrayWithPagingAsync<Catalog>(_jsonSerializer, _batchSize,
+                _catalogService.SaveChangesAsync,
+                processedCount =>
+                {
+                    progressInfo.Description = $"{processedCount} catalogs have been imported";
+                    progressCallback(progressInfo);
+                }, cancellationToken);
         }
 
         private async Task ImportCategoriesAsync(JsonTextReader reader, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
@@ -250,7 +248,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             var categoriesByHierarchyLevel = new Dictionary<int, IList<Category>>();
             var categoryLinks = new List<CategoryLink>();
 
-            await reader.DeserializeJsonArrayWithPagingAsync<Category>(_jsonSerializer, _batchSize, async (items) =>
+            await reader.DeserializeArrayWithPagingAsync<Category>(_jsonSerializer, _batchSize, async items =>
             {
                 var categories = new List<Category>();
 
@@ -339,10 +337,9 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 
         private async Task ImportPropertiesAsync(JsonTextReader reader, List<Property> propertiesWithForeignKeys, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
         {
-            await reader.DeserializeJsonArrayWithPagingAsync<Property>(_jsonSerializer, _batchSize, async (items) =>
+            await reader.DeserializeArrayWithPagingAsync<Property>(_jsonSerializer, _batchSize, async items =>
             {
-                var itemsArray = items.ToArray();
-                foreach (var property in itemsArray)
+                foreach (var property in items)
                 {
                     if (property.CategoryId != null || property.CatalogId != null)
                     {
@@ -352,7 +349,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                         property.CatalogId = null;
                     }
                 }
-                await _propertyService.SaveChangesAsync(itemsArray);
+                await _propertyService.SaveChangesAsync(items);
             }, processedCount =>
             {
                 progressInfo.Description = $"{processedCount} properties have been imported";
@@ -362,7 +359,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 
         private async Task ImportPropertyDictionaryItemsAsync(JsonTextReader reader, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
         {
-            await reader.DeserializeJsonArrayWithPagingAsync<PropertyDictionaryItem>(_jsonSerializer, _batchSize, items => _propertyDictionaryService.SaveChangesAsync(items.ToArray()), processedCount =>
+            await reader.DeserializeArrayWithPagingAsync<PropertyDictionaryItem>(_jsonSerializer, _batchSize, items => _propertyDictionaryService.SaveChangesAsync(items.ToArray()), processedCount =>
             {
                 progressInfo.Description = $"{processedCount} property dictionary items have been imported";
                 progressCallback(progressInfo);
@@ -373,12 +370,12 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         {
             var associationBackupMap = new Dictionary<string, IList<ProductAssociation>>();
 
-            await reader.DeserializeJsonArrayWithPagingAsync<CatalogProduct>(_jsonSerializer, _batchSize, async (items) =>
+            await reader.DeserializeArrayWithPagingAsync<CatalogProduct>(_jsonSerializer, _batchSize, async items =>
             {
                 var products = items.Select(product =>
                 {
                     //Do not save associations withing product to prevent dependency conflicts in db
-                    //we will save separateley after product import
+                    //we will save separately after product import
                     if (!product.Associations.IsNullOrEmpty())
                     {
                         associationBackupMap[product.Id] = product.Associations;
@@ -389,7 +386,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                     return product;
                 }).ToArray();
 
-                await _itemService.SaveChangesAsync(products.ToArray());
+                await _itemService.SaveChangesAsync(products);
 
                 if (options != null && options.HandleBinaryData)
                 {
@@ -428,9 +425,9 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 propertyValue.Property = null;
             }
 
-            if (entity is ProductAssociation asscociation)
+            if (entity is ProductAssociation productAssociation)
             {
-                asscociation.AssociatedObject = null;
+                productAssociation.AssociatedObject = null;
             }
 
             if (entity is Catalog catalog)
@@ -451,9 +448,9 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 
                 if (!category.Properties.IsNullOrEmpty())
                 {
-                    foreach (var propvalue in category.Properties)
+                    foreach (var categoryProperty in category.Properties)
                     {
-                        ResetRedundantReferences(propvalue);
+                        ResetRedundantReferences(categoryProperty);
                     }
                 }
             }

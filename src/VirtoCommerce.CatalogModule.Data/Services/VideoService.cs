@@ -29,16 +29,16 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private readonly VideoOptions _videoOptions;
 
         public VideoService(
-            IOptions<VideoOptions> videoOptions,
             Func<ICatalogRepository> repositoryFactory,
             IPlatformMemoryCache platformMemoryCache,
-            IEventPublisher eventPublisher)
+            IEventPublisher eventPublisher,
+            IOptions<VideoOptions> videoOptions)
             : base(repositoryFactory, platformMemoryCache, eventPublisher)
         {
             _videoOptions = videoOptions.Value;
         }
 
-        protected override async Task<IEnumerable<VideoEntity>> LoadEntities(IRepository repository, IEnumerable<string> ids, string responseGroup)
+        protected override async Task<IList<VideoEntity>> LoadEntities(IRepository repository, IList<string> ids, string responseGroup)
         {
             return await ((ICatalogRepository)repository).Videos
                 .Where(x => ids.Contains(x.Id))

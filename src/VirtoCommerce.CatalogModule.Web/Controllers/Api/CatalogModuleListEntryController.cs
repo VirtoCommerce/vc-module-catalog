@@ -230,7 +230,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return Forbid();
             }
 
-            var dstCatalog = await _catalogService.GetByIdAsync(moveRequest.Catalog);
+            var dstCatalog = await _catalogService.GetNoCloneAsync(moveRequest.Catalog);
             if (dstCatalog.IsVirtual)
             {
                 return BadRequest("Unable to move to a virtual catalog");
@@ -276,10 +276,10 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             {
                 var commonIds = idsToDelete.Skip(i).Take(deleteBatchSize).ToList();
 
-                var searchProductResult = await _itemService.GetAsync(commonIds, ItemResponseGroup.None.ToString());
+                var searchProductResult = await _itemService.GetNoCloneAsync(commonIds, ItemResponseGroup.None.ToString());
                 await _itemService.DeleteAsync(searchProductResult.Select(x => x.Id).ToArray());
 
-                var searchCategoryResult = await _categoryService.GetAsync(commonIds, CategoryResponseGroup.None.ToString());
+                var searchCategoryResult = await _categoryService.GetNoCloneAsync(commonIds, CategoryResponseGroup.None.ToString());
                 await _categoryService.DeleteAsync(searchCategoryResult.Select(x => x.Id).ToArray());
             }
 
@@ -307,7 +307,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private async Task<IList<T>> LoadCatalogEntriesAsync<T>(string[] ids)
         {
 #pragma warning disable CS0618 // Variations can be used here
-            var products = await _itemService.GetByIdsAsync(ids, (ItemResponseGroup.Links | ItemResponseGroup.ItemProperties | ItemResponseGroup.Variations).ToString());
+            var products = await _itemService.GetAsync(ids, (ItemResponseGroup.Links | ItemResponseGroup.ItemProperties | ItemResponseGroup.Variations).ToString());
 #pragma warning restore CS0618
             var categories = await _categoryService.GetAsync(ids.Except(products.Select(x => x.Id)).ToList(), (CategoryResponseGroup.WithLinks).ToString());
             return products.OfType<T>().Concat(categories.OfType<T>()).ToList();

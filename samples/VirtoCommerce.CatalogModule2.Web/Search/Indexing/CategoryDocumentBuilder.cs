@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Search.Indexing;
 using VirtoCommerce.CoreModule.Core.Outlines;
@@ -11,7 +12,8 @@ namespace VirtoCommerce.CatalogModule2.Data.Search.Indexing
 {
     public class CategoryDocumentBuilder2 : CategoryDocumentBuilder
     {
-        public CategoryDocumentBuilder2(ISettingsManager settingsManager, ICategoryService categoryService) : base(settingsManager, categoryService)
+        public CategoryDocumentBuilder2(ISettingsManager settingsManager, IPropertySearchService propertySearchService, ICategoryService categoryService)
+            : base(settingsManager, propertySearchService, categoryService)
         {
         }
         protected override IndexDocument CreateDocument(Category category)

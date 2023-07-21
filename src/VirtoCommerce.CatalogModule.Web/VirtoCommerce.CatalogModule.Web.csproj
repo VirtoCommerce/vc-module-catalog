@@ -1,33 +1,30 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
-    <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <noWarn>1591</noWarn>
-        <IsPackable>False</IsPackable>
-        <LangVersion>latest</LangVersion>
-        <OutputType>Library</OutputType>
-    </PropertyGroup>
-    <PropertyGroup>
-        <!-- Project is not a test project -->
-        <SonarQubeTestProject>false</SonarQubeTestProject>
-    </PropertyGroup>
-    <ItemGroup>
-        <Compile Remove="dist\**" />
-        <Compile Remove="node_modules\**" />
-        <EmbeddedResource Remove="dist\**" />
-        <EmbeddedResource Remove="node_modules\**" />
-        <None Remove="dist\**" />
-        <None Remove="node_modules\**" />
-    </ItemGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-        <NoWarn>1701;1702;1705;1591</NoWarn>
-    </PropertyGroup>
-    <ItemGroup>
-        <ProjectReference Include="..\VirtoCommerce.CatalogModule.BulkActions\VirtoCommerce.CatalogModule.BulkActions.csproj" />
-        <ProjectReference Include="..\VirtoCommerce.CatalogModule.Core\VirtoCommerce.CatalogModule.Core.csproj" />
-        <ProjectReference Include="..\VirtoCommerce.CatalogModule.Data.MySql\VirtoCommerce.CatalogModule.Data.MySql.csproj" />
-        <ProjectReference Include="..\VirtoCommerce.CatalogModule.Data.PostgreSql\VirtoCommerce.CatalogModule.Data.PostgreSql.csproj" />
-        <ProjectReference Include="..\VirtoCommerce.CatalogModule.Data.SqlServer\VirtoCommerce.CatalogModule.Data.SqlServer.csproj" />
-        <ProjectReference Include="..\VirtoCommerce.CatalogModule.Data\VirtoCommerce.CatalogModule.Data.csproj" />
-    </ItemGroup>
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <noWarn>1591</noWarn>
+    <IsPackable>False</IsPackable>
+    <LangVersion>latest</LangVersion>
+    <OutputType>Library</OutputType>
+  </PropertyGroup>
+  <PropertyGroup>
+    <!-- Project is not a test project -->
+    <SonarQubeTestProject>false</SonarQubeTestProject>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="dist\**" />
+    <Compile Remove="node_modules\**" />
+    <EmbeddedResource Remove="dist\**" />
+    <EmbeddedResource Remove="node_modules\**" />
+    <None Remove="dist\**" />
+    <None Remove="node_modules\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VirtoCommerce.CatalogModule.BulkActions\VirtoCommerce.CatalogModule.BulkActions.csproj" />
+    <ProjectReference Include="..\VirtoCommerce.CatalogModule.Core\VirtoCommerce.CatalogModule.Core.csproj" />
+    <ProjectReference Include="..\VirtoCommerce.CatalogModule.Data.MySql\VirtoCommerce.CatalogModule.Data.MySql.csproj" />
+    <ProjectReference Include="..\VirtoCommerce.CatalogModule.Data.PostgreSql\VirtoCommerce.CatalogModule.Data.PostgreSql.csproj" />
+    <ProjectReference Include="..\VirtoCommerce.CatalogModule.Data.SqlServer\VirtoCommerce.CatalogModule.Data.SqlServer.csproj" />
+    <ProjectReference Include="..\VirtoCommerce.CatalogModule.Data\VirtoCommerce.CatalogModule.Data.csproj" />
+  </ItemGroup>
 </Project>

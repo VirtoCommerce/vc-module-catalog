@@ -11,6 +11,7 @@ using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Options;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
+using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
@@ -61,7 +62,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                     Take = 1,
                 };
 
-                var searchResult = await _videoSearchService.SearchAsync(searchCriteria);
+                var searchResult = await _videoSearchService.SearchNoCloneAsync(searchCriteria);
 
                 createRequest.SortOrder = searchResult.Results.Count != 0 ? searchResult.Results[0].SortOrder + 1 : 1;
             }
@@ -86,7 +87,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Authorize(ModuleConstants.Security.Permissions.Read)]
         public async Task<ActionResult<VideoSearchResult>> SearchVideos([FromBody] VideoSearchCriteria criteria)
         {
-            var result = await _videoSearchService.SearchAsync(criteria);
+            var result = await _videoSearchService.SearchNoCloneAsync(criteria);
 
             return result;
         }

@@ -45,7 +45,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _catalogId = catalogId;
             _categoryId = categoryId;
 
-            _isIndexedSearchEnabled = settingsManager.GetValue(ModuleConstants.Settings.Search.UseCatalogIndexedSearchInManager.Name, true);
+            _isIndexedSearchEnabled = settingsManager.GetValue<bool>(ModuleConstants.Settings.Search.UseCatalogIndexedSearchInManager);
         }
 
         public bool HasMoreResults { get; private set; } = true;

@@ -13,11 +13,7 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql
     {
         private const int batchSize = 500;
 
-        public PostgreSqlCatalogRawDatabaseCommand()
-        {
-        }
-
-        public virtual async Task<string[]> GetAllChildrenCategoriesIdsAsync(CatalogDbContext dbContext, string[] categoryIds)
+        public virtual async Task<IList<string>> GetAllChildrenCategoriesIdsAsync(CatalogDbContext dbContext, IList<string> categoryIds)
         {
             var result = Array.Empty<string>();
 
@@ -41,7 +37,7 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql
             return result;
         }
 
-        public virtual async Task<string[]> GetAllSeoDuplicatesIdsAsync(CatalogDbContext dbContext)
+        public virtual async Task<IList<string>> GetAllSeoDuplicatesIdsAsync(CatalogDbContext dbContext)
         {
 
             const string commandTemplate = @"
@@ -83,7 +79,7 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql
             }
         }
 
-        public virtual async Task RemoveCatalogsAsync(CatalogDbContext dbContext, string[] ids)
+        public virtual async Task RemoveCatalogsAsync(CatalogDbContext dbContext, IList<string> ids)
         {
             if (!ids.IsNullOrEmpty())
             {
@@ -102,11 +98,11 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql
                     await ExecuteStoreQueryAsync(dbContext, commandTemplate, ids.Skip(skip).Take(batchSize));
                     skip += batchSize;
                 }
-                while (skip < ids.Length);
+                while (skip < ids.Count);
             }
         }
 
-        public virtual async Task RemoveCategoriesAsync(CatalogDbContext dbContext, string[] ids)
+        public virtual async Task RemoveCategoriesAsync(CatalogDbContext dbContext, IList<string> ids)
         {
             if (!ids.IsNullOrEmpty())
             {
@@ -129,11 +125,11 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql
 
                     skip += batchSize;
                 }
-                while (skip < ids.Length);
+                while (skip < ids.Count);
             }
         }
 
-        public async Task RemoveItemsAsync(CatalogDbContext dbContext, string[] itemIds)
+        public async Task RemoveItemsAsync(CatalogDbContext dbContext, IList<string> itemIds)
         {
             if (!itemIds.IsNullOrEmpty())
             {
@@ -174,7 +170,7 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql
 
                     skip += batchSize;
                 }
-                while (skip < itemIds.Length);
+                while (skip < itemIds.Count);
             }
         }
 
@@ -194,7 +190,7 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql
 
             if (!string.IsNullOrEmpty(criteria.Group))
             {
-                commands.ForEach(x => x.Parameters.Add(new NpgsqlParameter($"@group", criteria.Group)));
+                commands.ForEach(x => x.Parameters.Add(new NpgsqlParameter("@group", criteria.Group)));
             }
 
             if (!criteria.Tags.IsNullOrEmpty())
@@ -205,7 +201,7 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql
             if (!string.IsNullOrEmpty(criteria.Keyword))
             {
                 var wildcardKeyword = $"%{criteria.Keyword}%";
-                commands.ForEach(x => x.Parameters.Add(new NpgsqlParameter($"@keyword", wildcardKeyword)));
+                commands.ForEach(x => x.Parameters.Add(new NpgsqlParameter("@keyword", wildcardKeyword)));
             }
 
             if (!criteria.AssociatedObjectIds.IsNullOrEmpty())
@@ -221,7 +217,7 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql
             return result;
         }
 
-        public virtual async Task<ICollection<CategoryEntity>> SearchCategoriesHierarchyAsync(CatalogDbContext dbContext, string categoryId)
+        public virtual async Task<IList<CategoryEntity>> SearchCategoriesHierarchyAsync(CatalogDbContext dbContext, string categoryId)
         {
             var commandTemplate = @"
             WITH RECURSIVE cp AS (
@@ -250,7 +246,7 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql
                     SELECT a.*
                     FROM ""Association"" a");
 
-            AddAssociationsSearchCriteraToCommand(command, criteria);
+            AddAssociationsSearchCriteriaToCommand(command, criteria);
 
             command.Append(@"), Category_CTE AS
                 (
@@ -299,7 +295,7 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql
                         FROM ""Association"" a"
             );
 
-            AddAssociationsSearchCriteraToCommand(command, criteria);
+            AddAssociationsSearchCriteriaToCommand(command, criteria);
 
             command.Append(@"), Category_CTE AS
                     (
@@ -341,7 +337,7 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql
             return command.ToString();
         }
 
-        protected virtual void AddAssociationsSearchCriteraToCommand(StringBuilder command, ProductAssociationSearchCriteria criteria)
+        protected virtual void AddAssociationsSearchCriteriaToCommand(StringBuilder command, ProductAssociationSearchCriteria criteria)
         {
             // join items to search by keyword
             if (!string.IsNullOrEmpty(criteria.Keyword))

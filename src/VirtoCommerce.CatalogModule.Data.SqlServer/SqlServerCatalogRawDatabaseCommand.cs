@@ -12,11 +12,7 @@ namespace VirtoCommerce.CatalogModule.Data.SqlServer
     {
         private const int batchSize = 500;
 
-        public SqlServerCatalogRawDatabaseCommand()
-        {
-        }
-
-        public virtual async Task<string[]> GetAllChildrenCategoriesIdsAsync(CatalogDbContext dbContext, string[] categoryIds)
+        public virtual async Task<IList<string>> GetAllChildrenCategoriesIdsAsync(CatalogDbContext dbContext, IList<string> categoryIds)
         {
             var result = Array.Empty<string>();
 
@@ -38,7 +34,7 @@ namespace VirtoCommerce.CatalogModule.Data.SqlServer
             return result;
         }
 
-        public virtual async Task<string[]> GetAllSeoDuplicatesIdsAsync(CatalogDbContext dbContext)
+        public virtual async Task<IList<string>> GetAllSeoDuplicatesIdsAsync(CatalogDbContext dbContext)
         {
 
             const string commandTemplate = @"
@@ -78,10 +74,9 @@ namespace VirtoCommerce.CatalogModule.Data.SqlServer
                 commandText = $"DELETE PV FROM PropertyValue PV INNER JOIN Item I ON I.Id = PV.ItemId AND I.CatalogId = '{itemProperty.CatalogId}' WHERE PV.Name = '{itemProperty.Name}'";
                 await dbContext.Database.ExecuteSqlInterpolatedAsync(commandText);
             }
-
         }
 
-        public virtual async Task RemoveCatalogsAsync(CatalogDbContext dbContext, string[] ids)
+        public virtual async Task RemoveCatalogsAsync(CatalogDbContext dbContext, IList<string> ids)
         {
             if (!ids.IsNullOrEmpty())
             {
@@ -100,11 +95,11 @@ namespace VirtoCommerce.CatalogModule.Data.SqlServer
                     await ExecuteStoreQueryAsync(dbContext, commandTemplate, ids.Skip(skip).Take(batchSize));
                     skip += batchSize;
                 }
-                while (skip < ids.Length);
+                while (skip < ids.Count);
             }
         }
 
-        public virtual async Task RemoveCategoriesAsync(CatalogDbContext dbContext, string[] ids)
+        public virtual async Task RemoveCategoriesAsync(CatalogDbContext dbContext, IList<string> ids)
         {
             if (!ids.IsNullOrEmpty())
             {
@@ -127,11 +122,11 @@ namespace VirtoCommerce.CatalogModule.Data.SqlServer
 
                     skip += batchSize;
                 }
-                while (skip < ids.Length);
+                while (skip < ids.Count);
             }
         }
 
-        public async Task RemoveItemsAsync(CatalogDbContext dbContext, string[] itemIds)
+        public async Task RemoveItemsAsync(CatalogDbContext dbContext, IList<string> itemIds)
         {
             if (!itemIds.IsNullOrEmpty())
             {
@@ -172,7 +167,7 @@ namespace VirtoCommerce.CatalogModule.Data.SqlServer
 
                     skip += batchSize;
                 }
-                while (skip < itemIds.Length);
+                while (skip < itemIds.Count);
             }
         }
 
@@ -219,7 +214,7 @@ namespace VirtoCommerce.CatalogModule.Data.SqlServer
             return result;
         }
 
-        public virtual async Task<ICollection<CategoryEntity>> SearchCategoriesHierarchyAsync(CatalogDbContext dbContext, string categoryId)
+        public virtual async Task<IList<CategoryEntity>> SearchCategoriesHierarchyAsync(CatalogDbContext dbContext, string categoryId)
         {
             var commandTemplate = @"
                 WITH CategoryParents AS   

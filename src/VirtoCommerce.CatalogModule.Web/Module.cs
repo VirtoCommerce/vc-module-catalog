@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
@@ -69,7 +68,7 @@ namespace VirtoCommerce.CatalogModule.Web
         public void Initialize(IServiceCollection serviceCollection)
         {
             var databaseProvider = Configuration.GetValue("DatabaseProvider", "SqlServer");
-            serviceCollection.AddDbContext<CatalogDbContext>((provider, options) =>
+            serviceCollection.AddDbContext<CatalogDbContext>(options =>
             {
                 var connectionString = Configuration.GetConnectionString(ModuleInfo.Id) ?? Configuration.GetConnectionString("VirtoCommerce");
 
@@ -256,24 +255,25 @@ namespace VirtoCommerce.CatalogModule.Web
             settingsRegistrar.RegisterSettings(ModuleConstants.Settings.AllSettings, ModuleInfo.Id);
 
             //Register module permissions
-            var permissionsProvider = appBuilder.ApplicationServices.GetRequiredService<IPermissionsRegistrar>();
-            permissionsProvider.RegisterPermissions(ModuleConstants.Security.Permissions.AllPermissions.Select(x => new Permission { GroupName = "Catalog", Name = x }).ToArray());
+            var permissionsRegistrar = appBuilder.ApplicationServices.GetRequiredService<IPermissionsRegistrar>();
+            permissionsRegistrar.RegisterPermissions(ModuleInfo.Id, "Catalog", ModuleConstants.Security.Permissions.AllPermissions);
 
             //Register Permission scopes
             AbstractTypeFactory<PermissionScope>.RegisterType<SelectedCatalogScope>();
-            permissionsProvider.WithAvailabeScopesForPermissions(new[] {
-                                                                        ModuleConstants.Security.Permissions.Read,
-                                                                        ModuleConstants.Security.Permissions.Update,
-                                                                        ModuleConstants.Security.Permissions.Delete,
-                                                                         }, new SelectedCatalogScope());
+            permissionsRegistrar.WithAvailabeScopesForPermissions(new[]
+            {
+                ModuleConstants.Security.Permissions.Read,
+                ModuleConstants.Security.Permissions.Update,
+                ModuleConstants.Security.Permissions.Delete,
+            }, new SelectedCatalogScope());
 
             var inProcessBus = appBuilder.ApplicationServices.GetService<IHandlerRegistrar>();
-            inProcessBus.RegisterHandler<ProductChangedEvent>(async (message, token) => await appBuilder.ApplicationServices.GetService<LogChangesChangedEventHandler>().Handle(message));
-            inProcessBus.RegisterHandler<CategoryChangedEvent>(async (message, token) => await appBuilder.ApplicationServices.GetService<LogChangesChangedEventHandler>().Handle(message));
-            inProcessBus.RegisterHandler<CategoryChangedEvent>(async (message, token) => await appBuilder.ApplicationServices.GetService<IndexCategoryChangedEventHandler>().Handle(message));
-            inProcessBus.RegisterHandler<ProductChangedEvent>(async (message, token) => await appBuilder.ApplicationServices.GetService<IndexProductChangedEventHandler>().Handle(message));
-            inProcessBus.RegisterHandler<ProductChangingEvent>(async (message, token) => await appBuilder.ApplicationServices.GetService<VideoOwnerChangingEventHandler>().Handle(message));
-            inProcessBus.RegisterHandler<CategoryChangedEvent>(async (message, token) => await appBuilder.ApplicationServices.GetService<TrackSpecialChangesEventHandler>().Handle(message));
+            inProcessBus.RegisterHandler<ProductChangedEvent>(async (message, _) => await appBuilder.ApplicationServices.GetService<LogChangesChangedEventHandler>().Handle(message));
+            inProcessBus.RegisterHandler<CategoryChangedEvent>(async (message, _) => await appBuilder.ApplicationServices.GetService<LogChangesChangedEventHandler>().Handle(message));
+            inProcessBus.RegisterHandler<CategoryChangedEvent>(async (message, _) => await appBuilder.ApplicationServices.GetService<IndexCategoryChangedEventHandler>().Handle(message));
+            inProcessBus.RegisterHandler<ProductChangedEvent>(async (message, _) => await appBuilder.ApplicationServices.GetService<IndexProductChangedEventHandler>().Handle(message));
+            inProcessBus.RegisterHandler<ProductChangingEvent>(async (message, _) => await appBuilder.ApplicationServices.GetService<VideoOwnerChangingEventHandler>().Handle(message));
+            inProcessBus.RegisterHandler<CategoryChangedEvent>(async (message, _) => await appBuilder.ApplicationServices.GetService<TrackSpecialChangesEventHandler>().Handle(message));
 
             //Force migrations
             using (var serviceScope = appBuilder.ApplicationServices.CreateScope())

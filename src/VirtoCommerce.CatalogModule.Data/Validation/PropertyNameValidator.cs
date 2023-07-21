@@ -9,7 +9,7 @@ using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
 
-namespace VirtoCommerce.CatalogModule.Data.Search
+namespace VirtoCommerce.CatalogModule.Data.Validation
 {
     public class PropertyNameValidator : AbstractValidator<PropertyValidationRequest>
     {
@@ -32,7 +32,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 return result;
             }
 
-            var product = await _itemService.GetByIdAsync(request.ProductId, ItemResponseGroup.ItemProperties.ToString());
+            var product = await _itemService.GetNoCloneAsync(request.ProductId, ItemResponseGroup.ItemProperties.ToString());
             if (product == null)
             {
                 return result;
@@ -51,7 +51,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 return new ValidationResult(new[] { failure });
             }
 
-            var searchResult = await _productSearchService.SearchAsync(new ProductSearchCriteria
+            var searchResult = await _productSearchService.SearchNoCloneAsync(new ProductSearchCriteria
             {
                 MainProductId = request.ProductId,
                 PropertyName = request.Name,

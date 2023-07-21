@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -13,7 +12,7 @@ namespace VirtoCommerce.CatalogModule.Tests
 {
     public class ListEntriesMoveRequestValidatorTests
     {
-        private readonly Mock<ICategoryService> _categoryServiceMock = new Mock<ICategoryService>();
+        private readonly Mock<ICategoryService> _categoryServiceMock = new();
         private readonly ListEntriesMoveRequestValidator _validator;
 
         public ListEntriesMoveRequestValidatorTests()
@@ -25,18 +24,18 @@ namespace VirtoCommerce.CatalogModule.Tests
         public async Task Validate_NoTargetCategory_NotValid()
         {
             // Arrange
-            var targetCateroryId = "targetCat";
-            var movedCateroryId = "movedCat";
+            var targetCategoryId = "targetCat";
+            var movedCategoryId = "movedCat";
 
-            var moveRequest = new ListEntriesMoveRequest()
+            var moveRequest = new ListEntriesMoveRequest
             {
-                Category = targetCateroryId,
+                Category = targetCategoryId,
                 ListEntries = new[]
                 {
-                    new CategoryListEntry()
+                    new CategoryListEntry
                     {
                         Type = CategoryListEntry.TypeName,
-                        Id = movedCateroryId,
+                        Id = movedCategoryId,
                     }
                 },
             };
@@ -57,20 +56,20 @@ namespace VirtoCommerce.CatalogModule.Tests
         public async Task Validate_PasteUnderItself_NotValid(string targetCategoryPath, string movedCategoryPath)
         {
             // Arrange
-            var targetCateroryId = targetCategoryPath.Split("/").Last();
-            var movedCateroryId = movedCategoryPath.Split("/").Last();
+            var targetCategoryId = targetCategoryPath.Split("/").Last();
+            var movedCategoryId = movedCategoryPath.Split("/").Last();
 
             MockCategoryGetById(targetCategoryPath);
 
-            var moveRequest = new ListEntriesMoveRequest()
+            var moveRequest = new ListEntriesMoveRequest
             {
-                Category = targetCateroryId,
+                Category = targetCategoryId,
                 ListEntries = new[]
                 {
-                    new CategoryListEntry()
+                    new CategoryListEntry
                     {
                         Type = CategoryListEntry.TypeName,
-                        Id = movedCateroryId,
+                        Id = movedCategoryId,
                         Outline = movedCategoryPath.Split("/")
                     }
                 },
@@ -91,21 +90,21 @@ namespace VirtoCommerce.CatalogModule.Tests
         public async Task Validate_PasteNotUnderItself_Valid(string targetCategoryPath, string movedCategoryPath)
         {
             // Arrange
-            var targetCateroryId = targetCategoryPath.Split("/").Last();
-            var movedCateroryId = movedCategoryPath.Split("/").Last();
+            var targetCategoryId = targetCategoryPath.Split("/").Last();
+            var movedCategoryId = movedCategoryPath.Split("/").Last();
 
             MockCategoryGetById(targetCategoryPath);
             MockCategoryGetById(movedCategoryPath);
 
-            var moveRequest = new ListEntriesMoveRequest()
+            var moveRequest = new ListEntriesMoveRequest
             {
-                Category = targetCateroryId,
+                Category = targetCategoryId,
                 ListEntries = new[]
                 {
-                    new CategoryListEntry()
+                    new CategoryListEntry
                     {
                         Type = CategoryListEntry.TypeName,
-                        Id = movedCateroryId,
+                        Id = movedCategoryId,
                         Outline = movedCategoryPath.Split("/")
                     }
                 },
@@ -126,18 +125,18 @@ namespace VirtoCommerce.CatalogModule.Tests
             var outline = string.Join("/", parts.Skip(1));
 
             _categoryServiceMock
-                .Setup(x => x.GetByIdAsync(categoryId, It.IsAny<string>()))
-                .Returns(() =>
+                .Setup(x => x.GetAsync(new[] { categoryId }, It.IsAny<string>(), It.IsAny<bool>()))
+                .ReturnsAsync(() =>
                     {
                         // This complex part is done to allow Category.Outline property to be calculated. It uses Category.Parent recursively, so need to create all hierarchy.
-                        var parts = outline.Split("/").Reverse();
+                        var outlineParts = outline.Split("/").Reverse();
                         Category currentCategory = null, resultCategory = null;
 
-                        foreach (var part in parts)
+                        foreach (var part in outlineParts)
                         {
                             if (currentCategory == null)
                             {
-                                resultCategory = currentCategory = new Category()
+                                resultCategory = currentCategory = new Category
                                 {
                                     CatalogId = catalogId,
                                     Id = part
@@ -145,7 +144,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                             }
                             else
                             {
-                                currentCategory.Parent = new Category()
+                                currentCategory.Parent = new Category
                                 {
                                     CatalogId = catalogId,
                                     Id = part
@@ -154,7 +153,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                             }
                         }
 
-                        return Task.FromResult(resultCategory);
+                        return new[] { resultCategory };
                     }
                 );
         }

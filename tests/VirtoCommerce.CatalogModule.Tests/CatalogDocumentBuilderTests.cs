@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Moq;
 using VirtoCommerce.CatalogModule.Core;
+using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Data.Search.Indexing;
 using VirtoCommerce.CoreModule.Core.Outlines;
 using VirtoCommerce.Platform.Core.Settings;
@@ -47,7 +48,7 @@ namespace VirtoCommerce.CatalogModule.Tests
 
         private FakeCatalogDocumentBuilder GetFakeCatalogDocumentBuilder()
         {
-            return new FakeCatalogDocumentBuilder(Mock.Of<ISettingsManager>());
+            return new FakeCatalogDocumentBuilder(Mock.Of<ISettingsManager>(), Mock.Of<IPropertySearchService>());
         }
 
         public static IEnumerable<object[]> OutlineData
@@ -138,7 +139,8 @@ namespace VirtoCommerce.CatalogModule.Tests
 
     class FakeCatalogDocumentBuilder : CatalogDocumentBuilder
     {
-        public FakeCatalogDocumentBuilder(ISettingsManager settingsManager) : base(settingsManager)
+        public FakeCatalogDocumentBuilder(ISettingsManager settingsManager, IPropertySearchService propertySearchService)
+            : base(settingsManager, propertySearchService)
         {
         }
 

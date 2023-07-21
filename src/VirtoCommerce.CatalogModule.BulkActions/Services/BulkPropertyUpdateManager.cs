@@ -101,7 +101,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
             {
                 if (!_namesById.TryGetValue(property.CategoryId, out ownerName))
                 {
-                    var category = await _categoryService.GetByIdAsync(property.CategoryId, CategoryResponseGroup.Info.ToString());
+                    var category = await _categoryService.GetNoCloneAsync(property.CategoryId, CategoryResponseGroup.Info.ToString());
                     ownerName = $"{category?.Name} (Category)";
                     _namesById.Add(property.CategoryId, ownerName);
                 }
@@ -110,7 +110,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
             {
                 if (!_namesById.TryGetValue(property.CatalogId, out ownerName))
                 {
-                    var catalog = await _catalogService.GetByIdAsync(property.CatalogId, CategoryResponseGroup.Info.ToString());
+                    var catalog = await _catalogService.GetNoCloneAsync(property.CatalogId, CategoryResponseGroup.Info.ToString());
                     ownerName = $"{catalog?.Name} (Catalog)";
                     _namesById.Add(property.CatalogId, ownerName);
                 }
