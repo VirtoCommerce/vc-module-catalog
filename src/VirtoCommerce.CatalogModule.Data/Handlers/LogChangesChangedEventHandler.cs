@@ -94,7 +94,7 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
 
         public async Task LogEntityChangesInBackgroundAsync(OperationLog[] operationLogs)
         {
-            var result = new List<OperationLog>();
+            var result = operationLogs.ToList();
 
             using (var repository = _catalogRepositoryFactory())
             {
