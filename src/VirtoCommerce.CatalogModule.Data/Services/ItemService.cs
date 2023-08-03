@@ -250,7 +250,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             foreach (var asset in allAssets.Where(x => !string.IsNullOrEmpty(x.Url)))
             {
                 asset.RelativeUrl = !string.IsNullOrEmpty(asset.RelativeUrl) ? asset.RelativeUrl : asset.Url;
-                asset.Url = _blobUrlResolver.GetAbsoluteUrl(asset.Url);
+                asset.Url = _blobUrlResolver.GetAbsoluteUrl(HttpUtility.UrlDecode(asset.Url));
             }
 
             foreach (var product in products)
