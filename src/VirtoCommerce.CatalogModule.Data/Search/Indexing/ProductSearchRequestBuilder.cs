@@ -173,9 +173,14 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
             if (criteria.SearchInVariations)
             {
-                result.Add(FiltersHelper.CreateTermFilter("is", new[] { "variation", "product" }));
+                result.Add(FiltersHelper.CreateTermFilter("is", new[] { "product", "variation" }));
             }
-            else if (!criteria.WithHidden)
+            else
+            {
+                result.Add(FiltersHelper.CreateTermFilter("is", new[] { "product" }));
+            }
+
+            if (!criteria.WithHidden && !criteria.SearchInVariations)
             {
                 result.Add(FiltersHelper.CreateTermFilter("status", "visible"));
             }
