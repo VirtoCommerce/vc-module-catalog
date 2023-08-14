@@ -24,10 +24,10 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         {
             SearchRequest request = null;
 
-            var categorySearchCriteria = criteria as CategoryIndexedSearchCriteria;
-            if (categorySearchCriteria != null)
+            if (criteria is CategoryIndexedSearchCriteria categorySearchCriteria)
             {
-                // Getting filters modifies search phrase
+                // GetFilters() modifies Keyword
+                categorySearchCriteria = categorySearchCriteria.CloneTyped();
                 var filters = GetFilters(categorySearchCriteria);
 
                 request = new SearchRequest
