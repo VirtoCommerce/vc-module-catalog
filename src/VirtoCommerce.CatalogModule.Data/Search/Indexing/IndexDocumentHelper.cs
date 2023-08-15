@@ -13,7 +13,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         public static void AddObjectFieldValue<T>(this IndexDocument document, T value)
         {
-            document.Add(new IndexDocumentField(ObjectFieldName, value, IndexDocumentFieldValueType.Complex) { IsRetrievable = false, IsFilterable = false, IsSearchable = false });
+            document.Add(new IndexDocumentField(ObjectFieldName, value, IndexDocumentFieldValueType.Complex) { IsRetrievable = true, IsFilterable = false, IsSearchable = false });
         }
 
         public static T GetObjectFieldValue<T>(this SearchDocument document)
