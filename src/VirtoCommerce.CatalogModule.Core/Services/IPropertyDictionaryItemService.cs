@@ -10,7 +10,7 @@ namespace VirtoCommerce.CatalogModule.Core.Services
     /// </summary>
     public interface IPropertyDictionaryItemService : ICrudService<PropertyDictionaryItem>
     {
-        [Obsolete("Use GetByIdsAsync(IList<string> ids)", DiagnosticId = "VC0005", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions/")]
+        [Obsolete("Use GetAsync(IList<string> ids)", DiagnosticId = "VC0005", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions/")]
         Task<PropertyDictionaryItem[]> GetByIdsAsync(string[] ids);
 
         [Obsolete("Use SaveChangesAsync(IList<PropertyDictionaryItem> models)", DiagnosticId = "VC0005", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions/")]

@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using VirtoCommerce.CatalogModule.Core.Events;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
+using VirtoCommerce.CatalogModule.Data.Caching;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Platform.Core.Caching;
@@ -28,7 +30,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return ((ICatalogRepository)repository).GetPropertyDictionaryItemsByIdsAsync(ids);
         }
 
-        [Obsolete("Use GetByIdsAsync(IList<string> ids)", DiagnosticId = "VC0005", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions/")]
+        [Obsolete("Use GetAsync(IList<string> ids)", DiagnosticId = "VC0005", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions/")]
         public async Task<PropertyDictionaryItem[]> GetByIdsAsync(string[] ids)
         {
             var result = await GetAsync(ids);
@@ -45,6 +47,13 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         public async Task DeleteAsync(string[] ids)
         {
             await base.DeleteAsync(ids);
+        }
+
+        protected override void ConfigureCache(MemoryCacheEntryOptions cacheOptions, string id, PropertyDictionaryItem model)
+        {
+            base.ConfigureCache(cacheOptions, id, model);
+
+            cacheOptions.AddExpirationToken(CatalogCacheRegion.CreateChangeToken());
         }
     }
 }
