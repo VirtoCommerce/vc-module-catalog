@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -42,7 +43,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             {
                 return Forbid();
             }
-            var result = await _propertyDictionarySearchService.SearchAsync(criteria);
+            var result = await _propertyDictionarySearchService.SearchAsync(criteria, clone: true);
             return Ok(result);
         }
 
@@ -54,7 +55,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Authorize(ModuleConstants.Security.Permissions.Create)]
         public async Task<ActionResult> SaveChanges([FromBody] PropertyDictionaryItem[] propertyDictItems)
         {
-            await _propertyDictionaryService.SaveChangesAsync(propertyDictItems);
+            await _propertyDictionaryService.SaveChangesAsync(propertyDictItems.ToList());
             return Ok();
         }
 
@@ -67,7 +68,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Authorize(ModuleConstants.Security.Permissions.Delete)]
         public async Task<ActionResult> DeletePropertyDictionaryItems([FromQuery] string[] ids)
         {
-            await _propertyDictionaryService.DeleteAsync(ids);
+            await _propertyDictionaryService.DeleteAsync(ids.ToList());
             return Ok();
         }
     }

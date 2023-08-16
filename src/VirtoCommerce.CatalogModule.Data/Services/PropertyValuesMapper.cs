@@ -64,7 +64,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
             var criteria = new PropertyDictionaryItemSearchCriteria { PropertyIds = _dictionariesIds, Take = 1000 };
 
-            var dictionaries = await _propertyDictionarySearchService.SearchAsync(criteria);
+            var dictionaries = await _propertyDictionarySearchService.SearchAsync(criteria, clone: true);
             return dictionaries.Results;
         }
 

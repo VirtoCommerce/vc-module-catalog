@@ -4,10 +4,11 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.Domain;
 
 namespace VirtoCommerce.CatalogModule.Data.Model
 {
-    public class PropertyDictionaryItemEntity : Entity
+    public class PropertyDictionaryItemEntity : Entity, IDataEntity<PropertyDictionaryItemEntity, PropertyDictionaryItem>
     {
         [StringLength(512)]
         [Required]
