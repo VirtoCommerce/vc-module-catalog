@@ -92,7 +92,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 
                 await writer.WritePropertyNameAsync("PropertyDictionaryItems");
                 await writer.SerializeArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
-                    (GenericSearchResult<PropertyDictionaryItem>)await _propertyDictionarySearchService.SearchAsync(new PropertyDictionaryItemSearchCriteria { Skip = skip, Take = take })
+                    (GenericSearchResult<PropertyDictionaryItem>)await _propertyDictionarySearchService.SearchAsync(new PropertyDictionaryItemSearchCriteria { Skip = skip, Take = take }, clone: true)
                 , (processedCount, totalCount) =>
                 {
                     progressInfo.Description = $"{processedCount} of {totalCount} property dictionary items have been exported";
@@ -359,7 +359,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 
         private async Task ImportPropertyDictionaryItemsAsync(JsonTextReader reader, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
         {
-            await reader.DeserializeArrayWithPagingAsync<PropertyDictionaryItem>(_jsonSerializer, _batchSize, items => _propertyDictionaryService.SaveChangesAsync(items.ToArray()), processedCount =>
+            await reader.DeserializeArrayWithPagingAsync<PropertyDictionaryItem>(_jsonSerializer, _batchSize, items => _propertyDictionaryService.SaveChangesAsync(items), processedCount =>
             {
                 progressInfo.Description = $"{processedCount} property dictionary items have been imported";
                 progressCallback(progressInfo);

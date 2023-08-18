@@ -2,64 +2,46 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
+using VirtoCommerce.Platform.Core.Caching;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Data.Infrastructure;
+using VirtoCommerce.Platform.Core.GenericCrud;
+using VirtoCommerce.Platform.Data.GenericCrud;
 
 namespace VirtoCommerce.CatalogModule.Data.Search
 {
-    public class PropertyDictionaryItemSearchService : IPropertyDictionaryItemSearchService
+    public class PropertyDictionaryItemSearchService : SearchService<PropertyDictionaryItemSearchCriteria, PropertyDictionaryItemSearchResult, PropertyDictionaryItem, PropertyDictionaryItemEntity>, IPropertyDictionaryItemSearchService
     {
-        private readonly Func<ICatalogRepository> _repositoryFactory;
-        private readonly IPropertyDictionaryItemService _properyDictionaryItemService;
-
-        public PropertyDictionaryItemSearchService(Func<ICatalogRepository> repositoryFactory, IPropertyDictionaryItemService properyDictionaryItemService)
+        public PropertyDictionaryItemSearchService(Func<ICatalogRepository> repositoryFactory,
+            IPlatformMemoryCache platformMemoryCache,
+            IPropertyDictionaryItemService crudService,
+            IOptions<CrudOptions> crudOptions)
+            : base(repositoryFactory, platformMemoryCache, crudService, crudOptions)
         {
-            _repositoryFactory = repositoryFactory;
-            _properyDictionaryItemService = properyDictionaryItemService;
         }
 
+        [Obsolete("Use SearchAsync(PropertyDictionaryItemSearchCriteria searchCriteria, bool clone)", DiagnosticId = "VC0005", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions/")]
         public async Task<PropertyDictionaryItemSearchResult> SearchAsync(PropertyDictionaryItemSearchCriteria criteria)
         {
-            if (criteria == null)
-            {
-                throw new ArgumentNullException(nameof(criteria));
-            }
-
-            using (var repository = _repositoryFactory())
-            {
-                //Optimize performance and CPU usage
-                repository.DisableChangesTracking();
-
-                var result = AbstractTypeFactory<PropertyDictionaryItemSearchResult>.TryCreateInstance();
-
-                var sortInfos = BuildSortExpression(criteria);
-                var query = BuildQuery(repository, criteria);
-
-                result.TotalCount = await query.CountAsync();
-                if (criteria.Take > 0)
-                {
-                    var ids = await query.OrderBySortInfos(sortInfos).ThenBy(x => x.Id)
-                                        .Select(x => x.Id)
-                                        .Skip(criteria.Skip).Take(criteria.Take)
-                                        .AsNoTracking()
-                                        .ToArrayAsync();
-
-                    result.Results = (await _properyDictionaryItemService.GetByIdsAsync(ids)).OrderBy(x => Array.IndexOf(ids, x.Id)).ToList();
-                }
-
-                return result;
-            }
+            return await base.SearchAsync(criteria);
         }
 
+        [Obsolete("Use BuildQuery(IRepository repository, PropertyDictionaryItemSearchCriteria criteria)", DiagnosticId = "VC0005", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions/")]
         protected virtual IQueryable<PropertyDictionaryItemEntity> BuildQuery(ICatalogRepository repository, PropertyDictionaryItemSearchCriteria criteria)
         {
-            var query = repository.PropertyDictionaryItems;
+            return BuildQuery(repository as IRepository, criteria);
+        }
+
+        protected override IQueryable<PropertyDictionaryItemEntity> BuildQuery(IRepository repository, PropertyDictionaryItemSearchCriteria criteria)
+        {
+            var query = ((ICatalogRepository)repository).PropertyDictionaryItems;
+
             if (!criteria.CatalogIds.IsNullOrEmpty())
             {
                 query = query.Where(x => criteria.CatalogIds.Contains(x.Property.CatalogId));
@@ -76,7 +58,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             return query;
         }
 
-        protected virtual IList<SortInfo> BuildSortExpression(PropertyDictionaryItemSearchCriteria criteria)
+        protected override IList<SortInfo> BuildSortExpression(PropertyDictionaryItemSearchCriteria criteria)
         {
             var sortInfos = criteria.SortInfos;
             if (sortInfos.IsNullOrEmpty())

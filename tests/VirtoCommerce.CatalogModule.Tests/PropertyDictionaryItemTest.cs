@@ -44,7 +44,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                    }
             };
             propDictionarySearchService
-                .Setup(x => x.SearchAsync(It.IsAny<PropertyDictionaryItemSearchCriteria>()))
+                .Setup(x => x.SearchAsync(It.IsAny<PropertyDictionaryItemSearchCriteria>(), true))
                 .Returns(Task.FromResult(new PropertyDictionaryItemSearchResult { TotalCount = 1, Results = new[] { greenDictItem } }));
 
             productService
@@ -52,11 +52,11 @@ namespace VirtoCommerce.CatalogModule.Tests
                 .ReturnsAsync(new[] { new CatalogProduct { Properties = new List<Property>() } });
 
             //Add the new dictionary item to the property
-            await propDictionaryService.SaveChangesAsync(new[] { greenDictItem });
+            await propDictionaryService.SaveChangesAsync(new List<PropertyDictionaryItem> { greenDictItem });
 
             var product = await productService.Object.GetByIdAsync("Shoes", ItemResponseGroup.ItemProperties.ToString());
             //Find the desired dictionary value from all available
-            greenDictItem = (await propDictionarySearchService.Object.SearchAsync(new PropertyDictionaryItemSearchCriteria { PropertyIds = new[] { colorProperty.Id }, Keyword = "Green" }))
+            greenDictItem = (await propDictionarySearchService.Object.SearchAsync(new PropertyDictionaryItemSearchCriteria { PropertyIds = new[] { colorProperty.Id }, Keyword = "Green" }, clone: true))
                 .Results.FirstOrDefault();
             //Choose dictionary item for product property
             product.Properties.Add(new Property

@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
+using VirtoCommerce.CatalogModule.Core.Events;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Caching;
@@ -9,89 +11,49 @@ using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Platform.Core.Caching;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Data.Infrastructure;
+using VirtoCommerce.Platform.Core.Events;
+using VirtoCommerce.Platform.Data.GenericCrud;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
-    public class PropertyDictionaryItemService : IPropertyDictionaryItemService
+    public class PropertyDictionaryItemService : CrudService<PropertyDictionaryItem, PropertyDictionaryItemEntity, PropertyDictionaryItemChangingEvent, PropertyDictionaryItemChangedEvent>, IPropertyDictionaryItemService
     {
-        private readonly Func<ICatalogRepository> _repositoryFactory;
-        private readonly IPlatformMemoryCache _platformMemoryCache;
-
-        public PropertyDictionaryItemService(Func<ICatalogRepository> repositoryFactory, IPlatformMemoryCache platformMemoryCache)
+        public PropertyDictionaryItemService(Func<ICatalogRepository> repositoryFactory,
+            IPlatformMemoryCache platformMemoryCache,
+            IEventPublisher eventPublisher)
+            : base(repositoryFactory, platformMemoryCache, eventPublisher)
         {
-            _repositoryFactory = repositoryFactory;
-            _platformMemoryCache = platformMemoryCache;
         }
 
-        public Task<PropertyDictionaryItem[]> GetByIdsAsync(string[] ids)
+        protected override Task<IList<PropertyDictionaryItemEntity>> LoadEntities(IRepository repository, IList<string> ids, string responseGroup)
         {
-            var cacheKey = CacheKey.With(GetType(), "GetByIdsAsync", string.Join(",", ids));
-            return _platformMemoryCache.GetOrCreateExclusive(cacheKey, async (cacheEntry) =>
-            {
-                cacheEntry.AddExpirationToken(CatalogCacheRegion.CreateChangeToken());
-                cacheEntry.AddExpirationToken(DictionaryItemsCacheRegion.CreateChangeToken());
-                PropertyDictionaryItem[] result;
-
-                using (var repository = _repositoryFactory())
-                {
-                    //Optimize performance and CPU usage
-                    repository.DisableChangesTracking();
-
-                    result = (await repository.GetPropertyDictionaryItemsByIdsAsync(ids))
-                        .Select(x => x.ToModel(AbstractTypeFactory<PropertyDictionaryItem>.TryCreateInstance()))
-                        .ToArray();
-                }
-                return result;
-            });
+            return ((ICatalogRepository)repository).GetPropertyDictionaryItemsByIdsAsync(ids);
         }
 
+        [Obsolete("Use GetAsync(IList<string> ids)", DiagnosticId = "VC0005", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions/")]
+        public async Task<PropertyDictionaryItem[]> GetByIdsAsync(string[] ids)
+        {
+            var result = await GetAsync(ids);
+            return result.ToArray();
+        }
+
+        [Obsolete("Use SaveChangesAsync(IList<PropertyDictionaryItem> models)", DiagnosticId = "VC0005", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions/")]
         public async Task SaveChangesAsync(PropertyDictionaryItem[] dictItems)
         {
-            if (dictItems == null)
-            {
-                throw new ArgumentNullException(nameof(dictItems));
-            }
-
-            var pkMap = new PrimaryKeyResolvingMap();
-            using (var repository = _repositoryFactory())
-            {
-                var dbExistEntities = await repository.GetPropertyDictionaryItemsByIdsAsync(dictItems.Where(x => !x.IsTransient()).Select(x => x.Id).ToArray());
-                foreach (var dictItem in dictItems)
-                {
-                    var originalEntity = dbExistEntities.FirstOrDefault(x => x.Id == dictItem.Id);
-                    var modifiedEntity = AbstractTypeFactory<PropertyDictionaryItemEntity>.TryCreateInstance().FromModel(dictItem, pkMap);
-                    if (originalEntity != null)
-                    {
-                        modifiedEntity.Patch(originalEntity);
-                    }
-                    else
-                    {
-                        repository.Add(modifiedEntity);
-                    }
-                }
-
-                await repository.UnitOfWork.CommitAsync();
-                pkMap.ResolvePrimaryKeys();
-            }
-
-            DictionaryItemsCacheRegion.ExpireRegion();
+            await base.SaveChangesAsync(dictItems);
         }
 
+        [Obsolete("Use DeleteAsync(IList<string> ids, bool softDelete)", DiagnosticId = "VC0005", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions/")]
         public async Task DeleteAsync(string[] ids)
         {
-            using (var repository = _repositoryFactory())
-            {
-                var dbEntities = await repository.GetPropertyDictionaryItemsByIdsAsync(ids);
+            await base.DeleteAsync(ids);
+        }
 
-                foreach (var dbEntity in dbEntities)
-                {
-                    repository.Remove(dbEntity);
-                }
-                await repository.UnitOfWork.CommitAsync();
-            }
+        protected override void ConfigureCache(MemoryCacheEntryOptions cacheOptions, string id, PropertyDictionaryItem model)
+        {
+            base.ConfigureCache(cacheOptions, id, model);
 
-            DictionaryItemsCacheRegion.ExpireRegion();
+            cacheOptions.AddExpirationToken(CatalogCacheRegion.CreateChangeToken());
         }
     }
 }

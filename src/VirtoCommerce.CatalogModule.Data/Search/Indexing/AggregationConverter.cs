@@ -469,7 +469,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             aggregation.Labels = GetFirstLabelForEachLanguage(allPropertyLabels);
 
             var dictionaryItemsSearchResult = await _propDictItemsSearchService.SearchAsync(
-                new PropertyDictionaryItemSearchCriteria { PropertyIds = properties.Select(x => x.Id).ToArray(), Take = int.MaxValue });
+                new PropertyDictionaryItemSearchCriteria { PropertyIds = properties.Select(x => x.Id).ToArray(), Take = int.MaxValue }, clone: true);
             var allDictItemsMap = dictionaryItemsSearchResult.Results.GroupBy(x => x.Alias, StringComparer.OrdinalIgnoreCase)
                 .ToDictionary(x => x.Key,
                     x => x.SelectMany(dictItem => dictItem.LocalizedValues)

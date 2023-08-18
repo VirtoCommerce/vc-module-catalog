@@ -17,7 +17,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 
         protected override ExportableSearchResult FetchData(PropertyDictionaryItemSearchCriteria searchCriteria)
         {
-            var searchResult = _propertyDictionaryItemSearchService.SearchAsync(searchCriteria).GetAwaiter().GetResult();
+            var searchResult = _propertyDictionaryItemSearchService.SearchAsync(searchCriteria, clone: true).GetAwaiter().GetResult();
 
             return new ExportableSearchResult
             {
