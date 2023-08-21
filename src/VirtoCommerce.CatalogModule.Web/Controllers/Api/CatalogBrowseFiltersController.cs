@@ -150,7 +150,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 var property = catalogProperties.FirstOrDefault(p => p.Name.EqualsInvariant(propertyName) && p.Dictionary);
                 if (property != null)
                 {
-                    var searchResult = await _propDictItemsSearchService.SearchAsync(new PropertyDictionaryItemSearchCriteria { PropertyIds = new[] { property.Id }, Take = int.MaxValue });
+                    var searchResult = await _propDictItemsSearchService.SearchAsync(new PropertyDictionaryItemSearchCriteria { PropertyIds = new[] { property.Id }, Take = int.MaxValue }, clone: true);
                     result = searchResult.Results.Select(x => x.Alias).Distinct().ToArray();
                 }
             }

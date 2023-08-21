@@ -59,7 +59,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Obsolete("Use POST api/catalog/properties/dictionaryitems/search instead")]
         public async Task<ActionResult<PropertyDictionaryItem[]>> GetPropertyValues(string propertyId, [FromQuery] string keyword = null)
         {
-            var dictValues = await _propertyDictionarySearchService.SearchAsync(new PropertyDictionaryItemSearchCriteria { Keyword = keyword, PropertyIds = new[] { propertyId }, Take = int.MaxValue });
+            var dictValues = await _propertyDictionarySearchService.SearchAsync(new PropertyDictionaryItemSearchCriteria { Keyword = keyword, PropertyIds = new[] { propertyId }, Take = int.MaxValue }, clone: true);
 
             return Ok(dictValues.Results);
         }
