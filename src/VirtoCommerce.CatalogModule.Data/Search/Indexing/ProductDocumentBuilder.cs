@@ -138,7 +138,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             document.AddFilterableString("__type", product.GetType().Name);
             document.AddFilterableString("__sort", product.Name);
 
-            var statusField = IsVisible(product) ? "visible" : "hidden";
+            var statusField = GetProductStatus(product);
             IndexIsProperty(document, statusField);
             IndexIsProperty(document, string.IsNullOrEmpty(product.MainProductId) ? "product" : "variation");
             IndexIsProperty(document, product.Code);
@@ -267,6 +267,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             }
 
             return null;
+        }
+
+        protected virtual string GetProductStatus(CatalogProduct product)
+        {
+            return IsVisible(product) ? "visible" : "hidden";
         }
 
         /// <summary>
