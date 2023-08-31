@@ -263,7 +263,7 @@
                             placeholder="Add value"
                             ng-maxlength="currentEntity.validationRule.charCountMax"
                             ng-minlength="currentEntity.validationRule.charCountMin"
-                            ng-pattern="currentEntity.validationRule.regExp"
+                            allowed-tags-pattern="{{currentEntity.validationRule.regExp}}"
                             on-tag-added="tagsAdded($tag, currentEntity.name)"
                             on-tag-removed="tagsDeleted($tag, currentEntity.name, currentEntity.required)"
                             on-invalid-tag="addederror($tag, currentEntity.name, currentEntity.validationRule.charCountMin, currentEntity.validationRule.charCountMax, currentEntity.validationRule.regExp)">
