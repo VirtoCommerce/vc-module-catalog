@@ -3,7 +3,7 @@
   <id>VirtoCommerce.Catalog</id>
   <version>3.407.0</version>
   <version-tag />
-  <platformVersion>3.400.0</platformVersion>
+  <platformVersion>3.413.0</platformVersion>
   <dependencies>
     <dependency id="VirtoCommerce.Assets" version="3.400.0" />
     <dependency id="VirtoCommerce.BulkActionsModule" version="3.200.0" />

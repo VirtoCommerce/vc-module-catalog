@@ -2,15 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using EntityFrameworkCore.Triggers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Newtonsoft.Json;
 using VirtoCommerce.CatalogModule.Data.Model;
+using VirtoCommerce.Platform.Data.Infrastructure;
 
 namespace VirtoCommerce.CatalogModule.Data.Repositories
 {
-    public class CatalogDbContext : DbContextWithTriggers
+    public class CatalogDbContext : DbContextBase
     {
 #pragma warning disable S109
         public CatalogDbContext(DbContextOptions<CatalogDbContext> options)
