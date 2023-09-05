@@ -19,9 +19,9 @@
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="VirtoCommerce.AssetsModule.Core" Version="3.400.0" />
     <PackageReference Include="VirtoCommerce.ExportModule.Data" Version="3.200.0" />
-    <PackageReference Include="VirtoCommerce.Platform.Data" Version="3.411.0-alpha.12732-pt-13179-utc-converter" />
-    <PackageReference Include="VirtoCommerce.Platform.Hangfire" Version="3.400.0" />
-    <PackageReference Include="VirtoCommerce.Platform.Security" Version="3.400.0" />
+    <PackageReference Include="VirtoCommerce.Platform.Data" Version="3.413.0" />
+    <PackageReference Include="VirtoCommerce.Platform.Hangfire" Version="3.413.0" />
+    <PackageReference Include="VirtoCommerce.Platform.Security" Version="3.413.0" />
     <PackageReference Include="VirtoCommerce.StoreModule.Core" Version="3.400.0" />
   </ItemGroup>
   <ItemGroup>
