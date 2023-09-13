@@ -209,7 +209,8 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql
                 commands.ForEach(x => AddArrayParameters(x, "@associatedObjectIds", criteria.AssociatedObjectIds));
             }
 
-            result.TotalCount = await dbContext.ExecuteScalarAsync<Int32>(countSqlCommand.Text, countSqlCommand.Parameters.ToArray());
+            var lTotalCount = await dbContext.ExecuteScalarAsync<long>(countSqlCommand.Text, countSqlCommand.Parameters.ToArray());
+            result.TotalCount = (int)lTotalCount;
             result.Results = criteria.Take > 0
                 ? await dbContext.Set<AssociationEntity>().FromSqlRaw(querySqlCommand.Text, querySqlCommand.Parameters.ToArray()).ToListAsync()
                 : new List<AssociationEntity>();
