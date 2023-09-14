@@ -2,7 +2,7 @@
 <Project>
     <!-- These properties will be shared for all projects -->
     <PropertyGroup>
-        <VersionPrefix>3.261.7</VersionPrefix>
+        <VersionPrefix>3.261.8</VersionPrefix>
         <VersionSuffix>
         </VersionSuffix>
         <VersionSuffix Condition=" '$(VersionSuffix)' != '' AND '$(BuildNumber)' != '' ">$(VersionSuffix)-$(BuildNumber)</VersionSuffix>
