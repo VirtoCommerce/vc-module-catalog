@@ -86,14 +86,14 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
 
         protected virtual async Task<string> GetSerializedValue(string storeId)
         {
-            var store = await _storeService.GetByIdAsync(storeId, StoreResponseGroup.WithDynamicProperties.ToString());
+            var store = await _storeService.GetByIdAsync(storeId);
             var result = store?.GetDynamicPropertyValue(FilteredBrowsingPropertyName, string.Empty);
             return result;
         }
 
         protected virtual async Task SaveSerializedValue(string storeId, string serializedValue)
         {
-            var store = await _storeService.GetByIdAsync(storeId, StoreResponseGroup.WithDynamicProperties.ToString());
+            var store = await _storeService.GetByIdAsync(storeId);
             if (store != null)
             {
                 var property = store.DynamicProperties.FirstOrDefault(p => p.Name == FilteredBrowsingPropertyName);
