@@ -32,6 +32,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
         /// </param>
         /// <param name="categoryService"></param>
         /// <param name="catalogService"></param>
+        /// <param name="propertyUpdateManager"></param>
         public BulkPropertyUpdateManager(IDataSourceFactory dataSourceFactory, IItemService itemService, ICategoryService categoryService, ICatalogService catalogService, IPropertyUpdateManager propertyUpdateManager)
         {
             _dataSourceFactory = dataSourceFactory;
@@ -140,7 +141,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
             {
                 try
                 {
-                    hasChanges = hasChanges || _propertyUpdateManager.TryChangeProductPropertyValues(product, properties);
+                    hasChanges |= _propertyUpdateManager.TryChangeProductPropertyValues(product, properties);
                 }
                 catch (Exception e)
                 {

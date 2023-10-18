@@ -94,7 +94,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         private async Task<ChangeProductPropertiesResult> TryChangeProductPropertyValuesInternal(CatalogProduct product, JObject source, string language)
         {
-            var allProperties = product.Properties.Union(product.Category.Properties.Where(x => x.Type == PropertyType.Product)).Union(GetStandardProperties());
+            var allProperties = product.Properties.Union(product.Category.Properties.Where(x => x.Type == PropertyType.Product)).Union(GetStandardProperties()).ToList();
             var mapper = new PropertyValuesMapper(_propertyDictionarySearchService);
 
             var result = new ChangeProductPropertiesResult();
