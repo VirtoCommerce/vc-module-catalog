@@ -274,31 +274,43 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             sortedBounds.Add(null);
 
             string previousBound = null;
-            var isFirstPriceRange = isPriceRange;
+            var isFirstRange = true;
 
             foreach (var bound in sortedBounds)
             {
                 // Don't add a range for negative prices if first bound is 0
-                if (!isFirstPriceRange || bound != "0")
+                if (!isPriceRange || !isFirstRange || bound != "0")
                 {
                     var value = new RangeFilterValue
                     {
-                        Id = isFirstPriceRange ? $"under-{bound}" : bound == null ? $"over-{previousBound}" : $"{previousBound}-{bound}",
+                        Id = GetRangeId(isFirstRange, bound, previousBound),
                         Lower = previousBound,
                         Upper = bound,
                         // Exclude 0 as lower bound for price range if first bound is 0
-                        IncludeLower = !isFirstPriceRange || previousBound != "0",
+                        IncludeLower = !isPriceRange || !isFirstRange || previousBound != "0",
                         IncludeUpper = false,
                     };
 
                     result.Add(value);
-                    isFirstPriceRange = false;
+                    isFirstRange = false;
                 }
 
                 previousBound = bound;
             }
 
             return result.Any() ? result.ToArray() : null;
+        }
+
+        private static string GetRangeId(bool isFirstRange, string bound, string previousBound)
+        {
+            if (isFirstRange)
+            {
+                return $"under-{bound}";
+            }
+
+            return bound == null
+                ? $"over-{previousBound}"
+                : $"{previousBound}-{bound}";
         }
 
         private static IEnumerable<string> SortStringsAsNumbers(IEnumerable<string> strings)
