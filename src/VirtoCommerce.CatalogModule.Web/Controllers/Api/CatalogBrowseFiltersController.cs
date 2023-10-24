@@ -263,37 +263,39 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
         private static RangeFilterValue[] GetRangeFilterValues(IList<string> bounds, bool isPriceRange = false)
         {
+            if (bounds.IsNullOrEmpty())
+            {
+                return null;
+            }
+
             var result = new List<RangeFilterValue>();
 
-            if (bounds?.Any() == true)
+            var sortedBounds = SortStringsAsNumbers(bounds).ToList();
+            sortedBounds.Add(null);
+
+            string previousBound = null;
+            var isFirstPriceRange = isPriceRange;
+
+            foreach (var bound in sortedBounds)
             {
-                var sortedBounds = SortStringsAsNumbers(bounds).ToList();
-                sortedBounds.Add(null);
-
-                string previousBound = null;
-                var isFirstRange = true;
-
-                foreach (var bound in sortedBounds)
+                // Don't add a range for negative prices if first bound is 0
+                if (!isFirstPriceRange || bound != "0")
                 {
-                    // Don't add a range for negative prices if first bound is 0
-                    if (!isPriceRange || !isFirstRange || bound != "0")
+                    var value = new RangeFilterValue
                     {
-                        var value = new RangeFilterValue
-                        {
-                            Id = isFirstRange ? $"under-{bound}" : bound == null ? $"over-{previousBound}" : $"{previousBound}-{bound}",
-                            Lower = previousBound,
-                            Upper = bound,
-                            // Exclude 0 as lower bound for price range if first bound is 0
-                            IncludeLower = !isPriceRange || !isFirstRange || previousBound != "0",
-                            IncludeUpper = false,
-                        };
+                        Id = isFirstPriceRange ? $"under-{bound}" : bound == null ? $"over-{previousBound}" : $"{previousBound}-{bound}",
+                        Lower = previousBound,
+                        Upper = bound,
+                        // Exclude 0 as lower bound for price range if first bound is 0
+                        IncludeLower = !isFirstPriceRange || previousBound != "0",
+                        IncludeUpper = false,
+                    };
 
-                        result.Add(value);
-                        isFirstRange = false;
-                    }
-
-                    previousBound = bound;
+                    result.Add(value);
+                    isFirstPriceRange = false;
                 }
+
+                previousBound = bound;
             }
 
             return result.Any() ? result.ToArray() : null;
