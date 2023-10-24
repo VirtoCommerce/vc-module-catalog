@@ -308,9 +308,9 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return $"under-{bound}";
             }
 
-            return bound == null
-                ? $"over-{previousBound}"
-                : $"{previousBound}-{bound}";
+            return bound != null
+                ? $"{previousBound}-{bound}"
+                : $"over-{previousBound}";
         }
 
         private static IEnumerable<string> SortStringsAsNumbers(IEnumerable<string> strings)
