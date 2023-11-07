@@ -93,8 +93,8 @@ angular.module('virtoCommerce.catalogModule')
                 $scope.deleteList = function (selection) {
                     var dialog = {
                         id: "confirmDeleteMeasures",
-                        title: "measure.dialogs.notification-measure-delete.title",
-                        message: "measure.dialogs.notification-measure-delete.message",
+                        title: "catalog.dialogs.measures-delete.title",
+                        message: "catalog.dialogs.measures-delete.message",
                         callback: function (remove) {
                             if (remove) {
                                 bladeNavigationService.closeChildrenBlades(blade, function () {

@@ -71,6 +71,10 @@ angular.module('virtoCommerce.catalogModule')
                     );
                 }
 
+                blade.onClose = function (closeCallback) {
+                    bladeNavigationService.showConfirmationIfNeeded(isDirty(), canSave(), blade, $scope.saveChanges, closeCallback, "catalog.dialogs.measure-save.title", "catalog.dialogs.measure-save.message");
+                };
+
                 function canSave() {
                     return isDirty() && $scope.formScope && $scope.formScope.$valid;
                 }

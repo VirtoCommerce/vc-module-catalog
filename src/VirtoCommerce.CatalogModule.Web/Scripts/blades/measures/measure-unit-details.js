@@ -34,7 +34,7 @@ angular.module('virtoCommerce.catalogModule')
                 blade.isLoading = false;
 
                 blade.onClose = function (closeCallback) {
-                    bladeNavigationService.showConfirmationIfNeeded(isDirty(), canSave(), blade, $scope.saveChanges, closeCallback, "core.dialogs.address-save.title", "core.dialogs.address-save.message");
+                    bladeNavigationService.showConfirmationIfNeeded(isDirty(), canSave(), blade, $scope.saveChanges, closeCallback, "catalog.dialogs.measure-unit-save.title", "catalog.dialogs.measure-unit-save.message");
                 };
 
                 $scope.setForm = function (form) {
@@ -68,8 +68,8 @@ angular.module('virtoCommerce.catalogModule')
                 function deleteEntry() {
                     var dialog = {
                         id: "confirmDelete",
-                        title: "catalog.dialogs.phone-delete.title",
-                        message: "catalog.dialogs.phone-delete.message",
+                        title: "catalog.dialogs.measure-unit-delete.title",
+                        message: "catalog.dialogs.measure-unit-delete.message",
                         callback: function (remove) {
                             if (remove) {
                                 if (blade.deleteFn) {

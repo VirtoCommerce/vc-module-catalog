@@ -10,7 +10,10 @@
 </div>
 
 <script type="text/ng-template" id="conversion-factor.html">
-  <div class="form-editor form-input">
-    <input class="form-input" smart-float required num-type="float" fraction="6" min="0.000001" ng-model="blade.currentEntity.conversionFactor" placeholder="{{ 'catalog.blades.measure-unit-details.placeholders.convertion-factor' | translate }}" />
-  </div>
+  <div class="form-group">
+    <label class="form-label">{{ 'catalog.blades.measure-unit-details.labels.convertion-factor' | translate }}</label>
+    <div class="form-editor form-input">
+      <input class="form-input" smart-float required num-type="float" fraction="6" min="0.000001" ng-model="blade.currentEntity.conversionFactor" placeholder="{{ 'catalog.blades.measure-unit-details.placeholders.convertion-factor' | translate }}" />
+    </div>
+  </div
 </script>

@@ -39,8 +39,8 @@ angular.module('virtoCommerce.catalogModule')
 
                     var dialog = {
                         id: "confirmDelete",
-                        title: "catalog.dialogs.phones-delete.title",
-                        message: "catalog.dialogs.phones-delete.message",
+                        title: "catalog.dialogs.measure-units-delete.title",
+                        message: "catalog.dialogs.measure-units-delete.message",
                         callback: function (remove) {
                             if (remove) {
                                 bladeNavigationService.closeChildrenBlades(blade);

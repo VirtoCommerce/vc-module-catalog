@@ -880,6 +880,26 @@
       "links-delete": {
         "title": "Confirm Delete",
         "message": "Are you sure you want to delete selected links?"
+      },
+      "measures-delete": {
+        "title": "Confirm Delete",
+        "message": "Are you sure you want to delete selected measures?"
+      },
+      "measure-unit-save": {
+        "title": "Save changes",
+        "message": "This unit of measure has been modified. Do you want to save changes?"
+      },
+      "measure-unit-delete": {
+        "title": "Confirm Delete",
+        "message": "Are you sure you want to delete selected unit of measure?"
+      },
+      "measure-units-delete": {
+        "title": "Confirm Delete",
+        "message": "Are you sure you want to delete selected unit of measures?"
+      },
+      "measure-save": {
+        "title": "Save changes",
+        "message": "This measure has been modified. Do you want to save changes?"
       }
     },
     "wizards": {
