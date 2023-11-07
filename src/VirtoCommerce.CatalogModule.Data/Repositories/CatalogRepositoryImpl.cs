@@ -41,6 +41,9 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         public IQueryable<CategoryRelationEntity> CategoryLinks => DbContext.Set<CategoryRelationEntity>();
         public IQueryable<PropertyValidationRuleEntity> PropertyValidationRules => DbContext.Set<PropertyValidationRuleEntity>();
         public IQueryable<SeoInfoEntity> SeoInfos => DbContext.Set<SeoInfoEntity>();
+        public IQueryable<MeasureEntity> Measures => DbContext.Set<MeasureEntity>();
+        public IQueryable<MeasureUnitEntity> MeasureUnits => DbContext.Set<MeasureUnitEntity>();
+
 
         public virtual async Task<IList<CatalogEntity>> GetCatalogsByIdsAsync(IList<string> catalogIds)
         {
@@ -530,6 +533,21 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             }
 
             return result;
+        }
+
+        public async Task<IList<MeasureEntity>> GetMeasuresByIdsAsync(IList<string> ids)
+        {
+            var measures = await Measures
+                .Where(x => ids.Contains(x.Id))
+                .ToListAsync();
+
+            if (measures.Any())
+            {
+                var existingIds = measures.Select(x => x.Id).ToList();
+                await MeasureUnits.Where(x => existingIds.Contains(x.MeasureId)).LoadAsync();
+            }
+
+            return measures;
         }
     }
 }

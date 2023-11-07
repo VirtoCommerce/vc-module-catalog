@@ -1,0 +1,21 @@
+<div class="blade-content __medium-wide">
+  <div class="blade-inner">
+    <div class="inner-block">
+      <form class="form" name="formScope">
+        <fieldset>
+          <va-metaform registered-inputs="blade.metaFields" blade="blade" column-count="6" ng-if="blade.currentEntity" ng-init="setForm(formScope)"></va-metaform>
+        </fieldset>
+      </form>
+      <va-widget-container group="measureDetails" blade="blade" data="blade.currentEntity" gridster-opts="{width: 526}"></va-widget-container>
+    </div>
+  </div>
+</div>
+
+<script type="text/ng-template" id="measure-details-description.html">
+  <div class="form-group">
+    <label class="form-label">{{ 'catalog.blades.measure-details.labels.description' | translate }}</label>
+    <div class="form-input">
+      <textarea cols="30" rows="5" ng-model="blade.currentEntity.description" placeholder="{{ 'catalog.blades.measure-details.placeholders.description' | translate }}"></textarea>
+    </div>
+  </div>
+</script>

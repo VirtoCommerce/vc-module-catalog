@@ -14,18 +14,23 @@ namespace VirtoCommerce.CatalogModule.Core
             public static class Permissions
             {
                 public const string Access = "catalog:access",
-                  Create = "catalog:create",
-                  Read = "catalog:read",
-                  Update = "catalog:update",
-                  Delete = "catalog:delete",
-                  Export = "catalog:export",
-                  Import = "catalog:import",
-                  CatalogBrowseFiltersRead = "catalog:BrowseFilters:Read",
-                  CatalogBrowseFiltersUpdate = "catalog:BrowseFilters:Update",
-                  CategoryChange = "bulk-action:category:change",
-                  PropertiesUpdate = "bulk-action:properties:update";
+                    Create = "catalog:create",
+                    Read = "catalog:read",
+                    Update = "catalog:update",
+                    Delete = "catalog:delete",
+                    Export = "catalog:export",
+                    Import = "catalog:import",
+                    CatalogBrowseFiltersRead = "catalog:BrowseFilters:Read",
+                    CatalogBrowseFiltersUpdate = "catalog:BrowseFilters:Update",
+                    CategoryChange = "bulk-action:category:change",
+                    PropertiesUpdate = "bulk-action:properties:update",
+                    MeasuresAccess = "measures:access",
+                    MeasuresCreate = "measures:create",
+                    MeasuresRead = "measures:read",
+                    MeasuresUpdate = "measures:update",
+                    MeasuresDelete = "measures:delete";
 
-                public static string[] AllPermissions { get; } = { Access, Create, Read, Update, Delete, Export, Import, CatalogBrowseFiltersRead, CatalogBrowseFiltersUpdate, CategoryChange, PropertiesUpdate };
+                public static string[] AllPermissions { get; } = { Access, Create, Read, Update, Delete, Export, Import, CatalogBrowseFiltersRead, CatalogBrowseFiltersUpdate, CategoryChange, PropertiesUpdate, MeasuresAccess, MeasuresRead, MeasuresCreate, MeasuresUpdate, MeasuresDelete };
             }
         }
 

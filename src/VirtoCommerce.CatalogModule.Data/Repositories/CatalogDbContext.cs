@@ -261,6 +261,23 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
             #endregion SeoInfo
 
+            #region Measure
+
+            modelBuilder.Entity<MeasureEntity>().ToTable("Measure").HasKey(x => x.Id);
+            modelBuilder.Entity<MeasureEntity>().Property(x => x.Id).HasMaxLength(128).ValueGeneratedOnAdd();
+
+            #endregion
+
+            #region MeasureUnit
+
+            modelBuilder.Entity<MeasureUnitEntity>().ToTable("MeasureUnit").HasKey(x => x.Id);
+            modelBuilder.Entity<MeasureUnitEntity>().Property(x => x.Id).HasMaxLength(128).ValueGeneratedOnAdd();
+            modelBuilder.Entity<MeasureUnitEntity>().Property(x => x.ConversionFactor).HasPrecision(21, 6);
+            modelBuilder.Entity<MeasureUnitEntity>().HasOne(x => x.Measure).WithMany(x => x.Units).HasForeignKey(x => x.MeasureId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            #endregion
+
             base.OnModelCreating(modelBuilder);
 
             // Allows configuration for an entity type for different database types.

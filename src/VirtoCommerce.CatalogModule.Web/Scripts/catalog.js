@@ -29,7 +29,28 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                 ]
             });
     }])
+    .config(['$stateProvider', function ($stateProvider) {
+        $stateProvider
+            .state('workspace.measures', {
+                url: '/measures',
+                templateUrl: '$(Platform)/Scripts/common/templates/home.tpl.html',
+                controller: [
+                    '$scope', 'platformWebApp.bladeNavigationService', function ($scope, bladeNavigationService) {
 
+                        var blade = {
+                            id: 'measures',
+                            title: 'catalog.blades.measures-list.title',
+                            subtitle: 'catalog.blades.measures-list.subtitle',
+                            controller: 'virtoCommerce.catalogModule.measuresListController',
+                            template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/measures/measures-list.tpl.html',
+                            isClosingDisabled: true
+                        };
+                        bladeNavigationService.showBlade(blade);
+                        $scope.moduleName = 'vc-catalog-measure';
+                    }
+                ]
+            });
+    }])
     // define search filters to be accessible platform-wide
     .factory('virtoCommerce.catalogModule.predefinedSearchFilters', ['$localStorage', function ($localStorage) {
         $localStorage.catalogSearchFilters = $localStorage.catalogSearchFilters || [];
@@ -81,7 +102,7 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
 
                 //Register module in main menu
                 var menuItem = {
-                    path: 'browse/catalog',
+                    path: 'browse/measures',
                     icon: 'fa fa-folder',
                     title: 'catalog.main-menu-title',
                     priority: 20,
@@ -89,6 +110,17 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                     permission: 'catalog:access'
                 };
                 mainMenuService.addMenuItem(menuItem);
+
+                var menuItem = {
+                    path: 'browse/measures',
+                    icon: 'fas fa-ruler-combined',
+                    title: 'catalog.measure-menu-title',
+                    priority: 100,
+                    action: function () { $state.go('workspace.measures'); },
+                    permission: 'measures:access'
+                };
+                mainMenuService.addMenuItem(menuItem);
+
 
                 // register back-button
                 toolbarService.register(breadcrumbHistoryService.getBackButtonInstance(), 'virtoCommerce.catalogModule.categoriesItemsListController');
@@ -585,4 +617,62 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                         newBlade.totalItemsCount = (newBlade.selectedProducts || []).length;
                     }
                 });
+
+                metaFormsService.registerMetaFields('measureDetails', [
+                    {
+                        name: 'name',
+                        title: "catalog.blades.measure-details.labels.name",
+                        colSpan: 6,
+                        isRequired: true,
+                        valueType: "ShortText"
+                    },
+                    {
+                        name: 'code',
+                        title: "catalog.blades.measure-details.labels.code",
+                        colSpan: 6,
+                        isRequired: true,
+                        valueType: "ShortText"
+                    },
+                    {
+                        colSpan: 6,
+                        templateUrl: "measure-details-description.html"
+                    }
+                ]);
+
+                var measureUnitsWidget = {
+                    controller: 'virtoCommerce.catalogModule.measureUnitsWidgetController',
+                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/measureUnitsWidget.tpl.html'
+                };
+                widgetService.registerWidget(measureUnitsWidget, 'measureDetails');
+
+                metaFormsService.registerMetaFields('measureUnitDetails', [
+                    {
+                        name: 'code',
+                        title: "catalog.blades.measure-unit-details.labels.code",
+                        placeholder: "catalog.blades.measure-unit-details.placeholders.code",
+                        colSpan: 6,
+                        isRequired: true,
+                        valueType: "ShortText"
+                    },
+                    {
+                        name: 'name',
+                        title: "catalog.blades.measure-unit-details.labels.name",
+                        placeholder: "catalog.blades.measure-unit-details.placeholders.name",
+                        colSpan: 6,
+                        isRequired: true,
+                        valueType: "ShortText"
+                    },
+                    {
+                        colSpan: 6,
+                        templateUrl: "conversion-factor.html"
+                    },
+                    {
+                        name: 'symbol',
+                        title: "catalog.blades.measure-unit-details.labels.symbol",
+                        placeholder: "catalog.blades.measure-unit-details.placeholders.symbol",
+                        colSpan: 6,
+                        isRequired: true,
+                        valueType: "ShortText"
+                    }
+                ]);
             }]);

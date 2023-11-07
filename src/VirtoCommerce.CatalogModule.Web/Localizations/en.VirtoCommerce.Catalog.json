@@ -2,6 +2,7 @@
   "catalog": {
     "main-menu-title": "Catalog",
     "main-blade-title": "Catalog",
+    "measure-menu-title": "Unit of measure",
     "properties": {
       "catalog": "Catalog properties",
       "product": "Product properties",
@@ -651,6 +652,53 @@
           "add-links": "Add new link",
           "marked": "Marked"
         }
+      },
+      "measures-list": {
+        "title": "Unit of measures",
+        "subtitle": "List of available measures",
+        "labels": {
+          "name": "Name"
+        }
+      },
+      "measure-details": {
+        "title": " measure",
+        "title-new": "Add new measure",
+        "subtitle": "Measure details",
+        "labels": {
+          "name": "Name",
+          "code": "Code",
+          "description": "Description"
+        },
+        "placeholders": {
+          "name": "Enter name...",
+          "code": "Enter code...",
+          "description": "Enter description..."
+        }
+      },
+      "measure-units-list": {
+        "title": " measure units",
+        "subtitle": "List of measure units",
+        "labels": {
+          "name": "Name",
+          "code": "Code"
+        }
+      },
+      "measure-unit-details": {
+        "title": " unit of measure",
+        "title-new": "New unit of measure",
+        "subtitle": "Unit of measure details",
+        "labels": {
+          "name": "Name",
+          "code": "Code",
+          "conversion-factor": "Conversion factor",
+          "symbol": "Symbol"
+        },
+        "placeholders": {
+          "name": "Enter name...",
+          "code": "Enter code...",
+          "conversion-factor": "Enter conversion...",
+          "symbol": "Symbol"
+        }
       }
     },
     "exporter-list": {
@@ -719,6 +767,9 @@
       },
       "links": {
         "title": "Links"
+      },
+      "measure-units": {
+        "title": "Units"
       }
     },
     "dialogs": {
@@ -963,7 +1014,12 @@
     "catalog:update": "Update catalog related data",
     "catalog:delete": "Delete catalog related data",
     "catalog:export": "Export catalog data",
-    "catalog:import": "Import catalog data"
+    "catalog:import": "Import catalog data",
+    "measures:access": "Open unit of measure menu",
+    "measures:create": "Create unit of measure related data",
+    "measures:read": "View unit of measure related data",
+    "measures:update": "Update unit of measure related data",
+    "measures:delete": "Delete unit of measure related data"
   },
   "settings": {
     "Catalog": {
