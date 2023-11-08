@@ -8,12 +8,34 @@ angular.module('virtoCommerce.catalogModule')
 
                 blade.metaFields = metaFormsService.getMetaFields("measureDetails");
 
+                blade.toolbarCommands = [
+                    {
+                        name: "platform.commands.save",
+                        icon: 'fas fa-save',
+                        executeMethod: $scope.saveChanges,
+                        canExecuteMethod: canSave,
+                        permission: blade.updatePermission
+                    }
+                ];
+
                 if (blade.isNew) {
                     blade.title = 'catalog.blades.measure-details.title-new';
                     blade.currentEntity = {};
                 } else {
                     blade.title = blade.currentEntity.name + $translate.instant('catalog.blades.measure-details.title');
                     blade.subtitle = 'catalog.blades.measure-details.subtitle';
+
+                    blade.toolbarCommands.push(
+                        {
+                            name: "platform.commands.reset",
+                            icon: 'fa fa-undo',
+                            executeMethod: function () {
+                                angular.copy(blade.originalEntity, blade.currentEntity);
+                            },
+                            canExecuteMethod: isDirty,
+                            permission: blade.updatePermission
+                        }
+                    );
                 }
 
                 $scope.setForm = function (form) {
@@ -47,29 +69,6 @@ angular.module('virtoCommerce.catalogModule')
                             });
                     }
                 };
-
-                blade.toolbarCommands = [
-                    {
-                        name: "platform.commands.save",
-                        icon: 'fas fa-save',
-                        executeMethod: $scope.saveChanges,
-                        canExecuteMethod: canSave,
-                        permission: blade.updatePermission
-                    }];
-
-                if (!blade.isNew) {
-                    blade.toolbarCommands.push(
-                        {
-                            name: "platform.commands.reset",
-                            icon: 'fa fa-undo',
-                            executeMethod: function () {
-                                angular.copy(blade.originalEntity, blade.currentEntity);
-                            },
-                            canExecuteMethod: isDirty,
-                            permission: blade.updatePermission
-                        }
-                    );
-                }
 
                 blade.onClose = function (closeCallback) {
                     bladeNavigationService.showConfirmationIfNeeded(isDirty(), canSave(), blade, $scope.saveChanges, closeCallback, "catalog.dialogs.measure-save.title", "catalog.dialogs.measure-save.message");

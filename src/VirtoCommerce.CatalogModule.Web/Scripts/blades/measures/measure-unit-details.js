@@ -7,7 +7,7 @@ angular.module('virtoCommerce.catalogModule')
                 blade.metaFields = blade.metaFields && blade.metaFields.length ? blade.metaFields : metaFormsService.getMetaFields('measureUnitDetails');
 
                 blade.origEntity = blade.currentEntity;
-                blade.currentEntity = angular.copy(blade.origEntity);       
+                blade.currentEntity = angular.copy(blade.origEntity);
 
                 if (blade.isNew) {
                     blade.title = 'catalog.blades.measure-unit-details.title-new';
