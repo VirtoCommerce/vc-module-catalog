@@ -111,7 +111,7 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                 };
                 mainMenuService.addMenuItem(menuItem);
 
-                var menuItem = {
+                var measureMenuItem = {
                     path: 'browse/measures',
                     icon: 'fas fa-ruler-combined',
                     title: 'catalog.measure-menu-title',
@@ -119,7 +119,7 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                     action: function () { $state.go('workspace.measures'); },
                     permission: 'measures:access'
                 };
-                mainMenuService.addMenuItem(menuItem);
+                mainMenuService.addMenuItem(measureMenuItem);
 
 
                 // register back-button

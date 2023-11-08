@@ -30,7 +30,7 @@ angular.module('virtoCommerce.catalogModule')
                 function isItemsChecked() {
                     return $scope.gridApi && _.any($scope.gridApi.selection.getSelectedRows());
                 }
-    
+
                 function deleteList(selection) {
                     var itemIds = [];
                     angular.forEach(selection, function (item) {
@@ -47,7 +47,10 @@ angular.module('virtoCommerce.catalogModule')
                                 blade.isLoading = true;
 
                                 angular.forEach(itemIds, function (id) {
-                                    var toRemove = _.find(blade.currentEntity.units, function (x) { return angular.equals(x.id, id) });
+                                    var toRemove = _.find(blade.currentEntity.units, function (x) {
+                                        return angular.equals(x.id, id)
+                                    });
+
                                     if (toRemove) {
                                         var idx = blade.currentEntity.units.indexOf(toRemove);
                                         blade.currentEntity.units.splice(idx, 1);
@@ -71,22 +74,25 @@ angular.module('virtoCommerce.catalogModule')
                         id: 'unitDetail',
                         currentEntity: unit,
                         controller: 'virtoCommerce.catalogModule.measureUnitDetailsController',
-                        confirmChangesFn: function (unit) {
-                            if (unit.isNew) {
-                                unit.isNew = undefined;
-                                blade.currentEntity.units.push(unit);
+                        confirmChangesFn: function (measureUnit) {
+                            if (measureUnit.isNew) {
+                                measureUnit.isNew = undefined;
+                                blade.currentEntity.units.push(measureUnit);
                                 if (blade.confirmChangesFn) {
-                                    blade.confirmChangesFn(unit);
+                                    blade.confirmChangesFn(measureUnit);
                                 }
                             }
                         },
-                        deleteFn: function (unit) {
-                            var toRemove = _.find(blade.currentEntity.units, function (x) { return angular.equals(x, unit) });
+                        deleteFn: function (measureUnit) {
+                            var toRemove = _.find(blade.currentEntity.units, function (x) {
+                                return angular.equals(x, measureUnit)
+                            });
+
                             if (toRemove) {
                                 var idx = blade.currentEntity.units.indexOf(toRemove);
                                 blade.currentEntity.units.splice(idx, 1);
                                 if (blade.deleteFn) {
-                                    blade.deleteFn(unit);
+                                    blade.deleteFn(measureUnit);
                                 }
                             }
                         },
