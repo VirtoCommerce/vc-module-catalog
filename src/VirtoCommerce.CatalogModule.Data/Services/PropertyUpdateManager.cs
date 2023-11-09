@@ -154,7 +154,9 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
             else
             {
-                var productProperty = product.Properties?.FirstOrDefault(prop => prop.Id.EqualsInvariant(property.Id));
+                var productProperty = property.Id == null
+                    ? product.Properties?.FirstOrDefault(prop => prop.Id == null && prop.Name.EqualsInvariant(property.Name))
+                    : product.Properties?.FirstOrDefault(prop => prop.Id.EqualsInvariant(property.Id));
 
                 if (productProperty != null)
                 {
