@@ -12,7 +12,9 @@ angular.module('virtoCommerce.catalogModule')
                     {
                         name: "platform.commands.save",
                         icon: 'fas fa-save',
-                        executeMethod: $scope.saveChanges,
+                        executeMethod: function () {
+                            $scope.saveChanges();
+                        },
                         canExecuteMethod: canSave,
                         permission: blade.updatePermission
                     }
@@ -20,7 +22,6 @@ angular.module('virtoCommerce.catalogModule')
 
                 if (blade.isNew) {
                     blade.title = 'catalog.blades.measure-details.title-new';
-                    blade.currentEntity = {};
                 } else {
                     blade.title = blade.currentEntity.name + $translate.instant('catalog.blades.measure-details.title');
                     blade.subtitle = 'catalog.blades.measure-details.subtitle';
@@ -49,6 +50,7 @@ angular.module('virtoCommerce.catalogModule')
                         measures.createMeasure(blade.currentEntity,
                             function () {
                                 blade.parentBlade.refresh(true);
+                                angular.copy(blade.currentEntity, blade.originalEntity);
                                 $scope.bladeClose();
                             },
                             function (error) {
@@ -84,7 +86,7 @@ angular.module('virtoCommerce.catalogModule')
 
                 blade.refresh = function (parentRefresh) {
                     if (blade.isNew) {
-                        blade.currentEntity = {};
+                        blade.originalEntity = {};
                         blade.isLoading = false;
                     } else {
                         blade.isLoading = true;

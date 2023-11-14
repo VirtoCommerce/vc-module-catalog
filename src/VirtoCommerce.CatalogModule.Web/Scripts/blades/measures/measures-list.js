@@ -70,6 +70,7 @@ angular.module('virtoCommerce.catalogModule')
                     var newBlade = {
                         id: 'createMeasure',
                         isNew: true,
+                        currentEntity: {},
                         controller: 'virtoCommerce.catalogModule.measureDetailsController',
                         template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/measures/measure-details.tpl.html'
                     };
@@ -81,6 +82,7 @@ angular.module('virtoCommerce.catalogModule')
                 blade.editMeasure = function (measure) {
                     var newBlade = {
                         id: 'editMeasure',
+                        isNew: false,
                         currentEntity: measure,
                         currentEntityId: measure.id,
                         controller: 'virtoCommerce.catalogModule.measureDetailsController',
