@@ -102,7 +102,7 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
 
                 //Register module in main menu
                 var menuItem = {
-                    path: 'browse/measures',
+                    path: 'browse/catalog',
                     icon: 'fa fa-folder',
                     title: 'catalog.main-menu-title',
                     priority: 20,
