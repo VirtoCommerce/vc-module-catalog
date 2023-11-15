@@ -993,7 +993,8 @@
       "add-variation-property": "Add a custom property",
       "gallery": "Gallery",
       "map": "Map",
-      "open-item": "Open item"
+      "open-item": "Open item",
+      "default": "Set as default"
     },
     "permissions": {
       "catalog-scope": {
