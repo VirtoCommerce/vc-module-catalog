@@ -96,7 +96,11 @@ angular.module('virtoCommerce.catalogModule')
                                 }
                             }
                         },
-
+                        setDefaultMeasureUnitFn: function (measureUnit) {
+                            _.map(blade.currentEntity.units, function (unit) {
+                                unit.isDefault = unit.id === measureUnit.id;
+                            });
+                        },
                         template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/measures/measure-unit-details.tpl.html'
                     };
                     bladeNavigationService.showBlade(newBlade, $scope.blade);

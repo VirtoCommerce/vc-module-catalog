@@ -29,6 +29,15 @@ angular.module('virtoCommerce.catalogModule')
                     canExecuteMethod: function () {
                         return !blade.currentEntity.isNew;
                     }
+                }, {
+                    name: "catalog.commands.default", icon: 'fas fa-flag',
+                    executeMethod: function () {
+                        blade.currentEntity.isDefault = true;
+                        blade.setDefaultMeasureUnitFn(blade.currentEntity);
+                    },
+                    canExecuteMethod: function () {
+                        return !blade.currentEntity.isDefault;
+                    }
                 }];
 
                 blade.isLoading = false;
