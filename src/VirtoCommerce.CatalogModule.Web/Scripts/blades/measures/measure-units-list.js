@@ -96,9 +96,9 @@ angular.module('virtoCommerce.catalogModule')
                                 }
                             }
                         },
-                        setDefaultMeasureUnitFn: function (measureUnit) {
-                            _.map(blade.currentEntity.units, function (unit) {
-                                unit.isDefault = unit.id === measureUnit.id;
+                        setDefaultMeasureUnitFn: function (defaultUnit) {
+                            _.map(blade.currentEntity.units, function (measureUnit) {
+                                measureUnit.isDefault = measureUnit.id === defaultUnit.id;
                             });
                         },
                         template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/measures/measure-unit-details.tpl.html'
@@ -110,7 +110,7 @@ angular.module('virtoCommerce.catalogModule')
 
                 blade.toolbarCommands = [
                     {
-                        name: "platform.commands.add", icon: 'fas fa-plus',
+                        name: "platform.commands.add", icon: 'fas fa-plus',s
                         executeMethod: function () {
                             $scope.openDetailBlade();
                         },
