@@ -23,7 +23,8 @@ angular.module('virtoCommerce.catalogModule')
                 if (blade.isNew) {
                     blade.title = 'catalog.blades.measure-details.title-new';
                 } else {
-                    blade.title = blade.currentEntity.name + $translate.instant('catalog.blades.measure-details.title');
+                    blade.title = 'catalog.blades.measure-details.title';
+                    blade.titleValues = { name: blade.currentEntity.name };
                     blade.subtitle = 'catalog.blades.measure-details.subtitle';
 
                     blade.toolbarCommands.push(

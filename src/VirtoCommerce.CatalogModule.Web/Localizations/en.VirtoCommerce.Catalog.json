@@ -661,7 +661,7 @@
         }
       },
       "measure-details": {
-        "title": " measure",
+        "title": "{{name}} measure",
         "title-new": "Add new measure",
         "subtitle": "Measure details",
         "labels": {
@@ -676,7 +676,7 @@
         }
       },
       "measure-units-list": {
-        "title": " measure units",
+        "title": "{{name}} measure units",
         "subtitle": "List of measure units",
         "labels": {
           "name": "Name",
@@ -684,7 +684,7 @@
         }
       },
       "measure-unit-details": {
-        "title": " unit of measure",
+        "title": "{{name}} unit of measure",
         "title-new": "New unit of measure",
         "subtitle": "Unit of measure details",
         "labels": {

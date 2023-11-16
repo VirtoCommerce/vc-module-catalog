@@ -13,7 +13,8 @@ angular.module('virtoCommerce.catalogModule')
                     blade.title = 'catalog.blades.measure-unit-details.title-new';
                     blade.currentEntity = {};
                 } else {
-                    blade.title = blade.currentEntity.name + $translate.instant('catalog.blades.measure-unit-details.title');
+                    blade.title ='catalog.blades.measure-unit-details.title';
+                    blade.titleValues = { name: blade.currentEntity.name };
                     blade.subtitle = 'catalog.blades.measure-unit-details.subtitle';
                 }
 

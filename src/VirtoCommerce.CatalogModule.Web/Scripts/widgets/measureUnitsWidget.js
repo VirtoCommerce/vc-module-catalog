@@ -7,7 +7,8 @@ angular.module('virtoCommerce.catalogModule')
                 $scope.openBlade = function () {
                     var newBlade = {
                         id: "pmPhoneBlade",
-                        title: blade.title + $translate.instant('catalog.blades.measure-units-list.title'),
+                        title: 'catalog.blades.measure-units-list.title',
+                        titleValues: { name: blade.currentEntity.name },
                         currentEntity: blade.currentEntity,
                         subtitle: 'catalog.blades.measure-units-list.subtitle',
                         controller: 'virtoCommerce.catalogModule.measureUnitsListController',
