@@ -32,16 +32,16 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [HttpGet]
         [Route("{id}")]
         [Authorize(ModuleConstants.Security.Permissions.MeasuresAccess)]
-        public async Task<ActionResult<Measure>> GetContractById(string id)
+        public async Task<ActionResult<Measure>> GetMeasureById(string id)
         {
-            var contract = await _measureService.GetNoCloneAsync(id);
-            return Ok(contract);
+            var measure = await _measureService.GetNoCloneAsync(id);
+            return Ok(measure);
         }
 
         [HttpPost]
         [Route("search")]
         [Authorize(ModuleConstants.Security.Permissions.MeasuresRead)]
-        public async Task<ActionResult<MeasureSearchResult>> SearchContracts([FromBody] MeasureSearchCriteria searchCriteria)
+        public async Task<ActionResult<MeasureSearchResult>> SearchMeasures([FromBody] MeasureSearchCriteria searchCriteria)
         {
             var searchResult = await _measureSearchService.SearchNoCloneAsync(searchCriteria);
             return Ok(searchResult);
@@ -50,29 +50,29 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [HttpPost]
         [Route("")]
         [Authorize(ModuleConstants.Security.Permissions.MeasuresCreate)]
-        public async Task<ActionResult<Measure>> CreateContract([FromBody] Measure contract)
+        public async Task<ActionResult<Measure>> CreateMeasure([FromBody] Measure measure)
         {
             try
             {
-                await _measureService.SaveChangesAsync(new[] { contract });
+                await _measureService.SaveChangesAsync(new[] { measure });
             }
             catch (ValidationException ex)
             {
                 return BadRequest(GetErrorMessage(ex));
             }
 
-            return Ok(contract);
+            return Ok(measure);
         }
 
         [HttpPut]
         [Route("")]
         [Authorize(ModuleConstants.Security.Permissions.MeasuresUpdate)]
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
-        public async Task<ActionResult> UpdateContract([FromBody] Measure contract)
+        public async Task<ActionResult> UpdateMeasure([FromBody] Measure measure)
         {
             try
             {
-                await _measureService.SaveChangesAsync(new[] { contract });
+                await _measureService.SaveChangesAsync(new[] { measure });
             }
             catch (ValidationException ex)
             {
@@ -86,7 +86,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("")]
         [Authorize(ModuleConstants.Security.Permissions.MeasuresDelete)]
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
-        public async Task<ActionResult> DeleteContract([FromQuery] string[] ids)
+        public async Task<ActionResult> DeleteMeasure([FromQuery] string[] ids)
         {
             await _measureService.DeleteAsync(ids);
             return NoContent();
