@@ -30,7 +30,24 @@ namespace VirtoCommerce.CatalogModule.Core
                 public const string MeasuresUpdate = "measures:update";
                 public const string MeasuresDelete = "measures:delete";
 
-                public static string[] AllPermissions { get; } = { Access, Create, Read, Update, Delete, Export, Import, CatalogBrowseFiltersRead, CatalogBrowseFiltersUpdate, CategoryChange, PropertiesUpdate, MeasuresAccess, MeasuresRead, MeasuresCreate, MeasuresUpdate, MeasuresDelete };
+                public static string[] AllPermissions { get; } =
+                {
+                    Access,
+                    Create,
+                    Read,
+                    Update,
+                    Delete,
+                    Export,
+                    Import,
+                    CatalogBrowseFiltersRead,
+                    CatalogBrowseFiltersUpdate,
+                    CategoryChange,
+                    PropertiesUpdate,
+                    MeasuresAccess,
+                    MeasuresRead,
+                    MeasuresCreate,
+                    MeasuresUpdate, MeasuresDelete,
+                };
             }
         }
 

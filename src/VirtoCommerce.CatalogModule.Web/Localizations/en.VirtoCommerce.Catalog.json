@@ -2,7 +2,7 @@
   "catalog": {
     "main-menu-title": "Catalog",
     "main-blade-title": "Catalog",
-    "measure-menu-title": "Unit of measure",
+    "measure-menu-title": "Units of measure",
     "properties": {
       "catalog": "Catalog properties",
       "product": "Product properties",
@@ -654,7 +654,7 @@
         }
       },
       "measures-list": {
-        "title": "Unit of measures",
+        "title": "Units of measures",
         "subtitle": "List of available measures",
         "labels": {
           "name": "Name"

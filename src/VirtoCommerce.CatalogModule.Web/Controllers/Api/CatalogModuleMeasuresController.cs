@@ -86,7 +86,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("")]
         [Authorize(ModuleConstants.Security.Permissions.MeasuresDelete)]
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
-        public async Task<ActionResult> DeleteMeasure([FromQuery] string[] ids)
+        public async Task<ActionResult> DeleteMeasures([FromQuery] string[] ids)
         {
             await _measureService.DeleteAsync(ids);
             return NoContent();

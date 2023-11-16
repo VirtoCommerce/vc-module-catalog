@@ -15,7 +15,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 {
     public class MeasureService : CrudService<Measure, MeasureEntity, MeasureChangingEvent, MeasureChangedEvent>, IMeasureService
     {
-        public MeasureService(Func<ICatalogRepository> repositoryFactory, IPlatformMemoryCache platformMemoryCache, IEventPublisher eventPublisher) : base(repositoryFactory, platformMemoryCache, eventPublisher)
+        public MeasureService(Func<ICatalogRepository> repositoryFactory, IPlatformMemoryCache platformMemoryCache, IEventPublisher eventPublisher)
+            : base(repositoryFactory, platformMemoryCache, eventPublisher)
         {
         }
 

@@ -15,7 +15,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
         public object Clone()
         {
-            var result = MemberwiseClone() as Measure;
+            var result = (Measure)MemberwiseClone();
 
             result.Units = Units?.Select(x => x.Clone()).OfType<MeasureUnit>().ToList();
 

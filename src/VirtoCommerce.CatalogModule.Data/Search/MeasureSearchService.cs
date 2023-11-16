@@ -15,7 +15,12 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 {
     public class MeasureSearchService : SearchService<MeasureSearchCriteria, MeasureSearchResult, Measure, MeasureEntity>, IMeasureSearchService
     {
-        public MeasureSearchService(Func<ICatalogRepository> repositoryFactory, IPlatformMemoryCache platformMemoryCache, IMeasureService crudService, IOptions<CrudOptions> crudOptions) : base(repositoryFactory, platformMemoryCache, crudService, crudOptions)
+        public MeasureSearchService(
+            Func<ICatalogRepository> repositoryFactory,
+            IPlatformMemoryCache platformMemoryCache,
+            IMeasureService crudService,
+            IOptions<CrudOptions> crudOptions)
+            : base(repositoryFactory, platformMemoryCache, crudService, crudOptions)
         {
         }
 

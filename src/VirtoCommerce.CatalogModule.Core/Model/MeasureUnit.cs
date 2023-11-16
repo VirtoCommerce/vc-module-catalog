@@ -13,7 +13,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
         public object Clone()
         {
-            var result = MemberwiseClone() as MeasureUnit;
+            var result = (MeasureUnit)MemberwiseClone();
 
             return result;
         }
