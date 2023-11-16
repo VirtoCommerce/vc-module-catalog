@@ -4,6 +4,7 @@ using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search.Indexed;
 using VirtoCommerce.CatalogModule.Core.Search.Indexed;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.SearchModule.Core.Extensions;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
 
@@ -13,7 +14,7 @@ public class ProductSuggestionService : IProductSuggestionService
 {
     private readonly ISearchProvider _searchProvider;
 
-    protected virtual string ProductSuggestonField => nameof(CatalogProduct.Name).ToLowerInvariant();
+    protected virtual string ProductSuggestionField => nameof(CatalogProduct.Name).ToLowerInvariant();
 
     public ProductSuggestionService(ISearchProvider searchProvider)
     {
@@ -22,24 +23,26 @@ public class ProductSuggestionService : IProductSuggestionService
 
     public async Task<SuggestionResponse> GetSuggestionsAsync(ProductSuggestionRequest request)
     {
-        if (_searchProvider is not ISupportSuggestions supportSuggestions)
+        const string documentType = KnownDocumentTypes.Product;
+
+        if (!_searchProvider.Is<ISupportSuggestions>(documentType, out var supportSuggestions))
         {
             return AbstractTypeFactory<SuggestionResponse>.TryCreateInstance();
         }
 
-        var searchSuggestionResuest = AbstractTypeFactory<SuggestionRequest>.TryCreateInstance();
-        searchSuggestionResuest.Query = request.Query;
-        searchSuggestionResuest.Size = request.Size;
+        var suggestionRequest = AbstractTypeFactory<SuggestionRequest>.TryCreateInstance();
+        suggestionRequest.Query = request.Query;
+        suggestionRequest.Size = request.Size;
 
         if (!string.IsNullOrWhiteSpace(request.CatalogId))
         {
-            searchSuggestionResuest.QueryContext = new Dictionary<string, object> { { "catalog", request.CatalogId } };
+            suggestionRequest.QueryContext = new Dictionary<string, object> { { "catalog", request.CatalogId } };
         }
 
         // product suggestion only works with the predefined Product field
-        searchSuggestionResuest.Fields = new List<string> { ProductSuggestonField };
+        suggestionRequest.Fields = new List<string> { ProductSuggestionField };
 
-        var result = await supportSuggestions.GetSuggestionsAsync(KnownDocumentTypes.Product, searchSuggestionResuest);
+        var result = await supportSuggestions.GetSuggestionsAsync(documentType, suggestionRequest);
 
         return result;
     }
