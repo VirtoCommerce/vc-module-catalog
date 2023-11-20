@@ -627,11 +627,8 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                         valueType: "ShortText"
                     },
                     {
-                        name: 'code',
-                        title: "catalog.blades.measure-details.labels.code",
                         colSpan: 6,
-                        isRequired: true,
-                        valueType: "ShortText"
+                        templateUrl: "measure-details-code.html"
                     },
                     {
                         colSpan: 6,
@@ -647,12 +644,8 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
 
                 metaFormsService.registerMetaFields('measureUnitDetails', [
                     {
-                        name: 'code',
-                        title: "catalog.blades.measure-unit-details.labels.code",
-                        placeholder: "catalog.blades.measure-unit-details.placeholders.code",
                         colSpan: 6,
-                        isRequired: true,
-                        valueType: "ShortText"
+                        templateUrl: "measure-details-code.html"
                     },
                     {
                         name: 'name',

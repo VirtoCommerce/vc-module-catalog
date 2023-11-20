@@ -680,7 +680,8 @@
         "subtitle": "List of measure units",
         "labels": {
           "name": "Name",
-          "code": "Code"
+          "code": "Code",
+          "is-default": "IsDefault"
         }
       },
       "measure-unit-details": {

@@ -1,45 +1,45 @@
 angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.measureUnitDetailsController',
-        ['$scope', '$translate', 'platformWebApp.dialogService', 'platformWebApp.metaFormsService', 'platformWebApp.bladeNavigationService',
-            function ($scope, $translate, dialogService, metaFormsService, bladeNavigationService) {
+        ['$scope', 'platformWebApp.dialogService', 'platformWebApp.metaFormsService', 'platformWebApp.bladeNavigationService',
+            function ($scope, dialogService, metaFormsService, bladeNavigationService) {
                 var blade = $scope.blade;
 
                 blade.metaFields = blade.metaFields && blade.metaFields.length ? blade.metaFields : metaFormsService.getMetaFields('measureUnitDetails');
 
-                blade.origEntity = blade.currentEntity;
-                blade.currentEntity = angular.copy(blade.origEntity);
-
                 if (blade.isNew) {
                     blade.title = 'catalog.blades.measure-unit-details.title-new';
                     blade.currentEntity = {};
+                    blade.origEntity = {};
                 } else {
+                    blade.origEntity = blade.currentEntity;
+                    blade.currentEntity = angular.copy(blade.origEntity);
                     blade.title ='catalog.blades.measure-unit-details.title';
                     blade.titleValues = { name: blade.currentEntity.name };
                     blade.subtitle = 'catalog.blades.measure-unit-details.subtitle';
-                }
 
-                blade.toolbarCommands = [{
-                    name: "platform.commands.reset", icon: 'fa fa-undo',
-                    executeMethod: function () {
-                        angular.copy(blade.origEntity, blade.currentEntity);
-                    },
-                    canExecuteMethod: isDirty
-                }, {
-                    name: "platform.commands.delete", icon: 'fas fa-trash-alt',
-                    executeMethod: deleteEntry,
-                    canExecuteMethod: function () {
-                        return !blade.currentEntity.isNew;
-                    }
-                }, {
-                    name: "catalog.commands.default", icon: 'fas fa-flag',
-                    executeMethod: function () {
-                        blade.currentEntity.isDefault = true;
-                        blade.setDefaultMeasureUnitFn(blade.currentEntity);
-                    },
-                    canExecuteMethod: function () {
-                        return !blade.currentEntity.isDefault;
-                    }
-                }];
+                    blade.toolbarCommands = [{
+                        name: "platform.commands.reset", icon: 'fa fa-undo',
+                        executeMethod: function () {
+                            angular.copy(blade.origEntity, blade.currentEntity);
+                        },
+                        canExecuteMethod: isDirty
+                    }, {
+                        name: "platform.commands.delete", icon: 'fas fa-trash-alt',
+                        executeMethod: deleteEntry,
+                        canExecuteMethod: function () {
+                            return !blade.isNew;
+                        }
+                    }, {
+                        name: "catalog.commands.default", icon: 'fas fa-flag',
+                        executeMethod: function () {
+                            blade.currentEntity.isDefault = true;
+                            blade.setDefaultMeasureUnitFn(blade.currentEntity);
+                        },
+                        canExecuteMethod: function () {
+                            return !blade.currentEntity.isDefault;
+                        }
+                    }];
+                }
 
                 blade.isLoading = false;
 
@@ -61,7 +61,7 @@ angular.module('virtoCommerce.catalogModule')
 
                 $scope.saveChanges = function () {
                     if (blade.confirmChangesFn) {
-                        blade.confirmChangesFn(blade.currentEntity);
+                        blade.confirmChangesFn(blade.currentEntity, blade.isNew);
                     }
                     angular.copy(blade.currentEntity, blade.origEntity);
                     $scope.bladeClose();

@@ -19,3 +19,12 @@
     </div>
   </div>
 </script>
+
+<script type="text/ng-template" id="measure-details-code.html">
+  <div class="form-group">
+    <label class="form-label">{{ 'catalog.blades.measure-details.labels.code' | translate }}</label>
+    <div class="form-input">
+      <input required ng-readonly="!blade.isNew" class="form-control" ng-model="blade.currentEntity.code" name="code" placeholder="{{ 'catalog.blades.measure-details.placeholders.code' | translate }}" />
+    </div>
+  </div>
+</script>

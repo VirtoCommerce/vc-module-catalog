@@ -65,18 +65,21 @@ angular.module('virtoCommerce.catalogModule')
                 }
 
                 $scope.openDetailBlade = function (unit) {
+                    let isNewUnit = false;
                     if (!unit) {
-                        unit = { isNew: true };
+                        isNewUnit = true;
                     }
                     $scope.selectedItem = unit;
-
                     var newBlade = {
                         id: 'unitDetail',
                         currentEntity: unit,
+                        isNew: isNewUnit,
                         controller: 'virtoCommerce.catalogModule.measureUnitDetailsController',
-                        confirmChangesFn: function (measureUnit) {
-                            if (measureUnit.isNew) {
-                                measureUnit.isNew = undefined;
+                        confirmChangesFn: function (measureUnit, isNew) {
+                            if (isNew) {
+                                if (blade.currentEntity.units.length === 0) {
+                                    measureUnit.isDefault = true;
+                                }
                                 blade.currentEntity.units.push(measureUnit);
                                 if (blade.confirmChangesFn) {
                                     blade.confirmChangesFn(measureUnit);
