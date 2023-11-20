@@ -65,9 +65,18 @@ angular.module('virtoCommerce.catalogModule')
             return !angular.equals(blade.item, blade.origItem) && blade.hasUpdatePermission();
         }
 
-        function canSave() {
-            return isDirty() && blade.formScope && blade.formScope.$valid;
+        function isValidQuantity(item) {
+            let minQuantity = parseInt(item.minQuantity, 10);
+            let maxQuantity = parseInt(item.maxQuantity, 10);
+            
+            return !(isNaN(minQuantity) || isNaN(maxQuantity) || minQuantity > maxQuantity);
         }
+
+        function canSave() {
+            return isDirty() && isValidQuantity(blade.item) && blade.formScope && blade.formScope.$valid;
+        }
+
+        
 
         function saveChanges() {
             blade.isLoading = true;
