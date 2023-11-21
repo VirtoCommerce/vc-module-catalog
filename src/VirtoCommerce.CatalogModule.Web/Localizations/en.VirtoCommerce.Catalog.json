@@ -681,7 +681,7 @@
         "labels": {
           "name": "Name",
           "code": "Code",
-          "is-default": "IsDefault"
+          "is-default": "Default"
         }
       },
       "measure-unit-details": {
