@@ -916,7 +916,8 @@
       "add-variation-property": "Добавить пользовательское свойство",
       "gallery": "Галерея",
       "map": "Карта",
-      "open-item": "Открыть элемент"
+      "open-item": "Открыть элемент",
+      "default": "Сделать по-умолчанию"
     },
     "permissions": {
       "catalog-scope": {
