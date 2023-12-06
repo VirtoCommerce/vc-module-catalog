@@ -2,6 +2,7 @@
   "catalog": {
     "main-menu-title": "Catalog",
     "main-blade-title": "Catalog",
+    "measure-menu-title": "Units of measure",
     "properties": {
       "catalog": "Catalog properties",
       "product": "Product properties",
@@ -651,6 +652,54 @@
           "add-links": "Add new link",
           "marked": "Marked"
         }
+      },
+      "measures-list": {
+        "title": "Units of measures",
+        "subtitle": "List of available measures",
+        "labels": {
+          "name": "Name"
+        }
+      },
+      "measure-details": {
+        "title": "{{name}} measure",
+        "title-new": "Add new measure",
+        "subtitle": "Measure details",
+        "labels": {
+          "name": "Name",
+          "code": "Code",
+          "description": "Description"
+        },
+        "placeholders": {
+          "name": "Enter name...",
+          "code": "Enter code...",
+          "description": "Enter description..."
+        }
+      },
+      "measure-units-list": {
+        "title": "{{name}} measure units",
+        "subtitle": "List of measure units",
+        "labels": {
+          "name": "Name",
+          "code": "Code",
+          "is-default": "Default"
+        }
+      },
+      "measure-unit-details": {
+        "title": "{{name}} unit of measure",
+        "title-new": "New unit of measure",
+        "subtitle": "Unit of measure details",
+        "labels": {
+          "name": "Name",
+          "code": "Code",
+          "conversion-factor": "Conversion factor",
+          "symbol": "Symbol"
+        },
+        "placeholders": {
+          "name": "Enter name...",
+          "code": "Enter code...",
+          "conversion-factor": "Enter conversion...",
+          "symbol": "Symbol"
+        }
       }
     },
     "exporter-list": {
@@ -719,6 +768,9 @@
       },
       "links": {
         "title": "Links"
+      },
+      "measure-units": {
+        "title": "Units"
       }
     },
     "dialogs": {
@@ -829,6 +881,26 @@
       "links-delete": {
         "title": "Confirm Delete",
         "message": "Are you sure you want to delete selected links?"
+      },
+      "measures-delete": {
+        "title": "Confirm Delete",
+        "message": "Are you sure you want to delete selected measures?"
+      },
+      "measure-unit-save": {
+        "title": "Save changes",
+        "message": "This unit of measure has been modified. Do you want to save changes?"
+      },
+      "measure-unit-delete": {
+        "title": "Confirm Delete",
+        "message": "Are you sure you want to delete selected unit of measure?"
+      },
+      "measure-units-delete": {
+        "title": "Confirm Delete",
+        "message": "Are you sure you want to delete selected unit of measures?"
+      },
+      "measure-save": {
+        "title": "Save changes",
+        "message": "This measure has been modified. Do you want to save changes?"
       }
     },
     "wizards": {
@@ -922,7 +994,8 @@
       "add-variation-property": "Add a custom property",
       "gallery": "Gallery",
       "map": "Map",
-      "open-item": "Open item"
+      "open-item": "Open item",
+      "default": "Set as default"
     },
     "permissions": {
       "catalog-scope": {
@@ -963,7 +1036,12 @@
     "catalog:update": "Update catalog related data",
     "catalog:delete": "Delete catalog related data",
     "catalog:export": "Export catalog data",
-    "catalog:import": "Import catalog data"
+    "catalog:import": "Import catalog data",
+    "measures:access": "Open unit of measure menu",
+    "measures:create": "Create unit of measure related data",
+    "measures:read": "View unit of measure related data",
+    "measures:update": "Update unit of measure related data",
+    "measures:delete": "Delete unit of measure related data"
   },
   "settings": {
     "Catalog": {

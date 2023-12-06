@@ -1,0 +1,28 @@
+<div class="blade-static __bottom" ng-include="'$(Platform)/Scripts/common/templates/ok-cancel.tpl.html'"></div>
+<div class="blade-content">
+    <div class="blade-inner">
+        <div class="inner-block">
+            <form class="form" name="detailForm">
+                <va-metaform blade="blade" registered-inputs="blade.metaFields" column-count="1" ng-init="setForm(detailForm)"></va-metaform>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="text/ng-template" id="conversion-factor.html">
+  <div class="form-group">
+    <label class="form-label">{{ 'catalog.blades.measure-unit-details.labels.conversion-factor' | translate }}</label>
+    <div class="form-editor form-input">
+      <input class="form-input" smart-float required num-type="float" fraction="6" min="0.000001" ng-model="blade.currentEntity.conversionFactor" placeholder="{{ 'catalog.blades.measure-unit-details.placeholders.conversion-factor' | translate }}" />
+    </div>
+  </div>
+</script>
+
+<script type="text/ng-template" id="measure-details-code.html">
+  <div class="form-group">
+    <label class="form-label">{{ 'catalog.blades.measure-unit-details.labels.code' | translate }}</label>
+    <div class="form-input">
+      <input required ng-readonly="!blade.isNew" class="form-control" ng-model="blade.currentEntity.code" name="code" placeholder="{{ 'catalog.blades.measure-unit-details.placeholders.code' | translate }}" />
+    </div>
+  </div>
+</script>
