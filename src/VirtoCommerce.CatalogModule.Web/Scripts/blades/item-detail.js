@@ -65,30 +65,37 @@ angular.module('virtoCommerce.catalogModule')
             return !angular.equals(blade.item, blade.origItem) && blade.hasUpdatePermission();
         }
 
-        function isEmptyValue(value) {
-            return value == null || value === '';
+        function canSave() {
+            return isDirty() && blade.formScope && blade.formScope.$valid && isValidQuantity(blade.item);
         }
 
         function isValidQuantity(item) {
+            const minEmpty = isEmpty(item.minQuantity);
+            const maxEmpty = isEmpty(item.maxQuantity);
 
-            if (isEmptyValue(item.minQuantity) || isEmptyValue(item.maxQuantity)) {
+            if (minEmpty && maxEmpty) {
                 return true;
             }
 
-            let minQuantity = parseInt(item.minQuantity, 10);
-            let maxQuantity = parseInt(item.maxQuantity, 10);
+            const minNumber = parseInt(item.minQuantity, 10);
+            const maxNumber = parseInt(item.maxQuantity, 10);
 
-            if (isNaN(maxQuantity) || isNaN(minQuantity)) {
+            if (!minEmpty && (isNaN(minNumber) || minNumber < 0) ||
+                !maxEmpty && (isNaN(maxNumber) || maxNumber < 0)) {
+                return false;
+            }
+
+            if (minEmpty && !maxEmpty ||
+                !minEmpty && maxEmpty) {
                 return true;
             }
-            return minQuantity <= maxQuantity;
+
+            return minNumber <= maxNumber;
         }
 
-        function canSave() {
-            return isDirty() && isValidQuantity(blade.item) && blade.formScope && blade.formScope.$valid;
+        function isEmpty(value) {
+            return value == null || value === '';
         }
-
-        
 
         function saveChanges() {
             blade.isLoading = true;
