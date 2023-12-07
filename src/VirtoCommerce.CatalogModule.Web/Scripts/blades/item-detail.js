@@ -94,7 +94,7 @@ angular.module('virtoCommerce.catalogModule')
         }
 
         function isEmpty(value) {
-            return value == null || value === '';
+            return value == null || value === '' || value === '0' || value === 0;
         }
 
         function saveChanges() {
