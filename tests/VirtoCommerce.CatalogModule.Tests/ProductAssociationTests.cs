@@ -16,7 +16,7 @@ namespace VirtoCommerce.CatalogModule.Tests
     [Trait("Category", "CI")]
     public class ProductAssociationTests
     {
-        Mock<ICatalogRepository> _catalogRepositoryMock = new Mock<ICatalogRepository>();
+        readonly Mock<ICatalogRepository> _catalogRepositoryMock = new Mock<ICatalogRepository>();
 
         public static object[][] UpdateTestData => new object[][]
         {
@@ -108,7 +108,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             // Act
             await associationServiceMock.SaveChangesAsync(new IHasAssociations[] { product });
             // Assert
-            Assert.Equal(association.Priority, product.Associations.First().Priority);
+            Assert.Equal(association.Priority, product.Associations[0].Priority);
             _catalogRepositoryMock.Verify(x => x.Add(It.IsAny<dataModel.AssociationEntity>()), Times.Never);
         }
 
@@ -139,7 +139,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             // Act
             await associationServiceMock.SaveChangesAsync(new IHasAssociations[] { product });
             // Assert
-            Assert.Equal(association.Priority, product.Associations.First().Priority);
+            Assert.Equal(association.Priority, product.Associations[0].Priority);
             _catalogRepositoryMock.Verify(x => x.Add(It.IsAny<dataModel.AssociationEntity>()), Times.Never);
         }
 
@@ -338,7 +338,7 @@ namespace VirtoCommerce.CatalogModule.Tests
 
             _catalogRepositoryMock
                 .Setup(x => x.Associations)
-                .Returns(entitiesMock.Object);
+                .Returns(entitiesMock);
 
             _catalogRepositoryMock
                 .Setup(x => x.GetAssociationsByIdsAsync(It.IsAny<IList<string>>()))

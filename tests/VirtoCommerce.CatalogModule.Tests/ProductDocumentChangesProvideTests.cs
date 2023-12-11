@@ -53,7 +53,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             var catalogRepositoryMock = new Mock<ICatalogRepository>();
             var changeLogSearchServiceMock = new Mock<IChangeLogSearchService>();
 
-            catalogRepositoryMock.Setup(x => x.Items).Returns(quribleItems.Object);
+            catalogRepositoryMock.Setup(x => x.Items).Returns(quribleItems);
 
             var productDocumentChangesProvider = new ProductDocumentChangesProvider(() => catalogRepositoryMock.Object, changeLogSearchServiceMock.Object);
 
@@ -99,7 +99,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             var catalogRepositoryMock = new Mock<ICatalogRepository>();
             var changeLogSearchServiceMock = new Mock<IChangeLogSearchService>();
 
-            catalogRepositoryMock.Setup(x => x.Items).Returns(quribleItems.Object);
+            catalogRepositoryMock.Setup(x => x.Items).Returns(quribleItems);
 
             changeLogSearchServiceMock.Setup(x => x.SearchAsync(new ChangeLogSearchCriteria()
             {
@@ -144,7 +144,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             var catalogRepositoryMock = new Mock<ICatalogRepository>();
             var changeLogSearchServiceMock = new Mock<IChangeLogSearchService>();
 
-            catalogRepositoryMock.Setup(x => x.Items).Returns(quribleItems.Object);
+            catalogRepositoryMock.Setup(x => x.Items).Returns(quribleItems);
 
             var productDocumentChangesProvider = new ProductDocumentChangesProvider(() => catalogRepositoryMock.Object, changeLogSearchServiceMock.Object);
 
@@ -200,7 +200,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             var catalogRepositoryMock = new Mock<ICatalogRepository>();
             var changeLogSearchServiceMock = new Mock<IChangeLogSearchService>();
 
-            catalogRepositoryMock.Setup(x => x.Items).Returns(quribleItems.Object);
+            catalogRepositoryMock.Setup(x => x.Items).Returns(quribleItems);
 
             changeLogSearchServiceMock.Setup(x => x.SearchAsync(new ChangeLogSearchCriteria()
             {
