@@ -97,23 +97,21 @@ namespace VirtoCommerce.CatalogModule.Tests
         }
 
         [Fact]
-        public void Execute_UnknownTypeOfListEntry_ArgumentException()
+        public Task Execute_UnknownTypeOfListEntry_ArgumentException()
         {
             // arrange
             var context = new PropertiesUpdateBulkActionContext();
             var bulkAction = BuildBulkAction(context);
 
             // act
-            var action = new Action(() =>
+            var action = async () =>
                 {
-                    bulkAction
-                        .ExecuteAsync(new List<IEntity> { new ListEntryBase { Type = "somType" } })
-                        .GetAwaiter()
-                        .GetResult();
-                });
+                    await bulkAction
+                        .ExecuteAsync(new List<IEntity> { new ListEntryBase { Type = "somType" } });
+                };
 
             // assert
-            action.Should().Throw<ArgumentException>();
+            return action.Should().ThrowAsync<ArgumentException>();
         }
 
         [Fact]

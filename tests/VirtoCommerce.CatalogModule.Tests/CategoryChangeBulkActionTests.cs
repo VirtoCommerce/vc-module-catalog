@@ -75,7 +75,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         //}
 
         [Fact]
-        public void Execute_Should_ThrowException()
+        public Task Execute_Should_ThrowException()
         {
             // arrange
             var categoryId = "fakeId";
@@ -84,14 +84,14 @@ namespace VirtoCommerce.CatalogModule.Tests
             var bulkAction = BuildBulkAction(context);
 
             // act
-            var action = new Action(
+            var action = async
                 () =>
                 {
-                    bulkAction.ExecuteAsync(entries).GetAwaiter().GetResult();
-                });
+                    await bulkAction.ExecuteAsync(entries);
+                };
 
             // assert
-            action.Should().Throw<Exception>();
+            return action.Should().ThrowAsync<Exception>();
         }
 
         [Fact]
