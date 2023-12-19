@@ -83,6 +83,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model.Search
             }
 
             WithHidden = !listEntryCriteria.HideDirectLinkedCategories;
+            SearchInVariations = listEntryCriteria.SearchInVariations;
 
             return base.FromListEntryCriteria(listEntryCriteria);
         }
