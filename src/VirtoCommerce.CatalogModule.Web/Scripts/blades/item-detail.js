@@ -8,6 +8,8 @@ angular.module('virtoCommerce.catalogModule')
         blade.metaFields1 = metaFormsService.getMetaFields("productDetail1");
         blade.metaFields2 = metaFormsService.getMetaFields("productDetail2");
 
+        blade.hasVendorsPermission = bladeNavigationService.checkPermission('customer:read');
+
         blade.refresh = function (parentRefresh) {
             blade.isLoading = true;
             //2015 = Full ~& Variations do not load product variations

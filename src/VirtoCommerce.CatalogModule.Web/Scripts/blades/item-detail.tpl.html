@@ -86,6 +86,7 @@
     <div class="form-group">
         <label class="form-label">{{ 'catalog.blades.item-detail.labels.vendor' | translate }} <a href="" ng-click="blade.openVendorsManagement()" class="form-edit" va-permission="customer:read"><i class="form-ico fa fa-pencil"></i></a></label>
         <ui-scroll-drop-down ng-model="blade.item.vendor"
+                             disabled="!blade.hasVendorsPermission"
                              data="blade.fetchVendors(criteria)"
                              placeholder="'catalog.blades.item-detail.placeholders.vendor'">
         </ui-scroll-drop-down>
