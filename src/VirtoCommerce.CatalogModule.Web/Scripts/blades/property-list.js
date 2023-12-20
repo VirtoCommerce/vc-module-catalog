@@ -176,9 +176,32 @@ angular.module('virtoCommerce.catalogModule')
             }
             return 'catalog.commands.add-property';
         }
+
         blade.addPropertyButtonNameKey = setAddPropertyButtonNameKey();
         blade.toolbarCommands = [
             {
+                name: "catalog.blades.property-list.labels.add-filter", icon: 'fa fa-filter',
+                executeMethod: function () {
+                    $scope.editPropertyFilter();
+                },
+                canExecuteMethod: function () {
+                    return true;
+                }
+            },
+            {
+                name: "catalog.blades.property-list.labels.reset-filter", icon: 'fa fa-undo',
+                executeMethod: function () {
+                    $scope.resetFilter();
+                },
+                canExecuteMethod: function () {
+                    return blade.filteredProperties.length > 0;
+                }
+            },
+            blade.propertyVisibleCommand
+        ];
+
+        if (blade.entityType != "product" || bladeNavigationService.checkPermission("catalog.custom-property:edit")) {
+            blade.toolbarCommands.splice(0, 0, {
                 name: blade.addPropertyButtonNameKey,
                 icon: 'fas fa-plus',
                 executeMethod: function () {
@@ -209,28 +232,8 @@ angular.module('virtoCommerce.catalogModule')
                 canExecuteMethod: function () {
                     return true;
                 }
-            },
-            {
-                name: "catalog.blades.property-list.labels.add-filter", icon: 'fa fa-filter',
-                executeMethod: function () {
-                    $scope.editPropertyFilter();
-                },
-                canExecuteMethod: function () {
-                    return true;
-                }
-            },
-            {
-                name: "catalog.blades.property-list.labels.reset-filter", icon: 'fa fa-undo',
-                executeMethod: function () {
-                    $scope.resetFilter();
-                },
-                canExecuteMethod: function () {
-                    return blade.filteredProperties.length > 0;
-                }
-            },
-            blade.propertyVisibleCommand
-        ];
-
+            });
+        }
         $scope.editPropertyFilter = function () {
             var newBlade = {
                 id: "propertySelector",
@@ -263,6 +266,24 @@ angular.module('virtoCommerce.catalogModule')
 
                 hideEmptyProperties();
             }
+        };
+
+        $scope.isDictionary = function (prop) {
+            return prop.dictionary;
+        };
+
+        $scope.editDictionary = function (prop) {
+            var newBlade = { id: "propertyChild" };
+            newBlade.property = prop;
+            newBlade.languages = blade.languages;
+            newBlade.defaultLanguage = blade.defaultLanguage;
+            newBlade.title = 'catalog.blades.property-dictionary.title';
+            newBlade.titleValues =
+                { name: prop.name };
+            newBlade.subtitle = 'catalog.blades.property-dictionary.subtitle';
+            newBlade.controller = 'virtoCommerce.catalogModule.propertyDictionaryListController';
+            newBlade.template = 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-dictionary-list.tpl.html';
+            bladeNavigationService.showBlade(newBlade, blade);
         };
 
         function hideEmptyProperties() {
