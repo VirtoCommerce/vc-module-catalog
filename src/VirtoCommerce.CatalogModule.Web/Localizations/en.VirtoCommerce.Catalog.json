@@ -318,6 +318,7 @@
           "min-quantity": "Min. quantity",
           "max-quantity": "Max. quantity",
           "vendor": "Vendor",
+          "vendor-denied": "Access denied",
           "tax-type": "Tax type",
           "package-type": "Package type",
           "weight-unit": "Mass units",

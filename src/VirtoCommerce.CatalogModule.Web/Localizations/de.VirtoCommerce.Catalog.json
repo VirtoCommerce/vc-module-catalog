@@ -238,6 +238,7 @@
           "min-quantity": "Min. Menge",
           "max-quantity": "Max. Menge",
           "vendor": "Anbieter",
+          "vendor-denied": "Zugriff verweigert",
           "tax-type": "Steuertyp",
           "weight-unit": "Gewichtseinheit",
           "weight": "Gewicht",
