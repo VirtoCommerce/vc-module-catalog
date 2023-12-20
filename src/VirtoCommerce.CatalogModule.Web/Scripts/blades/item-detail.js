@@ -184,7 +184,7 @@ angular.module('virtoCommerce.catalogModule')
         blade.fetchVendors = function (criteria) {
             return blade.hasVendorsPermission
                 ? members.search(criteria)
-                : criteria.objectIds.map(x => ({ id: x, name: x }));
+                : criteria.objectIds.map(x => ({ id: x, name: $translate.instant('catalog.blades.item-detail.labels.vendor-denied') }));
         }
 
         blade.openVendorsManagement = function () {
