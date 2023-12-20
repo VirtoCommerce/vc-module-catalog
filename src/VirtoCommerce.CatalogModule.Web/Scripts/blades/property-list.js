@@ -106,24 +106,18 @@ angular.module('virtoCommerce.catalogModule')
             return _.first(_.map(_.filter(prop.displayNames, function (x) { return x && x.languageCode.startsWith(blade.defaultLanguage); }), function (x) { return x.name; }));
         };
 
+        var hasEditPropertyPermission = bladeNavigationService.checkPermission('catalog:metadata-property:edit');
+        var hasEditDictionaryPermission = bladeNavigationService.checkPermission('catalog:dictionary-property:edit');
+
+        $scope.canEditProperty = function (prop) {
+            return hasEditDictionaryPermission || (hasEditPropertyPermission && prop.dictionary);
+        };
+
         $scope.editProperty = function (prop) {
-            if (prop.isManageable) {
-                var newBlade = {
-                    id: 'editCategoryProperty',
-                    currentEntityId: prop ? prop.id : undefined,
-                    categoryId: blade.categoryId,
-                    catalogId: blade.catalogId,
-                    defaultLanguage: blade.defaultLanguage,
-                    languages: blade.languages,
-                    controller: 'virtoCommerce.catalogModule.propertyDetailController',
-                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-detail.tpl.html'
-                };
-                bladeNavigationService.showBlade(newBlade, blade);
-            } else {
-                editUnmanageable({
-                    title: 'catalog.blades.item-property-detail.title',
-                    origEntity: prop
-                });
+            if (hasEditPropertyPermission) {
+                editProperty(prop);
+            } else if (hasEditDictionaryPermission && prop.dictionary) {
+                editDictionary(prop);
             }
         };
 
@@ -268,11 +262,28 @@ angular.module('virtoCommerce.catalogModule')
             }
         };
 
-        $scope.isDictionary = function (prop) {
-            return prop.dictionary;
-        };
+        function editProperty(prop) {
+            if (prop.isManageable) {
+                var newBlade = {
+                    id: 'editCategoryProperty',
+                    currentEntityId: prop ? prop.id : undefined,
+                    categoryId: blade.categoryId,
+                    catalogId: blade.catalogId,
+                    defaultLanguage: blade.defaultLanguage,
+                    languages: blade.languages,
+                    controller: 'virtoCommerce.catalogModule.propertyDetailController',
+                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-detail.tpl.html'
+                };
+                bladeNavigationService.showBlade(newBlade, blade);
+            } else {
+                editUnmanageable({
+                    title: 'catalog.blades.item-property-detail.title',
+                    origEntity: prop
+                });
+            }
+        }
 
-        $scope.editDictionary = function (prop) {
+        function editDictionary(prop) {
             var newBlade = { id: "propertyChild" };
             newBlade.property = prop;
             newBlade.languages = blade.languages;
@@ -284,7 +295,7 @@ angular.module('virtoCommerce.catalogModule')
             newBlade.controller = 'virtoCommerce.catalogModule.propertyDictionaryListController';
             newBlade.template = 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/property-dictionary-list.tpl.html';
             bladeNavigationService.showBlade(newBlade, blade);
-        };
+        }
 
         function hideEmptyProperties() {
             var propertiesByType = _.filter(blade.currentEntities, function (property) {

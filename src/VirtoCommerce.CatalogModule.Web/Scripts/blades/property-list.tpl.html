@@ -18,11 +18,8 @@
                         <label class="form-label">
                             {{prop.name}} {{ getPropertyDisplayName(prop) ? '(' + getPropertyDisplayName(prop) + ')' : '' }}
                             <span class="alt-description" ng-if="isPropertyChanged(prop)"> {{'catalog.blades.property-list.labels.modified' | translate }} </span>
-                            <a href="" ng-click="editProperty(prop)" class="form-edit" va-permission="catalog:metadata-property:edit">
+                            <a ng-if="canEditProperty(prop)" href="" ng-click="editProperty(prop)" class="form-edit">
                                 <i class="form-ico fa fa-pencil"></i>
-                            </a>
-                            <a ng-if="isDictionary(prop)" href="" ng-click="editDictionary(prop)" class="form-edit" va-permission="catalog:dictionary-property:edit">
-                                <i class="form-ico fa fa-plus"></i>
                             </a>
                         </label>
                         <va-property2 ng-model="prop" get-prop-values="getPropValues" ng-if="!prop.isReadOnly" languages="blade.languages" default-language="blade.defaultLanguage" hidden-languages="prop.$$hiddenLanguages"></va-property2>
