@@ -182,7 +182,9 @@ angular.module('virtoCommerce.catalogModule')
         };
 
         blade.fetchVendors = function (criteria) {
-            return members.search(criteria);
+            return blade.hasVendorsPermission
+                ? members.search(criteria)
+                : criteria.objectIds.map(x => ({ id: x, name: x }));
         }
 
         blade.openVendorsManagement = function () {
