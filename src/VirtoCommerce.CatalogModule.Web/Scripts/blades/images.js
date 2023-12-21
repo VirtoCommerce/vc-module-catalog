@@ -98,35 +98,21 @@ angular.module('virtoCommerce.catalogModule')
 
                 blade.toolbarCommands = [
                     {
-                        name: 'platform.commands.remove',
-                        icon: 'fas fa-trash-alt',
-                        executeMethod: function() { $scope.removeAction(); },
-                        canExecuteMethod: function() {
-                            var retVal = false;
-                            if (blade.currentEntities && $scope.gridApi) {
-                                retVal = $scope.gridApi.selection.getSelectedRows()
-                                    .length >
-                                    0;
-                            }
-                            return retVal;
-                        }
-                    },
-                    {
                         name: 'catalog.commands.gallery',
                         icon: 'fas fa-image',
-                        executeMethod: function() {
+                        executeMethod: function () {
                             var dialog = {
                                 images: blade.currentEntities,
                                 currentImage: blade.currentEntities[0]
                             };
                             dialogService.showGalleryDialog(dialog);
                         },
-                        canExecuteMethod: function() {
+                        canExecuteMethod: function () {
                             return blade.currentEntities && _.any(blade.currentEntities);
                         }
                     },
                     {
-                        name: "Add",
+                        name: "platform.commands.add",
                         icon: 'fas fa-plus',
                         executeMethod: function() {
                             var newBlade = {
@@ -142,9 +128,9 @@ angular.module('virtoCommerce.catalogModule')
                         canExecuteMethod: function() { return true; }
                     },
                     {
-                        name: "Link",
+                        name: "catalog.commands.link",
                         icon: 'fas fa-link',
-                        executeMethod: function() {
+                        executeMethod: function () {
                             var newBlade = {
                                 title: 'catalog.blades.images-select.title',
                                 //folder: "catalog",
@@ -153,7 +139,37 @@ angular.module('virtoCommerce.catalogModule')
                             };
                             bladeNavigationService.showBlade(newBlade, blade);
                         },
-                        canExecuteMethod: function() { return authService.checkPermission('platform:asset:read'); }
+                        canExecuteMethod: function () { return authService.checkPermission('platform:asset:read'); }
+                    },
+                    {
+                        name: "catalog.commands.external-link",
+                        icon: 'fas fa-external-link-alt',
+                        executeMethod: function () {
+                            var newBlade = {
+                                languages: languages,
+                                item: blade.item,
+                                folderPath: blade.folderPath,
+                                onSelect: linkAssets,
+                                controller: 'virtoCommerce.catalogModule.imagesAddExternalLinkController',
+                                template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/images-add-external-link.tpl.html'
+                            };
+                            bladeNavigationService.showBlade(newBlade, blade);
+                        },
+                        canExecuteMethod: function () { return authService.checkPermission('catalog:add-external-image'); }
+                    },
+                    {
+                        name: 'platform.commands.remove',
+                        icon: 'fas fa-trash-alt',
+                        executeMethod: function () { $scope.removeAction(); },
+                        canExecuteMethod: function () {
+                            var retVal = false;
+                            if (blade.currentEntities && $scope.gridApi) {
+                                retVal = $scope.gridApi.selection.getSelectedRows()
+                                    .length >
+                                    0;
+                            }
+                            return retVal;
+                        }
                     }
                 ];
 
