@@ -1,15 +1,12 @@
 angular.module('virtoCommerce.catalogModule')
-    .controller('virtoCommerce.catalogModule.imagesAddController',
-        ['$scope', '$translate', 'FileUploader', 'platformWebApp.bladeNavigationService', 'platformWebApp.settings',
-            function ($scope, $translate, FileUploader,  bladeNavigationService, settings) {
+    .controller('virtoCommerce.catalogModule.imagesAddExternalLinkController',
+        ['$scope', '$translate', 'platformWebApp.bladeNavigationService', 'platformWebApp.settings',
+            function ($scope, $translate, bladeNavigationService, settings) {
                 var blade = $scope.blade;
 
-                blade.hasAssetCreatePermission = bladeNavigationService.checkPermission('platform:asset:create');
-
-                blade.headIcon = 'fa fa-image';
+                blade.headIcon = 'fa fa-external-link';
 
                 $scope.isValid = false;
-
                 blade.isLoading = false;
 
                 blade.refresh = function (item) {
@@ -25,43 +22,24 @@ angular.module('virtoCommerce.catalogModule')
                     });
 
                     blade.item = item;
-                    blade.title = 'catalog.blades.image-upload.title';
+                    blade.title = 'catalog.blades.image-add-external-link.title';
                     $scope.imageTypes = settings.getValues({ id: 'Catalog.ImageCategories' });
 
-                    if (!$scope.uploader && blade.hasAssetCreatePermission) {
-
-                        // create the uploader            
-                        var uploader = $scope.uploader = new FileUploader({
-                            scope: $scope,
-                            headers: { Accept: 'application/json' },
-                            autoUpload: true,
-                            removeAfterUpload: true
-                        });
-
-                        uploader.url = getImageUrl(blade.folderPath, blade.imageType).relative;
-
-                        uploader.onSuccessItem = function (fileItem, images, status, headers) {
-                            angular.forEach(images, function (image) {
-                                //ADD uploaded image
-                                image.isImage = true;
-                                image.group = blade.imageType;
-                                blade.currentEntities.push(image);
-                            });
-
-                            $scope.isValid = true;
-                        };
-
-                        uploader.onAfterAddingAll = function (addedItems) {
-                            bladeNavigationService.setError(null, blade);
-                        };
-
-                        uploader.onErrorItem = function (element, response, status, headers) {
-                            $scope.isValid = false;
-                            bladeNavigationService.setError(element._file.name + ' failed: ' + (response.message ? response.message : status), blade);
-                        };
-                    }
                     blade.currentEntities = [];
                 }
+
+                $scope.addImageFromUrlHandler = function () {
+                    $scope.isValid = true;
+
+                    var image = {
+                        isImage: true,
+                        group: blade.imageType,
+                        url: blade.newExternalImageUrl,
+                        name: blade.newExternalImageUrl.split('/').pop(),
+                        relativeUrl: blade.newExternalImageUrl
+                    };
+                    blade.currentEntities.push(image);
+                };
 
                 $scope.saveChanges = function () {
                     if (blade.onSelect) {
@@ -103,15 +81,6 @@ angular.module('virtoCommerce.catalogModule')
                     };
                     bladeNavigationService.showBlade(newBlade, blade);
                 };
-
-                $scope.changeImageCategory = function ($item, $model) {
-                    $scope.uploader.url = getImageUrl(blade.folderPath, blade.imageType).relative;
-                };
-
-                function getImageUrl(path, imageType) {
-                    var folderUrl = 'catalog/' + (path + (imageType ? '/' + imageType : ''));
-                    return { folderUrl: folderUrl, relative: 'api/assets?folderUrl=' + folderUrl };
-                }
 
                 initialize(blade.item);
 

@@ -20,6 +20,7 @@ namespace VirtoCommerce.CatalogModule.Core
                 public const string Delete = "catalog:delete";
                 public const string Export = "catalog:export";
                 public const string Import = "catalog:import";
+                public const string AddExternalImage = "catalog:add-external-image";
                 public const string CatalogBrowseFiltersRead = "catalog:BrowseFilters:Read";
                 public const string CatalogBrowseFiltersUpdate = "catalog:BrowseFilters:Update";
                 public const string CategoryChange = "bulk-action:category:change";
@@ -39,6 +40,7 @@ namespace VirtoCommerce.CatalogModule.Core
                     Delete,
                     Export,
                     Import,
+                    AddExternalImage,
                     CatalogBrowseFiltersRead,
                     CatalogBrowseFiltersUpdate,
                     CategoryChange,
