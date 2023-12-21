@@ -701,7 +701,9 @@
         "add-property": "Eigenschaft hinzufügen",
         "gallery": "Galerie",
         "map": "Karte",
-        "default": "Als Standard einstellen"
+        "default": "Als Standard einstellen",
+        "link": "Verlinken",
+        "external-link": "Zum externen link"
       },
       "permissions": {
         "catalog-scope": {
