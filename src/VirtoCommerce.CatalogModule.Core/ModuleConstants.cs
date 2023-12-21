@@ -35,15 +35,11 @@ namespace VirtoCommerce.CatalogModule.Core
                     Delete,
                     Export,
                     Import,
-                    AddExternalImage
+                    AddExternalImage,
                     CatalogBrowseFiltersRead,
                     CatalogBrowseFiltersUpdate,
                     CategoryChange,
-                    PropertiesUpdate,
-                    MeasuresAccess,
-                    MeasuresRead,
-                    MeasuresCreate,
-                    MeasuresUpdate, MeasuresDelete,
+                    PropertiesUpdate
                 };
             }
         }
