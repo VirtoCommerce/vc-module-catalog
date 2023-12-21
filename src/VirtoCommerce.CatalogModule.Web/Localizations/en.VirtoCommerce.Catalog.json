@@ -445,7 +445,7 @@
         },
         "descr": {
           "external-link": "Use an external image URL instead of uploading it to assets",
-          "external-link-warning": "\"Example: scheme://your_resource.png\". For security reasons, you must only use images that support the URL scheme of the Storefront when uploading external images."
+          "external-link-warning": "Note: Only https link is allowed for security reasons."
         }
       },
       "video-list": {
@@ -563,6 +563,9 @@
       },
       "image-upload": {
         "title": "Upload images"
+      },
+      "image-add-external-link": {
+        "title": "Add external link"
       },
       "aggregation-properties-details": {
         "name": {
@@ -915,7 +918,10 @@
       "add-variation-property": "Add a custom property",
       "gallery": "Gallery",
       "map": "Map",
-      "open-item": "Open item"
+      "open-item": "Open item",
+      "default": "Set as default",
+      "link": "Link",
+      "external-link": "External Link"
     },
     "permissions": {
       "catalog-scope": {

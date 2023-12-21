@@ -698,7 +698,10 @@
         "clear-all": "Alle löschen",
         "add-property": "Eigenschaft hinzufügen",
         "gallery": "Galerie",
-        "map": "Karte"
+        "map": "Karte",
+        "default": "Als Standard einstellen",
+        "link": "Verlinken",
+        "external-link": "Zum externen link"
       },
       "permissions": {
         "catalog-scope": {

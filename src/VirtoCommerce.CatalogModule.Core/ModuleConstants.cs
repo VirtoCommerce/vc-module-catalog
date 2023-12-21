@@ -20,12 +20,31 @@ namespace VirtoCommerce.CatalogModule.Core
                   Delete = "catalog:delete",
                   Export = "catalog:export",
                   Import = "catalog:import",
+                  AddExternalImage = "catalog:add-external-image",
                   CatalogBrowseFiltersRead = "catalog:BrowseFilters:Read",
                   CatalogBrowseFiltersUpdate = "catalog:BrowseFilters:Update",
                   CategoryChange = "bulk-action:category:change",
                   PropertiesUpdate = "bulk-action:properties:update";
 
-                public static string[] AllPermissions { get; } = { Access, Create, Read, Update, Delete, Export, Import, CatalogBrowseFiltersRead, CatalogBrowseFiltersUpdate, CategoryChange, PropertiesUpdate };
+                public static string[] AllPermissions { get; } =
+                {
+                    Access,
+                    Create,
+                    Read,
+                    Update,
+                    Delete,
+                    Export,
+                    Import,
+                    AddExternalImage
+                    CatalogBrowseFiltersRead,
+                    CatalogBrowseFiltersUpdate,
+                    CategoryChange,
+                    PropertiesUpdate,
+                    MeasuresAccess,
+                    MeasuresRead,
+                    MeasuresCreate,
+                    MeasuresUpdate, MeasuresDelete,
+                };
             }
         }
 
