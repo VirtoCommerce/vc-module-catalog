@@ -55,6 +55,15 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Authorize(ModuleConstants.Security.Permissions.Create)]
         public async Task<ActionResult> SaveChanges([FromBody] PropertyDictionaryItem[] propertyDictItems)
         {
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, propertyDictItems,
+                new CatalogAuthorizationRequirement(
+                    ModuleConstants.Security.Permissions.CatalogMetadataPropertyEdit,
+                    ModuleConstants.Security.Permissions.CatalogDictionaryPropertyEdit
+                ));
+            if (!authorizationResult.Succeeded)
+            {
+                return Forbid();
+            }
             await _propertyDictionaryService.SaveChangesAsync(propertyDictItems.ToList());
             return Ok();
         }
@@ -68,6 +77,16 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Authorize(ModuleConstants.Security.Permissions.Delete)]
         public async Task<ActionResult> DeletePropertyDictionaryItems([FromQuery] string[] ids)
         {
+            var criteria = new PropertyDictionaryItemSearchCriteria { PropertyIds = ids };
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, criteria,
+                new CatalogAuthorizationRequirement(
+                    ModuleConstants.Security.Permissions.CatalogMetadataPropertyEdit,
+                    ModuleConstants.Security.Permissions.CatalogDictionaryPropertyEdit
+                ));
+            if (!authorizationResult.Succeeded)
+            {
+                return Forbid();
+            }
             await _propertyDictionaryService.DeleteAsync(ids.ToList());
             return Ok();
         }

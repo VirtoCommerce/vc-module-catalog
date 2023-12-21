@@ -28,7 +28,12 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
 
             if (!context.HasSucceeded)
             {
-                var userPermissions = context.User.FindPermissions(requirement.Permission, _jsonOptions.SerializerSettings);
+                var userPermissions = !requirement.Permissions.IsNullOrEmpty()
+                    ? requirement.Permissions.SelectMany(
+                        x => context.User.FindPermissions(x, _jsonOptions.SerializerSettings)
+                    ).ToList()
+                : context.User.FindPermissions(requirement.Permission, _jsonOptions.SerializerSettings);
+
                 if (userPermissions.Count > 0)
                 {
                     var allowedCatalogIdsList = new List<string>();

@@ -110,7 +110,7 @@ angular.module('virtoCommerce.catalogModule')
         var hasEditDictionaryPermission = bladeNavigationService.checkPermission('catalog:dictionary-property:edit');
 
         $scope.canEditProperty = function (prop) {
-            return hasEditDictionaryPermission || (hasEditPropertyPermission && prop.dictionary);
+            return hasEditPropertyPermission || (hasEditDictionaryPermission && prop.dictionary);
         };
 
         $scope.editProperty = function (prop) {
