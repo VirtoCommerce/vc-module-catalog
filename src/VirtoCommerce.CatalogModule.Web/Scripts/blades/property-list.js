@@ -108,13 +108,16 @@ angular.module('virtoCommerce.catalogModule')
 
         var hasEditPropertyPermission = bladeNavigationService.checkPermission('catalog:metadata-property:edit');
         var hasEditDictionaryPermission = bladeNavigationService.checkPermission('catalog:dictionary-property:edit');
+        var hasEditCustomPropertyPermission = bladeNavigationService.checkPermission('catalog:custom-property:edit');
 
         $scope.canEditProperty = function (prop) {
-            return hasEditPropertyPermission || (hasEditDictionaryPermission && prop.dictionary);
+            return (hasEditPropertyPermission && prop.id)
+                || (hasEditDictionaryPermission && prop.dictionary)
+                || (hasEditCustomPropertyPermission && !prop.id);
         };
 
         $scope.editProperty = function (prop) {
-            if (hasEditPropertyPermission) {
+            if (hasEditPropertyPermission || (hasEditCustomPropertyPermission && !prop.id)) {
                 editProperty(prop);
             } else if (hasEditDictionaryPermission && prop.dictionary) {
                 editDictionary(prop);
@@ -194,7 +197,8 @@ angular.module('virtoCommerce.catalogModule')
             blade.propertyVisibleCommand
         ];
 
-        if (blade.entityType != "product" || bladeNavigationService.checkPermission("catalog.custom-property:edit")) {
+        if ((blade.entityType != "product" && hasEditPropertyPermission) ||
+            (blade.entityType == "product" && hasEditCustomPropertyPermission)) {
             blade.toolbarCommands.splice(0, 0, {
                 name: blade.addPropertyButtonNameKey,
                 icon: 'fas fa-plus',
