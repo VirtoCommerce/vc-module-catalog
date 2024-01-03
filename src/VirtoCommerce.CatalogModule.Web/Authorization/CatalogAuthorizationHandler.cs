@@ -108,6 +108,10 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
                         }
                         context.Succeed(requirement);
                     }
+                    else if (context.Resource is IEnumerable<PropertyDictionaryItem>)
+                    {
+                        context.Succeed(requirement);
+                    }
                 }
             }
         }
