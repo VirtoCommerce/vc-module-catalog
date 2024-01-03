@@ -31,14 +31,14 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
                 {
                     if (context.Resource is IEnumerable<IHasProperties> haveProperties)
                     {
-                        if (haveProperties.All(x => x.Properties.All(p => p.Id != null)))
+                        if (haveProperties.All(x => x.Properties.Where(p => p.Id == null).All(p => p.Values.All(v => v.Id != null))))
                         {
                             context.Succeed(requirement);
                         }
                     }
                     else if (context.Resource is IHasProperties hasProperties)
                     {
-                        if (hasProperties.Properties.All(x => x.Id != null))
+                        if (hasProperties.Properties.Where(p => p.Id == null).All(x => x.Values.All(v => v.Id != null)))
                         {
                             context.Succeed(requirement);
                         }
