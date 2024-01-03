@@ -197,8 +197,8 @@ angular.module('virtoCommerce.catalogModule')
             blade.propertyVisibleCommand
         ];
 
-        if ((blade.entityType != "product" && hasEditPropertyPermission) ||
-            (blade.entityType == "product" && hasEditCustomPropertyPermission)) {
+        if ((blade.entityType !== "product" && hasEditPropertyPermission) ||
+            (blade.entityType === "product" && hasEditCustomPropertyPermission)) {
             blade.toolbarCommands.splice(0, 0, {
                 name: blade.addPropertyButtonNameKey,
                 icon: 'fas fa-plus',

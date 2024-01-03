@@ -27,22 +27,21 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
             {
                 var userPermissions = context.User.FindPermissions(requirement.Permission, _jsonOptions.SerializerSettings);
 
-                if (userPermissions.Count == 0)
+                if (userPermissions.Count != 0)
                 {
-                    if (context.Resource is IEnumerable<IHasProperties> haveProperties)
+                    return;
+                }
+                if (context.Resource is IEnumerable<IHasProperties> haveProperties)
+                {
+                    if (haveProperties.All(x => x.Properties.Where(p => p.Id == null).All(p => p.Values.All(v => v.Id != null))))
                     {
-                        if (haveProperties.All(x => x.Properties.Where(p => p.Id == null).All(p => p.Values.All(v => v.Id != null))))
-                        {
-                            context.Succeed(requirement);
-                        }
+                        context.Succeed(requirement);
                     }
-                    else if (context.Resource is IHasProperties hasProperties)
-                    {
-                        if (hasProperties.Properties.Where(p => p.Id == null).All(x => x.Values.All(v => v.Id != null)))
-                        {
-                            context.Succeed(requirement);
-                        }
-                    }
+                }
+                else if (context.Resource is IHasProperties hasProperties &&
+                         hasProperties.Properties.Where(p => p.Id == null).All(x => x.Values.All(v => v.Id != null)))
+                {
+                    context.Succeed(requirement);
                 }
             }
         }
