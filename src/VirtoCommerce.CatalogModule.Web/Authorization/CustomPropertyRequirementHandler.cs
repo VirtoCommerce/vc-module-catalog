@@ -35,19 +35,12 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
                 {
                     return;
                 }
-                if (context.Resource is IEnumerable<CatalogProduct> products)
+                switch (context.Resource)
                 {
-                    if (await Compare(products))
-                    {
+                    case IEnumerable<CatalogProduct> products when await Compare(products):
+                    case CatalogProduct product when await Compare(new[] { product }):
                         context.Succeed(requirement);
-                    }
-                }
-                else if (context.Resource is CatalogProduct product)
-                {
-                    if (await Compare(new[] { product }))
-                    {
-                        context.Succeed(requirement);
-                    }
+                        break;
                 }
             }
         }
