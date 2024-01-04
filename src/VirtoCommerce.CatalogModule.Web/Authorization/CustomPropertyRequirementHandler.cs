@@ -68,7 +68,7 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
             return true;
         }
 
-        private bool CompareProperties(IList<Property> source, IList<Property> changed)
+        private static bool CompareProperties(IList<Property> source, IList<Property> changed)
         {
             if (source.Count(x => x.Id == null) != changed.Count(x => x.Id == null))
             {
@@ -87,7 +87,7 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
             return true;
         }
 
-        private bool ComparePropertyValues(IList<PropertyValue> source, IList<PropertyValue> changed)
+        private static bool ComparePropertyValues(IList<PropertyValue> source, IList<PropertyValue> changed)
         {
             if (source.Count != changed.Count)
             {
