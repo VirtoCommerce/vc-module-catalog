@@ -37,15 +37,15 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
                 }
                 switch (context.Resource)
                 {
-                    case IEnumerable<CatalogProduct> products when await Compare(products):
-                    case CatalogProduct product when await Compare(new[] { product }):
+                    case IEnumerable<CatalogProduct> products when await CustomPropertyChanged(products):
+                    case CatalogProduct product when await CustomPropertyChanged(new[] { product }):
                         context.Succeed(requirement);
                         break;
                 }
             }
         }
 
-        private async Task<bool> Compare(IEnumerable<CatalogProduct> products)
+        private async Task<bool> CustomPropertyChanged(IEnumerable<CatalogProduct> products)
         {
             var searchCriteria = new ProductSearchCriteria
             {
@@ -59,7 +59,7 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
             foreach (var changedProduct in products)
             {
                 var sourceProduct = sourceProducts.FirstOrDefault(x => x.Id == changedProduct.Id);
-                if (sourceProduct == null || !CompareProperties(sourceProduct.Properties, changedProduct.Properties))
+                if (sourceProduct == null || !CustomPropertiesChanged(sourceProduct.Properties, changedProduct.Properties))
                 {
                     return false;
                 }
@@ -68,7 +68,7 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
             return true;
         }
 
-        private static bool CompareProperties(IList<Property> source, IList<Property> changed)
+        private static bool CustomPropertiesChanged(IList<Property> source, IList<Property> changed)
         {
             if (source.Count(x => x.Id == null) != changed.Count(x => x.Id == null))
             {
@@ -78,7 +78,7 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
             foreach (var sourceProperty in source.Where(x => x.Id == null))
             {
                 var changedProperty = changed.FirstOrDefault(x => x.Name == sourceProperty.Name);
-                if (changedProperty == null || !ComparePropertyValues(sourceProperty.Values, changedProperty.Values))
+                if (changedProperty == null || !CustomPropertyValuesChanged(sourceProperty.Values, changedProperty.Values))
                 {
                     return false;
                 }
@@ -87,7 +87,7 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
             return true;
         }
 
-        private static bool ComparePropertyValues(IList<PropertyValue> source, IList<PropertyValue> changed)
+        private static bool CustomPropertyValuesChanged(IList<PropertyValue> source, IList<PropertyValue> changed)
         {
             if (source.Count != changed.Count)
             {
