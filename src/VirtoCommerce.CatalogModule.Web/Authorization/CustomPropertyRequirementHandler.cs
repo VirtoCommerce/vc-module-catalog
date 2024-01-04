@@ -58,10 +58,10 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
             {
                 ObjectIds = products.Select(x => x.Id).ToArray(),
                 SearchInVariations = true,
-                ResponseGroup = ItemResponseGroup.WithProperties.ToString()
+                ResponseGroup = ItemResponseGroup.WithProperties.ToString(),
+                Take = products.Count()
             };
             var sourceProducts = (await _productSearch.SearchAsync(searchCriteria)).Results;
-
 
             foreach (var changedProduct in products)
             {
