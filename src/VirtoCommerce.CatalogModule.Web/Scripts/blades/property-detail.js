@@ -211,7 +211,7 @@ angular.module('virtoCommerce.catalogModule')
         var hasEditDictionaryPermission = bladeNavigationService.checkPermission('catalog:dictionary-property:edit');
 
         blade.canEditDictionary = function () {
-            return blade.currentEntity.dictionary && !blade.currentEntity.isNew && hasEditDictionaryPermission;
+            return blade.currentEntity && blade.currentEntity.dictionary && !blade.currentEntity.isNew && hasEditDictionaryPermission;
         }
 
         blade.onClose = function (closeCallback) {
