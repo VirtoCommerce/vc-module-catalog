@@ -78,7 +78,7 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
             foreach (var sourceProperty in source.Where(x => x.Id == null))
             {
                 var changedProperty = changed.FirstOrDefault(x => x.Name == sourceProperty.Name);
-                if (changedProperty == null || !CustomPropertyValuesChanged(sourceProperty.Values, changedProperty.Values))
+                if (changedProperty == null || !CustomPropertyValuesChanged(sourceProperty, changedProperty))
                 {
                     return false;
                 }
@@ -87,17 +87,19 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
             return true;
         }
 
-        private static bool CustomPropertyValuesChanged(IList<PropertyValue> source, IList<PropertyValue> changed)
+        private static bool CustomPropertyValuesChanged(Property source, Property changed)
         {
-            if (source.Count != changed.Count)
+            if (source.Values.Count != changed.Values.Count)
             {
                 return false;
             }
 
-            foreach (var sourceValue in source)
+            foreach (var sourceValue in source.Values)
             {
-                var changedValue = changed.FirstOrDefault(x => x.Id == sourceValue.Id);
-                if (changedValue == null || changedValue.PropertyName != sourceValue.PropertyName)
+                var changedValue = changed.Values.FirstOrDefault(x => x.Id == sourceValue.Id);
+                if (changedValue == null
+                    || changed.Name != sourceValue.PropertyName
+                    || changed.ValueType != sourceValue.ValueType)
                 {
                     return false;
                 }
