@@ -29,6 +29,7 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
             if (!context.HasSucceeded)
             {
                 var userPermissions = context.User.FindPermissions(requirement.Permission, _jsonOptions.SerializerSettings);
+
                 if (userPermissions.Count > 0)
                 {
                     var allowedCatalogIdsList = new List<string>();
@@ -101,6 +102,10 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
                         {
                             propertyDictionaryItemSearchCriteria.CatalogIds = propertyDictionaryItemSearchCriteria.CatalogIds.Intersect(allowedCatalogIds).ToArray();
                         }
+                        context.Succeed(requirement);
+                    }
+                    else if (context.Resource is IEnumerable<PropertyDictionaryItem>)
+                    {
                         context.Succeed(requirement);
                     }
                 }

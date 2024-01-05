@@ -1047,7 +1047,10 @@
     "measures:create": "Create unit of measure related data",
     "measures:read": "View unit of measure related data",
     "measures:update": "Update unit of measure related data",
-    "measures:delete": "Delete unit of measure related data"
+    "measures:delete": "Delete unit of measure related data",
+    "catalog:metadata-property:edit": "Edit metadata of properties",
+    "catalog:custom-property:edit": "Edit product's custom properties",
+    "catalog:dictionary-property:edit": "Edit dictionary values of property"
   },
   "settings": {
     "Catalog": {
