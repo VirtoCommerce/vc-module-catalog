@@ -60,8 +60,8 @@ namespace VirtoCommerce.CatalogModule.Tests
             // Assert
             catalogRepositoryFactory.Verify(x => x.Invoke(), Times.Never);
             Assert.Equal(60, categoryIdsFirstCall.Count);
-            Assert.Equal(1, categoryIdsSecondCall.Count);
-            Assert.Equal(0, categoryIdsThirdCall.Count);
+            Assert.Single(categoryIdsSecondCall);
+            Assert.Empty(categoryIdsThirdCall);
             Assert.False(iterator.HasMoreResults);
         }
 
@@ -107,8 +107,8 @@ namespace VirtoCommerce.CatalogModule.Tests
             catalogRepositoryFactory.Verify(x => x.Invoke(), Times.Never);
             categoryIndexedSearchService.Verify(x => x.SearchAsync(It.IsAny<CategoryIndexedSearchCriteria>()), Times.Exactly(2));
             Assert.Equal(categories.Count, categoryIds.Count);
-            Assert.Equal(categories.First().Id, categoryIds.First());
-            Assert.Equal(categories.Last().Id, categoryIds.Last());
+            Assert.Equal(categories[0].Id, categoryIds[0]);
+            Assert.Equal(categories[categories.Count - 1].Id, categoryIds[categoryIds.Count - 1]);
             Assert.Equal(2, iterationCount);
         }
 

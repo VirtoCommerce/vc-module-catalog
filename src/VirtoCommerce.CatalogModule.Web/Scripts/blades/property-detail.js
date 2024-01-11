@@ -208,6 +208,12 @@ angular.module('virtoCommerce.catalogModule')
             dialogService.showDialog(dialog, 'Modules/$(VirtoCommerce.Catalog)/Scripts/dialogs/deleteProperty-dialog.tpl.html', 'platformWebApp.confirmDialogController');
         }
 
+        var hasEditDictionaryPermission = bladeNavigationService.checkPermission('catalog:dictionary-property:edit');
+
+        blade.canEditDictionary = function () {
+            return blade.currentEntity && blade.currentEntity.dictionary && !blade.currentEntity.isNew && hasEditDictionaryPermission;
+        }
+
         blade.onClose = function (closeCallback) {
             bladeNavigationService.showConfirmationIfNeeded(isDirty(), canSave(), blade, saveChanges, closeCallback, "catalog.dialogs.property-save.title", "catalog.dialogs.property-save.message");
         };

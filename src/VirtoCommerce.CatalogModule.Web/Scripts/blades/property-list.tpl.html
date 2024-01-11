@@ -18,7 +18,7 @@
                         <label class="form-label">
                             {{prop.name}} {{ getPropertyDisplayName(prop) ? '(' + getPropertyDisplayName(prop) + ')' : '' }}
                             <span class="alt-description" ng-if="isPropertyChanged(prop)"> {{'catalog.blades.property-list.labels.modified' | translate }} </span>
-                            <a href="" ng-click="editProperty(prop)" class="form-edit">
+                            <a ng-if="canEditProperty(prop)" href="" ng-click="editProperty(prop)" class="form-edit">
                                 <i class="form-ico fa fa-pencil"></i>
                             </a>
                         </label>

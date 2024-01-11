@@ -47,8 +47,8 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     (c1, c2) => c1.SequenceEqual(c2),
                     c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
                     c => c.ToList())); // take a reference about value comparers here: https://learn.microsoft.com/en-us/ef/core/modeling/value-comparers?tabs=ef5#mutable-classes
-            modelBuilder.Entity<CategoryEntity>()
-                .HasCheckConstraint("Parent_category_check", $"\"{nameof(CategoryEntity.ParentCategoryId)}\" != \"{nameof(CategoryEntity.Id)}\"");
+            modelBuilder.Entity<CategoryEntity>().ToTable(t =>
+                t.HasCheckConstraint("Parent_category_check", $"\"{nameof(CategoryEntity.ParentCategoryId)}\" != \"{nameof(CategoryEntity.Id)}\""));
 
             #endregion Category
 
