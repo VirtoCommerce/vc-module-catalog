@@ -18,7 +18,7 @@
     <PackageReference Include="Google.Apis.YouTube.v3" Version="1.64.0.3205" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
     <PackageReference Include="VirtoCommerce.AssetsModule.Core" Version="3.800.0" />
-    <PackageReference Include="VirtoCommerce.ExportModule.Data" Version="3.800.08" />
+    <PackageReference Include="VirtoCommerce.ExportModule.Data" Version="3.800.0" />
     <PackageReference Include="VirtoCommerce.Platform.Data" Version="3.800.0" />
     <PackageReference Include="VirtoCommerce.Platform.Hangfire" Version="3.800.0" />
     <PackageReference Include="VirtoCommerce.Platform.Security" Version="3.800.0" />
