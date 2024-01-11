@@ -115,7 +115,7 @@
                     <span class="list-t">{{ 'catalog.blades.property-validationRule.title'|translate }}</span>
                     <span class="list-descr">{{ 'catalog.blades.property-validationRule.subtitle'|translate }}</span>
                 </li>
-                <li class="list-item" ng-class="{'__selected': currentChild === 'dict', '__disabled': !blade.currentEntity.dictionary || blade.currentEntity.isNew }" ng-click='openChild("dict")'>
+                <li class="list-item" ng-class="{'__selected': currentChild === 'dict', '__disabled': !blade.canEditDictionary() }" ng-click='openChild("dict")'>
                     <span class="list-t">{{ 'catalog.blades.property-detail.labels.dictionary' | translate }}</span>
                     <span class="list-descr">{{ 'catalog.blades.property-detail.labels.manage-dictionary' | translate }}</span>
                     <span ng-if="blade.currentEntity.isNew" class="list-descr">{{ 'catalog.blades.property-detail.labels.new-dictionary-property-caution' | translate }}</span>

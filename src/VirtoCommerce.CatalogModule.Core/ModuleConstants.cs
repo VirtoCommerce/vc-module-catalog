@@ -30,6 +30,9 @@ namespace VirtoCommerce.CatalogModule.Core
                 public const string MeasuresRead = "measures:read";
                 public const string MeasuresUpdate = "measures:update";
                 public const string MeasuresDelete = "measures:delete";
+                public const string CatalogMetadataPropertyEdit = "catalog:metadata-property:edit";
+                public const string CatalogCustomPropertyEdit = "catalog:custom-property:edit";
+                public const string CatalogDictionaryPropertyEdit = "catalog:dictionary-property:edit";
 
                 public static string[] AllPermissions { get; } =
                 {
@@ -49,6 +52,9 @@ namespace VirtoCommerce.CatalogModule.Core
                     MeasuresRead,
                     MeasuresCreate,
                     MeasuresUpdate, MeasuresDelete,
+                    CatalogMetadataPropertyEdit,
+                    CatalogCustomPropertyEdit,
+                    CatalogDictionaryPropertyEdit,
                 };
             }
         }

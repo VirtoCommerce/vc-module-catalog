@@ -145,7 +145,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         public async Task<ActionResult> SaveProperty([FromBody] Property property)
         {
-            var authorizationResult = await _authorizationService.AuthorizeAsync(User, property, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, property, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.CatalogMetadataPropertyEdit));
             if (!authorizationResult.Succeeded)
             {
                 return Forbid();
@@ -200,7 +200,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         {
             var property = await _propertyService.GetByIdsAsync(new[] { id });
 
-            var authorizationResult = await _authorizationService.AuthorizeAsync(User, property, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Delete));
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, property, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.CatalogMetadataPropertyEdit));
             if (!authorizationResult.Succeeded)
             {
                 return Forbid();

@@ -4,10 +4,10 @@
            class="vc-catalog form-control"
            placeholder="{{ 'catalog.blades.property-dictionary.placeholders.value' | translate }}"
            ng-model="ngModel"
-           ng-maxlength="{{validationRules.charCountMax}}"
-           ng-minlength="{{validationRules.charCountMin}}"
-           ng-required="{{required}}"
-           ng-pattern="{{validationRules.regExp}}">
+           ng-maxlength="validationRules.charCountMax"
+           ng-minlength="validationRules.charCountMin"
+           ng-required="required"
+           ng-pattern="validationRules.regExp">
 
     <div class="form-error" ng-if="form[name].$invalid">
         <span ng-if="form[name].$error.required">{{ 'catalog.blades.property-list.validations.required' | translate }}</span>
