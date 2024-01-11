@@ -3,14 +3,14 @@
   <id>VirtoCommerce.Catalog</id>
   <version>3.800.0</version>
   <version-tag />
-  <platformVersion>3.800.0-alpha.12831-net8</platformVersion>
+  <platformVersion>3.800.0</platformVersion>
   <dependencies>
-    <dependency id="VirtoCommerce.Assets" version="3.800.0-alpha.108-pt-14740-net8" />
-    <dependency id="VirtoCommerce.BulkActionsModule" version="3.800.0-alpha.199-pt-14740-net8" />
-    <dependency id="VirtoCommerce.Core" version="3.800.0-alpha.1593-pt-14740-net8" />
-    <dependency id="VirtoCommerce.Export" version="3.800.0-alpha.225-pt-14740-net8" />
-    <dependency id="VirtoCommerce.Search" version="3.800.0-alpha.726-pt-14740-net8" />
-    <dependency id="VirtoCommerce.Store" version="3.800.0-alpha.676-pt-14740-net8" />
+    <dependency id="VirtoCommerce.Assets" version="3.800.0" />
+    <dependency id="VirtoCommerce.BulkActionsModule" version="3.800.0" />
+    <dependency id="VirtoCommerce.Core" version="3.800.0" />
+    <dependency id="VirtoCommerce.Export" version="3.800.0" />
+    <dependency id="VirtoCommerce.Search" version="3.800.0" />
+    <dependency id="VirtoCommerce.Store" version="3.800.0" />
   </dependencies>
   <title>Catalog</title>
   <description>Easily manage your products, categories, variations, and properties</description>

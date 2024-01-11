@@ -17,12 +17,12 @@
     <PackageReference Include="FluentValidation" Version="11.8.1" />
     <PackageReference Include="Google.Apis.YouTube.v3" Version="1.64.0.3205" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
-    <PackageReference Include="VirtoCommerce.AssetsModule.Core" Version="3.800.0-alpha.108-pt-14740-net8" />
-    <PackageReference Include="VirtoCommerce.ExportModule.Data" Version="3.800.0-alpha.225-pt-14740-net8" />
-    <PackageReference Include="VirtoCommerce.Platform.Data" Version="3.800.0-alpha.12831-net8" />
-    <PackageReference Include="VirtoCommerce.Platform.Hangfire" Version="3.800.0-alpha.12831-net8" />
-    <PackageReference Include="VirtoCommerce.Platform.Security" Version="3.800.0-alpha.12831-net8" />
-    <PackageReference Include="VirtoCommerce.StoreModule.Core" Version="3.800.0-alpha.676-pt-14740-net8" />
+    <PackageReference Include="VirtoCommerce.AssetsModule.Core" Version="3.800.0" />
+    <PackageReference Include="VirtoCommerce.ExportModule.Data" Version="3.800.08" />
+    <PackageReference Include="VirtoCommerce.Platform.Data" Version="3.800.0" />
+    <PackageReference Include="VirtoCommerce.Platform.Hangfire" Version="3.800.0" />
+    <PackageReference Include="VirtoCommerce.Platform.Security" Version="3.800.0" />
+    <PackageReference Include="VirtoCommerce.StoreModule.Core" Version="3.800.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\VirtoCommerce.CatalogModule.Core\VirtoCommerce.CatalogModule.Core.csproj" />
