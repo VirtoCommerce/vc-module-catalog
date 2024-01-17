@@ -1,7 +1,7 @@
 angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.propertyDetailController', ['$scope', '$q', 'virtoCommerce.catalogModule.properties', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'virtoCommerce.catalogModule.valueTypes', 'virtoCommerce.catalogModule.propertyValidators', function ($scope, $q, properties, bladeNavigationService, dialogService, valueTypes, propertyValidators) {
         var blade = $scope.blade;
-        blade.updatePermission = 'catalog:update';
+        blade.updatePermission = 'catalog:metadata-property:edit';
         blade.origEntity = {};
         $scope.currentChild = undefined;
         blade.title = "catalog.blades.property-detail.title";
