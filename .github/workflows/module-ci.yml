@@ -1,4 +1,4 @@
-# v3.200.35
+# v3.200.36
 name: Module CI
 
 on:
@@ -202,18 +202,6 @@ jobs:
         with:
           packageUrl: ${{ steps.artifactUrl.outputs.download_url }}
 
-      - name: Update virtocommerce.com
-        if: ${{ github.ref == 'refs/heads/master' }}
-        uses: VirtoCommerce/vc-github-actions/update-virtocommercecom@master
-        with:
-          githubToken: ${{ secrets.REPO_TOKEN }}
-          login: ${{ secrets.VIRTOCOMMERCE_APP_ID }}
-          password: ${{ secrets.VIRTOCOMMERCE_SECRET }}
-          moduleId: ${{ steps.artifact_ver.outputs.moduleId }}
-          moduleDescription: ${{ steps.artifact_ver.outputs.moduleDescription }}
-          projectUrl: ${{ steps.artifact_ver.outputs.projectUrl }}
-          iconUrl: ${{ steps.artifact_ver.outputs.iconUrl }}
-
       - name: Parse Jira Keys from All Commits
         uses: VirtoCommerce/vc-github-actions/get-jira-keys@master
         if: always()
@@ -252,7 +240,7 @@ jobs:
     if: ${{ ((github.ref == 'refs/heads/dev') && (github.event_name == 'push') && (needs.ci.outputs.run-e2e == 'true')) ||
         (github.event_name == 'workflow_dispatch')}}
     needs: 'ci'
-    uses: VirtoCommerce/.github/.github/workflows/e2e.yml@v3.200.35
+    uses: VirtoCommerce/.github/.github/workflows/e2e.yml@v3.200.36
     with:
       katalonRepo: 'VirtoCommerce/vc-quality-gate-katalon'
       katalonRepoBranch: 'dev'
@@ -272,7 +260,7 @@ jobs:
         (github.ref == 'refs/heads/dev')) && 
         github.event_name == 'push' }}
     needs: ci
-    uses: VirtoCommerce/.github/.github/workflows/deploy-cloud.yml@v3.200.35
+    uses: VirtoCommerce/.github/.github/workflows/deploy-cloud.yml@v3.200.36
     with:
       releaseSource: module
       moduleId: ${{ needs.ci.outputs.moduleId }}
