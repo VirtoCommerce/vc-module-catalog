@@ -1,4 +1,4 @@
-# v3.200.36
+# v3.800.0
 name: Module CI
 
 on:
@@ -240,7 +240,7 @@ jobs:
     if: ${{ ((github.ref == 'refs/heads/dev') && (github.event_name == 'push') && (needs.ci.outputs.run-e2e == 'true')) ||
         (github.event_name == 'workflow_dispatch')}}
     needs: 'ci'
-    uses: VirtoCommerce/.github/.github/workflows/e2e.yml@v3.200.36
+    uses: VirtoCommerce/.github/.github/workflows/e2e.yml@v3.800.0
     with:
       katalonRepo: 'VirtoCommerce/vc-quality-gate-katalon'
       katalonRepoBranch: 'dev'
@@ -260,7 +260,7 @@ jobs:
         (github.ref == 'refs/heads/dev')) && 
         github.event_name == 'push' }}
     needs: ci
-    uses: VirtoCommerce/.github/.github/workflows/deploy-cloud.yml@v3.200.36
+    uses: VirtoCommerce/.github/.github/workflows/deploy-cloud.yml@v3.800.0
     with:
       releaseSource: module
       moduleId: ${{ needs.ci.outputs.moduleId }}
