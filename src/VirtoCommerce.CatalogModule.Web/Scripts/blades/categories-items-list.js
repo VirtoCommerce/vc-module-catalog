@@ -83,10 +83,13 @@ angular.module('virtoCommerce.catalogModule')
                     keyword: filter.keyword ? filter.keyword : undefined,
                     searchInVariations: filter.searchInVariations ? filter.searchInVariations : false,
                     responseGroup: 'withCategories, withProducts',
-                    sort: uiGridHelper.getSortExpression($scope),
+                    sort: filter.keyword ? "relevance" : uiGridHelper.getSortExpression($scope),
                     skip: ($scope.pageSettings.currentPage - 1) * $scope.pageSettings.itemsPerPageCount,
                     take: $scope.pageSettings.itemsPerPageCount
                 };
+                if (searchCriteria.keyword && !searchCriteria.sort) {
+                    searchCriteria.sort = "relevance";
+                }
                 return searchCriteria;
             }
 
