@@ -87,6 +87,9 @@ angular.module('virtoCommerce.catalogModule')
                     skip: ($scope.pageSettings.currentPage - 1) * $scope.pageSettings.itemsPerPageCount,
                     take: $scope.pageSettings.itemsPerPageCount
                 };
+                if (searchCriteria.keyword && !searchCriteria.sort) {
+                    searchCriteria.sort = "relevance";
+                }
                 return searchCriteria;
             }
 
