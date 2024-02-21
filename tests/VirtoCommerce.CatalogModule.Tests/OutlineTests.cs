@@ -22,9 +22,9 @@ namespace VirtoCommerce.CatalogModule.Tests
 
 
             Assert.NotNull(c0.Outlines);
-            Assert.Equal(1, c0.Outlines.Count);
+            Assert.Single(c0.Outlines);
 
-            var outline = c0.Outlines.First();
+            var outline = c0.Outlines[0];
             Assert.NotNull(outline.Items);
             Assert.Equal(2, outline.Items.Count);
 
@@ -38,16 +38,14 @@ namespace VirtoCommerce.CatalogModule.Tests
         [Fact]
         public void GetCategories_When_PhysicalCatalog_Expect_SinglePhysicalOutline()
         {
-            var bol = false;
-            bol |= true;
             var service = GetOutlineService();
             var c3 = GetTestData().OfType<Category>().FirstOrDefault(x => x.Id == "c3");
             service.FillOutlinesForObjects(new[] { c3 }, "c");
 
             Assert.NotNull(c3.Outlines);
-            Assert.Equal(1, c3.Outlines.Count);
+            Assert.Single(c3.Outlines);
 
-            var outline = c3.Outlines.First();
+            var outline = c3.Outlines[0];
             Assert.NotNull(outline.Items);
             Assert.Equal(4, outline.Items.Count);
 
@@ -107,9 +105,9 @@ namespace VirtoCommerce.CatalogModule.Tests
             service.FillOutlinesForObjects(new[] { p0 }, null);
 
             Assert.NotNull(p0.Outlines);
-            Assert.Equal(1, p0.Outlines.Count);
+            Assert.Single(p0.Outlines);
 
-            var outline = p0.Outlines.First();
+            var outline = p0.Outlines[0];
             Assert.NotNull(outline.Items);
             Assert.Equal(2, outline.Items.Count);
 
@@ -129,9 +127,9 @@ namespace VirtoCommerce.CatalogModule.Tests
 
 
             Assert.NotNull(p1.Outlines);
-            Assert.Equal(1, p1.Outlines.Count);
+            Assert.Single(p1.Outlines);
 
-            var outline = p1.Outlines.First();
+            var outline = p1.Outlines[0];
             Assert.NotNull(outline.Items);
             Assert.Equal(5, outline.Items.Count);
 

@@ -299,6 +299,12 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return Forbid();
             }
 
+            var customPropertyResult = await _authorizationService.AuthorizeAsync(User, product, new CustomPropertyRequirement());
+            if (!customPropertyResult.Succeeded)
+            {
+                return Forbid();
+            }
+
             var result = (await InnerSaveProducts(new[] { product })).FirstOrDefault();
             if (result != null)
             {
@@ -317,6 +323,12 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         {
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, products, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
             if (!authorizationResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            var customPropertyResult = await _authorizationService.AuthorizeAsync(User, products, new CustomPropertyRequirement());
+            if (!customPropertyResult.Succeeded)
             {
                 return Forbid();
             }

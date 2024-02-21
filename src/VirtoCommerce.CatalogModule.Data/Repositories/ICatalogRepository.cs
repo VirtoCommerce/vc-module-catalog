@@ -25,6 +25,8 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         IQueryable<AssociationEntity> Associations { get; }
         IQueryable<CategoryRelationEntity> CategoryLinks { get; }
         IQueryable<SeoInfoEntity> SeoInfos { get; }
+        IQueryable<MeasureEntity> Measures { get; }
+        IQueryable<MeasureUnitEntity> MeasureUnits { get; }
 
         Task<IList<string>> GetAllSeoDuplicatesIdsAsync();
 
@@ -55,5 +57,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         Task RemoveAllPropertyValuesAsync(string propertyId);
 
         Task<IList<CategoryEntity>> SearchCategoriesHierarchyAsync(string categoryId);
+
+        Task<IList<MeasureEntity>> GetMeasuresByIdsAsync(IList<string> ids);
     }
 }

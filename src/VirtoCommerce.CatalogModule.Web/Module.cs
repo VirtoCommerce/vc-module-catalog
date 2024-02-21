@@ -135,6 +135,9 @@ namespace VirtoCommerce.CatalogModule.Web
             serviceCollection.AddTransient<IOutlineService, OutlineService>();
             serviceCollection.AddTransient<ISkuGenerator, DefaultSkuGenerator>();
 
+            serviceCollection.AddTransient<IMeasureService, MeasureService>();
+            serviceCollection.AddTransient<IMeasureSearchService, MeasureSearchService>();
+
             serviceCollection.AddTransient<LogChangesChangedEventHandler>();
             serviceCollection.AddTransient<IndexCategoryChangedEventHandler>();
             serviceCollection.AddTransient<IndexProductChangedEventHandler>();
@@ -208,6 +211,7 @@ namespace VirtoCommerce.CatalogModule.Web
             serviceCollection.AddTransient<CategorySearchRequestBuilder>();
 
             serviceCollection.AddTransient<IAuthorizationHandler, CatalogAuthorizationHandler>();
+            serviceCollection.AddTransient<IAuthorizationHandler, CustomPropertyRequirementHandler>();
 
             serviceCollection.AddTransient<ICatalogExportPagedDataSourceFactory, CatalogExportPagedDataSourceFactory>();
 
