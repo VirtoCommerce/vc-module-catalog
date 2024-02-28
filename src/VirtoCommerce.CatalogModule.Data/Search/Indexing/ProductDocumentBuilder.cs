@@ -88,7 +88,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                         foreach (var variation in productVariations.Results)
                         {
                             result.Add(CreateDocument(variation, product));
-                            IndexProductVariation(doc, variation);
+
+                            if (variation.IsActive.HasValue && variation.IsActive.Value)
+                            {
+                                IndexProductVariation(doc, variation);
+                            }
                         }
                         totalCount = productVariations.TotalCount;
                         skipCount += variationsSearchCriteria.Take;

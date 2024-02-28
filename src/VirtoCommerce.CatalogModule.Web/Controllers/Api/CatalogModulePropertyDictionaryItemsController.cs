@@ -52,7 +52,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// </summary>
         [HttpPost]
         [Route("")]
-        [Authorize(ModuleConstants.Security.Permissions.Create)]
+        [Authorize(ModuleConstants.Security.Permissions.CatalogDictionaryPropertyEdit)]
         public async Task<ActionResult> SaveChanges([FromBody] PropertyDictionaryItem[] propertyDictItems)
         {
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, propertyDictItems, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.CatalogDictionaryPropertyEdit));
@@ -70,7 +70,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <param name="ids">The identifiers of objects that needed to be deleted</param>
         [HttpDelete]
         [Route("")]
-        [Authorize(ModuleConstants.Security.Permissions.Delete)]
+        [Authorize(ModuleConstants.Security.Permissions.CatalogDictionaryPropertyEdit)]
         public async Task<ActionResult> DeletePropertyDictionaryItems([FromQuery] string[] ids)
         {
             var criteria = new PropertyDictionaryItemSearchCriteria { PropertyIds = ids };

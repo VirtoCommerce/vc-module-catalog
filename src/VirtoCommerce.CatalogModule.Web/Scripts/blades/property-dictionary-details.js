@@ -3,11 +3,11 @@ angular.module('virtoCommerce.catalogModule')
         ['$scope', 'platformWebApp.dialogService', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.propDictItems', function ($scope, dialogService, bladeNavigationService, propDictItems) {
             var blade = $scope.blade;
             blade.headIcon = 'fa fa-book';
+            blade.updatePermission = 'catalog:dictionary-property:edit';
 
             $scope.isValid = true;
             $scope.blade.isLoading = false;
             $scope.validationRules = blade.property.validationRule;
-
 
             $scope.setForm = function (form) { blade.formScope = form; }
 
