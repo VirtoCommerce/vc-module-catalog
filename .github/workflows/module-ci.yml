@@ -1,5 +1,5 @@
-# v3.800.3
-# https://virtocommerce.atlassian.net/browse/VCST-570
+# v3.800.4
+# https://virtocommerce.atlassian.net/browse/VCST-488
 name: Module CI
 
 on:
@@ -241,7 +241,7 @@ jobs:
     if: ${{ ((github.ref == 'refs/heads/dev') && (github.event_name == 'push') && (needs.ci.outputs.run-e2e == 'true')) ||
         (github.event_name == 'workflow_dispatch')}}
     needs: 'ci'
-    uses: VirtoCommerce/.github/.github/workflows/e2e.yml@v3.800.2
+    uses: VirtoCommerce/.github/.github/workflows/e2e.yml@v3.800.4
     with:
       katalonRepo: 'VirtoCommerce/vc-quality-gate-katalon'
       katalonRepoBranch: 'dev'
@@ -261,7 +261,7 @@ jobs:
         (github.ref == 'refs/heads/dev')) && 
         github.event_name == 'push' }}
     needs: ci
-    uses: VirtoCommerce/.github/.github/workflows/deploy-cloud.yml@v3.800.2
+    uses: VirtoCommerce/.github/.github/workflows/deploy-cloud.yml@v3.800.4
     with:
       releaseSource: module
       moduleId: ${{ needs.ci.outputs.moduleId }}
