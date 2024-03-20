@@ -4,14 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Data.Model;
-using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Data.Extensions;
-using VirtoCommerce.Platform.Data.Infrastructure;
 
 namespace VirtoCommerce.CatalogModule.Data.Repositories
 {
@@ -595,7 +590,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 	                where c.Id = cp.ParentCategoryId 
                 )  
                 SELECT *
-                FROM CategoryParents";
+                FROM CategoryParents OPTION (MAXRECURSION 512)";
 
             var categoryIdParam = new SqlParameter("@categoryId", categoryId);
             var result = await DbContext.Set<CategoryEntity>().FromSqlRaw(commandTemplate, categoryIdParam).ToListAsync();
