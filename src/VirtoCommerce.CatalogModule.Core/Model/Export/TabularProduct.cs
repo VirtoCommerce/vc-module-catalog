@@ -54,6 +54,8 @@ namespace VirtoCommerce.CatalogModule.Core.Model.Export
 
         public string OuterId { get; set; }
 
+        public string ImageUrl { get; set; }
+
 
         public object Clone()
         {
