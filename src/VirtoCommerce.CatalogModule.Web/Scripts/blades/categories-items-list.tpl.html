@@ -4,7 +4,6 @@
     <va-breadcrumb ng-model="blade.breadcrumbs" blade-id="blade.id" blade-maximized="blade.isMaximized" ng-if="blade.catalogId"></va-breadcrumb>
     <div class="form-group">
         <vc-item-search blade="blade"></vc-item-search>
-        <p class="form-count">{{'platform.list.count' | translate}}: <span class="count">{{pageSettings.totalItems | number:0}}</span></p>
     </div>
     <div class="search-criteria" ng-if="appliedKeyword">
         <vc-item-search-criteria blade="blade"></vc-item-search-criteria>
