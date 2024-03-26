@@ -49,6 +49,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model.Export
             EndDate = source.EndDate;
             Priority = source.Priority;
             OuterId = source.OuterId;
+            ImageUrl = source.ImgSrc;
 
             Images = source.Images?.Select(x => x.Clone() as Image).ToList();
             Assets = source.Assets?.Select(x => x.Clone() as Asset).ToList();
@@ -104,6 +105,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model.Export
             result.EndDate = EndDate;
             result.Priority = Priority;
             result.OuterId = OuterId;
+            result.ImageUrl = ImageUrl;
 
             return result;
         }
