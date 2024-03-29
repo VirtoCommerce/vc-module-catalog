@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core;
@@ -278,11 +279,35 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         protected virtual Aggregation GetPriceRangeAggregation(PriceRangeFilter priceRangeFilter, IList<AggregationResponse> aggregationResponses)
         {
+            var fieldName = "price";
+
+            var priceValues = aggregationResponses.Where(a => a.Id.StartsWith(fieldName)).SelectMany(x => x.Values).ToArray();
+
+            if (priceValues.Length == 0)
+            {
+                return null;
+            }
+
+            var rangeAggregations = new List<AggregationResponse>();
+
+            var matchIdRegEx = new Regex(@"^(?<left>[0-9*]+)-(?<right>[0-9*]+)$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+            rangeAggregations.AddRange(priceValues.Select(x =>
+            {
+                var matchId = matchIdRegEx.Match(x.Id);
+                var left = matchId.Groups["left"].Value;
+                var right = matchId.Groups["right"].Value;
+                x.Id = left == "*" ? $@"under-{right}" : x.Id;
+                x.Id = right == "*" ? $@"over-{left}" : x.Id;
+                return new AggregationResponse { Id = $@"{fieldName}-{x.Id}", Values = new List<AggregationResponseValue> { x } };
+            }));
+
+
             var result = new Aggregation
             {
                 AggregationType = "pricerange",
                 Field = priceRangeFilter.Key,
-                Items = GetRangeAggregationItems(priceRangeFilter.Key, priceRangeFilter.Values, aggregationResponses).ToArray(),
+                Items = GetRangeAggregationItems(priceRangeFilter.Key, priceRangeFilter.Values, rangeAggregations).ToArray(),
             };
 
 
