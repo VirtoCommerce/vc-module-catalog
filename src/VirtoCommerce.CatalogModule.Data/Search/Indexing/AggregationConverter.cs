@@ -279,16 +279,17 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         protected virtual Aggregation GetPriceRangeAggregation(PriceRangeFilter priceRangeFilter, IList<AggregationResponse> aggregationResponses)
         {
-            var fieldName = "price";
+            var rangeAggregations = new List<AggregationResponse>();
 
-            var priceValues = aggregationResponses.Where(a => a.Id.StartsWith(fieldName)).SelectMany(x => x.Values).ToArray();
+            // Merge All Virtual Price Ranges in rangeAggregations
+            var priceFieldName = "price";
+
+            var priceValues = aggregationResponses.Where(a => a.Id.StartsWith(priceFieldName)).SelectMany(x => x.Values).ToArray();
 
             if (priceValues.Length == 0)
             {
                 return null;
             }
-
-            var rangeAggregations = new List<AggregationResponse>();
 
             var matchIdRegEx = new Regex(@"^(?<left>[0-9*]+)-(?<right>[0-9*]+)$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
@@ -299,7 +300,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 var right = matchId.Groups["right"].Value;
                 x.Id = left == "*" ? $@"under-{right}" : x.Id;
                 x.Id = right == "*" ? $@"over-{left}" : x.Id;
-                return new AggregationResponse { Id = $@"{fieldName}-{x.Id}", Values = new List<AggregationResponseValue> { x } };
+                return new AggregationResponse { Id = $@"{priceFieldName}-{x.Id}", Values = new List<AggregationResponseValue> { x } };
             }));
 
 
