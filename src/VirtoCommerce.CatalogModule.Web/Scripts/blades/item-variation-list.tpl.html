@@ -6,7 +6,6 @@
                 <i class="btn-ico fa fa-remove" title="Clear" ng-click="blade.searchText='';gridApi.grid.queueGridRefresh()"></i>
             </button>
         </div>
-        <p class="form-count">{{'platform.list.count' | translate }}: <span class="count">{{filteredEntitiesCount}}</span></p>
     </div>
 </div>
 <div class="blade-static __bottom" ng-if="pageSettings.itemsPerPageCount < pageSettings.totalItems" ng-include="'pagerTemplate.html'"></div>
