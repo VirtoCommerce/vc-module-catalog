@@ -41,10 +41,11 @@ using VirtoCommerce.ExportModule.Core.Model;
 using VirtoCommerce.ExportModule.Core.Services;
 using VirtoCommerce.ExportModule.Data.Extensions;
 using VirtoCommerce.ExportModule.Data.Services;
-using VirtoCommerce.Platform.Core.Bus;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.DynamicProperties;
+using VirtoCommerce.Platform.Core.Events;
 using VirtoCommerce.Platform.Core.ExportImport;
+using VirtoCommerce.Platform.Core.Extensions;
 using VirtoCommerce.Platform.Core.Modularity;
 using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.Platform.Core.Settings;
@@ -57,13 +58,18 @@ using AuthorizationOptions = Microsoft.AspNetCore.Authorization.AuthorizationOpt
 
 namespace VirtoCommerce.CatalogModule.Web
 {
-    public class Module : IModule, IHasConfiguration, IExportSupport, IImportSupport
+    public class Module : IModule, IHasConfiguration, IExportSupport, IImportSupport, IHasModuleCatalog
     {
         private IApplicationBuilder _appBuilder;
 
         public ManifestModuleInfo ModuleInfo { get; set; }
 
         public IConfiguration Configuration { get; set; }
+        public IModuleCatalog ModuleCatalog { get; set; }
+
+        // optional modules
+        private const string BulkActionsModuleId = "VirtoCommerce.BulkActionsModule";
+        private const string GenericExportModuleId = "VirtoCommerce.Export";
 
         public void Initialize(IServiceCollection serviceCollection)
         {
@@ -238,13 +244,17 @@ namespace VirtoCommerce.CatalogModule.Web
 
             #endregion Add Authorization Policy for GenericExport
 
-            #region BulkActions
-
             serviceCollection.AddTransient<ListEntryMover<Category>, CategoryMover>();
             serviceCollection.AddTransient<ListEntryMover<CatalogProduct>, ProductMover>();
-            serviceCollection.AddTransient<IBulkPropertyUpdateManager, BulkPropertyUpdateManager>();
-            serviceCollection.AddTransient<IDataSourceFactory, DataSourceFactory>();
-            serviceCollection.AddTransient<IBulkActionFactory, CatalogBulkActionFactory>();
+
+            #region BulkActions
+
+            if (ModuleCatalog.IsModuleInstalled(BulkActionsModuleId))
+            {
+                serviceCollection.AddTransient<IBulkPropertyUpdateManager, BulkPropertyUpdateManager>();
+                serviceCollection.AddTransient<IDataSourceFactory, DataSourceFactory>();
+                serviceCollection.AddTransient<IBulkActionFactory, CatalogBulkActionFactory>();
+            }
 
             #endregion BulkActions
 
@@ -271,13 +281,12 @@ namespace VirtoCommerce.CatalogModule.Web
                 ModuleConstants.Security.Permissions.Delete,
             }, new SelectedCatalogScope());
 
-            var inProcessBus = appBuilder.ApplicationServices.GetService<IHandlerRegistrar>();
-            inProcessBus.RegisterHandler<ProductChangedEvent>(async (message, _) => await appBuilder.ApplicationServices.GetService<LogChangesChangedEventHandler>().Handle(message));
-            inProcessBus.RegisterHandler<CategoryChangedEvent>(async (message, _) => await appBuilder.ApplicationServices.GetService<LogChangesChangedEventHandler>().Handle(message));
-            inProcessBus.RegisterHandler<CategoryChangedEvent>(async (message, _) => await appBuilder.ApplicationServices.GetService<IndexCategoryChangedEventHandler>().Handle(message));
-            inProcessBus.RegisterHandler<ProductChangedEvent>(async (message, _) => await appBuilder.ApplicationServices.GetService<IndexProductChangedEventHandler>().Handle(message));
-            inProcessBus.RegisterHandler<ProductChangingEvent>(async (message, _) => await appBuilder.ApplicationServices.GetService<VideoOwnerChangingEventHandler>().Handle(message));
-            inProcessBus.RegisterHandler<CategoryChangedEvent>(async (message, _) => await appBuilder.ApplicationServices.GetService<TrackSpecialChangesEventHandler>().Handle(message));
+            appBuilder.RegisterEventHandler<ProductChangedEvent, LogChangesChangedEventHandler>();
+            appBuilder.RegisterEventHandler<CategoryChangedEvent, LogChangesChangedEventHandler>();
+            appBuilder.RegisterEventHandler<CategoryChangedEvent, IndexCategoryChangedEventHandler>();
+            appBuilder.RegisterEventHandler<ProductChangedEvent, IndexProductChangedEventHandler>();
+            appBuilder.RegisterEventHandler<ProductChangingEvent, VideoOwnerChangingEventHandler>();
+            appBuilder.RegisterEventHandler<CategoryChangedEvent, TrackSpecialChangesEventHandler>();
 
             //Force migrations
             using (var serviceScope = appBuilder.ApplicationServices.CreateScope())
@@ -311,45 +320,49 @@ namespace VirtoCommerce.CatalogModule.Web
 
             #region Register types for generic Export
 
-            var registrar = appBuilder.ApplicationServices.GetService<IKnownExportTypesRegistrar>();
+            if (ModuleCatalog.IsModuleInstalled(GenericExportModuleId))
+            {
+                var registrar = appBuilder.ApplicationServices.GetService<IKnownExportTypesRegistrar>();
+                registrar.RegisterType(
+                    ExportedTypeDefinitionBuilder.Build<ExportableProduct, ProductExportDataQuery>()
+                        .WithDataSourceFactory(appBuilder.ApplicationServices.GetService<ICatalogExportPagedDataSourceFactory>())
+                        .WithMetadata(typeof(ExportableProduct).GetPropertyNames(
+                            nameof(ExportableProduct.Properties),
+                            $"{nameof(ExportableProduct.Properties)}.{nameof(Property.Values)}",
+                            $"{nameof(ExportableProduct.Properties)}.{nameof(Property.Attributes)}",
+                            $"{nameof(ExportableProduct.Properties)}.{nameof(Property.DisplayNames)}",
+                            $"{nameof(ExportableProduct.Properties)}.{nameof(Property.ValidationRules)}",
+                            nameof(ExportableProduct.Assets),
+                            nameof(ExportableProduct.Links),
+                            nameof(ExportableProduct.SeoInfos),
+                            nameof(ExportableProduct.Reviews),
+                            nameof(ExportableProduct.Associations),
+                            nameof(ExportableProduct.ReferencedAssociations),
+                            nameof(ExportableProduct.Outlines),
+                            nameof(ExportableProduct.Images)))
+                        .WithTabularMetadata(typeof(ExportableProduct).GetPropertyNames()));
 
-            registrar.RegisterType(
-                ExportedTypeDefinitionBuilder.Build<ExportableProduct, ProductExportDataQuery>()
-                    .WithDataSourceFactory(appBuilder.ApplicationServices.GetService<ICatalogExportPagedDataSourceFactory>())
-                    .WithMetadata(typeof(ExportableProduct).GetPropertyNames(
-                        nameof(ExportableProduct.Properties),
-                        $"{nameof(ExportableProduct.Properties)}.{nameof(Property.Values)}",
-                        $"{nameof(ExportableProduct.Properties)}.{nameof(Property.Attributes)}",
-                        $"{nameof(ExportableProduct.Properties)}.{nameof(Property.DisplayNames)}",
-                        $"{nameof(ExportableProduct.Properties)}.{nameof(Property.ValidationRules)}",
-                        nameof(ExportableProduct.Assets),
-                        nameof(ExportableProduct.Links),
-                        nameof(ExportableProduct.SeoInfos),
-                        nameof(ExportableProduct.Reviews),
-                        nameof(ExportableProduct.Associations),
-                        nameof(ExportableProduct.ReferencedAssociations),
-                        nameof(ExportableProduct.Outlines),
-                        nameof(ExportableProduct.Images)))
-                    .WithTabularMetadata(typeof(ExportableProduct).GetPropertyNames()));
-
-            registrar.RegisterType(
-                ExportedTypeDefinitionBuilder.Build<ExportableCatalogFull, CatalogFullExportDataQuery>()
-                    .WithDataSourceFactory(appBuilder.ApplicationServices.GetService<ICatalogExportPagedDataSourceFactory>())
-                    .WithMetadata(new ExportedTypeMetadata { PropertyInfos = Array.Empty<ExportedTypePropertyInfo>() })
-                    .WithRestrictDataSelectivity());
+                registrar.RegisterType(
+                    ExportedTypeDefinitionBuilder.Build<ExportableCatalogFull, CatalogFullExportDataQuery>()
+                        .WithDataSourceFactory(appBuilder.ApplicationServices.GetService<ICatalogExportPagedDataSourceFactory>())
+                        .WithMetadata(new ExportedTypeMetadata { PropertyInfos = Array.Empty<ExportedTypePropertyInfo>() })
+                        .WithRestrictDataSelectivity());
+            }
 
             #endregion Register types for generic Export
 
             #region BulkActions
 
-            AbstractTypeFactory<BulkActionContext>.RegisterType<CategoryChangeBulkActionContext>();
-            AbstractTypeFactory<BulkActionContext>.RegisterType<PropertiesUpdateBulkActionContext>();
+            if (ModuleCatalog.IsModuleInstalled(BulkActionsModuleId))
+            {
+                AbstractTypeFactory<BulkActionContext>.RegisterType<CategoryChangeBulkActionContext>();
+                AbstractTypeFactory<BulkActionContext>.RegisterType<PropertiesUpdateBulkActionContext>();
 
-            RegisterBulkAction(nameof(CategoryChangeBulkAction), nameof(CategoryChangeBulkActionContext));
-            RegisterBulkAction(nameof(PropertiesUpdateBulkAction), nameof(PropertiesUpdateBulkActionContext));
+                RegisterBulkAction(nameof(CategoryChangeBulkAction), nameof(CategoryChangeBulkActionContext));
+                RegisterBulkAction(nameof(PropertiesUpdateBulkAction), nameof(PropertiesUpdateBulkActionContext));
+            }
 
             #endregion BulkActions
-
         }
 
         public void Uninstall()
