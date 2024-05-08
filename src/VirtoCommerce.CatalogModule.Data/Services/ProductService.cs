@@ -343,4 +343,21 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             public string ProductId { get; set; }
         }
     }
+
+    [Obsolete($"Use {nameof(ProductService)} instead")]
+    public class ItemService(
+        Func<ICatalogRepository> repositoryFactory,
+        IPlatformMemoryCache platformMemoryCache,
+        IEventPublisher eventPublisher,
+        AbstractValidator<IHasProperties> hasPropertyValidator,
+        ICatalogService catalogService,
+        ICategoryService categoryService,
+        IOutlineService outlineService,
+        IBlobUrlResolver blobUrlResolver,
+        ISkuGenerator skuGenerator,
+        AbstractValidator<CatalogProduct> productValidator)
+        :
+            ProductService(repositoryFactory, platformMemoryCache, eventPublisher, hasPropertyValidator, catalogService,
+                categoryService, outlineService, blobUrlResolver, skuGenerator, productValidator),
+            IItemService;
 }

@@ -119,6 +119,10 @@ namespace VirtoCommerce.CatalogModule.Web
             serviceCollection.AddTransient<ICategoryIndexedSearchService, CategoryIndexedSearchService>();
 
             serviceCollection.AddTransient<IProductService, ProductService>();
+            // Registering ItemService for backward compatibility only
+#pragma warning disable CS0618 // Type or member is obsolete
+            serviceCollection.AddTransient<IItemService, ItemService>();
+#pragma warning restore CS0618 // Type or member is obsolete
             serviceCollection.AddTransient<IProductIndexedSearchService, ProductIndexedSearchService>();
             serviceCollection.AddSingleton<IProductSuggestionService, ProductSuggestionService>();
             serviceCollection.AddTransient<IAssociationService, AssociationService>();
