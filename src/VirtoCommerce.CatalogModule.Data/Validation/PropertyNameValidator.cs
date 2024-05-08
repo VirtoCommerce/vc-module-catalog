@@ -13,12 +13,12 @@ namespace VirtoCommerce.CatalogModule.Data.Validation
 {
     public class PropertyNameValidator : AbstractValidator<PropertyValidationRequest>
     {
-        private readonly IItemService _itemService;
+        private readonly IProductService _productService;
         private readonly IProductSearchService _productSearchService;
 
-        public PropertyNameValidator(IItemService itemService, IProductSearchService productSearchService)
+        public PropertyNameValidator(IProductService productService, IProductSearchService productSearchService)
         {
-            _itemService = itemService;
+            _productService = productService;
             _productSearchService = productSearchService;
         }
 
@@ -32,7 +32,7 @@ namespace VirtoCommerce.CatalogModule.Data.Validation
                 return result;
             }
 
-            var product = await _itemService.GetNoCloneAsync(request.ProductId, ItemResponseGroup.ItemProperties.ToString());
+            var product = await _productService.GetNoCloneAsync(request.ProductId, ItemResponseGroup.ItemProperties.ToString());
             if (product == null)
             {
                 return result;

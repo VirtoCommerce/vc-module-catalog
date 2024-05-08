@@ -20,7 +20,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
         public ProductSearchService(
             Func<ICatalogRepository> repositoryFactory,
             IPlatformMemoryCache platformMemoryCache,
-            IItemService crudService,
+            IProductService crudService,
             IOptions<CrudOptions> crudOptions)
             : base(repositoryFactory, platformMemoryCache, crudService, crudOptions)
         {

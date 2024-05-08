@@ -15,7 +15,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
         private readonly IDataSourceFactory _dataSourceFactory;
         private readonly IPropertyUpdateManager _propertyUpdateManager;
 
-        private readonly IItemService _itemService;
+        private readonly IProductService _productService;
         private readonly ICategoryService _categoryService;
         private readonly ICatalogService _catalogService;
 
@@ -27,16 +27,16 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
         /// <param name="dataSourceFactory">
         /// The data source factory.
         /// </param>
-        /// <param name="itemService">
+        /// <param name="productService">
         /// The item service.
         /// </param>
         /// <param name="categoryService"></param>
         /// <param name="catalogService"></param>
         /// <param name="propertyUpdateManager"></param>
-        public BulkPropertyUpdateManager(IDataSourceFactory dataSourceFactory, IItemService itemService, ICategoryService categoryService, ICatalogService catalogService, IPropertyUpdateManager propertyUpdateManager)
+        public BulkPropertyUpdateManager(IDataSourceFactory dataSourceFactory, IProductService productService, ICategoryService categoryService, ICatalogService catalogService, IPropertyUpdateManager propertyUpdateManager)
         {
             _dataSourceFactory = dataSourceFactory;
-            _itemService = itemService;
+            _productService = productService;
             _categoryService = categoryService;
             _catalogService = catalogService;
             _propertyUpdateManager = propertyUpdateManager;
@@ -52,7 +52,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
             while (await dataSource.FetchAsync())
             {
                 var productIds = dataSource.Items.Select(item => item.Id).ToList();
-                var products = await _itemService.GetAsync(productIds, (ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemProperties).ToString());
+                var products = await _productService.GetAsync(productIds, (ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemProperties).ToString());
 
                 // using only product inherited properties from categories,
                 // own product props (only from PropertyValues) are not set via bulk update action
@@ -88,7 +88,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
 
             if (hasChanges)
             {
-                await _itemService.SaveChangesAsync(products);
+                await _productService.SaveChangesAsync(products);
             }
 
             return result;

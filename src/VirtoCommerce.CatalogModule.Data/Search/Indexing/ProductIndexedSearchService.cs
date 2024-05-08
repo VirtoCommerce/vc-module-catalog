@@ -15,14 +15,14 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 {
     public class ProductIndexedSearchService : CatalogIndexedSearchService<CatalogProduct, ProductIndexedSearchCriteria, ProductIndexedSearchResult>, IProductIndexedSearchService
     {
-        private readonly IItemService _itemService;
+        private readonly IProductService _productService;
         private readonly IBlobUrlResolver _blobUrlResolver;
         private readonly IAggregationConverter _aggregationConverter;
 
-        public ProductIndexedSearchService(ISearchRequestBuilderRegistrar searchRequestBuilderRegistrar, ISearchProvider searchProvider, ISettingsManager settingsManager, IItemService itemService, IBlobUrlResolver blobUrlResolver, IAggregationConverter aggregationConverter)
+        public ProductIndexedSearchService(ISearchRequestBuilderRegistrar searchRequestBuilderRegistrar, ISearchProvider searchProvider, ISettingsManager settingsManager, IProductService productService, IBlobUrlResolver blobUrlResolver, IAggregationConverter aggregationConverter)
             : base(searchRequestBuilderRegistrar, searchProvider, settingsManager)
         {
-            _itemService = itemService;
+            _productService = productService;
             _blobUrlResolver = blobUrlResolver;
             _aggregationConverter = aggregationConverter;
         }
@@ -32,7 +32,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         {
             var catalog = criteria.CatalogId;
             var responseGroup = GetResponseGroup(criteria);
-            var products = await _itemService.GetByIdsAsync(missingItemIds, responseGroup.ToString(), catalog);
+            var products = await _productService.GetByIdsAsync(missingItemIds, responseGroup.ToString(), catalog);
             //var result = products.Select(p => p.ToWebModel(_blobUrlResolver)).ToArray();
             return products;
         }

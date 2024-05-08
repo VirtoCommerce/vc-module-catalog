@@ -8,7 +8,7 @@ namespace VirtoCommerce.CatalogModule2.Data.Services
 {
     public class ProductMover2 : ProductMover
     {
-        public ProductMover2(IItemService itemService) : base(itemService)
+        public ProductMover2(IProductService productService) : base(productService)
         {
         }
         public override Task ConfirmMoveAsync(IEnumerable<CatalogProduct> entities)

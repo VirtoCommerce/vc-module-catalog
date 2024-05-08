@@ -5,7 +5,7 @@ using VirtoCommerce.Platform.Core.GenericCrud;
 
 namespace VirtoCommerce.CatalogModule.Core.Services
 {
-    public interface IItemService : ICrudService<CatalogProduct>
+    public interface IProductService : ICrudService<CatalogProduct>
     {
         Task<IList<CatalogProduct>> GetByCodes(string catalogId, IList<string> codes, string responseGroup);
         Task<IDictionary<string, string>> GetIdsByCodes(string catalogId, IList<string> codes);

@@ -20,14 +20,14 @@ namespace VirtoCommerce.CatalogModule.Data.Services
     /// </summary>
     public class CatalogSeoDuplicatesDetector : ISeoDuplicatesDetector
     {
-        private readonly IItemService _productService;
+        private readonly IProductService _productService;
         private readonly ICategoryService _categoryService;
         private readonly IStoreService _storeService;
         private readonly Func<ICatalogRepository> _repositoryFactory;
         private readonly ISettingsManager _settingsManager;
 
         public CatalogSeoDuplicatesDetector(
-            IItemService productService,
+            IProductService productService,
             ICategoryService categoryService,
             IStoreService storeService,
             Func<ICatalogRepository> repositoryFactory,

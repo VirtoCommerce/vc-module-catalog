@@ -14,11 +14,11 @@ namespace VirtoCommerce.CatalogModule2.Data.Search.Indexing
 {
     public class ProductIndexedSearchService2 : ProductIndexedSearchService
     {
-        public ProductIndexedSearchService2(ISearchRequestBuilderRegistrar searchRequestBuilderRegistrar, ISearchProvider searchProvider, ISettingsManager settingsManager, IItemService itemService, IBlobUrlResolver blobUrlResolver, IAggregationConverter aggregationConverter) : base(
+        public ProductIndexedSearchService2(ISearchRequestBuilderRegistrar searchRequestBuilderRegistrar, ISearchProvider searchProvider, ISettingsManager settingsManager, IProductService productService, IBlobUrlResolver blobUrlResolver, IAggregationConverter aggregationConverter) : base(
             searchRequestBuilderRegistrar,
             searchProvider,
             settingsManager,
-            itemService,
+            productService,
             blobUrlResolver,
             aggregationConverter
             )

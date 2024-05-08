@@ -16,13 +16,13 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
     public class ProductExportPagedDataSource : ExportPagedDataSource<ProductExportDataQuery, ProductSearchCriteria>
     {
         private readonly IBlobStorageProvider _blobStorageProvider;
-        private readonly IItemService _itemService;
+        private readonly IProductService _productService;
         private readonly IProductSearchService _productSearchService;
 
-        public ProductExportPagedDataSource(IBlobStorageProvider blobStorageProvider, IItemService itemService, IProductSearchService productSearchService, ProductExportDataQuery dataQuery) : base(dataQuery)
+        public ProductExportPagedDataSource(IBlobStorageProvider blobStorageProvider, IProductService productService, IProductSearchService productSearchService, ProductExportDataQuery dataQuery) : base(dataQuery)
         {
             _blobStorageProvider = blobStorageProvider;
-            _itemService = itemService;
+            _productService = productService;
             _productSearchService = productSearchService;
         }
 
@@ -36,7 +36,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 
             if (searchCriteria.ObjectIds.Any(x => !string.IsNullOrWhiteSpace(x)))
             {
-                result = _itemService.GetAsync(searchCriteria.ObjectIds.ToList(), responseGroup).GetAwaiter().GetResult().ToArray();
+                result = _productService.GetAsync(searchCriteria.ObjectIds.ToList(), responseGroup).GetAwaiter().GetResult().ToArray();
                 totalCount = result.Length;
             }
             else

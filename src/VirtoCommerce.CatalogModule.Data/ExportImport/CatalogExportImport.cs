@@ -21,7 +21,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         private readonly IProductSearchService _productSearchService;
         private readonly ICategorySearchService _categorySearchService;
         private readonly ICategoryService _categoryService;
-        private readonly IItemService _itemService;
+        private readonly IProductService _productService;
         private readonly IPropertyService _propertyService;
         private readonly IPropertySearchService _propertySearchService;
         private readonly IPropertyDictionaryItemSearchService _propertyDictionarySearchService;
@@ -33,14 +33,14 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         private readonly int _batchSize = 50;
 
         public CatalogExportImport(ICatalogService catalogService, ICatalogSearchService catalogSearchService, IProductSearchService productSearchService, ICategorySearchService categorySearchService, ICategoryService categoryService,
-                                  IItemService itemService, IPropertyService propertyService, IPropertySearchService propertySearchService, IPropertyDictionaryItemSearchService propertyDictionarySearchService,
+                                  IProductService productService, IPropertyService propertyService, IPropertySearchService propertySearchService, IPropertyDictionaryItemSearchService propertyDictionarySearchService,
                                   IPropertyDictionaryItemService propertyDictionaryService, JsonSerializer jsonSerializer, IBlobStorageProvider blobStorageProvider, IAssociationService associationService)
         {
             _catalogService = catalogService;
             _productSearchService = productSearchService;
             _categorySearchService = categorySearchService;
             _categoryService = categoryService;
-            _itemService = itemService;
+            _productService = productService;
             _propertyService = propertyService;
             _propertySearchService = propertySearchService;
             _propertyDictionarySearchService = propertyDictionarySearchService;
@@ -386,7 +386,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                     return product;
                 }).ToArray();
 
-                await _itemService.SaveChangesAsync(products);
+                await _productService.SaveChangesAsync(products);
 
                 if (options != null && options.HandleBinaryData)
                 {

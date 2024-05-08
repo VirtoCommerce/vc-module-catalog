@@ -19,7 +19,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         {
             var propDictionaryService = new Mock<IPropertyDictionaryItemService>().Object;
             var propDictionarySearchService = new Mock<IPropertyDictionaryItemSearchService>();
-            var productService = new Mock<IItemService>();
+            var productService = new Mock<IProductService>();
 
             var colorProperty = new Property
             {

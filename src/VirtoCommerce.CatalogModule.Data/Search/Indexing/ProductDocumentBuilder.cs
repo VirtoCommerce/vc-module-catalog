@@ -17,13 +17,13 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 {
     public class ProductDocumentBuilder : CatalogDocumentBuilder, IIndexSchemaBuilder, IIndexDocumentBuilder
     {
-        private readonly IItemService _itemService;
+        private readonly IProductService _productService;
         private readonly IProductSearchService _productsSearchService;
 
-        public ProductDocumentBuilder(ISettingsManager settingsManager, IPropertySearchService propertySearchService, IItemService itemService, IProductSearchService productsSearchService)
+        public ProductDocumentBuilder(ISettingsManager settingsManager, IPropertySearchService propertySearchService, IProductService productService, IProductSearchService productsSearchService)
             : base(settingsManager, propertySearchService)
         {
-            _itemService = itemService;
+            _productService = productService;
             _productsSearchService = productsSearchService;
         }
 
@@ -111,7 +111,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         protected virtual async Task<CatalogProduct[]> GetProducts(IList<string> productIds)
         {
 #pragma warning disable CS0618 // Variations can be used here
-            var products = await _itemService.GetNoCloneAsync(productIds.ToList(), (ItemResponseGroup.Full & ~ItemResponseGroup.Variations).ToString());
+            var products = await _productService.GetNoCloneAsync(productIds.ToList(), (ItemResponseGroup.Full & ~ItemResponseGroup.Variations).ToString());
 #pragma warning restore CS0618
 
             return products.ToArray();

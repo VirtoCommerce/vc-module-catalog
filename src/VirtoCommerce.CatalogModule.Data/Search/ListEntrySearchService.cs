@@ -18,14 +18,14 @@ namespace VirtoCommerce.CatalogModule.Data.Search
     public class ListEntrySearchService : IListEntrySearchService
     {
         private readonly Func<ICatalogRepository> _catalogRepositoryFactory;
-        private readonly IItemService _itemService;
+        private readonly IProductService _productService;
         private readonly ICategoryService _categoryService;
         private readonly Dictionary<string, string> _productSortingAliases = new Dictionary<string, string>();
         private readonly Dictionary<string, string> _categorySortingAliases = new Dictionary<string, string>();
-        public ListEntrySearchService(Func<ICatalogRepository> catalogRepositoryFactory, IItemService itemService, ICategoryService categoryService)
+        public ListEntrySearchService(Func<ICatalogRepository> catalogRepositoryFactory, IProductService productService, ICategoryService categoryService)
         {
             _catalogRepositoryFactory = catalogRepositoryFactory;
-            _itemService = itemService;
+            _productService = productService;
             _categoryService = categoryService;
 
             _productSortingAliases["sku"] = nameof(CatalogProduct.Code);
@@ -52,7 +52,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
             var categorySkip = 0;
             var categoryTake = 0;
-            //Because products and categories represent in search result as two separated collections for handle paging request 
+            //Because products and categories represent in search result as two separated collections for handle paging request
             //we should join two resulting collection artificially
             //search categories
             if (criteria.ObjectTypes.IsNullOrEmpty() || criteria.ObjectTypes.Contains(nameof(Category)))
@@ -118,7 +118,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 {
                     if (criteria.SearchInChildren)
                     {
-                        //need search in all catalog linked and children categories 
+                        //need search in all catalog linked and children categories
                         //First need load all categories belong to searched catalogs
                         searchCategoryIds = repository.Categories.Where(x => criteria.CatalogIds.Contains(x.CatalogId)).Select(x => x.Id).ToArray();
                         //Then load all physical categories linked to catalog
@@ -146,7 +146,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 {
                     query = query.Where(x => x.Code == criteria.Code);
                 }
-                //Extension point 
+                //Extension point
                 query = BuildQuery(query, criteria);
                 var sortInfos = BuildSortExpression(criteria);
                 //Try to replace sorting columns names
@@ -195,7 +195,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                         var hasVirtualCatalog = repository.Catalogs.Where(x => criteria.CatalogIds.Contains(x.Id)).Any(x => x.Virtual);
                         if (!hasVirtualCatalog)
                         {
-                            // When searching from the root level of a catalog and all searched catalogs are not virtual then 'categoryIds' condition can safely cut off 
+                            // When searching from the root level of a catalog and all searched catalogs are not virtual then 'categoryIds' condition can safely cut off
                             searchCategoryIds = null;
                         }
                         else
@@ -226,7 +226,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
                     var essentialResponseGroup = ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemAssets | ItemResponseGroup.Links | ItemResponseGroup.Seo | ItemResponseGroup.Outlines;
                     var responseGroup = string.Concat(criteria.ResponseGroup, ",", essentialResponseGroup.ToString());
-                    result.Results = (await _itemService.GetByIdsAsync(itemIds.ToArray(), responseGroup, criteria.CatalogId)).OrderBy(x => itemIds.IndexOf(x.Id)).ToList();
+                    result.Results = (await _productService.GetByIdsAsync(itemIds.ToArray(), responseGroup, criteria.CatalogId)).OrderBy(x => itemIds.IndexOf(x.Id)).ToList();
                 }
             }
 

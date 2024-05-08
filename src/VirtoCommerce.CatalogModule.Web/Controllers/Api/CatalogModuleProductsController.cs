@@ -21,7 +21,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
     [Authorize]
     public class CatalogModuleProductsController : Controller
     {
-        private readonly IItemService _itemsService;
+        private readonly IProductService _itemsService;
         private readonly ICatalogService _catalogService;
         private readonly ICategoryService _categoryService;
         private readonly ISkuGenerator _skuGenerator;
@@ -30,7 +30,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly MvcNewtonsoftJsonOptions _jsonOptions;
 
         public CatalogModuleProductsController(
-            IItemService itemsService,
+            IProductService itemsService,
             ICategoryService categoryService,
             ICatalogService catalogService,
             ISkuGenerator skuGenerator,
@@ -98,7 +98,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             {
                 return Forbid();
             }
-            //It is a important to return serialized data by such way. Instead you have a slow response time for large outputs 
+            //It is a important to return serialized data by such way. Instead you have a slow response time for large outputs
             //https://github.com/dotnet/aspnetcore/issues/19646
             var result = JsonConvert.SerializeObject(items, _jsonOptions.SerializerSettings);
 
@@ -106,7 +106,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         }
 
         /// <summary>
-        /// Gets products by plenty ids 
+        /// Gets products by plenty ids
         /// </summary>
         /// <param name="ids">Item ids</param>
         /// <param name="respGroup">Response group.</param>
@@ -223,7 +223,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             var copyProduct = (CatalogProduct)product.GetCopy();
 
-            // Reset 
+            // Reset
             copyProduct.Id = null;
             copyProduct.CreatedDate = DateTime.UtcNow;
             copyProduct.CreatedBy = null;

@@ -12,8 +12,8 @@ namespace VirtoCommerce.CatalogModule2.Data.Search.Indexing
 {
     public class ProductDocumentBuilder2 : ProductDocumentBuilder
     {
-        public ProductDocumentBuilder2(ISettingsManager settingsManager, IPropertySearchService propertySearchService, IItemService itemService, IProductSearchService productsSearchService)
-            : base(settingsManager, propertySearchService, itemService, productsSearchService)
+        public ProductDocumentBuilder2(ISettingsManager settingsManager, IPropertySearchService propertySearchService, IProductService productService, IProductSearchService productsSearchService)
+            : base(settingsManager, propertySearchService, productService, productsSearchService)
         {
         }
         protected override IndexDocument CreateDocument(CatalogProduct product)
