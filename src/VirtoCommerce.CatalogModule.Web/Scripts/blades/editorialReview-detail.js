@@ -28,8 +28,9 @@ angular.module('virtoCommerce.catalogModule')
             var existReview = _.find(blade.item.reviews, function (x) { return x == blade.origEntity; });
             if (!existReview) {
                 blade.item.reviews.push(blade.origEntity);
-            };
+            }
             angular.copy(blade.currentEntity, blade.origEntity);
+            blade.currentEntity.isInherited = false;
             $scope.bladeClose();
         };
 
@@ -102,9 +103,10 @@ angular.module('virtoCommerce.catalogModule')
             var existReview = _.find(blade.item.reviews, function (x) { return x === blade.origEntity; });
             if (!existReview) {
                 blade.item.reviews.push(blade.origEntity);
-            };
+            }
 
             angular.copy(blade.currentEntity, blade.origEntity);
+            blade.currentEntity.isInherited = false;
         }
 
         function isDirty() {
