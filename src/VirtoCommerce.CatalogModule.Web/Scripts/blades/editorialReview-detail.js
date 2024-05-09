@@ -3,7 +3,7 @@ angular.module('virtoCommerce.catalogModule')
     function ($scope, bladeNavigationService, FileUploader, settings, $timeout) {
         var blade = $scope.blade;
 
-        function initilize() {
+        function initialize() {
             if (!blade.item.reviews) {
                 blade.item.reviews = [];
             }
@@ -23,16 +23,6 @@ angular.module('virtoCommerce.catalogModule')
         }
 
         $scope.isValid = true;
-
-        $scope.saveChanges = function () {
-            var existReview = _.find(blade.item.reviews, function (x) { return x == blade.origEntity; });
-            if (!existReview) {
-                blade.item.reviews.push(blade.origEntity);
-            }
-            angular.copy(blade.currentEntity, blade.origEntity);
-            blade.currentEntity.isInherited = false;
-            $scope.bladeClose();
-        };
 
         blade.headIcon = 'fa fa-comments';
         blade.title = 'catalog.blades.editorialReview-detail.title';
@@ -105,8 +95,8 @@ angular.module('virtoCommerce.catalogModule')
                 blade.item.reviews.push(blade.origEntity);
             }
 
-            angular.copy(blade.currentEntity, blade.origEntity);
             blade.currentEntity.isInherited = false;
+            angular.copy(blade.currentEntity, blade.origEntity);
         }
 
         function isDirty() {
@@ -121,5 +111,5 @@ angular.module('virtoCommerce.catalogModule')
             bladeNavigationService.showConfirmationIfNeeded(isDirty(), canSave(), blade, saveChanges, closeCallback, "catalog.dialogs.review-save.title", "catalog.dialogs.review-save.message");
         };
 
-        initilize();
+        initialize();
     }]);
