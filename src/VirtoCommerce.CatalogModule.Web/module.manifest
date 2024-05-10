@@ -3,12 +3,12 @@
   <id>VirtoCommerce.Catalog</id>
   <version>3.809.0</version>
   <version-tag />
-  <platformVersion>3.800.0</platformVersion>
+  <platformVersion>3.824.0</platformVersion>
   <dependencies>
     <dependency id="VirtoCommerce.Assets" version="3.800.0" />
-    <dependency id="VirtoCommerce.BulkActionsModule" version="3.800.0" />
+    <dependency id="VirtoCommerce.BulkActionsModule" version="3.800.0" optional="true"/>
     <dependency id="VirtoCommerce.Core" version="3.800.0" />
-    <dependency id="VirtoCommerce.Export" version="3.800.0" />
+    <dependency id="VirtoCommerce.Export" version="3.800.0" optional="true"/>
     <dependency id="VirtoCommerce.Search" version="3.800.0" />
     <dependency id="VirtoCommerce.Store" version="3.800.0" />
   </dependencies>
