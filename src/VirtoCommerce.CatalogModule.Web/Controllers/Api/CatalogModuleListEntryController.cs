@@ -32,8 +32,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly ListEntryMover<Category> _categoryMover;
         private readonly ListEntryMover<CatalogProduct> _productMover;
 
-        public CatalogModuleListEntryController(
-            IInternalListEntrySearchService internalListEntrySearchService,
+        public CatalogModuleListEntryController(IInternalListEntrySearchService internalListEntrySearchService,
             IListEntrySearchService listEntrySearchService,
             ILinkSearchService linkSearchService,
             ICategoryService categoryService,
@@ -52,6 +51,21 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             _listEntrySearchService = listEntrySearchService;
             _categoryMover = categoryMover;
             _productMover = productMover;
+        }
+
+        [Obsolete($"Use the overload that accepts {nameof(IProductService)}")]
+        public CatalogModuleListEntryController(
+            IInternalListEntrySearchService internalListEntrySearchService,
+            IListEntrySearchService listEntrySearchService,
+            ILinkSearchService linkSearchService,
+            ICategoryService categoryService,
+            IItemService itemService,
+            ICatalogService catalogService,
+            IAuthorizationService authorizationService,
+            ListEntryMover<Category> categoryMover,
+            ListEntryMover<CatalogProduct> productMover)
+            : this(internalListEntrySearchService, listEntrySearchService, linkSearchService, categoryService, (IProductService)itemService, catalogService, authorizationService, categoryMover, productMover)
+        {
         }
 
         /// <summary>

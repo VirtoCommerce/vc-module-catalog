@@ -32,6 +32,12 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             _categorySortingAliases["sku"] = nameof(Category.Code);
         }
 
+        [Obsolete($"Use the overload that accepts {nameof(IProductService)}")]
+        public ListEntrySearchService(Func<ICatalogRepository> catalogRepositoryFactory, IItemService itemService, ICategoryService categoryService)
+            : this(catalogRepositoryFactory, (IProductService)itemService, categoryService)
+        {
+        }
+
         public async Task<ListEntrySearchResult> SearchAsync(CatalogListEntrySearchCriteria criteria)
         {
             if (criteria == null)

@@ -51,6 +51,14 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             _catalogSearchService = catalogSearchService;
         }
 
+        [Obsolete($"Use the overload that accepts {nameof(IProductService)}")]
+        public CatalogExportImport(ICatalogService catalogService, ICatalogSearchService catalogSearchService, IProductSearchService productSearchService, ICategorySearchService categorySearchService, ICategoryService categoryService,
+            IItemService itemService, IPropertyService propertyService, IPropertySearchService propertySearchService, IPropertyDictionaryItemSearchService propertyDictionarySearchService,
+            IPropertyDictionaryItemService propertyDictionaryService, JsonSerializer jsonSerializer, IBlobStorageProvider blobStorageProvider, IAssociationService associationService)
+            : this(catalogService, catalogSearchService, productSearchService, categorySearchService, categoryService, (IProductService)itemService, propertyService, propertySearchService, propertyDictionarySearchService, propertyDictionaryService, jsonSerializer, blobStorageProvider, associationService)
+        {
+        }
+
         public async Task DoExportAsync(Stream outStream, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();

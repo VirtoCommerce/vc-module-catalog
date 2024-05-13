@@ -35,6 +35,12 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Actions.PropertiesUpdate
             _bulkPropertyUpdateManager = bulkPropertyUpdateManager;
         }
 
+        [Obsolete($"Use the overload that accepts {nameof(IProductService)}")]
+        public PropertiesUpdateBulkAction(PropertiesUpdateBulkActionContext context, IItemService itemService, IBulkPropertyUpdateManager bulkPropertyUpdateManager)
+            : this(context, (IProductService)itemService, bulkPropertyUpdateManager)
+        {
+        }
+
         public BulkActionContext Context => _context;
 
         public async Task<BulkActionResult> ExecuteAsync(IEnumerable<IEntity> entities)

@@ -27,6 +27,12 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             _productsSearchService = productsSearchService;
         }
 
+        [Obsolete($"Use the overload that accepts {nameof(IProductService)}")]
+        public ProductDocumentBuilder(ISettingsManager settingsManager, IPropertySearchService propertySearchService, IItemService itemService, IProductSearchService productsSearchService)
+            : this(settingsManager, propertySearchService, (IProductService)itemService, productsSearchService)
+        {
+        }
+
         public virtual async Task BuildSchemaAsync(IndexDocument schema)
         {
             schema.AddFilterableString("__type");

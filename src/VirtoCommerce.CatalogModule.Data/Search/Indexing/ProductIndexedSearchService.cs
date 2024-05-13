@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -27,6 +28,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             _aggregationConverter = aggregationConverter;
         }
 
+        [Obsolete($"Use the overload that accepts {nameof(IProductService)}")]
+        public ProductIndexedSearchService(ISearchRequestBuilderRegistrar searchRequestBuilderRegistrar, ISearchProvider searchProvider, ISettingsManager settingsManager, IItemService itemService, IBlobUrlResolver blobUrlResolver, IAggregationConverter aggregationConverter)
+            : this(searchRequestBuilderRegistrar, searchProvider, settingsManager, (IProductService)itemService, blobUrlResolver, aggregationConverter)
+        {
+        }
 
         protected override async Task<IList<CatalogProduct>> LoadMissingItems(string[] missingItemIds, ProductIndexedSearchCriteria criteria)
         {

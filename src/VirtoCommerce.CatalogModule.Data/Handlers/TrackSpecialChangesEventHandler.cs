@@ -24,6 +24,12 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
             _productService = productService;
         }
 
+        [Obsolete($"Use the overload that accepts {nameof(IProductService)}")]
+        public TrackSpecialChangesEventHandler(Func<ICatalogRepository> catalogRepositoryFactory, IItemService itemService)
+            : this(catalogRepositoryFactory, (IProductService)itemService)
+        {
+        }
+
         public Task Handle(CategoryChangedEvent message)
         {
             var categoryIds = message.ChangedEntries

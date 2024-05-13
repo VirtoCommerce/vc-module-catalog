@@ -42,6 +42,12 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
             _propertyUpdateManager = propertyUpdateManager;
         }
 
+        [Obsolete($"Use the overload that accepts {nameof(IProductService)}")]
+        public BulkPropertyUpdateManager(IDataSourceFactory dataSourceFactory, IItemService itemService, ICategoryService categoryService, ICatalogService catalogService, IPropertyUpdateManager propertyUpdateManager)
+            : this(dataSourceFactory, (IProductService)itemService, categoryService, catalogService, propertyUpdateManager)
+        {
+        }
+
         public async Task<Property[]> GetPropertiesAsync(BulkActionContext context)
         {
             var result = new List<Property>();

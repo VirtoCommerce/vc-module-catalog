@@ -40,6 +40,17 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _settingsManager = settingsManager;
         }
 
+        [Obsolete($"Use the overload that accepts {nameof(IProductService)}")]
+        public CatalogSeoDuplicatesDetector(
+            IItemService itemService,
+            ICategoryService categoryService,
+            IStoreService storeService,
+            Func<ICatalogRepository> repositoryFactory,
+            ISettingsManager settingsManager)
+            : this((IProductService)itemService, categoryService, storeService, repositoryFactory, settingsManager)
+        {
+        }
+
         #region ISeoConflictDetector Members
 
         public async Task<IEnumerable<SeoInfo>> DetectSeoDuplicatesAsync(TenantIdentity tenantIdentity)

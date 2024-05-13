@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,6 +21,12 @@ namespace VirtoCommerce.CatalogModule.Data.Validation
         {
             _productService = productService;
             _productSearchService = productSearchService;
+        }
+
+        [Obsolete($"Use the overload that accepts {nameof(IProductService)}")]
+        public PropertyNameValidator(IItemService itemService, IProductSearchService productSearchService)
+            : this((IProductService)itemService, productSearchService)
+        {
         }
 
         public override async Task<ValidationResult> ValidateAsync(ValidationContext<PropertyValidationRequest> context, CancellationToken cancellation = default)

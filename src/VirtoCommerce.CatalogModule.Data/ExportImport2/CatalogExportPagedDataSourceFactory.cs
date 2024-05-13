@@ -36,6 +36,19 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             _catalogSearchService = catalogSearchService;
         }
 
+        [Obsolete($"Use the overload that accepts {nameof(IProductService)}")]
+        public CatalogExportPagedDataSourceFactory(
+            IPropertySearchService propertySearchService
+            , IPropertyDictionaryItemSearchService propertyDictionaryItemSearchService
+            , IBlobStorageProvider blobStorageProvider
+            , IProductSearchService productSearchService
+            , IItemService itemService
+            , ICategorySearchService categorySearchService
+            , ICatalogSearchService catalogSearchService)
+            : this(propertySearchService, propertyDictionaryItemSearchService, blobStorageProvider, productSearchService, (IProductService)itemService, categorySearchService, catalogSearchService)
+        {
+        }
+
         public virtual IPagedDataSource Create(ExportDataQuery dataQuery)
         {
             IPagedDataSource result = null;

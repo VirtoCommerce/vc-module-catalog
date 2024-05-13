@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,6 +22,12 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         public ProductMover(IProductService productService)
         {
             _productService = productService;
+        }
+
+        [Obsolete($"Use the overload that accepts {nameof(IProductService)}")]
+        public ProductMover(IItemService itemService)
+            : this((IProductService)itemService)
+        {
         }
 
         public override Task ConfirmMoveAsync(IEnumerable<CatalogProduct> entities)

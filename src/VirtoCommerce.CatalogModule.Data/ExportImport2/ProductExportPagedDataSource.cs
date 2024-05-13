@@ -26,6 +26,11 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             _productSearchService = productSearchService;
         }
 
+        [Obsolete($"Use the overload that accepts {nameof(IProductService)}")]
+        public ProductExportPagedDataSource(IBlobStorageProvider blobStorageProvider, IItemService itemService, IProductSearchService productSearchService, ProductExportDataQuery dataQuery)
+            : this(blobStorageProvider, (IProductService)itemService, productSearchService, dataQuery)
+        {
+        }
 
         protected override ExportableSearchResult FetchData(ProductSearchCriteria searchCriteria)
         {

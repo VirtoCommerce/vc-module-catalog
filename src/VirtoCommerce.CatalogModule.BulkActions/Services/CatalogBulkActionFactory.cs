@@ -34,6 +34,16 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
             _productListEntryMover = productListEntryMover;
         }
 
+        [Obsolete($"Use the overload that accepts {nameof(IProductService)}")]
+        public CatalogBulkActionFactory(ICatalogService catalogService,
+            IItemService itemService,
+            IBulkPropertyUpdateManager bulkPropertyUpdateManager,
+            ListEntryMover<Category> categoryListEntryMover,
+            ListEntryMover<CatalogProduct> productListEntryMover)
+            : this(catalogService, (IProductService)itemService, bulkPropertyUpdateManager, categoryListEntryMover, productListEntryMover)
+        {
+        }
+
         public IBulkAction Create(BulkActionContext context)
         {
             IBulkAction result = null;

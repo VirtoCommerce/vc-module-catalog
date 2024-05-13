@@ -26,6 +26,15 @@ namespace VirtoCommerce.CatalogModule.Data.Search
         {
         }
 
+        [Obsolete($"Use the overload that accepts {nameof(IProductService)}")]
+        public ProductSearchService(
+            Func<ICatalogRepository> repositoryFactory,
+            IPlatformMemoryCache platformMemoryCache,
+            IItemService itemService,
+            IOptions<CrudOptions> crudOptions)
+            : this(repositoryFactory, platformMemoryCache, (IProductService)itemService, crudOptions)
+        {
+        }
 
         protected override IQueryable<ItemEntity> BuildQuery(IRepository repository, ProductSearchCriteria criteria)
         {
