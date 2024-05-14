@@ -118,11 +118,16 @@ namespace VirtoCommerce.CatalogModule.Web
             serviceCollection.AddTransient<ICategoryService, CategoryService>();
             serviceCollection.AddTransient<ICategoryIndexedSearchService, CategoryIndexedSearchService>();
 
-            serviceCollection.AddTransient<IProductService, ProductService>();
-            // Registering ItemService for backward compatibility only
 #pragma warning disable CS0618 // Type or member is obsolete
-            serviceCollection.AddTransient<IItemService, ItemService>();
+            serviceCollection.AddTransient<ItemService>();
+            serviceCollection.AddTransient(ResolveItemService);
+            serviceCollection.AddTransient<IProductService>(provider => provider.GetRequiredService<IItemService>());
 #pragma warning restore CS0618 // Type or member is obsolete
+
+            serviceCollection.AddSingleton<ProductServiceResolver>();
+            serviceCollection.AddTransient(provider =>
+                provider.GetRequiredService<ProductServiceResolver>().Resolve(provider));
+
             serviceCollection.AddTransient<IProductIndexedSearchService, ProductIndexedSearchService>();
             serviceCollection.AddSingleton<IProductSuggestionService, ProductSuggestionService>();
             serviceCollection.AddTransient<IAssociationService, AssociationService>();
@@ -263,6 +268,69 @@ namespace VirtoCommerce.CatalogModule.Web
             #endregion BulkActions
 
             serviceCollection.AddTransient<ICategoryTreeService, CategoryTreeService>();
+        }
+
+       [ThreadStatic] private static bool _resolvingItemService;       // Guards against stack overflow when resolving IItemService or IProductService
+
+#pragma warning disable CS0618 // Type or member is obsolete
+        private static IItemService ResolveItemService(IServiceProvider provider)
+        {
+            // The idea here is to try to resolve IItemService by resolving IProductService first and casting or
+            // adapting it to IItemService. This way, if there's a custom registration for IProductService somewhere,
+            // it will be used. Conversely, the standard registration for IProductService tries to resolve this
+            // registration first, for same reasons (there might be custom IItemService registered somewhere).
+            // If neither IItemService nor IProductService is overridden, this would cause a circular dependency and
+            // a stack overflow - that's why we need _resolvingItemService to guard the stack and cut the loop at
+            // first detected reentrancy. As a result, without custom IItemService or IProductService, ItemService
+            // is resolved by default.
+
+            if (_resolvingItemService)  // Reentrant? Fall back to the default implementation:
+            {
+                return provider.GetRequiredService<ItemService>();
+            }
+
+            _resolvingItemService = true;
+            try
+            {
+                var productService = provider.GetRequiredService<IProductService>();
+
+                if (productService is IItemService itemService) // First see, if we can get away with a simple cast
+                {
+                    return itemService;
+                }
+
+                // Adapt the resolved IProductService to IItemService:
+                return new ProductServiceAdapter(productService);
+            }
+            finally
+            {
+                _resolvingItemService = false;      // Clean up
+            }
+        }
+#pragma warning restore CS0618 // Type or member is obsolete
+
+        private sealed class ProductServiceResolver
+        {
+            private volatile bool _tryResolveToLegacyItemService = true;
+
+            public IProductService Resolve(IServiceProvider serviceProvider)
+            {
+                if (_tryResolveToLegacyItemService)
+                {
+#pragma warning disable CS0618 // Type or member is obsolete
+                    var itemService = serviceProvider.GetService<IItemService>();
+
+                    if (itemService is not null and not ProductServiceAdapter)
+                    {
+                        return itemService;
+                    }
+#pragma warning restore CS0618 // Type or member is obsolete
+                }
+
+                _tryResolveToLegacyItemService = false;
+
+                return serviceProvider.GetRequiredService<ProductService>();
+            }
         }
 
         public void PostInitialize(IApplicationBuilder appBuilder)

@@ -360,4 +360,16 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             ProductService(repositoryFactory, platformMemoryCache, eventPublisher, hasPropertyValidator, catalogService,
                 categoryService, outlineService, blobUrlResolver, skuGenerator, productValidator),
             IItemService;
+
+    [Obsolete($"Use only when legacy code requires {nameof(IItemService)}")]
+    public sealed class ProductServiceAdapter(IProductService productService) : IItemService
+    {
+        public Task<IList<CatalogProduct>> GetAsync(IList<string> ids, string responseGroup = null, bool clone = true) => productService.GetAsync(ids, responseGroup, clone);
+        public Task SaveChangesAsync(IList<CatalogProduct> models) => productService.SaveChangesAsync(models);
+        public Task DeleteAsync(IList<string> ids, bool softDelete = false) => productService.DeleteAsync(ids, softDelete);
+        public Task<IList<CatalogProduct>> GetByCodes(string catalogId, IList<string> codes, string responseGroup) => productService.GetByCodes(catalogId, codes, responseGroup);
+        public Task<IDictionary<string, string>> GetIdsByCodes(string catalogId, IList<string> codes) => productService.GetIdsByCodes(catalogId, codes);
+        public Task<CatalogProduct> GetByIdAsync(string itemId, string responseGroup, string catalogId) => productService.GetByIdAsync(itemId, responseGroup, catalogId);
+        public Task<IList<CatalogProduct>> GetByIdsAsync(IList<string> ids, string responseGroup, string catalogId) => productService.GetByIdsAsync(ids, responseGroup, catalogId);
+    }
 }
