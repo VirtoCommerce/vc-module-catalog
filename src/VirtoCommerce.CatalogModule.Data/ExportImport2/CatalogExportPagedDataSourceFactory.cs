@@ -14,7 +14,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         private readonly IPropertyDictionaryItemSearchService _propertyDictionaryItemSearchService;
         private readonly IBlobStorageProvider _blobStorageProvider;
         private readonly IProductSearchService _productSearchService;
-        private readonly IItemService _itemService;
+        private readonly IProductService _productService;
         private readonly ICategorySearchService _categorySearchService;
         private readonly ICatalogSearchService _catalogSearchService;
 
@@ -23,7 +23,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             , IPropertyDictionaryItemSearchService propertyDictionaryItemSearchService
             , IBlobStorageProvider blobStorageProvider
             , IProductSearchService productSearchService
-            , IItemService itemService
+            , IProductService productService
             , ICategorySearchService categorySearchService
             , ICatalogSearchService catalogSearchService)
         {
@@ -31,9 +31,37 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             _propertyDictionaryItemSearchService = propertyDictionaryItemSearchService;
             _blobStorageProvider = blobStorageProvider;
             _productSearchService = productSearchService;
-            _itemService = itemService;
+            _productService = productService;
             _categorySearchService = categorySearchService;
             _catalogSearchService = catalogSearchService;
+        }
+
+        [Obsolete($"Use the overload that accepts {nameof(IProductService)}")]
+        public CatalogExportPagedDataSourceFactory(
+            IPropertySearchService propertySearchService
+            , IPropertyDictionaryItemSearchService propertyDictionaryItemSearchService
+            , IBlobStorageProvider blobStorageProvider
+            , IProductSearchService productSearchService
+            , IItemService itemService
+            , ICategorySearchService categorySearchService
+            , ICatalogSearchService catalogSearchService)
+            : this(propertySearchService, propertyDictionaryItemSearchService, blobStorageProvider, productSearchService, (IProductService)itemService, categorySearchService, catalogSearchService)
+        {
+        }
+
+        [Obsolete($"This constructor is intended to be used by a DI container only")]
+        public CatalogExportPagedDataSourceFactory(
+            IPropertySearchService propertySearchService
+            , IPropertyDictionaryItemSearchService propertyDictionaryItemSearchService
+            , IBlobStorageProvider blobStorageProvider
+            , IProductSearchService productSearchService
+            , IProductService productService
+            // ReSharper disable once UnusedParameter.Local
+            , IItemService itemService
+            , ICategorySearchService categorySearchService
+            , ICatalogSearchService catalogSearchService)
+            : this(propertySearchService, propertyDictionaryItemSearchService, blobStorageProvider, productSearchService, productService, categorySearchService, catalogSearchService)
+        {
         }
 
         public virtual IPagedDataSource Create(ExportDataQuery dataQuery)
@@ -50,7 +78,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             }
             else if (dataQuery is ProductFullExportDataQuery productFullExportQuery)
             {
-                result = new ProductExportPagedDataSource(_blobStorageProvider, _itemService, _productSearchService, productFullExportQuery.ToProductExportDataQuery());
+                result = new ProductExportPagedDataSource(_blobStorageProvider, _productService, _productSearchService, productFullExportQuery.ToProductExportDataQuery());
             }
             else if (dataQuery is CategoryExportDataQuery categoryExportQuery)
             {
@@ -62,7 +90,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             }
             else if (dataQuery is ProductExportDataQuery productExportQuery)
             {
-                result = new ProductExportPagedDataSource(_blobStorageProvider, _itemService, _productSearchService, productExportQuery);
+                result = new ProductExportPagedDataSource(_blobStorageProvider, _productService, _productSearchService, productExportQuery);
             }
             else if (dataQuery is CatalogFullExportDataQuery catalogFullExportQuery)
             {

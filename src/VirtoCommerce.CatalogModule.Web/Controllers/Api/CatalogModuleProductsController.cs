@@ -21,7 +21,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
     [Authorize]
     public class CatalogModuleProductsController : Controller
     {
-        private readonly IItemService _itemsService;
+        private readonly IProductService _productService;
         private readonly ICatalogService _catalogService;
         private readonly ICategoryService _categoryService;
         private readonly ISkuGenerator _skuGenerator;
@@ -30,7 +30,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly MvcNewtonsoftJsonOptions _jsonOptions;
 
         public CatalogModuleProductsController(
-            IItemService itemsService,
+            IProductService productService,
             ICategoryService categoryService,
             ICatalogService catalogService,
             ISkuGenerator skuGenerator,
@@ -38,13 +38,41 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             IPropertyUpdateManager updateManager,
             IOptions<MvcNewtonsoftJsonOptions> jsonOptions)
         {
-            _itemsService = itemsService;
+            _productService = productService;
             _categoryService = categoryService;
             _catalogService = catalogService;
             _skuGenerator = skuGenerator;
             _authorizationService = authorizationService;
             _updateManager = updateManager;
             _jsonOptions = jsonOptions.Value;
+        }
+
+        [Obsolete($"Use the overload that accepts {nameof(IProductService)}")]
+        public CatalogModuleProductsController(
+            IItemService itemService,
+            ICategoryService categoryService,
+            ICatalogService catalogService,
+            ISkuGenerator skuGenerator,
+            IAuthorizationService authorizationService,
+            IPropertyUpdateManager updateManager,
+            IOptions<MvcNewtonsoftJsonOptions> jsonOptions)
+            : this((IProductService)itemService, categoryService, catalogService, skuGenerator, authorizationService, updateManager, jsonOptions)
+        {
+        }
+
+        [Obsolete($"This constructor is intended to be used by a DI container only")]
+        public CatalogModuleProductsController(
+            IProductService productService,
+            // ReSharper disable once UnusedParameter.Local
+            IItemService itemService,
+            ICategoryService categoryService,
+            ICatalogService catalogService,
+            ISkuGenerator skuGenerator,
+            IAuthorizationService authorizationService,
+            IPropertyUpdateManager updateManager,
+            IOptions<MvcNewtonsoftJsonOptions> jsonOptions)
+            : this(productService, categoryService, catalogService, skuGenerator, authorizationService, updateManager, jsonOptions)
+        {
         }
 
 
@@ -58,7 +86,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         public async Task<ActionResult<CatalogProduct>> GetProductById(string id, [FromQuery] string respGroup = null)
         {
 
-            var product = await _itemsService.GetNoCloneAsync(id, respGroup);
+            var product = await _productService.GetNoCloneAsync(id, respGroup);
             if (product == null)
             {
                 return NotFound();
@@ -74,7 +102,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [HttpPost("~/api/catalog/{catalogId}/products-by-codes")]
         public async Task<ActionResult<CatalogProduct[]>> GetByCodes([FromRoute] string catalogId, [FromBody] List<string> codes, [FromQuery] string responseGroup)
         {
-            var idsByCodes = await _itemsService.GetIdsByCodes(catalogId, codes);
+            var idsByCodes = await _productService.GetIdsByCodes(catalogId, codes);
 
             return await GetProductByIds(idsByCodes.Values.ToList(), responseGroup);
         }
@@ -88,7 +116,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("")]
         public async Task<ActionResult<CatalogProduct[]>> GetProductByIds([FromQuery] List<string> ids, [FromQuery] string respGroup = null)
         {
-            var items = await _itemsService.GetNoCloneAsync(ids, respGroup);
+            var items = await _productService.GetNoCloneAsync(ids, respGroup);
             if (items == null)
             {
                 return NotFound();
@@ -98,7 +126,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             {
                 return Forbid();
             }
-            //It is a important to return serialized data by such way. Instead you have a slow response time for large outputs 
+            //It is a important to return serialized data by such way. Instead you have a slow response time for large outputs
             //https://github.com/dotnet/aspnetcore/issues/19646
             var result = JsonConvert.SerializeObject(items, _jsonOptions.SerializerSettings);
 
@@ -106,7 +134,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         }
 
         /// <summary>
-        /// Gets products by plenty ids 
+        /// Gets products by plenty ids
         /// </summary>
         /// <param name="ids">Item ids</param>
         /// <param name="respGroup">Response group.</param>
@@ -184,7 +212,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("{productId}/getnewvariation")]
         public async Task<ActionResult<CatalogProduct>> GetNewVariation(string productId)
         {
-            var product = await _itemsService.GetByIdAsync(productId);
+            var product = await _productService.GetByIdAsync(productId);
             if (product == null)
             {
                 return NotFound();
@@ -215,7 +243,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("{productId}/clone")]
         public async Task<ActionResult<CatalogProduct>> CloneProduct(string productId)
         {
-            var product = await _itemsService.GetByIdAsync(productId);
+            var product = await _productService.GetByIdAsync(productId);
             if (product == null)
             {
                 return NotFound();
@@ -223,7 +251,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             var copyProduct = (CatalogProduct)product.GetCopy();
 
-            // Reset 
+            // Reset
             copyProduct.Id = null;
             copyProduct.CreatedDate = DateTime.UtcNow;
             copyProduct.CreatedBy = null;
@@ -259,7 +287,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("{productId}/{language}")]
         public async Task<ActionResult<CatalogProduct>> ProductPartialUpdate(string productId, string language, [FromBody] JObject productPatch)
         {
-            var product = await _itemsService.GetByIdAsync(productId);
+            var product = await _productService.GetByIdAsync(productId);
             if (product == null)
             {
                 return NotFound();
@@ -346,13 +374,13 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("")]
         public async Task<ActionResult> DeleteProduct([FromQuery] List<string> ids)
         {
-            var products = await _itemsService.GetNoCloneAsync(ids, ItemResponseGroup.ItemInfo.ToString());
+            var products = await _productService.GetNoCloneAsync(ids, ItemResponseGroup.ItemInfo.ToString());
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, products, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Delete));
             if (!authorizationResult.Succeeded)
             {
                 return Forbid();
             }
-            await _itemsService.DeleteAsync(ids);
+            await _productService.DeleteAsync(ids);
             return Ok();
         }
 
@@ -381,7 +409,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             if (!toSaveList.IsNullOrEmpty())
             {
-                await _itemsService.SaveChangesAsync(toSaveList.ToArray());
+                await _productService.SaveChangesAsync(toSaveList.ToArray());
             }
 
             return toSaveList.ToArray();

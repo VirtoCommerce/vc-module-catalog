@@ -43,9 +43,9 @@
 //            newProperty.DictionaryValues.Add(colorDictValue);
 //            newProperty = propertyService.Create(newProperty);
 
-//            var productService = GetItemService();
+//            var productService = GetProductService();
 //            var product = productService.GetById("93beb4e92dba4a08a173aa0a0cf0cffb", ItemResponseGroup.ItemInfo);
-//            //Set value 
+//            //Set value
 //            product.PropertyValues.Add(new PropertyValue { PropertyId = newProperty.Id, PropertyName = newProperty.Name, ValueId = colorDictValue.Id, Value = colorDictValue.Value, ValueType = newProperty.ValueType });
 //            productService.Update(new[] { product });
 
@@ -57,10 +57,10 @@
 //            return new CatalogServiceImpl(GetCatalogRepository, new Mock<ICacheManager<object>>().Object, new Mock<AbstractValidator<IHasProperties>>().Object, GetEventPublisher().Object);
 //        }
 
-//        private static IItemService GetItemService()
+//        private static IProductService GetProductService()
 //        {
 
-//            return new ItemServiceImpl(
+//            return new ProductServiceImpl(
 //                GetCatalogRepository,
 //                GetCommerceService(),
 //                new Mock<IOutlineService>().Object,

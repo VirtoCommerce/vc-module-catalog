@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,13 +14,25 @@ namespace VirtoCommerce.CatalogModule.Data.Validation
 {
     public class PropertyNameValidator : AbstractValidator<PropertyValidationRequest>
     {
-        private readonly IItemService _itemService;
+        private readonly IProductService _productService;
         private readonly IProductSearchService _productSearchService;
 
-        public PropertyNameValidator(IItemService itemService, IProductSearchService productSearchService)
+        public PropertyNameValidator(IProductService productService, IProductSearchService productSearchService)
         {
-            _itemService = itemService;
+            _productService = productService;
             _productSearchService = productSearchService;
+        }
+
+        [Obsolete($"Use the overload that accepts {nameof(IProductService)}")]
+        public PropertyNameValidator(IItemService itemService, IProductSearchService productSearchService)
+            : this((IProductService)itemService, productSearchService)
+        {
+        }
+
+        [Obsolete($"This constructor is intended to be used by a DI container only")]
+        public PropertyNameValidator(IProductService productService, /* ReSharper disable once UnusedParameter.Local */ IItemService itemService, IProductSearchService productSearchService)
+            : this(productService, productSearchService)
+        {
         }
 
         public override async Task<ValidationResult> ValidateAsync(ValidationContext<PropertyValidationRequest> context, CancellationToken cancellation = default)
@@ -32,7 +45,7 @@ namespace VirtoCommerce.CatalogModule.Data.Validation
                 return result;
             }
 
-            var product = await _itemService.GetNoCloneAsync(request.ProductId, ItemResponseGroup.ItemProperties.ToString());
+            var product = await _productService.GetNoCloneAsync(request.ProductId, ItemResponseGroup.ItemProperties.ToString());
             if (product == null)
             {
                 return result;

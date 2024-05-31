@@ -13,7 +13,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
     public class CatalogBulkActionFactory : IBulkActionFactory
     {
         private readonly ICatalogService _catalogService;
-        private readonly IItemService _itemService;
+        private readonly IProductService _productService;
         private readonly IBulkPropertyUpdateManager _bulkPropertyUpdateManager;
         private readonly ListEntryMover<Category> _categoryListEntryMover;
         private readonly ListEntryMover<CatalogProduct> _productListEntryMover;
@@ -22,16 +22,38 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
         /// Initializes a new instance of the <see cref="CatalogBulkActionFactory"/> class.
         /// </summary>
         public CatalogBulkActionFactory(ICatalogService catalogService,
-            IItemService itemService,
+            IProductService productService,
             IBulkPropertyUpdateManager bulkPropertyUpdateManager,
             ListEntryMover<Category> categoryListEntryMover,
             ListEntryMover<CatalogProduct> productListEntryMover)
         {
             _catalogService = catalogService;
-            _itemService = itemService;
+            _productService = productService;
             _bulkPropertyUpdateManager = bulkPropertyUpdateManager;
             _categoryListEntryMover = categoryListEntryMover;
             _productListEntryMover = productListEntryMover;
+        }
+
+        [Obsolete($"Use the overload that accepts {nameof(IProductService)}")]
+        public CatalogBulkActionFactory(ICatalogService catalogService,
+            IItemService itemService,
+            IBulkPropertyUpdateManager bulkPropertyUpdateManager,
+            ListEntryMover<Category> categoryListEntryMover,
+            ListEntryMover<CatalogProduct> productListEntryMover)
+            : this(catalogService, (IProductService)itemService, bulkPropertyUpdateManager, categoryListEntryMover, productListEntryMover)
+        {
+        }
+
+        [Obsolete($"This constructor is intended to be used by a DI container only")]
+        public CatalogBulkActionFactory(ICatalogService catalogService,
+            IProductService productService,
+            // ReSharper disable once UnusedParameter.Local
+            IItemService itemService,
+            IBulkPropertyUpdateManager bulkPropertyUpdateManager,
+            ListEntryMover<Category> categoryListEntryMover,
+            ListEntryMover<CatalogProduct> productListEntryMover)
+            : this(catalogService, productService, bulkPropertyUpdateManager, categoryListEntryMover, productListEntryMover)
+        {
         }
 
         public IBulkAction Create(BulkActionContext context)
@@ -45,7 +67,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
                     break;
 
                 case PropertiesUpdateBulkActionContext updatePropertiesActionContext:
-                    result = new PropertiesUpdateBulkAction(updatePropertiesActionContext, _itemService, _bulkPropertyUpdateManager);
+                    result = new PropertiesUpdateBulkAction(updatePropertiesActionContext, _productService, _bulkPropertyUpdateManager);
                     break;
             }
 

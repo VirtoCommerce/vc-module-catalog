@@ -16,7 +16,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Actions.PropertiesUpdate
     public class PropertiesUpdateBulkAction : IBulkAction
     {
         private readonly PropertiesUpdateBulkActionContext _context;
-        private readonly IItemService _itemService;
+        private readonly IProductService _productService;
         private readonly IBulkPropertyUpdateManager _bulkPropertyUpdateManager;
 
         /// <summary>
@@ -28,11 +28,23 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Actions.PropertiesUpdate
         /// <param name="context">
         /// The context.
         /// </param>
-        public PropertiesUpdateBulkAction(PropertiesUpdateBulkActionContext context, IItemService itemService, IBulkPropertyUpdateManager bulkPropertyUpdateManager)
+        public PropertiesUpdateBulkAction(PropertiesUpdateBulkActionContext context, IProductService productService, IBulkPropertyUpdateManager bulkPropertyUpdateManager)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
-            _itemService = itemService;
+            _productService = productService;
             _bulkPropertyUpdateManager = bulkPropertyUpdateManager;
+        }
+
+        [Obsolete($"Use the overload that accepts {nameof(IProductService)}")]
+        public PropertiesUpdateBulkAction(PropertiesUpdateBulkActionContext context, IItemService itemService, IBulkPropertyUpdateManager bulkPropertyUpdateManager)
+            : this(context, (IProductService)itemService, bulkPropertyUpdateManager)
+        {
+        }
+
+        [Obsolete($"This constructor is intended to be used by a DI container only")]
+        public PropertiesUpdateBulkAction(PropertiesUpdateBulkActionContext context, IProductService productService, /* ReSharper disable once UnusedParameter.Local */ IItemService itemService, IBulkPropertyUpdateManager bulkPropertyUpdateManager)
+            : this(context, productService, bulkPropertyUpdateManager)
+        {
         }
 
         public BulkActionContext Context => _context;
@@ -48,7 +60,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Actions.PropertiesUpdate
 
             var productQuery = entries.Where(entry => entry.Type.EqualsInvariant(ProductListEntry.TypeName));
             var productIds = productQuery.Select(entry => entry.Id).ToList();
-            var products = await _itemService.GetAsync(productIds, (ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemProperties).ToString());
+            var products = await _productService.GetAsync(productIds, (ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemProperties).ToString());
 
             return await _bulkPropertyUpdateManager.UpdatePropertiesAsync(products?.ToArray(), _context.Properties);
         }

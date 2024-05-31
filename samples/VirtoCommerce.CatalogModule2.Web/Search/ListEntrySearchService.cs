@@ -14,7 +14,7 @@ namespace VirtoCommerce.CatalogModule2.Data.Search
 {
     public class ListEntrySearchService2 : ListEntrySearchService
     {
-        public ListEntrySearchService2(Func<ICatalogRepository> catalogRepositoryFactory, IItemService itemService, ICategoryService categoryService) : base(catalogRepositoryFactory, itemService, categoryService)
+        public ListEntrySearchService2(Func<ICatalogRepository> catalogRepositoryFactory, IProductService productService, ICategoryService categoryService) : base(catalogRepositoryFactory, productService, categoryService)
         {
         }
         protected override IQueryable<CategoryEntity> BuildQuery(IQueryable<CategoryEntity> query, CatalogListEntrySearchCriteria criteria)

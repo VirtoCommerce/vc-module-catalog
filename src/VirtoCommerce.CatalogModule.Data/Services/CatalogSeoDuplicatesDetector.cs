@@ -20,14 +20,14 @@ namespace VirtoCommerce.CatalogModule.Data.Services
     /// </summary>
     public class CatalogSeoDuplicatesDetector : ISeoDuplicatesDetector
     {
-        private readonly IItemService _productService;
+        private readonly IProductService _productService;
         private readonly ICategoryService _categoryService;
         private readonly IStoreService _storeService;
         private readonly Func<ICatalogRepository> _repositoryFactory;
         private readonly ISettingsManager _settingsManager;
 
         public CatalogSeoDuplicatesDetector(
-            IItemService productService,
+            IProductService productService,
             ICategoryService categoryService,
             IStoreService storeService,
             Func<ICatalogRepository> repositoryFactory,
@@ -38,6 +38,30 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _storeService = storeService;
             _repositoryFactory = repositoryFactory;
             _settingsManager = settingsManager;
+        }
+
+        [Obsolete($"Use the overload that accepts {nameof(IProductService)}")]
+        public CatalogSeoDuplicatesDetector(
+            IItemService itemService,
+            ICategoryService categoryService,
+            IStoreService storeService,
+            Func<ICatalogRepository> repositoryFactory,
+            ISettingsManager settingsManager)
+            : this((IProductService)itemService, categoryService, storeService, repositoryFactory, settingsManager)
+        {
+        }
+
+        [Obsolete($"This constructor is intended to be used by a DI container only")]
+        public CatalogSeoDuplicatesDetector(
+            IProductService productService,
+            // ReSharper disable once UnusedParameter.Local
+            IItemService itemService,
+            ICategoryService categoryService,
+            IStoreService storeService,
+            Func<ICatalogRepository> repositoryFactory,
+            ISettingsManager settingsManager)
+            : this(productService, categoryService, storeService, repositoryFactory, settingsManager)
+        {
         }
 
         #region ISeoConflictDetector Members

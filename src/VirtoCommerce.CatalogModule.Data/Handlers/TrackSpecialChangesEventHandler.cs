@@ -16,12 +16,24 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
     public sealed class TrackSpecialChangesEventHandler : IEventHandler<CategoryChangedEvent>
     {
         private readonly Func<ICatalogRepository> _catalogRepositoryFactory;
-        private readonly IItemService _itemService;
+        private readonly IProductService _productService;
 
-        public TrackSpecialChangesEventHandler(Func<ICatalogRepository> catalogRepositoryFactory, IItemService itemService)
+        public TrackSpecialChangesEventHandler(Func<ICatalogRepository> catalogRepositoryFactory, IProductService productService)
         {
             _catalogRepositoryFactory = catalogRepositoryFactory;
-            _itemService = itemService;
+            _productService = productService;
+        }
+
+        [Obsolete($"Use the overload that accepts {nameof(IProductService)}")]
+        public TrackSpecialChangesEventHandler(Func<ICatalogRepository> catalogRepositoryFactory, IItemService itemService)
+            : this(catalogRepositoryFactory, (IProductService)itemService)
+        {
+        }
+
+        [Obsolete($"This constructor is intended to be used by a DI container only")]
+        public TrackSpecialChangesEventHandler(Func<ICatalogRepository> catalogRepositoryFactory, IProductService productService, /* ReSharper disable once UnusedParameter.Local */ IItemService itemService)
+            : this(catalogRepositoryFactory, productService)
+        {
         }
 
         public Task Handle(CategoryChangedEvent message)
@@ -56,8 +68,8 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
             categoryIds.AddRange(childrenCategoryIds);
             var childrenProductIds = await repository.Items.Where(x => categoryIds.Contains(x.CategoryId)).Select(x => x.Id).ToListAsync();
 
-            var products = await _itemService.GetAsync(childrenProductIds.ToList(), ItemResponseGroup.ItemInfo.ToString());
-            await _itemService.SaveChangesAsync(products);
+            var products = await _productService.GetAsync(childrenProductIds.ToList(), ItemResponseGroup.ItemInfo.ToString());
+            await _productService.SaveChangesAsync(products);
         }
     }
 }

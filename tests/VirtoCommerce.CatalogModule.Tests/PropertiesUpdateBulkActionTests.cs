@@ -18,11 +18,11 @@ namespace VirtoCommerce.CatalogModule.Tests
 {
     public class PropertiesUpdateBulkActionTests
     {
-        private readonly Mock<IItemService> _itemServiceMock;
+        private readonly Mock<IProductService> _productServiceMock;
 
         public PropertiesUpdateBulkActionTests()
         {
-            _itemServiceMock = new Mock<IItemService>();
+            _productServiceMock = new Mock<IProductService>();
         }
 
         [Fact]
@@ -56,19 +56,19 @@ namespace VirtoCommerce.CatalogModule.Tests
         }
 
         [Fact]
-        public async Task Execute_ItemService_InvokeGetByIds()
+        public async Task Execute_ProductService_InvokeGetByIds()
         {
             // arrange
             var context = new PropertiesUpdateBulkActionContext();
-            var itemService = new Mock<IItemService> { DefaultValueProvider = DefaultValueProvider.Mock };
+            var productService = new Mock<IProductService> { DefaultValueProvider = DefaultValueProvider.Mock };
             context.Properties = new Property[] { };
-            var bulkAction = BuildBulkAction(context, itemService);
+            var bulkAction = BuildBulkAction(context, productService);
 
             // act
             await bulkAction.ExecuteAsync(Enumerable.Empty<IEntity>());
 
             // assert
-            itemService.Verify(
+            productService.Verify(
                 t => t.GetAsync(
                     It.IsAny<IList<string>>(),
                     (ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemProperties).ToString(),
@@ -172,26 +172,26 @@ namespace VirtoCommerce.CatalogModule.Tests
             PropertiesUpdateBulkActionContext context,
             IMock<IBulkPropertyUpdateManager> manager)
         {
-            return BuildBulkAction(context, _itemServiceMock, manager);
+            return BuildBulkAction(context, _productServiceMock, manager);
         }
 
         private IBulkAction BuildBulkAction(
             PropertiesUpdateBulkActionContext context,
-            IMock<IItemService> itemServiceMock)
+            IMock<IProductService> productServiceMock)
         {
             var manager = new Mock<IBulkPropertyUpdateManager>();
             manager.Setup(t => t.GetPropertiesAsync(It.IsAny<PropertiesUpdateBulkActionContext>()))
                 .ReturnsAsync(new List<Property>().ToArray());
 
-            return BuildBulkAction(context, itemServiceMock, manager);
+            return BuildBulkAction(context, productServiceMock, manager);
         }
 
         private IBulkAction BuildBulkAction(
             PropertiesUpdateBulkActionContext context,
-            IMock<IItemService> itemServiceMock,
+            IMock<IProductService> productServiceMock,
             IMock<IBulkPropertyUpdateManager> manager)
         {
-            return new PropertiesUpdateBulkAction(context, itemServiceMock.Object, manager.Object);
+            return new PropertiesUpdateBulkAction(context, productServiceMock.Object, manager.Object);
         }
     }
 }

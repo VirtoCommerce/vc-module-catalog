@@ -24,10 +24,10 @@ namespace VirtoCommerce.CatalogModule.Tests
         //    catalogRepository.Setup(x => x.Items).Returns(TestItemEntities.AsQueryable());
         //    catalogRepository.Setup(x => x.GetAllChildrenCategoriesIds(It.Is<string[]>(ids => ids.SequenceEqual(new[] { "cat-1" })))).Returns(TestChildCategories);
 
-        //    var itemService = new Mock<IItemService>();
-        //    itemService.Setup(x => x.GetByIds(It.Is<string[]>(ids => ids.SequenceEqual(verifySet.Select(p => p.Id))), It.IsIn(domainModel.ItemResponseGroup.ItemInfo), It.IsAny<string>()))
+        //    var productService = new Mock<IProductService>();
+        //    productService.Setup(x => x.GetByIds(It.Is<string[]>(ids => ids.SequenceEqual(verifySet.Select(p => p.Id))), It.IsIn(domainModel.ItemResponseGroup.ItemInfo), It.IsAny<string>()))
         //               .Returns(verifySet);
-        //    var sut = new ProductAssociationSearchService(() => catalogRepository.Object, itemService.Object);
+        //    var sut = new ProductAssociationSearchService(() => catalogRepository.Object, productService.Object);
         //    // Act
         //    var result = sut.SearchProductAssociations(criteria);
         //    // Assert
@@ -43,8 +43,8 @@ namespace VirtoCommerce.CatalogModule.Tests
         //        ObjectIds = new string[] { }.ToList()
         //    };
         //    var catalogRepository = new Mock<ICatalogRepository>();
-        //    var itemService = new Mock<IItemService>();
-        //    var sut = new ProductAssociationSearchService(() => catalogRepository.Object, itemService.Object);
+        //    var productService = new Mock<IProductService>();
+        //    var sut = new ProductAssociationSearchService(() => catalogRepository.Object, productService.Object);
         //    Assert.Throws<ArgumentNullException>(() => sut.SearchProductAssociations(criteria));
         //}
 

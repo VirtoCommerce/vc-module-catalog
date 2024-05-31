@@ -13,7 +13,7 @@ namespace VirtoCommerce.CatalogModule2.Web.Services
     public class CatalogSeoDuplicatesDetector2 : CatalogSeoDuplicatesDetector
     {
         public CatalogSeoDuplicatesDetector2(
-            IItemService productService,
+            IProductService productService,
             ICategoryService categoryService,
             IStoreService storeService,
             Func<ICatalogRepository> repositoryFactory,

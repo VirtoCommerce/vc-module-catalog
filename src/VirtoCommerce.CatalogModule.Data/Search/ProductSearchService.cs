@@ -20,12 +20,33 @@ namespace VirtoCommerce.CatalogModule.Data.Search
         public ProductSearchService(
             Func<ICatalogRepository> repositoryFactory,
             IPlatformMemoryCache platformMemoryCache,
-            IItemService crudService,
+            IProductService crudService,
             IOptions<CrudOptions> crudOptions)
             : base(repositoryFactory, platformMemoryCache, crudService, crudOptions)
         {
         }
 
+        [Obsolete($"Use the overload that accepts {nameof(IProductService)}")]
+        public ProductSearchService(
+            Func<ICatalogRepository> repositoryFactory,
+            IPlatformMemoryCache platformMemoryCache,
+            IItemService itemService,
+            IOptions<CrudOptions> crudOptions)
+            : this(repositoryFactory, platformMemoryCache, (IProductService)itemService, crudOptions)
+        {
+        }
+
+        [Obsolete($"This constructor is intended to be used by a DI container only")]
+        public ProductSearchService(
+            Func<ICatalogRepository> repositoryFactory,
+            IPlatformMemoryCache platformMemoryCache,
+            IProductService productService,
+            // ReSharper disable once UnusedParameter.Local
+            IItemService itemService,
+            IOptions<CrudOptions> crudOptions)
+            : this(repositoryFactory, platformMemoryCache, productService, crudOptions)
+        {
+        }
 
         protected override IQueryable<ItemEntity> BuildQuery(IRepository repository, ProductSearchCriteria criteria)
         {

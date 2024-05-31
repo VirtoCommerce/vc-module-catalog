@@ -17,14 +17,26 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 {
     public class ProductDocumentBuilder : CatalogDocumentBuilder, IIndexSchemaBuilder, IIndexDocumentBuilder
     {
-        private readonly IItemService _itemService;
+        private readonly IProductService _productService;
         private readonly IProductSearchService _productsSearchService;
 
-        public ProductDocumentBuilder(ISettingsManager settingsManager, IPropertySearchService propertySearchService, IItemService itemService, IProductSearchService productsSearchService)
+        public ProductDocumentBuilder(ISettingsManager settingsManager, IPropertySearchService propertySearchService, IProductService productService, IProductSearchService productsSearchService)
             : base(settingsManager, propertySearchService)
         {
-            _itemService = itemService;
+            _productService = productService;
             _productsSearchService = productsSearchService;
+        }
+
+        [Obsolete($"Use the overload that accepts {nameof(IProductService)}")]
+        public ProductDocumentBuilder(ISettingsManager settingsManager, IPropertySearchService propertySearchService, IItemService itemService, IProductSearchService productsSearchService)
+            : this(settingsManager, propertySearchService, (IProductService)itemService, productsSearchService)
+        {
+        }
+
+        [Obsolete($"This constructor is intended to be used by a DI container only")]
+        public ProductDocumentBuilder(ISettingsManager settingsManager, IPropertySearchService propertySearchService, IProductService productService, /* ReSharper disable once UnusedParameter.Local */ IItemService itemService, IProductSearchService productsSearchService)
+            : this(settingsManager, propertySearchService, productService, productsSearchService)
+        {
         }
 
         public virtual async Task BuildSchemaAsync(IndexDocument schema)
@@ -111,7 +123,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         protected virtual async Task<CatalogProduct[]> GetProducts(IList<string> productIds)
         {
 #pragma warning disable CS0618 // Variations can be used here
-            var products = await _itemService.GetNoCloneAsync(productIds.ToList(), (ItemResponseGroup.Full & ~ItemResponseGroup.Variations).ToString());
+            var products = await _productService.GetNoCloneAsync(productIds.ToList(), (ItemResponseGroup.Full & ~ItemResponseGroup.Variations).ToString());
 #pragma warning restore CS0618
 
             return products.ToArray();

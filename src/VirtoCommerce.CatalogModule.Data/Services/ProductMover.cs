@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,22 +11,34 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 {
     public class ProductMover : ListEntryMover<CatalogProduct>
     {
-        private readonly IItemService _itemService;
+        private readonly IProductService _productService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProductMover"/> class.
         /// </summary>
-        /// <param name="itemService">
+        /// <param name="productService">
         /// The item service.
         /// </param>
-        public ProductMover(IItemService itemService)
+        public ProductMover(IProductService productService)
         {
-            _itemService = itemService;
+            _productService = productService;
+        }
+
+        [Obsolete($"Use the overload that accepts {nameof(IProductService)}")]
+        public ProductMover(IItemService itemService)
+            : this((IProductService)itemService)
+        {
+        }
+
+        [Obsolete($"This constructor is intended to be used by a DI container only")]
+        public ProductMover(IProductService productService, /* ReSharper disable once UnusedParameter.Local */ IItemService itemService)
+            : this(productService)
+        {
         }
 
         public override Task ConfirmMoveAsync(IEnumerable<CatalogProduct> entities)
         {
-            return _itemService.SaveChangesAsync(entities.ToArray());
+            return _productService.SaveChangesAsync(entities.ToArray());
         }
 
         public override async Task<List<CatalogProduct>> PrepareMoveAsync(ListEntriesMoveRequest moveInfo)
@@ -35,7 +48,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             foreach (var listEntryProduct in moveInfo.ListEntries.Where(
                 listEntry => listEntry.Type.EqualsInvariant(ProductListEntry.TypeName)))
             {
-                var product = await _itemService.GetByIdAsync(listEntryProduct.Id, ItemResponseGroup.ItemLarge.ToString());
+                var product = await _productService.GetByIdAsync(listEntryProduct.Id, ItemResponseGroup.ItemLarge.ToString());
                 if (product.CatalogId == moveInfo.Catalog)
                 {
                     // idle

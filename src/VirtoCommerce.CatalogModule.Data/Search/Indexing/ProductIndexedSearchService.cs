@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,24 +16,35 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 {
     public class ProductIndexedSearchService : CatalogIndexedSearchService<CatalogProduct, ProductIndexedSearchCriteria, ProductIndexedSearchResult>, IProductIndexedSearchService
     {
-        private readonly IItemService _itemService;
+        private readonly IProductService _productService;
         private readonly IBlobUrlResolver _blobUrlResolver;
         private readonly IAggregationConverter _aggregationConverter;
 
-        public ProductIndexedSearchService(ISearchRequestBuilderRegistrar searchRequestBuilderRegistrar, ISearchProvider searchProvider, ISettingsManager settingsManager, IItemService itemService, IBlobUrlResolver blobUrlResolver, IAggregationConverter aggregationConverter)
+        public ProductIndexedSearchService(ISearchRequestBuilderRegistrar searchRequestBuilderRegistrar, ISearchProvider searchProvider, ISettingsManager settingsManager, IProductService productService, IBlobUrlResolver blobUrlResolver, IAggregationConverter aggregationConverter)
             : base(searchRequestBuilderRegistrar, searchProvider, settingsManager)
         {
-            _itemService = itemService;
+            _productService = productService;
             _blobUrlResolver = blobUrlResolver;
             _aggregationConverter = aggregationConverter;
         }
 
+        [Obsolete($"Use the overload that accepts {nameof(IProductService)}")]
+        public ProductIndexedSearchService(ISearchRequestBuilderRegistrar searchRequestBuilderRegistrar, ISearchProvider searchProvider, ISettingsManager settingsManager, IItemService itemService, IBlobUrlResolver blobUrlResolver, IAggregationConverter aggregationConverter)
+            : this(searchRequestBuilderRegistrar, searchProvider, settingsManager, (IProductService)itemService, blobUrlResolver, aggregationConverter)
+        {
+        }
+
+        [Obsolete($"This constructor is intended to be used by a DI container only")]
+        public ProductIndexedSearchService(ISearchRequestBuilderRegistrar searchRequestBuilderRegistrar, IProductService productService, /* ReSharper disable once UnusedParameter.Local */ ISearchProvider searchProvider, ISettingsManager settingsManager, IItemService itemService, IBlobUrlResolver blobUrlResolver, IAggregationConverter aggregationConverter)
+            : this(searchRequestBuilderRegistrar, searchProvider, settingsManager, productService, blobUrlResolver, aggregationConverter)
+        {
+        }
 
         protected override async Task<IList<CatalogProduct>> LoadMissingItems(string[] missingItemIds, ProductIndexedSearchCriteria criteria)
         {
             var catalog = criteria.CatalogId;
             var responseGroup = GetResponseGroup(criteria);
-            var products = await _itemService.GetByIdsAsync(missingItemIds, responseGroup.ToString(), catalog);
+            var products = await _productService.GetByIdsAsync(missingItemIds, responseGroup.ToString(), catalog);
             //var result = products.Select(p => p.ToWebModel(_blobUrlResolver)).ToArray();
             return products;
         }

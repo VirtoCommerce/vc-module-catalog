@@ -25,13 +25,35 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly IInternalListEntrySearchService _internalListEntrySearchService;
         private readonly ICategoryService _categoryService;
         private readonly ICatalogService _catalogService;
-        private readonly IItemService _itemService;
+        private readonly IProductService _productService;
         private readonly IListEntrySearchService _listEntrySearchService;
         private readonly IAuthorizationService _authorizationService;
         private readonly ILinkSearchService _linkSearchService;
         private readonly ListEntryMover<Category> _categoryMover;
         private readonly ListEntryMover<CatalogProduct> _productMover;
 
+        public CatalogModuleListEntryController(IInternalListEntrySearchService internalListEntrySearchService,
+            IListEntrySearchService listEntrySearchService,
+            ILinkSearchService linkSearchService,
+            ICategoryService categoryService,
+            IProductService productService,
+            ICatalogService catalogService,
+            IAuthorizationService authorizationService,
+            ListEntryMover<Category> categoryMover,
+            ListEntryMover<CatalogProduct> productMover)
+        {
+            _internalListEntrySearchService = internalListEntrySearchService;
+            _categoryService = categoryService;
+            _linkSearchService = linkSearchService;
+            _authorizationService = authorizationService;
+            _productService = productService;
+            _catalogService = catalogService;
+            _listEntrySearchService = listEntrySearchService;
+            _categoryMover = categoryMover;
+            _productMover = productMover;
+        }
+
+        [Obsolete($"Use the overload that accepts {nameof(IProductService)}")]
         public CatalogModuleListEntryController(
             IInternalListEntrySearchService internalListEntrySearchService,
             IListEntrySearchService listEntrySearchService,
@@ -42,16 +64,25 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             IAuthorizationService authorizationService,
             ListEntryMover<Category> categoryMover,
             ListEntryMover<CatalogProduct> productMover)
+            : this(internalListEntrySearchService, listEntrySearchService, linkSearchService, categoryService, (IProductService)itemService, catalogService, authorizationService, categoryMover, productMover)
         {
-            _internalListEntrySearchService = internalListEntrySearchService;
-            _categoryService = categoryService;
-            _linkSearchService = linkSearchService;
-            _authorizationService = authorizationService;
-            _itemService = itemService;
-            _catalogService = catalogService;
-            _listEntrySearchService = listEntrySearchService;
-            _categoryMover = categoryMover;
-            _productMover = productMover;
+        }
+
+        [Obsolete($"This constructor is intended to be used by a DI container only")]
+        public CatalogModuleListEntryController(
+            IInternalListEntrySearchService internalListEntrySearchService,
+            IListEntrySearchService listEntrySearchService,
+            ILinkSearchService linkSearchService,
+            ICategoryService categoryService,
+            IProductService productService,
+            // ReSharper disable once UnusedParameter.Local
+            IItemService itemService,
+            ICatalogService catalogService,
+            IAuthorizationService authorizationService,
+            ListEntryMover<Category> categoryMover,
+            ListEntryMover<CatalogProduct> productMover)
+            : this(internalListEntrySearchService, listEntrySearchService, linkSearchService, categoryService, productService, catalogService, authorizationService, categoryMover, productMover)
+        {
         }
 
         /// <summary>
@@ -276,8 +307,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             {
                 var commonIds = idsToDelete.Skip(i).Take(deleteBatchSize).ToList();
 
-                var searchProductResult = await _itemService.GetNoCloneAsync(commonIds, ItemResponseGroup.None.ToString());
-                await _itemService.DeleteAsync(searchProductResult.Select(x => x.Id).ToArray());
+                var searchProductResult = await _productService.GetNoCloneAsync(commonIds, ItemResponseGroup.None.ToString());
+                await _productService.DeleteAsync(searchProductResult.Select(x => x.Id).ToArray());
 
                 var searchCategoryResult = await _categoryService.GetNoCloneAsync(commonIds, CategoryResponseGroup.None.ToString());
                 await _categoryService.DeleteAsync(searchCategoryResult.Select(x => x.Id).ToArray());
@@ -293,7 +324,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 var products = entities.OfType<CatalogProduct>().ToArray();
                 if (!products.IsNullOrEmpty())
                 {
-                    await _itemService.SaveChangesAsync(products);
+                    await _productService.SaveChangesAsync(products);
                 }
 
                 var categories = entities.OfType<Category>().ToArray();
@@ -307,7 +338,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private async Task<IList<T>> LoadCatalogEntriesAsync<T>(string[] ids)
         {
 #pragma warning disable CS0618 // Variations can be used here
-            var products = await _itemService.GetAsync(ids, (ItemResponseGroup.Links | ItemResponseGroup.ItemProperties | ItemResponseGroup.Variations).ToString());
+            var products = await _productService.GetAsync(ids, (ItemResponseGroup.Links | ItemResponseGroup.ItemProperties | ItemResponseGroup.Variations).ToString());
 #pragma warning restore CS0618
             var categories = await _categoryService.GetAsync(ids.Except(products.Select(x => x.Id)).ToList(), (CategoryResponseGroup.WithLinks).ToString());
             return products.OfType<T>().Concat(categories.OfType<T>()).ToList();
