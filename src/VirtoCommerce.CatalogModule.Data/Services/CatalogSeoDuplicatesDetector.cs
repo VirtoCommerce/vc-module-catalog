@@ -51,6 +51,19 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
         }
 
+        [Obsolete($"This constructor is intended to be used by a DI container only")]
+        public CatalogSeoDuplicatesDetector(
+            IProductService productService,
+            // ReSharper disable once UnusedParameter.Local
+            IItemService itemService,
+            ICategoryService categoryService,
+            IStoreService storeService,
+            Func<ICatalogRepository> repositoryFactory,
+            ISettingsManager settingsManager)
+            : this(productService, categoryService, storeService, repositoryFactory, settingsManager)
+        {
+        }
+
         #region ISeoConflictDetector Members
 
         public async Task<IEnumerable<SeoInfo>> DetectSeoDuplicatesAsync(TenantIdentity tenantIdentity)

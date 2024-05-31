@@ -41,6 +41,12 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Actions.PropertiesUpdate
         {
         }
 
+        [Obsolete($"This constructor is intended to be used by a DI container only")]
+        public PropertiesUpdateBulkAction(PropertiesUpdateBulkActionContext context, IProductService productService, /* ReSharper disable once UnusedParameter.Local */ IItemService itemService, IBulkPropertyUpdateManager bulkPropertyUpdateManager)
+            : this(context, productService, bulkPropertyUpdateManager)
+        {
+        }
+
         public BulkActionContext Context => _context;
 
         public async Task<BulkActionResult> ExecuteAsync(IEnumerable<IEntity> entities)

@@ -44,6 +44,18 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
         {
         }
 
+        [Obsolete($"This constructor is intended to be used by a DI container only")]
+        public CatalogBulkActionFactory(ICatalogService catalogService,
+            IProductService productService,
+            // ReSharper disable once UnusedParameter.Local
+            IItemService itemService,
+            IBulkPropertyUpdateManager bulkPropertyUpdateManager,
+            ListEntryMover<Category> categoryListEntryMover,
+            ListEntryMover<CatalogProduct> productListEntryMover)
+            : this(catalogService, productService, bulkPropertyUpdateManager, categoryListEntryMover, productListEntryMover)
+        {
+        }
+
         public IBulkAction Create(BulkActionContext context)
         {
             IBulkAction result = null;

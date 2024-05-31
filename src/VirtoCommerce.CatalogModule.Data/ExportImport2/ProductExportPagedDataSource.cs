@@ -32,6 +32,12 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         {
         }
 
+        [Obsolete($"This constructor is intended to be used by a DI container only")]
+        public ProductExportPagedDataSource(IBlobStorageProvider blobStorageProvider, IProductService productService, /* ReSharper disable once UnusedParameter.Local */ IItemService itemService, IProductSearchService productSearchService, ProductExportDataQuery dataQuery)
+            : this(blobStorageProvider, productService, productSearchService, dataQuery)
+        {
+        }
+
         protected override ExportableSearchResult FetchData(ProductSearchCriteria searchCriteria)
         {
             CatalogProduct[] result;

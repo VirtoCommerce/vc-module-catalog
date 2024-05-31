@@ -30,6 +30,12 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
         }
 
+        [Obsolete($"This constructor is intended to be used by a DI container only")]
+        public ProductMover(IProductService productService, /* ReSharper disable once UnusedParameter.Local */ IItemService itemService)
+            : this(productService)
+        {
+        }
+
         public override Task ConfirmMoveAsync(IEnumerable<CatalogProduct> entities)
         {
             return _productService.SaveChangesAsync(entities.ToArray());

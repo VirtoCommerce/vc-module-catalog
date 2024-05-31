@@ -38,6 +38,12 @@ namespace VirtoCommerce.CatalogModule.Data.Search
         {
         }
 
+        [Obsolete($"This constructor is intended to be used by a DI container only")]
+        public ListEntrySearchService(Func<ICatalogRepository> catalogRepositoryFactory, IProductService productService, /* ReSharper disable once UnusedParameter.Local */ IItemService itemService, ICategoryService categoryService)
+            : this(catalogRepositoryFactory, productService, categoryService)
+        {
+        }
+
         public async Task<ListEntrySearchResult> SearchAsync(CatalogListEntrySearchCriteria criteria)
         {
             if (criteria == null)

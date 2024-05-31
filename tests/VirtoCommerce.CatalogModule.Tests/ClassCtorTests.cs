@@ -5,6 +5,7 @@ using VirtoCommerce.CatalogModule.BulkActions.Actions.CategoryChange;
 using VirtoCommerce.CatalogModule.BulkActions.Actions.PropertiesUpdate;
 using VirtoCommerce.CatalogModule.BulkActions.DataSources;
 using VirtoCommerce.CatalogModule.Core.Search;
+using VirtoCommerce.CatalogModule.Core.Services;
 using Xunit;
 
 namespace VirtoCommerce.CatalogModule.Tests
@@ -20,7 +21,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             var action = new Action(
                 () =>
                 {
-                    new PropertiesUpdateBulkAction(null, null, null);
+                    new PropertiesUpdateBulkAction(null, (IProductService)null, null);
                 });
 
             // assert

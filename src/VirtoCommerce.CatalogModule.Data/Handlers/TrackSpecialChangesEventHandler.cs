@@ -30,6 +30,12 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
         {
         }
 
+        [Obsolete($"This constructor is intended to be used by a DI container only")]
+        public TrackSpecialChangesEventHandler(Func<ICatalogRepository> catalogRepositoryFactory, IProductService productService, /* ReSharper disable once UnusedParameter.Local */ IItemService itemService)
+            : this(catalogRepositoryFactory, productService)
+        {
+        }
+
         public Task Handle(CategoryChangedEvent message)
         {
             var categoryIds = message.ChangedEntries

@@ -33,6 +33,12 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         {
         }
 
+        [Obsolete($"This constructor is intended to be used by a DI container only")]
+        public ProductDocumentBuilder(ISettingsManager settingsManager, IPropertySearchService propertySearchService, IProductService productService, /* ReSharper disable once UnusedParameter.Local */ IItemService itemService, IProductSearchService productsSearchService)
+            : this(settingsManager, propertySearchService, productService, productsSearchService)
+        {
+        }
+
         public virtual async Task BuildSchemaAsync(IndexDocument schema)
         {
             schema.AddFilterableString("__type");

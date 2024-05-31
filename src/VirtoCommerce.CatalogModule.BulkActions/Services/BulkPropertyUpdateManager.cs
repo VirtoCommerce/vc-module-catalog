@@ -48,6 +48,12 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
         {
         }
 
+        [Obsolete($"This constructor is intended to be used by a DI container only")]
+        public BulkPropertyUpdateManager(IDataSourceFactory dataSourceFactory, IProductService productService, /* ReSharper disable once UnusedParameter.Local */ IItemService itemService, ICategoryService categoryService, ICatalogService catalogService, IPropertyUpdateManager propertyUpdateManager)
+            : this(dataSourceFactory, productService, categoryService, catalogService, propertyUpdateManager)
+        {
+        }
+
         public async Task<Property[]> GetPropertiesAsync(BulkActionContext context)
         {
             var result = new List<Property>();

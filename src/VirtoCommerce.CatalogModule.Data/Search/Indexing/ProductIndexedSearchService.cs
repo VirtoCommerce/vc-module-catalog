@@ -34,6 +34,12 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         {
         }
 
+        [Obsolete($"This constructor is intended to be used by a DI container only")]
+        public ProductIndexedSearchService(ISearchRequestBuilderRegistrar searchRequestBuilderRegistrar, IProductService productService, /* ReSharper disable once UnusedParameter.Local */ ISearchProvider searchProvider, ISettingsManager settingsManager, IItemService itemService, IBlobUrlResolver blobUrlResolver, IAggregationConverter aggregationConverter)
+            : this(searchRequestBuilderRegistrar, searchProvider, settingsManager, productService, blobUrlResolver, aggregationConverter)
+        {
+        }
+
         protected override async Task<IList<CatalogProduct>> LoadMissingItems(string[] missingItemIds, ProductIndexedSearchCriteria criteria)
         {
             var catalog = criteria.CatalogId;

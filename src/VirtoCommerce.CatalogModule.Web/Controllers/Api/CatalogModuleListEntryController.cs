@@ -68,6 +68,23 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         {
         }
 
+        [Obsolete($"This constructor is intended to be used by a DI container only")]
+        public CatalogModuleListEntryController(
+            IInternalListEntrySearchService internalListEntrySearchService,
+            IListEntrySearchService listEntrySearchService,
+            ILinkSearchService linkSearchService,
+            ICategoryService categoryService,
+            IProductService productService,
+            // ReSharper disable once UnusedParameter.Local
+            IItemService itemService,
+            ICatalogService catalogService,
+            IAuthorizationService authorizationService,
+            ListEntryMover<Category> categoryMover,
+            ListEntryMover<CatalogProduct> productMover)
+            : this(internalListEntrySearchService, listEntrySearchService, linkSearchService, categoryService, productService, catalogService, authorizationService, categoryMover, productMover)
+        {
+        }
+
         /// <summary>
         /// Searches for the items by complex criteria.
         /// </summary>

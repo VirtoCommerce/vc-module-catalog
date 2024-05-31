@@ -29,6 +29,12 @@ namespace VirtoCommerce.CatalogModule.Data.Validation
         {
         }
 
+        [Obsolete($"This constructor is intended to be used by a DI container only")]
+        public PropertyNameValidator(IProductService productService, /* ReSharper disable once UnusedParameter.Local */ IItemService itemService, IProductSearchService productSearchService)
+            : this(productService, productSearchService)
+        {
+        }
+
         public override async Task<ValidationResult> ValidateAsync(ValidationContext<PropertyValidationRequest> context, CancellationToken cancellation = default)
         {
             var result = new ValidationResult();

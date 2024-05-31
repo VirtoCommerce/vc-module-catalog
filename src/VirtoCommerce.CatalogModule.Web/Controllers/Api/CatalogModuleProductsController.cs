@@ -60,6 +60,21 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         {
         }
 
+        [Obsolete($"This constructor is intended to be used by a DI container only")]
+        public CatalogModuleProductsController(
+            IProductService productService,
+            // ReSharper disable once UnusedParameter.Local
+            IItemService itemService,
+            ICategoryService categoryService,
+            ICatalogService catalogService,
+            ISkuGenerator skuGenerator,
+            IAuthorizationService authorizationService,
+            IPropertyUpdateManager updateManager,
+            IOptions<MvcNewtonsoftJsonOptions> jsonOptions)
+            : this(productService, categoryService, catalogService, skuGenerator, authorizationService, updateManager, jsonOptions)
+        {
+        }
+
 
         /// <summary>
         /// Gets product by id.

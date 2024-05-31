@@ -49,6 +49,21 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         {
         }
 
+        [Obsolete($"This constructor is intended to be used by a DI container only")]
+        public CatalogExportPagedDataSourceFactory(
+            IPropertySearchService propertySearchService
+            , IPropertyDictionaryItemSearchService propertyDictionaryItemSearchService
+            , IBlobStorageProvider blobStorageProvider
+            , IProductSearchService productSearchService
+            , IProductService productService
+            // ReSharper disable once UnusedParameter.Local
+            , IItemService itemService
+            , ICategorySearchService categorySearchService
+            , ICatalogSearchService catalogSearchService)
+            : this(propertySearchService, propertyDictionaryItemSearchService, blobStorageProvider, productSearchService, productService, categorySearchService, catalogSearchService)
+        {
+        }
+
         public virtual IPagedDataSource Create(ExportDataQuery dataQuery)
         {
             IPagedDataSource result = null;

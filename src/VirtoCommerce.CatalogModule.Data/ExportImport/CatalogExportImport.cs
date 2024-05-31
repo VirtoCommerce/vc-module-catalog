@@ -59,6 +59,14 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         {
         }
 
+        [Obsolete($"This constructor is intended to be used by a DI container only")]
+        public CatalogExportImport(ICatalogService catalogService, ICatalogSearchService catalogSearchService, IProductSearchService productSearchService, ICategorySearchService categorySearchService, ICategoryService categoryService,
+            IProductService productService, /* ReSharper disable once UnusedParameter.Local */ IItemService itemService, IPropertyService propertyService, IPropertySearchService propertySearchService, IPropertyDictionaryItemSearchService propertyDictionarySearchService,
+            IPropertyDictionaryItemService propertyDictionaryService, JsonSerializer jsonSerializer, IBlobStorageProvider blobStorageProvider, IAssociationService associationService)
+            : this(catalogService, catalogSearchService, productSearchService, categorySearchService, categoryService, productService, propertyService, propertySearchService, propertyDictionarySearchService, propertyDictionaryService, jsonSerializer, blobStorageProvider, associationService)
+        {
+        }
+
         public async Task DoExportAsync(Stream outStream, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
