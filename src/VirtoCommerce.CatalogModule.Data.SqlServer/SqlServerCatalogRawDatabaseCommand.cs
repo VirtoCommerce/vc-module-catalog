@@ -299,11 +299,11 @@ namespace VirtoCommerce.CatalogModule.Data.SqlServer
 
             command.Append(@"), Category_CTE AS
                     (
-                        SELECT AssociatedCategoryId Id, AssociatedCategoryId
+                        SELECT AssociatedCategoryId Id, AssociatedCategoryId, Id AssociationId
                         FROM Association_CTE
                         WHERE AssociatedCategoryId IS NOT NULL
                         UNION ALL
-                        SELECT c.Id, cte.AssociatedCategoryId
+                        SELECT c.Id, cte.AssociatedCategoryId, cte.AssociationId
                         FROM Category c
                         INNER JOIN Category_CTE cte ON c.ParentCategoryId = cte.Id
                     ),
@@ -325,7 +325,7 @@ namespace VirtoCommerce.CatalogModule.Data.SqlServer
                             ,a.OuterId
                         FROM Category_CTE cat
                         LEFT JOIN Item i ON cat.Id=i.CategoryId
-                        LEFT JOIN Association a ON cat.AssociatedCategoryId=a.AssociatedCategoryId
+                        LEFT JOIN Association a ON cat.AssociationId = a.Id
                         WHERE i.ParentId IS NULL
                         UNION
                         SELECT * FROM Association_CTE

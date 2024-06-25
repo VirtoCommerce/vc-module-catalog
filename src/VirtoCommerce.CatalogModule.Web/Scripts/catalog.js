@@ -29,7 +29,28 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                 ]
             });
     }])
+    .config(['$stateProvider', function ($stateProvider) {
+        $stateProvider
+            .state('workspace.measures', {
+                url: '/measures',
+                templateUrl: '$(Platform)/Scripts/common/templates/home.tpl.html',
+                controller: [
+                    '$scope', 'platformWebApp.bladeNavigationService', function ($scope, bladeNavigationService) {
 
+                        var blade = {
+                            id: 'measures',
+                            title: 'catalog.blades.measures-list.title',
+                            subtitle: 'catalog.blades.measures-list.subtitle',
+                            controller: 'virtoCommerce.catalogModule.measuresListController',
+                            template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/measures/measures-list.tpl.html',
+                            isClosingDisabled: true
+                        };
+                        bladeNavigationService.showBlade(blade);
+                        $scope.moduleName = 'vc-catalog-measure';
+                    }
+                ]
+            });
+    }])
     // define search filters to be accessible platform-wide
     .factory('virtoCommerce.catalogModule.predefinedSearchFilters', ['$localStorage', function ($localStorage) {
         $localStorage.catalogSearchFilters = $localStorage.catalogSearchFilters || [];
@@ -76,8 +97,8 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
     }])
 
     .run(
-        ['platformWebApp.mainMenuService', 'platformWebApp.widgetService', '$state', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.catalogExportService', 'platformWebApp.permissionScopeResolver', 'virtoCommerce.catalogModule.catalogs', 'virtoCommerce.catalogModule.predefinedSearchFilters', 'platformWebApp.metaFormsService', 'virtoCommerce.catalogModule.itemTypesResolverService', '$http', '$compile', 'virtoCommerce.exportModule.genericViewerItemService', 'platformWebApp.toolbarService', 'platformWebApp.breadcrumbHistoryService',
-            function (mainMenuService, widgetService, $state, bladeNavigationService, catalogExportService, scopeResolver, catalogs, predefinedSearchFilters, metaFormsService, itemTypesResolverService, $http, $compile, genericViewerItemService, toolbarService, breadcrumbHistoryService) {
+        ['$injector', 'platformWebApp.mainMenuService', 'platformWebApp.widgetService', '$state', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.catalogExportService', 'platformWebApp.permissionScopeResolver', 'virtoCommerce.catalogModule.catalogs', 'virtoCommerce.catalogModule.predefinedSearchFilters', 'platformWebApp.metaFormsService', 'virtoCommerce.catalogModule.itemTypesResolverService', '$http', '$compile', 'platformWebApp.toolbarService', 'platformWebApp.breadcrumbHistoryService',
+            function ($injector, mainMenuService, widgetService, $state, bladeNavigationService, catalogExportService, scopeResolver, catalogs, predefinedSearchFilters, metaFormsService, itemTypesResolverService, $http, $compile, toolbarService, breadcrumbHistoryService) {
 
                 //Register module in main menu
                 var menuItem = {
@@ -89,6 +110,17 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                     permission: 'catalog:access'
                 };
                 mainMenuService.addMenuItem(menuItem);
+
+                var measureMenuItem = {
+                    path: 'browse/measures',
+                    icon: 'fas fa-ruler-combined',
+                    title: 'catalog.measure-menu-title',
+                    priority: 100,
+                    action: function () { $state.go('workspace.measures'); },
+                    permission: 'measures:access'
+                };
+                mainMenuService.addMenuItem(measureMenuItem);
+
 
                 // register back-button
                 toolbarService.register(breadcrumbHistoryService.getBackButtonInstance(), 'virtoCommerce.catalogModule.categoriesItemsListController');
@@ -542,47 +574,103 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                     }
                 ]);
 
-                genericViewerItemService.registerViewer('CatalogProduct', function (item) {
-                    var itemCopy = angular.copy(item);
+                // assume that since export module is loaded it's safe to use module services and controllers
+                if ($injector.modules['virtoCommerce.exportModule']) {
+                    var genericViewerItemService = $injector.get('virtoCommerce.exportModule.genericViewerItemService');
 
-                    return {
-                        id: "itemmDetail",
-                        itemId: itemCopy.id,
-                        productType: itemCopy.productType,
-                        title: itemCopy.name,
-                        controller: 'virtoCommerce.catalogModule.itemDetailController',
-                        template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/item-detail.tpl.html'
-                    };
-                });
+                    genericViewerItemService.registerViewer('CatalogProduct', function (item) {
+                        var itemCopy = angular.copy(item);
+
+                        return {
+                            id: "itemmDetail",
+                            itemId: itemCopy.id,
+                            productType: itemCopy.productType,
+                            title: itemCopy.name,
+                            controller: 'virtoCommerce.catalogModule.itemDetailController',
+                            template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/item-detail.tpl.html'
+                        };
+                    });
+
+                    catalogExportService.register({
+                        name: 'Generic Export',
+                        description: 'Export products filtered by catalogs or categories to JSON or CSV',
+                        icon: 'fa-fw fa fa-database',
+                        controller: 'virtoCommerce.exportModule.exportSettingsController',
+                        template: 'Modules/$(VirtoCommerce.Export)/Scripts/blades/export-settings.tpl.html',
+                        id: 'catalogGenericExport',
+                        title: 'catalog.blades.exporter.productTitle',
+                        subtitle: 'catalog.blades.exporter.productSubtitle',
+                        onInitialize: function (newBlade) {
+                            var exportDataRequest = {
+                                exportTypeName: 'VirtoCommerce.CatalogModule.Core.Model.Export.ExportableProduct',
+                                dataQuery: {
+                                    exportTypeName: 'ProductExportDataQuery',
+                                    categoryIds: _.pluck(newBlade.selectedCategories, 'id'),
+                                    objectIds: _.pluck(newBlade.selectedProducts, 'id'),
+                                    catalogIds: [newBlade.catalog.id],
+                                    searchInChildren: true,
+                                    isAllSelected: true
+                                }
+                            };
+                            newBlade.exportDataRequest = exportDataRequest;
+                            newBlade.totalItemsCount = (newBlade.selectedProducts || []).length;
+                        }
+                    });
+                }
 
                 $http.get('Modules/$(VirtoCommerce.Catalog)/Scripts/directives/itemSearch.tpl.html').then(function (response) {
                     // compile the response, which will put stuff into the cache
                     $compile(response.data);
                 });
 
-                catalogExportService.register({
-                    name: 'Generic Export',
-                    description: 'Export products filtered by catalogs or categories to JSON or CSV',
-                    icon: 'fa-fw fa fa-database',
-                    controller: 'virtoCommerce.exportModule.exportSettingsController',
-                    template: 'Modules/$(VirtoCommerce.Export)/Scripts/blades/export-settings.tpl.html',
-                    id: 'catalogGenericExport',
-                    title: 'catalog.blades.exporter.productTitle',
-                    subtitle: 'catalog.blades.exporter.productSubtitle',
-                    onInitialize: function (newBlade) {
-                        var exportDataRequest = {
-                            exportTypeName: 'VirtoCommerce.CatalogModule.Core.Model.Export.ExportableProduct',
-                            dataQuery: {
-                                exportTypeName: 'ProductExportDataQuery',
-                                categoryIds: _.pluck(newBlade.selectedCategories, 'id'),
-                                objectIds: _.pluck(newBlade.selectedProducts, 'id'),
-                                catalogIds: [newBlade.catalog.id],
-                                searchInChildren: true,
-                                isAllSelected: true
-                            }
-                        };
-                        newBlade.exportDataRequest = exportDataRequest;
-                        newBlade.totalItemsCount = (newBlade.selectedProducts || []).length;
+                metaFormsService.registerMetaFields('measureDetails', [
+                    {
+                        name: 'name',
+                        title: "catalog.blades.measure-details.labels.name",
+                        colSpan: 6,
+                        isRequired: true,
+                        valueType: "ShortText"
+                    },
+                    {
+                        colSpan: 6,
+                        templateUrl: "measure-details-code.html"
+                    },
+                    {
+                        colSpan: 6,
+                        templateUrl: "measure-details-description.html"
                     }
-                });
+                ]);
+
+                var measureUnitsWidget = {
+                    controller: 'virtoCommerce.catalogModule.measureUnitsWidgetController',
+                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/measureUnitsWidget.tpl.html'
+                };
+                widgetService.registerWidget(measureUnitsWidget, 'measureDetails');
+
+                metaFormsService.registerMetaFields('measureUnitDetails', [
+                    {
+                        colSpan: 6,
+                        templateUrl: "measure-details-code.html"
+                    },
+                    {
+                        name: 'name',
+                        title: "catalog.blades.measure-unit-details.labels.name",
+                        placeholder: "catalog.blades.measure-unit-details.placeholders.name",
+                        colSpan: 6,
+                        isRequired: true,
+                        valueType: "ShortText"
+                    },
+                    {
+                        colSpan: 6,
+                        templateUrl: "conversion-factor.html"
+                    },
+                    {
+                        name: 'symbol',
+                        title: "catalog.blades.measure-unit-details.labels.symbol",
+                        placeholder: "catalog.blades.measure-unit-details.placeholders.symbol",
+                        colSpan: 6,
+                        isRequired: true,
+                        valueType: "ShortText"
+                    }
+                ]);
             }]);

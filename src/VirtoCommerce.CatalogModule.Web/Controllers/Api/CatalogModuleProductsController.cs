@@ -223,12 +223,24 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             var copyProduct = (CatalogProduct)product.GetCopy();
 
+            // Reset 
+            copyProduct.Id = null;
+            copyProduct.CreatedDate = DateTime.UtcNow;
+            copyProduct.CreatedBy = null;
+            copyProduct.ModifiedDate = null;
+            copyProduct.ModifiedBy = null;
+
             // Generate new SKUs and remove SEO records for product and its variations
             copyProduct.Code = _skuGenerator.GenerateSku(product);
             copyProduct.SeoInfos.Clear();
 
             foreach (var variation in copyProduct.Variations)
             {
+                variation.Id = null;
+                variation.CreatedDate = DateTime.UtcNow;
+                variation.CreatedBy = null;
+                variation.ModifiedDate = null;
+                variation.ModifiedBy = null;
                 variation.Code = _skuGenerator.GenerateSku(variation);
                 variation.SeoInfos.Clear();
             }
@@ -287,6 +299,12 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return Forbid();
             }
 
+            var customPropertyResult = await _authorizationService.AuthorizeAsync(User, product, new CustomPropertyRequirement());
+            if (!customPropertyResult.Succeeded)
+            {
+                return Forbid();
+            }
+
             var result = (await InnerSaveProducts(new[] { product })).FirstOrDefault();
             if (result != null)
             {
@@ -305,6 +323,12 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         {
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, products, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
             if (!authorizationResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            var customPropertyResult = await _authorizationService.AuthorizeAsync(User, products, new CustomPropertyRequirement());
+            if (!customPropertyResult.Succeeded)
             {
                 return Forbid();
             }

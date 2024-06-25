@@ -74,7 +74,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
                 video.Name = snippet.Title;
                 video.Description = snippet.Description;
-                video.UploadDate = snippet.PublishedAt;
+                video.UploadDate = snippet.PublishedAtDateTimeOffset?.UtcDateTime;
                 video.ThumbnailUrl = snippet.Thumbnails.High.Url;
                 video.EmbedUrl = GetEmbedUrl(resource.Player.EmbedHtml);
                 video.Duration = FormatDuration(resource.ContentDetails.Duration);

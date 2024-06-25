@@ -56,6 +56,11 @@ namespace VirtoCommerce.CatalogModule.Core.Model.Search
         public virtual DateTime? EndDate { get; set; }
 
         /// <summary>
+        /// Defines the date to be used for filtering products. The date must be in UTC format as that is format indexes are stored in.
+        /// </summary>
+        public DateTime? CertainDate { get; set; }
+
+        /// <summary>
         /// Gets or sets a "white" list of aggregation keys that identify preconfigured aggregations, which SHOULD be calculated and returned with the search result.
         /// </summary>
         public IList<string> IncludeAggregations { get; set; }
@@ -83,6 +88,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model.Search
             }
 
             WithHidden = !listEntryCriteria.HideDirectLinkedCategories;
+            SearchInVariations = listEntryCriteria.SearchInVariations;
 
             return base.FromListEntryCriteria(listEntryCriteria);
         }

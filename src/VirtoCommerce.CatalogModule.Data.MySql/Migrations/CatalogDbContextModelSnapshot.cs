@@ -16,7 +16,7 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.0")
+                .HasAnnotation("ProductVersion", "6.0.13")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.AssetEntity", b =>
@@ -689,6 +689,97 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
                     b.ToTable("Item", (string)null);
                 });
 
+            modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.MeasureEntity", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(128)
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("varchar(128)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Measure", (string)null);
+                });
+
+            modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.MeasureUnitEntity", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(128)
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<decimal>("ConversionFactor")
+                        .HasPrecision(21, 6)
+                        .HasColumnType("decimal(21,6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("MeasureId")
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(128)
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<string>("Symbol")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MeasureId");
+
+                    b.ToTable("MeasureUnit", (string)null);
+                });
+
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.PropertyAttributeEntity", b =>
                 {
                     b.Property<string>("Id")
@@ -1336,6 +1427,16 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
                     b.Navigation("Parent");
                 });
 
+            modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.MeasureUnitEntity", b =>
+                {
+                    b.HasOne("VirtoCommerce.CatalogModule.Data.Model.MeasureEntity", "Measure")
+                        .WithMany("Units")
+                        .HasForeignKey("MeasureId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Measure");
+                });
+
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.PropertyAttributeEntity", b =>
                 {
                     b.HasOne("VirtoCommerce.CatalogModule.Data.Model.PropertyEntity", "Property")
@@ -1503,6 +1604,11 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
                     b.Navigation("ReferencedAssociations");
 
                     b.Navigation("SeoInfos");
+                });
+
+            modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.MeasureEntity", b =>
+                {
+                    b.Navigation("Units");
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.PropertyDictionaryItemEntity", b =>

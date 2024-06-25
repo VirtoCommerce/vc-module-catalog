@@ -67,7 +67,6 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             var exportableProducts = models.Select(x =>
             {
                 var exportableProduct = AbstractTypeFactory<ExportableProduct>.TryCreateInstance().FromModel(x);
-                exportableProduct.ImageUrl = x.ImgSrc;
                 return exportableProduct;
             });
 

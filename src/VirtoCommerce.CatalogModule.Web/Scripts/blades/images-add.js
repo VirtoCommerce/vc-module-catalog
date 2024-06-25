@@ -1,20 +1,16 @@
 angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.imagesAddController',
-        ['$scope', '$filter', '$translate', 'FileUploader', 'platformWebApp.dialogService',
-            'platformWebApp.bladeNavigationService', 'platformWebApp.authService',
-            'platformWebApp.assets.api', 'platformWebApp.settings',
-            function ($scope, $filter, $translate, FileUploader, dialogService, bladeNavigationService, authService, assets, settings) {
+        ['$scope', '$translate', 'FileUploader', 'platformWebApp.bladeNavigationService', 'platformWebApp.settings',
+            function ($scope, $translate, FileUploader,  bladeNavigationService, settings) {
                 var blade = $scope.blade;
 
                 blade.hasAssetCreatePermission = bladeNavigationService.checkPermission('platform:asset:create');
 
                 blade.headIcon = 'fa fa-image';
 
-                $scope.isValid = true;
+                $scope.isValid = false;
 
                 blade.isLoading = false;
-
-                blade.useExternalUrl = false;
 
                 blade.refresh = function (item) {
                     initialize(item);
@@ -51,6 +47,8 @@ angular.module('virtoCommerce.catalogModule')
                                 image.group = blade.imageType;
                                 blade.currentEntities.push(image);
                             });
+
+                            $scope.isValid = true;
                         };
 
                         uploader.onAfterAddingAll = function (addedItems) {
@@ -58,46 +56,12 @@ angular.module('virtoCommerce.catalogModule')
                         };
 
                         uploader.onErrorItem = function (element, response, status, headers) {
+                            $scope.isValid = false;
                             bladeNavigationService.setError(element._file.name + ' failed: ' + (response.message ? response.message : status), blade);
                         };
                     }
                     blade.currentEntities = [];
                 }
-
-                $scope.addImageFromUrlHandler = function () {
-                    if (blade.useExternalUrl) {
-                        $scope.addImageDirectlyFromUrl();
-                    } else {
-                        $scope.addImageFromUrl();
-                    }
-                };
-
-                $scope.addImageFromUrl = function () {
-                    if (blade.newExternalImageUrl) {
-                        assets.uploadFromUrl({ folderUrl: getImageUrl(blade.folderPath, blade.imageType).folderUrl, url: blade.newExternalImageUrl }, function (data) {
-                            _.each(data, function (x) {
-                                x.isImage = true;
-                                x.group = blade.imageType;
-                                blade.currentEntities.push(x);
-                            });
-                            blade.newExternalImageUrl = undefined;
-                        });
-                    }
-                };
-
-                $scope.addImageDirectlyFromUrl = function () {
-                    if (blade.newExternalImageUrl) {
-                        var image = {
-                            isImage: true,
-                            group: blade.imageType,
-                            url: blade.newExternalImageUrl,
-                            name: blade.newExternalImageUrl.split('/').pop(),
-                            relativeUrl: blade.newExternalImageUrl
-                        };
-                        blade.currentEntities.push(image);
-                        blade.newExternalImageUrl = undefined;
-                    }
-                };
 
                 $scope.saveChanges = function () {
                     if (blade.onSelect) {
@@ -145,9 +109,7 @@ angular.module('virtoCommerce.catalogModule')
                 };
 
                 function getImageUrl(path, imageType) {
-
                     var folderUrl = 'catalog/' + (path + (imageType ? '/' + imageType : ''));
-
                     return { folderUrl: folderUrl, relative: 'api/assets?folderUrl=' + folderUrl };
                 }
 

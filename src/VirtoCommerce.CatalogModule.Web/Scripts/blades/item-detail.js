@@ -8,6 +8,8 @@ angular.module('virtoCommerce.catalogModule')
         blade.metaFields1 = metaFormsService.getMetaFields("productDetail1");
         blade.metaFields2 = metaFormsService.getMetaFields("productDetail2");
 
+        blade.hasVendorsPermission = bladeNavigationService.checkPermission('customer:read');
+
         blade.refresh = function (parentRefresh) {
             blade.isLoading = true;
             //2015 = Full ~& Variations do not load product variations
@@ -66,7 +68,35 @@ angular.module('virtoCommerce.catalogModule')
         }
 
         function canSave() {
-            return isDirty() && blade.formScope && blade.formScope.$valid;
+            return isDirty() && blade.formScope && blade.formScope.$valid && isValidQuantity(blade.item);
+        }
+
+        function isValidQuantity(item) {
+            const minEmpty = isEmpty(item.minQuantity);
+            const maxEmpty = isEmpty(item.maxQuantity);
+
+            if (minEmpty && maxEmpty) {
+                return true;
+            }
+
+            const minNumber = parseInt(item.minQuantity, 10);
+            const maxNumber = parseInt(item.maxQuantity, 10);
+
+            if (!minEmpty && (isNaN(minNumber) || minNumber < 0) ||
+                !maxEmpty && (isNaN(maxNumber) || maxNumber < 0)) {
+                return false;
+            }
+
+            if (minEmpty && !maxEmpty ||
+                !minEmpty && maxEmpty) {
+                return true;
+            }
+
+            return minNumber <= maxNumber;
+        }
+
+        function isEmpty(value) {
+            return value == null || value === '' || value === '0' || value === 0;
         }
 
         function saveChanges() {
@@ -152,7 +182,9 @@ angular.module('virtoCommerce.catalogModule')
         };
 
         blade.fetchVendors = function (criteria) {
-            return members.search(criteria);
+            return blade.hasVendorsPermission
+                ? members.search(criteria)
+                : criteria.objectIds.map(x => ({ id: x, name: $translate.instant('catalog.blades.item-detail.labels.vendor-denied') }));
         }
 
         blade.openVendorsManagement = function () {

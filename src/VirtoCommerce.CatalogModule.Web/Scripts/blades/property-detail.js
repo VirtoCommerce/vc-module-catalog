@@ -1,7 +1,7 @@
 angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.propertyDetailController', ['$scope', '$q', 'virtoCommerce.catalogModule.properties', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'virtoCommerce.catalogModule.valueTypes', 'virtoCommerce.catalogModule.propertyValidators', function ($scope, $q, properties, bladeNavigationService, dialogService, valueTypes, propertyValidators) {
         var blade = $scope.blade;
-        blade.updatePermission = 'catalog:update';
+        blade.updatePermission = 'catalog:metadata-property:edit';
         blade.origEntity = {};
         $scope.currentChild = undefined;
         blade.title = "catalog.blades.property-detail.title";
@@ -206,6 +206,12 @@ angular.module('virtoCommerce.catalogModule')
                 }
             };
             dialogService.showDialog(dialog, 'Modules/$(VirtoCommerce.Catalog)/Scripts/dialogs/deleteProperty-dialog.tpl.html', 'platformWebApp.confirmDialogController');
+        }
+
+        var hasEditDictionaryPermission = bladeNavigationService.checkPermission('catalog:dictionary-property:edit');
+
+        blade.canEditDictionary = function () {
+            return blade.currentEntity && blade.currentEntity.dictionary && !blade.currentEntity.isNew && hasEditDictionaryPermission;
         }
 
         blade.onClose = function (closeCallback) {

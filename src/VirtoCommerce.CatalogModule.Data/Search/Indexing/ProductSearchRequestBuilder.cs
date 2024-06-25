@@ -156,6 +156,12 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
             result.Add(FiltersHelper.CreateOutlineFilter(criteria));
 
+            if (criteria.CertainDate.HasValue)
+            {
+                result.Add(FiltersHelper.CreateDateRangeFilter("startdate", null, criteria.CertainDate, false, true));
+                result.Add(FiltersHelper.CreateDateRangeFilter("enddate", criteria.CertainDate, null, false, true));
+            }
+
             if (criteria.StartDateFrom.HasValue)
             {
                 result.Add(FiltersHelper.CreateDateRangeFilter("startdate", criteria.StartDateFrom, criteria.StartDate, false, true));

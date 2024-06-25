@@ -13,19 +13,49 @@ namespace VirtoCommerce.CatalogModule.Core
         {
             public static class Permissions
             {
-                public const string Access = "catalog:access",
-                  Create = "catalog:create",
-                  Read = "catalog:read",
-                  Update = "catalog:update",
-                  Delete = "catalog:delete",
-                  Export = "catalog:export",
-                  Import = "catalog:import",
-                  CatalogBrowseFiltersRead = "catalog:BrowseFilters:Read",
-                  CatalogBrowseFiltersUpdate = "catalog:BrowseFilters:Update",
-                  CategoryChange = "bulk-action:category:change",
-                  PropertiesUpdate = "bulk-action:properties:update";
+                public const string Access = "catalog:access";
+                public const string Create = "catalog:create";
+                public const string Read = "catalog:read";
+                public const string Update = "catalog:update";
+                public const string Delete = "catalog:delete";
+                public const string Export = "catalog:export";
+                public const string Import = "catalog:import";
+                public const string AddExternalImage = "catalog:add-external-image";
+                public const string CatalogBrowseFiltersRead = "catalog:BrowseFilters:Read";
+                public const string CatalogBrowseFiltersUpdate = "catalog:BrowseFilters:Update";
+                public const string CategoryChange = "bulk-action:category:change";
+                public const string PropertiesUpdate = "bulk-action:properties:update";
+                public const string MeasuresAccess = "measures:access";
+                public const string MeasuresCreate = "measures:create";
+                public const string MeasuresRead = "measures:read";
+                public const string MeasuresUpdate = "measures:update";
+                public const string MeasuresDelete = "measures:delete";
+                public const string CatalogMetadataPropertyEdit = "catalog:metadata-property:edit";
+                public const string CatalogCustomPropertyEdit = "catalog:custom-property:edit";
+                public const string CatalogDictionaryPropertyEdit = "catalog:dictionary-property:edit";
 
-                public static string[] AllPermissions { get; } = { Access, Create, Read, Update, Delete, Export, Import, CatalogBrowseFiltersRead, CatalogBrowseFiltersUpdate, CategoryChange, PropertiesUpdate };
+                public static string[] AllPermissions { get; } =
+                {
+                    Access,
+                    Create,
+                    Read,
+                    Update,
+                    Delete,
+                    Export,
+                    Import,
+                    AddExternalImage,
+                    CatalogBrowseFiltersRead,
+                    CatalogBrowseFiltersUpdate,
+                    CategoryChange,
+                    PropertiesUpdate,
+                    MeasuresAccess,
+                    MeasuresRead,
+                    MeasuresCreate,
+                    MeasuresUpdate, MeasuresDelete,
+                    CatalogMetadataPropertyEdit,
+                    CatalogCustomPropertyEdit,
+                    CatalogDictionaryPropertyEdit,
+                };
             }
         }
 
