@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -243,14 +242,14 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             foreach (var image in allImages.Where(x => !string.IsNullOrEmpty(x.Url)))
             {
                 image.RelativeUrl = !string.IsNullOrEmpty(image.RelativeUrl) ? image.RelativeUrl : image.Url;
-                image.Url = _blobUrlResolver.GetAbsoluteUrl(HttpUtility.UrlDecode(image.Url));
+                image.Url = _blobUrlResolver.GetAbsoluteUrl(image.Url);
             }
 
             var allAssets = new { products }.GetFlatObjectsListWithInterface<IHasAssets>().Where(x => x.Assets != null).SelectMany(x => x.Assets);
             foreach (var asset in allAssets.Where(x => !string.IsNullOrEmpty(x.Url)))
             {
                 asset.RelativeUrl = !string.IsNullOrEmpty(asset.RelativeUrl) ? asset.RelativeUrl : asset.Url;
-                asset.Url = _blobUrlResolver.GetAbsoluteUrl(HttpUtility.UrlDecode(asset.Url));
+                asset.Url = _blobUrlResolver.GetAbsoluteUrl(asset.Url);
             }
 
             foreach (var product in products)
