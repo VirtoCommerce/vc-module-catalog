@@ -19,7 +19,7 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                         var catalogId = $location.search().catalogId;
 
                         if (productId) {
-                            productBlade = {
+                            var productBlade = {
                                 id: 'categories',
                                 level: 0,
                                 itemId: productId,
@@ -34,7 +34,7 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                             bladeNavigationService.showBlade(productBlade);
                         }
                         else if (categoryId) {
-                            categoryBlade = {
+                            var categoryBlade = {
                                 id: 'categories',
                                 level: 0,
                                 isBrowsingLinkedCategory: false,
