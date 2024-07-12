@@ -329,9 +329,6 @@ angular.module('virtoCommerce.catalogModule')
                             bladeNavigationService.showBlade(newBlade, blade.parentBlade);
                         });
                     }
-
-                    //$location.search('categoryId', listItem.id);
-                    //$location.search('productId', null);
                 } else {
                     newBlade = {
                         id: "listItemDetail" + blade.mode,
@@ -346,9 +343,6 @@ angular.module('virtoCommerce.catalogModule')
 
                     // setting current categoryId to be globally available
                     bladeNavigationService.catalogsSelectedCategoryId = blade.categoryId;
-
-                    //$location.search('categoryId', null);
-                    //$location.search('productId', listItem.id);
                 }
             };
 
