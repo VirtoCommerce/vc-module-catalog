@@ -83,7 +83,7 @@
           "filter-lowStock": "Low on stock",
           "filter-notActive": "Inactive",
           "filter-display-variations": "Display variations",
-          "unnamed-filter": "Unnamed filter",
+          "unnamed-filter": "Filter by Keyword",
           "result-grouping": "Group results by:",
           "result-grouping-none": "None",
           "result-grouping-$path": "Category",
