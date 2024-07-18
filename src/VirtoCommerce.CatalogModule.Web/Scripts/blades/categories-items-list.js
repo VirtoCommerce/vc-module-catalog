@@ -123,6 +123,13 @@ angular.module('virtoCommerce.catalogModule')
                 }
 
                 breadCrumb.navigate = function () {
+                    if (blade.categoryId) {
+                        $location.search({ categoryId: blade.categoryId, catalogId: blade.catalogId });
+                    }
+                    else {
+                        $location.search({});
+                    }
+
                     bladeNavigationService.closeBlade(blade,
                         function () {
                             blade.disableOpenAnimation = true;
