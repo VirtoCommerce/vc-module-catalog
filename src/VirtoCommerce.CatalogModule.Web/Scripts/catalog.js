@@ -12,25 +12,62 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                 url: '/catalog',
                 templateUrl: '$(Platform)/Scripts/common/templates/home.tpl.html',
                 controller: [
-                    '$scope', 'platformWebApp.bladeNavigationService', function ($scope, bladeNavigationService) {
+                    '$scope', '$location', 'platformWebApp.bladeNavigationService', function ($scope, $location, bladeNavigationService) {
 
-                        var blade = {
-                            id: 'categories',
-                            title: 'catalog.blades.catalogs-list.title',
-                            breadcrumbs: [],
-                            subtitle: 'catalog.blades.catalogs-list.subtitle',
-                            controller: 'virtoCommerce.catalogModule.catalogsListController',
-                            template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/catalogs-list.tpl.html',
-                            isClosingDisabled: true
-                        };
-                        bladeNavigationService.showBlade(blade);
+                        var productId = $location.search().productId;
+                        var categoryId = $location.search().categoryId;
+                        var catalogId = $location.search().catalogId;
+
+                        if (productId) {
+                            var productBlade = {
+                                id: 'categories',
+                                level: 0,
+                                itemId: productId,
+                                productType: 'Physical',
+                                title: '',
+                                catalog: '',
+                                controller: 'virtoCommerce.catalogModule.itemDetailController',
+                                template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/item-detail.tpl.html',
+                                isClosingDisabled: true
+                            };
+
+                            bladeNavigationService.showBlade(productBlade);
+                        }
+                        else if (categoryId) {
+                            var categoryBlade = {
+                                id: 'categories',
+                                level: 0,
+                                isBrowsingLinkedCategory: false,
+                                breadcrumbs: [],
+                                title: 'catalog.blades.categories-items-list.title',
+                                subtitle: 'catalog.blades.categories-items-list.subtitle',
+                                subtitleValues: '',
+                                catalogId: catalogId,
+                                categoryId: categoryId,
+                                catalog: '',
+                                controller: 'virtoCommerce.catalogModule.categoriesItemsListController',
+                                template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/categories-items-list.tpl.html',
+                                isClosingDisabled: true
+                            };
+                            bladeNavigationService.showBlade(categoryBlade);
+                        }
+                        else {
+                            var blade = {
+                                id: 'categories',
+                                title: 'catalog.blades.catalogs-list.title',
+                                breadcrumbs: [],
+                                subtitle: 'catalog.blades.catalogs-list.subtitle',
+                                controller: 'virtoCommerce.catalogModule.catalogsListController',
+                                template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/catalogs-list.tpl.html',
+                                isClosingDisabled: true
+                            };
+                            bladeNavigationService.showBlade(blade);
+                        }
+
                         $scope.moduleName = 'vc-catalog';
                     }
                 ]
-            });
-    }])
-    .config(['$stateProvider', function ($stateProvider) {
-        $stateProvider
+            })
             .state('workspace.measures', {
                 url: '/measures',
                 templateUrl: '$(Platform)/Scripts/common/templates/home.tpl.html',
@@ -106,7 +143,9 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                     icon: 'fa fa-folder',
                     title: 'catalog.main-menu-title',
                     priority: 20,
-                    action: function () { $state.go('workspace.catalog'); },
+                    action: function () {
+                        $state.go('workspace.catalog', {}, { reload: true });
+                    },
                     permission: 'catalog:access'
                 };
                 mainMenuService.addMenuItem(menuItem);

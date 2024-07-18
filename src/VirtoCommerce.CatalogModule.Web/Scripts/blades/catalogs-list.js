@@ -1,6 +1,6 @@
 angular.module('virtoCommerce.catalogModule')
-    .controller('virtoCommerce.catalogModule.catalogsListController', ['$scope', 'virtoCommerce.catalogModule.catalogs', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'platformWebApp.authService', 'platformWebApp.uiGridHelper', 'platformWebApp.bladeUtils', '$timeout', 'platformWebApp.settings',
-        function ($scope, catalogs, bladeNavigationService, dialogService, authService, uiGridHelper, bladeUtils, $timeout, settings) {
+    .controller('virtoCommerce.catalogModule.catalogsListController', ['$scope', '$location', 'virtoCommerce.catalogModule.catalogs', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'platformWebApp.authService', 'platformWebApp.uiGridHelper', 'platformWebApp.bladeUtils', '$timeout', 'platformWebApp.settings',
+        function ($scope, $location, catalogs, bladeNavigationService, dialogService, authService, uiGridHelper, bladeUtils, $timeout, settings) {
             $scope.uiGridConstants = uiGridHelper.uiGridConstants;
             var blade = $scope.blade;
             $scope.hasMore = true;
@@ -74,6 +74,8 @@ angular.module('virtoCommerce.catalogModule')
             };
 
             function openItemsBlade(node) {
+                $location.search({ });
+
                 var newBlade = {
                     id: 'itemsList1',
                     level: 1,

@@ -1,7 +1,7 @@
 angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.categoriesItemsListController', [
-        '$sessionStorage', '$localStorage', '$timeout', '$scope', 'virtoCommerce.catalogModule.categories', 'virtoCommerce.catalogModule.items', 'virtoCommerce.catalogModule.listEntries', 'platformWebApp.bladeUtils', 'platformWebApp.dialogService', 'platformWebApp.authService', 'platformWebApp.uiGridHelper', 'virtoCommerce.catalogModule.catalogs', 'platformWebApp.settings',
-        function ($sessionStorage, $localStorage, $timeout, $scope, categories, items, listEntries, bladeUtils, dialogService, authService, uiGridHelper, catalogs, settings) {
+        '$sessionStorage', '$location', '$timeout', '$scope', 'virtoCommerce.catalogModule.listEntries', 'platformWebApp.bladeUtils', 'platformWebApp.dialogService', 'platformWebApp.authService', 'platformWebApp.uiGridHelper', 'virtoCommerce.catalogModule.catalogs', 'platformWebApp.settings',
+        function ($sessionStorage, $location, $timeout, $scope, listEntries, bladeUtils, dialogService, authService, uiGridHelper, catalogs, settings) {
             $scope.uiGridConstants = uiGridHelper.uiGridConstants;
             $scope.hasMore = true;
             $scope.items = [];
@@ -123,6 +123,13 @@ angular.module('virtoCommerce.catalogModule')
                 }
 
                 breadCrumb.navigate = function () {
+                    if (blade.categoryId) {
+                        $location.search({ categoryId: blade.categoryId, catalogId: blade.catalogId });
+                    }
+                    else {
+                        $location.search({});
+                    }
+
                     bladeNavigationService.closeBlade(blade,
                         function () {
                             blade.disableOpenAnimation = true;
@@ -291,6 +298,12 @@ angular.module('virtoCommerce.catalogModule')
 
             blade.setSelectedItem = function (listItem) {
                 $scope.selectedNodeId = listItem.id;
+                if (listItem.type === 'category') {
+                    $location.search({ categoryId: listItem.id, catalogId: listItem.catalogId });
+                }
+                else {
+                    $location.search({ productId: listItem.id});
+                }
             };
 
             $scope.selectItem = function (e, listItem) {
