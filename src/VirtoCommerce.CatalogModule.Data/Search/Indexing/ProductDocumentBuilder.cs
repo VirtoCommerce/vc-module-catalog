@@ -286,7 +286,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         private static bool IsVisible(CatalogProduct product)
         {
             return
-                product.MainProductId == null &&
                 product.IsActive == true &&
                 product.ParentCategoryIsActive;
         }
