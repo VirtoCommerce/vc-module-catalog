@@ -62,10 +62,21 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             {
                 //https://docs.microsoft.com/en-us/ef/core/querying/async
 
-                await PropertyValues
-                    .Include(x => x.DictionaryItem.DictionaryItemValues)
-                    .Where(x => catalogIds.Contains(x.CatalogId) && x.CategoryId == null)
-                    .LoadAsync();
+                if (catalogIds.Count == 1)
+                {
+                    var catalogId = catalogIds.First();
+                    await PropertyValues
+                        .Include(x => x.DictionaryItem.DictionaryItemValues)
+                        .Where(x => x.CatalogId == catalogId && x.CategoryId == null)
+                        .LoadAsync();
+                }
+                else
+                {
+                    await PropertyValues
+                        .Include(x => x.DictionaryItem.DictionaryItemValues)
+                        .Where(x => catalogIds.Contains(x.CatalogId) && x.CategoryId == null)
+                        .LoadAsync();
+                }
 
                 var catalogPropertiesIds = await Properties
                     .Where(x => catalogIds.Contains(x.CatalogId) && x.CategoryId == null)
@@ -122,11 +133,23 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 //Load all properties meta information and information for inheritance
                 if (categoryResponseGroup.HasFlag(CategoryResponseGroup.WithProperties))
                 {
-                    //Load category property values by separate query
-                    await PropertyValues
-                        .Include(x => x.DictionaryItem.DictionaryItemValues)
-                        .Where(x => categoriesIds.Contains(x.CategoryId))
-                        .LoadAsync();
+                    if (categoriesIds.Count == 1)
+                    {
+                        // Improve CPU
+                        var categoryId = categoriesIds.First();
+                        await PropertyValues
+                            .Include(x => x.DictionaryItem.DictionaryItemValues)
+                            .Where(x => x.CategoryId == categoryId)
+                            .LoadAsync();
+                    }
+                    else
+                    {
+                        //Load category property values by separate query
+                        await PropertyValues
+                            .Include(x => x.DictionaryItem.DictionaryItemValues)
+                            .Where(x => categoriesIds.Contains(x.CategoryId))
+                            .LoadAsync();
+                    }
 
                     var categoryPropertiesIds = await Properties
                         .Where(x => categoriesIds.Contains(x.CategoryId))
@@ -164,7 +187,21 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
                 if (itemResponseGroup.HasFlag(ItemResponseGroup.ItemProperties))
                 {
-                    await PropertyValues.Include(x => x.DictionaryItem.DictionaryItemValues).Where(x => itemIds.Contains(x.ItemId)).LoadAsync();
+                    if (itemIds.Count == 1)
+                    {
+                        var itemId = itemIds.First();
+                        await PropertyValues
+                            .Include(x => x.DictionaryItem.DictionaryItemValues)
+                            .Where(x => x.ItemId == itemId)
+                            .LoadAsync();
+                    }
+                    else
+                    {
+                        await PropertyValues
+                            .Include(x => x.DictionaryItem.DictionaryItemValues)
+                            .Where(x => itemIds.Contains(x.ItemId))
+                            .LoadAsync();
+                    }
                 }
 
                 if (itemResponseGroup.HasFlag(ItemResponseGroup.Links))
