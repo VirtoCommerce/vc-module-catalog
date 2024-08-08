@@ -111,7 +111,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return _platformMemoryCache.GetOrCreateExclusive(cacheKey, async cacheEntry =>
             {
                 cacheEntry.AddExpirationToken(CatalogCacheRegion.CreateChangeToken());
-                IList<CatalogEntity> entities;
+                var entities = new List<CatalogEntity>();
 
                 using (var repository = _repositoryFactory())
                 {
@@ -119,7 +119,11 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     repository.DisableChangesTracking();
 
                     var ids = await repository.Catalogs.Select(x => x.Id).ToListAsync();
-                    entities = await repository.GetCatalogsByIdsAsync(ids);
+                    foreach (var catalogId in ids)
+                    {
+                        var catalogEntities = await repository.GetCatalogsByIdsAsync([catalogId]);
+                        entities.AddRange(catalogEntities);
+                    }
                 }
 
                 var result = entities
