@@ -25,7 +25,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         public string Code { get; set; }
 
         /// <summary>
-        /// The manufacturer's part number for the product.
+        /// A manufacturer part number (MPN) is a unique alphanumeric code assigned by a manufacturer to identify a specific product or component. It is used primarily for part tracking in inventory management, supply chain operations, and ordering purposes.
         /// </summary>
         public string ManufacturerPartNumber { get; set; }
 

@@ -7,13 +7,6 @@ angular.module('virtoCommerce.catalogModule')
             blade.currentEntities = [];
             var selectedNode = null;
 
-            blade.isCopyIdMenuVisible = false;
-            settings.getValues({ id: 'Catalog.AllowToCopyID' }, function (data) {
-                if (data && data.length > 0) {
-                    blade.isCopyIdMenuVisible = data[0];
-                }
-            });
-
             blade.refresh = function () {
                 blade.isLoading = true;
 

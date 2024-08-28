@@ -17,13 +17,6 @@ angular.module('virtoCommerce.catalogModule')
                     initialize(item);
                 };
 
-                blade.isCopyIdMenuVisible = false;
-                settings.getValues({ id: 'Catalog.AllowToCopyID' }, function (data) {
-                    if (data && data.length > 0) {
-                        blade.isCopyIdMenuVisible = data[0];
-                    }
-                });
-
                 function initialize(item) {
                     blade.item = item;
                     blade.title = item.name;

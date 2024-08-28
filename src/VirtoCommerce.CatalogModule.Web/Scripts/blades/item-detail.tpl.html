@@ -46,6 +46,11 @@
         <input ng-class="{'error': blade.formScope.gtin.$invalid && !blade.formScope.gtin.$pristine}" placeholder="{{ 'catalog.blades.item-detail.placeholders.gtin' | translate }}" class="form-control" ng-model="blade.item.gtin" name="gtin" type="text" ng-maxlength="14" />
     </div>
 </script>
+<script type="text/ng-template" id="mpn.html">
+  <div class="form-input">
+    <input ng-class="{'error': blade.formScope.manufacturerPartNumber.$invalid && !blade.formScope.manufacturerPartNumber.$pristine}" placeholder="{{ 'catalog.blades.item-detail.placeholders.mpn' | translate }}" class="form-control" ng-model="blade.item.manufacturerPartNumber" name="manufacturerPartNumber" type="text" ng-maxlength="70" />
+  </div>
+</script>
 <script type="text/ng-template" id="startDate.html">
     <i class="form-ico fa fa-question-circle __link __lightblue" ng-click="blade.setting.startDate_descrVisible=!blade.setting.startDate_descrVisible"></i>
     <div class="form-input __calendar">

@@ -3,13 +3,6 @@ angular.module('virtoCommerce.catalogModule')
         var blade = $scope.blade;
         blade.headIcon = 'fa fa-chain';
 
-        blade.isCopyIdMenuVisible = false;
-        settings.getValues({ id: 'Catalog.AllowToCopyID' }, function (data) {
-            if (data && data.length > 0) {
-                blade.isCopyIdMenuVisible = data[0];
-            }
-        });
-
         blade.toolbarCommands = [
             {
                 name: 'platform.commands.remove',
