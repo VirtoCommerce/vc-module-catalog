@@ -11,13 +11,6 @@ angular.module('virtoCommerce.catalogModule')
             if (blade.catalogId)
                 blade.catalog = catalogs.get({ id: blade.catalogId });
 
-            blade.isCopyIdMenuVisible = false;
-            settings.getValues({ id: 'Catalog.AllowToCopyID' }, function (data) {
-                if (data && data.length > 0) {
-                    blade.isCopyIdMenuVisible = data[0];
-                }
-            });
-
             blade.refresh = function () {
 
                 blade.isLoading = true;

@@ -64,14 +64,6 @@ namespace VirtoCommerce.CatalogModule.Core
 #pragma warning disable S3218
             public static class General
             {
-                public static SettingDescriptor CopyIDMenuItem { get; } = new SettingDescriptor
-                {
-                    Name = "Catalog.AllowToCopyID",
-                    GroupName = "Catalog|General",
-                    ValueType = SettingValueType.Boolean,
-                    DefaultValue = false
-                };
-
                 public static SettingDescriptor ImageCategories { get; } = new SettingDescriptor
                 {
                     Name = "Catalog.ImageCategories",
@@ -137,8 +129,7 @@ namespace VirtoCommerce.CatalogModule.Core
                                    EditorialReviewTypes,
                                    CategoryDescriptionTypes,
                                    UseSeoDeduplication,
-                                   EventBasedIndexation,
-                                   CopyIDMenuItem
+                                   EventBasedIndexation
                                };
                     }
                 }

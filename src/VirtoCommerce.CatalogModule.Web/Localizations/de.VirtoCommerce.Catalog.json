@@ -248,6 +248,7 @@
           "expiration-date": "Ablaufdatum herunterladen",
           "download-type": "Typ herunterladen",
           "gtin": "GTIN",
+          "mpn": "MPN",
           "start-date": "Zuerst aufgeführt",
           "end-date": "Listing läuft ab am"
         },
@@ -265,6 +266,7 @@
           "expiration-date": "Datum auswählen",
           "download-type": "Wählen Sie aus...",
           "gtin": "GTIN eingeben",
+          "mpn": "MPN eingeben",
           "start-date": "Bitte geben sie die das datum...",
           "end-date": "Bitte geben sie die das datum..."
         },

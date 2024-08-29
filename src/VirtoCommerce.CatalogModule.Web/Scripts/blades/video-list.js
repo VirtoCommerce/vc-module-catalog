@@ -17,13 +17,6 @@ angular.module('virtoCommerce.catalogModule')
                     });
                 };
 
-                blade.isCopyIdMenuVisible = false;
-                settings.getValues({ id: 'Catalog.AllowToCopyID' }, function (data) {
-                    if (data && data.length > 0) {
-                        blade.isCopyIdMenuVisible = data[0];
-                    }
-                });
-
                 blade.refresh = function () {
                     blade.isLoading = true;
                     videos.options(null,

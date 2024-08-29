@@ -475,7 +475,33 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                     templateUrl: "name.html"
                 }]);
 
-                metaFormsService.registerMetaFields("productDetail1", [{
+                metaFormsService.registerMetaFields("productDetail1", [
+                {
+                    title: "catalog.blades.item-detail.labels.sku",
+                    colSpan: 6,
+                    templateUrl: "sku.html"
+                },
+                {
+                    title: "catalog.blades.item-detail.labels.gtin",
+                    colSpan: 3,
+                    templateUrl: "gtin.html"
+                    },
+                {
+                    title: "catalog.blades.item-detail.labels.mpn",
+                    colSpan: 3,
+                    templateUrl: "mpn.html"
+                },
+                {
+                    colSpan: 3,
+                    spanAllColumns: true,
+                    templateUrl: "vendor.html"
+                },
+                {
+                    colSpan: 3,
+                    spanAllColumns: true,
+                    templateUrl: "taxType.html"
+                },
+                {
                     name: 'id',
                     title: "catalog.blades.item-detail.labels.id",
                     colSpan: 3,
@@ -489,25 +515,6 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                     placeholder: " ",
                     isReadOnly: true,
                     valueType: "ShortText"
-                }, {
-                    title: "catalog.blades.item-detail.labels.sku",
-                    colSpan: 3,
-                    templateUrl: "sku.html"
-                },
-                {
-                    title: "catalog.blades.item-detail.labels.gtin",
-                    colSpan: 3,
-                    templateUrl: "gtin.html"
-                },
-                {
-                    colSpan: 3,
-                    spanAllColumns: true,
-                    templateUrl: "vendor.html"
-                },
-                {
-                    colSpan: 3,
-                    spanAllColumns: true,
-                    templateUrl: "taxType.html"
                 }
                 ]);
 

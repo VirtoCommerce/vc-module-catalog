@@ -339,6 +339,7 @@
           "expiration-date": "Download expiration date",
           "download-type": "Download type",
           "gtin": "GTIN",
+          "mpn": "MPN",
           "start-date": "First listed",
           "end-date": "Listing expires on"
         },
@@ -356,6 +357,7 @@
           "expiration-date": "Select date",
           "download-type": "Select...",
           "gtin": "Enter GTIN here",
+          "mpn": "Enter MPN here",
           "start-date": "Please provide a date...",
           "end-date": "Please provide a date..."
         },
