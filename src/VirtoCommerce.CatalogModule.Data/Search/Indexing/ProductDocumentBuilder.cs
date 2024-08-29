@@ -50,7 +50,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             schema.AddFilterableString("mainProductId");
             schema.AddFilterableString("productFamilyId");
             schema.AddFilterableString("gtin");
-            schema.AddFilterableString("mpn");
+            schema.AddFilterableString("manufacturerPartNumber");
             schema.AddFilterableString("availability");
 
             schema.AddFilterableCollection("is");
@@ -165,7 +165,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             document.AddFilterableString("mainProductId", product.MainProductId ?? string.Empty);
             document.AddFilterableString("productFamilyId", string.IsNullOrEmpty(product.MainProductId) ? product.Id : product.MainProductId);
             document.AddFilterableString("gtin", product.Gtin ?? string.Empty);
-            document.AddFilterableString("mpn", product.ManufacturerPartNumber ?? string.Empty);
+            document.AddFilterableString("manufacturerPartNumber", product.ManufacturerPartNumber ?? string.Empty);
 
             var productAvailability = GetProductAvailability(product);
             if (!string.IsNullOrEmpty(productAvailability))
