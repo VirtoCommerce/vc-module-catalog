@@ -18,7 +18,7 @@
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
     <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.800.0" />
     <PackageReference Include="VirtoCommerce.ExportModule.Core" Version="3.800.0" />
-    <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.825.0" />
+    <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.851.0-alpha.12972-vcst-1752" />
     <PackageReference Include="VirtoCommerce.SearchModule.Core" Version="3.800.0" />
   </ItemGroup>
 </Project>
