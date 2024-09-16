@@ -23,7 +23,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             _platformMemoryCache = platformMemoryCache;
         }
 
-        public async Task<ProductAssociationSearchResult> SearchProductAssociationsAsync(ProductAssociationSearchCriteria criteria)
+        public Task<ProductAssociationSearchResult> SearchProductAssociationsAsync(ProductAssociationSearchCriteria criteria)
         {
             if (criteria == null)
             {
@@ -31,11 +31,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             }
 
             var cacheKey = CacheKey.With(GetType(), "SearchProductAssociationsAsync", criteria.GetCacheKey());
-            return await _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async (cacheEntry) =>
+            return _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async (cacheEntry) =>
             {
                 cacheEntry.AddExpirationToken(AssociationSearchCacheRegion.CreateChangeToken());
                 var result = AbstractTypeFactory<ProductAssociationSearchResult>.TryCreateInstance();
-                if (!criteria.ObjectIds.IsNullOrEmpty())
+                if (!criteria.ObjectIds.IsNullOrEmpty() || !criteria.AssociatedObjectIds.IsNullOrEmpty())
                 {
                     using (var repository = _catalogRepositoryFactory())
                     {
