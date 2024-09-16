@@ -68,8 +68,25 @@ angular.module('virtoCommerce.catalogModule')
         }
 
         function canSave() {
-            return isDirty() && blade.formScope && blade.formScope.$valid && isValidQuantity(blade.item);
+            return isDirty() && blade.formScope && blade.formScope.$valid
+                && isValidQuantity(blade.item)
+                && isValidPackSize(blade.item);
         }
+
+        function isValidPackSize(item) {
+            const packSizeEmpty = isEmpty(item.packSize);
+            const packSize = parseInt(item.packSize, 10);
+
+            if (packSizeEmpty) {
+                return false;
+            }
+
+            if (!packSizeEmpty && (isNaN(packSize) || packSize < 0)) {
+                return false;
+            }
+            return true;
+        }
+
 
         function isValidQuantity(item) {
             const minEmpty = isEmpty(item.minQuantity);

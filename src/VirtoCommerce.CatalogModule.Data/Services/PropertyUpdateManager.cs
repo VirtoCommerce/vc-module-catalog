@@ -40,6 +40,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                              new Property { Name = nameof(CatalogProduct.TrackInventory), Type = PropertyType.Product, ValueType = PropertyValueType.Boolean },
                              new Property { Name = nameof(CatalogProduct.MinQuantity), Type = PropertyType.Product, ValueType = PropertyValueType.Integer },
                              new Property { Name = nameof(CatalogProduct.MaxQuantity), Type = PropertyType.Product, ValueType = PropertyValueType.Integer },
+                             new Property { Name = nameof(CatalogProduct.PackSize), Type = PropertyType.Product, ValueType = PropertyValueType.Integer },
                              new Property { Name = nameof(CatalogProduct.Vendor), Type = PropertyType.Product, ValueType = PropertyValueType.ShortText, Dictionary = true },
                              new Property { Name = nameof(CatalogProduct.WeightUnit), Type = PropertyType.Product, ValueType = PropertyValueType.ShortText, Dictionary = true },
                              new Property { Name = nameof(CatalogProduct.Weight), Type = PropertyType.Product, ValueType = PropertyValueType.Number },

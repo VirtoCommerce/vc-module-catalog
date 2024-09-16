@@ -30,6 +30,8 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
         public decimal MaxQuantity { get; set; }
 
+        public int PackSize { get; set; }
+
         public bool TrackInventory { get; set; }
 
         [StringLength(128)]
@@ -153,6 +155,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             product.MaxQuantity = (int)MaxQuantity;
             product.MeasureUnit = MeasureUnit;
             product.MinQuantity = (int)MinQuantity;
+            product.PackSize = PackSize;
             product.Name = Name;
             product.PackageType = PackageType;
             product.Priority = Priority;
@@ -261,6 +264,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             MaxQuantity = product.MaxQuantity ?? 0;
             MeasureUnit = product.MeasureUnit;
             MinQuantity = product.MinQuantity ?? 0;
+            PackSize = product.PackSize;
             Name = product.Name;
             PackageType = product.PackageType;
             Priority = product.Priority;
@@ -391,6 +395,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             target.TrackInventory = TrackInventory;
             target.MinQuantity = MinQuantity;
             target.MaxQuantity = MaxQuantity;
+            target.PackSize = PackSize;
             target.EnableReview = EnableReview;
             target.OuterId = OuterId;
             target.CatalogId = CatalogId;

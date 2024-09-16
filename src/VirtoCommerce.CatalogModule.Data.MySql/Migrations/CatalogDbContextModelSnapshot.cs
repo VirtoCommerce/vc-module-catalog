@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 
@@ -16,8 +17,10 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.13")
+                .HasAnnotation("ProductVersion", "8.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
+
+            MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.AssetEntity", b =>
                 {
@@ -343,9 +346,10 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
 
                     b.HasIndex("ParentCategoryId");
 
-                    b.ToTable("Category", (string)null);
-
-                    b.HasCheckConstraint("Parent_category_check", "\"ParentCategoryId\" != \"Id\"");
+                    b.ToTable("Category", null, t =>
+                        {
+                            t.HasCheckConstraint("Parent_category_check", "\"ParentCategoryId\" != \"Id\"");
+                        });
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.CategoryItemRelationEntity", b =>
@@ -625,6 +629,11 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
                     b.Property<string>("OuterId")
                         .HasMaxLength(128)
                         .HasColumnType("varchar(128)");
+
+                    b.Property<int>("PackSize")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
 
                     b.Property<string>("PackageType")
                         .HasMaxLength(128)
