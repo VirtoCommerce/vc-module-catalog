@@ -112,7 +112,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         public int? MinQuantity { get; set; }
 
         /// <summary>
-        /// Defines the number of items in a package. Default value is 1.
+        /// Defines the number of items in a package. Quantity step for your product's. Default value is 1.
         /// </summary>
         public int PackSize { get; set; } = 1;
 

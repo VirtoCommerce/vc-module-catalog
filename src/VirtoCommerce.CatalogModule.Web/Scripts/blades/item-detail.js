@@ -69,28 +69,17 @@ angular.module('virtoCommerce.catalogModule')
 
         function canSave() {
             return isDirty() && blade.formScope && blade.formScope.$valid
-                && isValidQuantity(blade.item)
-                && isValidPackSize(blade.item);
+                && isValidQuantity(blade.item);
         }
-
-        function isValidPackSize(item) {
-            const packSizeEmpty = isEmpty(item.packSize);
-            const packSize = parseInt(item.packSize, 10);
-
-            if (packSizeEmpty) {
-                return false;
-            }
-
-            if (!packSizeEmpty && (isNaN(packSize) || packSize < 0)) {
-                return false;
-            }
-            return true;
-        }
-
 
         function isValidQuantity(item) {
             const minEmpty = isEmpty(item.minQuantity);
             const maxEmpty = isEmpty(item.maxQuantity);
+            const packSizeEmpty = isEmpty(item.packSize);
+
+            if (packSizeEmpty) {
+                return false;
+            }
 
             if (minEmpty && maxEmpty) {
                 return true;
@@ -98,6 +87,7 @@ angular.module('virtoCommerce.catalogModule')
 
             const minNumber = parseInt(item.minQuantity, 10);
             const maxNumber = parseInt(item.maxQuantity, 10);
+            const packSize = parseInt(item.packSize, 10);
 
             if (!minEmpty && (isNaN(minNumber) || minNumber < 0) ||
                 !maxEmpty && (isNaN(maxNumber) || maxNumber < 0)) {
@@ -107,6 +97,10 @@ angular.module('virtoCommerce.catalogModule')
             if (minEmpty && !maxEmpty ||
                 !minEmpty && maxEmpty) {
                 return true;
+            }
+
+            if (!packSizeEmpty && (isNaN(packSize) || packSize < 0)) {
+                return false;
             }
 
             return minNumber <= maxNumber;
