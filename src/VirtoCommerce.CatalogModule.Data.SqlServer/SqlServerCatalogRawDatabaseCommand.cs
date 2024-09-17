@@ -347,9 +347,26 @@ namespace VirtoCommerce.CatalogModule.Data.SqlServer
                 ");
             }
 
-            command.Append(@"
+            if (!criteria.ObjectIds.IsNullOrEmpty())
+            {
+                command.Append(@"
                     WHERE ItemId IN ({0})
-            ");
+                ");
+
+                // search by associated product ids
+                if (!criteria.AssociatedObjectIds.IsNullOrEmpty())
+                {
+                    command.Append("  AND a.AssociatedItemId in (@associatedoOjectIds)");
+                }
+            }
+            else
+            {
+                // search by associated product ids
+                if (!criteria.AssociatedObjectIds.IsNullOrEmpty())
+                {
+                    command.Append("  WHERE a.AssociatedItemId in (@associatedoOjectIds)");
+                }
+            }
 
             // search by association type
             if (!string.IsNullOrEmpty(criteria.Group))
@@ -368,12 +385,6 @@ namespace VirtoCommerce.CatalogModule.Data.SqlServer
             {
                 command.Append("  AND i.Name like @keyword");
             }
-
-            // search by associated product ids
-            if (!criteria.AssociatedObjectIds.IsNullOrEmpty())
-            {
-                command.Append("  AND a.AssociatedItemId in (@associatedoOjectIds)");
-            }
         }
 
         protected virtual Task<int> ExecuteStoreQueryAsync(CatalogDbContext dbContext, string commandTemplate, IEnumerable<string> parameterValues)
@@ -384,14 +395,24 @@ namespace VirtoCommerce.CatalogModule.Data.SqlServer
 
         protected virtual Command CreateCommand(string commandTemplate, IEnumerable<string> parameterValues)
         {
-            var parameters = parameterValues.Select((v, i) => new Microsoft.Data.SqlClient.SqlParameter($"@p{i}", v)).ToArray();
-            var parameterNames = string.Join(",", parameters.Select(p => p.ParameterName));
-
-            return new Command
+            if (!parameterValues.IsNullOrEmpty())
             {
-                Text = string.Format(commandTemplate, parameterNames),
-                Parameters = parameters.OfType<object>().ToList(),
-            };
+                var parameters = parameterValues.Select((v, i) => new Microsoft.Data.SqlClient.SqlParameter($"@p{i}", v)).ToArray();
+                var parameterNames = string.Join(",", parameters.Select(p => p.ParameterName));
+
+                return new Command
+                {
+                    Text = string.Format(commandTemplate, parameterNames),
+                    Parameters = parameters.OfType<object>().ToList(),
+                };
+            }
+            else
+            {
+                return new Command
+                {
+                    Text = commandTemplate
+                };
+            }
         }
 
         protected static Microsoft.Data.SqlClient.SqlParameter[] AddArrayParameters<T>(Command cmd, string paramNameRoot, IEnumerable<T> values)
