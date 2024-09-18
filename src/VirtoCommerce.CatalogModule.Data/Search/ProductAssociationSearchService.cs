@@ -35,7 +35,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             {
                 cacheEntry.AddExpirationToken(AssociationSearchCacheRegion.CreateChangeToken());
                 var result = AbstractTypeFactory<ProductAssociationSearchResult>.TryCreateInstance();
-                if (!criteria.ObjectIds.IsNullOrEmpty())
+                if (!criteria.ObjectIds.IsNullOrEmpty() || !criteria.AssociatedObjectIds.IsNullOrEmpty())
                 {
                     using (var repository = _catalogRepositoryFactory())
                     {
