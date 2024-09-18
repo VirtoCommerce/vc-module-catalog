@@ -52,6 +52,12 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             schema.AddFilterableString("gtin");
             schema.AddFilterableString("manufacturerPartNumber");
             schema.AddFilterableString("availability");
+            schema.AddFilterableString("weightUnit");
+            schema.AddFilterableDecimal("weight");
+            schema.AddFilterableString("measureUnit");
+            schema.AddFilterableDecimal("height");
+            schema.AddFilterableDecimal("width");
+            schema.AddFilterableDecimal("length");
 
             schema.AddFilterableCollection("is");
             schema.AddFilterableCollection("catalog");
@@ -166,6 +172,12 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             document.AddFilterableString("productFamilyId", string.IsNullOrEmpty(product.MainProductId) ? product.Id : product.MainProductId);
             document.AddFilterableString("gtin", product.Gtin ?? string.Empty);
             document.AddFilterableString("manufacturerPartNumber", product.ManufacturerPartNumber ?? string.Empty);
+            document.AddFilterableString("weightUnit", product.WeightUnit ?? string.Empty);
+            document.AddFilterableDecimal("weight", product.Weight);
+            document.AddFilterableString("measureUnit", product.MeasureUnit ?? string.Empty);
+            document.AddFilterableDecimal("height", product.Height);
+            document.AddFilterableDecimal("width", product.Width);
+            document.AddFilterableDecimal("length", product.Length);
 
             var productAvailability = GetProductAvailability(product);
             if (!string.IsNullOrEmpty(productAvailability))
