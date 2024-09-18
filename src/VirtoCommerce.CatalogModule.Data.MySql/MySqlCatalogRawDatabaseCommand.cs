@@ -148,16 +148,21 @@ namespace VirtoCommerce.CatalogModule.Data.MySql
         {
             var result = new GenericSearchResult<AssociationEntity>();
 
-            var query = dbContext.Set<AssociationEntity>().Where(item => criteria.ObjectIds.Contains(item.ItemId));
+            var query = dbContext.Set<AssociationEntity>().AsQueryable();
 
-            if (!string.IsNullOrEmpty(criteria.Group))
+            if (!criteria.ObjectIds.IsNullOrEmpty())
             {
-                query = query.Where(item => item.AssociationType == criteria.Group);
+                query = query.Where(item => criteria.ObjectIds.Contains(item.ItemId));
             }
 
             if (!criteria.AssociatedObjectIds.IsNullOrEmpty())
             {
                 query = query.Where(item => criteria.AssociatedObjectIds.Contains(item.AssociatedItemId));
+            }
+
+            if (!string.IsNullOrEmpty(criteria.Group))
+            {
+                query = query.Where(item => item.AssociationType == criteria.Group);
             }
 
             if (!string.IsNullOrEmpty(criteria.Keyword))
@@ -349,14 +354,24 @@ namespace VirtoCommerce.CatalogModule.Data.MySql
 
         protected virtual Command CreateCommand(string commandTemplate, IEnumerable<string> parameterValues)
         {
-            var parameters = parameterValues.Select((v, i) => new MySqlParameter($"@p{i}", v)).ToArray();
-            var parameterNames = string.Join(",", parameters.Select(p => p.ParameterName));
-
-            return new Command
+            if (!parameterValues.IsNullOrEmpty())
             {
-                Text = string.Format(commandTemplate, parameterNames),
-                Parameters = parameters.OfType<object>().ToList(),
-            };
+                var parameters = parameterValues.Select((v, i) => new MySqlParameter($"@p{i}", v)).ToArray();
+                var parameterNames = string.Join(",", parameters.Select(p => p.ParameterName));
+
+                return new Command
+                {
+                    Text = string.Format(commandTemplate, parameterNames),
+                    Parameters = parameters.OfType<object>().ToList(),
+                };
+            }
+            else
+            {
+                return new Command
+                {
+                    Text = commandTemplate
+                };
+            }
         }
 
         protected class Command

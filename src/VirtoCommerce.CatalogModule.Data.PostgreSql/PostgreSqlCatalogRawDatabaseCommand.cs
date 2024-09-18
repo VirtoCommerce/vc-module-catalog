@@ -242,32 +242,61 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql
             var command = new StringBuilder();
 
             command.Append(@"
-                ; WITH RECURSIVE Association_CTE AS
-                (
-                    SELECT a.*
-                    FROM ""Association"" a");
+                    ;WITH RECURSIVE Association_CTE AS
+                    (
+                        SELECT
+                             a.""Id""
+                            ,a.""AssociationType""
+                            ,a.""Priority""
+                            ,a.""ItemId""
+                            ,a.""CreatedDate""
+                            ,a.""ModifiedDate""
+                            ,a.""CreatedBy""
+                            ,a.""ModifiedBy""
+                            ,a.""AssociatedItemId""
+                            ,a.""AssociatedCategoryId""
+                            ,a.""Tags""
+                            ,a.""Quantity""
+                            ,a.""OuterId""
+                        FROM ""Association"" a"
+            );
 
             AddAssociationsSearchCriteriaToCommand(command, criteria);
 
             command.Append(@"), Category_CTE AS
-                (
-                    SELECT ""AssociatedCategoryId"" Id
-                    FROM Association_CTE
-                    WHERE ""AssociatedCategoryId"" IS NOT NULL
-                    UNION ALL
-                    SELECT c.""Id""
-                    FROM ""Category"" c
-                    INNER JOIN Category_CTE cte ON c.""ParentCategoryId"" = cte.Id
-                ),
-                Item_CTE AS
-                (
-                    SELECT  i.""Id""
-                    FROM (SELECT DISTINCT Id FROM Category_CTE) c
-                    LEFT JOIN ""Item"" i ON c.Id=i.""CategoryId"" WHERE i.""ParentId"" IS NULL
-                    UNION
-                    SELECT ""AssociatedItemId"" Id FROM Association_CTE
-                )
-                SELECT COUNT(""Id"") FROM Item_CTE");
+                    (
+                        SELECT ""AssociatedCategoryId"" Id, ""AssociatedCategoryId""
+                        FROM Association_CTE
+                        WHERE ""AssociatedCategoryId"" IS NOT NULL
+                        UNION ALL
+                        SELECT c.""Id"", cte.""AssociatedCategoryId""
+                        FROM ""Category"" c
+                        INNER JOIN Category_CTE cte ON c.""ParentCategoryId"" = cte.Id
+                    ),
+                    Item_CTE AS
+                    (
+                        SELECT
+                            a.""Id""
+                            ,a.""AssociationType""
+                            ,a.""Priority""
+                            ,a.""ItemId""
+                            ,a.""CreatedDate""
+                            ,a.""ModifiedDate""
+                            ,a.""CreatedBy""
+                            ,a.""ModifiedBy""
+                            ,i.""Id"" ""AssociatedItemId""
+                            ,a.""AssociatedCategoryId""
+                            ,a.""Tags""
+                            ,a.""Quantity""
+                            ,a.""OuterId""
+                        FROM Category_CTE cat
+                        LEFT JOIN ""Item"" i ON cat.Id=i.""CategoryId""
+                        LEFT JOIN ""Association"" a ON cat.""AssociatedCategoryId""=a.""AssociatedCategoryId""
+                        WHERE i.""ParentId"" IS NULL
+                        UNION
+                        SELECT * FROM Association_CTE
+                    )
+                    SELECT COUNT(*) FROM Item_CTE WHERE ""AssociatedItemId"" IS NOT NULL ");
 
             return command.ToString();
         }
@@ -348,9 +377,26 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql
                 ");
             }
 
-            command.Append(@"
-                    WHERE ""ItemId"" IN ({0})
-            ");
+            if (!criteria.ObjectIds.IsNullOrEmpty())
+            {
+                command.Append(@"
+                    WHERE ItemId IN ({0})
+                ");
+
+                // search by associated product ids
+                if (!criteria.AssociatedObjectIds.IsNullOrEmpty())
+                {
+                    command.Append("  AND a.\"AssociatedItemId\" in (@associatedObjectIds)");
+                }
+            }
+            else
+            {
+                // search by associated product ids
+                if (!criteria.AssociatedObjectIds.IsNullOrEmpty())
+                {
+                    command.Append("  WHERE a.\"AssociatedItemId\" in (@associatedObjectIds)");
+                }
+            }
 
             // search by association type
             if (!string.IsNullOrEmpty(criteria.Group))
@@ -369,12 +415,6 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql
             {
                 command.Append("  AND i.\"Name\" like @keyword");
             }
-
-            // search by associated product ids
-            if (!criteria.AssociatedObjectIds.IsNullOrEmpty())
-            {
-                command.Append("  AND a.\"AssociatedItemId\" in (@associatedObjectIds)");
-            }
         }
 
         protected virtual Task<int> ExecuteStoreQueryAsync(CatalogDbContext dbContext, string commandTemplate, IEnumerable<string> parameterValues)
@@ -385,14 +425,24 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql
 
         protected virtual Command CreateCommand(string commandTemplate, IEnumerable<string> parameterValues)
         {
-            var parameters = parameterValues.Select((v, i) => new NpgsqlParameter($"@p{i}", v)).ToArray();
-            var parameterNames = string.Join(",", parameters.Select(p => p.ParameterName));
-
-            return new Command
+            if (!parameterValues.IsNullOrEmpty())
             {
-                Text = string.Format(commandTemplate, parameterNames),
-                Parameters = parameters.OfType<object>().ToList(),
-            };
+                var parameters = parameterValues.Select((v, i) => new NpgsqlParameter($"@p{i}", v)).ToArray();
+                var parameterNames = string.Join(",", parameters.Select(p => p.ParameterName));
+
+                return new Command
+                {
+                    Text = string.Format(commandTemplate, parameterNames),
+                    Parameters = parameters.OfType<object>().ToList(),
+                };
+            }
+            else
+            {
+                return new Command
+                {
+                    Text = commandTemplate
+                };
+            }
         }
 
         protected static NpgsqlParameter[] AddArrayParameters<T>(Command cmd, string paramNameRoot, IEnumerable<T> values)
