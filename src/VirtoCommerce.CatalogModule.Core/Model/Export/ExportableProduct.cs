@@ -29,6 +29,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model.Export
             IndexingDate = source.IndexingDate;
             MaxQuantity = source.MaxQuantity;
             MinQuantity = source.MinQuantity;
+            PackSize = source.PackSize;
             ProductType = source.ProductType;
             PackageType = source.PackageType;
             WeightUnit = source.WeightUnit;
@@ -85,6 +86,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model.Export
             result.IndexingDate = IndexingDate;
             result.MaxQuantity = MaxQuantity;
             result.MinQuantity = MinQuantity;
+            result.PackSize = PackSize;
             result.ProductType = ProductType;
             result.PackageType = PackageType;
             result.WeightUnit = WeightUnit;

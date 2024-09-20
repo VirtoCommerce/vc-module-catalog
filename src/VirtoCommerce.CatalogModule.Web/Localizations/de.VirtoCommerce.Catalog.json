@@ -239,6 +239,7 @@
           "has-user-agreement": "Hat User Agreement",
           "min-quantity": "Min. Menge",
           "max-quantity": "Max. Menge",
+          "pack-size": "Packungsgröße",
           "vendor": "Anbieter",
           "vendor-denied": "Zugriff verweigert",
           "tax-type": "Steuertyp",

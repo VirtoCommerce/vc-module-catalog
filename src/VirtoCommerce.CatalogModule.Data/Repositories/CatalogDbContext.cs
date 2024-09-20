@@ -72,6 +72,8 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             modelBuilder.Entity<ItemEntity>().HasIndex(x => new { x.CatalogId, x.ParentId }).IsUnique(false).HasDatabaseName("IX_CatalogId_ParentId");
             modelBuilder.Entity<ItemEntity>().HasIndex(x => new { x.CreatedDate, x.ParentId }).IsUnique(false).HasDatabaseName("IX_CreatedDate_ParentId");
 
+            modelBuilder.Entity<ItemEntity>().Property(x => x.PackSize).HasDefaultValue(1);
+
             #endregion Item
 
             #region Property

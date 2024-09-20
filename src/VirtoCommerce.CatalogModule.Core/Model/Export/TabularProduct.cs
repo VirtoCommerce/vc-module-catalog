@@ -19,6 +19,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model.Export
         public DateTime? IndexingDate { get; set; }
         public int? MaxQuantity { get; set; }
         public int? MinQuantity { get; set; }
+        public int PackSize { get; set; }
         public string ProductType { get; set; }
         public string PackageType { get; set; }
         public string WeightUnit { get; set; }

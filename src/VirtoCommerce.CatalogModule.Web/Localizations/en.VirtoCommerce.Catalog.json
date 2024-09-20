@@ -326,6 +326,7 @@
           "has-user-agreement": "Has user agreement",
           "min-quantity": "Min. quantity",
           "max-quantity": "Max. quantity",
+          "pack-size": "Pack size",
           "vendor": "Vendor",
           "vendor-denied": "Access denied",
           "tax-type": "Tax type",
