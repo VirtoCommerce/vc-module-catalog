@@ -522,14 +522,21 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                 {
                     name: 'isBuyable',
                     title: "catalog.blades.item-detail.labels.can-be-purchased",
-                    colSpan: 3,
+                    colSpan: 2,
                     valueType: "Boolean"
                 },
                 {
                     name: 'trackInventory',
                     title: "catalog.blades.item-detail.labels.track-inventory",
-                    colSpan: 3,
+                    colSpan: 2,
                     valueType: "Boolean"
+                },
+                {
+                    name: '_priority',
+                    title: "catalog.blades.item-detail.labels.priority",
+                    placeholder: "catalog.blades.item-detail.placeholders.priority",
+                    colSpan: 2,
+                    valueType: "Integer"
                 },
                 {
                     name: 'minQuantity',
@@ -544,9 +551,8 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                     valueType: "Integer"
                 },
                 {
-                    name: '_priority',
-                    title: "catalog.blades.item-detail.labels.priority",
-                    placeholder: "catalog.blades.item-detail.placeholders.priority",
+                    name: 'packSize',
+                    title: "catalog.blades.item-detail.labels.pack-size",
                     colSpan: 2,
                     valueType: "Integer"
                 },

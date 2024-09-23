@@ -17,10 +17,10 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.13")
+                .HasAnnotation("ProductVersion", "8.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.AssetEntity", b =>
                 {
@@ -346,9 +346,10 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
 
                     b.HasIndex("ParentCategoryId");
 
-                    b.ToTable("Category", (string)null);
-
-                    b.HasCheckConstraint("Parent_category_check", "\"ParentCategoryId\" != \"Id\"");
+                    b.ToTable("Category", null, t =>
+                        {
+                            t.HasCheckConstraint("Parent_category_check", "\"ParentCategoryId\" != \"Id\"");
+                        });
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.CategoryItemRelationEntity", b =>
@@ -628,6 +629,11 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                     b.Property<string>("OuterId")
                         .HasMaxLength(128)
                         .HasColumnType("nvarchar(128)");
+
+                    b.Property<int>("PackSize")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
 
                     b.Property<string>("PackageType")
                         .HasMaxLength(128)

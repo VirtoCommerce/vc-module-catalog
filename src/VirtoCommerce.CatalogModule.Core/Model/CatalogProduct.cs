@@ -113,6 +113,11 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         public int? MinQuantity { get; set; }
 
         /// <summary>
+        /// Defines the number of items in a package. Quantity step for your product's. Default value is 1.
+        /// </summary>
+        public int PackSize { get; set; } = 1;
+
+        /// <summary>
         /// First listed date and time. If you do not specify an end date, the product will be active until you deactivate it.If you do not specify an end date, the product will be active until you deactivate it.If you do not specify a start date, the product will become active immediately once you save it.
         /// </summary>
         public DateTime StartDate { get; set; }
