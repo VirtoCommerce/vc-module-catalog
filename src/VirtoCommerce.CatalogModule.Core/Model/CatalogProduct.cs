@@ -9,10 +9,11 @@ using VirtoCommerce.CoreModule.Core.Outlines;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.ExportModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.SearchModule.Core.Model;
 
 namespace VirtoCommerce.CatalogModule.Core.Model
 {
-    public class CatalogProduct : AuditableEntity, IHasLinks, ISeoSupport, IHasOutlines, IHasDimension, IHasAssociations, IHasProperties, IHasImages, IHasAssets, IInheritable, IHasTaxType, IHasName, IHasOuterId, IExportable, ICopyable, IHasCategoryId, IHasExcludedProperties
+    public class CatalogProduct : AuditableEntity, IHasLinks, ISeoSupport, IHasOutlines, IHasDimension, IHasAssociations, IHasProperties, IHasImages, IHasAssets, IInheritable, IHasTaxType, IHasName, IHasOuterId, IExportable, ICopyable, IHasCategoryId, IHasExcludedProperties, IHasRelevanceScore
     {
         /// <summary>
         /// The type of product. Can be "Physical", "Digital", etc.
@@ -446,6 +447,8 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                        Category.IsActive == true && Category.ParentIsActive;
             }
         }
+
+        public double? RelevanceScore { get; set; }
 
         public virtual object GetCopy()
         {

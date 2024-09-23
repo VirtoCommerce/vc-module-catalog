@@ -7,10 +7,11 @@ using VirtoCommerce.CoreModule.Core.Outlines;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.ExportModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.SearchModule.Core.Model;
 
 namespace VirtoCommerce.CatalogModule.Core.Model
 {
-    public class Category : AuditableEntity, IHasLinks, ISeoSupport, IHasOutlines, IHasImages, IHasProperties, IHasTaxType, IHasName, IHasOuterId, IExportable, IHasExcludedProperties
+    public class Category : AuditableEntity, IHasLinks, ISeoSupport, IHasOutlines, IHasImages, IHasProperties, IHasTaxType, IHasName, IHasOuterId, IExportable, IHasExcludedProperties, IHasRelevanceScore
     {
         public Category()
         {
@@ -178,6 +179,8 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                        Parent.IsActive == true && Parent.ParentIsActive;
             }
         }
+
+        public double? RelevanceScore { get; set; }
 
         public virtual void Move(string catalogId, string categoryId)
         {

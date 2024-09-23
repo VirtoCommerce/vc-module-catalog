@@ -7,6 +7,7 @@ using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Settings;
+using VirtoCommerce.SearchModule.Core.Extensions;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
 
@@ -90,6 +91,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
                 // Preserve original sorting order
                 result = documents.Select(doc => itemsMap[doc.Id.ToString()]).Where(x => x != null).ToArray();
+                documents.SetRelevanceScore(result);
             }
 
             return result;
