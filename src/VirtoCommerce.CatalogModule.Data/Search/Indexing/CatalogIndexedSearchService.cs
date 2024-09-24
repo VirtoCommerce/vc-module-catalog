@@ -90,8 +90,20 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 ReduceSearchResults(itemsMap.Values.Where(v => v != null), criteria);
 
                 // Preserve original sorting order
-                result = documents.Select(doc => itemsMap[doc.Id.ToString()]).Where(x => x != null).ToArray();
-                documents.SetRelevanceScore(result);
+                result = documents
+                    .Select(doc =>
+                    {
+                        var item = itemsMap.TryGetValue(doc.Id, out var value) ? value : null;
+
+                        if (item is IHasRelevanceScore hasRelevanceScore)
+                        {
+                            hasRelevanceScore.RelevanceScore = doc.GetRelevanceScore();
+                        }
+
+                        return item;
+                    })
+                    .Where(x => x != null)
+                    .ToArray();
             }
 
             return result;
