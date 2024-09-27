@@ -1,14 +1,17 @@
 using System.Linq;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.SearchModule.Core.Model;
 
 namespace VirtoCommerce.CatalogModule.Core.Model.ListEntry
 {
     /// <summary>
     /// Category ListEntry record.
     /// </summary>
-    public class CategoryListEntry : ListEntryBase
+    public class CategoryListEntry : ListEntryBase, IHasRelevanceScore
     {
         public const string TypeName = "category";
+
+        public double? RelevanceScore { get; set; }
 
         public override ListEntryBase FromModel(AuditableEntity entity)
         {
@@ -23,6 +26,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model.ListEntry
                 IsActive = category.IsActive;
                 Links = category.Links;
                 CatalogId = category.CatalogId;
+                RelevanceScore = category.RelevanceScore;
 
                 if (!category.Outlines.IsNullOrEmpty())
                 {
@@ -31,6 +35,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model.ListEntry
                     Path = category.Outlines.First().Items.Select(x => x.Name).ToList();
                 }
             }
+
             return this;
         }
     }
