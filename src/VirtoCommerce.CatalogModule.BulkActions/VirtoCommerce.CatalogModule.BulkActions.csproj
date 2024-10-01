@@ -15,7 +15,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
-    <PackageReference Include="VirtoCommerce.BulkActionsModule.Core" Version="3.800.0" />
+    <PackageReference Include="VirtoCommerce.BulkActionsModule.Core" Version="3.802.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\VirtoCommerce.CatalogModule.Core\VirtoCommerce.CatalogModule.Core.csproj" />

@@ -1,8 +1,8 @@
 # Common settings
 
-.github/* @mvktsk @Vectorfield4
-.gitignore @mvktsk @Vectorfield4
-.dockerignore @mvktsk @Vectorfield4
+.github/* @VirtoCommerce/platform
+.gitignore @VirtoCommerce/platform
+.dockerignore @VirtoCommerce/platform
 
 # Main Code and Tests
 
@@ -13,4 +13,4 @@ tests/* @VirtoCommerce/platform
 VirtoCommerce.Platform.sln  @VirtoCommerce/platform
 
 # Docs
-docs/* @zashchitnik-kuka
+docs/* @VirtoCommerce/platform
