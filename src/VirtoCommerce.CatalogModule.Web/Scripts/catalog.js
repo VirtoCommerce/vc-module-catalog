@@ -284,6 +284,16 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                 };
                 widgetService.registerWidget(catalogPropertyWidget, 'catalogDetail');
 
+                var catalogSeoWidget = {
+                    controller: 'virtoCommerce.coreModule.seo.seoWidgetController',
+                    template: 'Modules/$(VirtoCommerce.Core)/Scripts/SEO/widgets/seoWidget.tpl.html',
+                    objectType: 'Catalog',
+                    getDefaultContainerId: function (blade) { return undefined; },
+                    getLanguages: function (blade) { return _.pluck(blade.currentEntity.languages, 'languageCode'); }
+                };
+
+                widgetService.registerWidget(catalogSeoWidget, 'catalogDetail');
+
                 //Register links widgets
                 var categoryLinksWidget = {
                     controller: 'virtoCommerce.catalogModule.linksWidgetController',
