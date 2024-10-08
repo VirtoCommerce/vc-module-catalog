@@ -258,6 +258,8 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             modelBuilder.Entity<SeoInfoEntity>().Property(x => x.Id).HasMaxLength(128).ValueGeneratedOnAdd();
             modelBuilder.Entity<SeoInfoEntity>().HasOne(x => x.Category).WithMany(x => x.SeoInfos).HasForeignKey(x => x.CategoryId)
                 .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<SeoInfoEntity>().HasOne(x => x.Catalog).WithMany(x => x.SeoInfos).HasForeignKey(x => x.CatalogId)
+                .OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<SeoInfoEntity>().HasOne(x => x.Item).WithMany(x => x.SeoInfos).HasForeignKey(x => x.ItemId)
                 .OnDelete(DeleteBehavior.Cascade);
 

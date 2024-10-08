@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
+using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.ExportModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Core.Model
 {
-    public class Catalog : AuditableEntity, IHasProperties, IHasOuterId, IExportable
+    public class Catalog : AuditableEntity, IHasProperties, IHasOuterId, IExportable, ISeoSupport
     {
         public string Name { get; set; }
         public bool IsVirtual { get; set; }
@@ -35,6 +36,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         {
             var result = (Catalog)MemberwiseClone();
 
+            result.SeoInfos = SeoInfos?.Select(x => x.CloneTyped()).ToList();
             result.Languages = Languages?.Select(x => x.CloneTyped()).ToList();
             result.Properties = Properties?.Select(x => x.CloneTyped()).ToList();
 
@@ -51,6 +53,13 @@ namespace VirtoCommerce.CatalogModule.Core.Model
             {
                 Properties = null;
             }
+            if (!catalogResponseGroup.HasFlag(CatalogResponseGroup.WithSeo))
+            {
+                SeoInfos = null;
+            }
         }
+
+        public string SeoObjectType { get { return GetType().Name; } }
+        public IList<SeoInfo> SeoInfos { get; set; }
     }
 }

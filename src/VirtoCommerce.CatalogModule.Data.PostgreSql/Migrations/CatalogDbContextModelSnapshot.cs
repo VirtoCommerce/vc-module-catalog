@@ -1117,6 +1117,9 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
                         .HasMaxLength(128)
                         .HasColumnType("character varying(128)");
 
+                    b.Property<string>("CatalogId")
+                        .HasColumnType("character varying(128)");
+
                     b.Property<string>("CategoryId")
                         .HasColumnType("character varying(128)");
 
@@ -1170,6 +1173,8 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
                         .HasColumnType("character varying(255)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CatalogId");
 
                     b.HasIndex("CategoryId");
 
@@ -1551,6 +1556,11 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.SeoInfoEntity", b =>
                 {
+                    b.HasOne("VirtoCommerce.CatalogModule.Data.Model.CatalogEntity", "Catalog")
+                        .WithMany("SeoInfos")
+                        .HasForeignKey("CatalogId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("VirtoCommerce.CatalogModule.Data.Model.CategoryEntity", "Category")
                         .WithMany("SeoInfos")
                         .HasForeignKey("CategoryId")
@@ -1560,6 +1570,8 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
                         .WithMany("SeoInfos")
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Catalog");
 
                     b.Navigation("Category");
 
@@ -1575,6 +1587,8 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
                     b.Navigation("IncomingLinks");
 
                     b.Navigation("Properties");
+
+                    b.Navigation("SeoInfos");
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.CategoryEntity", b =>

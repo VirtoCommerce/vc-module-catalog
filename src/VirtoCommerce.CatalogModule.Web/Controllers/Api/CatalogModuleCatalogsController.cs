@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -10,6 +11,7 @@ using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Authorization;
+using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
@@ -105,6 +107,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         {
             var retVal = AbstractTypeFactory<Catalog>.TryCreateInstance();
             retVal.Name = "New catalog";
+            retVal.SeoInfos = new List<SeoInfo>();
             retVal.Languages = new List<CatalogLanguage>
                 {
                     new CatalogLanguage
@@ -148,7 +151,17 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Authorize(ModuleConstants.Security.Permissions.Create)]
         public async Task<ActionResult<Catalog>> CreateCatalog([FromBody] Catalog catalog)
         {
-            await _catalogService.SaveChangesAsync(new[] { catalog });
+            //Ensure that new category has SeoInfo
+            if (catalog.SeoInfos == null || !catalog.SeoInfos.Any())
+            {
+                var defaultLanguage = catalog?.Languages.First(x => x.IsDefault).LanguageCode;
+                var seoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
+                seoInfo.LanguageCode = defaultLanguage;
+                seoInfo.SemanticUrl = "catalog";
+                catalog.SeoInfos = [seoInfo];
+            }
+
+            await _catalogService.SaveChangesAsync([catalog]);
             return Ok(catalog);
         }
 
