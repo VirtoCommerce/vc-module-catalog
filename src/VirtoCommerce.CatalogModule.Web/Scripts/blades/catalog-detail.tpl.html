@@ -6,7 +6,7 @@
                 <va-metaform registered-inputs="blade.metaFields" blade="blade" column-count="2" ng-if="blade.currentEntity" ng-init="setForm(formScope)"></va-metaform>
             </form>
 
-            <va-widget-container group="catalogDetail" blade="blade" gridster-opts="gridsterOpts" class="form-group"></va-widget-container>
+            <va-widget-container group="catalogDetail" blade="blade" gridster-opts="gridsterOpts" data="blade.currentEntity" class="form-group"></va-widget-container>
         </div>
     </div>
 </div>

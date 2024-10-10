@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Domain;
 
@@ -40,6 +41,9 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         public virtual ObservableCollection<PropertyEntity> Properties { get; set; }
             = new NullCollection<PropertyEntity>();
 
+        public virtual ObservableCollection<SeoInfoEntity> SeoInfos { get; set; }
+            = new NullCollection<SeoInfoEntity>();
+
         #endregion
 
         public virtual Catalog ToModel(Catalog catalog)
@@ -67,6 +71,8 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             {
                 catalog.Languages.Add(additionalLanguage);
             }
+
+            catalog.SeoInfos = SeoInfos.Select(x => x.ToModel(AbstractTypeFactory<SeoInfo>.TryCreateInstance())).ToList();
 
             // Self properties
             catalog.Properties = Properties.Where(x => x.CategoryId == null)
@@ -144,6 +150,11 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 }
             }
 
+            if (catalog.SeoInfos != null)
+            {
+                SeoInfos = new ObservableCollection<SeoInfoEntity>(catalog.SeoInfos.Select(x => AbstractTypeFactory<SeoInfoEntity>.TryCreateInstance().FromModel(x, pkMap)));
+            }
+
             if (catalog.Languages != null)
             {
                 CatalogLanguages = new ObservableCollection<CatalogLanguageEntity>(catalog.Languages.Select(x => AbstractTypeFactory<CatalogLanguageEntity>.TryCreateInstance().FromModel(x, pkMap)));
@@ -169,6 +180,11 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             if (!CatalogPropertyValues.IsNullCollection())
             {
                 CatalogPropertyValues.Patch(target.CatalogPropertyValues, (sourcePropValue, targetPropValue) => sourcePropValue.Patch(targetPropValue));
+            }
+
+            if (!SeoInfos.IsNullCollection())
+            {
+                SeoInfos.Patch(target.SeoInfos, (sourceSeoInfo, targetSeoInfo) => sourceSeoInfo.Patch(targetSeoInfo));
             }
         }
     }
