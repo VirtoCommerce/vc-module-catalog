@@ -7,13 +7,31 @@ using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CoreModule.Core.Outlines;
+using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Settings;
+using VirtoCommerce.SearchModule.Core.Extensions;
 using VirtoCommerce.SearchModule.Core.Model;
 using static VirtoCommerce.SearchModule.Core.Extensions.IndexDocumentExtensions;
 
 namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 {
+    // TODO: Should be moved to VirtoCommerce.SearchModule.Core.Extensions.IndexDocumentExtensions before release
+    public static class IndexDocumentExtensionsLocalTest
+    {
+        public static void AddContentString(this IndexDocument document, string value, string languageCode)
+        {
+            if (string.IsNullOrEmpty(languageCode))
+            {
+                document.AddContentString(value);
+            }
+            else
+            {
+                document.AddSearchableCollection($"{ContentFieldName}_{languageCode.ToLowerInvariant()}", value);
+            }
+        }
+    }
+
     public abstract class CatalogDocumentBuilder
     {
         private readonly ISettingsManager _settingsManager;
@@ -149,8 +167,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 if (contentPropertyTypes == null || contentPropertyTypes.Contains(property.Type))
                 {
                     var contentField = property.Multilanguage && !string.IsNullOrWhiteSpace(propValue.LanguageCode)
-                        ? $"__content_{propValue.LanguageCode.ToLowerInvariant()}"
-                        : "__content";
+                        ? $"{ContentFieldName}_{propValue.LanguageCode.ToLowerInvariant()}"
+                        : ContentFieldName;
 
                     switch (propValue.ValueType)
                     {
@@ -165,6 +183,27 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
                             break;
                     }
+                }
+            }
+        }
+
+        protected virtual void IndexSeoInformation(IndexDocument document, IList<SeoInfo> seoInfos)
+        {
+            foreach (var seoInfo in seoInfos)
+            {
+                // Add SEO information to localized content
+                if (!string.IsNullOrEmpty(seoInfo.LanguageCode))
+                {
+                    document.AddContentString(seoInfo.MetaKeywords, seoInfo.LanguageCode);
+                    document.AddContentString(seoInfo.MetaDescription, seoInfo.LanguageCode);
+                    document.AddContentString(seoInfo.PageTitle, seoInfo.LanguageCode);
+                }
+                else
+                {
+                    // Add SEO information to content
+                    document.AddContentString(seoInfo.MetaKeywords);
+                    document.AddContentString(seoInfo.MetaDescription);
+                    document.AddContentString(seoInfo.PageTitle);
                 }
             }
         }
