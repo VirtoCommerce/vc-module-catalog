@@ -217,8 +217,10 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             // Index custom product properties
             IndexCustomProperties(document, product.Properties, contentPropertyTypes);
 
-            // Index editorial reviews
+            // Index product descriptions
             IndexDescriptions(document, product.Reviews);
+
+            IndexSeoInformation(document, product.SeoInfos);
 
             if (StoreObjectsInIndex)
             {
@@ -245,8 +247,9 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             // add the variationId to __variations
             document.AddSearchableCollection("__variations", variation.Id);
 
-            IndexCustomProperties(document, variation.Properties, new[] { PropertyType.Variation });
+            IndexCustomProperties(document, variation.Properties, [PropertyType.Variation]);
             IndexDescriptions(document, variation.Reviews);
+            IndexSeoInformation(document, variation.SeoInfos);
         }
 
         protected virtual void IndexTypeProperty(IndexDocument document, string value)
@@ -259,6 +262,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         {
             foreach (var review in reviews.Where(x => !string.IsNullOrEmpty(x?.Content)))
             {
+                document.AddContentString(review.Content, review.LanguageCode);
+
                 var descriptionField = $"description_{review.ReviewType?.ToLowerInvariant() ?? "null"}_{review.LanguageCode?.ToLowerInvariant() ?? "null"}";
                 document.Add(new IndexDocumentField(descriptionField, review.Content, IndexDocumentFieldValueType.String) { IsRetrievable = true, IsCollection = true });
             }
