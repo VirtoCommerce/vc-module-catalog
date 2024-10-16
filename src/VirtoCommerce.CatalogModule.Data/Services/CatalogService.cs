@@ -185,6 +185,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             {
                 CatalogTreeCacheRegion.ExpireTokenForKey(catalog.Id);
             }
+
+            SeoInfoCacheRegion.ExpireRegion();
         }
 
         protected virtual async Task<CatalogChangedEntriesAggregate> GetDeletedEntriesAsync(IList<Catalog> catalogs)

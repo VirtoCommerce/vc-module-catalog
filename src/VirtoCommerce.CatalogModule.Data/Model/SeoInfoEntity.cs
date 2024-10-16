@@ -39,6 +39,9 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         public string CategoryId { get; set; }
         public virtual CategoryEntity Category { get; set; }
 
+        public string CatalogId { get; set; }
+        public virtual CatalogEntity Catalog { get; set; }
+
         #endregion
 
         public virtual SeoInfo ToModel(SeoInfo seoInfo)
@@ -56,8 +59,10 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             seoInfo.IsActive = IsActive;
             seoInfo.MetaDescription = MetaDescription;
             seoInfo.MetaKeywords = MetaKeywords;
-            seoInfo.ObjectId = ItemId ?? CategoryId;
-            seoInfo.ObjectType = ItemId != null ? "CatalogProduct" : "Category";
+            seoInfo.ObjectId = ItemId ?? CategoryId ?? CatalogId;
+            seoInfo.ObjectType = ItemId != null
+                ? "CatalogProduct"
+                : CategoryId != null ? "Category" : "Catalog";
             seoInfo.StoreId = StoreId;
 
             return seoInfo;

@@ -13,6 +13,12 @@ angular.module('virtoCommerce.catalogModule')
                 if ($scope.pageSettings.currentPage !== 1)
                     $scope.pageSettings.currentPage = 1;
 
+                if ($scope.gridApi) {
+                    blade.currentEntities = [];
+                    $scope.gridApi.infiniteScroll.resetScroll(true, true);
+                    $scope.gridApi.infiniteScroll.dataLoaded(true, true);
+                }
+
                 catalogs.search(getSearchCriteria(), function (data) {
                     blade.isLoading = false;
                     $scope.pageSettings.totalItems = data.totalCount;
@@ -24,11 +30,6 @@ angular.module('virtoCommerce.catalogModule')
                         selectedNode = _.findWhere(data.results, { id: selectedNode.id });
                     }
                 });
-                if ($scope.gridApi) {
-                    blade.currentEntities = [];
-                    $scope.gridApi.infiniteScroll.resetScroll(true, true);
-                    $scope.gridApi.infiniteScroll.dataLoaded();
-                }
             };
 
             function showMore() {
