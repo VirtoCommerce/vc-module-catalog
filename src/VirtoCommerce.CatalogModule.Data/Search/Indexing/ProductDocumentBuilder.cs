@@ -262,14 +262,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         {
             foreach (var review in reviews.Where(x => !string.IsNullOrEmpty(x?.Content)))
             {
-                if (!string.IsNullOrEmpty(review.LanguageCode))
-                {
-                    document.AddContentString(review.Content, review.LanguageCode);
-                }
-                else
-                {
-                    document.AddContentString(review.Content);
-                }
+                document.AddContentString(review.Content, review.LanguageCode);
 
                 var descriptionField = $"description_{review.ReviewType?.ToLowerInvariant() ?? "null"}_{review.LanguageCode?.ToLowerInvariant() ?? "null"}";
                 document.Add(new IndexDocumentField(descriptionField, review.Content, IndexDocumentFieldValueType.String) { IsRetrievable = true, IsCollection = true });

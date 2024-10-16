@@ -191,20 +191,9 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         {
             foreach (var seoInfo in seoInfos)
             {
-                // Add SEO information to localized content
-                if (!string.IsNullOrEmpty(seoInfo.LanguageCode))
-                {
-                    document.AddContentString(seoInfo.MetaKeywords, seoInfo.LanguageCode);
-                    document.AddContentString(seoInfo.MetaDescription, seoInfo.LanguageCode);
-                    document.AddContentString(seoInfo.PageTitle, seoInfo.LanguageCode);
-                }
-                else
-                {
-                    // Add SEO information to content
-                    document.AddContentString(seoInfo.MetaKeywords);
-                    document.AddContentString(seoInfo.MetaDescription);
-                    document.AddContentString(seoInfo.PageTitle);
-                }
+                document.AddContentString(seoInfo.MetaKeywords, seoInfo.LanguageCode);
+                document.AddContentString(seoInfo.MetaDescription, seoInfo.LanguageCode);
+                document.AddContentString(seoInfo.PageTitle, seoInfo.LanguageCode);
             }
         }
 

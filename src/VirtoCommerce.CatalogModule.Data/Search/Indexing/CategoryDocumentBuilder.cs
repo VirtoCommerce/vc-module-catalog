@@ -150,12 +150,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         {
             foreach (var description in descriptions.Where(x => !string.IsNullOrEmpty(x?.Content)))
             {
-                document.AddContentString(description.Content);
-
-                if (!string.IsNullOrEmpty(description.LanguageCode))
-                {
-                    document.AddContentString(description.Content, description.LanguageCode);
-                }
+                document.AddContentString(description.Content, description.LanguageCode);
 
                 var descriptionField = $"description_{description.DescriptionType?.ToLowerInvariant() ?? "null"}_{description.LanguageCode?.ToLowerInvariant() ?? "null"}";
                 document.Add(new IndexDocumentField(descriptionField, description.Content, IndexDocumentFieldValueType.String) { IsRetrievable = true, IsCollection = true });
