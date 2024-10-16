@@ -16,22 +16,6 @@ using static VirtoCommerce.SearchModule.Core.Extensions.IndexDocumentExtensions;
 
 namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 {
-    // TODO: Should be moved to VirtoCommerce.SearchModule.Core.Extensions.IndexDocumentExtensions before release
-    public static class IndexDocumentExtensionsLocalTest
-    {
-        public static void AddContentString(this IndexDocument document, string value, string languageCode)
-        {
-            if (string.IsNullOrEmpty(languageCode))
-            {
-                document.AddContentString(value);
-            }
-            else
-            {
-                document.AddSearchableCollection($"{ContentFieldName}_{languageCode.ToLowerInvariant()}", value);
-            }
-        }
-    }
-
     public abstract class CatalogDocumentBuilder
     {
         private readonly ISettingsManager _settingsManager;
@@ -166,21 +150,13 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 // Add value to the searchable content field if property type is unknown or if it is present in the provided list
                 if (contentPropertyTypes == null || contentPropertyTypes.Contains(property.Type))
                 {
-                    var contentField = property.Multilanguage && !string.IsNullOrWhiteSpace(propValue.LanguageCode)
-                        ? $"{ContentFieldName}_{propValue.LanguageCode.ToLowerInvariant()}"
-                        : ContentFieldName;
-
                     switch (propValue.ValueType)
                     {
                         case PropertyValueType.LongText:
                         case PropertyValueType.ShortText:
                             var stringValue = propValue.Value.ToString();
-
-                            if (!string.IsNullOrWhiteSpace(stringValue)) // don't index empty values
-                            {
-                                document.Add(new IndexDocumentField(contentField, stringValue.ToLower(), IndexDocumentFieldValueType.String) { IsRetrievable = true, IsSearchable = true, IsCollection = true });
-                            }
-
+                            document.AddContentString(stringValue,
+                                property.Multilanguage ? propValue.LanguageCode : string.Empty);
                             break;
                     }
                 }
