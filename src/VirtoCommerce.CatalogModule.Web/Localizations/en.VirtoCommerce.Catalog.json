@@ -10,14 +10,14 @@
       "category": "Category properties",
       "geoPoint": {
         "title": "Geo point",
-        "placeholder": "Please enter latitude and longitude",
-        "description": "Please list latitude and longitude separated with a comma without spaces, e.g. 41.40338,2.17403."
+        "placeholder": "Enter latitude and longitude",
+        "description": "Enter latitude and longitude separated by a comma without spaces, e.g. 41.40338,2.17403"
       }
     },
     "product-types": {
       "Physical": "Physical",
       "Digital": "Digital",
-      "BillOfMaterials": "Product with a Bill of Materials"
+      "BillOfMaterials": "Product with bill of materials"
     },
     "blades": {
       "catalogs-list": {
@@ -29,16 +29,16 @@
         }
       },
       "catalog-add": {
-        "title": "New Catalog",
+        "title": "New catalog",
         "subtitle": "Choose new catalog type",
         "menu": {
           "catalog": {
-            "title": "Physical Catalog",
-            "description": "This is a central point for managing your store merchandise and creating catalogs for brands, product lines, or particular suppliers."
+            "title": "Physical catalog",
+            "description": "A physical catalog is an online list of products or services a company offers. Products can be grouped into categories or be part of the catalog without belonging to any category"
           },
           "virtual-catalog": {
-            "title": "Virtual Catalog",
-            "description": "Virtual catalogs allow you to visualize products stored in physical categories in a different way."
+            "title": "Virtual catalog",
+            "description": "A virtual catalog is built from one or more physical catalogs. They are used to display products by pulling together items from different physical catalogs"
           }
         }
       },
@@ -58,7 +58,7 @@
       "catalog-languages": {
         "subtitle": "Manage languages",
         "labels": {
-          "note": "Drag and drop to control the order. First active element becomes the default language.",
+          "note": "Drag and drop to control the order. First active element becomes the default language",
           "language-dictionary": "Language dictionary",
           "active": "Active",
           "language": "Language",
@@ -70,16 +70,16 @@
         }
       },
       "categories-items-list": {
-        "title": "Categories and Items",
+        "title": "Categories and items",
         "subtitle": "Browsing {{name}}",
         "subtitle-search": "Search results for \"{{keyword}}\"",
-        "title-mapping": "Choose Categories and Items for mapping",
-        "subtitle-mapping": "Creating a Link within your virtual catalog",
+        "title-mapping": "Choose categories and items for mapping",
+        "subtitle-mapping": "Creating a link within your virtual catalog",
         "labels": {
           "filter-new": "Add new filter",
           "filter-priceless": "No price",
-          "filter-withPrice": "Has a defined price",
-          "filter-priceRange": "Price between",
+          "filter-withPrice": "Defined price",
+          "filter-priceRange": "Price range",
           "filter-lowStock": "Low on stock",
           "filter-notActive": "Inactive",
           "filter-display-variations": "Display variations",
@@ -108,7 +108,7 @@
           "priority": "Priority"
         },
         "validations": {
-          "code": "Code cannot contain these characters: $+;=%{}[]|@~!^*&()?'<>"
+          "code": "Code cannot contain the following characters: $+;=%{}[]|@~!^*&()?'<>"
         },
         "placeholders": {
           "name": "Enter category name",
@@ -123,29 +123,29 @@
         "menu": {
           "category": {
             "title": "Category",
-            "description": "This is a container for other Categories and Products or Variations."
+            "description": "This is a container for other categories, products, or variations"
           },
           "link": {
             "title": "Link",
-            "description": "A link to physical Category or Product."
+            "description": "Link to a physical category or product"
           },
           "physical-product": {
-            "title": "Physical Product",
-            "description": "A physical product is an item for sale one may order. It can be used for targeted promotions and requires physical shipping."
+            "title": "Physical product",
+            "description": "This is a tangible item that can be purchased. It requires physical shipping and can be used for targeted promotions"
           },
           "digital-product": {
-            "title": "Digital Product",
-            "description": "A digital product is an item for sale one may order. It can be used for targeted promotions and is downloadable, which means it does not require any physical shipping."
+            "title": "Digital product",
+            "description": "This is an intangible item available for purchase. It can be downloaded directly after purchase, meaning it does not require physical shipping. Digital products are also suitable for targeted promotions"
           },
           "bill-of-materials-product": {
-            "title": "Product with a Bill of Materials",
-            "description": "This is a physical product that also includes a bill of materials (a list of ancillary items). It can be used for targeted promotions and requires physical shipping."
+            "title": "Product with bill of materials",
+            "description": "This is a physical product that comes with a bill of materials (a list of additional items). It can be used for specific promotions and requires physical shipping"
           }
         },
         "catalog-item-name": "Catalog",
-        "catalog-item-description": "This is a central point for managing your store merchandise and creating catalogs for brans, product lines, or particular suppliers.",
-        "virtual-catalog-item-name": "Virtual Catalog",
-        "virtual-catalog-item-description": "Virtual catalogs allow you to visualize the products and categories stored in physical categories in a different way."
+        "catalog-item-description": "This is a central point for managing your store merchandise and creating catalogs for brans, product lines, or particular suppliers",
+        "virtual-catalog-item-name": "Virtual catalog",
+        "virtual-catalog-item-description": "A virtual catalog is built from one or more physical catalogs. They are used to display products by pulling together items from different physical catalogs"
       },
       "catalog-property-list": {
         "subtitle": "Catalog properties",
@@ -164,7 +164,7 @@
         },
         "placeholders": {
           "criteria": "Enter search phrase",
-          "name": "Please give this filter a name"
+          "name": "Name this filter"
         }
       },
       "property-detail": {
@@ -176,18 +176,18 @@
           "display-order": "Display order",
           "required": "Required",
           "dictionary": "Dictionary",
-          "multivalue": "Multi value",
-          "multi-language": "Multi language",
+          "multivalue": "Multi-value",
+          "multi-language": "Multi-language",
           "applies-to": "Applies to",
-          "value-type": "Value Type",
+          "value-type": "Value type",
           "manage-dictionary": "Manage dictionary",
-          "new-dictionary-property-caution": "You can manage dictionary items only once you save the property",
+          "new-dictionary-property-caution": "You can manage dictionary items only after you save the property",
           "attributes": "Attributes",
           "manage-attributes": "Manage property attributes",
           "hidden": "Hidden"
         },
         "placeholders": {
-          "display-name": "Enter display name...",
+          "display-name": "Enter display name",
           "display-order": "Display order"
         }
       },
@@ -199,7 +199,7 @@
         "character-limit": {
           "between": "between",
           "at-least": "at least",
-          "not-more-than": "no more than"
+          "not-more-than": "not more than"
         },
         "patterns": {
           "custom": "custom",
@@ -247,17 +247,17 @@
         "subtitle": "Enter property information",
         "labels": {
           "property-name": "Property name",
-          "duplicate-property-in-product": "The property named {{propertyName}} already exists in {{categoryName}}. The name must be unique.",
-          "duplicate-property-in-catalog": "The property named {{propertyName}} already exists at the root catalog. The name must be unique.",
-          "duplicate-property-in-variation1": "The property named {{propertyName}} already exists for this variation ",
-          "duplicate-property-in-variation2": ". The name must be unique.",
-          "property-naming-error": "The property name must begin with an alphanumeric character and can contain only Latin characters, digits, and underscores (_). If an underscore (_) is used, make sure it has an alphanumeric character before and after it.",
-          "value-type": "Value Type"
+          "duplicate-property-in-product": "The property named {{propertyName}} already exists in {{categoryName}}. The name must be unique",
+          "duplicate-property-in-catalog": "The property named {{propertyName}} already exists at the root catalog. The name must be unique",
+          "duplicate-property-in-variation1": "The property named {{propertyName}} already exists for this variation",
+          "duplicate-property-in-variation2": ". The name must be unique",
+          "property-naming-error": "The property name must start with an alphanumeric character and contain only Latin characters, digits and underscores (_). If an underscore (_) is used, make sure there is an alphanumeric character before and after it",
+          "value-type": "Value type"
         }
       },
       "catalogs-select": {
-        "title": "Select Catalog",
-        "subtitle": "Creating a Link within your virtual catalog"
+        "title": "Select catalog",
+        "subtitle": "Creating a link within your virtual catalog"
       },
       "property-valueType": {
         "title": "{{name}} value type",
@@ -278,13 +278,13 @@
           "name-duplicate": "Duplicate name found"
         },
         "placeholders": {
-          "name": "Please enter the name",
-          "value": "Please enter the value"
+          "name": "Enter name",
+          "value": "Enter value"
         }
       },
       "property-type": {
         "title": "{{name}} applies to",
-        "subtitle": "Changes to what the applies"
+        "subtitle": "Соответствующие изменения"
       },
       "property-dictionary": {
         "title": "{{name}} dictionary",
@@ -299,7 +299,7 @@
           "language-add": "New values",
           "dictionary-edit": "Edit dictionary value",
           "priority": "Priority",
-          "priority-description": "The lowest value will be used first."
+          "priority-description": "The lowest value will be used first"
         },
         "validations": {
           "required": "Required",
@@ -324,8 +324,8 @@
           "store-visible": "Visible",
           "track-inventory": "Track inventory",
           "has-user-agreement": "Has user agreement",
-          "min-quantity": "Min. quantity",
-          "max-quantity": "Max. quantity",
+          "min-quantity": "Minimum quantity",
+          "max-quantity": "Maximum quantity",
           "pack-size": "Pack size",
           "vendor": "Vendor",
           "vendor-denied": "Access denied",
@@ -345,7 +345,7 @@
           "end-date": "Listing expires on"
         },
         "validations": {
-          "sku": "The SKU cannot contain these characters: $+;=%{}[]|@~!^*&()?'<>"
+          "sku": "SKU cannot contain the following characters: $+;=%{}[]|@~!^*&()?'<>"
         },
         "placeholders": {
           "sku": "Enter item SKU",
@@ -355,22 +355,22 @@
           "tax-type": "Select...",
           "weight-unit": "Select...",
           "weight": "Enter weight",
-          "expiration-date": "Select date",
+          "expiration-date": "Select a date",
           "download-type": "Select...",
-          "gtin": "Enter GTIN here",
-          "mpn": "Enter MPN here",
-          "start-date": "Please provide a date...",
-          "end-date": "Please provide a date..."
+          "gtin": "Enter GTIN",
+          "mpn": "Enter MPN",
+          "start-date": "Specify a date",
+          "end-date": "Specify a date"
         },
         "descr": {
-          "start-date": "If you do not specify a start date, the product will become active immediately once you save it.",
-          "end-date": "If you do not specify an end date, the product will be active until you deactivate it."
+          "start-date": "If you do not specify a start date, the product will become active immediately as soon as you save it",
+          "end-date": "If you do not specify an end date, the product will remain active until you deactivate it"
         }
       },
       "catalog-items-select": {
         "title": "Select categories",
         "title-association": "Select items to associate",
-        "subtitle-association": "Adding Associations to Product",
+        "subtitle-association": "Adding associations to product",
         "bread-crumb-top": "All catalogs",
         "labels": {
           "picture": "Pic",
@@ -440,7 +440,7 @@
           "image-category": "Image category",
           "drag-drop-comment": "Drag and drop your images here",
           "progress": "Progress",
-          "make-default-image": "Drag and drop an image to the top left corner of the image area to set it as default.",
+          "make-default-image": "Drag and drop an image into the upper left corner of the image area to set it as the default",
           "language": "Language",
           "preview": "Preview",
           "external-link": "External link",
@@ -450,21 +450,21 @@
         "placeholders": {
           "image-url": "Paste image URL here",
           "name": "Enter name",
-          "image-category": "Select...",
+          "image-category": "Select",
           "language": "Select language",
           "altText": "Enter text",
           "description": "Enter description"
         },
         "descr": {
           "external-link": "Use an external image URL instead of uploading it to assets",
-          "external-link-warning": "Note: Only https link is allowed for security reasons."
+          "external-link-warning": "Note: For security reasons, only https links are allowed"
         }
       },
       "video-list": {
         "title": "Videos",
         "subtitle": "All videos",
         "labels": {
-          "preview": "Prw",
+          "preview": "Preview",
           "name": "Name",
           "language": "Language",
           "priority": "Priority"
@@ -476,7 +476,7 @@
         "create": "Create",
         "labels": {
           "content-url": "Content URL",
-          "no-apikey": "You have not provided any Google API Key in the platform configuration file. The video information will be incomplete."
+          "no-apikey": "You have not provided any Google API key in the platform configuration file. The video information will be incomplete"
         },
         "placeholders": {
           "content-url": "Enter video URL"
@@ -487,21 +487,21 @@
         "subtitle": "Edit video information",
         "labels": {
           "name": "Video name",
-          "upload-date": "Upload date",
+          "upload-date": "Upload a date",
           "description": "Description",
           "duration": "Duration",
           "language": "Language",
           "video": "Video",
           "content-url": "Content URL",
           "embed-url": "Embedded URL",
-          "video-preview": "Video Preview",
+          "video-preview": "Video preview",
           "thumbnail": "Thumbnail",
           "thumbnail-url": "Thumbnail URL",
-          "thumbnail-preview": "Thumbnail Preview"
+          "thumbnail-preview": "Thumbnail preview"
         },
         "placeholders": {
           "name": "Enter name",
-          "upload-date": "Please provide a date...",
+          "upload-date": "Specify a date",
           "description": "Enter description",
           "language": "Select language",
           "content-url": "Enter video URL"
@@ -536,7 +536,7 @@
       "item-associations-list": {
         "subtitle": "Associations",
         "labels": {
-          "sorting-prompt": "Set how the associated items will appear in the web store. Drag and drop the products to change the order.",
+          "sorting-prompt": "Set how the associated items will appear in the web store. Drag and drop the products to change their order",
           "picture": "Img",
           "name": "Name",
           "priority": "Priority",
@@ -553,8 +553,8 @@
         },
         "placeholders": {
           "group": "Select...",
-          "quantity": "Enter quantity...",
-          "tags": "Enter tags..."
+          "quantity": "Specify quantity",
+          "tags": "Specify tags"
         }
       },
       "advanced-search-results": {
@@ -589,12 +589,12 @@
         "size": {
           "label": "Aggregation size",
           "placeholder": "Enter aggregation size",
-          "description": "Maximum number of aggregation values in the search results. 0 = unlimited"
+          "description": "Maximum number of aggregation values in search results. 0 = unlimited"
         },
         "values-Attribute": {
           "label": "Allowed values",
           "placeholder": "Enter allowed values",
-          "description": "Enter aggregation values allowed in the search results. Leave this blank to allow all values."
+          "description": "Enter aggregation values allowed in search results. Leave this blank to allow all values"
         },
         "values-Range": {
           "label": "Range bounds",
@@ -608,11 +608,11 @@
         }
       },
       "importers-list": {
-        "title": "Import Types",
+        "title": "Import types",
         "subtitle": "Select any of the available import types below"
       },
       "exporter-list": {
-        "title": "Export Types",
+        "title": "Export types",
         "subtitle": "Select any of the available export types below"
       },
       "exporter": {
@@ -620,7 +620,7 @@
         "productSubtitle": "Export catalog products to JSON or CSV"
       },
       "bill-of-materials-list": {
-        "title": "Bill of material products",
+        "title": "Bill of materials (BOM) products",
         "subtitle": "Add or delete BOM products",
         "no-data": "There are no products yet",
         "labels": {
@@ -636,11 +636,11 @@
         "lables": {
           "Product": {
             "title": "Product property",
-            "description": "Appears only for the related products"
+            "description": "Appears only for related products"
           },
           "Category": {
             "title": "Category property",
-            "description": "Appears only for the related catalog"
+            "description": "Appears only for related catalog"
           },
           "Catalog": {
             "title": "Catalog property",
@@ -648,7 +648,7 @@
           },
           "Variation": {
             "title": "Variation property",
-            "description": "Appears only for the related variations"
+            "description": "Appears only for related variations"
           }
         }
       },
@@ -677,9 +677,9 @@
           "description": "Description"
         },
         "placeholders": {
-          "name": "Enter name...",
-          "code": "Enter code...",
-          "description": "Enter description..."
+          "name": "Enter name",
+          "code": "Enter code",
+          "description": "Enter description"
         }
       },
       "measure-units-list": {
@@ -702,15 +702,15 @@
           "symbol": "Symbol"
         },
         "placeholders": {
-          "name": "Enter name...",
-          "code": "Enter code...",
-          "conversion-factor": "Enter conversion...",
+          "name": "Enter name",
+          "code": "Enter code",
+          "conversion-factor": "Enter conversion",
           "symbol": "Symbol"
         }
       }
     },
     "exporter-list": {
-      "title": "Export Types",
+      "title": "Export types",
       "subtitle": "Select any of the available export types below"
     },
     "exporter": {
@@ -767,7 +767,7 @@
         "height": "Height"
       },
       "billOfMaterials": {
-        "title": "Bill of Material"
+        "title": "Bill of materials"
       },
       "videos": {
         "blade-subtitle": "Videos",
@@ -783,48 +783,48 @@
     "dialogs": {
       "catalog-save": {
         "title": "Save changes",
-        "message": "This catalog has been modified. Do you want to save changes?"
+        "message": "This catalog has been modified. Do you want to save the changes?"
       },
       "catalog-delete": {
-        "title": "Confirm Delete",
-        "warning": "WARNING: This change is permanent and cannot be undone. Applying this change may result in a data loss.",
-        "message": "Are you sure you want to delete this catalog:",
+        "title": "Confirm delete",
+        "warning": "WARNING: This change is permanent and cannot be undone. Applying this change may result in data loss",
+        "message": "Are you sure you want to delete this catalog?",
         "instruction": "Type 'yes' to delete:"
       },
       "catalog-items-delete": {
-        "title": "Confirm Delete",
-        "warning": "WARNING: This change is permanent and cannot be undone. Applying this change may result in a data loss.",
+        "title": "Confirm delete",
+        "warning": "WARNING: This change is permanent and cannot be undone. Applying this change may result in data loss",
         "message": "The following data will be deleted:",
         "instruction": "Type 'yes' to delete:",
         "item": "{{count}} Item(s)",
         "category": "{{count}} Category(ies) and any content within",
         "linked-item": "{{count}} Item(s)",
-        "linked-category": "{{count}} Linked Category(ies)"
+        "linked-category": "{{count}} Linked category(ies)"
       },
       "property-delete": {
         "message": "Are you sure you want to delete the {{name}} property?",
-        "warning": "WARNING: This change is permanent and cannot be undone. Applying this change may result in a data loss.",
-        "msg1": "Please select the appropriate delete option. Options:",
-        "msg2": "Remove only Property metadata and keep the values in the related objects",
+        "warning": "WARNING: This change is permanent and cannot be undone. Applying this change may result in data loss",
+        "msg1": "Select the appropriate delete option. Options:",
+        "msg2": "Remove only property metadata and keep the values in the related objects",
         "msg3": "Delete completely with all related values",
         "shallow": "Remove metadata",
         "full": "Delete completely"
       },
       "property-dictionary-item-delete": {
         "message": "Are you sure you want to delete the selected dictionary items?",
-        "warning": "WARNING: This change is permanent and cannot be undone. Applying this change may result in a data loss."
+        "warning": "WARNING: This change is permanent and cannot be undone. Applying this change may result in data loss"
       },
       "virtual-catalog-save": {
         "title": "Save changes",
-        "message": "This virtual catalog has been modified. Do you want to save changes?"
+        "message": "This virtual catalog has been modified. Do you want to save the changes?"
       },
       "category-save": {
         "title": "Save changes",
-        "message": "This category has been modified. Do you want to save changes?"
+        "message": "This category has been modified. Do you want to save the changes?"
       },
       "item-save": {
         "title": "Save changes",
-        "message": "This item has been modified. Do you want to save changes?"
+        "message": "This item has been modified. Do you want to save the changes?"
       },
       "variation-delete": {
         "title": "Confirm Delete",
@@ -832,82 +832,82 @@
       },
       "property-save": {
         "title": "Save changes",
-        "message": "This property has been modified. Do you want to save changes?"
+        "message": "This property has been modified. Do you want to save the changes?"
       },
       "item-property-delete": {
         "message": "Are you sure you want to delete the {{name}} property?"
       },
       "dictionary-values-delete": {
-        "title": "Confirm Delete",
+        "title": "Confirm delete",
         "message": "Are you sure you want to delete the selected dictionary values?"
       },
       "review-save": {
         "title": "Save changes",
-        "message": "This description has been modified. Do you want to save changes?"
+        "message": "This description has been modified. Do you want to save the changes?"
       },
       "review-delete": {
-        "title": "Confirm Delete",
+        "title": "Confirm delete",
         "message": "Are you sure you want to delete this description?"
       },
       "association-delete": {
-        "title": "Confirm Delete",
+        "title": "Confirm delete",
         "message": "Are you sure you want to delete the selected associations?"
       },
       "attribut-delete": {
-        "title": "Confirm Delete",
+        "title": "Confirm delete",
         "message": "Are you sure you want to delete the selected attributes?"
       },
       "image-save": {
         "title": "Confirm Delete",
-        "message": "These images have been modified. Do you want to save changes?"
+        "message": "These images have been modified. Do you want to save the changes?"
       },
       "video-save": {
         "title": "Save changes",
-        "message": "This video has been modified. Do you want to save changes?"
+        "message": "This video has been modified. Do you want to save the changes?"
       },
       "video-delete": {
-        "title": "Confirm Delete",
+        "title": "Confirm delete",
         "message": "Are you sure you want to delete this video?"
       },
       "video-list-delete": {
-        "title": "Confirm Delete",
+        "title": "Confirm delete",
         "message": "Are you sure you want to delete the selected videos?"
       },
       "asset-save": {
         "title": "Save changes",
-        "message": "These assets have been modified. Do you want to save changes?"
+        "message": "These assets have been modified. Do you want to save the changes?"
       },
       "language-save": {
         "title": "Save changes",
-        "message": "The languages have been modified. Do you want to save changes?"
+        "message": "The languages have been modified. Do you want to save the changes?"
       },
       "bill-or-materials-associations-delete": {
-        "title": "Confirm Delete",
+        "title": "Confirm delete",
         "message": "Are you sure you want to delete the selected products?"
       },
       "links-delete": {
-        "title": "Confirm Delete",
-        "message": "Are you sure you want to delete selected links?"
+        "title": "Confirm delete",
+        "message": "Are you sure you want to delete the selected links?"
       },
       "measures-delete": {
-        "title": "Confirm Delete",
-        "message": "Are you sure you want to delete selected measures?"
+        "title": "Confirm delete",
+        "message": "Are you sure you want to delete the selected measures?"
       },
       "measure-unit-save": {
         "title": "Save changes",
-        "message": "This unit of measure has been modified. Do you want to save changes?"
+        "message": "This unit of measure has been modified. Do you want to save the changes?"
       },
       "measure-unit-delete": {
         "title": "Confirm Delete",
-        "message": "Are you sure you want to delete selected unit of measure?"
+        "message": "Are you sure you want to delete the selected unit of measure?"
       },
       "measure-units-delete": {
         "title": "Confirm Delete",
-        "message": "Are you sure you want to delete selected unit of measures?"
+        "message": "Are you sure you want to delete the selected unit of measure?"
       },
       "measure-save": {
         "title": "Save changes",
-        "message": "This measure has been modified. Do you want to save changes?"
+        "message": "This measure has been modified. Do you want to save the changes?"
       }
     },
     "wizards": {
@@ -919,7 +919,7 @@
           "code": "Code"
         },
         "validations": {
-          "code": "The code cannot contain these characters: $+;=%{}[]|@~!^*&()?'<>"
+          "code": "The code cannot contain the following characters: $+;=%{}[]|@~!^*&()?'<>"
         },
         "placeholders": {
           "name": "Enter category name",
@@ -927,8 +927,8 @@
         }
       },
       "new-product": {
-        "title": "New Product",
-        "subtitle": "Please provide all information for the product",
+        "title": "New product",
+        "subtitle": "Provide all information about the product",
         "labels": {
           "sku": "SKU",
           "name": "Name",
@@ -943,7 +943,7 @@
           "seo-information-summary-undefined": "SEO information not provided"
         },
         "validations": {
-          "sku": "The SKU cannot contain these characters: $+;=%{}[]|@~!^*&()?'<>",
+          "sku": "The SKU cannot contain the following characters: $+;=%{}[]|@~!^*&()?'<>",
           "sku-required": "Required",
           "name-required": "Required"
         },
@@ -954,7 +954,7 @@
       },
       "new-variation": {
         "title": "New variation",
-        "subtitle": "Please provide variation information",
+        "subtitle": "Provide variation information",
         "labels": {
           "sku": "SKU",
           "name": "Name",
@@ -964,7 +964,7 @@
           "upload-images-summary": "{{ count }} image(s) uploaded"
         },
         "validations": {
-          "sku": "The SKU cannot contain these characters: $+;=%{}[]|@~!^*&()?'<>",
+          "sku": "The SKU cannot contain the following characters: $+;=%{}[]|@~!^*&()?'<>",
           "sku-required": "Required",
           "name-required": "Required"
         },
@@ -977,19 +977,19 @@
         "subtitle": "Item images"
       },
       "association": {
-        "title": "New Association",
+        "title": "New association",
         "labels": {
           "group-name": "Group name",
           "tags": "Tags",
-          "tags-placeholder": "Enter tags...",
+          "tags-placeholder": "Enter tags",
           "quantity": "Quantity",
           "items": "Items",
-          "products-selected": "products selected",
-          "categories-selected": "categories selected"
+          "products-selected": "Products selected",
+          "categories-selected": "Categories selected"
         },
         "placeholders": {
           "group-name": "Select...",
-          "quantity": "Enter quantity..."
+          "quantity": "Enter quantity"
         }
       }
     },
@@ -1004,7 +1004,7 @@
       "open-item": "Open item",
       "default": "Set as default",
       "link": "Link",
-      "external-link": "External Link"
+      "external-link": "External link"
     },
     "permissions": {
       "catalog-scope": {
@@ -1029,11 +1029,11 @@
         "selected": "Selected: "
       },
       "placeholders": {
-        "catalog-lists": "Select catalog…"
+        "catalog-lists": "Select catalog"
       },
       "blades": {
         "titles": {
-          "select-categories": "Select categories…"
+          "select-categories": "Select categories"
         }
       }
     }
@@ -1052,13 +1052,13 @@
     "measures:update": "Update unit of measure related data",
     "measures:delete": "Delete unit of measure related data",
     "catalog:metadata-property:edit": "Edit metadata of properties",
-    "catalog:custom-property:edit": "Edit product's custom properties",
+    "catalog:custom-property:edit": "Edit product custom properties",
     "catalog:dictionary-property:edit": "Edit dictionary values of property"
   },
   "settings": {
     "Catalog": {
       "ImageCategories": {
-        "description": "Dictionary of possible categories the images for this item may have",
+        "description": "Dictionary of possible categories of images for this item",
         "title": "Image categories"
       },
       "AssociationGroups": {
@@ -1066,7 +1066,7 @@
         "title": "Association group names"
       },
       "EditorialReviewTypes": {
-        "description": "Dictionary of possible types the descriptions for this item may have",
+        "description": "Dictionary of possible types of descriptions for this item",
         "title": "Item description types"
       },
       "UseSeoDeduplication": {
@@ -1074,12 +1074,12 @@
         "title": "Detect SEO duplicates"
       },
       "CategoryDescriptionTypes": {
-        "description": "Dictionary of possible types the descriptions for this category may have",
+        "description": "Dictionary of possible types of descriptions for this category",
         "title": "Category description types"
       },
       "AllowToCopyID": {
         "title": "Allow to copy item's ID",
-        "description": "Enable it to see the Copy ID context menu item."
+        "description": "Enable it to see the Copy ID context menu item"
       },
       "Search": {
         "UseCatalogIndexedSearchInManager": {
@@ -1091,14 +1091,13 @@
           "title": "Store serialized catalog objects in the index"
         },
         "DefaultAggregationSize": {
-          "description": "Used for aggregations whose size is not set in store aggregation properties. Set to 0 for unlimited size.",
-
+          "description": "Specify the size for aggregations when not defined in the store's aggregation properties. Set to 0 for unlimited size",
           "title": "Default value for aggregation size"
         },
         "EventBasedIndexation": {
           "Enable": {
             "title": "Enable event-based indexing for catalog entities",
-            "description": "Any changes to a catalog entity will trigger a background task that will apply these changes to the search index."
+            "description": "Any changes made to a catalog entity trigger a background task that applies those changes to the search index"
           }
         }
       }
@@ -1109,11 +1108,11 @@
           "IndexationDate": {
             "Product": {
               "title": "Product indexing date and time",
-              "description": "Date and time the product indexing task will start at"
+              "description": "Date and time product indexing task starts"
             },
             "Category": {
               "title": "Category indexing date and time",
-              "description": "Date and time the category indexing task will start at"
+              "description": "Date and time category indexing starts"
             }
           }
         }
@@ -1129,17 +1128,17 @@
     "types": {
       "VirtoCommerce.CatalogModule.Core.Model.Export.ExportableProduct": {
         "name": "Products",
-        "description": "Catalog product data with related objects Supports JSON and CSV"
+        "description": "Catalog product data with related objects. Supports JSON and CSV"
       },
       "VirtoCommerce.CatalogModule.Core.Model.Export.ExportableCatalogFull": {
         "name": "Catalog",
-        "description": "Catalog data with related objects Supports JSON"
+        "description": "Catalog data with related objects. Supports JSON"
       }
     },
     "groups": {
       "VirtoCommerce.CatalogModule.Core.Model.Export": {
         "name": "Catalog",
-        "description": "Catalogs, Categories, and Products"
+        "description": "Catalogs, categories, and products"
       }
     }
   },
