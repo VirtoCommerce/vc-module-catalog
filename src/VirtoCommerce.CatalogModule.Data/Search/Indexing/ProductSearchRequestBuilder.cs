@@ -7,6 +7,7 @@ using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Extensions;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
+using static VirtoCommerce.SearchModule.Core.Extensions.IndexDocumentExtensions;
 
 namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 {
@@ -38,7 +39,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 request = new SearchRequest
                 {
                     SearchKeywords = productSearchCriteria.Keyword,
-                    SearchFields = new[] { "__content" },
+                    SearchFields = [ContentFieldName],
                     Filter = GetFilters(allFilters).And(),
                     Sorting = GetSorting(productSearchCriteria),
                     Skip = criteria.Skip,
