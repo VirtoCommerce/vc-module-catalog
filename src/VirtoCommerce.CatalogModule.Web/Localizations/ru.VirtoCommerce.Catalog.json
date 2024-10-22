@@ -520,7 +520,7 @@
         }
       },
       "item-asset-list": {
-        "subtitle": "Ресурсы товара",
+        "subtitle": "Ресурсы для товара",
         "labels": {
           "copy-url-prompt": "Скопировать в буфер обмена: Ctrl+C, Enter",
           "select-files": "Выберите файлы",
@@ -740,7 +740,7 @@
         "title": "Описание"
       },
       "itemAsset": {
-        "blade-subtitle": "Ресурсы товара",
+        "blade-subtitle": "Ресурсы для товара",
         "title": "Ресурсы"
       },
       "itemAssociations": {
