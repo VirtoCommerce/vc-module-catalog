@@ -456,7 +456,7 @@
           "description": "Beschreibung eingeben"
         },
         "descr": {
-          "external-link": "Verwenden Sie eine externe Bild-URL anstelle des Hochladens in die Assets",
+          "external-link": "Verwenden Sie eine externe Bild-URL anstelle des Hochladens in die Ressourcen",
           "external-link-warning": "Hinweis: Aus Sicherheitsgründen sind nur https-Links erlaubt"
         }
       },
@@ -520,7 +520,7 @@
         }
       },
       "item-asset-list": {
-        "subtitle": "Artikel-Assets",
+        "subtitle": "Artikelressourcen",
         "labels": {
           "copy-url-prompt": "In die Zwischenablage kopieren: Strg+C, Eingabetaste",
           "select-files": "Dateien auswählen",
@@ -568,10 +568,10 @@
         "title": "Bilder verlinken"
       },
       "images-select": {
-        "title": "Assets verlinken"
+        "title": "Ressourcen verlinken"
       },
       "asset-upload": {
-        "title": "Assets hinzufügen"
+        "title": "Ressourcen hinzufügen"
       },
       "image-upload": {
         "title": "Bilder hochladen"
@@ -740,8 +740,8 @@
         "title": "Beschreibung"
       },
       "itemAsset": {
-        "blade-subtitle": "Artikelassets",
-        "title": "Assets"
+        "blade-subtitle": "Artikelressourcen",
+        "title": "Ressourcen"
       },
       "itemAssociations": {
         "blade-subtitle": "Assoziationen",
@@ -875,7 +875,7 @@
       },
       "asset-save": {
         "title": "Änderungen speichern",
-        "message": "Diese Assets wurden geändert. Möchten Sie die Änderungen speichern?"
+        "message": "Diese Ressourcen wurden geändert. Möchten Sie die Änderungen speichern?"
       },
       "language-save": {
         "title": "Änderungen speichern",
