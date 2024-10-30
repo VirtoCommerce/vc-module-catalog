@@ -45,7 +45,7 @@ angular.module('virtoCommerce.catalogModule')
             blade.origItem = data;
             blade.isLoading = false;
 
-            if (parentRefresh && blade.parentBlade.refresh) {
+            if (parentRefresh && blade.parentBlade && blade.parentBlade.refresh) {
                 blade.parentBlade.refresh();
             }
             if (blade.childrenBlades) {
