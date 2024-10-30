@@ -101,12 +101,16 @@ angular.module('virtoCommerce.catalogModule')
                 return false;
             }
 
-            if (minNumber <= packSize && packSize <= maxNumber)
+            if (minNumber > maxNumber)
             {
-                return true;
+                return false;
             }
 
-            return false;
+            if (packSize > maxNumber) {
+                return false;
+            }
+
+            return true;
         }
 
         function isEmpty(value) {
