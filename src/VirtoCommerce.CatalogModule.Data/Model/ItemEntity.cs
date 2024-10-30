@@ -264,7 +264,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             MaxQuantity = product.MaxQuantity ?? 0;
             MeasureUnit = product.MeasureUnit;
             MinQuantity = product.MinQuantity ?? 0;
-            PackSize = product.PackSize >= 1 ? PackSize : 1;
+            PackSize = product.PackSize >= 1 ? product.PackSize : 1;
             Name = product.Name;
             PackageType = product.PackageType;
             Priority = product.Priority;
