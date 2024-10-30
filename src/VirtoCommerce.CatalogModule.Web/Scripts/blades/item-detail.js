@@ -81,7 +81,7 @@ angular.module('virtoCommerce.catalogModule')
                 return false;
             }
 
-            if (minEmpty && maxEmpty) {
+            if (minEmpty && maxEmpty && packSizeEmpty) {
                 return true;
             }
 
