@@ -45,7 +45,7 @@ angular.module('virtoCommerce.catalogModule')
             blade.origItem = data;
             blade.isLoading = false;
 
-            if (parentRefresh && blade.parentBlade.refresh) {
+            if (parentRefresh && blade.parentBlade && blade.parentBlade.refresh) {
                 blade.parentBlade.refresh();
             }
             if (blade.childrenBlades) {
@@ -77,33 +77,40 @@ angular.module('virtoCommerce.catalogModule')
             const maxEmpty = isEmpty(item.maxQuantity);
             const packSizeEmpty = isEmpty(item.packSize);
 
+            let minNumber = parseInt(item.minQuantity, 10);
+            let maxNumber = parseInt(item.maxQuantity, 10);
+            let packSize = parseInt(item.packSize, 10);
+
+            if (minEmpty) {
+                minNumber = 0;
+            }
+
+            if (maxEmpty) {
+                maxNumber = Number.MAX_VALUE;
+            }
+
             if (packSizeEmpty) {
                 return false;
             }
 
-            if (minEmpty && maxEmpty) {
-                return true;
-            }
-
-            const minNumber = parseInt(item.minQuantity, 10);
-            const maxNumber = parseInt(item.maxQuantity, 10);
-            const packSize = parseInt(item.packSize, 10);
-
-            if (!minEmpty && (isNaN(minNumber) || minNumber < 0) ||
-                !maxEmpty && (isNaN(maxNumber) || maxNumber < 0)) {
+            if (minNumber < 0 || maxNumber < 0) {
                 return false;
             }
 
-            if (minEmpty && !maxEmpty ||
-                !minEmpty && maxEmpty) {
-                return true;
-            }
-
-            if (!packSizeEmpty && (isNaN(packSize) || packSize < 0)) {
+            if (packSize < 1) {
                 return false;
             }
 
-            return minNumber <= maxNumber;
+            if (minNumber > maxNumber)
+            {
+                return false;
+            }
+
+            if (packSize > maxNumber) {
+                return false;
+            }
+
+            return true;
         }
 
         function isEmpty(value) {
