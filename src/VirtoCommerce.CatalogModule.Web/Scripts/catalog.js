@@ -605,6 +605,13 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                     valueType: "DateTime"
                 }]);
 
+                metaFormsService.registerMetaFields("productDetail3", [
+                {
+                    name: 'isConfigurable',
+                    title: "catalog.blades.item-detail.labels.is-configurable",
+                    valueType: "Boolean"
+                }]);
+
                 metaFormsService.registerMetaFields('VirtoCommerce.CatalogModule.Core.Model.Export.ExportableProduct' + 'ExportFilter', [
                     {
                         name: 'catalogSelector',
