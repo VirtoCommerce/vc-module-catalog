@@ -380,7 +380,7 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql
             if (!criteria.ObjectIds.IsNullOrEmpty())
             {
                 command.Append(@"
-                    WHERE ItemId IN ({0})
+                    WHERE ""ItemId"" IN ({0})
                 ");
 
                 // search by associated product ids
