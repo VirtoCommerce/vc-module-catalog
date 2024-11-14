@@ -789,6 +789,132 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
                     b.ToTable("MeasureUnit", (string)null);
                 });
 
+            modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.ProductConfigurationEntity", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ProductId")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ProductConfiguration", (string)null);
+                });
+
+            modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.ProductConfigurationOptionEntity", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ProductId")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<int>("Quantity")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1);
+
+                    b.Property<string>("SectionId")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("SectionId");
+
+                    b.ToTable("ProductConfigurationOption", (string)null);
+                });
+
+            modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.ProductConfigurationSectionEntity", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<string>("ConfigurationId")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsRequired")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConfigurationId");
+
+                    b.ToTable("ProductConfigurationSection", (string)null);
+                });
+
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.PropertyAttributeEntity", b =>
                 {
                     b.Property<string>("Id")
@@ -1451,6 +1577,47 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
                     b.Navigation("Measure");
                 });
 
+            modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.ProductConfigurationEntity", b =>
+                {
+                    b.HasOne("VirtoCommerce.CatalogModule.Data.Model.ItemEntity", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.ProductConfigurationOptionEntity", b =>
+                {
+                    b.HasOne("VirtoCommerce.CatalogModule.Data.Model.ItemEntity", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("VirtoCommerce.CatalogModule.Data.Model.ProductConfigurationSectionEntity", "Section")
+                        .WithMany("Options")
+                        .HasForeignKey("SectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("Section");
+                });
+
+            modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.ProductConfigurationSectionEntity", b =>
+                {
+                    b.HasOne("VirtoCommerce.CatalogModule.Data.Model.ProductConfigurationEntity", "Configuration")
+                        .WithMany("Sections")
+                        .HasForeignKey("ConfigurationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Configuration");
+                });
+
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.PropertyAttributeEntity", b =>
                 {
                     b.HasOne("VirtoCommerce.CatalogModule.Data.Model.PropertyEntity", "Property")
@@ -1632,6 +1799,16 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.MeasureEntity", b =>
                 {
                     b.Navigation("Units");
+                });
+
+            modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.ProductConfigurationEntity", b =>
+                {
+                    b.Navigation("Sections");
+                });
+
+            modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.ProductConfigurationSectionEntity", b =>
+                {
+                    b.Navigation("Options");
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.PropertyDictionaryItemEntity", b =>
