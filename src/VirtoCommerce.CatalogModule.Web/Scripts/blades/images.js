@@ -53,7 +53,17 @@ angular.module('virtoCommerce.catalogModule')
                 $scope.removeItem = function(image) {
                     var idx = blade.currentEntities.indexOf(image);
                     if (idx >= 0) {
-                        blade.currentEntities.splice(idx, 1);
+                        var dialog = {
+                            id: "confirmDeleteItem",
+                            title: "platform.dialogs.folders-delete.title",
+                            message: "platform.dialogs.folders-delete.message",
+                            callback: function (remove) {
+                                if (remove) {
+                                    blade.currentEntities.splice(idx, 1);
+                                }
+                            }
+                        }
+                        dialogService.showConfirmationDialog(dialog);
                     }
                 };
 
@@ -77,13 +87,22 @@ angular.module('virtoCommerce.catalogModule')
                         selectedImages = $scope.gridApi.selection.getSelectedRows();
                     }
 
-                    angular.forEach(selectedImages,
-                        function(image) {
-                            var idx = blade.currentEntities.indexOf(image);
-                            if (idx >= 0) {
-                                blade.currentEntities.splice(idx, 1);
+                    var dialog = {
+                        id: "confirmDeleteItem",
+                        title: "platform.dialogs.folders-delete.title",
+                        message: "platform.dialogs.folders-delete.message",
+                        callback: function (remove) {
+                            if (remove) {
+                                angular.forEach(selectedImages, function (image) {
+                                    var idx = blade.currentEntities.indexOf(image);
+                                    if (idx >= 0) {
+                                        blade.currentEntities.splice(idx, 1);
+                                    }
+                                });
                             }
-                        });
+                        }
+                    }
+                    dialogService.showConfirmationDialog(dialog);
                 };
 
                 $scope.edit = function(entity) {
