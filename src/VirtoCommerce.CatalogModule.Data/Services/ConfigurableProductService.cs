@@ -32,7 +32,7 @@ public class ConfigurableProductService : IConfigurableProductService
                     {
                         Id = y.AssociatedObjectId,
                         ProductId = y.AssociatedObjectId,
-                        Quantity = y.Quantity ?? 0,
+                        Quantity = y.Quantity ?? 1,
                     }).ToList(),
                 })
                 .ToList(),
