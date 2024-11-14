@@ -17,7 +17,7 @@ public class ConfigurableProductService : IConfigurableProductService
     {
         var associations = await _associationService.GetAssociationsAsync([productId]);
 
-        return new ProductConfiguration
+        var result = new ProductConfiguration
         {
             ConfigurationSections = associations
                 .GroupBy(x => x.Type)
@@ -26,12 +26,18 @@ public class ConfigurableProductService : IConfigurableProductService
                     Id = $"{productId}-{x.Key}",
                     Name = x.Key,
                     Type = x.FirstOrDefault()?.AssociatedObjectType,
-                    Quantity = x.FirstOrDefault()?.Quantity ?? 0,
                     Description = string.Empty,
                     IsRequired = false,
-                    ProductIds = x.Select(y => y.AssociatedObjectId).ToList(),
+                    Options = x.Select(y => new ProductConfigurationOption
+                    {
+                        Id = y.AssociatedObjectId,
+                        ProductId = y.AssociatedObjectId,
+                        Quantity = y.Quantity ?? 0,
+                    }).ToList(),
                 })
                 .ToList(),
         };
+
+        return result;
     }
 }

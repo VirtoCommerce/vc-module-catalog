@@ -9,7 +9,14 @@ public class ProductConfigurationSection
     public string Type { get; set; }
     public string Description { get; set; }
     public bool IsRequired { get; set; }
-    public int Quantity { get; set; } = 1;
+    public int DisplayOrder { get; set; }
 
-    public IList<string> ProductIds { get; set; } = [];
+    public IList<ProductConfigurationOption> Options { get; set; } = [];
+}
+
+public class ProductConfigurationOption
+{
+    public string Id { get; set; }
+    public string ProductId { get; set; }
+    public int Quantity { get; set; } = 1;
 }
