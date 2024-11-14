@@ -43,7 +43,36 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         public IQueryable<SeoInfoEntity> SeoInfos => DbContext.Set<SeoInfoEntity>();
         public IQueryable<MeasureEntity> Measures => DbContext.Set<MeasureEntity>();
         public IQueryable<MeasureUnitEntity> MeasureUnits => DbContext.Set<MeasureUnitEntity>();
+        public IQueryable<ProductConfigurationEntity> ProductConfigurations => DbContext.Set<ProductConfigurationEntity>();
+        public IQueryable<ProductConfigurationSectionEntity> ProductConfigurationSections => DbContext.Set<ProductConfigurationSectionEntity>();
+        public IQueryable<ProductConfigurationOptionEntity> ProductConfigurationOptions => DbContext.Set<ProductConfigurationOptionEntity>();
 
+        public virtual async Task<IList<ProductConfigurationEntity>> GetProductConfigurationsByIdsAsync(IList<string> configurationIds)
+        {
+            var result = await ProductConfigurations
+                .Include(x => x.Sections)
+                .Where(x => configurationIds.Contains(x.Id))
+                .ToListAsync();
+
+            if (result.Count != 0)
+            {
+                var sectionIds = result.SelectMany(x => x.Sections.Select(s => s.Id)).ToList();
+                await ProductConfigurationSections
+                    .Include(x => x.Options)
+                    .Where(x => sectionIds.Contains(x.Id))
+                    .LoadAsync();
+
+                // var optionIds = result.SelectMany(x => x.Sections.SelectMany(s => s.Options.Select(o => o.Id))).ToList();
+                // await ProductConfigurationOptions
+                //     .Where(x => optionIds.Contains(x.Id))
+                //     .LoadAsync();
+                var associatedProductIds = result.SelectMany(x => x.Sections.SelectMany(s => s.Options.Select(o => o.ProductId))).ToList();
+
+                await GetItemByIdsAsync(associatedProductIds, (ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemAssets).ToString());
+            }
+
+            return result;
+        }
 
         public virtual async Task<IList<CatalogEntity>> GetCatalogsByIdsAsync(IList<string> catalogIds)
         {

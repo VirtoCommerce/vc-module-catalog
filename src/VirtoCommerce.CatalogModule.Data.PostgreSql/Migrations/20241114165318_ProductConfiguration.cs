@@ -93,7 +93,8 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_ProductConfiguration_ProductId",
                 table: "ProductConfiguration",
-                column: "ProductId");
+                column: "ProductId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductConfigurationOption_ProductId",

@@ -262,6 +262,9 @@ namespace VirtoCommerce.CatalogModule.Web
             #endregion BulkActions
 
             serviceCollection.AddTransient<ICategoryTreeService, CategoryTreeService>();
+
+            serviceCollection.AddTransient<IProductConfigurationService, ProductConfigurationService>();
+            serviceCollection.AddTransient<IProductConfigurationSearchService, ProductConfigurationSearchService>();
         }
 
         public void PostInitialize(IApplicationBuilder appBuilder)

@@ -820,7 +820,8 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProductId");
+                    b.HasIndex("ProductId")
+                        .IsUnique();
 
                     b.ToTable("ProductConfiguration", (string)null);
                 });
@@ -1580,8 +1581,8 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.ProductConfigurationEntity", b =>
                 {
                     b.HasOne("VirtoCommerce.CatalogModule.Data.Model.ItemEntity", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
+                        .WithOne("Configuration")
+                        .HasForeignKey("VirtoCommerce.CatalogModule.Data.Model.ProductConfigurationEntity", "ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1784,6 +1785,8 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
                     b.Navigation("CategoryLinks");
 
                     b.Navigation("Childrens");
+
+                    b.Navigation("Configuration");
 
                     b.Navigation("EditorialReviews");
 

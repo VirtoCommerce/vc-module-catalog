@@ -1,7 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Core.Model.Configuration;
 using VirtoCommerce.Platform.Core.Common;
@@ -12,14 +11,11 @@ namespace VirtoCommerce.CatalogModule.Data.Model;
 public class ProductConfigurationEntity : AuditableEntity, IDataEntity<ProductConfigurationEntity, ProductConfiguration>
 {
     [StringLength(128)]
-    [ForeignKey("Product")]
     [Required]
     public string ProductId { get; set; }
-    [Required]
     public bool IsActive { get; set; }
 
     public virtual ItemEntity Product { get; set; }
-
     public virtual ObservableCollection<ProductConfigurationSectionEntity> Sections { get; set; } = new NullCollection<ProductConfigurationSectionEntity>();
 
     public virtual ProductConfiguration ToModel(ProductConfiguration model)

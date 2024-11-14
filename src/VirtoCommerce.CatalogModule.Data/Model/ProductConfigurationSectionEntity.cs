@@ -1,7 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Core.Model.Configuration;
 using VirtoCommerce.Platform.Core.Common;
@@ -12,7 +11,6 @@ namespace VirtoCommerce.CatalogModule.Data.Model;
 public class ProductConfigurationSectionEntity : AuditableEntity, IDataEntity<ProductConfigurationSectionEntity, ProductConfigurationSection>
 {
     [StringLength(128)]
-    [ForeignKey("Configuration")]
     [Required]
     public string ConfigurationId { get; set; }
     public string Name { get; set; }
