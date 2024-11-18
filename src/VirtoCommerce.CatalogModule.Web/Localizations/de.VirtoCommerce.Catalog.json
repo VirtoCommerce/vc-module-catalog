@@ -778,6 +778,9 @@
       },
       "measure-units": {
         "title": "Einheiten"
+      },
+      "configuration": {
+        "title": "Konfiguration"
       }
     },
     "dialogs": {

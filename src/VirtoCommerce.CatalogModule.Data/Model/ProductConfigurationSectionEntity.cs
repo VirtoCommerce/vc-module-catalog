@@ -13,6 +13,8 @@ public class ProductConfigurationSectionEntity : AuditableEntity, IDataEntity<Pr
     [StringLength(128)]
     [Required]
     public string ConfigurationId { get; set; }
+    [StringLength(256)]
+    [Required]
     public string Name { get; set; }
     public string Description { get; set; }
     public bool IsRequired { get; set; }

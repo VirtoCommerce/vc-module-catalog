@@ -707,7 +707,27 @@
           "conversion-factor": "Enter conversion",
           "symbol": "Symbol"
         }
-      }
+      },
+      "configuration-details": {
+        "title": "Product configuration",
+        "labels": {
+          "enable": "Enable configuration",
+          "hide": "Hide"
+        },
+        "descr": {
+          "enable": "Activating the functionality of the product configuration.",
+          "no-section": "There are no sections in this configuration yet.",
+          "sorting-prompt": "Set how the sections will appear in the web store. Drag and drop the sections to change their order."
+        }
+      },
+      "section-details": {
+        "title": "New section",
+        "labels": {
+          "name": "Section name",
+          "description": "Description",
+          "required": "Selection in this section is mandatory"
+        }
+      } 
     },
     "exporter-list": {
       "title": "Export types",
@@ -778,6 +798,9 @@
       },
       "measure-units": {
         "title": "Units"
+      },
+      "configuration": {
+        "title": "Configuration"
       }
     },
     "dialogs": {

@@ -28,33 +28,16 @@ public class ProductConfigurationSearchService : SearchService<ProductConfigurat
     {
         var query = ((ICatalogRepository)repository).ProductConfigurations;
 
+        if (!string.IsNullOrEmpty(criteria.ProductId))
+        {
+            query = query.Where(x => x.ProductId == criteria.ProductId);
+        }
+
+        if (criteria.IsActive.HasValue)
+        {
+            query = query.Where(x => x.IsActive == criteria.IsActive.Value);
+        }
+
         return query;
     }
-
-    // protected override IList<SortInfo> BuildSortExpression(ProductConfigurationSearchCriteria criteria)
-    // {
-    //     var sortInfos = criteria.SortInfos;
-    //
-    //     if (sortInfos.IsNullOrEmpty())
-    //     {
-    //         sortInfos =
-    //         [
-    //             new SortInfo { SortColumn = nameof(CategoryEntity.Name) },
-    //         ];
-    //     }
-    //
-    //     return sortInfos;
-    // }
-
-    // protected override Task<ProductConfigurationSearchResult> ProcessSearchAsync(
-    //     ProductConfigurationSearchCriteria criteria)
-    // {
-    //     throw new NotImplementedException();
-    // }
-    //
-    // protected override Task<IList<ProductConfigurationEntity>> LoadEntities(IRepository repository, IList<string> ids,
-    //     string responseGroup)
-    // {
-    //     throw new NotImplementedException();
-    // }
 }

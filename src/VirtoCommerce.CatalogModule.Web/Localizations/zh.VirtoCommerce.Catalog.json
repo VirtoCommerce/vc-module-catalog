@@ -778,6 +778,9 @@
       },
       "measure-units": {
         "title": "单位"
+      },
+      "configuration": {
+        "title": "配置"
       }
     },
     "dialogs": {

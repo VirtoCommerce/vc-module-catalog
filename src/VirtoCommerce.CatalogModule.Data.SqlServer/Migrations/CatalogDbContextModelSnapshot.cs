@@ -909,7 +909,9 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
 
@@ -1583,7 +1585,7 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.ProductConfigurationEntity", b =>
                 {
                     b.HasOne("VirtoCommerce.CatalogModule.Data.Model.ItemEntity", "Product")
-                        .WithOne("Configuration")
+                        .WithOne()
                         .HasForeignKey("VirtoCommerce.CatalogModule.Data.Model.ProductConfigurationEntity", "ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1787,8 +1789,6 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                     b.Navigation("CategoryLinks");
 
                     b.Navigation("Childrens");
-
-                    b.Navigation("Configuration");
 
                     b.Navigation("EditorialReviews");
 

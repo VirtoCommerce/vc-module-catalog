@@ -115,8 +115,6 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         public virtual ObservableCollection<ItemEntity> Childrens { get; set; }
             = new NullCollection<ItemEntity>();
 
-        public virtual ProductConfigurationEntity Configuration { get; set; }
-
         #endregion
 
         public virtual CatalogProduct ToModel(CatalogProduct product)
