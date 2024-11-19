@@ -1,7 +1,7 @@
 <div class="blade-content __medium-wide">
   <div class="blade-inner">
     <div class="inner-block">
-      <!-- <form class="form" name="configurationForm"> -->
+      <form class="form" name="configurationForm">
         <div class="form-group" ng-init="setForm(configurationForm)">
           <label class="form-label">{{ 'catalog.blades.configuration-details.labels.enable' | translate }}</label>
           <i class="form-ico fa fa-question-circle __link __lightblue" ng-click="blade.setting.enable_descrVisible=!blade.setting.enable_descrVisible"></i>
@@ -17,15 +17,19 @@
           </div>
         </div>
         <div class="form-group">
+          <div class="note" ng-if="!blade.currentEntity.sections.length">{{ 'catalog.blades.configuration-details.descr.no-sections' | translate }}</div>
+          <div class="note" ng-if="blade.currentEntity.sections.length">{{ 'catalog.blades.configuration-details.descr.sorting-prompt' | translate }}</div>
           <div class="table-wrapper" ng-if="blade.currentEntity.sections.length > 0" ng-init="setGridOptions({
                 data: 'blade.currentEntity.sections',
-                rowTemplate: 'item-list.row.html',
+                rowTemplate: 'section-list.row.html',
+                rowHeight: 45,
                 enableSorting: false,
+                virtualizationThreshold: 1000,
                 columnDefs: [
-                        { name: 'actions', displayName: '', enableColumnResizing: false, width: 30, cellTemplate: 'item-list-actions.cell.html', pinnedLeft:true },
-                        { name: 'name', displayName: 'catalog.blades.section-details.labels.name', cellTemplate: 'item-list-name.cell.html' }
-                 ]})">
-            <div ui-grid="gridOptions" ui-grid-auto-resize ui-grid-save-state ui-grid-selection ui-grid-resize-columns ui-grid-move-columns ui-grid-pinning ui-grid-draggable-rows></div>
+                        { name: 'actions', displayName: '', enableColumnResizing: false, width: 30, cellTemplate: 'section-list-actions.cell.html', pinnedLeft:true },
+                        { name: 'name', displayName: 'catalog.blades.configuration-details.labels.name', cellTemplate: 'section-list-name.cell.html' }
+                 ]})" style="margin: 0 -20px 0;">
+            <div ui-grid="gridOptions" ui-grid-auto-resize ui-grid-save-state ui-grid-selection ui-grid-resize-columns ui-grid-move-columns ui-grid-pinning ui-grid-draggable-rows ui-grid-height></div>
             <ul class="menu __context" role="menu" id="pcl_menu">
               <li class="menu-item" ng-click='edit(contextMenuEntity)'>
                 <i class="menu-ico fa fa-edit"></i> {{'platform.commands.manage' | translate}}
@@ -35,28 +39,29 @@
               </li>
             </ul>
           </div>
-          <div class="note" ng-if="!blade.currentEntity.sections.length">{{ 'catalog.blades.configuration-details.descr.no-section' | translate }}</div>
-          <div class="note" ng-if="blade.currentEntity.sections.length > 1">{{ 'catalog.blades.configuration-details.descr.sorting-prompt' | translate }}</div>
         </div>
-      <!-- </form> -->
+      </form>
     </div>
   </div>
 </div>
 
-<script type="text/ng-template" id="item-list.row.html">
-  <div ng-click='grid.appScope.edit(row.entity)' ng-repeat="(colRenderIndex, col) in colContainer.renderedColumns track by col.uid" ui-grid-one-bind-id-grid="rowRenderIndex + '-' + col.uid + '-cell'" class="ui-grid-cell" ng-class="{'ui-grid-row-header-cell': col.isRowHeader, '__hovered': grid.appScope.contextMenuEntity === row.entity, '__selected': row.entity.id===grid.appScope.selectedNodeId }" role="{{col.isRowHeader ? 'rowheader' : 'gridcell' }}" ui-grid-cell style="{{'cursor: ' + (col.name==='actions' ? 'pointer' : 'move')}}" context-menu="grid.appScope.contextMenuEntity = row.entity" data-target="pcl_menu"></div>
+<script type="text/ng-template" id="section-list.row.html">
+  <div grid="grid" class="ui-grid-draggable-row" draggable="true">
+    <div ng-click='grid.appScope.edit(row.entity)' ng-repeat="(colRenderIndex, col) in colContainer.renderedColumns track by col.uid" ui-grid-one-bind-id-grid="rowRenderIndex + '-' + col.uid + '-cell'" class="ui-grid-cell" ng-class="{'ui-grid-row-header-cell': col.isRowHeader, '__hovered': grid.appScope.contextMenuEntity === row.entity, '__selected': row.entity.displayOrder===grid.appScope.selectedNodeId }" role="{{col.isRowHeader ? 'rowheader' : 'gridcell' }}" ui-grid-cell style="{{'cursor: ' + (col.name==='actions' ? 'pointer' : 'move')}}" context-menu="grid.appScope.contextMenuEntity = row.entity" data-target="pcl_menu"></div>
+  </div>
 </script>
 
-<script type="text/ng-template" id="item-list-name.cell.html">
+<script type="text/ng-template" id="section-list-name.cell.html">
   <div class="ui-grid-cell-contents">
     <div class="inner-contents">
-      <i class="table-ico fas puzzle-piece"></i>
+      <i class="table-ico fas fa-puzzle-piece"></i>
       <div class="table-t">{{COL_FIELD}}</div>
+      <div class="table-descr">{{ 'catalog.blades.configuration-details.labels.quantity' | translate }}: {{row.entity.options.length}}</div>
     </div>
   </div>
 </script>
 
-<script type="text/ng-template" id="item-list-actions.cell.html">
+<script type="text/ng-template" id="section-list-actions.cell.html">
   <div class="ui-grid-actions" left-click-menu="grid.appScope.contextMenuEntity = row.entity" data-target="pcl_menu">
     <i class="fa fa-ellipsis-v"></i>
   </div>

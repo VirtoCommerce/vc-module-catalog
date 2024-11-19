@@ -5,7 +5,7 @@ angular.module('virtoCommerce.catalogModule')
 
             blade.headIcon = 'fas fa-sliders';
             blade.title = 'catalog.blades.configuration-details.title';
-//            blade.formScope = null;
+            blade.formScope = null;
             blade.toolbarCommands = [
                 {
                     name: "platform.commands.save",
@@ -15,7 +15,14 @@ angular.module('virtoCommerce.catalogModule')
                     permission: 'configurations:update'
                 },
                 {
-                    name: "platform.commands.add",
+                    name: "platform.commands.reset",
+                    icon: 'fa fa-undo',
+                    executeMethod: function () { angular.copy(blade.origEntity, blade.currentEntity); },
+                    canExecuteMethod: isDirty,
+                    permission: 'configurations:update'
+                },
+                {
+                    name: "catalog.blades.configuration-details.commands.add",
                     icon: 'fas fa-plus',
                     executeMethod: function() { openSectionBlade({}); },
                     canExecuteMethod: function () { return true; },
@@ -30,16 +37,15 @@ angular.module('virtoCommerce.catalogModule')
                 }
             ];
 
-//            $scope.setForm = function (form) { blade.formScope = form; }
+            $scope.setForm = function (form) { blade.formScope = form; }
 
             $scope.setGridOptions = function (gridOptions) {
                 uiGridHelper.initialize($scope, gridOptions, function (gridApi) {
-                    //update gridApi for current grid
                     $scope.gridApi = gridApi;
 
                     gridApi.draggableRows.on.rowFinishDrag($scope, function () {
                         for (var i = 0; i < blade.currentEntity.sections.length; i++) {
-                            blade.currentEntity.sections[i].displayOrder = i + 1;
+                            blade.currentEntity.sections[i].displayOrder = i;
                         }
                     });
                 });
@@ -47,6 +53,7 @@ angular.module('virtoCommerce.catalogModule')
 
             $scope.edit = function(item)
             {
+                $scope.selectedNodeId = item.displayOrder;
                 openSectionBlade(item);
             }
 
@@ -71,7 +78,7 @@ angular.module('virtoCommerce.catalogModule')
             }
 
             function canSave() {
-                return isDirty() /*&& blade.formScope && blade.formScope.$valid*/ && blade.currentEntity.sections.length > 0;
+                return isDirty() && blade.formScope && blade.formScope.$valid && blade.currentEntity.sections.length > 0;
             }
 
             function saveChanges() {
@@ -102,6 +109,10 @@ angular.module('virtoCommerce.catalogModule')
                 blade.isLoading = true;
                 configurationsApi.getConfigurationByProduct({ productId: blade.productId }, function (data) {
                     blade.isLoading = false;
+                    if(data.sections == null)
+                    {
+                        data.sections = [];
+                    }
                     blade.currentEntity = angular.copy(data);
                     blade.origEntity = data;
                 });
