@@ -7,7 +7,7 @@
           <i class="form-ico fa fa-question-circle __link __lightblue" ng-click="blade.setting.enable_descrVisible=!blade.setting.enable_descrVisible"></i>
           <div class="form-input">
             <label class="form-label __switch">
-              <input type="checkbox" ng-model="blade.currentEntity.isActive" />
+              <input type="checkbox" ng-model="blade.currentEntity.isActive" [disabled]="(!canBeEnabled)"/>
               <span class="switch"></span>
             </label>
           </div>
@@ -17,12 +17,13 @@
           </div>
         </div>
         <div class="form-group">
+          <label class="form-label">{{ 'catalog.blades.configuration-details.labels.sections' | translate }}</label>
           <div class="note" ng-if="!blade.currentEntity.sections.length">{{ 'catalog.blades.configuration-details.descr.no-sections' | translate }}</div>
           <div class="note" ng-if="blade.currentEntity.sections.length">{{ 'catalog.blades.configuration-details.descr.sorting-prompt' | translate }}</div>
           <div class="table-wrapper" ng-if="blade.currentEntity.sections.length > 0" ng-init="setGridOptions({
                 data: 'blade.currentEntity.sections',
                 rowTemplate: 'section-list.row.html',
-                rowHeight: 45,
+                rowHeight: 61,
                 enableSorting: false,
                 virtualizationThreshold: 1000,
                 columnDefs: [
@@ -54,9 +55,9 @@
 <script type="text/ng-template" id="section-list-name.cell.html">
   <div class="ui-grid-cell-contents">
     <div class="inner-contents">
-      <i class="table-ico fas fa-puzzle-piece"></i>
       <div class="table-t">{{COL_FIELD}}</div>
       <div class="table-descr">{{ 'catalog.blades.configuration-details.labels.quantity' | translate }}: {{row.entity.options.length}}</div>
+      <div class="table-descr">{{ row.entity.isRequired ? ('catalog.blades.section-details.labels.required' | translate) : '&nbsp'}}</div>
     </div>
   </div>
 </script>

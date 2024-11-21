@@ -31,7 +31,7 @@ angular.module('virtoCommerce.catalogModule')
             $scope.isValid = false;
 
             $scope.$watch("blade.currentEntity", function () {
-                $scope.isValid = blade.formScope && blade.formScope.$valid && blade.currentEntity.options.length > 0;
+                $scope.isValid = blade.formScope && blade.formScope.$valid;
             }, true);
 
             $scope.setForm = function (form) { blade.formScope = form; };
@@ -40,6 +40,19 @@ angular.module('virtoCommerce.catalogModule')
                 uiGridHelper.initialize($scope, gridOptions, function (gridApi) {
                     $scope.gridApi = gridApi;
                 });
+            };
+
+            $scope.openItem = function (item) {
+                $scope.selectedNodeId = item.productId;
+                var newBlade = {
+                    id: 'optionItemDetail',
+                    itemId: item.productId,
+                    productType: item.productType,
+                    controller: 'virtoCommerce.catalogModule.itemDetailController',
+                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/item-detail.tpl.html'
+                };
+
+                bladeNavigationService.showBlade(newBlade, blade);
             };
 
             $scope.saveChanges = function () {
@@ -69,19 +82,6 @@ angular.module('virtoCommerce.catalogModule')
 
             $scope.delete = function (data) {
                 deleteList([data]);
-            };
-
-            $scope.openItem = function (item) {
-                $scope.selectedNodeId = item.productId;
-                var newBlade = {
-                    id: 'optionItemDetail',
-                    itemId: item.productId,
-                    productType: item.productType,
-                    controller: 'virtoCommerce.catalogModule.itemDetailController',
-                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/item-detail.tpl.html'
-                };
-
-                bladeNavigationService.showBlade(newBlade, blade);
             };
 
             function deleteList(list) {
@@ -122,20 +122,25 @@ angular.module('virtoCommerce.catalogModule')
                     controller: 'virtoCommerce.catalogModule.catalogItemSelectController',
                     template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/common/catalog-items-select.tpl.html',
                     options: options,
+                    headIcon: "fas fa-list",
                     breadcrumbs: [],
                     toolbarCommands: [
                         {
                             name: "platform.commands.confirm", icon: 'fa fa-check',
                             executeMethod: function (pickingBlade) {
-                                blade.selection = _.uniq(_.union(blade.selection, selection), function (x) {
-                                    return [x.type, x.id].join();
+                                var currentSelection = _.map(blade.currentEntity.options, function (x) {
+                                    return { id: x.productId, productType: x.productType, option: x }
                                 });
 
-                                blade.currentEntity.options = _.map(blade.selection, function (x) {
+                                currentSelection = _.uniq(_.union(currentSelection, selection), function (x) {
+                                    return [x.productType, x.id].join();
+                                });
+
+                                blade.currentEntity.options = _.map(currentSelection, function (x) {
                                     var retVal = x.option;
                                     if (!retVal) {
                                         retVal = {
-                                            productType: x.type,
+                                            productType: x.productType,
                                             productId: x.id,
                                             productName: x.name,
                                             productImg: x.imageUrl,
@@ -160,9 +165,6 @@ angular.module('virtoCommerce.catalogModule')
                 }
                 blade.currentEntity = angular.copy(item);
                 blade.isLoading = false;
-                blade.selection = _.map(blade.currentEntity.options, function (x) {
-                    return { id: x.productId, type: x.productType, option: x }
-                });
             };
 
             initialize(blade.origEntity);

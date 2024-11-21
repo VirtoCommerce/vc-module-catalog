@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -62,12 +63,13 @@ public class CatalogModuleConfigurationsController : Controller
     /// </summary>
     /// <remarks>Gets configuration by product id with full information loaded</remarks>
     /// <param name="productId">The product id</param>
+    /// <param name="cancellationToken">The cancellation token to cancel the request</param>
     [HttpGet]
     [Route("~/api/catalog/products/{productId}/configurations")]
     [Authorize(ModuleConstants.Security.Permissions.ConfigurationsRead)]
-    public async Task<ActionResult<ProductConfiguration>> GetConfigurationByProductId(string productId)
+    public async Task<ActionResult<ProductConfiguration>> GetConfigurationByProductId(string productId, CancellationToken cancellationToken)
     {
-        var configuration = await _configurationService.GetByProductIdAsync(productId);
+        var configuration = await _configurationService.GetByProductIdAsync(productId, cancellationToken);
 
         if (configuration == null)
         {
@@ -84,12 +86,14 @@ public class CatalogModuleConfigurationsController : Controller
     /// </summary>
     /// <remarks>If configuration.id is null, a new configuration is created. It's updated otherwise</remarks>
     /// <param name="configuration">The configuration.</param>
+    /// <param name="cancellationToken">The cancellation token to cancel the request</param>
     [HttpPost]
     [Route("")]
     [Authorize(ModuleConstants.Security.Permissions.ConfigurationsUpdate)]
-    public async Task<ActionResult> CreateOrUpdateConfiguration([FromBody] ProductConfiguration configuration)
+    public async Task<ActionResult> CreateOrUpdateConfiguration([FromBody] ProductConfiguration configuration, CancellationToken cancellationToken)
     {
-        await _configurationService.SaveChangesAsync([configuration]);
+        await _configurationService.SaveChangesAsync(configuration, cancellationToken);
+
         return Ok(configuration);
     }
 }

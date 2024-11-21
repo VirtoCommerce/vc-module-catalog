@@ -25,6 +25,7 @@
           </div>
         </div>
         <div class="form-group">
+          <label class="form-label">{{ 'catalog.blades.section-details.labels.options' | translate }}</label>
           <div class="note" ng-if="!blade.currentEntity.options.length">{{ 'catalog.blades.section-details.descr.no-options' | translate }}</div>
           <div class="table-wrapper" ng-if="blade.currentEntity.options.length" ng-init="setGridOptions({
                     rowTemplate: 'option-list.row.html',

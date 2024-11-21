@@ -33,7 +33,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Authorize(ModuleConstants.Security.Permissions.Read)]
         public async Task<ActionResult<ProductAssociation[]>> GetProductAssociations(string productId)
         {
-            var result = await _associationService.GetAssociationsAsync(new string[] { productId });
+            var result = await _associationService.GetAssociationsAsync([productId]);
             return Ok(result);
         }
 

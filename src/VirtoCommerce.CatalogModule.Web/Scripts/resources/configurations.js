@@ -8,8 +8,8 @@ angular.module('virtoCommerce.catalogModule')
                     url: 'api/catalog/products/:productId/configurations',
                     params: { productId: '@productId' }
                 },
-                search: { method: 'POST', url: 'api/catalog/configurations/search' },
-                update: { method: 'POST', url: 'api/catalog/configurations' }
+                search: { method: 'POST', url: 'api/catalog/products/configurations/search' },
+                update: { method: 'POST', url: 'api/catalog/products/configurations' }
             });
 
     }]);

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Data.Model;
@@ -63,8 +64,8 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
         Task<IList<MeasureEntity>> GetMeasuresByIdsAsync(IList<string> ids);
 
-        Task<IList<ProductConfigurationEntity>> GetConfigurationsByIdsAsync(IList<string> configurationIds);
+        Task<IList<ProductConfigurationEntity>> GetConfigurationsByIdsAsync(IList<string> configurationIds, CancellationToken cancellationToken);
 
-        Task<ProductConfigurationEntity> GetConfigurationByProductIdAsync(string productId);
+        Task<ProductConfigurationEntity> GetConfigurationByProductIdAsync(string productId, CancellationToken cancellationToken);
     }
 }

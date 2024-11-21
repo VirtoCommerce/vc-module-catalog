@@ -714,7 +714,8 @@
           "enable": "Enable configuration",
           "hide": "Hide",
           "name": "Section name",
-          "quantity": "Number of options"
+          "quantity": "Options",
+          "sections": "Sections"
         },
         "descr": {
           "enable": "Activating the functionality of the product configuration.",
@@ -733,7 +734,8 @@
           "required": "Option selection is required",
           "picture": "Img",
           "quantity": "Quantity",
-          "product-name": "Product name"
+          "product-name": "Product name",
+          "options": "Options"
         },
         "descr": {
           "no-options": "There are no options in this section yet."

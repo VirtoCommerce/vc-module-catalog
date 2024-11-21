@@ -18,15 +18,15 @@ public class ProductConfigurationOption : AuditableEntity, ICloneable
     /// <summary>
     /// Display name for the product
     /// </summary>
-    public virtual string ProductName => Product.Name;
+    public virtual string ProductName => Product?.Name;
     /// <summary>
     /// Product image URL
     /// </summary>
-    public virtual string ProductImg => Product.ImgSrc;
+    public virtual string ProductImg => Product?.ImgSrc;
     /// <summary>
     /// Type of product
     /// </summary>
-    public virtual string ProductType => Product.ProductType;
+    public virtual string ProductType => Product?.ProductType;
 
     #region ICloneable members
 

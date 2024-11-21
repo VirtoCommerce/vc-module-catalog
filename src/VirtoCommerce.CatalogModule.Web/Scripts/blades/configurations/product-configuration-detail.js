@@ -61,6 +61,19 @@ angular.module('virtoCommerce.catalogModule')
                 deleteList([data]);
             };
 
+            $scope.$watch("blade.currentEntity", function () {
+                if (blade.currentEntity) {
+                    var canBeEnabled = _.some(blade.currentEntity.sections) &&
+                        _.every(blade.currentEntity.sections, section => _.some(section.options));
+
+                    if (!canBeEnabled) {
+                        blade.currentEntity.isActive = false;
+                    }
+
+                    $scope.canBeEnabled = canBeEnabled;
+                }
+            }, true);
+
             function deleteList(list) {
                 bladeNavigationService.closeChildrenBlades(blade,
                     function () {
@@ -85,7 +98,7 @@ angular.module('virtoCommerce.catalogModule')
                 blade.isLoading = true;
 
                 configurationsApi.update({}, blade.currentEntity, function (data) {
-                    blade.refresh();
+                    refresh();
                 });
             }
 

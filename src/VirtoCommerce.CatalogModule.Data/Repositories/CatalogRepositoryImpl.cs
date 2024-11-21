@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
 using Microsoft.EntityFrameworkCore;
@@ -47,12 +48,12 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         public IQueryable<ProductConfigurationSectionEntity> ProductConfigurationSections => DbContext.Set<ProductConfigurationSectionEntity>();
         public IQueryable<ProductConfigurationOptionEntity> ProductConfigurationOptions => DbContext.Set<ProductConfigurationOptionEntity>();
 
-        public virtual async Task<IList<ProductConfigurationEntity>> GetConfigurationsByIdsAsync(IList<string> configurationIds)
+        public virtual async Task<IList<ProductConfigurationEntity>> GetConfigurationsByIdsAsync(IList<string> configurationIds, CancellationToken cancellationToken)
         {
             var result = await ProductConfigurations
                 .Include(x => x.Sections)
                 .Where(x => configurationIds.Contains(x.Id))
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             if (result.Count != 0)
             {
@@ -60,25 +61,23 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 await ProductConfigurationSections
                     .Include(x => x.Options)
                     .Where(x => sectionIds.Contains(x.Id))
-                    .LoadAsync();
+                    .LoadAsync(cancellationToken);
 
-                // var optionIds = result.SelectMany(x => x.Sections.SelectMany(s => s.Options.Select(o => o.Id))).ToList();
-                // await ProductConfigurationOptions
-                //     .Where(x => optionIds.Contains(x.Id))
-                //     .LoadAsync();
                 var associatedProductIds = result.SelectMany(x => x.Sections.SelectMany(s => s.Options.Select(o => o.ProductId))).ToList();
 
-                await GetItemByIdsAsync(associatedProductIds, (ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemAssets).ToString());
+                cancellationToken.ThrowIfCancellationRequested();
+
+                await GetItemByIdsAsync(associatedProductIds, (ItemResponseGroup.ItemInfo).ToString());
             }
 
             return result;
         }
 
-        public virtual async Task<ProductConfigurationEntity> GetConfigurationByProductIdAsync(string productId)
+        public virtual async Task<ProductConfigurationEntity> GetConfigurationByProductIdAsync(string productId, CancellationToken cancellationToken)
         {
             var result = await ProductConfigurations
                 .Include(x => x.Sections)
-                .FirstOrDefaultAsync(x => x.ProductId == productId);
+                .FirstOrDefaultAsync(x => x.ProductId == productId, cancellationToken);
 
             if (result != null)
             {
@@ -86,11 +85,13 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 await ProductConfigurationSections
                     .Include(x => x.Options)
                     .Where(x => sectionIds.Contains(x.Id))
-                    .LoadAsync();
+                    .LoadAsync(cancellationToken);
 
                 var associatedProductIds = result.Sections.SelectMany(s => s.Options.Select(o => o.ProductId)).ToList();
 
-                await GetItemByIdsAsync(associatedProductIds, (ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemAssets).ToString());
+                cancellationToken.ThrowIfCancellationRequested();
+
+                await GetItemByIdsAsync(associatedProductIds, (ItemResponseGroup.ItemInfo).ToString());
             }
 
             return result;

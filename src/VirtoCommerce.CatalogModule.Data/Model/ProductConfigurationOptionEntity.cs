@@ -33,6 +33,11 @@ public class ProductConfigurationOptionEntity : AuditableEntity, IDataEntity<Pro
         model.ProductId = ProductId;
         model.Quantity = Quantity;
 
+        if (Product != null)
+        {
+            model.Product = Product.ToModel(AbstractTypeFactory<Core.Model.CatalogProduct>.TryCreateInstance());
+        }
+
         return model;
     }
 

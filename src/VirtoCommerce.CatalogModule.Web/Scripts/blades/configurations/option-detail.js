@@ -2,7 +2,7 @@ angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.configurationOptionDetailController', ['$scope', 'platformWebApp.bladeNavigationService',
     function ($scope, bladeNavigationService) {
         var blade = $scope.blade;
-//        blade.headIcon = 'fas fa-puzzle-piece';
+        blade.headIcon = blade.origEntity.productType === 'Digital' ? 'fa fa-file-zip-o' : 'fa fa-dropbox';
         $scope.isValid = false;
 
         $scope.$watch("blade.currentEntity", function () {

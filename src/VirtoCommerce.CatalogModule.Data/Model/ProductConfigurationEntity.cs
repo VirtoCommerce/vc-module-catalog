@@ -51,6 +51,11 @@ public class ProductConfigurationEntity : AuditableEntity, IDataEntity<ProductCo
         ProductId = model.ProductId;
         IsActive = model.IsActive;
 
+        if (model.Sections != null)
+        {
+            Sections = new ObservableCollection<ProductConfigurationSectionEntity>(model.Sections.Select(x => AbstractTypeFactory<ProductConfigurationSectionEntity>.TryCreateInstance().FromModel(x, pkMap)));
+        }
+
         return this;
     }
 
