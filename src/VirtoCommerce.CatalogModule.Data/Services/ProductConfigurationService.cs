@@ -74,11 +74,7 @@ public class ProductConfigurationService : CrudService<ProductConfiguration, Pro
     public virtual async Task SaveChangesAsync(ProductConfiguration configuration, CancellationToken cancellationToken)
     {
         // Only the full configuration can be active
-        if (configuration.Sections is null or [])
-        {
-            configuration.IsActive = false;
-        }
-        else if (configuration.Sections.Any(x => x.Options is null or []))
+        if ((configuration.Sections is null or []) || configuration.Sections.Any(x => x.Options is null or []))
         {
             configuration.IsActive = false;
         }
@@ -136,7 +132,7 @@ public class ProductConfigurationService : CrudService<ProductConfiguration, Pro
     private void LoadDependencies(IList<ProductConfiguration> configurations)
     {
         var allImages = configurations.SelectMany(c => c.Sections.SelectMany(s => s.Options.Where(o => o.Product != null && o.Product.Images != null).SelectMany(o => o.Product.Images)));
-        allImages.Union(configurations.Where(x => x.Product != null && x.Product.Images != null).SelectMany(x => x.Product.Images));
+        allImages = allImages.Union(configurations.Where(x => x.Product != null && x.Product.Images != null).SelectMany(x => x.Product.Images));
 
         foreach (var image in allImages.Where(x => !string.IsNullOrEmpty(x.Url)))
         {
