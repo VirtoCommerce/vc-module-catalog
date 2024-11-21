@@ -13,7 +13,7 @@ public class ProductConfiguration : AuditableEntity, ICloneable
 
     [JsonIgnore]
     public CatalogProduct Product { get; set; }
-    // [JsonIgnore]
+
     public IList<ProductConfigurationSection> Sections { get; set; }
 
     #region ICloneable

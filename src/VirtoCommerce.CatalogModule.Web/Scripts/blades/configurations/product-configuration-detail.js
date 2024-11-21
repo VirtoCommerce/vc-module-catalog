@@ -37,6 +37,10 @@ angular.module('virtoCommerce.catalogModule')
                 }
             ];
 
+            blade.onClose = function (closeCallback) {
+                bladeNavigationService.showConfirmationIfNeeded(isDirty(), canSave(), blade, saveChanges, closeCallback, "catalog.dialogs.configuration-save.title", "catalog.dialogs.configuration-save.message");
+            };
+
             $scope.setForm = function (form) { blade.formScope = form; }
 
             $scope.setGridOptions = function (gridOptions) {
@@ -97,7 +101,7 @@ angular.module('virtoCommerce.catalogModule')
             function saveChanges() {
                 blade.isLoading = true;
 
-                configurationsApi.update({}, blade.currentEntity, function (data) {
+                configurationsApi.update({}, blade.currentEntity, function () {
                     refresh();
                 });
             }

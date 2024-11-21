@@ -95,6 +95,9 @@
         },
         "placeholders": {
           "select-filter": "Select filter"
+        },
+        "descr": {
+          "title-mapping": "It's mapped to this virtual location"
         }
       },
       "category-detail": {
@@ -314,6 +317,7 @@
       "item-detail": {
         "subtitle": "{{ productTypeName }} item details",
         "subtitle-variation": "Variation details",
+        "hide-description": "Hide",
         "labels": {
           "id": "ID",
           "outer-id": "Outer ID",
@@ -541,7 +545,12 @@
           "name": "Name",
           "priority": "Priority",
           "group": "Group",
-          "quantity": "Quantity"
+          "quantity": "Quantity",
+          "tags": "Tags"
+        },
+        "descr": {
+          "no-associations": "No Associations yet.",
+          "quantity": "Association Quantity"
         }
       },
       "item-association-detail": {
@@ -710,15 +719,15 @@
       },
       "configuration-details": {
         "title": "Product configuration",
+        "hide-description": "Hide",
         "labels": {
           "enable": "Enable configuration",
-          "hide": "Hide",
           "name": "Section name",
           "quantity": "Options",
           "sections": "Sections"
         },
         "descr": {
-          "enable": "Activating the functionality of the product configuration.",
+          "enable": "Activating the functionality of the product configuration. To activate, the configuration must contain at least one section, and each section must contain at least one option.",
           "no-sections": "There are no sections in this configuration yet.",
           "sorting-prompt": "Set how the sections will appear in the web store. Drag and drop the sections to change their order."
         },
@@ -956,6 +965,10 @@
         "measure-save": {
           "title": "Save changes",
           "message": "This measure has been modified. Do you want to save the changes?"
+        },
+        "configuration-save": {
+          "title": "Save changes",
+          "message": "This configuration has been modified. Do you want to save the changes?"
         }
       },
       "wizards": {

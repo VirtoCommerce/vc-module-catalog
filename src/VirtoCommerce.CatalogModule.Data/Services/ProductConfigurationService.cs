@@ -15,6 +15,7 @@ using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Events;
 using VirtoCommerce.Platform.Data.GenericCrud;
 using VirtoCommerce.Platform.Data.Infrastructure;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace VirtoCommerce.CatalogModule.Data.Services;
 
@@ -72,6 +73,16 @@ public class ProductConfigurationService : CrudService<ProductConfiguration, Pro
 
     public virtual async Task SaveChangesAsync(ProductConfiguration configuration, CancellationToken cancellationToken)
     {
+        // Only the full configuration can be active
+        if (configuration.Sections is null or [])
+        {
+            configuration.IsActive = false;
+        }
+        else if (configuration.Sections.Any(x => x.Options is null or []))
+        {
+            configuration.IsActive = false;
+        }
+
         await base.SaveChangesAsync([configuration]);
 
         using var repository = _repositoryFactory();

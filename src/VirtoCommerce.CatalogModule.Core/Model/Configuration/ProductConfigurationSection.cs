@@ -16,7 +16,7 @@ public class ProductConfigurationSection : AuditableEntity, ICloneable, IHasName
 
     [JsonIgnore]
     public ProductConfiguration Configuration { get; set; }
-    // [JsonIgnore]
+
     public IList<ProductConfigurationOption> Options { get; set; }
 
     #region ICloneable members
