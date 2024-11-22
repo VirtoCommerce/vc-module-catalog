@@ -1598,7 +1598,7 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                     b.HasOne("VirtoCommerce.CatalogModule.Data.Model.ItemEntity", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("VirtoCommerce.CatalogModule.Data.Model.ProductConfigurationSectionEntity", "Section")

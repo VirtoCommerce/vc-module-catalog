@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -97,8 +97,7 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
                         name: "FK_ProductConfigurationOption_Item_ProductId",
                         column: x => x.ProductId,
                         principalTable: "Item",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_ProductConfigurationOption_ProductConfigurationSection_Secti~",
                         column: x => x.SectionId,
