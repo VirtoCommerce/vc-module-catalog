@@ -45,7 +45,7 @@ public class ProductConfigurationService : CrudService<ProductConfiguration, Pro
 
         if (configurations != null && configurations.Any())
         {
-            LoadDependencies(configurations);
+            ResolveImageUrls(configurations);
         }
 
         return configurations;
@@ -64,7 +64,7 @@ public class ProductConfigurationService : CrudService<ProductConfiguration, Pro
 
         if (model != null)
         {
-            LoadDependencies([model]);
+            ResolveImageUrls([model]);
         }
 
         return model;
@@ -128,7 +128,7 @@ public class ProductConfigurationService : CrudService<ProductConfiguration, Pro
         await repository.UnitOfWork.CommitAsync();
     }
 
-    private void LoadDependencies(IList<ProductConfiguration> configurations)
+    private void ResolveImageUrls(IList<ProductConfiguration> configurations)
     {
         var allImages = configurations.SelectMany(c => c.Sections.SelectMany(s => s.Options.Where(o => o.Product != null && o.Product.Images != null).SelectMany(o => o.Product.Images)));
         allImages = allImages.Union(configurations.Where(x => x.Product != null && x.Product.Images != null).SelectMany(x => x.Product.Images));
