@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CatalogModule.Core.Model.Configuration;
 using VirtoCommerce.CatalogModule.Core.Services;
 
 namespace VirtoCommerce.CatalogModule.Data.Services;
@@ -19,7 +20,7 @@ public class ConfigurableProductService : IConfigurableProductService
 
         var result = new ProductConfiguration
         {
-            ConfigurationSections = associations
+            Sections = associations
                 .GroupBy(x => x.Type)
                 .Select(x => new ProductConfigurationSection
                 {

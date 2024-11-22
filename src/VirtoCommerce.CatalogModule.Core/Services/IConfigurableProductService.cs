@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CatalogModule.Core.Model.Configuration;
 
 namespace VirtoCommerce.CatalogModule.Core.Services;
 public interface IConfigurableProductService
