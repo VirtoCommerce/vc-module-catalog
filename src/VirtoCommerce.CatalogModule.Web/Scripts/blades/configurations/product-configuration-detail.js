@@ -2,6 +2,7 @@ angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.productConfigurationDetailController', ['$scope', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.configurationsApi', 'platformWebApp.uiGridHelper',
         function ($scope, bladeNavigationService, configurationsApi, uiGridHelper) {
             var blade = $scope.blade;
+            var updatePermission = 'configurations:update';
 
             blade.headIcon = 'fas fa-sliders';
             blade.title = 'catalog.blades.configuration-details.title';
@@ -12,21 +13,21 @@ angular.module('virtoCommerce.catalogModule')
                     icon: 'fas fa-save',
                     executeMethod: saveChanges,
                     canExecuteMethod: canSave,
-                    permission: 'configurations:update'
+                    permission: updatePermission
                 },
                 {
                     name: "platform.commands.reset",
                     icon: 'fa fa-undo',
                     executeMethod: function () { angular.copy(blade.origEntity, blade.currentEntity); },
                     canExecuteMethod: isDirty,
-                    permission: 'configurations:update'
+                    permission: updatePermission
                 },
                 {
                     name: "catalog.blades.configuration-details.commands.add",
                     icon: 'fas fa-plus',
                     executeMethod: function() { openSectionBlade({}); },
                     canExecuteMethod: function () { return true; },
-                    permission: 'configurations:update'
+                    permission: updatePermission
                 },
                 {
                     name: "platform.commands.delete",
@@ -84,7 +85,7 @@ angular.module('virtoCommerce.catalogModule')
                         var undeletedEntries = _.difference(blade.currentEntity.sections, list);
                         blade.currentEntity.sections = undeletedEntries;
                     });
-            };
+            }
 
             function isItemsChecked() {
                 return $scope.gridApi && _.any($scope.gridApi.selection.getSelectedRows());
@@ -111,9 +112,9 @@ angular.module('virtoCommerce.catalogModule')
                     id: "sectionDetail",
                     origEntity: section ,
                     title: section.name ? section.name : 'catalog.blades.section-details.title',
-                    onSaveNew: function (section) {
-                        section.displayOrder = blade.currentEntity.sections.length;
-                        blade.currentEntity.sections.push(section);
+                    onSaveNew: function (newSection) {
+                        newSection.displayOrder = blade.currentEntity.sections.length;
+                        blade.currentEntity.sections.push(newSection);
                     },
                     controller: 'virtoCommerce.catalogModule.configurationSectionDetailController',
                     template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/configurations/configuration-section-detail.tpl.html'

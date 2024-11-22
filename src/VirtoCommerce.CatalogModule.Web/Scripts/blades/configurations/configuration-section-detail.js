@@ -15,7 +15,7 @@ angular.module('virtoCommerce.catalogModule')
                 {
                     name: "catalog.blades.section-details.commands.add",
                     icon: 'fas fa-plus',
-                    executeMethod: function () { openOptionSelectorBlade({}); },
+                    executeMethod: openOptionSelectorBlade,
                     canExecuteMethod: function () { return true; },
                     permission: 'configurations:update'
                 },
@@ -90,7 +90,7 @@ angular.module('virtoCommerce.catalogModule')
                         var undeletedEntries = _.difference(blade.currentEntity.options, list);
                         blade.currentEntity.options = undeletedEntries;
                     });
-            };
+            }
 
             function isItemsChecked() {
                 return $scope.gridApi && _.any($scope.gridApi.selection.getSelectedRows());
@@ -107,12 +107,12 @@ angular.module('virtoCommerce.catalogModule')
                     selectedItemIds: [],
                     checkItemFn: function (listItem, isSelected) {
                         if (isSelected) {
-                            if (!_.find(selection, function (x) { return x.id == listItem.id; })) {
+                            if (!_.find(selection, function (x) { return x.id === listItem.id; })) {
                                 selection.push(listItem);
                             }
                         }
                         else {
-                            selection = _.reject(selection, function (x) { return x.id == listItem.id; });
+                            selection = _.reject(selection, function (x) { return x.id === listItem.id; });
                         }
                     }
                 };
@@ -165,7 +165,7 @@ angular.module('virtoCommerce.catalogModule')
                 }
                 blade.currentEntity = angular.copy(item);
                 blade.isLoading = false;
-            };
+            }
 
             initialize(blade.origEntity);
         }]);

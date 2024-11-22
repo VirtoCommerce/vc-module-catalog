@@ -15,7 +15,6 @@ using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Events;
 using VirtoCommerce.Platform.Data.GenericCrud;
 using VirtoCommerce.Platform.Data.Infrastructure;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace VirtoCommerce.CatalogModule.Data.Services;
 
@@ -91,7 +90,7 @@ public class ProductConfigurationService : CrudService<ProductConfiguration, Pro
         }
     }
 
-    private async Task DeleteSectionsAsync(ProductConfiguration configuration, ICatalogRepository repository, CancellationToken cancellationToken)
+    private static async Task DeleteSectionsAsync(ProductConfiguration configuration, ICatalogRepository repository, CancellationToken cancellationToken)
     {
         var sectionIds = configuration.Sections.Where(x => !x.IsTransient()).Select(x => x.Id).ToList();
         var deletedSections = await repository.ProductConfigurationSections
@@ -114,7 +113,7 @@ public class ProductConfigurationService : CrudService<ProductConfiguration, Pro
         await repository.UnitOfWork.CommitAsync();
     }
 
-    private async Task DeleteOptionsAsync(ProductConfigurationSection section, ICatalogRepository repository, CancellationToken cancellationToken)
+    private static async Task DeleteOptionsAsync(ProductConfigurationSection section, ICatalogRepository repository, CancellationToken cancellationToken)
     {
         var optionIds = section.Options.Where(x => !x.IsTransient()).Select(x => x.Id).ToList();
         var deletedOptions = await repository.ProductConfigurationOptions.Where(x => x.SectionId == section.Id && !optionIds.Contains(x.Id)).ToListAsync(cancellationToken);

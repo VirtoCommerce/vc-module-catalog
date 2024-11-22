@@ -39,7 +39,7 @@ angular.module('virtoCommerce.catalogModule')
         function initialize(item) {
             blade.currentEntity = angular.copy(item);
             blade.isLoading = false;
-        };
+        }
 
         function openCurrentItem() {
             var newBlade = {
@@ -51,7 +51,7 @@ angular.module('virtoCommerce.catalogModule')
             };
 
             bladeNavigationService.showBlade(newBlade, blade);
-        };
+        }
 
         initialize(blade.origEntity);
     }]);
