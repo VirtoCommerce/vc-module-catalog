@@ -591,6 +591,9 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
                     b.Property<bool>("IsBuyable")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsConfigurable")
+                        .HasColumnType("boolean");
+
                     b.Property<decimal?>("Length")
                         .HasPrecision(18, 4)
                         .HasColumnType("numeric(18,4)");
