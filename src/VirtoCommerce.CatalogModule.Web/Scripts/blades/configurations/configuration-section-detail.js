@@ -3,7 +3,7 @@ angular.module('virtoCommerce.catalogModule')
         function ($scope, bladeNavigationService, uiGridHelper) {
             var blade = $scope.blade;
             blade.headIcon = 'fas fa-puzzle-piece';
-            blade.title = blade.origEntity.name ? blade.origEntity.name : 'catalog.blades.section-details.title',
+            blade.title = blade.origEntity.name ? blade.origEntity.name : 'catalog.blades.section-details.title';
             blade.formScope = null;
 
             blade.toolbarCommands = [
