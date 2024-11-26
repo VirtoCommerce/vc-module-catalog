@@ -346,7 +346,8 @@
           "gtin": "GTIN",
           "mpn": "MPN",
           "start-date": "First listed",
-          "end-date": "Listing expires on"
+          "end-date": "Listing expires on",
+          "is-configurable": "Configurable"
         },
         "validations": {
           "sku": "SKU cannot contain the following characters: $+;=%{}[]|@~!^*&()?'<>"

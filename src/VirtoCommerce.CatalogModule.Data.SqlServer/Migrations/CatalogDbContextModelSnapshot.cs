@@ -591,6 +591,9 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                     b.Property<bool>("IsBuyable")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsConfigurable")
+                        .HasColumnType("bit");
+
                     b.Property<decimal?>("Length")
                         .HasPrecision(18, 4)
                         .HasColumnType("decimal(18,4)");

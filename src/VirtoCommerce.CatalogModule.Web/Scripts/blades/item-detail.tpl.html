@@ -1,13 +1,15 @@
 <div class="blade-content __medium-wide">
     <div class="blade-inner">
         <div class="inner-block">
-            <form class="form" name="detailForm">
-                <va-metaform registered-inputs="blade.metaFields" blade="blade" column-count="6" ng-if="blade.currentEntity" ng-init="setForm(detailForm)"></va-metaform>
+          <form class="form" name="detailForm">
+            <va-metaform registered-inputs="blade.metaFields" blade="blade" column-count="6" ng-if="blade.currentEntity" ng-init="setForm(detailForm)"></va-metaform>
 
-                <va-metaform registered-inputs="blade.metaFields1" blade="blade" column-count="6" ng-if="blade.currentEntity" class="blade-gray-box"></va-metaform>
+            <va-metaform registered-inputs="blade.metaFields1" blade="blade" column-count="6" ng-if="blade.currentEntity" class="blade-gray-box"></va-metaform>
 
-                <va-metaform registered-inputs="blade.metaFields2" blade="blade" column-count="6" ng-if="blade.currentEntity"></va-metaform>
-            </form>
+            <va-metaform registered-inputs="blade.metaFields2" blade="blade" column-count="6" ng-if="blade.currentEntity"></va-metaform>
+
+            <va-metaform registered-inputs="blade.metaFields3" blade="blade" column-count="2" ng-if="blade.currentEntity"></va-metaform>
+          </form>
             <va-widget-container group="itemDetail" blade="blade" data="blade.item" gridster-opts="{columns: 4}" class="form-group"></va-widget-container>
         </div>
     </div>
