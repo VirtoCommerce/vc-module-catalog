@@ -125,12 +125,24 @@ angular.module('virtoCommerce.catalogModule')
 
             function refresh() {
                 blade.isLoading = true;
-                configurationsApi.getConfigurationByProduct({ productId: blade.productId }, function (data) {
+
+                configurationsApi.search({ productId: blade.productId }, function (result) {
                     blade.isLoading = false;
+
+                    var data = {};
+
+                    if (result.totalCount == 0 || result.results == null || result.results.length <= 0) {
+                        data.productId = blade.productId;
+                        data.isActive = false;
+                    } else {
+                        data = result.results[0];
+                    }
+
                     if(data.sections == null)
                     {
                         data.sections = [];
                     }
+
                     blade.currentEntity = angular.copy(data);
                     blade.origEntity = data;
                 });

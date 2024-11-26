@@ -52,31 +52,6 @@ public class CatalogModuleConfigurationsController(IProductConfigurationService 
     }
 
     /// <summary>
-    /// Get configuration by product id.
-    /// </summary>
-    /// <remarks>Gets configuration by product id with full information loaded</remarks>
-    /// <param name="productId">The product id</param>
-    [HttpGet]
-    [Route("~/api/catalog/products/{productId}/configurations")]
-    [Authorize(ModuleConstants.Security.Permissions.ConfigurationsRead)]
-    public async Task<ActionResult<ProductConfiguration>> GetConfigurationByProductId(string productId)
-    {
-        var criteria = AbstractTypeFactory<ProductConfigurationSearchCriteria>.TryCreateInstance();
-        criteria.ProductId = productId;
-
-        var searchResult = await _configurationSearchService.SearchAsync(criteria);
-        var configuration = searchResult.Results.FirstOrDefault();
-
-        if (configuration == null)
-        {
-            configuration = AbstractTypeFactory<ProductConfiguration>.TryCreateInstance();
-            configuration.ProductId = productId;
-        }
-
-        return Ok(configuration);
-    }
-
-    /// <summary>
     /// Create or update the specified configuration.
     /// </summary>
     /// <remarks>If configuration id is null, a new configuration is created. It's updated otherwise</remarks>

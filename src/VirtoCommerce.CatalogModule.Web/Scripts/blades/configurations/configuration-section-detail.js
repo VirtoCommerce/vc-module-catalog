@@ -137,9 +137,9 @@ angular.module('virtoCommerce.catalogModule')
                                 });
 
                                 blade.currentEntity.options = _.map(currentSelection, function (x) {
-                                    var retVal = x.option;
-                                    if (!retVal) {
-                                        retVal = {
+                                    var option = x.option;
+                                    if (!option) {
+                                        option = {
                                             productType: x.productType,
                                             productId: x.id,
                                             productName: x.name,
@@ -147,7 +147,7 @@ angular.module('virtoCommerce.catalogModule')
                                             quantity: 1
                                         };
                                     }
-                                    return retVal;
+                                    return option;
                                 });
 
                                 bladeNavigationService.closeBlade(pickingBlade);
