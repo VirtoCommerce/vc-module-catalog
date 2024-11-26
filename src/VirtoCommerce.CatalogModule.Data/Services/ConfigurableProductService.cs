@@ -13,6 +13,7 @@ public class ConfigurableProductService : IConfigurableProductService
         _associationService = associationService;
     }
 
+    [System.Obsolete]
     public async Task<ProductConfiguration> GetProductConfigurationAsync(string productId)
     {
         var associations = await _associationService.GetAssociationsAsync([productId]);
@@ -25,6 +26,7 @@ public class ConfigurableProductService : IConfigurableProductService
                 {
                     Id = $"{productId}-{x.Key}",
                     Name = x.Key,
+                    Type = x.FirstOrDefault()?.AssociatedObjectType,
                     Description = string.Empty,
                     IsRequired = false,
                     Options = x.Select(y => new ProductConfigurationOption
