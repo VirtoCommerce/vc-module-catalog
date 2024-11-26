@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core.Model.Configuration;
@@ -13,7 +14,7 @@ public class ConfigurableProductService : IConfigurableProductService
         _associationService = associationService;
     }
 
-    [System.Obsolete("Use ProductConfigurationService instead")]
+    [Obsolete("Use ProductConfigurationService instead")]
     public async Task<ProductConfiguration> GetProductConfigurationAsync(string productId)
     {
         var associations = await _associationService.GetAssociationsAsync([productId]);
