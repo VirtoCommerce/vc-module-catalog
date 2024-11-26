@@ -13,7 +13,7 @@ public class ConfigurableProductService : IConfigurableProductService
         _associationService = associationService;
     }
 
-    [System.Obsolete]
+    [System.Obsolete("Use ProductConfigurationService instead")]
     public async Task<ProductConfiguration> GetProductConfigurationAsync(string productId)
     {
         var associations = await _associationService.GetAssociationsAsync([productId]);
