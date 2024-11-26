@@ -131,7 +131,7 @@ angular.module('virtoCommerce.catalogModule')
 
                     var data = {};
 
-                    if (result.totalCount == 0 || result.results == null || result.results.length <= 0) {
+                    if (result.totalCount === 0 || result.results == null || result.results.length <= 0) {
                         data.productId = blade.productId;
                         data.isActive = false;
                     } else {
