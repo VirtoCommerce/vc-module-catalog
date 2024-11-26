@@ -143,7 +143,7 @@ angular.module('virtoCommerce.catalogModule')
                                             productType: x.productType,
                                             productId: x.id,
                                             productName: x.name,
-                                            productImg: x.imageUrl,
+                                            productImageUrl: x.imageUrl,
                                             quantity: 1
                                         };
                                     }

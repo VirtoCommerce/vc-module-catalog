@@ -64,8 +64,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
         Task<IList<MeasureEntity>> GetMeasuresByIdsAsync(IList<string> ids);
 
-        Task<IList<ProductConfigurationEntity>> GetConfigurationsByIdsAsync(IList<string> configurationIds, CancellationToken cancellationToken);
 
-        Task<ProductConfigurationEntity> GetConfigurationByProductIdAsync(string productId, CancellationToken cancellationToken);
+        Task<IList<ProductConfigurationEntity>> GetConfigurationsByIdsAsync(IList<string> ids, CancellationToken cancellationToken);
     }
 }

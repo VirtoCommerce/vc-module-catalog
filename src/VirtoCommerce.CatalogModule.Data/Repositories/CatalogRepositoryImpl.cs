@@ -48,53 +48,41 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         public IQueryable<ProductConfigurationSectionEntity> ProductConfigurationSections => DbContext.Set<ProductConfigurationSectionEntity>();
         public IQueryable<ProductConfigurationOptionEntity> ProductConfigurationOptions => DbContext.Set<ProductConfigurationOptionEntity>();
 
-        public virtual async Task<IList<ProductConfigurationEntity>> GetConfigurationsByIdsAsync(IList<string> configurationIds, CancellationToken cancellationToken)
+
+        public virtual async Task<IList<ProductConfigurationEntity>> GetConfigurationsByIdsAsync(IList<string> ids, CancellationToken cancellationToken)
         {
-            var result = await ProductConfigurations
-                .Include(x => x.Sections)
-                .Where(x => configurationIds.Contains(x.Id))
+            var configurations = await ProductConfigurations
+                .Where(x => ids.Contains(x.Id))
                 .ToListAsync(cancellationToken);
 
-            if (result.Count != 0)
+            if (configurations.Count > 0)
             {
-                var sectionIds = result.SelectMany(x => x.Sections.Select(s => s.Id)).ToList();
-                await ProductConfigurationSections
-                    .Include(x => x.Options)
-                    .Where(x => sectionIds.Contains(x.Id))
-                    .LoadAsync(cancellationToken);
-
-                var associatedProductIds = result.SelectMany(x => x.Sections.SelectMany(s => s.Options.Select(o => o.ProductId))).ToList();
-
                 cancellationToken.ThrowIfCancellationRequested();
+                var configurationIds = configurations.Select(x => x.Id).ToList();
 
-                await GetItemByIdsAsync(associatedProductIds, (ItemResponseGroup.ItemInfo).ToString());
+                var sections = await ProductConfigurationSections
+                    .Where(x => configurationIds.Contains(x.ConfigurationId))
+                    .ToListAsync(cancellationToken);
+
+                if (sections.Count > 0)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    var sectionIds = sections.Select(x => x.Id).ToList();
+
+                    var options = await ProductConfigurationOptions
+                        .Where(x => sectionIds.Contains(x.SectionId))
+                        .ToListAsync(cancellationToken);
+
+                    if (options.Count > 0)
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        var productIds = options.Select(x => x.ProductId).ToList();
+                        await GetItemByIdsAsync(productIds, ItemResponseGroup.ItemInfo.ToString());
+                    }
+                }
             }
 
-            return result;
-        }
-
-        public virtual async Task<ProductConfigurationEntity> GetConfigurationByProductIdAsync(string productId, CancellationToken cancellationToken)
-        {
-            var result = await ProductConfigurations
-                .Include(x => x.Sections)
-                .FirstOrDefaultAsync(x => x.ProductId == productId, cancellationToken);
-
-            if (result != null)
-            {
-                var sectionIds = result.Sections.Select(s => s.Id).ToList();
-                await ProductConfigurationSections
-                    .Include(x => x.Options)
-                    .Where(x => sectionIds.Contains(x.Id))
-                    .LoadAsync(cancellationToken);
-
-                var associatedProductIds = result.Sections.SelectMany(s => s.Options.Select(o => o.ProductId)).ToList();
-
-                cancellationToken.ThrowIfCancellationRequested();
-
-                await GetItemByIdsAsync(associatedProductIds, (ItemResponseGroup.ItemInfo).ToString());
-            }
-
-            return result;
+            return configurations;
         }
 
         public virtual async Task<IList<CatalogEntity>> GetCatalogsByIdsAsync(IList<string> catalogIds)

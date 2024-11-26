@@ -8,12 +8,14 @@ namespace VirtoCommerce.CatalogModule.Data.Model;
 
 public class ProductConfigurationOptionEntity : AuditableEntity, IDataEntity<ProductConfigurationOptionEntity, ProductConfigurationOption>
 {
-    [StringLength(128)]
     [Required]
+    [StringLength(128)]
     public string SectionId { get; set; }
-    [StringLength(128)]
+
     [Required]
+    [StringLength(128)]
     public string ProductId { get; set; }
+
     public int Quantity { get; set; }
 
     public virtual ProductConfigurationSectionEntity Section { get; set; }

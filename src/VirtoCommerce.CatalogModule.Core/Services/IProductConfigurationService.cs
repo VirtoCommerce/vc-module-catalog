@@ -7,7 +7,5 @@ namespace VirtoCommerce.CatalogModule.Core.Services;
 
 public interface IProductConfigurationService : ICrudService<ProductConfiguration>
 {
-    Task<ProductConfiguration> GetByProductIdAsync(string productId, CancellationToken cancellationToken);
-
     Task SaveChangesAsync(ProductConfiguration configuration, CancellationToken cancellationToken);
 }

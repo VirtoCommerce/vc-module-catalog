@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -52,7 +53,7 @@ public class CatalogModuleConfigurationsController : Controller
     [HttpPost]
     [Route("search")]
     [Authorize(ModuleConstants.Security.Permissions.ConfigurationsRead)]
-    public async Task<ActionResult<ProductConfigurationSearchResult>> GetConfigurations([FromBody] ProductConfigurationSearchCriteria criteria)
+    public async Task<ActionResult<ProductConfigurationSearchResult>> SearchConfigurations([FromBody] ProductConfigurationSearchCriteria criteria)
     {
         var result = await _configurationSearchService.SearchNoCloneAsync(criteria);
         return Ok(result);
@@ -63,13 +64,16 @@ public class CatalogModuleConfigurationsController : Controller
     /// </summary>
     /// <remarks>Gets configuration by product id with full information loaded</remarks>
     /// <param name="productId">The product id</param>
-    /// <param name="cancellationToken">The cancellation token to cancel the request</param>
     [HttpGet]
     [Route("~/api/catalog/products/{productId}/configurations")]
     [Authorize(ModuleConstants.Security.Permissions.ConfigurationsRead)]
-    public async Task<ActionResult<ProductConfiguration>> GetConfigurationByProductId(string productId, CancellationToken cancellationToken)
+    public async Task<ActionResult<ProductConfiguration>> GetConfigurationByProductId(string productId)
     {
-        var configuration = await _configurationService.GetByProductIdAsync(productId, cancellationToken);
+        var criteria = AbstractTypeFactory<ProductConfigurationSearchCriteria>.TryCreateInstance();
+        criteria.ProductId = productId;
+
+        var searchResult = await _configurationSearchService.SearchAsync(criteria);
+        var configuration = searchResult.Results.FirstOrDefault();
 
         if (configuration == null)
         {
@@ -84,7 +88,7 @@ public class CatalogModuleConfigurationsController : Controller
     /// <summary>
     /// Create or update the specified configuration.
     /// </summary>
-    /// <remarks>If configuration.id is null, a new configuration is created. It's updated otherwise</remarks>
+    /// <remarks>If configuration id is null, a new configuration is created. It's updated otherwise</remarks>
     /// <param name="configuration">The configuration.</param>
     /// <param name="cancellationToken">The cancellation token to cancel the request</param>
     [HttpPost]

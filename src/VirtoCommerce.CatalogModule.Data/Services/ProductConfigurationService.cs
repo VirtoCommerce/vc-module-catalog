@@ -14,7 +14,6 @@ using VirtoCommerce.Platform.Core.Caching;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Events;
 using VirtoCommerce.Platform.Data.GenericCrud;
-using VirtoCommerce.Platform.Data.Infrastructure;
 
 namespace VirtoCommerce.CatalogModule.Data.Services;
 
@@ -32,42 +31,6 @@ public class ProductConfigurationService : CrudService<ProductConfiguration, Pro
     {
         _repositoryFactory = repositoryFactory;
         _blobUrlResolver = blobUrlResolver;
-    }
-
-    protected override Task<IList<ProductConfigurationEntity>> LoadEntities(IRepository repository, IList<string> ids, string responseGroup)
-    {
-        return ((ICatalogRepository)repository).GetConfigurationsByIdsAsync(ids, CancellationToken.None);
-    }
-
-    protected override IList<ProductConfiguration> ProcessModels(IList<ProductConfigurationEntity> entities, string responseGroup)
-    {
-        var configurations = base.ProcessModels(entities, responseGroup);
-
-        if (configurations != null && configurations.Any())
-        {
-            ResolveImageUrls(configurations);
-        }
-
-        return configurations;
-    }
-
-    public async Task<ProductConfiguration> GetByProductIdAsync(string productId, CancellationToken cancellationToken)
-    {
-        using var repository = _repositoryFactory();
-
-        // Disable DBContext change tracking for better performance 
-        repository.DisableChangesTracking();
-
-        var productEntity = await repository.GetConfigurationByProductIdAsync(productId, cancellationToken);
-
-        var model = productEntity?.ToModel(AbstractTypeFactory<ProductConfiguration>.TryCreateInstance());
-
-        if (model != null)
-        {
-            ResolveImageUrls([model]);
-        }
-
-        return model;
     }
 
     public virtual async Task SaveChangesAsync(ProductConfiguration configuration, CancellationToken cancellationToken)
@@ -89,6 +52,25 @@ public class ProductConfigurationService : CrudService<ProductConfiguration, Pro
             await DeleteOptionsAsync(section, repository, cancellationToken);
         }
     }
+
+
+    protected override Task<IList<ProductConfigurationEntity>> LoadEntities(IRepository repository, IList<string> ids, string responseGroup)
+    {
+        return ((ICatalogRepository)repository).GetConfigurationsByIdsAsync(ids, CancellationToken.None);
+    }
+
+    protected override IList<ProductConfiguration> ProcessModels(IList<ProductConfigurationEntity> entities, string responseGroup)
+    {
+        var configurations = base.ProcessModels(entities, responseGroup);
+
+        if (configurations != null && configurations.Count > 0)
+        {
+            ResolveImageUrls(configurations);
+        }
+
+        return configurations;
+    }
+
 
     private static async Task DeleteSectionsAsync(ProductConfiguration configuration, ICatalogRepository repository, CancellationToken cancellationToken)
     {
@@ -130,10 +112,10 @@ public class ProductConfigurationService : CrudService<ProductConfiguration, Pro
 
     private void ResolveImageUrls(IList<ProductConfiguration> configurations)
     {
-        var allImages = configurations.SelectMany(c => c.Sections.SelectMany(s => s.Options.Where(o => o.Product != null && o.Product.Images != null).SelectMany(o => o.Product.Images)));
-        allImages = allImages.Union(configurations.Where(x => x.Product != null && x.Product.Images != null).SelectMany(x => x.Product.Images));
+        var images = configurations.SelectMany(c => c.Sections.SelectMany(s => s.Options.Where(o => o.Product != null && o.Product.Images != null).SelectMany(o => o.Product.Images)));
+        images = images.Union(configurations.Where(x => x.Product != null && x.Product.Images != null).SelectMany(x => x.Product.Images));
 
-        foreach (var image in allImages.Where(x => !string.IsNullOrEmpty(x.Url)))
+        foreach (var image in images.Where(x => !string.IsNullOrEmpty(x.Url)))
         {
             image.RelativeUrl = !string.IsNullOrEmpty(image.RelativeUrl) ? image.RelativeUrl : image.Url;
             image.Url = _blobUrlResolver.GetAbsoluteUrl(image.Url);

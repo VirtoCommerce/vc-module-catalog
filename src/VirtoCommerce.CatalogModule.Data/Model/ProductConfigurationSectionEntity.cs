@@ -10,12 +10,14 @@ namespace VirtoCommerce.CatalogModule.Data.Model;
 
 public class ProductConfigurationSectionEntity : AuditableEntity, IDataEntity<ProductConfigurationSectionEntity, ProductConfigurationSection>
 {
+    [Required]
     [StringLength(128)]
-    [Required]
     public string ConfigurationId { get; set; }
-    [StringLength(256)]
+
     [Required]
+    [StringLength(256)]
     public string Name { get; set; }
+
     public string Description { get; set; }
     public bool IsRequired { get; set; }
     public int DisplayOrder { get; set; }

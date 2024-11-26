@@ -10,9 +10,10 @@ namespace VirtoCommerce.CatalogModule.Data.Model;
 
 public class ProductConfigurationEntity : AuditableEntity, IDataEntity<ProductConfigurationEntity, ProductConfiguration>
 {
-    [StringLength(128)]
     [Required]
+    [StringLength(128)]
     public string ProductId { get; set; }
+
     public bool IsActive { get; set; }
 
     public virtual ItemEntity Product { get; set; }
