@@ -2,11 +2,12 @@ angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.productConfigurationDetailController', ['$scope', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.configurationsApi', 'platformWebApp.uiGridHelper',
         function ($scope, bladeNavigationService, configurationsApi, uiGridHelper) {
             var blade = $scope.blade;
-            var updatePermission = 'configurations:update';
+            var updatePermission = 'catalog:configurations:update';
 
             blade.headIcon = 'fas fa-sliders';
             blade.title = 'catalog.blades.configuration-details.title';
             blade.formScope = null;
+
             blade.toolbarCommands = [
                 {
                     name: "platform.commands.save",
@@ -34,7 +35,7 @@ angular.module('virtoCommerce.catalogModule')
                     icon: 'fas fa-trash-alt',
                     executeMethod: function () { deleteList($scope.gridApi.selection.getSelectedRows()); },
                     canExecuteMethod: isItemsChecked,
-                    permission: 'configurations:delete'
+                    permission: 'catalog:configurations:delete'
                 }
             ];
 
@@ -110,14 +111,13 @@ angular.module('virtoCommerce.catalogModule')
             function openSectionBlade(section) {
                 var newBlade = {
                     id: "sectionDetail",
+                    controller: 'virtoCommerce.catalogModule.configurationSectionDetailController',
+                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/configurations/configuration-section-detail.tpl.html',
                     origEntity: section ,
-                    title: section.name ? section.name : 'catalog.blades.section-details.title',
                     onSaveNew: function (newSection) {
                         newSection.displayOrder = blade.currentEntity.sections.length;
                         blade.currentEntity.sections.push(newSection);
                     },
-                    controller: 'virtoCommerce.catalogModule.configurationSectionDetailController',
-                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/configurations/configuration-section-detail.tpl.html'
                 };
 
                 bladeNavigationService.showBlade(newBlade, blade);

@@ -751,7 +751,7 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                 var productConfigurationWidget = {
                     controller: 'virtoCommerce.catalogModule.productConfigurationWidgetController',
                     template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/productConfigurationWidget.tpl.html',
-                    isVisible: function (blade) { return !blade.isNew && authService.checkPermission('configurations:read'); }
+                    isVisible: function (blade) { return !blade.isNew && authService.checkPermission('catalog:configurations:read'); }
                 };
                 widgetService.registerWidget(productConfigurationWidget, 'itemDetail');
             }]);

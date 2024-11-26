@@ -13,11 +13,11 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api;
 
 [Route("api/catalog/products/configurations")]
 [Authorize]
-public class CatalogModuleConfigurationsController(IProductConfigurationService configurationService, IProductConfigurationSearchService configurationSearchService) : Controller
+public class CatalogModuleConfigurationsController(
+    IProductConfigurationService configurationService,
+    IProductConfigurationSearchService configurationSearchService)
+    : Controller
 {
-    private readonly IProductConfigurationService _configurationService = configurationService;
-    private readonly IProductConfigurationSearchService _configurationSearchService = configurationSearchService;
-
     /// <summary>
     /// Get configuration by id.
     /// </summary>
@@ -28,7 +28,7 @@ public class CatalogModuleConfigurationsController(IProductConfigurationService 
     [Authorize(ModuleConstants.Security.Permissions.ConfigurationsRead)]
     public async Task<ActionResult<ProductConfiguration>> GetConfiguration(string id)
     {
-        var configuration = await _configurationService.GetNoCloneAsync(id);
+        var configuration = await configurationService.GetNoCloneAsync(id);
 
         if (configuration == null)
         {
@@ -47,7 +47,7 @@ public class CatalogModuleConfigurationsController(IProductConfigurationService 
     [Authorize(ModuleConstants.Security.Permissions.ConfigurationsRead)]
     public async Task<ActionResult<ProductConfigurationSearchResult>> SearchConfigurations([FromBody] ProductConfigurationSearchCriteria criteria)
     {
-        var result = await _configurationSearchService.SearchNoCloneAsync(criteria);
+        var result = await configurationSearchService.SearchNoCloneAsync(criteria);
         return Ok(result);
     }
 
@@ -67,7 +67,7 @@ public class CatalogModuleConfigurationsController(IProductConfigurationService 
             configuration.IsActive = false;
         }
 
-        await _configurationService.SaveChangesAsync([configuration]);
+        await configurationService.SaveChangesAsync([configuration]);
 
         return Ok(configuration);
     }

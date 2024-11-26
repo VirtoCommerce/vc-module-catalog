@@ -3,28 +3,30 @@ angular.module('virtoCommerce.catalogModule')
         function ($scope, bladeNavigationService, uiGridHelper) {
             var blade = $scope.blade;
             blade.headIcon = 'fas fa-puzzle-piece';
+            blade.title = blade.origEntity.name ? blade.origEntity.name : 'catalog.blades.section-details.title',
             blade.formScope = null;
+
             blade.toolbarCommands = [
                 {
                     name: "platform.commands.reset",
                     icon: 'fa fa-undo',
                     executeMethod: function () { angular.copy(blade.origEntity, blade.currentEntity); },
                     canExecuteMethod: isDirty,
-                    permission: 'configurations:update'
+                    permission: 'catalog:configurations:update'
                 },
                 {
                     name: "catalog.blades.section-details.commands.add",
                     icon: 'fas fa-plus',
                     executeMethod: openOptionSelectorBlade,
                     canExecuteMethod: function () { return true; },
-                    permission: 'configurations:update'
+                    permission: 'catalog:configurations:update'
                 },
                 {
                     name: "platform.commands.delete",
                     icon: 'fas fa-trash-alt',
                     executeMethod: function () { deleteList($scope.gridApi.selection.getSelectedRows()); },
                     canExecuteMethod: isItemsChecked,
-                    permission: 'configurations:delete'
+                    permission: 'catalog:configurations:delete'
                 }
             ];
 
@@ -46,10 +48,10 @@ angular.module('virtoCommerce.catalogModule')
                 $scope.selectedNodeId = item.productId;
                 var newBlade = {
                     id: 'optionItemDetail',
+                    controller: 'virtoCommerce.catalogModule.itemDetailController',
+                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/item-detail.tpl.html',
                     itemId: item.productId,
                     productType: item.productType,
-                    controller: 'virtoCommerce.catalogModule.itemDetailController',
-                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/item-detail.tpl.html'
                 };
 
                 bladeNavigationService.showBlade(newBlade, blade);
@@ -71,10 +73,9 @@ angular.module('virtoCommerce.catalogModule')
 
                 var newBlade = {
                     id: 'optionDetail',
-                    title: item.productName,
-                    origEntity: item,
                     controller: 'virtoCommerce.catalogModule.configurationOptionDetailController',
-                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/configurations/option-detail.tpl.html'
+                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/configurations/option-detail.tpl.html',
+                    origEntity: item,
                 };
 
                 bladeNavigationService.showBlade(newBlade, blade);
@@ -118,9 +119,9 @@ angular.module('virtoCommerce.catalogModule')
                 };
                 var newBlade = {
                     id: "CatalogItemsSelect",
-                    title: "catalog.blades.option-details.title",
                     controller: 'virtoCommerce.catalogModule.catalogItemSelectController',
                     template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/common/catalog-items-select.tpl.html',
+                    title: "catalog.blades.option-details.title",
                     options: options,
                     headIcon: "fas fa-list",
                     breadcrumbs: [],

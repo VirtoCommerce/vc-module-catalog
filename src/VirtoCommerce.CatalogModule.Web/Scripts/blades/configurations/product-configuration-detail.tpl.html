@@ -4,7 +4,7 @@
       <form class="form" name="configurationForm">
         <div class="form-group" ng-init="setForm(configurationForm)">
           <label class="form-label">{{ 'catalog.blades.configuration-details.labels.enable' | translate }}</label>
-          <i class="form-ico fa fa-question-circle __link __lightblue" ng-click="blade.setting.enable_descrVisible=!blade.setting.enable_descrVisible"></i>
+          <span class="form-ico fa fa-question-circle __link __lightblue" ng-click="blade.setting.enable_descrVisible=!blade.setting.enable_descrVisible"></span>
           <div class="form-input">
             <label class="form-label __switch">
               <input type="checkbox" ng-model="blade.currentEntity.isActive" [disabled]="(!canBeEnabled)"/>
@@ -33,10 +33,10 @@
             <div ui-grid="gridOptions" ui-grid-auto-resize ui-grid-save-state ui-grid-selection ui-grid-resize-columns ui-grid-move-columns ui-grid-pinning ui-grid-draggable-rows ui-grid-height></div>
             <ul class="menu __context" role="menu" id="pcl_menu">
               <li class="menu-item" ng-click='edit(contextMenuEntity)'>
-                <i class="menu-ico fa fa-edit"></i> {{'platform.commands.manage' | translate}}
+                <span class="menu-ico fa fa-edit"></span> {{'platform.commands.manage' | translate}}
               </li>
-              <li class="menu-item" ng-click='delete(contextMenuEntity)' va-permission="configurations:delete">
-                <i class="menu-ico fas fa-trash-alt"></i> {{'platform.commands.delete' | translate}}
+              <li class="menu-item" ng-click='delete(contextMenuEntity)' va-permission="catalog:configurations:delete">
+                <span class="menu-ico fas fa-trash-alt"></span> {{'platform.commands.delete' | translate}}
               </li>
             </ul>
           </div>
@@ -64,6 +64,6 @@
 
 <script type="text/ng-template" id="section-list-actions.cell.html">
   <div class="ui-grid-actions" left-click-menu="grid.appScope.contextMenuEntity = row.entity" data-target="pcl_menu">
-    <i class="fa fa-ellipsis-v"></i>
+    <span class="fa fa-ellipsis-v"></span>
   </div>
 </script>

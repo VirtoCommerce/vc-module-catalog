@@ -5,9 +5,9 @@ angular.module('virtoCommerce.catalogModule')
         $scope.openBlade = function () {
             var newBlade = {
                 id: "productConfiguration",
-                productId: blade.currentEntity.id,
                 controller: 'virtoCommerce.catalogModule.productConfigurationDetailController',
-                template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/configurations/product-configuration-detail.tpl.html'
+                template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/configurations/product-configuration-detail.tpl.html',
+                productId: blade.currentEntity.id,
             };
             bladeNavigationService.showBlade(newBlade, blade);
         };

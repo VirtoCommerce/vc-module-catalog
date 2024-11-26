@@ -45,13 +45,15 @@ public class ProductConfigurationSearchService : SearchService<ProductConfigurat
     protected override IList<SortInfo> BuildSortExpression(ProductConfigurationSearchCriteria criteria)
     {
         var sortInfos = criteria.SortInfos;
+
         if (sortInfos.IsNullOrEmpty())
         {
-            sortInfos = [new SortInfo
-            {
-                SortColumn = nameof(ProductConfigurationEntity.CreatedDate)
-            }];
+            sortInfos =
+            [
+                new SortInfo { SortColumn = nameof(ProductConfigurationEntity.CreatedDate) }
+            ];
         }
+
         return sortInfos;
     }
 }

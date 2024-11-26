@@ -33,9 +33,9 @@ namespace VirtoCommerce.CatalogModule.Core
                 public const string CatalogMetadataPropertyEdit = "catalog:metadata-property:edit";
                 public const string CatalogCustomPropertyEdit = "catalog:custom-property:edit";
                 public const string CatalogDictionaryPropertyEdit = "catalog:dictionary-property:edit";
-                public const string ConfigurationsRead = "configurations:read";
-                public const string ConfigurationsUpdate = "configurations:update";
-                public const string ConfigurationsDelete = "configurations:delete";
+                public const string ConfigurationsRead = "catalog:configurations:read";
+                public const string ConfigurationsUpdate = "catalog:configurations:update";
+                public const string ConfigurationsDelete = "catalog:configurations:delete";
 
                 public static string[] AllPermissions { get; } =
                 {
