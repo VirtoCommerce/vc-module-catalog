@@ -17,7 +17,7 @@ public class ProductConfigurationSection : AuditableEntity, ICloneable, IHasName
     [JsonIgnore]
     public ProductConfiguration Configuration { get; set; }
 
-    public IList<ProductConfigurationOption> Options { get; set; }
+    public IList<ProductConfigurationOption> Options { get; set; } = [];
 
     #region ICloneable members
     public virtual object Clone()

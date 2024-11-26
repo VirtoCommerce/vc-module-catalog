@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,16 +13,10 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api;
 
 [Route("api/catalog/products/configurations")]
 [Authorize]
-public class CatalogModuleConfigurationsController : Controller
+public class CatalogModuleConfigurationsController(IProductConfigurationService configurationService, IProductConfigurationSearchService configurationSearchService) : Controller
 {
-    private readonly IProductConfigurationService _configurationService;
-    private readonly IProductConfigurationSearchService _configurationSearchService;
-
-    public CatalogModuleConfigurationsController(IProductConfigurationService configurationService, IProductConfigurationSearchService configurationSearchService)
-    {
-        _configurationService = configurationService;
-        _configurationSearchService = configurationSearchService;
-    }
+    private readonly IProductConfigurationService _configurationService = configurationService;
+    private readonly IProductConfigurationSearchService _configurationSearchService = configurationSearchService;
 
     /// <summary>
     /// Get configuration by id.
@@ -79,7 +71,6 @@ public class CatalogModuleConfigurationsController : Controller
         {
             configuration = AbstractTypeFactory<ProductConfiguration>.TryCreateInstance();
             configuration.ProductId = productId;
-            configuration.Sections = new List<ProductConfigurationSection>(0);
         }
 
         return Ok(configuration);
@@ -90,13 +81,18 @@ public class CatalogModuleConfigurationsController : Controller
     /// </summary>
     /// <remarks>If configuration id is null, a new configuration is created. It's updated otherwise</remarks>
     /// <param name="configuration">The configuration.</param>
-    /// <param name="cancellationToken">The cancellation token to cancel the request</param>
     [HttpPost]
     [Route("")]
     [Authorize(ModuleConstants.Security.Permissions.ConfigurationsUpdate)]
-    public async Task<ActionResult> CreateOrUpdateConfiguration([FromBody] ProductConfiguration configuration, CancellationToken cancellationToken)
+    public async Task<ActionResult> CreateOrUpdateConfiguration([FromBody] ProductConfiguration configuration)
     {
-        await _configurationService.SaveChangesAsync(configuration, cancellationToken);
+        // Only the full configuration can be active
+        if ((configuration.Sections is null or []) || configuration.Sections.Any(x => x.Options is null or []))
+        {
+            configuration.IsActive = false;
+        }
+
+        await _configurationService.SaveChangesAsync([configuration]);
 
         return Ok(configuration);
     }

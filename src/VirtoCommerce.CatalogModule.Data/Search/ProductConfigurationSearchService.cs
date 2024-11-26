@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Options;
 using VirtoCommerce.CatalogModule.Core.Model.Configuration;
@@ -39,5 +40,18 @@ public class ProductConfigurationSearchService : SearchService<ProductConfigurat
         }
 
         return query;
+    }
+
+    protected override IList<SortInfo> BuildSortExpression(ProductConfigurationSearchCriteria criteria)
+    {
+        var sortInfos = criteria.SortInfos;
+        if (sortInfos.IsNullOrEmpty())
+        {
+            sortInfos = [new SortInfo
+            {
+                SortColumn = nameof(ProductConfigurationEntity.CreatedDate)
+            }];
+        }
+        return sortInfos;
     }
 }
