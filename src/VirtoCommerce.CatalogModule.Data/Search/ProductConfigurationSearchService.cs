@@ -29,9 +29,9 @@ public class ProductConfigurationSearchService : SearchService<ProductConfigurat
     {
         var query = ((ICatalogRepository)repository).ProductConfigurations;
 
-        if (!string.IsNullOrEmpty(criteria.ProductId))
+        if (!criteria.ProductIds.IsNullOrEmpty())
         {
-            query = query.Where(x => x.ProductId == criteria.ProductId);
+            query = query.Where(x => criteria.ProductIds.Contains(x.ProductId));
         }
 
         if (criteria.IsActive.HasValue)
