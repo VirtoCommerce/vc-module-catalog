@@ -591,9 +591,6 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
                     b.Property<bool>("IsBuyable")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<bool>("IsConfigurable")
-                        .HasColumnType("tinyint(1)");
-
                     b.Property<decimal?>("Length")
                         .HasPrecision(18, 4)
                         .HasColumnType("decimal(18,4)");

@@ -98,11 +98,6 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         public bool? TrackInventory { get; set; }
 
         /// <summary>
-        /// Indicates configurable product.
-        /// </summary>
-        public bool IsConfigurable { get; set; }
-
-        /// <summary>
         /// The date and time when the product was last indexed for search.
         /// </summary>
         public DateTime? IndexingDate { get; set; }

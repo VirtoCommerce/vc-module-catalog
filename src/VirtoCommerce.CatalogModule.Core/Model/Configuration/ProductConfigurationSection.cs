@@ -14,9 +14,6 @@ public class ProductConfigurationSection : AuditableEntity, ICloneable, IHasName
     public bool IsRequired { get; set; }
     public int DisplayOrder { get; set; }
 
-    [Obsolete("This field is no longer used")]
-    public string Type { get; set; }
-
     [JsonIgnore]
     public ProductConfiguration Configuration { get; set; }
 
