@@ -89,7 +89,7 @@ angular.module('virtoCommerce.catalogModule')
             }
 
             function isItemsChecked() {
-                return $scope.gridApi && _.any($scope.gridApi.selection.getSelectedRows());
+                return $scope.gridApi && _.some(blade.currentEntity.sections) && _.some($scope.gridApi.selection.getSelectedRows());
             }
 
             function isDirty() {
@@ -97,7 +97,7 @@ angular.module('virtoCommerce.catalogModule')
             }
 
             function canSave() {
-                return isDirty() && blade.formScope && blade.formScope.$valid && blade.currentEntity.sections.length > 0;
+                return isDirty() && blade.formScope && blade.formScope.$valid;
             }
 
             function saveChanges() {

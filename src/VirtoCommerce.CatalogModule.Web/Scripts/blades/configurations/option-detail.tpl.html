@@ -6,7 +6,7 @@
         <div class="form-group" ng-init="setForm(optionForm)">
           <label class="form-label">{{ 'catalog.blades.option-details.labels.quantity' | translate }}</label>
           <div class="form-input __number">
-            <input smart-float num-type="integer" required ng-model="blade.currentEntity.quantity"
+            <input smart-float num-type="integer" required ng-model="blade.currentEntity.quantity" ng-pattern="/^[1-9]+[0-9]*$/"
                    placeholder="{{ 'catalog.blades.option-details.placeholders.quantity' | translate }}">
           </div>
         </div>

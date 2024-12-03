@@ -1,47 +1,44 @@
-<div class="blade-content __medium-wide">
+<div class="blade-static" style="height: 240px; width: 550px; white-space: normal;">
+  <form class="form" name="configurationForm" style="margin:0; padding: 0;">
+    <div class="form-group" ng-init="setForm(configurationForm)">
+      <label class="form-label">{{ 'catalog.blades.configuration-details.labels.enable' | translate }}</label>
+      <div class="form-input">
+        <label class="form-label __switch">
+          <input type="checkbox" ng-model="blade.currentEntity.isActive" [disabled]="(!canBeEnabled)" />
+          <span class="switch"></span>
+        </label>
+      </div>
+      <div class="list __info list-descr">{{ 'catalog.blades.configuration-details.descr.enable' | translate }}</div>
+    </div>
+    <div class="form-group" style="padding-top: 0;">
+      <label class="form-label">{{ 'catalog.blades.configuration-details.labels.sections' | translate }}</label>
+      <div class="note" style="margin-top:10px;">{{ 'catalog.blades.configuration-details.descr.sorting-prompt' | translate }}</div>
+    </div>
+  </form>
+</div>
+<div class="blade-content __medium-wide" style="height: calc(100% - 242px) !important;">
   <div class="blade-inner">
-    <div class="inner-block">
-      <form class="form" name="configurationForm">
-        <div class="form-group" ng-init="setForm(configurationForm)">
-          <label class="form-label">{{ 'catalog.blades.configuration-details.labels.enable' | translate }}</label>
-          <span class="form-ico fa fa-question-circle __link __lightblue" ng-click="blade.setting.enable_descrVisible=!blade.setting.enable_descrVisible"></span>
-          <div class="form-input">
-            <label class="form-label __switch">
-              <input type="checkbox" ng-model="blade.currentEntity.isActive" [disabled]="(!canBeEnabled)"/>
-              <span class="switch"></span>
-            </label>
-          </div>
-          <div ng-if="blade.setting.enable_descrVisible">
-            <div class="list __info list-descr">{{ 'catalog.blades.configuration-details.descr.enable' | translate }}</div>
-            <a href="" ng-click="blade.setting.enable_descrVisible = null;">{{ 'catalog.blades.configuration-details.hide-description' | translate }}</a>
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">{{ 'catalog.blades.configuration-details.labels.sections' | translate }}</label>
-          <div class="note" ng-if="!blade.currentEntity.sections.length">{{ 'catalog.blades.configuration-details.descr.no-sections' | translate }}</div>
-          <div class="note" ng-if="blade.currentEntity.sections.length">{{ 'catalog.blades.configuration-details.descr.sorting-prompt' | translate }}</div>
-          <div class="table-wrapper" ng-if="blade.currentEntity.sections.length > 0" ng-init="setGridOptions({
+    <div class="inner-block" ng-init="setGridOptions({
                 data: 'blade.currentEntity.sections',
                 rowTemplate: 'section-list.row.html',
                 rowHeight: 61,
                 enableSorting: false,
-                virtualizationThreshold: 1000,
                 columnDefs: [
                         { name: 'actions', displayName: '', enableColumnResizing: false, width: 30, cellTemplate: 'section-list-actions.cell.html', pinnedLeft:true },
                         { name: 'name', displayName: 'catalog.blades.configuration-details.labels.name', cellTemplate: 'section-list-name.cell.html' }
-                 ]})" style="margin: 0 -20px 0;">
-            <div ui-grid="gridOptions" ui-grid-auto-resize ui-grid-save-state ui-grid-selection ui-grid-resize-columns ui-grid-move-columns ui-grid-pinning ui-grid-draggable-rows ui-grid-height></div>
-            <ul class="menu __context" role="menu" id="pcl_menu">
-              <li class="menu-item" ng-click='edit(contextMenuEntity)'>
-                <span class="menu-ico fa fa-edit"></span> {{'platform.commands.manage' | translate}}
-              </li>
-              <li class="menu-item" ng-click='delete(contextMenuEntity)' va-permission="catalog:configurations:delete">
-                <span class="menu-ico fas fa-trash-alt"></span> {{'platform.commands.delete' | translate}}
-              </li>
-            </ul>
-          </div>
-        </div>
-      </form>
+                 ]})">
+      <div class="table-wrapper" ng-if="blade.currentEntity.sections.length" style="margin: 0 -21px;">
+        <div ui-grid="gridOptions" ui-grid-auto-resize ui-grid-save-state ui-grid-selection ui-grid-resize-columns ui-grid-move-columns ui-grid-pinning ui-grid-draggable-rows ui-grid-height></div>
+        <ul class="menu __context" role="menu" id="pcl_menu">
+          <li class="menu-item" ng-click='edit(contextMenuEntity)'>
+            <span class="menu-ico fa fa-edit"></span> {{'platform.commands.manage' | translate}}
+          </li>
+          <li class="menu-item" ng-click='delete(contextMenuEntity)' va-permission="catalog:configurations:delete">
+            <span class="menu-ico fas fa-trash-alt"></span> {{'platform.commands.delete' | translate}}
+          </li>
+        </ul>
+      </div>
+      <div class="note" ng-if="!blade.currentEntity.sections.length">{{ 'catalog.blades.configuration-details.descr.no-sections' | translate }}</div>
     </div>
   </div>
 </div>
