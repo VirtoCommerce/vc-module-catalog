@@ -118,7 +118,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
 
 
         // Support JSON for serialization
-        private static string Serialize(IList<IBrowseFilter> filters)
+        protected static string Serialize(IList<IBrowseFilter> filters)
         {
             string result = null;
 
@@ -133,20 +133,18 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
                 };
 
                 // Serialize to JSON
-                using (var memStream = new MemoryStream())
-                {
-                    browsing.SerializeJson(memStream, _jsonSerializer);
-                    memStream.Seek(0, SeekOrigin.Begin);
+                using var memStream = new MemoryStream();
+                browsing.SerializeJson(memStream, _jsonSerializer);
+                memStream.Seek(0, SeekOrigin.Begin);
 
-                    result = memStream.ReadToString();
-                }
+                result = memStream.ReadToString();
             }
 
             return result;
         }
 
         // Support both JSON and XML for deserialization
-        private static IList<IBrowseFilter> Deserialize(string value)
+        protected static IList<IBrowseFilter> Deserialize(string value)
         {
             IList<IBrowseFilter> result = null;
 
@@ -163,11 +161,9 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
                 else
                 {
                     // JSON
-                    using (var stringReader = new StringReader(value))
-                    using (var jsonTextReader = new JsonTextReader(stringReader))
-                    {
-                        browsing = _jsonSerializer.Deserialize<FilteredBrowsing>(jsonTextReader);
-                    }
+                    using var stringReader = new StringReader(value);
+                    using var jsonTextReader = new JsonTextReader(stringReader);
+                    browsing = _jsonSerializer.Deserialize<FilteredBrowsing>(jsonTextReader);
                 }
 
                 // Flatten groups
