@@ -778,6 +778,9 @@
       },
       "measure-units": {
         "title": "単位"
+      },
+      "configuration": {
+        "title": "構成"
       }
     },
     "dialogs": {

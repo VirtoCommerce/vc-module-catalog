@@ -1,4 +1,4 @@
-﻿angular.module('virtoCommerce.catalogModule')
+angular.module('virtoCommerce.catalogModule')
 .controller('virtoCommerce.catalogModule.associationWizardController', ['$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.settings', 'virtoCommerce.catalogModule.items', function ($scope, bladeNavigationService, settings, items) {
     var blade = $scope.blade;
     blade.title = "catalog.wizards.association.title";
@@ -45,7 +45,7 @@
             return retVal;
         });
         if (angular.isFunction(blade.onSaveChanges)) {
-            blade.onSaveChanges();                
+            blade.onSaveChanges();
         }
         $scope.bladeClose();
     };

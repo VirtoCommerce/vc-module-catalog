@@ -1,6 +1,6 @@
 angular.module('virtoCommerce.catalogModule')
-    .controller('virtoCommerce.catalogModule.catalogsListController', ['$scope', '$location', 'virtoCommerce.catalogModule.catalogs', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'platformWebApp.authService', 'platformWebApp.uiGridHelper', 'platformWebApp.bladeUtils', '$timeout', 'platformWebApp.settings',
-        function ($scope, $location, catalogs, bladeNavigationService, dialogService, authService, uiGridHelper, bladeUtils, $timeout, settings) {
+    .controller('virtoCommerce.catalogModule.catalogsListController', ['$scope', '$location', 'virtoCommerce.catalogModule.catalogs', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'platformWebApp.authService', 'platformWebApp.uiGridHelper', 'platformWebApp.bladeUtils', '$timeout',
+        function ($scope, $location, catalogs, bladeNavigationService, dialogService, authService, uiGridHelper, bladeUtils, $timeout) {
             $scope.uiGridConstants = uiGridHelper.uiGridConstants;
             var blade = $scope.blade;
             $scope.hasMore = true;

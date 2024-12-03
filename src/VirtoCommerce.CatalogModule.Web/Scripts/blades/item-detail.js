@@ -7,7 +7,6 @@ angular.module('virtoCommerce.catalogModule')
         blade.metaFields = metaFormsService.getMetaFields("productDetail");
         blade.metaFields1 = metaFormsService.getMetaFields("productDetail1");
         blade.metaFields2 = metaFormsService.getMetaFields("productDetail2");
-        blade.metaFields3 = metaFormsService.getMetaFields("productDetail3");
 
         blade.hasVendorsPermission = bladeNavigationService.checkPermission('customer:read');
 

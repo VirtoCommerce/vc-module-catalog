@@ -1,0 +1,80 @@
+<div class="blade-static" style="height: 280px; width: 550px; white-space: normal;">
+  <form class="form" name="sectionForm" style="margin:0; padding: 0;">
+    <div class="form-group" ng-init="setForm(sectionForm)">
+      <label class="form-label">{{'catalog.blades.section-details.labels.name' | translate}}</label>
+      <div class="form-input">
+        <input ng-model="blade.currentEntity.name" focus-on="" required rows="1" />
+      </div>
+    </div>
+    <div class="form-group" style="padding-top: 0;">
+      <label class="form-label">{{'catalog.blades.section-details.labels.description' | translate}}</label>
+      <div class="form-input">
+        <textarea ng-model="blade.currentEntity.description" rows="2" style="resize: none; height: 50px; min-height: 50px;"></textarea>
+      </div>
+    </div>
+    <div class="form-group" style="padding-top: 0;">
+      <label class="form-label">{{ 'catalog.blades.section-details.labels.required' | translate }}</label>
+      <div class="form-input">
+        <label class="form-label __switch">
+          <input type="checkbox" ng-model="blade.currentEntity.isRequired" />
+          <span class="switch"></span>
+        </label>
+      </div>
+    </div>
+    <div class="form-group" style="padding-top: 0;">
+      <label class="form-label">{{ 'catalog.blades.section-details.labels.options' | translate }}</label>
+    </div>
+  </form>
+</div>
+<div class="blade-static __bottom" ng-include="'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/common/templates/ok-cancel.tpl.html'"></div>
+<div class="blade-content __medium-wide" style="height: calc(100% - 352px) !important;">
+  <div class="blade-inner">
+    <div class="inner-block" ng-init="setGridOptions({
+                    rowTemplate: 'option-list.row.html',
+                    data: 'blade.currentEntity.options',
+                    rowHeight: 61,
+                    enableSorting: false,
+                    columnDefs: [
+                        { name: 'actions', displayName: '', enableColumnResizing: false, width: 30, cellTemplate: 'option-list-actions.cell.html', pinnedLeft:true },
+                        {
+                            name: 'productImageUrl', displayName: 'catalog.blades.section-details.labels.picture',
+                            enableColumnResizing: false, width: 60, cellTemplate: 'option-list-icon.cell.html'
+                        },
+                        { name: 'productName', displayName: 'catalog.blades.section-details.labels.product-name'},
+                        { name: 'quantity', displayName: 'catalog.blades.section-details.labels.quantity', width: 120 }
+                    ]})">
+      <div class="table-wrapper" ng-if="blade.currentEntity.options.length" style="margin: 0 -21px 0;">
+        <div ui-grid="gridOptions" ui-grid-auto-resize ui-grid-save-state ui-grid-selection ui-grid-resize-columns ui-grid-move-columns ui-grid-pinning ui-grid-height></div>
+        <ul class="menu __context" role="menu" id="sol_menu">
+          <li class="menu-item" ng-click='edit(contextMenuEntity)'>
+            <span class="menu-ico fa fa-pencil"></span> {{'platform.commands.edit' | translate}}
+          </li>
+          <li class="menu-item" ng-click='openItem(contextMenuEntity)'>
+            <span class="menu-ico fa fa-edit"></span> {{'catalog.commands.open-item' | translate}}
+          </li>
+          <li class="menu-item" ng-click='delete(contextMenuEntity)'>
+            <span class="menu-ico fas fa-trash-alt"></span> {{'platform.commands.delete' | translate}}
+          </li>
+        </ul>
+      </div>
+      <div class="note" ng-if="!blade.currentEntity.options.length">{{ 'catalog.blades.section-details.descr.no-options' | translate }}</div>
+    </div>
+  </div>
+</div>
+
+<script type="text/ng-template" id="option-list.row.html">
+  <div ng-click='grid.appScope.edit(row.entity)' ng-repeat="(colRenderIndex, col) in colContainer.renderedColumns track by col.uid" ui-grid-one-bind-id-grid="rowRenderIndex + '-' + col.uid + '-cell'" class="ui-grid-cell" ng-class="{'ui-grid-row-header-cell': col.isRowHeader, '__hovered': grid.appScope.contextMenuEntity === row.entity, '__selected': row.entity.productId ===grid.appScope.selectedNodeId}" role="{{col.isRowHeader ? 'rowheader' : 'gridcell' }}" ui-grid-cell context-menu="grid.appScope.contextMenuEntity = row.entity" data-target="sol_menu"></div>
+</script>
+<script type="text/ng-template" id="option-list-actions.cell.html">
+  <div class="ui-grid-actions" left-click-menu="grid.appScope.contextMenuEntity = row.entity" data-target="sol_menu">
+    <span class="fa fa-ellipsis-v"></span>
+  </div>
+</script>
+<script type="text/ng-template" id="option-list-icon.cell.html">
+  <div class="ui-grid-cell-contents">
+    <div class="product-img">
+      <img class="image" ng-src="{{COL_FIELD}}" ng-if="COL_FIELD">
+      <span class="table-ico fas fa-image" ng-if="!COL_FIELD"></span>
+    </div>
+  </div>
+</script>

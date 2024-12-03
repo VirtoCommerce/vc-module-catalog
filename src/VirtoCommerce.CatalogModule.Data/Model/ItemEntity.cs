@@ -24,8 +24,6 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
         public bool IsBuyable { get; set; }
 
-        public bool IsConfigurable { get; set; }
-
         public int AvailabilityRule { get; set; }
 
         public decimal MinQuantity { get; set; }
@@ -150,7 +148,6 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             product.Height = Height;
             product.IsActive = IsActive;
             product.IsBuyable = IsBuyable;
-            product.IsConfigurable = IsConfigurable;
             product.Length = Length;
             product.MainProductId = ParentId;
             product.ManufacturerPartNumber = ManufacturerPartNumber;
@@ -260,7 +257,6 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             Height = product.Height;
             IsActive = product.IsActive ?? true;
             IsBuyable = product.IsBuyable ?? true;
-            IsConfigurable = product.IsConfigurable;
             Length = product.Length;
             ParentId = product.MainProductId;
             ManufacturerPartNumber = product.ManufacturerPartNumber;
@@ -396,7 +392,6 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
             target.IsBuyable = IsBuyable;
             target.IsActive = IsActive;
-            target.IsConfigurable = IsConfigurable;
             target.TrackInventory = TrackInventory;
             target.MinQuantity = MinQuantity;
             target.MaxQuantity = MaxQuantity;
