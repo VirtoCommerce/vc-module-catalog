@@ -138,9 +138,10 @@ angular.module('virtoCommerce.catalogModule')
                         data = result.results[0];
                     }
 
-                    if(data.sections == null)
-                    {
+                    if (data.sections == null) {
                         data.sections = [];
+                    } else {
+                        data.sections.sort((a, b) => a.displayOrder - b.displayOrder);
                     }
 
                     blade.currentEntity = angular.copy(data);
