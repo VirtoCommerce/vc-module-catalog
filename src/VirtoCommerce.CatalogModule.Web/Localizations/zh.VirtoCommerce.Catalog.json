@@ -9,15 +9,15 @@
       "variation": "变体属性",
       "category": "类别属性",
       "geoPoint": {
-        "title": "地理位置",
+        "title": "地理点",
         "placeholder": "输入纬度和经度",
-        "description": "输入纬度和经度，用逗号分隔，不要有空格，例如：41.40338,2.17403"
+        "description": "输入用逗号分隔的纬度和经度，不带空格，例如 41.40338,2.17403"
       }
     },
     "product-types": {
       "Physical": "实物",
       "Digital": "数字",
-      "BillOfMaterials": "物料清单产品"
+      "BillOfMaterials": "带物料清单的产品"
     },
     "blades": {
       "catalogs-list": {
@@ -29,24 +29,24 @@
         }
       },
       "catalog-add": {
-        "title": "新建目录",
+        "title": "新目录",
         "subtitle": "选择新目录类型",
         "menu": {
           "catalog": {
-            "title": "实体目录",
-            "description": "实体目录是公司提供的产品或服务的在线列表。产品可以分组到类别中，也可以不属于任何类别而成为目录的一部分"
+            "title": "实物目录",
+            "description": "实物目录是公司提供的产品或服务的在线列表。产品可以分组到类别中，也可以是目录的一部分而不属于任何类别"
           },
           "virtual-catalog": {
             "title": "虚拟目录",
-            "description": "虚拟目录由一个或多个实体目录构建而成。它们用于通过从不同的实体目录中提取项目来显示产品"
+            "description": "虚拟目录是由一个或多个实物目录构建的。它们用于通过汇集来自不同实物目录的项目来显示产品"
           }
         }
       },
       "catalog-detail": {
         "subtitle": "目录详情",
-        "title-new": "新建目录",
+        "title-new": "新目录",
         "subtitle-new": "目录详情",
-        "title-new-virtual": "新建虚拟目录",
+        "title-new-virtual": "新虚拟目录",
         "subtitle-virtual": "虚拟目录详情",
         "labels": {
           "catalog-name": "目录名称"
@@ -72,22 +72,22 @@
       "categories-items-list": {
         "title": "类别和项目",
         "subtitle": "浏览 {{name}}",
-        "subtitle-search": "搜索结果：\"{{keyword}}\"",
-        "title-mapping": "选择要映射的类别和项目",
-        "subtitle-mapping": "在虚拟目录中创建链接",
+        "subtitle-search": "搜索结果 \"{{keyword}}\"",
+        "title-mapping": "选择类别和项目进行映射",
+        "subtitle-mapping": "在您的虚拟目录中创建链接",
         "labels": {
           "filter-new": "添加新过滤器",
           "filter-priceless": "无价格",
-          "filter-withPrice": "已定价",
+          "filter-withPrice": "已定义价格",
           "filter-priceRange": "价格范围",
           "filter-lowStock": "库存不足",
-          "filter-notActive": "未激活",
+          "filter-notActive": "不活跃",
           "filter-display-variations": "显示变体",
-          "unnamed-filter": "按以下条件过滤：",
-          "result-grouping": "结果分组方式：",
+          "unnamed-filter": "按过滤",
+          "result-grouping": "按以下方式分组结果：",
           "result-grouping-none": "无",
           "result-grouping-$path": "类别",
-          "inactive": "未激活",
+          "inactive": "不活跃",
           "hidden": "隐藏",
           "picture": "图片",
           "name": "名称",
@@ -95,11 +95,14 @@
         },
         "placeholders": {
           "select-filter": "选择过滤器"
+        },
+        "descr": {
+          "title-mapping": "它映射到此虚拟位置"
         }
       },
       "category-detail": {
         "subtitle": "类别详情",
-        "parent-disabled-alert": "父类别已隐藏",
+        "parent-disabled-alert": "父类别被隐藏",
         "labels": {
           "is-active": "可见",
           "name": "名称",
@@ -118,7 +121,7 @@
         }
       },
       "categories-items-add": {
-        "title": "新建类别项目",
+        "title": "新类别项目",
         "subtitle": "选择新项目类型",
         "menu": {
           "category": {
@@ -127,25 +130,25 @@
           },
           "link": {
             "title": "链接",
-            "description": "链接到实体类别或产品"
+            "description": "链接到实物类别或产品"
           },
           "physical-product": {
             "title": "实物产品",
-            "description": "这是可以购买的有形物品。它需要物理运输，可用于定向促销"
+            "description": "这是可以购买的有形物品。它需要实物运输，并可用于定向促销"
           },
           "digital-product": {
             "title": "数字产品",
-            "description": "这是可供购买的无形物品。购买后可直接下载，无需物理运输。数字产品也适用于定向促销"
+            "description": "这是可供购买的无形物品。购买后可以直接下载，这意味着不需要实物运输。数字产品也适合定向促销"
           },
           "bill-of-materials-product": {
-            "title": "物料清单产品",
-            "description": "这是一种带有物料清单（附加项目列表）的实物产品。它可用于特定促销，需要物理运输"
+            "title": "带物料清单的产品",
+            "description": "这是一种带有物料清单（附加项目列表）的实物产品。它可以用于特定促销，并需要实物运输"
           }
         },
         "catalog-item-name": "目录",
-        "catalog-item-description": "这是管理商店商品和为品牌、产品线或特定供应商创建目录的中心点",
+        "catalog-item-description": "这是管理您的商店商品和为品牌、产品线或特定供应商创建目录的中心点",
         "virtual-catalog-item-name": "虚拟目录",
-        "virtual-catalog-item-description": "虚拟目录由一个或多个实体目录构建而成。它们用于通过从不同的实体目录中提取项目来显示产品"
+        "virtual-catalog-item-description": "虚拟目录是由一个或多个实物目录构建的。它们用于通过汇集来自不同实物目录的项目来显示产品"
       },
       "catalog-property-list": {
         "subtitle": "目录属性",
@@ -155,7 +158,7 @@
       },
       "filter-detail": {
         "subtitle": "编辑过滤器",
-        "new-title": "新建过滤器",
+        "new-title": "新过滤器",
         "new-subtitle": "创建新过滤器",
         "labels": {
           "criteria": "搜索短语",
@@ -164,7 +167,7 @@
         },
         "placeholders": {
           "criteria": "输入搜索短语",
-          "name": "为此过滤器命名"
+          "name": "命名此过滤器"
         }
       },
       "property-detail": {
@@ -174,7 +177,7 @@
           "property-name": "属性名称",
           "display-name": "显示名称",
           "display-order": "显示顺序",
-          "required": "必填",
+          "required": "必需",
           "dictionary": "字典",
           "multivalue": "多值",
           "multi-language": "多语言",
@@ -183,7 +186,7 @@
           "manage-dictionary": "管理字典",
           "new-dictionary-property-caution": "只有在保存属性后才能管理字典项",
           "attributes": "属性",
-          "manage-attributes": "管理属性特性",
+          "manage-attributes": "管理属性",
           "hidden": "隐藏"
         },
         "placeholders": {
@@ -197,7 +200,7 @@
         "match-validation-pattern": "匹配特定模式",
         "character-count": "限制字符数",
         "character-limit": {
-          "between": "介于",
+          "between": "之间",
           "at-least": "至少",
           "not-more-than": "不超过"
         },
@@ -208,9 +211,9 @@
           "date": "日期"
         },
         "descriptions": {
-          "require": "此属性为必填项",
+          "require": "此属性是必需的",
           "character-limit": "指定允许的最小和/或最大字符数",
-          "pattern": "使此字段匹配模式，如电子邮件地址、URL或自定义正则表达式。例如：^[a-z]{6,15}$"
+          "pattern": "使此字段匹配模式，例如电子邮件地址、URL或自定义正则表达式。例如：^[a-z]{6,15}$"
         }
       },
       "property-list": {
@@ -228,8 +231,8 @@
           "excluded": "选择属性"
         },
         "validations": {
-          "required": "此字段为必填项",
-          "maxLength": "此字段不能超过 {{max}} 个字符",
+          "required": "此字段是必需的",
+          "maxLength": "此字段不得包含超过 {{max}} 个字符",
           "minLenght": "此字段必须至少包含 {{min}} 个字符",
           "pattern": "此字段与所选模式不匹配"
         }
@@ -237,13 +240,13 @@
       "property-selector": {
         "title": "选择要编辑的属性",
         "labels": {
-          "applied-filter": "已应用的过滤器",
-          "new-filter": "新建过滤器"
+          "applied-filter": "已应用过滤器",
+          "new-filter": "新过滤器"
         }
       },
       "item-property-detail": {
         "title": "编辑项目属性",
-        "title-new": "新建项目属性",
+        "title-new": "新项目属性",
         "subtitle": "输入属性信息",
         "labels": {
           "property-name": "属性名称",
@@ -251,13 +254,13 @@
           "duplicate-property-in-catalog": "名为 {{propertyName}} 的属性已存在于根目录中。名称必须唯一",
           "duplicate-property-in-variation1": "名为 {{propertyName}} 的属性已存在于此变体中",
           "duplicate-property-in-variation2": "。名称必须唯一",
-          "property-naming-error": "属性名称必须以字母数字字符开头，只能包含拉丁字符、数字和下划线（_）。如果使用下划线（_），请确保前后有字母数字字符",
+          "property-naming-error": "属性名称必须以字母数字字符开头，并且只能包含拉丁字符、数字和下划线（_）。如果使用下划线（_），请确保在其前后有字母数字字符",
           "value-type": "值类型"
         }
       },
       "catalogs-select": {
         "title": "选择目录",
-        "subtitle": "在虚拟目录中创建链接"
+        "subtitle": "在您的虚拟目录中创建链接"
       },
       "property-valueType": {
         "title": "{{name}} 值类型",
@@ -267,14 +270,14 @@
         "title": "{{name}} 属性",
         "subtitle": "管理属性",
         "labels": {
-          "new-attribute": "新建属性",
+          "new-attribute": "新属性",
           "current-attributes": "当前属性",
           "name": "名称",
           "value": "值"
         },
         "validations": {
-          "name-required": "必填",
-          "value-required": "必填",
+          "name-required": "必需",
+          "value-required": "必需",
           "name-duplicate": "发现重复名称"
         },
         "placeholders": {
@@ -284,7 +287,7 @@
       },
       "property-type": {
         "title": "{{name}} 适用于",
-        "subtitle": "相应的更改"
+        "subtitle": "适用的更改"
       },
       "property-dictionary": {
         "title": "{{name}} 字典",
@@ -299,10 +302,10 @@
           "language-add": "新值",
           "dictionary-edit": "编辑字典值",
           "priority": "优先级",
-          "priority-description": "最低值将首先使用"
+          "priority-description": "将首先使用最低值"
         },
         "validations": {
-          "required": "必填",
+          "required": "必需",
           "duplicate": "发现重复名称"
         },
         "placeholders": {
@@ -314,9 +317,10 @@
       "item-detail": {
         "subtitle": "{{ productTypeName }} 项目详情",
         "subtitle-variation": "变体详情",
+        "hide-description": "隐藏",
         "labels": {
           "id": "ID",
-          "outer-id": "外部ID",
+          "outer-id": "外部 ID",
           "sku": "SKU",
           "priority": "优先级",
           "name": "产品名称",
@@ -335,20 +339,21 @@
           "weight": "重量",
           "dimensions": "尺寸",
           "use-package-type": "与包装相同",
-          "measure-unit": "计量单位",
+          "measure-unit": "测量单位",
           "max-downloads": "最大下载次数",
-          "expiration-date": "下载过期日期",
+          "expiration-date": "下载到期日期",
           "download-type": "下载类型",
           "gtin": "GTIN",
           "mpn": "MPN",
-          "start-date": "首次上架",
-          "end-date": "上架截止日期"
+          "start-date": "首次列出",
+          "end-date": "列表到期",
+          "is-configurable": "可配置"
         },
         "validations": {
-          "sku": "SKU不能包含以下字符：$+;=%{}[]|@~!^*&()?'<>"
+          "sku": "SKU 不能包含以下字符：$+;=%{}[]|@~!^*&()?'<>"
         },
         "placeholders": {
-          "sku": "输入项目SKU",
+          "sku": "输入项目 SKU",
           "priority": "输入数字",
           "name": "输入项目名称",
           "vendor": "选择...",
@@ -357,20 +362,20 @@
           "weight": "输入重量",
           "expiration-date": "选择日期",
           "download-type": "选择...",
-          "gtin": "输入GTIN",
-          "mpn": "输入MPN",
+          "gtin": "输入 GTIN",
+          "mpn": "输入 MPN",
           "start-date": "指定日期",
           "end-date": "指定日期"
         },
         "descr": {
-          "start-date": "如果不指定开始日期，产品将在保存后立即生效",
-          "end-date": "如果不指定结束日期，产品将保持活跃状态，直到您将其停用"
+          "start-date": "如果您未指定开始日期，产品将在您保存后立即激活",
+          "end-date": "如果您未指定结束日期，产品将保持激活状态，直到您将其停用"
         }
       },
       "catalog-items-select": {
         "title": "选择类别",
         "title-association": "选择要关联的项目",
-        "subtitle-association": "添加产品关联",
+        "subtitle-association": "向产品添加关联",
         "bread-crumb-top": "所有目录",
         "labels": {
           "picture": "图片",
@@ -382,7 +387,7 @@
       "item-variation-list": {
         "subtitle": "项目变体",
         "labels": {
-          "no-items": "暂无变体",
+          "no-items": "尚无变体",
           "picture": "图片",
           "name": "名称",
           "sku": "SKU",
@@ -392,7 +397,7 @@
       "editorialReviews-list": {
         "subtitle": "项目描述",
         "labels": {
-          "no-reviews": "暂无项目描述"
+          "no-reviews": "尚无项目描述"
         }
       },
       "editorialReview-detail": {
@@ -412,7 +417,7 @@
       "categoryDescriptions-list": {
         "subtitle": "类别描述",
         "labels": {
-          "no-descriptions": "暂无项目描述"
+          "no-descriptions": "尚无项目描述"
         }
       },
       "categoryDescription-detail": {
@@ -433,14 +438,14 @@
         "subtitle": "管理图片",
         "labels": {
           "no-images": "无图片",
-          "copy-url-prompt": "复制到剪贴板：Ctrl+C，然后回车",
+          "copy-url-prompt": "复制到剪贴板：Ctrl+C, Enter",
           "select-images": "选择图片",
           "select-image-category": "选择图片类别",
           "name": "名称",
           "image-category": "图片类别",
-          "drag-drop-comment": "将您的图片拖放到这里",
+          "drag-drop-comment": "将您的图片拖放到此处",
           "progress": "进度",
-          "make-default-image": "将图片拖放到图片区域的左上角以将其设为默认图片",
+          "make-default-image": "将图片拖放到图片区域的左上角以设置为默认",
           "language": "语言",
           "preview": "预览",
           "external-link": "外部链接",
@@ -448,7 +453,7 @@
           "description": "元描述"
         },
         "placeholders": {
-          "image-url": "在此粘贴图片URL",
+          "image-url": "在此粘贴图片 URL",
           "name": "输入名称",
           "image-category": "选择",
           "language": "选择语言",
@@ -456,8 +461,8 @@
           "description": "输入描述"
         },
         "descr": {
-          "external-link": "使用外部图片URL而不是上传到资产",
-          "external-link-warning": "注意：出于安全原因，仅允许https链接"
+          "external-link": "使用外部图片 URL 而不是上传到资产",
+          "external-link-warning": "注意：出于安全原因，仅允许 https 链接"
         }
       },
       "video-list": {
@@ -471,19 +476,19 @@
         }
       },
       "video-add": {
-        "title": "YouTube视频",
+        "title": "YouTube 视频",
         "subtitle": "新视频",
         "create": "创建",
         "labels": {
-          "content-url": "内容URL",
-          "no-apikey": "您尚未在平台配置文件中提供任何Google API密钥。视频信息将不完整"
+          "content-url": "内容 URL",
+          "no-apikey": "您在平台配置文件中未提供任何 Google API 密钥。视频信息将不完整"
         },
         "placeholders": {
-          "content-url": "输入视频URL"
+          "content-url": "输入视频 URL"
         }
       },
       "video-detail": {
-        "title": "YouTube视频",
+        "title": "YouTube 视频",
         "subtitle": "编辑视频信息",
         "labels": {
           "name": "视频名称",
@@ -492,11 +497,11 @@
           "duration": "时长",
           "language": "语言",
           "video": "视频",
-          "content-url": "内容URL",
-          "embed-url": "嵌入URL",
+          "content-url": "内容 URL",
+          "embed-url": "嵌入 URL",
           "video-preview": "视频预览",
           "thumbnail": "缩略图",
-          "thumbnail-url": "缩略图URL",
+          "thumbnail-url": "缩略图 URL",
           "thumbnail-preview": "缩略图预览"
         },
         "placeholders": {
@@ -504,7 +509,7 @@
           "upload-date": "指定日期",
           "description": "输入描述",
           "language": "选择语言",
-          "content-url": "输入视频URL"
+          "content-url": "输入视频 URL"
         }
       },
       "item-asset-detail": {
@@ -522,26 +527,31 @@
       "item-asset-list": {
         "subtitle": "项目资产",
         "labels": {
-          "copy-url-prompt": "复制到剪贴板：Ctrl+C，然后回车",
+          "copy-url-prompt": "复制到剪贴板：Ctrl+C, Enter",
           "select-files": "选择文件",
-          "drag-drop-comment": "将您的文件拖放到这里",
+          "drag-drop-comment": "将您的文件拖放到此处",
           "name": "名称",
           "progress": "进度",
           "type": "类型",
           "actions": "操作",
-          "remove": "删除",
+          "remove": "移除",
           "copy-link": "复制链接"
         }
       },
       "item-associations-list": {
         "subtitle": "关联",
         "labels": {
-          "sorting-prompt": "设置关联项目在网店中的显示方式。拖放产品以更改其顺序",
+          "sorting-prompt": "设置关联项目在网上商店中的显示方式。拖放产品以更改其顺序",
           "picture": "图片",
           "name": "名称",
           "priority": "优先级",
           "group": "组",
-          "quantity": "数量"
+          "quantity": "数量",
+          "tags": "标签"
+        },
+        "descr": {
+          "no-associations": "尚无关联。",
+          "quantity": "关联数量"
         }
       },
       "item-association-detail": {
@@ -561,8 +571,8 @@
         "title": "搜索结果"
       },
       "item-dimensions": {
-        "title": "商品尺寸",
-        "subtitle": "更改产品尺寸属性"
+        "title": "项目测量",
+        "subtitle": "更改产品测量属性"
       },
       "asset-select": {
         "title": "链接图片"
@@ -589,7 +599,7 @@
         "size": {
           "label": "聚合大小",
           "placeholder": "输入聚合大小",
-          "description": "搜索结果中聚合值的最大数量。0 = 无限制"
+          "description": "搜索结果中聚合值的最大数量。0 = 无限"
         },
         "values-Attribute": {
           "label": "允许的值",
@@ -597,32 +607,32 @@
           "description": "输入搜索结果中允许的聚合值。留空以允许所有值"
         },
         "values-Range": {
-          "label": "范围边界",
+          "label": "范围界限",
           "placeholder": "添加数字",
-          "description": "边界将在保存前自动排序。范围构建如下：小于[边界1]，[边界1]到[边界2]，...，大于[边界N]"
+          "description": "在保存之前，界限将自动排序。范围构造如下：低于 [界限 1]，[界限 1] 到 [界限 2]，... ，高于 [界限 N]"
         },
         "values-PriceRange": {
-          "label": "价格范围边界",
+          "label": "价格范围界限",
           "placeholder": "添加数字",
-          "description": "边界将在保存前自动排序。价格范围构建如下：小于[边界1]，[边界1]到[边界2]，...，大于[边界N]"
+          "description": "在保存之前，界限将自动排序。价格范围构造如下：低于 [界限 1]，[界限 1] 到 [界限 2]，... ，高于 [界限 N]"
         }
       },
       "importers-list": {
         "title": "导入类型",
-        "subtitle": "从以下可用导入类型中选择"
+        "subtitle": "选择以下任何可用的导入类型"
       },
       "exporter-list": {
         "title": "导出类型",
-        "subtitle": "从以下可用导出类型中选择"
+        "subtitle": "选择以下任何可用的导出类型"
       },
       "exporter": {
         "productTitle": "导出目录产品",
-        "productSubtitle": "将目录产品导出为JSON或CSV"
+        "productSubtitle": "将目录产品导出为 JSON 或 CSV"
       },
       "bill-of-materials-list": {
-        "title": "物料清单（BOM）产品",
-        "subtitle": "添加或删除BOM产品",
-        "no-data": "还没有产品",
+        "title": "物料清单 (BOM) 产品",
+        "subtitle": "添加或删除 BOM 产品",
+        "no-data": "尚无产品",
         "labels": {
           "picture": "图片",
           "name": "名称",
@@ -636,26 +646,26 @@
         "lables": {
           "Product": {
             "title": "产品属性",
-            "description": "仅对相关产品显示"
+            "description": "仅出现在相关产品中"
           },
           "Category": {
             "title": "类别属性",
-            "description": "仅对相关目录显示"
+            "description": "仅出现在相关目录中"
           },
           "Catalog": {
             "title": "目录属性",
-            "description": "仅对此目录显示"
+            "description": "仅出现在此目录中"
           },
           "Variation": {
             "title": "变体属性",
-            "description": "仅对相关变体显示"
+            "description": "仅出现在相关变体中"
           }
         }
       },
       "links-list": {
         "title": "链接",
         "labels": {
-          "no-data": "还没有链接",
+          "no-data": "尚无链接",
           "add-links": "添加新链接",
           "marked": "已标记"
         }
@@ -668,9 +678,9 @@
         }
       },
       "measure-details": {
-        "title": "{{name}} 计量",
-        "title-new": "添加新计量",
-        "subtitle": "计量详情",
+        "title": "{{name}} 计量单位",
+        "title-new": "添加新计量单位",
+        "subtitle": "计量单位详情",
         "labels": {
           "name": "名称",
           "code": "代码",
@@ -704,343 +714,392 @@
         "placeholders": {
           "name": "输入名称",
           "code": "输入代码",
-          "conversion-factor": "输入转换",
+          "conversion-factor": "输入转换因子",
           "symbol": "符号"
         }
-      }
-    },
-    "exporter-list": {
-      "title": "导出类型",
-      "subtitle": "从以下可用导出类型中选择"
-    },
-    "exporter": {
-      "productTitle": "导出目录产品",
-      "productSubtitle": "将目录产品导出为JSON或CSV"
-    },
-    "widgets": {
-      "catalogLanguages": {
-        "blade-subtitle": "管理语言",
-        "title": "语言",
-        "default-language": "默认语言"
       },
-      "catalogProperty": {
-        "blade-subtitle": "目录属性",
-        "title": "属性"
-      },
-      "categoryProperty": {
-        "blade-subtitle": "类别属性",
-        "title": "属性"
-      },
-      "editorialReview": {
-        "blade-subtitle": "商品描述",
-        "title": "描述"
-      },
-      "categoryDescription": {
-        "blade-subtitle": "类别描述",
-        "title": "描述"
-      },
-      "itemAsset": {
-        "blade-subtitle": "商品资产",
-        "title": "资产"
-      },
-      "itemAssociations": {
-        "blade-subtitle": "关联",
-        "title": "关联"
-      },
-      "itemImage": {
-        "blade-subtitle": "管理图片",
-        "no-images": "无图片"
-      },
-      "itemProperty": {
-        "blade-subtitle": "商品属性",
-        "title": "属性"
-      },
-      "itemVariation": {
-        "blade-subtitle": "商品变体",
-        "title": "变体"
-      },
-      "itemDimensions": {
-        "title": "重量和尺寸",
-        "weight": "重量",
-        "length": "长度",
-        "width": "宽度",
-        "height": "高度"
-      },
-      "billOfMaterials": {
-        "title": "物料清单"
-      },
-      "videos": {
-        "blade-subtitle": "视频",
-        "title": "视频"
-      },
-      "links": {
-        "title": "链接"
-      },
-      "measure-units": {
-        "title": "单位"
-      },
-      "configuration": {
-        "title": "配置"
-      }
-    },
-    "dialogs": {
-      "catalog-save": {
-        "title": "保存更改",
-        "message": "此目录已被修改。您想保存更改吗？"
-      },
-      "catalog-delete": {
-        "title": "确认删除",
-        "warning": "警告：此更改是永久性的，无法撤消。应用此更改可能会导致数据丢失",
-        "message": "您确定要删除此目录吗？",
-        "instruction": "输入'yes'以删除："
-      },
-      "catalog-items-delete": {
-        "title": "确认删除",
-        "warning": "警告：此更改是永久性的，无法撤消。应用此更改可能会导致数据丢失",
-        "message": "以下数据将被删除：",
-        "instruction": "输入'yes'以删除：",
-        "item": "{{count}} 个商品",
-        "category": "{{count}} 个类别及其中的所有内容",
-        "linked-item": "{{count}} 个链接商品",
-        "linked-category": "{{count}} 个链接类别"
-      },
-      "property-delete": {
-        "message": "您确定要删除 {{name}} 属性吗？",
-        "warning": "警告：此更改是永久性的，无法撤消。应用此更改可能会导致数据丢失",
-        "msg1": "选择适当的删除选项。选项：",
-        "msg2": "仅删除属性元数据，保留相关对象中的值",
-        "msg3": "完全删除所有相关值",
-        "shallow": "删除元数据",
-        "full": "完全删除"
-      },
-      "property-dictionary-item-delete": {
-        "message": "您确定要删除所选的字典项吗？",
-        "warning": "警告：此更改是永久性的，无法撤消。应用此更改可能会导致数据丢失"
-      },
-      "virtual-catalog-save": {
-        "title": "保存更改",
-        "message": "此虚拟目录已被修改。您想保存更改吗？"
-      },
-      "category-save": {
-        "title": "保存更改",
-        "message": "此类别已被修改。您想保存更改吗？"
-      },
-      "item-save": {
-        "title": "保存更改",
-        "message": "此商品已被修改。您想保存更改吗？"
-      },
-      "variation-delete": {
-        "title": "确认删除",
-        "message": "您确定要删除所选的变体吗？"
-      },
-      "property-save": {
-        "title": "保存更改",
-        "message": "此属性已被修改。您想保存更改吗？"
-      },
-      "item-property-delete": {
-        "message": "您确定要删除 {{name}} 属性吗？"
-      },
-      "dictionary-values-delete": {
-        "title": "确认删除",
-        "message": "您确定要删除所选的字典值吗？"
-      },
-      "review-save": {
-        "title": "保存更改",
-        "message": "此描述已被修改。您想保存更改吗？"
-      },
-      "review-delete": {
-        "title": "确认删除",
-        "message": "您确定要删除此描述吗？"
-      },
-      "association-delete": {
-        "title": "确认删除",
-        "message": "您确定要删除所选的关联吗？"
-      },
-      "attribut-delete": {
-        "title": "确认删除",
-        "message": "您确定要删除所选的属性吗？"
-      },
-      "image-save": {
-        "title": "确认删除",
-        "message": "这些图片已被修改。您想保存更改吗？"
-      },
-      "video-save": {
-        "title": "保存更改",
-        "message": "此视频已被修改。您想保存更改吗？"
-      },
-      "video-delete": {
-        "title": "确认删除",
-        "message": "您确定要删除此视频吗？"
-      },
-      "video-list-delete": {
-        "title": "确认删除",
-        "message": "您确定要删除所选的视频吗？"
-      },
-      "asset-save": {
-        "title": "保存更改",
-        "message": "这些资产已被修改。您想保存更改吗？"
-      },
-      "language-save": {
-        "title": "保存更改",
-        "message": "语言已被修改。您想保存更改吗？"
-      },
-      "bill-or-materials-associations-delete": {
-        "title": "确认删除",
-        "message": "您确定要删除所选的产品吗？"
-      },
-      "links-delete": {
-        "title": "确认删除",
-        "message": "您确定要删除所选的链接吗？"
-      },
-      "measures-delete": {
-        "title": "确认删除",
-        "message": "您确定要删除所选的计量单位吗？"
-      },
-      "measure-unit-save": {
-        "title": "保存更改",
-        "message": "此计量单位已被修改。您想保存更改吗？"
-      },
-      "measure-unit-delete": {
-        "title": "确认删除",
-        "message": "您确定要删除所选的计量单位吗？"
-      },
-      "measure-units-delete": {
-        "title": "确认删除",
-        "message": "您确定要删除所选的计量单位吗？"
-      },
-      "measure-save": {
-        "title": "保存更改",
-        "message": "此计量已被修改。您想保存更改吗？"
-      }
-    },
-    "wizards": {
-      "category": {
-        "title": "新建类别",
-        "subtitle": "提供类别信息",
+      "configuration-details": {
+        "title": "产品配置",
+        "hide-description": "隐藏",
         "labels": {
-          "name": "名称",
-          "code": "代码"
+          "enable": "启用配置",
+          "name": "部分名称",
+          "quantity": "选项",
+          "sections": "部分"
         },
-        "validations": {
-          "code": "代码不能包含以下字符：$+;=%{}[]|@~!^*&()?'<>"
+        "descr": {
+          "enable": "产品配置功能的激活。要激活，配置必须包含至少一个部分，并且每个部分必须包含至少一个选项",
+          "no-sections": "此配置中尚无部分",
+          "sorting-prompt": "设置部分在网上商店中出现的顺序。拖放部分以更改其顺序"
         },
-        "placeholders": {
-          "name": "输入类别名称",
-          "code": "输入类别代码"
+        "commands": {
+          "add": "添加部分"
         }
       },
-      "new-product": {
-        "title": "新建产品",
-        "subtitle": "提供产品的所有信息",
+      "section-details": {
+        "title": "新部分",
         "labels": {
-          "sku": "SKU",
-          "name": "名称",
-          "fill-properties": "提供属性",
-          "fill-properties-summary": "已提供 {{ count }} 个属性，共 {{total}} 个",
-          "upload-images": "上传图片",
-          "upload-images-summary": "已上传 {{ count }} 张图片",
-          "add-review": "添加描述",
-          "add-review-summary": "已添加 {{ count }} 个描述",
-          "seo-information": "提供SEO信息",
-          "seo-information-summary-defined": "已提供SEO信息",
-          "seo-information-summary-undefined": "未提供SEO信息"
-        },
-        "validations": {
-          "sku": "SKU不能包含以下字符：$+;=%{}[]|@~!^*&()?'<>",
-          "sku-required": "必填",
-          "name-required": "必填"
-        },
-        "placeholders": {
-          "name": "输入商品名称",
-          "sku": "输入商品SKU"
-        }
-      },
-      "new-variation": {
-        "title": "新建变体",
-        "subtitle": "提供变体信息",
-        "labels": {
-          "sku": "SKU",
-          "name": "名称",
-          "fill-properties": "提供属性",
-          "fill-properties-summary": "已提供 {{ count }} 个属性，共 {{total}} 个",
-          "upload-images": "上传图片",
-          "upload-images-summary": "已上传 {{ count }} 张图片"
-        },
-        "validations": {
-          "sku": "SKU不能包含以下字符：$+;=%{}[]|@~!^*&()?'<>",
-          "sku-required": "必填",
-          "name-required": "必填"
-        },
-        "placeholders": {
-          "name": "输入商品名称",
-          "sku": "输入商品SKU"
-        }
-      },
-      "item-images": {
-        "subtitle": "商品图片"
-      },
-      "association": {
-        "title": "新建关联",
-        "labels": {
-          "group-name": "组名",
-          "tags": "标签",
-          "tags-placeholder": "输入标签",
+          "name": "部分名称",
+          "description": "描述",
+          "required": "需要选择选项",
+          "picture": "图片",
           "quantity": "数量",
-          "items": "商品",
-          "products-selected": "已选择的产品",
-          "categories-selected": "已选择的类别"
+          "product-name": "产品名称",
+          "options": "选项"
+        },
+        "descr": {
+          "no-options": "此部分中尚无选项"
+        },
+        "commands": {
+          "add": "添加选项"
+        }
+      },
+      "option-details": {
+        "title": "选择项目作为选项",
+        "labels": {
+          "quantity": "数量"
         },
         "placeholders": {
-          "group-name": "选择...",
-          "quantity": "输入数量"
-        }
+          "quantity": "指定数量"
+        } 
       }
     },
-    "commands": {
-      "copy-id": "复制ID",
-      "clear-all": "清除所有",
-      "add-property": "添加属性",
-      "add-product-property": "添加自定义属性",
-      "add-variation-property": "添加自定义属性",
-      "gallery": "图库",
-      "map": "地图",
-      "open-item": "打开商品",
-      "default": "设为默认",
-      "link": "链接",
-      "external-link": "外部链接"
-    },
-    "permissions": {
-      "catalog-scope": {
-        "title": "仅适用于所选目录",
-        "blade": {
-          "subtitle": "选择目录"
+      "exporter-list": {
+        "title": "导出类型",
+        "subtitle": "选择以下任何可用的导出类型"
+      },
+      "exporter": {
+        "productTitle": "导出目录产品",
+        "productSubtitle": "将目录产品导出为 JSON 或 CSV"
+      },
+      "widgets": {
+        "catalogLanguages": {
+          "blade-subtitle": "管理语言",
+          "title": "语言",
+          "default-language": "默认语言"
+        },
+        "catalogProperty": {
+          "blade-subtitle": "目录属性",
+          "title": "属性"
+        },
+        "categoryProperty": {
+          "blade-subtitle": "类别属性",
+          "title": "属性"
+        },
+        "editorialReview": {
+          "blade-subtitle": "项目描述",
+          "title": "描述"
+        },
+        "categoryDescription": {
+          "blade-subtitle": "类别描述",
+          "title": "描述"
+        },
+        "itemAsset": {
+          "blade-subtitle": "项目资产",
+          "title": "资产"
+        },
+        "itemAssociations": {
+          "blade-subtitle": "关联",
+          "title": "关联"
+        },
+        "itemImage": {
+          "blade-subtitle": "管理图片",
+          "no-images": "无图片"
+        },
+        "itemProperty": {
+          "blade-subtitle": "项目属性",
+          "title": "属性"
+        },
+        "itemVariation": {
+          "blade-subtitle": "项目变体",
+          "title": "变体"
+        },
+        "itemDimensions": {
+          "title": "重量和尺寸",
+          "weight": "重量",
+          "length": "长度",
+          "width": "宽度",
+          "height": "高度"
+        },
+        "billOfMaterials": {
+          "title": "物料清单"
+        },
+        "videos": {
+          "blade-subtitle": "视频",
+          "title": "视频"
+        },
+        "links": {
+          "title": "链接"
+        },
+        "measure-units": {
+          "title": "单位"
+        },
+        "configuration": {
+          "title": "配置"
         }
       },
-      "category-scope": {
-        "title": "仅适用于所选类别"
-      }
-    },
-    "selectors": {
-      "titles": {
-        "catalogs": "目录",
-        "categories": "类别",
-        "search-in-variations": "在产品变体中搜索",
-        "search-in-children": "在子类别中搜索"
+      "dialogs": {
+        "catalog-save": {
+          "title": "保存更改",
+          "message": "此目录已被修改。您要保存更改吗？"
+        },
+        "catalog-delete": {
+          "title": "确认删除",
+          "warning": "警告：此更改是永久性的，无法撤销。应用此更改可能会导致数据丢失",
+          "message": "您确定要删除此目录吗？",
+          "instruction": "输入 'yes' 以删除："
+        },
+        "catalog-items-delete": {
+          "title": "确认删除",
+          "warning": "警告：此更改是永久性的，无法撤销。应用此更改可能会导致数据丢失",
+          "message": "以下数据将被删除：",
+          "instruction": "输入 'yes' 以删除：",
+          "item": "{{count}} 项目",
+          "category": "{{count}} 类别及其内容",
+          "linked-item": "{{count}} 项目",
+          "linked-category": "{{count}} 关联类别"
+        },
+        "property-delete": {
+          "message": "您确定要删除 {{name}} 属性吗？",
+          "warning": "警告：此更改是永久性的，无法撤销。应用此更改可能会导致数据丢失",
+          "msg1": "选择适当的删除选项。选项：",
+          "msg2": "仅删除属性元数据并保留相关对象中的值",
+          "msg3": "完全删除及其所有相关值",
+          "shallow": "删除元数据",
+          "full": "完全删除"
+        },
+        "property-dictionary-item-delete": {
+          "message": "您确定要删除所选字典项吗？",
+          "warning": "警告：此更改是永久性的，无法撤销。应用此更改可能会导致数据丢失"
+        },
+        "virtual-catalog-save": {
+          "title": "保存更改",
+          "message": "此虚拟目录已被修改。您要保存更改吗？"
+        },
+        "category-save": {
+          "title": "保存更改",
+          "message": "此类别已被修改。您要保存更改吗？"
+        },
+        "item-save": {
+          "title": "保存更改",
+          "message": "此项目已被修改。您要保存更改吗？"
+        },
+        "variation-delete": {
+          "title": "确认删除",
+          "message": "您确定要删除所选变体吗？"
+        },
+        "property-save": {
+          "title": "保存更改",
+          "message": "此属性已被修改。您要保存更改吗？"
+        },
+        "item-property-delete": {
+          "message": "您确定要删除 {{name}} 属性吗？"
+        },
+        "dictionary-values-delete": {
+          "title": "确认删除",
+          "message": "您确定要删除所选字典值吗？"
+        },
+        "review-save": {
+          "title": "保存更改",
+          "message": "此描述已被修改。您要保存更改吗？"
+        },
+        "review-delete": {
+          "title": "确认删除",
+          "message": "您确定要删除此描述吗？"
+        },
+        "association-delete": {
+          "title": "确认删除",
+          "message": "您确定要删除所选关联吗？"
+        },
+        "attribut-delete": {
+          "title": "确认删除",
+          "message": "您确定要删除所选属性吗？"
+        },
+        "image-save": {
+          "title": "确认删除",
+          "message": "这些图片已被修改。您要保存更改吗？"
+        },
+        "video-save": {
+          "title": "保存更改",
+          "message": "此视频已被修改。您要保存更改吗？"
+        },
+        "video-delete": {
+          "title": "确认删除",
+          "message": "您确定要删除此视频吗？"
+        },
+        "video-list-delete": {
+          "title": "确认删除",
+          "message": "您确定要删除所选视频吗？"
+        },
+        "asset-save": {
+          "title": "保存更改",
+          "message": "这些资产已被修改。您要保存更改吗？"
+        },
+        "language-save": {
+          "title": "保存更改",
+          "message": "语言已被修改。您要保存更改吗？"
+        },
+        "bill-or-materials-associations-delete": {
+          "title": "确认删除",
+          "message": "您确定要删除所选产品吗？"
+        },
+        "links-delete": {
+          "title": "确认删除",
+          "message": "您确定要删除所选链接吗？"
+        },
+        "measures-delete": {
+          "title": "确认删除",
+          "message": "您确定要删除所选计量单位吗？"
+        },
+        "measure-unit-save": {
+          "title": "保存更改",
+          "message": "此计量单位已被修改。您要保存更改吗？"
+        },
+        "measure-unit-delete": {
+          "title": "确认删除",
+          "message": "您确定要删除所选计量单位吗？"
+        },
+        "measure-units-delete": {
+          "title": "确认删除",
+          "message": "您确定要删除所选计量单位吗？"
+        },
+        "measure-save": {
+          "title": "保存更改",
+          "message": "此计量单位已被修改。您要保存更改吗？"
+        },
+        "configuration-save": {
+          "title": "保存更改",
+          "message": "此配置已被修改。您要保存更改吗？"
+        }
       },
-      "labels": {
-        "select": "选择",
-        "selected": "已选择："
+      "wizards": {
+        "category": {
+          "title": "新类别",
+          "subtitle": "提供类别信息",
+          "labels": {
+            "name": "名称",
+            "code": "代码"
+          },
+          "validations": {
+            "code": "代码不能包含以下字符：$+;=%{}[]|@~!^*&()?'<>"
+          },
+          "placeholders": {
+            "name": "输入类别名称",
+            "code": "输入类别代码"
+          }
+        },
+        "new-product": {
+          "title": "新产品",
+          "subtitle": "提供所有产品信息",
+          "labels": {
+            "sku": "SKU",
+            "name": "名称",
+            "fill-properties": "提供属性",
+            "fill-properties-summary": "已提供 {{ count }} 个属性，共 {{total}} 个",
+            "upload-images": "上传图片",
+            "upload-images-summary": "已上传 {{ count }} 张图片",
+            "add-review": "添加描述",
+            "add-review-summary": "已添加 {{ count }} 个描述",
+            "seo-information": "提供 SEO 信息",
+            "seo-information-summary-defined": "已提供 SEO 信息",
+            "seo-information-summary-undefined": "未提供 SEO 信息"
+          },
+          "validations": {
+            "sku": "SKU 不能包含以下字符：$+;=%{}[]|@~!^*&()?'<>",
+            "sku-required": "必填",
+            "name-required": "必填"
+          },
+          "placeholders": {
+            "name": "输入项目名称",
+            "sku": "输入项目 SKU"
+          }
+        },
+        "new-variation": {
+          "title": "新变体",
+          "subtitle": "提供变体信息",
+          "labels": {
+            "sku": "SKU",
+            "name": "名称",
+            "fill-properties": "提供属性",
+            "fill-properties-summary": "已提供 {{ count }} 个属性，共 {{total}} 个",
+            "upload-images": "上传图片",
+            "upload-images-summary": "已上传 {{ count }} 张图片"
+          },
+          "validations": {
+            "sku": "SKU 不能包含以下字符：$+;=%{}[]|@~!^*&()?'<>",
+            "sku-required": "必填",
+            "name-required": "必填"
+          },
+          "placeholders": {
+            "name": "输入项目名称",
+            "sku": "输入项目 SKU"
+          }
+        },
+        "item-images": {
+          "subtitle": "项目图片"
+        },
+        "association": {
+          "title": "新关联",
+          "labels": {
+            "group-name": "组名",
+            "tags": "标签",
+            "tags-placeholder": "输入标签",
+            "quantity": "数量",
+            "items": "项目",
+            "products-selected": "已选择产品",
+            "categories-selected": "已选择类别"
+          },
+          "placeholders": {
+            "group-name": "选择...",
+            "quantity": "输入数量"
+          }
+        }
       },
-      "placeholders": {
-        "catalog-lists": "选择目录"
+      "commands": {
+        "copy-id": "复制 ID",
+        "clear-all": "清除所有",
+        "add-property": "添加属性",
+        "add-product-property": "添加自定义属性",
+        "add-variation-property": "添加自定义属性",
+        "gallery": "画廊",
+        "map": "地图",
+        "open-item": "打开项目",
+        "default": "设为默认",
+        "link": "链接",
+        "external-link": "外部链接"
       },
-      "blades": {
+      "permissions": {
+        "catalog-scope": {
+          "title": "仅适用于所选目录",
+          "blade": {
+            "subtitle": "选择目录"
+          }
+        },
+        "category-scope": {
+          "title": "仅适用于所选类别"
+        }
+      },
+      "selectors": {
         "titles": {
-          "select-categories": "选择类别"
+          "catalogs": "目录",
+          "categories": "类别",
+          "search-in-variations": "在产品变体中搜索",
+          "search-in-children": "在子类别中搜索"
+        },
+        "labels": {
+          "select": "选择",
+          "selected": "已选择: "
+        },
+        "placeholders": {
+          "catalog-lists": "选择目录"
+        },
+        "blades": {
+          "titles": {
+            "select-categories": "选择类别"
+          }
         }
       }
-    }
-  },
+    },
   "permissions": {
     "catalog:access": "打开目录菜单",
     "catalog:create": "创建目录相关数据",
@@ -1054,9 +1113,9 @@
     "measures:read": "查看计量单位相关数据",
     "measures:update": "更新计量单位相关数据",
     "measures:delete": "删除计量单位相关数据",
-    "catalog:metadata-property:edit": "编辑属性元数据",
+    "catalog:metadata-property:edit": "编辑属性的元数据",
     "catalog:custom-property:edit": "编辑产品自定义属性",
-    "catalog:dictionary-property:edit": "编辑属性字典值"
+    "catalog:dictionary-property:edit": "编辑属性的字典值"
   },
   "settings": {
     "Catalog": {
@@ -1073,34 +1132,34 @@
         "title": "项目描述类型"
       },
       "UseSeoDeduplication": {
-        "description": "启用或禁用检测SEO重复",
-        "title": "检测SEO重复"
+        "description": "启用或禁用检测 SEO 重复",
+        "title": "检测 SEO 重复"
       },
       "CategoryDescriptionTypes": {
         "description": "此类别可能的描述类型字典",
         "title": "类别描述类型"
       },
       "AllowToCopyID": {
-        "title": "允许复制项目ID",
-        "description": "启用此选项以查看复制ID上下文菜单项"
+        "title": "允许复制项目的 ID",
+        "description": "启用以查看复制 ID 上下文菜单项"
       },
       "Search": {
         "UseCatalogIndexedSearchInManager": {
-          "description": "启用或禁用具有高级语法的目录模块索引搜索",
-          "title": "对目录使用索引搜索"
+          "description": "启用或禁用目录模块的高级语法索引搜索",
+          "title": "使用目录的索引搜索"
         },
         "UseFullObjectIndexStoring": {
-          "description": "在索引中存储序列化的目录对象，并在搜索结果中返回它们",
+          "description": "在索引中存储序列化的目录对象并在搜索结果中返回它们",
           "title": "在索引中存储序列化的目录对象"
         },
         "DefaultAggregationSize": {
-          "description": "当未在商店的聚合属性中定义时，指定聚合的大小。设置为0表示无限大小",
+          "description": "在商店的聚合属性中未定义时指定聚合的大小。设置为 0 表示无限大小",
           "title": "聚合大小的默认值"
         },
         "EventBasedIndexation": {
           "Enable": {
-            "title": "为目录实体启用基于事件的索引",
-            "description": "对目录实体所做的任何更改都会触发后台任务，将这些更改应用到搜索索引"
+            "title": "启用基于事件的目录实体索引",
+            "description": "对目录实体所做的任何更改都会触发后台任务，将这些更改应用于搜索索引"
           }
         }
       }
@@ -1124,18 +1183,18 @@
   },
   "module": {
     "VirtoCommerce.Catalog": {
-      "description": "如果勾选二进制复选框，则导出或导入目录、类别、产品和属性以及图像二进制文件"
+      "description": "导出或导入目录、类别、产品和属性，如果勾选二进制复选框，则包括图片二进制文件"
     }
   },
   "export": {
     "types": {
       "VirtoCommerce.CatalogModule.Core.Model.Export.ExportableProduct": {
         "name": "产品",
-        "description": "带有相关对象的目录产品数据。支持JSON和CSV"
+        "description": "目录产品数据及相关对象。支持 JSON 和 CSV"
       },
       "VirtoCommerce.CatalogModule.Core.Model.Export.ExportableCatalogFull": {
         "name": "目录",
-        "description": "带有相关对象的目录数据。支持JSON"
+        "description": "目录数据及相关对象。支持 JSON"
       }
     },
     "groups": {
@@ -1145,12 +1204,12 @@
       }
     }
   },
-  "CategoryChangeBulkAction": "批量更改类别",
-  "PropertiesUpdateBulkAction": "批量更新属性",
+  "CategoryChangeBulkAction": "批量类别更改",
+  "PropertiesUpdateBulkAction": "批量属性更新",
   "virtoCommerce.catalogBulkActionsModule": {
     "blades": {
       "hello-world": {
-        "title": "Hello world 刀片"
+        "title": "Hello world blade"
       },
       "action-progress": {
         "title": "任务进度"

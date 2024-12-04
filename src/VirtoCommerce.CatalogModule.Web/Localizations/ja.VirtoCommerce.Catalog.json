@@ -2,52 +2,52 @@
   "catalog": {
     "main-menu-title": "カタログ",
     "main-blade-title": "カタログ",
-    "measure-menu-title": "計量単位",
+    "measure-menu-title": "測定単位",
     "properties": {
       "catalog": "カタログのプロパティ",
-      "product": "商品のプロパティ",
+      "product": "製品のプロパティ",
       "variation": "バリエーションのプロパティ",
       "category": "カテゴリのプロパティ",
       "geoPoint": {
-        "title": "地理的位置",
-        "placeholder": "緯度と経度を入力してください",
-        "description": "緯度と経度をカンマで区切り、スペースを入れずに入力してください。例：41.40338,2.17403"
+        "title": "ジオポイント",
+        "placeholder": "緯度と経度を入力",
+        "description": "緯度と経度をカンマで区切ってスペースなしで入力します。例: 41.40338,2.17403"
       }
     },
     "product-types": {
-      "Physical": "実物商品",
-      "Digital": "デジタル商品",
-      "BillOfMaterials": "部品表付き商品"
+      "Physical": "物理的",
+      "Digital": "デジタル",
+      "BillOfMaterials": "部品表付き製品"
     },
     "blades": {
       "catalogs-list": {
         "title": "カタログ",
-        "subtitle": "カタログの管理",
+        "subtitle": "カタログを管理",
         "labels": {
           "name": "名前",
-          "virtual": "仮想"
+          "virtual": "バーチャル"
         }
       },
       "catalog-add": {
-        "title": "新規カタログ",
-        "subtitle": "新規カタログタイプの選択",
+        "title": "新しいカタログ",
+        "subtitle": "新しいカタログタイプを選択",
         "menu": {
           "catalog": {
-            "title": "実物カタログ",
-            "description": "実物カタログは、企業が提供する製品やサービスのオンラインリストです。商品はカテゴリにグループ化することも、カテゴリに属さずにカタログの一部となることもできます"
+            "title": "物理カタログ",
+            "description": "物理カタログは、企業が提供する製品やサービスのオンラインリストです。製品はカテゴリにグループ化することも、カテゴリに属さずにカタログの一部にすることもできます"
           },
           "virtual-catalog": {
-            "title": "仮想カタログ",
-            "description": "仮想カタログは、1つ以上の実物カタログから構築されます。異なる実物カタログからアイテムを集めて商品を表示するために使用されます"
+            "title": "バーチャルカタログ",
+            "description": "バーチャルカタログは、1つ以上の物理カタログから構築されます。異なる物理カタログからアイテムを集めて製品を表示するために使用されます"
           }
         }
       },
       "catalog-detail": {
         "subtitle": "カタログの詳細",
-        "title-new": "新規カタログ",
+        "title-new": "新しいカタログ",
         "subtitle-new": "カタログの詳細",
-        "title-new-virtual": "新規仮想カタログ",
-        "subtitle-virtual": "仮想カタログの詳細",
+        "title-new-virtual": "新しいバーチャルカタログ",
+        "subtitle-virtual": "バーチャルカタログの詳細",
         "labels": {
           "catalog-name": "カタログ名"
         },
@@ -56,14 +56,14 @@
         }
       },
       "catalog-languages": {
-        "subtitle": "言語の管理",
+        "subtitle": "言語を管理",
         "labels": {
-          "note": "ドラッグアンドドロップで順序を制御します。最初のアクティブな要素がデフォルト言語になります",
+          "note": "ドラッグ＆ドロップで順序を制御します。最初のアクティブな要素がデフォルトの言語になります",
           "language-dictionary": "言語辞書",
           "active": "アクティブ",
           "language": "言語",
-          "default-language": "デフォルト言語",
-          "additional-languages": "追加言語"
+          "default-language": "デフォルトの言語",
+          "additional-languages": "追加の言語"
         },
         "placeholders": {
           "select": "選択..."
@@ -71,20 +71,20 @@
       },
       "categories-items-list": {
         "title": "カテゴリとアイテム",
-        "subtitle": "{{name}}の閲覧",
-        "subtitle-search": "「{{keyword}}」の検索結果",
-        "title-mapping": "マッピングするカテゴリとアイテムの選択",
-        "subtitle-mapping": "仮想カタログ内のリンクを作成",
+        "subtitle": "{{name}} を閲覧中",
+        "subtitle-search": "\"{{keyword}}\" の検索結果",
+        "title-mapping": "マッピングするカテゴリとアイテムを選択",
+        "subtitle-mapping": "バーチャルカタログ内でリンクを作成",
         "labels": {
-          "filter-new": "新規フィルターの追加",
+          "filter-new": "新しいフィルターを追加",
           "filter-priceless": "価格なし",
-          "filter-withPrice": "価格設定済み",
+          "filter-withPrice": "定義された価格",
           "filter-priceRange": "価格範囲",
-          "filter-lowStock": "在庫少",
+          "filter-lowStock": "在庫が少ない",
           "filter-notActive": "非アクティブ",
           "filter-display-variations": "バリエーションを表示",
           "unnamed-filter": "フィルター条件",
-          "result-grouping": "結果のグループ化:",
+          "result-grouping": "結果をグループ化:",
           "result-grouping-none": "なし",
           "result-grouping-$path": "カテゴリ",
           "inactive": "非アクティブ",
@@ -95,16 +95,19 @@
         },
         "placeholders": {
           "select-filter": "フィルターを選択"
+        },
+        "descr": {
+          "title-mapping": "このバーチャルロケーションにマッピングされています"
         }
       },
       "category-detail": {
         "subtitle": "カテゴリの詳細",
-        "parent-disabled-alert": "親カテゴリは非表示です",
+        "parent-disabled-alert": "親カテゴリが非表示です",
         "labels": {
           "is-active": "表示",
           "name": "名前",
           "code": "コード",
-          "tax-type": "税種別",
+          "tax-type": "税タイプ",
           "priority": "優先度"
         },
         "validations": {
@@ -114,38 +117,38 @@
           "name": "カテゴリ名を入力",
           "code": "カテゴリコードを入力",
           "select": "選択...",
-          "priority": "数字を入力"
+          "priority": "番号を入力"
         }
       },
       "categories-items-add": {
-        "title": "新規カテゴリアイテム",
-        "subtitle": "新規アイテムタイプの選択",
+        "title": "新しいカテゴリアイテム",
+        "subtitle": "新しいアイテムタイプを選択",
         "menu": {
           "category": {
             "title": "カテゴリ",
-            "description": "これは他のカテゴリ、商品、またはバリエーションのコンテナです"
+            "description": "他のカテゴリ、製品、またはバリエーションのコンテナです"
           },
           "link": {
             "title": "リンク",
-            "description": "実物カテゴリまたは商品へのリンク"
+            "description": "物理カテゴリまたは製品へのリンク"
           },
           "physical-product": {
-            "title": "実物商品",
-            "description": "これは購入可能な有形アイテムです。物理的な配送が必要で、ターゲットプロモーションに使用できます"
+            "title": "物理製品",
+            "description": "購入可能な有形アイテムです。物理的な配送が必要で、ターゲットプロモーションに使用できます"
           },
           "digital-product": {
-            "title": "デジタル商品",
-            "description": "これは購入可能な無形アイテムです。購入後に直接ダウンロードでき、物理的な配送は必要ありません。デジタル商品もターゲットプロモーションに適しています"
+            "title": "デジタル製品",
+            "description": "購入可能な無形アイテムです。購入後に直接ダウンロードできるため、物理的な配送は必要ありません。デジタル製品はターゲットプロモーションにも適しています"
           },
           "bill-of-materials-product": {
-            "title": "部品表付き商品",
-            "description": "これは部品表（追加アイテムのリスト）が付属する実物商品です。特定のプロモーションに使用でき、物理的な配送が必要です"
+            "title": "部品表付き製品",
+            "description": "部品表（追加アイテムのリスト）付きの物理製品です。特定のプロモーションに使用でき、物理的な配送が必要です"
           }
         },
         "catalog-item-name": "カタログ",
-        "catalog-item-description": "これは店舗の商品を管理し、ブランド、製品ライン、または特定のサプライヤー向けのカタログを作成するための中心点です",
-        "virtual-catalog-item-name": "仮想カタログ",
-        "virtual-catalog-item-description": "仮想カタログは、1つ以上の実物カタログから構築されます。異なる実物カタログからアイテムを集めて商品を表示するために使用されます"
+        "catalog-item-description": "店舗の商品を管理し、ブランド、製品ライン、または特定のサプライヤーのためのカタログを作成するための中心的なポイントです",
+        "virtual-catalog-item-name": "バーチャルカタログ",
+        "virtual-catalog-item-description": "バーチャルカタログは、1つ以上の物理カタログから構築されます。異なる物理カタログからアイテムを集めて製品を表示するために使用されます"
       },
       "catalog-property-list": {
         "subtitle": "カタログのプロパティ",
@@ -154,13 +157,13 @@
         }
       },
       "filter-detail": {
-        "subtitle": "フィルターの編集",
-        "new-title": "新規フィルター",
-        "new-subtitle": "新規フィルターの作成",
+        "subtitle": "フィルターを編集",
+        "new-title": "新しいフィルター",
+        "new-subtitle": "新しいフィルターを作成",
         "labels": {
           "criteria": "検索フレーズ",
           "name": "フィルター名",
-          "searchInVariations": "商品バリエーションを表示"
+          "searchInVariations": "製品バリエーションを表示"
         },
         "placeholders": {
           "criteria": "検索フレーズを入力",
@@ -168,8 +171,8 @@
         }
       },
       "property-detail": {
-        "title": "プロパティの管理",
-        "subtitle": "プロパティ情報の編集",
+        "title": "プロパティを管理",
+        "subtitle": "プロパティ情報を編集",
         "labels": {
           "property-name": "プロパティ名",
           "display-name": "表示名",
@@ -179,11 +182,11 @@
           "multivalue": "複数値",
           "multi-language": "多言語",
           "applies-to": "適用対象",
-          "value-type": "値の種類",
-          "manage-dictionary": "辞書の管理",
-          "new-dictionary-property-caution": "プロパティを保存した後でのみ辞書アイテムを管理できます",
+          "value-type": "値のタイプ",
+          "manage-dictionary": "辞書を管理",
+          "new-dictionary-property-caution": "プロパティを保存した後にのみ辞書項目を管理できます",
           "attributes": "属性",
-          "manage-attributes": "プロパティ属性の管理",
+          "manage-attributes": "プロパティ属性を管理",
           "hidden": "非表示"
         },
         "placeholders": {
@@ -192,32 +195,32 @@
         }
       },
       "property-validationRule": {
-        "title": "バリデーションルール",
-        "subtitle": "バリデーションルールの管理",
+        "title": "検証ルール",
+        "subtitle": "検証ルールを管理",
         "match-validation-pattern": "特定のパターンに一致",
         "character-count": "文字数制限",
         "character-limit": {
-          "between": "次の間",
-          "at-least": "以上",
+          "between": "の間",
+          "at-least": "少なくとも",
           "not-more-than": "以下"
         },
         "patterns": {
           "custom": "カスタム",
-          "email": "メールアドレス",
+          "email": "メール",
           "url": "URL",
           "date": "日付"
         },
         "descriptions": {
           "require": "このプロパティは必須です",
-          "character-limit": "許可される最小および/または最大文字数を指定してください",
-          "pattern": "このフィールドをメールアドレス、URL、またはカスタム正規表現などのパターンに一致させます。例：^[a-z]{6,15}$"
+          "character-limit": "許可される文字数の最小値および/または最大値を指定します",
+          "pattern": "このフィールドをメールアドレス、URL、またはカスタム正規表現などのパターンに一致させます。例: ^[a-z]{6,15}$"
         }
       },
       "property-list": {
         "subtitle": "プロパティリスト",
         "labels": {
           "empty-list": "なし",
-          "modified": "（変更済み）",
+          "modified": "(変更済み)",
           "add-filter": "フィルター",
           "reset-filter": "フィルターをリセット",
           "excluded": "継承から除外されたプロパティ",
@@ -229,8 +232,8 @@
         },
         "validations": {
           "required": "このフィールドは必須です",
-          "maxLength": "このフィールドは{{max}}文字以下である必要があります",
-          "minLenght": "このフィールドは少なくとも{{min}}文字必要です",
+          "maxLength": "このフィールドには {{max}} 文字を超えて含めることはできません",
+          "minLenght": "このフィールドには少なくとも {{min}} 文字を含める必要があります",
           "pattern": "このフィールドは選択されたパターンに一致しません"
         }
       },
@@ -238,36 +241,36 @@
         "title": "編集するプロパティを選択",
         "labels": {
           "applied-filter": "適用されたフィルター",
-          "new-filter": "新規フィルター"
+          "new-filter": "新しいフィルター"
         }
       },
       "item-property-detail": {
-        "title": "アイテムプロパティの編集",
-        "title-new": "新規アイテムプロパティ",
+        "title": "アイテムプロパティを編集",
+        "title-new": "新しいアイテムプロパティ",
         "subtitle": "プロパティ情報を入力",
         "labels": {
           "property-name": "プロパティ名",
-          "duplicate-property-in-product": "{{propertyName}}という名前のプロパティは{{categoryName}}に既に存在します。名前は一意である必要があります",
-          "duplicate-property-in-catalog": "{{propertyName}}という名前のプロパティはルートカタログに既に存在します。名前は一意である必要があります",
-          "duplicate-property-in-variation1": "{{propertyName}}という名前のプロパティはこのバリエーションに既に存在します",
-          "duplicate-property-in-variation2": "。名前は一意である必要があります",
-          "property-naming-error": "プロパティ名は英数字で始まり、ラテン文字、数字、アンダースコア(_)のみを含む必要があります。アンダースコア(_)を使用する場合は、その前後に英数字があることを確認してください",
-          "value-type": "値の種類"
+          "duplicate-property-in-product": "{{categoryName}} に {{propertyName}} という名前のプロパティが既に存在します。名前は一意でなければなりません",
+          "duplicate-property-in-catalog": "ルートカタログに {{propertyName}} という名前のプロパティが既に存在します。名前は一意でなければなりません",
+          "duplicate-property-in-variation1": "このバリエーションには {{propertyName}} という名前のプロパティが既に存在します",
+          "duplicate-property-in-variation2": "。名前は一意でなければなりません",
+          "property-naming-error": "プロパティ名は英数字で始まり、ラテン文字、数字、およびアンダースコア (_) のみを含む必要があります。アンダースコア (_) を使用する場合は、その前後に英数字があることを確認してください",
+          "value-type": "値のタイプ"
         }
       },
       "catalogs-select": {
         "title": "カタログを選択",
-        "subtitle": "仮想カタログ内のリンクを作成"
+        "subtitle": "バーチャルカタログ内でリンクを作成"
       },
       "property-valueType": {
-        "title": "{{name}}の値の種類",
-        "subtitle": "値の種類を変更"
+        "title": "{{name}} 値のタイプ",
+        "subtitle": "値のタイプを変更"
       },
       "property-attributes": {
-        "title": "{{name}}の属性",
-        "subtitle": "属性の管理",
+        "title": "{{name}} 属性",
+        "subtitle": "属性を管理",
         "labels": {
-          "new-attribute": "新規属性",
+          "new-attribute": "新しい属性",
           "current-attributes": "現在の属性",
           "name": "名前",
           "value": "値"
@@ -275,7 +278,7 @@
         "validations": {
           "name-required": "必須",
           "value-required": "必須",
-          "name-duplicate": "重複する名前が見つかりました"
+          "name-duplicate": "重複した名前が見つかりました"
         },
         "placeholders": {
           "name": "名前を入力",
@@ -283,27 +286,27 @@
         }
       },
       "property-type": {
-        "title": "{{name}}の適用対象",
-        "subtitle": "対応する変更"
+        "title": "{{name}} の適用対象",
+        "subtitle": "Соответствующие изменения"
       },
       "property-dictionary": {
-        "title": "{{name}}辞書",
-        "subtitle": "辞書の管理",
+        "title": "{{name}} 辞書",
+        "subtitle": "辞書を管理",
         "labels": {
           "new-value": "新しい値",
           "current-values": "現在の値",
           "value": "値",
           "alias": "エイリアス",
           "sort-order": "並び順",
-          "language-edit": "値の編集",
+          "language-edit": "値を編集",
           "language-add": "新しい値",
-          "dictionary-edit": "辞書の値を編集",
+          "dictionary-edit": "辞書値を編集",
           "priority": "優先度",
-          "priority-description": "最も低い値が最初に使用されます"
+          "priority-description": "最小の値が最初に使用されます"
         },
         "validations": {
           "required": "必須",
-          "duplicate": "重複する名前が見つかりました"
+          "duplicate": "重複した名前が見つかりました"
         },
         "placeholders": {
           "value": "値を入力",
@@ -312,44 +315,46 @@
         }
       },
       "item-detail": {
-        "subtitle": "{{ productTypeName }}アイテムの詳細",
+        "subtitle": "{{ productTypeName }} アイテムの詳細",
         "subtitle-variation": "バリエーションの詳細",
+        "hide-description": "非表示",
         "labels": {
           "id": "ID",
-          "outer-id": "外部ID",
+          "outer-id": "外部 ID",
           "sku": "SKU",
           "priority": "優先度",
-          "name": "商品名",
+          "name": "製品名",
           "can-be-purchased": "購入可能",
           "store-visible": "表示",
-          "track-inventory": "在庫管理",
-          "has-user-agreement": "ユーザー同意あり",
+          "track-inventory": "在庫を追跡",
+          "has-user-agreement": "ユーザー契約あり",
           "min-quantity": "最小数量",
           "max-quantity": "最大数量",
           "pack-size": "パックサイズ",
           "vendor": "ベンダー",
           "vendor-denied": "アクセス拒否",
-          "tax-type": "税種別",
+          "tax-type": "税タイプ",
           "package-type": "パッケージタイプ",
-          "weight-unit": "重量単位",
+          "weight-unit": "質量単位",
           "weight": "重量",
           "dimensions": "寸法",
           "use-package-type": "パッケージと同じ",
           "measure-unit": "測定単位",
           "max-downloads": "最大ダウンロード数",
-          "expiration-date": "ダウンロード期限日",
+          "expiration-date": "ダウンロード有効期限",
           "download-type": "ダウンロードタイプ",
           "gtin": "GTIN",
           "mpn": "MPN",
-          "start-date": "掲載開始日",
-          "end-date": "掲載終了日"
+          "start-date": "最初のリスト",
+          "end-date": "リストの有効期限",
+          "is-configurable": "設定可能"
         },
         "validations": {
-          "sku": "SKUには次の文字を含めることはできません: $+;=%{}[]|@~!^*&()?'<>"
+          "sku": "SKU には次の文字を含めることはできません: $+;=%{}[]|@~!^*&()?'<>"
         },
         "placeholders": {
-          "sku": "アイテムのSKUを入力",
-          "priority": "数字を入力",
+          "sku": "アイテム SKU を入力",
+          "priority": "番号を入力",
           "name": "アイテム名を入力",
           "vendor": "選択...",
           "tax-type": "選択...",
@@ -357,42 +362,42 @@
           "weight": "重量を入力",
           "expiration-date": "日付を選択",
           "download-type": "選択...",
-          "gtin": "GTINを入力",
-          "mpn": "MPNを入力",
+          "gtin": "GTIN を入力",
+          "mpn": "MPN を入力",
           "start-date": "日付を指定",
           "end-date": "日付を指定"
         },
         "descr": {
-          "start-date": "開始日を指定しない場合、保存後すぐに商品がアクティブになります",
-          "end-date": "終了日を指定しない場合、非アクティブにするまで商品はアクティブのままです"
+          "start-date": "開始日を指定しない場合、製品は保存するとすぐにアクティブになります",
+          "end-date": "終了日を指定しない場合、製品は非アクティブになるまでアクティブのままです"
         }
       },
       "catalog-items-select": {
         "title": "カテゴリを選択",
         "title-association": "関連付けるアイテムを選択",
-        "subtitle-association": "商品に関連付けを追加",
+        "subtitle-association": "製品に関連付けを追加",
         "bread-crumb-top": "すべてのカタログ",
         "labels": {
           "picture": "画像",
           "name": "名前",
           "sku": "SKU",
-          "virtual": "仮想"
+          "virtual": "バーチャル"
         }
       },
       "item-variation-list": {
         "subtitle": "アイテムのバリエーション",
         "labels": {
-          "no-items": "まだバリエーションがありません",
+          "no-items": "まだバリエーションはありません",
           "picture": "画像",
           "name": "名前",
           "sku": "SKU",
-          "manufacturer-part-number": "製造業者部品番号"
+          "manufacturer-part-number": "製造者部品番号"
         }
       },
       "editorialReviews-list": {
         "subtitle": "アイテムの説明",
         "labels": {
-          "no-reviews": "まだアイテムの説明がありません"
+          "no-reviews": "まだアイテムの説明はありません"
         }
       },
       "editorialReview-detail": {
@@ -412,7 +417,7 @@
       "categoryDescriptions-list": {
         "subtitle": "カテゴリの説明",
         "labels": {
-          "no-descriptions": "まだアイテムの説明がありません"
+          "no-descriptions": "まだアイテムの説明はありません"
         }
       },
       "categoryDescription-detail": {
@@ -430,7 +435,7 @@
         }
       },
       "images": {
-        "subtitle": "画像の管理",
+        "subtitle": "画像を管理",
         "labels": {
           "no-images": "画像なし",
           "copy-url-prompt": "クリップボードにコピー: Ctrl+C, Enter",
@@ -438,17 +443,17 @@
           "select-image-category": "画像カテゴリを選択",
           "name": "名前",
           "image-category": "画像カテゴリ",
-          "drag-drop-comment": "ここに画像をドラッグ＆ドロップしてください",
+          "drag-drop-comment": "ここに画像をドラッグ＆ドロップ",
           "progress": "進行状況",
-          "make-default-image": "デフォルト画像として設定するには、画像を画像エリアの左上隅にドラッグ＆ドロップしてください",
+          "make-default-image": "画像エリアの左上隅に画像をドラッグ＆ドロップしてデフォルトに設定",
           "language": "言語",
           "preview": "プレビュー",
           "external-link": "外部リンク",
-          "altText": "画像の代替テキスト",
+          "altText": "画像代替テキスト",
           "description": "メタ説明"
         },
         "placeholders": {
-          "image-url": "画像URLをここに貼り付け",
+          "image-url": "ここに画像URLを貼り付け",
           "name": "名前を入力",
           "image-category": "選択",
           "language": "言語を選択",
@@ -457,12 +462,12 @@
         },
         "descr": {
           "external-link": "アセットにアップロードする代わりに外部画像URLを使用",
-          "external-link-warning": "注意：セキュリティ上の理由から、httpsリンクのみが許可されています"
+          "external-link-warning": "注意: セキュリティ上の理由から、httpsリンクのみが許可されます"
         }
       },
       "video-list": {
-        "title": "動画",
-        "subtitle": "すべての動画",
+        "title": "ビデオ",
+        "subtitle": "すべてのビデオ",
         "labels": {
           "preview": "プレビュー",
           "name": "名前",
@@ -471,30 +476,30 @@
         }
       },
       "video-add": {
-        "title": "YouTube動画",
-        "subtitle": "新しい動画",
+        "title": "YouTubeビデオ",
+        "subtitle": "新しいビデオ",
         "create": "作成",
         "labels": {
           "content-url": "コンテンツURL",
-          "no-apikey": "プラットフォーム設定ファイルにGoogle APIキーが提供されていません。動画情報は不完全になります"
+          "no-apikey": "プラットフォーム構成ファイルにGoogle APIキーが提供されていません。ビデオ情報は不完全になります"
         },
         "placeholders": {
-          "content-url": "動画URLを入力"
+          "content-url": "ビデオURLを入力"
         }
       },
       "video-detail": {
-        "title": "YouTube動画",
-        "subtitle": "動画情報の編集",
+        "title": "YouTubeビデオ",
+        "subtitle": "ビデオ情報を編集",
         "labels": {
-          "name": "動画名",
+          "name": "ビデオ名",
           "upload-date": "アップロード日",
           "description": "説明",
-          "duration": "長さ",
+          "duration": "期間",
           "language": "言語",
-          "video": "動画",
+          "video": "ビデオ",
           "content-url": "コンテンツURL",
           "embed-url": "埋め込みURL",
-          "video-preview": "動画プレビュー",
+          "video-preview": "ビデオプレビュー",
           "thumbnail": "サムネイル",
           "thumbnail-url": "サムネイルURL",
           "thumbnail-preview": "サムネイルプレビュー"
@@ -504,7 +509,7 @@
           "upload-date": "日付を指定",
           "description": "説明を入力",
           "language": "言語を選択",
-          "content-url": "動画URLを入力"
+          "content-url": "ビデオURLを入力"
         }
       },
       "item-asset-detail": {
@@ -520,11 +525,11 @@
         }
       },
       "item-asset-list": {
-        "subtitle": "アイテムのアセット",
+        "subtitle": "アイテムアセット",
         "labels": {
           "copy-url-prompt": "クリップボードにコピー: Ctrl+C, Enter",
           "select-files": "ファイルを選択",
-          "drag-drop-comment": "ここにファイルをドラッグ＆ドロップしてください",
+          "drag-drop-comment": "ここにファイルをドラッグ＆ドロップ",
           "name": "名前",
           "progress": "進行状況",
           "type": "タイプ",
@@ -536,12 +541,17 @@
       "item-associations-list": {
         "subtitle": "関連付け",
         "labels": {
-          "sorting-prompt": "関連アイテムがウェブストアでどのように表示されるかを設定します。商品をドラッグ＆ドロップして順序を変更してください",
+          "sorting-prompt": "関連付けられたアイテムがウェブストアにどのように表示されるかを設定します。製品をドラッグ＆ドロップして順序を変更",
           "picture": "画像",
           "name": "名前",
           "priority": "優先度",
           "group": "グループ",
-          "quantity": "数量"
+          "quantity": "数量",
+          "tags": "タグ"
+        },
+        "descr": {
+          "no-associations": "まだ関連付けはありません。",
+          "quantity": "関連付け数量"
         }
       },
       "item-association-detail": {
@@ -562,7 +572,7 @@
       },
       "item-dimensions": {
         "title": "アイテムの測定",
-        "subtitle": "商品の測定プロパティを変更"
+        "subtitle": "製品の測定プロパティを変更"
       },
       "asset-select": {
         "title": "画像をリンク"
@@ -584,45 +594,45 @@
           "label": "プロパティ名"
         },
         "type": {
-          "label": "集計タイプ"
+          "label": "集約タイプ"
         },
         "size": {
-          "label": "集計サイズ",
-          "placeholder": "集計サイズを入力",
-          "description": "検索結果の集計値の最大数。0 = 無制限"
+          "label": "集約サイズ",
+          "placeholder": "集約サイズを入力",
+          "description": "検索結果の集約値の最大数。0 = 無制限"
         },
         "values-Attribute": {
           "label": "許可される値",
           "placeholder": "許可される値を入力",
-          "description": "検索結果で許可される集計値を入力してください。すべての値を許可する場合は空白のままにしてください"
+          "description": "検索結果で許可される集約値を入力します。すべての値を許可するには空白のままにします"
         },
         "values-Range": {
-          "label": "範囲の境界",
+          "label": "範囲境界",
           "placeholder": "数値を追加",
-          "description": "境界は保存前に自動的に並べ替えられます。範囲は次のように構築されます：[境界1]未満、[境界1]から[境界2]、...、[境界N]超"
+          "description": "保存前に境界が自動的にソートされます。範囲は次のように構成されます: [境界1]以下、[境界1]から[境界2]まで、...、[境界N]以上"
         },
         "values-PriceRange": {
-          "label": "価格範囲の境界",
+          "label": "価格範囲境界",
           "placeholder": "数値を追加",
-          "description": "境界は保存前に自動的に並べ替えられます。価格範囲は次のように構築されます：[境界1]未満、[境界1]から[境界2]、...、[境界N]超"
+          "description": "保存前に境界が自動的にソートされます。価格範囲は次のように構成されます: [境界1]以下、[境界1]から[境界2]まで、...、[境界N]以上"
         }
       },
       "importers-list": {
         "title": "インポートタイプ",
-        "subtitle": "以下の利用可能なインポートタイプから選択してください"
+        "subtitle": "以下の利用可能なインポートタイプを選択"
       },
       "exporter-list": {
         "title": "エクスポートタイプ",
-        "subtitle": "以下の利用可能なエクスポートタイプから選択してください"
+        "subtitle": "以下の利用可能なエクスポートタイプを選択"
       },
       "exporter": {
-        "productTitle": "カタログ商品をエクスポート",
-        "productSubtitle": "カタログ商品をJSONまたはCSVにエクスポート"
+        "productTitle": "カタログ製品をエクスポート",
+        "productSubtitle": "カタログ製品をJSONまたはCSVにエクスポート"
       },
       "bill-of-materials-list": {
-        "title": "部品表（BOM）商品",
-        "subtitle": "BOM商品の追加または削除",
-        "no-data": "まだ商品がありません",
+        "title": "部品表 (BOM) 製品",
+        "subtitle": "BOM製品を追加または削除",
+        "no-data": "まだ製品はありません",
         "labels": {
           "picture": "画像",
           "name": "名前",
@@ -635,42 +645,42 @@
         "subtitle": "プロパティタイプを選択",
         "lables": {
           "Product": {
-            "title": "商品プロパティ",
-            "description": "関連する商品にのみ表示されます"
+            "title": "製品プロパティ",
+            "description": "関連製品にのみ表示"
           },
           "Category": {
             "title": "カテゴリプロパティ",
-            "description": "関連するカタログにのみ表示されます"
+            "description": "関連カタログにのみ表示"
           },
           "Catalog": {
             "title": "カタログプロパティ",
-            "description": "このカタログにのみ表示されます"
+            "description": "このカタログにのみ表示"
           },
           "Variation": {
             "title": "バリエーションプロパティ",
-            "description": "関連するバリエーションにのみ表示されます"
+            "description": "関連バリエーションにのみ表示"
           }
         }
       },
       "links-list": {
         "title": "リンク",
         "labels": {
-          "no-data": "まだリンクがありません",
+          "no-data": "まだリンクはありません",
           "add-links": "新しいリンクを追加",
           "marked": "マーク済み"
         }
       },
       "measures-list": {
-        "title": "計量単位",
-        "subtitle": "利用可能な計量単位のリスト",
+        "title": "測定単位",
+        "subtitle": "利用可能な測定単位のリスト",
         "labels": {
           "name": "名前"
         }
       },
       "measure-details": {
-        "title": "{{name}}計量単位",
-        "title-new": "新しい計量単位を追加",
-        "subtitle": "計量単位の詳細",
+        "title": "{{name}} 測定",
+        "title-new": "新しい測定を追加",
+        "subtitle": "測定の詳細",
         "labels": {
           "name": "名前",
           "code": "コード",
@@ -683,8 +693,8 @@
         }
       },
       "measure-units-list": {
-        "title": "{{name}}計量単位",
-        "subtitle": "計量単位のリスト",
+        "title": "{{name}} 測定単位",
+        "subtitle": "測定単位のリスト",
         "labels": {
           "name": "名前",
           "code": "コード",
@@ -692,355 +702,404 @@
         }
       },
       "measure-unit-details": {
-        "title": "{{name}}計量単位",
-        "title-new": "新しい計量単位",
-        "subtitle": "計量単位の詳細",
+        "title": "{{name}} 測定単位",
+        "title-new": "新しい測定単位",
+        "subtitle": "測定単位の詳細",
         "labels": {
           "name": "名前",
           "code": "コード",
           "conversion-factor": "変換係数",
-          "symbol": "記号"
+          "symbol": "シンボル"
         },
         "placeholders": {
           "name": "名前を入力",
           "code": "コードを入力",
-          "conversion-factor": "変換係数を入力",
-          "symbol": "記号"
-        }
-      }
-    },
-    "exporter-list": {
-      "title": "エクスポートタイプ",
-      "subtitle": "以下の利用可能なエクスポートタイプから選択してください"
-    },
-    "exporter": {
-      "productTitle": "カタログ商品をエクスポート",
-      "productSubtitle": "カタログ商品をJSONまたはCSVにエクスポート"
-    },
-    "widgets": {
-      "catalogLanguages": {
-        "blade-subtitle": "言語の管理",
-        "title": "言語",
-        "default-language": "デフォルト言語"
-      },
-      "catalogProperty": {
-        "blade-subtitle": "カタログのプロパティ",
-        "title": "プロパティ"
-      },
-      "categoryProperty": {
-        "blade-subtitle": "カテゴリのプロパティ",
-        "title": "プロパティ"
-      },
-      "editorialReview": {
-        "blade-subtitle": "アイテムの説明",
-        "title": "説明"
-      },
-      "categoryDescription": {
-        "blade-subtitle": "カテゴリの説明",
-        "title": "説明"
-      },
-      "itemAsset": {
-        "blade-subtitle": "アイテムのアセット",
-        "title": "アセット"
-      },
-      "itemAssociations": {
-        "blade-subtitle": "関連付け",
-        "title": "関連付け"
-      },
-      "itemImage": {
-        "blade-subtitle": "画像の管理",
-        "no-images": "画像なし"
-      },
-      "itemProperty": {
-        "blade-subtitle": "アイテムのプロパティ",
-        "title": "プロパティ"
-      },
-      "itemVariation": {
-        "blade-subtitle": "アイテムのバリエーション",
-        "title": "バリエーション"
-      },
-      "itemDimensions": {
-        "title": "重量とサイズ",
-        "weight": "重量",
-        "length": "長さ",
-        "width": "幅",
-        "height": "高さ"
-      },
-      "billOfMaterials": {
-        "title": "部品表"
-      },
-      "videos": {
-        "blade-subtitle": "動画",
-        "title": "動画"
-      },
-      "links": {
-        "title": "リンク"
-      },
-      "measure-units": {
-        "title": "単位"
-      },
-      "configuration": {
-        "title": "構成"
-      }
-    },
-    "dialogs": {
-      "catalog-save": {
-        "title": "変更を保存",
-        "message": "このカタログは変更されています。変更を保存しますか？"
-      },
-      "catalog-delete": {
-        "title": "削除の確認",
-        "warning": "警告：この変更は永続的であり、元に戻すことはできません。この変更を適用するとデータが失われる可能性があります",
-        "message": "このカタログを削除してもよろしいですか？",
-        "instruction": "削除するには「はい」と入力してください："
-      },
-      "catalog-items-delete": {
-        "title": "削除の確認",
-        "warning": "警告：この変更は永続的であり、元に戻すことはできません。この変更を適用するとデータが失われる可能性があります",
-        "message": "以下のデータが削除されます：",
-        "instruction": "削除するには「はい」と入力してください：",
-        "item": "{{count}}個のアイテム",
-        "category": "{{count}}個のカテゴリとその中のすべてのコンテンツ",
-        "linked-item": "{{count}}個のリンクされたアイテム",
-        "linked-category": "{{count}}個のリンクされたカテゴリ"
-      },
-      "property-delete": {
-        "message": "{{name}}プロパティを削除してもよろしいですか？",
-        "warning": "警告：この変更は永続的であり、元に戻すことはできません。この変更を適用するとデータが失われる可能性があります",
-        "msg1": "適切な削除オプションを選択してください。オプション：",
-        "msg2": "プロパティのメタデータのみを削除し、関連オブジェクトの値を保持する",
-        "msg3": "関連するすべての値と共に完全に削除する",
-        "shallow": "メタデータを削除",
-        "full": "完全に削除"
-      },
-      "property-dictionary-item-delete": {
-        "message": "選択した辞書アイテムを削除してもよろしいですか？",
-        "warning": "警告：この変更は永続的であり、元に戻すことはできません。この変更を適用するとデータが失われる可能性があります"
-      },
-      "virtual-catalog-save": {
-        "title": "変更を保存",
-        "message": "この仮想カタログは変更されています。変更を保存しますか？"
-      },
-      "category-save": {
-        "title": "変更を保存",
-        "message": "このカテゴリは変更されています。変更を保存しますか？"
-      },
-      "item-save": {
-        "title": "変更を保存",
-        "message": "このアイテムは変更されています。変更を保存しますか？"
-      },
-      "variation-delete": {
-        "title": "削除の確認",
-        "message": "選択したバリエーションを削除してもよろしいですか？"
-      },
-      "property-save": {
-        "title": "変更を保存",
-        "message": "このプロパティは変更されています。変更を保存しますか？"
-      },
-      "item-property-delete": {
-        "message": "{{name}}プロパティを削除してもよろしいですか？"
-      },
-      "dictionary-values-delete": {
-        "title": "削除の確認",
-        "message": "選択した辞書の値を削除してもよろしいですか？"
-      },
-      "review-save": {
-        "title": "変更を保存",
-        "message": "この説明は変更されています。変更を保存しますか？"
-      },
-      "review-delete": {
-        "title": "削除の確認",
-        "message": "この説明を削除してもよろしいですか？"
-      },
-      "association-delete": {
-        "title": "削除の確認",
-        "message": "選択した関連付けを削除してもよろしいですか？"
-      },
-      "attribut-delete": {
-        "title": "削除の確認",
-        "message": "選択した属性を削除してもよろしいですか？"
-      },
-      "image-save": {
-        "title": "削除の確認",
-        "message": "これらの画像は変更されています。変更を保存しますか？"
-      },
-      "video-save": {
-        "title": "変更を保存",
-        "message": "この動画は変更されています。変更を保存しますか？"
-      },
-      "video-delete": {
-        "title": "削除の確認",
-        "message": "この動画を削除してもよろしいですか？"
-      },
-      "video-list-delete": {
-        "title": "削除の確認",
-        "message": "選択した動画を削除してもよろしいですか？"
-      },
-      "asset-save": {
-        "title": "変更を保存",
-        "message": "これらのアセットは変更されています。変更を保存しますか？"
-      },
-      "language-save": {
-        "title": "変更を保存",
-        "message": "言語が変更されています。変更を保存しますか？"
-      },
-      "bill-or-materials-associations-delete": {
-        "title": "削除の確認",
-        "message": "選択した製品を削除してもよろしいですか？"
-      },
-      "links-delete": {
-        "title": "削除の確認",
-        "message": "選択したリンクを削除してもよろしいですか？"
-      },
-      "measures-delete": {
-        "title": "削除の確認",
-        "message": "選択した計量単位を削除してもよろしいですか？"
-      },
-      "measure-unit-save": {
-        "title": "変更を保存",
-        "message": "この計量単位は変更されています。変更を保存しますか？"
-      },
-      "measure-unit-delete": {
-        "title": "削除の確認",
-        "message": "選択した計量単位を削除してもよろしいですか？"
-      },
-      "measure-units-delete": {
-        "title": "削除の確認",
-        "message": "選択した計量単位を削除してもよろしいですか？"
-      },
-      "measure-save": {
-        "title": "変更を保存",
-        "message": "この計量単位は変更されています。変更を保存しますか？"
-      }
-    },
-    "wizards": {
-      "category": {
-        "title": "新しいカテゴリ",
-        "subtitle": "カテゴリ情報を入力してください",
-        "labels": {
-          "name": "名前",
-          "code": "コード"
-        },
-        "validations": {
-          "code": "コードには次の文字を含めることはできません: $+;=%{}[]|@~!^*&()?'<>"
-        },
-        "placeholders": {
-          "name": "カテゴリ名を入力",
-          "code": "カテゴリコードを入力"
+          "conversion-factor": "変換を入力",
+          "symbol": "シンボル"
         }
       },
-      "new-product": {
-        "title": "新しい商品",
-        "subtitle": "商品に関するすべての情報を入力してください",
+      "configuration-details": {
+        "title": "製品構成",
+        "hide-description": "非表示",
         "labels": {
-          "sku": "SKU",
-          "name": "名前",
-          "fill-properties": "プロパティを入力",
-          "fill-properties-summary": "{{total}}個中{{ count }}個のプロパティが入力されました",
-          "upload-images": "画像をアップロード",
-          "upload-images-summary": "{{ count }}個の画像がアップロードされました",
-          "add-review": "説明を追加",
-          "add-review-summary": "{{ count }}個の説明が追加されました",
-          "seo-information": "SEO情報を入力",
-          "seo-information-summary-defined": "SEO情報が入力されました",
-          "seo-information-summary-undefined": "SEO情報が入力されていません"
+          "enable": "構成を有効にする",
+          "name": "セクション名",
+          "quantity": "オプション",
+          "sections": "セクション"
         },
-        "validations": {
-          "sku": "SKUには次の文字を含めることはできません: $+;=%{}[]|@~!^*&()?'<>",
-          "sku-required": "必須",
-          "name-required": "必須"
+        "descr": {
+          "enable": "製品構成機能の有効化。構成を有効にするには、少なくとも1つのセクションが含まれている必要があり、各セクションには少なくとも1つのオプションが含まれている必要があります",
+          "no-sections": "この構成にはまだセクションがありません",
+          "sorting-prompt": "セクションがウェブストアに表示される順序を設定します。セクションをドラッグ＆ドロップして順序を変更"
         },
-        "placeholders": {
-          "name": "アイテム名を入力",
-          "sku": "アイテムのSKUを入力"
+        "commands": {
+          "add": "セクションを追加"
         }
       },
-      "new-variation": {
-        "title": "新しいバリエーション",
-        "subtitle": "バリエーション情報を入力してください",
+      "section-details": {
+        "title": "新しいセクション",
         "labels": {
-          "sku": "SKU",
-          "name": "名前",
-          "fill-properties": "プロパティを入力",
-          "fill-properties-summary": "{{total}}個中{{ count }}個のプロパティが入力されました",
-          "upload-images": "画像をアップロード",
-          "upload-images-summary": "{{ count }}個の画像がアップロードされました"
-        },
-        "validations": {
-          "sku": "SKUには次の文字を含めることはできません: $+;=%{}[]|@~!^*&()?'<>",
-          "sku-required": "必須",
-          "name-required": "必須"
-        },
-        "placeholders": {
-          "name": "アイテム名を入力",
-          "sku": "アイテムのSKUを入力"
-        }
-      },
-      "item-images": {
-        "subtitle": "アイテムの画像"
-      },
-      "association": {
-        "title": "新しい関連付け",
-        "labels": {
-          "group-name": "グループ名",
-          "tags": "タグ",
-          "tags-placeholder": "タグを入力",
+          "name": "セクション名",
+          "description": "説明",
+          "required": "オプションの選択が必要",
+          "picture": "画像",
           "quantity": "数量",
-          "items": "アイテム",
-          "products-selected": "選択された商品",
-          "categories-selected": "選択されたカテゴリ"
+          "product-name": "製品名",
+          "options": "オプション"
+        },
+        "descr": {
+          "no-options": "このセクションにはまだオプションがありません"
+        },
+        "commands": {
+          "add": "オプションを追加"
+        }
+      },
+      "option-details": {
+        "title": "オプションとしてアイテムを選択",
+        "labels": {
+          "quantity": "数量"
         },
         "placeholders": {
-          "group-name": "選択...",
-          "quantity": "数量を入力"
-        }
+          "quantity": "数量を指定"
+        } 
       }
     },
-    "commands": {
-      "copy-id": "IDをコピー",
-      "clear-all": "すべてクリア",
-      "add-property": "プロパティを追加",
-      "add-product-property": "カスタムプロパティを追加",
-      "add-variation-property": "カスタムプロパティを追加",
-      "gallery": "ギャラリー",
-      "map": "マップ",
-      "open-item": "アイテムを開く",
-      "default": "デフォルトに設定",
-      "link": "リンク",
-      "external-link": "外部リンク"
-    },
-    "permissions": {
-      "catalog-scope": {
-        "title": "選択したカタログのみ",
-        "blade": {
-          "subtitle": "カタログを選択"
+      "exporter-list": {
+        "title": "エクスポートタイプ",
+        "subtitle": "以下の利用可能なエクスポートタイプを選択"
+      },
+      "exporter": {
+        "productTitle": "カタログ製品をエクスポート",
+        "productSubtitle": "カタログ製品をJSONまたはCSVにエクスポート"
+      },
+      "widgets": {
+        "catalogLanguages": {
+          "blade-subtitle": "言語を管理",
+          "title": "言語",
+          "default-language": "デフォルトの言語"
+        },
+        "catalogProperty": {
+          "blade-subtitle": "カタログプロパティ",
+          "title": "プロパティ"
+        },
+        "categoryProperty": {
+          "blade-subtitle": "カテゴリプロパティ",
+          "title": "プロパティ"
+        },
+        "editorialReview": {
+          "blade-subtitle": "アイテムの説明",
+          "title": "説明"
+        },
+        "categoryDescription": {
+          "blade-subtitle": "カテゴリの説明",
+          "title": "説明"
+        },
+        "itemAsset": {
+          "blade-subtitle": "アイテムアセット",
+          "title": "アセット"
+        },
+        "itemAssociations": {
+          "blade-subtitle": "関連付け",
+          "title": "関連付け"
+        },
+        "itemImage": {
+          "blade-subtitle": "画像を管理",
+          "no-images": "画像なし"
+        },
+        "itemProperty": {
+          "blade-subtitle": "アイテムプロパティ",
+          "title": "プロパティ"
+        },
+        "itemVariation": {
+          "blade-subtitle": "アイテムのバリエーション",
+          "title": "バリエーション"
+        },
+        "itemDimensions": {
+          "title": "重量とサイズ",
+          "weight": "重量",
+          "length": "長さ",
+          "width": "幅",
+          "height": "高さ"
+        },
+        "billOfMaterials": {
+          "title": "部品表"
+        },
+        "videos": {
+          "blade-subtitle": "ビデオ",
+          "title": "ビデオ"
+        },
+        "links": {
+          "title": "リンク"
+        },
+        "measure-units": {
+          "title": "単位"
+        },
+        "configuration": {
+          "title": "構成"
         }
       },
-      "category-scope": {
-        "title": "選択したカテゴリのみ"
-      }
-    },
-    "selectors": {
-      "titles": {
-        "catalogs": "カタログ",
-        "categories": "カテゴリ",
-        "search-in-variations": "商品バリエーションで検索",
-        "search-in-children": "子カテゴリで検索"
+      "dialogs": {
+        "catalog-save": {
+          "title": "変更を保存",
+          "message": "このカタログは変更されました。変更を保存しますか？"
+        },
+        "catalog-delete": {
+          "title": "削除を確認",
+          "warning": "警告: この変更は永久的であり、元に戻すことはできません。この変更を適用するとデータが失われる可能性があります",
+          "message": "このカタログを削除してもよろしいですか？",
+          "instruction": "削除するには 'yes' と入力:"
+        },
+        "catalog-items-delete": {
+          "title": "削除を確認",
+          "warning": "警告: この変更は永久的であり、元に戻すことはできません。この変更を適用するとデータが失われる可能性があります",
+          "message": "次のデータが削除されます:",
+          "instruction": "削除するには 'yes' と入力:",
+          "item": "{{count}} アイテム",
+          "category": "{{count}} カテゴリとその中のすべてのコンテンツ",
+          "linked-item": "{{count}} アイテム",
+          "linked-category": "{{count}} リンクされたカテゴリ"
+        },
+        "property-delete": {
+          "message": "{{name}} プロパティを削除してもよろしいですか？",
+          "warning": "警告: この変更は永久的であり、元に戻すことはできません。この変更を適用するとデータが失われる可能性があります",
+          "msg1": "適切な削除オプションを選択してください。オプション:",
+          "msg2": "プロパティメタデータのみを削除し、関連オブジェクトの値を保持",
+          "msg3": "関連するすべての値と共に完全に削除",
+          "shallow": "メタデータを削除",
+          "full": "完全に削除"
+        },
+        "property-dictionary-item-delete": {
+          "message": "選択した辞書項目を削除してもよろしいですか？",
+          "warning": "警告: この変更は永久的であり、元に戻すことはできません。この変更を適用するとデータが失われる可能性があります"
+        },
+        "virtual-catalog-save": {
+          "title": "変更を保存",
+          "message": "このバーチャルカタログは変更されました。変更を保存しますか？"
+        },
+        "category-save": {
+          "title": "変更を保存",
+          "message": "このカテゴリは変更されました。変更を保存しますか？"
+        },
+        "item-save": {
+          "title": "変更を保存",
+          "message": "このアイテムは変更されました。変更を保存しますか？"
+        },
+        "variation-delete": {
+          "title": "削除を確認",
+          "message": "選択したバリエーションを削除してもよろしいですか？"
+        },
+        "property-save": {
+          "title": "変更を保存",
+          "message": "このプロパティは変更されました。変更を保存しますか？"
+        },
+        "item-property-delete": {
+          "message": "{{name}} プロパティを削除してもよろしいですか？"
+        },
+        "dictionary-values-delete": {
+          "title": "削除を確認",
+          "message": "選択した辞書値を削除してもよろしいですか？"
+        },
+        "review-save": {
+          "title": "変更を保存",
+          "message": "この説明は変更されました。変更を保存しますか？"
+        },
+        "review-delete": {
+          "title": "削除を確認",
+          "message": "この説明を削除してもよろしいですか？"
+        },
+        "association-delete": {
+          "title": "削除を確認",
+          "message": "選択した関連付けを削除してもよろしいですか？"
+        },
+        "attribut-delete": {
+          "title": "削除を確認",
+          "message": "選択した属性を削除してもよろしいですか？"
+        },
+        "image-save": {
+          "title": "削除を確認",
+          "message": "これらの画像は変更されました。変更を保存しますか？"
+        },
+        "video-save": {
+          "title": "変更を保存",
+          "message": "このビデオは変更されました。変更を保存しますか？"
+        },
+        "video-delete": {
+          "title": "削除を確認",
+          "message": "このビデオを削除してもよろしいですか？"
+        },
+        "video-list-delete": {
+          "title": "削除を確認",
+          "message": "選択したビデオを削除してもよろしいですか？"
+        },
+        "asset-save": {
+          "title": "変更を保存",
+          "message": "これらのアセットは変更されました。変更を保存しますか？"
+        },
+        "language-save": {
+          "title": "変更を保存",
+          "message": "言語が変更されました。変更を保存しますか？"
+        },
+        "bill-or-materials-associations-delete": {
+          "title": "削除を確認",
+          "message": "選択した製品を削除してもよろしいですか？"
+        },
+        "links-delete": {
+          "title": "削除を確認",
+          "message": "選択したリンクを削除してもよろしいですか？"
+        },
+        "measures-delete": {
+          "title": "削除を確認",
+          "message": "選択した測定を削除してもよろしいですか？"
+        },
+        "measure-unit-save": {
+          "title": "変更を保存",
+          "message": "この測定単位は変更されました。変更を保存しますか？"
+        },
+        "measure-unit-delete": {
+          "title": "削除を確認",
+          "message": "選択した測定単位を削除してもよろしいですか？"
+        },
+        "measure-units-delete": {
+          "title": "削除を確認",
+          "message": "選択した測定単位を削除してもよろしいですか？"
+        },
+        "measure-save": {
+          "title": "変更を保存",
+          "message": "この測定は変更されました。変更を保存しますか？"
+        },
+        "configuration-save": {
+          "title": "変更を保存",
+          "message": "この構成は変更されました。変更を保存しますか？"
+        }
       },
-      "labels": {
-        "select": "選択",
-        "selected": "選択済み: "
+      "wizards": {
+        "category": {
+          "title": "新しいカテゴリ",
+          "subtitle": "カテゴリ情報を提供",
+          "labels": {
+            "name": "名前",
+            "code": "コード"
+          },
+          "validations": {
+            "code": "コードには次の文字を含めることはできません: $+;=%{}[]|@~!^*&()?'<>"
+          },
+          "placeholders": {
+            "name": "カテゴリ名を入力",
+            "code": "カテゴリコードを入力"
+          }
+        },
+        "new-product": {
+          "title": "新しい製品",
+          "subtitle": "製品に関するすべての情報を提供",
+          "labels": {
+            "sku": "SKU",
+            "name": "名前",
+            "fill-properties": "プロパティを提供",
+            "fill-properties-summary": "{{ count }} / {{total}} のプロパティが提供されました",
+            "upload-images": "画像をアップロード",
+            "upload-images-summary": "{{ count }} 枚の画像がアップロードされました",
+            "add-review": "説明を追加",
+            "add-review-summary": "{{ count }} 件の説明が追加されました",
+            "seo-information": "SEO情報を提供",
+            "seo-information-summary-defined": "SEO情報が提供されました",
+            "seo-information-summary-undefined": "SEO情報が提供されていません"
+          },
+          "validations": {
+            "sku": "SKUには次の文字を含めることはできません: $+;=%{}[]|@~!^*&()?'<>",
+            "sku-required": "必須",
+            "name-required": "必須"
+          },
+          "placeholders": {
+            "name": "アイテム名を入力",
+            "sku": "アイテムSKUを入力"
+          }
+        },
+        "new-variation": {
+          "title": "新しいバリエーション",
+          "subtitle": "バリエーション情報を提供",
+          "labels": {
+            "sku": "SKU",
+            "name": "名前",
+            "fill-properties": "プロパティを提供",
+            "fill-properties-summary": "{{ count }} / {{total}} のプロパティが提供されました",
+            "upload-images": "画像をアップロード",
+            "upload-images-summary": "{{ count }} 枚の画像がアップロードされました"
+          },
+          "validations": {
+            "sku": "SKUには次の文字を含めることはできません: $+;=%{}[]|@~!^*&()?'<>",
+            "sku-required": "必須",
+            "name-required": "必須"
+          },
+          "placeholders": {
+            "name": "アイテム名を入力",
+            "sku": "アイテムSKUを入力"
+          }
+        },
+        "item-images": {
+          "subtitle": "アイテム画像"
+        },
+        "association": {
+          "title": "新しい関連付け",
+          "labels": {
+            "group-name": "グループ名",
+            "tags": "タグ",
+            "tags-placeholder": "タグを入力",
+            "quantity": "数量",
+            "items": "アイテム",
+            "products-selected": "選択された製品",
+            "categories-selected": "選択されたカテゴリ"
+          },
+          "placeholders": {
+            "group-name": "選択...",
+            "quantity": "数量を入力"
+          }
+        }
       },
-      "placeholders": {
-        "catalog-lists": "カタログを選択"
+      "commands": {
+        "copy-id": "IDをコピー",
+        "clear-all": "すべてクリア",
+        "add-property": "プロパティを追加",
+        "add-product-property": "カスタムプロパティを追加",
+        "add-variation-property": "カスタムプロパティを追加",
+        "gallery": "ギャラリー",
+        "map": "マップ",
+        "open-item": "アイテムを開く",
+        "default": "デフォルトに設定",
+        "link": "リンク",
+        "external-link": "外部リンク"
       },
-      "blades": {
+      "permissions": {
+        "catalog-scope": {
+          "title": "選択されたカタログのみ",
+          "blade": {
+            "subtitle": "カタログを選択"
+          }
+        },
+        "category-scope": {
+          "title": "選択されたカテゴリのみ"
+        }
+      },
+      "selectors": {
         "titles": {
-          "select-categories": "カテゴリを選択"
+          "catalogs": "カタログ",
+          "categories": "カテゴリ",
+          "search-in-variations": "製品バリエーション内を検索",
+          "search-in-children": "子カテゴリ内を検索"
+        },
+        "labels": {
+          "select": "選択",
+          "selected": "選択済み: "
+        },
+        "placeholders": {
+          "catalog-lists": "カタログを選択"
+        },
+        "blades": {
+          "titles": {
+            "select-categories": "カテゴリを選択"
+          }
         }
       }
-    }
-  },
+    },
   "permissions": {
     "catalog:access": "カタログメニューを開く",
     "catalog:create": "カタログ関連データを作成",
@@ -1049,31 +1108,31 @@
     "catalog:delete": "カタログ関連データを削除",
     "catalog:export": "カタログデータをエクスポート",
     "catalog:import": "カタログデータをインポート",
-    "measures:access": "計量単位メニューを開く",
-    "measures:create": "計量単位関連データを作成",
-    "measures:read": "計量単位関連データを表示",
-    "measures:update": "計量単位関連データを更新",
-    "measures:delete": "計量単位関連データを削除",
+    "measures:access": "測定単位メニューを開く",
+    "measures:create": "測定単位関連データを作成",
+    "measures:read": "測定単位関連データを表示",
+    "measures:update": "測定単位関連データを更新",
+    "measures:delete": "測定単位関連データを削除",
     "catalog:metadata-property:edit": "プロパティのメタデータを編集",
-    "catalog:custom-property:edit": "商品のカスタムプロパティを編集",
+    "catalog:custom-property:edit": "製品のカスタムプロパティを編集",
     "catalog:dictionary-property:edit": "プロパティの辞書値を編集"
   },
   "settings": {
     "Catalog": {
       "ImageCategories": {
-        "description": "このアイテムの画像カテゴリの可能な辞書",
+        "description": "このアイテムの画像の可能なカテゴリの辞書",
         "title": "画像カテゴリ"
       },
       "AssociationGroups": {
-        "description": "カタログ商品の関連付けグループ",
-        "title": "関連付けグループ名"
+        "description": "カタログ製品の関連グループ",
+        "title": "関連グループ名"
       },
       "EditorialReviewTypes": {
         "description": "このアイテムの説明の可能なタイプの辞書",
         "title": "アイテム説明タイプ"
       },
       "UseSeoDeduplication": {
-        "description": "SEO重複の検出を有効または無効にする",
+        "description": "SEO重複検出を有効または無効にする",
         "title": "SEO重複を検出"
       },
       "CategoryDescriptionTypes": {
@@ -1081,26 +1140,26 @@
         "title": "カテゴリ説明タイプ"
       },
       "AllowToCopyID": {
-        "title": "アイテムのIDのコピーを許可",
-        "description": "有効にすると、コンテキストメニューに「IDをコピー」項目が表示されます"
+        "title": "アイテムのIDをコピーすることを許可",
+        "description": "IDをコピーするコンテキストメニュー項目を表示するには有効にします"
       },
       "Search": {
         "UseCatalogIndexedSearchInManager": {
-          "description": "高度な構文を持つカタログモジュールのインデックス付き検索を有効または無効にする",
-          "title": "カタログにインデックス付き検索を使用"
+          "description": "カタログモジュールのインデックス検索を高度な構文で有効または無効にする",
+          "title": "カタログのインデックス検索を使用"
         },
         "UseFullObjectIndexStoring": {
-          "description": "シリアル化されたカタログオブジェクトをインデックスに保存し、検索結果で返す",
-          "title": "シリアル化されたカタログオブジェクトをインデックスに保存"
+          "description": "インデックスにシリアル化されたカタログオブジェクトを保存し、検索結果に返す",
+          "title": "インデックスにシリアル化されたカタログオブジェクトを保存"
         },
         "DefaultAggregationSize": {
-          "description": "ストアの集計プロパティで定義されていない場合の集計サイズを指定します。無制限のサイズの場合は0に設定します",
-          "title": "集計サイズのデフォルト値"
+          "description": "ストアの集約プロパティで定義されていない場合の集約のサイズを指定します。無制限のサイズにするには0に設定",
+          "title": "集約サイズのデフォルト値"
         },
         "EventBasedIndexation": {
           "Enable": {
             "title": "カタログエンティティのイベントベースのインデックス作成を有効にする",
-            "description": "カタログエンティティに加えられた変更は、それらの変更を検索インデックスに適用するバックグラウンドタスクをトリガーします"
+            "description": "カタログエンティティに加えられた変更は、検索インデックスにその変更を適用するバックグラウンドタスクをトリガーします"
           }
         }
       }
@@ -1110,12 +1169,12 @@
         "IndexingJobs": {
           "IndexationDate": {
             "Product": {
-              "title": "商品インデックス作成の日時",
-              "description": "商品インデックス作成タスクが開始する日時"
+              "title": "製品のインデックス作成日と時間",
+              "description": "製品のインデックス作成タスクが開始される日付と時間"
             },
             "Category": {
-              "title": "カテゴリインデックス作成の日時",
-              "description": "カテゴリインデックス作成が開始する日時"
+              "title": "カテゴリのインデックス作成日と時間",
+              "description": "カテゴリのインデックス作成が開始される日付と時間"
             }
           }
         }
@@ -1124,14 +1183,14 @@
   },
   "module": {
     "VirtoCommerce.Catalog": {
-      "description": "バイナリチェックボックスにチェックを入れると、画像バイナリと共にカタログ、カテゴリ、製品、およびプロパティをエクスポートまたはインポートします"
+      "description": "バイナリチェックボックスをオンにすると、画像バイナリを含むカタログ、カテゴリ、製品、およびプロパティをエクスポートまたはインポート"
     }
   },
   "export": {
     "types": {
       "VirtoCommerce.CatalogModule.Core.Model.Export.ExportableProduct": {
         "name": "製品",
-        "description": "関連オブジェクトを含むカタログ製品データ。JSONとCSVをサポート"
+        "description": "関連オブジェクトを含むカタログ製品データ。JSONおよびCSVをサポート"
       },
       "VirtoCommerce.CatalogModule.Core.Model.Export.ExportableCatalogFull": {
         "name": "カタログ",
@@ -1150,20 +1209,20 @@
   "virtoCommerce.catalogBulkActionsModule": {
     "blades": {
       "hello-world": {
-        "title": "ハローワールドブレード"
+        "title": "Hello world ブレード"
       },
       "action-progress": {
-        "title": "タスクの進捗"
+        "title": "タスクの進行状況"
       }
     },
     "actions": {
       "types": {
         "CategoryChangeBulkAction": {
-          "title": "カテゴリ変更",
+          "title": "カテゴリを変更",
           "subtitle": "製品を別のカテゴリに移動"
         },
         "PropertiesUpdateBulkAction": {
-          "title": "プロパティ編集",
+          "title": "プロパティを編集",
           "subtitle": "1つ以上のプロパティを更新"
         }
       }
