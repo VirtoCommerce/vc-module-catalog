@@ -801,7 +801,7 @@
         "instruction": "Tapez 'oui' pour supprimer :",
         "item": "{{count}} Élément(s)",
         "category": "{{count}} Catégorie(s) et tout leur contenu",
-        "linked-item": "{{count}} Élément(s)",
+        "linked-item": "{{count}} Élément(s) liée(s)",
         "linked-category": "{{count}} Catégorie(s) liée(s)"
       },
       "property-delete": {
