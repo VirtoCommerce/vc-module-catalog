@@ -801,7 +801,7 @@
         "instruction": "Geben Sie 'ja' ein, um zu löschen:",
         "item": "{{count}} Artikel",
         "category": "{{count}} Kategorie(n) und alle Inhalte darin",
-        "linked-item": "{{count}} Artikel",
+        "linked-item": "{{count}} Verknüpfte Artikel",
         "linked-category": "{{count}} Verknüpfte Kategorie(n)"
       },
       "property-delete": {

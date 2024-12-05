@@ -801,7 +801,7 @@
         "instruction": "Digite 'sim' para excluir:",
         "item": "{{count}} Item(ns)",
         "category": "{{count}} Categoria(s) e qualquer conteúdo dentro",
-        "linked-item": "{{count}} Item(ns)",
+        "linked-item": "{{count}} Item(ns) vinculada(s)",
         "linked-category": "{{count}} Categoria(s) vinculada(s)"
       },
       "property-delete": {
