@@ -847,13 +847,13 @@
           "title": "Confirmar eliminación",
           "warning": "ADVERTENCIA: Este cambio es permanente y no se puede deshacer. Aplicar este cambio puede resultar en pérdida de datos",
           "message": "¿Está seguro de que desea eliminar este catálogo?",
-          "instruction": "Escriba 'sí' para eliminar:"
+          "instruction": "Escriba 'yes' para eliminar:"
         },
         "catalog-items-delete": {
           "title": "Confirmar eliminación",
           "warning": "ADVERTENCIA: Este cambio es permanente y no se puede deshacer. Aplicar este cambio puede resultar en pérdida de datos",
           "message": "Se eliminarán los siguientes datos:",
-          "instruction": "Escriba 'sí' para eliminar:",
+          "instruction": "Escriba 'yes' para eliminar:",
           "item": "{{count}} Artículo(s)",
           "category": "{{count}} Categoría(s) y cualquier contenido dentro",
           "linked-item": "{{count}} Artículo(s)",

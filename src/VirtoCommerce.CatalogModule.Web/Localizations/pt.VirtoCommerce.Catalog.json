@@ -847,13 +847,13 @@
           "title": "Confirmar exclusão",
           "warning": "AVISO: Esta alteração é permanente e não pode ser desfeita. Aplicar esta alteração pode resultar em perda de dados",
           "message": "Tem certeza de que deseja excluir este catálogo?",
-          "instruction": "Digite 'sim' para excluir:"
+          "instruction": "Digite 'yes' para excluir:"
         },
         "catalog-items-delete": {
           "title": "Confirmar exclusão",
           "warning": "AVISO: Esta alteração é permanente e não pode ser desfeita. Aplicar esta alteração pode resultar em perda de dados",
           "message": "Os seguintes dados serão excluídos:",
-          "instruction": "Digite 'sim' para excluir:",
+          "instruction": "Digite 'yes' para excluir:",
           "item": "{{count}} Item(ns)",
           "category": "{{count}} Categoria(s) e qualquer conteúdo dentro",
           "linked-item": "{{count}} Item(ns)",

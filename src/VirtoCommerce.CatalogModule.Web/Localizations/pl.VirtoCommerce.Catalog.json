@@ -847,13 +847,13 @@
           "title": "Potwierdź usunięcie",
           "warning": "OSTRZEŻENIE: Ta zmiana jest trwała i nie może zostać cofnięta. Zastosowanie tej zmiany może skutkować utratą danych",
           "message": "Czy na pewno chcesz usunąć ten katalog?",
-          "instruction": "Wpisz 'tak', aby usunąć:"
+          "instruction": "Wpisz 'yes', aby usunąć:"
         },
         "catalog-items-delete": {
           "title": "Potwierdź usunięcie",
           "warning": "OSTRZEŻENIE: Ta zmiana jest trwała i nie może zostać cofnięta. Zastosowanie tej zmiany może skutkować utratą danych",
           "message": "Następujące dane zostaną usunięte:",
-          "instruction": "Wpisz 'tak', aby usunąć:",
+          "instruction": "Wpisz 'yes', aby usunąć:",
           "item": "{{count}} Element(y)",
           "category": "{{count}} Kategoria(e) i wszelkie treści w nich zawarte",
           "linked-item": "{{count}} Element(y)",

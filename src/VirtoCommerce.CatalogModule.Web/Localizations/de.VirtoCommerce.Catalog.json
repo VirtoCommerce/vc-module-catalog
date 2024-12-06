@@ -847,13 +847,13 @@
           "title": "Löschen bestätigen",
           "warning": "WARNUNG: Diese Änderung ist dauerhaft und kann nicht rückgängig gemacht werden. Diese Änderung kann zu Datenverlust führen",
           "message": "Sind Sie sicher, dass Sie diesen Katalog löschen möchten?",
-          "instruction": "Geben Sie 'ja' ein, um zu löschen:"
+          "instruction": "Geben Sie 'yes' ein, um zu löschen:"
         },
         "catalog-items-delete": {
           "title": "Löschen bestätigen",
           "warning": "WARNUNG: Diese Änderung ist dauerhaft und kann nicht rückgängig gemacht werden. Diese Änderung kann zu Datenverlust führen",
           "message": "Die folgenden Daten werden gelöscht:",
-          "instruction": "Geben Sie 'ja' ein, um zu löschen:",
+          "instruction": "Geben Sie 'yes' ein, um zu löschen:",
           "item": "{{count}} Artikel",
           "category": "{{count}} Kategorie(n) und alle Inhalte darin",
           "linked-item": "{{count}} Verknüpfte Artikel",

@@ -847,13 +847,13 @@
           "title": "Conferma eliminazione",
           "warning": "ATTENZIONE: Questa modifica è permanente e non può essere annullata. Applicare questa modifica può comportare la perdita di dati",
           "message": "Sei sicuro di voler eliminare questo catalogo?",
-          "instruction": "Digita 'sì' per eliminare:"
+          "instruction": "Digita 'yes' per eliminare:"
         },
         "catalog-items-delete": {
           "title": "Conferma eliminazione",
           "warning": "ATTENZIONE: Questa modifica è permanente e non può essere annullata. Applicare questa modifica può comportare la perdita di dati",
           "message": "I seguenti dati verranno eliminati:",
-          "instruction": "Digita 'sì' per eliminare:",
+          "instruction": "Digita 'yes' per eliminare:",
           "item": "{{count}} Elemento(i)",
           "category": "{{count}} Categoria(e) e qualsiasi contenuto all'interno",
           "linked-item": "{{count}} Elemento(i)",
