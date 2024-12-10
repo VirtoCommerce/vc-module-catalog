@@ -801,7 +801,7 @@
         "instruction": "Digita 'sì' per eliminare:",
         "item": "{{count}} Articolo/i",
         "category": "{{count}} Categoria/e e qualsiasi contenuto al suo interno",
-        "linked-item": "{{count}} Articolo/i",
+        "linked-item": "{{count}} Articolo/i collegata/e",
         "linked-category": "{{count}} Categoria/e collegata/e"
       },
       "property-delete": {
