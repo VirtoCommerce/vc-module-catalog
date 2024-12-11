@@ -35,10 +35,10 @@
                     <li class="menu-item" ng-click='edit(contextMenuEntity)'>
                         <i class="menu-ico fa fa-edit"></i> {{'platform.commands.manage' | translate}}
                     </li>
-                    <li class="menu-item" ng-click='cut(contextMenuEntity)' va-permission="catalog:create">
+                    <li class="menu-item" ng-click='cut(contextMenuEntity)' va-permission="catalog:create" ng-if="!blade.isBrowsingLinkedCategory">
                         <i class="menu-ico fas fa-cut"></i> {{'platform.commands.cut' | translate}}
                     </li>
-                    <li class="menu-item" ng-click='delete(contextMenuEntity)' va-permission="catalog:delete">
+                    <li class="menu-item" ng-click='delete(contextMenuEntity)' va-permission="catalog:delete" ng-if="!blade.isBrowsingLinkedCategory">
                         <i class="menu-ico fas fa-trash-alt"></i> {{'platform.commands.delete' | translate}}
                     </li>
                     <li class="menu-item" ng-click='copyItemID(contextMenuEntity)' va-permission="catalog:read">

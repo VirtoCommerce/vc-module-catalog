@@ -798,7 +798,7 @@
         "instruction": "Type 'yes' to delete:",
         "item": "{{count}} Item(s)",
         "category": "{{count}} Category(ies) and any content within",
-        "linked-item": "{{count}} Item(s)",
+        "linked-item": "{{count}} Linked item(s)",
         "linked-category": "{{count}} Linked Category(ies)"
       },
       "property-delete": {
