@@ -764,342 +764,342 @@
         } 
       }
     },
-      "exporter-list": {
-        "title": "Typy eksportu",
-        "subtitle": "Wybierz dowolny z dostępnych typów eksportu poniżej"
+    "exporter-list": {
+      "title": "Typy eksportu",
+      "subtitle": "Wybierz dowolny z dostępnych typów eksportu poniżej"
+    },
+    "exporter": {
+      "productTitle": "Eksportuj produkty katalogu",
+      "productSubtitle": "Eksportuj produkty katalogu do JSON lub CSV"
+    },
+    "widgets": {
+      "catalogLanguages": {
+        "blade-subtitle": "Zarządzaj językami",
+        "title": "Języki",
+        "default-language": "Domyślny język"
       },
-      "exporter": {
-        "productTitle": "Eksportuj produkty katalogu",
-        "productSubtitle": "Eksportuj produkty katalogu do JSON lub CSV"
+      "catalogProperty": {
+        "blade-subtitle": "Właściwości katalogu",
+        "title": "Właściwości"
       },
-      "widgets": {
-        "catalogLanguages": {
-          "blade-subtitle": "Zarządzaj językami",
-          "title": "Języki",
-          "default-language": "Domyślny język"
-        },
-        "catalogProperty": {
-          "blade-subtitle": "Właściwości katalogu",
-          "title": "Właściwości"
-        },
-        "categoryProperty": {
-          "blade-subtitle": "Właściwości kategorii",
-          "title": "Właściwości"
-        },
-        "editorialReview": {
-          "blade-subtitle": "Opisy elementów",
-          "title": "Opisy"
-        },
-        "categoryDescription": {
-          "blade-subtitle": "Opisy kategorii",
-          "title": "Opis"
-        },
-        "itemAsset": {
-          "blade-subtitle": "Zasoby elementu",
-          "title": "Zasoby"
-        },
-        "itemAssociations": {
-          "blade-subtitle": "Powiązania",
-          "title": "Powiązania"
-        },
-        "itemImage": {
-          "blade-subtitle": "Zarządzaj obrazami",
-          "no-images": "Brak obrazów"
-        },
-        "itemProperty": {
-          "blade-subtitle": "Właściwości elementu",
-          "title": "Właściwości"
-        },
-        "itemVariation": {
-          "blade-subtitle": "Wariacje elementu",
-          "title": "Wariacje"
-        },
-        "itemDimensions": {
-          "title": "Waga i rozmiar",
-          "weight": "Waga",
-          "length": "Długość",
-          "width": "Szerokość",
-          "height": "Wysokość"
-        },
-        "billOfMaterials": {
-          "title": "Lista materiałów"
-        },
-        "videos": {
-          "blade-subtitle": "Filmy",
-          "title": "Filmy"
-        },
-        "links": {
-          "title": "Linki"
-        },
-        "measure-units": {
-          "title": "Jednostki"
-        },
-        "configuration": {
-          "title": "Konfiguracja"
-        }
+      "categoryProperty": {
+        "blade-subtitle": "Właściwości kategorii",
+        "title": "Właściwości"
       },
-      "dialogs": {
-        "catalog-save": {
-          "title": "Zapisz zmiany",
-          "message": "Ten katalog został zmodyfikowany. Czy chcesz zapisać zmiany?"
-        },
-        "catalog-delete": {
-          "title": "Potwierdź usunięcie",
-          "warning": "OSTRZEŻENIE: Ta zmiana jest trwała i nie może zostać cofnięta. Zastosowanie tej zmiany może skutkować utratą danych",
-          "message": "Czy na pewno chcesz usunąć ten katalog?",
-          "instruction": "Wpisz 'yes', aby usunąć:"
-        },
-        "catalog-items-delete": {
-          "title": "Potwierdź usunięcie",
-          "warning": "OSTRZEŻENIE: Ta zmiana jest trwała i nie może zostać cofnięta. Zastosowanie tej zmiany może skutkować utratą danych",
-          "message": "Następujące dane zostaną usunięte:",
-          "instruction": "Wpisz 'yes', aby usunąć:",
-          "item": "{{count}} Element(y)",
-          "category": "{{count}} Kategoria(e) i wszelkie treści w nich zawarte",
-          "linked-item": "{{count}} Element(y)",
-          "linked-category": "{{count}} Powiązana(e) kategoria(e)"
-        },
-        "property-delete": {
-          "message": "Czy na pewno chcesz usunąć właściwość {{name}}?",
-          "warning": "OSTRZEŻENIE: Ta zmiana jest trwała i nie może zostać cofnięta. Zastosowanie tej zmiany może skutkować utratą danych",
-          "msg1": "Wybierz odpowiednią opcję usunięcia. Opcje:",
-          "msg2": "Usuń tylko metadane właściwości i zachowaj wartości w powiązanych obiektach",
-          "msg3": "Usuń całkowicie wraz z wszystkimi powiązanymi wartościami",
-          "shallow": "Usuń metadane",
-          "full": "Usuń całkowicie"
-        },
-        "property-dictionary-item-delete": {
-          "message": "Czy na pewno chcesz usunąć wybrane elementy słownika?",
-          "warning": "OSTRZEŻENIE: Ta zmiana jest trwała i nie może zostać cofnięta. Zastosowanie tej zmiany może skutkować utratą danych"
-        },
-        "virtual-catalog-save": {
-          "title": "Zapisz zmiany",
-          "message": "Ten katalog wirtualny został zmodyfikowany. Czy chcesz zapisać zmiany?"
-        },
-        "category-save": {
-          "title": "Zapisz zmiany",
-          "message": "Ta kategoria została zmodyfikowana. Czy chcesz zapisać zmiany?"
-        },
-        "item-save": {
-          "title": "Zapisz zmiany",
-          "message": "Ten element został zmodyfikowany. Czy chcesz zapisać zmiany?"
-        },
-        "variation-delete": {
-          "title": "Potwierdź usunięcie",
-          "message": "Czy na pewno chcesz usunąć wybrane wariacje?"
-        },
-        "property-save": {
-          "title": "Zapisz zmiany",
-          "message": "Ta właściwość została zmodyfikowana. Czy chcesz zapisać zmiany?"
-        },
-        "item-property-delete": {
-          "message": "Czy na pewno chcesz usunąć właściwość {{name}}?"
-        },
-        "dictionary-values-delete": {
-          "title": "Potwierdź usunięcie",
-          "message": "Czy na pewno chcesz usunąć wybrane wartości słownika?"
-        },
-        "review-save": {
-          "title": "Zapisz zmiany",
-          "message": "Ten opis został zmodyfikowany. Czy chcesz zapisać zmiany?"
-        },
-        "review-delete": {
-          "title": "Potwierdź usunięcie",
-          "message": "Czy na pewno chcesz usunąć ten opis?"
-        },
-        "association-delete": {
-          "title": "Potwierdź usunięcie",
-          "message": "Czy na pewno chcesz usunąć wybrane powiązania?"
-        },
-        "attribut-delete": {
-          "title": "Potwierdź usunięcie",
-          "message": "Czy na pewno chcesz usunąć wybrane atrybuty?"
-        },
-        "image-save": {
-          "title": "Potwierdź usunięcie",
-          "message": "Te obrazy zostały zmodyfikowane. Czy chcesz zapisać zmiany?"
-        },
-        "video-save": {
-          "title": "Zapisz zmiany",
-          "message": "Ten film został zmodyfikowany. Czy chcesz zapisać zmiany?"
-        },
-        "video-delete": {
-          "title": "Potwierdź usunięcie",
-          "message": "Czy na pewno chcesz usunąć ten film?"
-        },
-        "video-list-delete": {
-          "title": "Potwierdź usunięcie",
-          "message": "Czy na pewno chcesz usunąć wybrane filmy?"
-        },
-        "asset-save": {
-          "title": "Zapisz zmiany",
-          "message": "Te zasoby zostały zmodyfikowane. Czy chcesz zapisać zmiany?"
-        },
-        "language-save": {
-          "title": "Zapisz zmiany",
-          "message": "Języki zostały zmodyfikowane. Czy chcesz zapisać zmiany?"
-        },
-        "bill-or-materials-associations-delete": {
-          "title": "Potwierdź usunięcie",
-          "message": "Czy na pewno chcesz usunąć wybrane produkty?"
-        },
-        "links-delete": {
-          "title": "Potwierdź usunięcie",
-          "message": "Czy na pewno chcesz usunąć wybrane linki?"
-        },
-        "measures-delete": {
-          "title": "Potwierdź usunięcie",
-          "message": "Czy na pewno chcesz usunąć wybrane jednostki miary?"
-        },
-        "measure-unit-save": {
-          "title": "Zapisz zmiany",
-          "message": "Ta jednostka miary została zmodyfikowana. Czy chcesz zapisać zmiany?"
-        },
-        "measure-unit-delete": {
-          "title": "Potwierdź usunięcie",
-          "message": "Czy na pewno chcesz usunąć wybraną jednostkę miary?"
-        },
-        "measure-units-delete": {
-          "title": "Potwierdź usunięcie",
-          "message": "Czy na pewno chcesz usunąć wybraną jednostkę miary?"
-        },
-        "measure-save": {
-          "title": "Zapisz zmiany",
-          "message": "Ta miara została zmodyfikowana. Czy chcesz zapisać zmiany?"
-        },
-        "configuration-save": {
-          "title": "Zapisz zmiany",
-          "message": "Ta konfiguracja została zmodyfikowana. Czy chcesz zapisać zmiany?"
-        }
+      "editorialReview": {
+        "blade-subtitle": "Opisy elementów",
+        "title": "Opisy"
       },
-      "wizards": {
-        "category": {
-          "title": "Nowa kategoria",
-          "subtitle": "Podaj informacje o kategorii",
-          "labels": {
-            "name": "Nazwa",
-            "code": "Kod"
-          },
-          "validations": {
-            "code": "Kod nie może zawierać następujących znaków: $+;=%{}[]|@~!^*&()?'<>"
-          },
-          "placeholders": {
-            "name": "Wprowadź nazwę kategorii",
-            "code": "Wprowadź kod kategorii"
-          }
-        },
-        "new-product": {
-          "title": "Nowy produkt",
-          "subtitle": "Podaj wszystkie informacje o produkcie",
-          "labels": {
-            "sku": "SKU",
-            "name": "Nazwa",
-            "fill-properties": "Podaj właściwości",
-            "fill-properties-summary": "{{ count }} z {{total}} właściwości podano",
-            "upload-images": "Prześlij obrazy",
-            "upload-images-summary": "{{ count }} obraz(y) przesłano",
-            "add-review": "Dodaj opis",
-            "add-review-summary": "{{ count }} opis(y) dodano",
-            "seo-information": "Podaj informacje SEO",
-            "seo-information-summary-defined": "Podano informacje SEO",
-            "seo-information-summary-undefined": "Nie podano informacji SEO"
-          },
-          "validations": {
-            "sku": "SKU nie może zawierać następujących znaków: $+;=%{}[]|@~!^*&()?'<>",
-            "sku-required": "Wymagane",
-            "name-required": "Wymagane"
-          },
-          "placeholders": {
-            "name": "Wprowadź nazwę przedmiotu",
-            "sku": "Wprowadź SKU przedmiotu"
-          }
-        },
-        "new-variation": {
-          "title": "Nowa wariacja",
-          "subtitle": "Podaj informacje o wariacji",
-          "labels": {
-            "sku": "SKU",
-            "name": "Nazwa",
-            "fill-properties": "Podaj właściwości",
-            "fill-properties-summary": "{{ count }} z {{total}} właściwości podano",
-            "upload-images": "Prześlij obrazy",
-            "upload-images-summary": "{{ count }} obraz(y) przesłano"
-          },
-          "validations": {
-            "sku": "SKU nie może zawierać następujących znaków: $+;=%{}[]|@~!^*&()?'<>",
-            "sku-required": "Wymagane",
-            "name-required": "Wymagane"
-          },
-          "placeholders": {
-            "name": "Wprowadź nazwę przedmiotu",
-            "sku": "Wprowadź SKU przedmiotu"
-          }
-        },
-        "item-images": {
-          "subtitle": "Obrazy przedmiotu"
-        },
-        "association": {
-          "title": "Nowe powiązanie",
-          "labels": {
-            "group-name": "Nazwa grupy",
-            "tags": "Tagi",
-            "tags-placeholder": "Wprowadź tagi",
-            "quantity": "Ilość",
-            "items": "Przedmioty",
-            "products-selected": "Wybrane produkty",
-            "categories-selected": "Wybrane kategorie"
-          },
-          "placeholders": {
-            "group-name": "Wybierz...",
-            "quantity": "Wprowadź ilość"
-          }
-        }
+      "categoryDescription": {
+        "blade-subtitle": "Opisy kategorii",
+        "title": "Opis"
       },
-      "commands": {
-        "copy-id": "Kopiuj ID",
-        "clear-all": "Wyczyść wszystko",
-        "add-property": "Dodaj właściwość",
-        "add-product-property": "Dodaj właściwość niestandardową",
-        "add-variation-property": "Dodaj właściwość niestandardową",
-        "gallery": "Galeria",
-        "map": "Mapa",
-        "open-item": "Otwórz przedmiot",
-        "default": "Ustaw jako domyślne",
-        "link": "Link",
-        "external-link": "Link zewnętrzny"
+      "itemAsset": {
+        "blade-subtitle": "Zasoby elementu",
+        "title": "Zasoby"
       },
-      "permissions": {
-        "catalog-scope": {
-          "title": "Tylko dla wybranych katalogów",
-          "blade": {
-            "subtitle": "Wybierz katalogi"
-          }
-        },
-        "category-scope": {
-          "title": "Tylko dla wybranych kategorii"
-        }
+      "itemAssociations": {
+        "blade-subtitle": "Powiązania",
+        "title": "Powiązania"
       },
-      "selectors": {
-        "titles": {
-          "catalogs": "Katalogi",
-          "categories": "Kategorie",
-          "search-in-variations": "Szukaj w wariacjach produktów",
-          "search-in-children": "Szukaj w kategoriach podrzędnych"
-        },
+      "itemImage": {
+        "blade-subtitle": "Zarządzaj obrazami",
+        "no-images": "Brak obrazów"
+      },
+      "itemProperty": {
+        "blade-subtitle": "Właściwości elementu",
+        "title": "Właściwości"
+      },
+      "itemVariation": {
+        "blade-subtitle": "Wariacje elementu",
+        "title": "Wariacje"
+      },
+      "itemDimensions": {
+        "title": "Waga i rozmiar",
+        "weight": "Waga",
+        "length": "Długość",
+        "width": "Szerokość",
+        "height": "Wysokość"
+      },
+      "billOfMaterials": {
+        "title": "Lista materiałów"
+      },
+      "videos": {
+        "blade-subtitle": "Filmy",
+        "title": "Filmy"
+      },
+      "links": {
+        "title": "Linki"
+      },
+      "measure-units": {
+        "title": "Jednostki"
+      },
+      "configuration": {
+        "title": "Konfiguracja"
+      }
+    },
+    "dialogs": {
+      "catalog-save": {
+        "title": "Zapisz zmiany",
+        "message": "Ten katalog został zmodyfikowany. Czy chcesz zapisać zmiany?"
+      },
+      "catalog-delete": {
+        "title": "Potwierdź usunięcie",
+        "warning": "OSTRZEŻENIE: Ta zmiana jest trwała i nie może zostać cofnięta. Zastosowanie tej zmiany może skutkować utratą danych",
+        "message": "Czy na pewno chcesz usunąć ten katalog?",
+        "instruction": "Wpisz 'yes', aby usunąć:"
+      },
+      "catalog-items-delete": {
+        "title": "Potwierdź usunięcie",
+        "warning": "OSTRZEŻENIE: Ta zmiana jest trwała i nie może zostać cofnięta. Zastosowanie tej zmiany może skutkować utratą danych",
+        "message": "Następujące dane zostaną usunięte:",
+        "instruction": "Wpisz 'yes', aby usunąć:",
+        "item": "{{count}} Element(y)",
+        "category": "{{count}} Kategoria(e) i wszelkie treści w nich zawarte",
+        "linked-item": "{{count}} Element(y)",
+        "linked-category": "{{count}} Powiązana(e) kategoria(e)"
+      },
+      "property-delete": {
+        "message": "Czy na pewno chcesz usunąć właściwość {{name}}?",
+        "warning": "OSTRZEŻENIE: Ta zmiana jest trwała i nie może zostać cofnięta. Zastosowanie tej zmiany może skutkować utratą danych",
+        "msg1": "Wybierz odpowiednią opcję usunięcia. Opcje:",
+        "msg2": "Usuń tylko metadane właściwości i zachowaj wartości w powiązanych obiektach",
+        "msg3": "Usuń całkowicie wraz z wszystkimi powiązanymi wartościami",
+        "shallow": "Usuń metadane",
+        "full": "Usuń całkowicie"
+      },
+      "property-dictionary-item-delete": {
+        "message": "Czy na pewno chcesz usunąć wybrane elementy słownika?",
+        "warning": "OSTRZEŻENIE: Ta zmiana jest trwała i nie może zostać cofnięta. Zastosowanie tej zmiany może skutkować utratą danych"
+      },
+      "virtual-catalog-save": {
+        "title": "Zapisz zmiany",
+        "message": "Ten katalog wirtualny został zmodyfikowany. Czy chcesz zapisać zmiany?"
+      },
+      "category-save": {
+        "title": "Zapisz zmiany",
+        "message": "Ta kategoria została zmodyfikowana. Czy chcesz zapisać zmiany?"
+      },
+      "item-save": {
+        "title": "Zapisz zmiany",
+        "message": "Ten element został zmodyfikowany. Czy chcesz zapisać zmiany?"
+      },
+      "variation-delete": {
+        "title": "Potwierdź usunięcie",
+        "message": "Czy na pewno chcesz usunąć wybrane wariacje?"
+      },
+      "property-save": {
+        "title": "Zapisz zmiany",
+        "message": "Ta właściwość została zmodyfikowana. Czy chcesz zapisać zmiany?"
+      },
+      "item-property-delete": {
+        "message": "Czy na pewno chcesz usunąć właściwość {{name}}?"
+      },
+      "dictionary-values-delete": {
+        "title": "Potwierdź usunięcie",
+        "message": "Czy na pewno chcesz usunąć wybrane wartości słownika?"
+      },
+      "review-save": {
+        "title": "Zapisz zmiany",
+        "message": "Ten opis został zmodyfikowany. Czy chcesz zapisać zmiany?"
+      },
+      "review-delete": {
+        "title": "Potwierdź usunięcie",
+        "message": "Czy na pewno chcesz usunąć ten opis?"
+      },
+      "association-delete": {
+        "title": "Potwierdź usunięcie",
+        "message": "Czy na pewno chcesz usunąć wybrane powiązania?"
+      },
+      "attribut-delete": {
+        "title": "Potwierdź usunięcie",
+        "message": "Czy na pewno chcesz usunąć wybrane atrybuty?"
+      },
+      "image-save": {
+        "title": "Potwierdź usunięcie",
+        "message": "Te obrazy zostały zmodyfikowane. Czy chcesz zapisać zmiany?"
+      },
+      "video-save": {
+        "title": "Zapisz zmiany",
+        "message": "Ten film został zmodyfikowany. Czy chcesz zapisać zmiany?"
+      },
+      "video-delete": {
+        "title": "Potwierdź usunięcie",
+        "message": "Czy na pewno chcesz usunąć ten film?"
+      },
+      "video-list-delete": {
+        "title": "Potwierdź usunięcie",
+        "message": "Czy na pewno chcesz usunąć wybrane filmy?"
+      },
+      "asset-save": {
+        "title": "Zapisz zmiany",
+        "message": "Te zasoby zostały zmodyfikowane. Czy chcesz zapisać zmiany?"
+      },
+      "language-save": {
+        "title": "Zapisz zmiany",
+        "message": "Języki zostały zmodyfikowane. Czy chcesz zapisać zmiany?"
+      },
+      "bill-or-materials-associations-delete": {
+        "title": "Potwierdź usunięcie",
+        "message": "Czy na pewno chcesz usunąć wybrane produkty?"
+      },
+      "links-delete": {
+        "title": "Potwierdź usunięcie",
+        "message": "Czy na pewno chcesz usunąć wybrane linki?"
+      },
+      "measures-delete": {
+        "title": "Potwierdź usunięcie",
+        "message": "Czy na pewno chcesz usunąć wybrane jednostki miary?"
+      },
+      "measure-unit-save": {
+        "title": "Zapisz zmiany",
+        "message": "Ta jednostka miary została zmodyfikowana. Czy chcesz zapisać zmiany?"
+      },
+      "measure-unit-delete": {
+        "title": "Potwierdź usunięcie",
+        "message": "Czy na pewno chcesz usunąć wybraną jednostkę miary?"
+      },
+      "measure-units-delete": {
+        "title": "Potwierdź usunięcie",
+        "message": "Czy na pewno chcesz usunąć wybraną jednostkę miary?"
+      },
+      "measure-save": {
+        "title": "Zapisz zmiany",
+        "message": "Ta miara została zmodyfikowana. Czy chcesz zapisać zmiany?"
+      },
+      "configuration-save": {
+        "title": "Zapisz zmiany",
+        "message": "Ta konfiguracja została zmodyfikowana. Czy chcesz zapisać zmiany?"
+      }
+    },
+    "wizards": {
+      "category": {
+        "title": "Nowa kategoria",
+        "subtitle": "Podaj informacje o kategorii",
         "labels": {
-          "select": "Wybierz",
-          "selected": "Wybrane: "
+          "name": "Nazwa",
+          "code": "Kod"
+        },
+        "validations": {
+          "code": "Kod nie może zawierać następujących znaków: $+;=%{}[]|@~!^*&()?'<>"
         },
         "placeholders": {
-          "catalog-lists": "Wybierz katalog"
+          "name": "Wprowadź nazwę kategorii",
+          "code": "Wprowadź kod kategorii"
+        }
+      },
+      "new-product": {
+        "title": "Nowy produkt",
+        "subtitle": "Podaj wszystkie informacje o produkcie",
+        "labels": {
+          "sku": "SKU",
+          "name": "Nazwa",
+          "fill-properties": "Podaj właściwości",
+          "fill-properties-summary": "{{ count }} z {{total}} właściwości podano",
+          "upload-images": "Prześlij obrazy",
+          "upload-images-summary": "{{ count }} obraz(y) przesłano",
+          "add-review": "Dodaj opis",
+          "add-review-summary": "{{ count }} opis(y) dodano",
+          "seo-information": "Podaj informacje SEO",
+          "seo-information-summary-defined": "Podano informacje SEO",
+          "seo-information-summary-undefined": "Nie podano informacji SEO"
         },
-        "blades": {
-          "titles": {
-            "select-categories": "Wybierz kategorie"
-          }
+        "validations": {
+          "sku": "SKU nie może zawierać następujących znaków: $+;=%{}[]|@~!^*&()?'<>",
+          "sku-required": "Wymagane",
+          "name-required": "Wymagane"
+        },
+        "placeholders": {
+          "name": "Wprowadź nazwę przedmiotu",
+          "sku": "Wprowadź SKU przedmiotu"
+        }
+      },
+      "new-variation": {
+        "title": "Nowa wariacja",
+        "subtitle": "Podaj informacje o wariacji",
+        "labels": {
+          "sku": "SKU",
+          "name": "Nazwa",
+          "fill-properties": "Podaj właściwości",
+          "fill-properties-summary": "{{ count }} z {{total}} właściwości podano",
+          "upload-images": "Prześlij obrazy",
+          "upload-images-summary": "{{ count }} obraz(y) przesłano"
+        },
+        "validations": {
+          "sku": "SKU nie może zawierać następujących znaków: $+;=%{}[]|@~!^*&()?'<>",
+          "sku-required": "Wymagane",
+          "name-required": "Wymagane"
+        },
+        "placeholders": {
+          "name": "Wprowadź nazwę przedmiotu",
+          "sku": "Wprowadź SKU przedmiotu"
+        }
+      },
+      "item-images": {
+        "subtitle": "Obrazy przedmiotu"
+      },
+      "association": {
+        "title": "Nowe powiązanie",
+        "labels": {
+          "group-name": "Nazwa grupy",
+          "tags": "Tagi",
+          "tags-placeholder": "Wprowadź tagi",
+          "quantity": "Ilość",
+          "items": "Przedmioty",
+          "products-selected": "Wybrane produkty",
+          "categories-selected": "Wybrane kategorie"
+        },
+        "placeholders": {
+          "group-name": "Wybierz...",
+          "quantity": "Wprowadź ilość"
         }
       }
     },
+    "commands": {
+      "copy-id": "Kopiuj ID",
+      "clear-all": "Wyczyść wszystko",
+      "add-property": "Dodaj właściwość",
+      "add-product-property": "Dodaj właściwość niestandardową",
+      "add-variation-property": "Dodaj właściwość niestandardową",
+      "gallery": "Galeria",
+      "map": "Mapa",
+      "open-item": "Otwórz przedmiot",
+      "default": "Ustaw jako domyślne",
+      "link": "Link",
+      "external-link": "Link zewnętrzny"
+    },
+    "permissions": {
+      "catalog-scope": {
+        "title": "Tylko dla wybranych katalogów",
+        "blade": {
+          "subtitle": "Wybierz katalogi"
+        }
+      },
+      "category-scope": {
+        "title": "Tylko dla wybranych kategorii"
+      }
+    },
+    "selectors": {
+      "titles": {
+        "catalogs": "Katalogi",
+        "categories": "Kategorie",
+        "search-in-variations": "Szukaj w wariacjach produktów",
+        "search-in-children": "Szukaj w kategoriach podrzędnych"
+      },
+      "labels": {
+        "select": "Wybierz",
+        "selected": "Wybrane: "
+      },
+      "placeholders": {
+        "catalog-lists": "Wybierz katalog"
+      },
+      "blades": {
+        "titles": {
+          "select-categories": "Wybierz kategorie"
+        }
+      }
+    }
+  },
   "permissions": {
     "catalog:access": "Otwórz menu katalogu",
     "catalog:create": "Utwórz dane związane z katalogiem",

@@ -764,342 +764,342 @@
         } 
       }
     },
-      "exporter-list": {
-        "title": "导出类型",
-        "subtitle": "选择以下任何可用的导出类型"
+    "exporter-list": {
+      "title": "导出类型",
+      "subtitle": "选择以下任何可用的导出类型"
+    },
+    "exporter": {
+      "productTitle": "导出目录产品",
+      "productSubtitle": "将目录产品导出为 JSON 或 CSV"
+    },
+    "widgets": {
+      "catalogLanguages": {
+        "blade-subtitle": "管理语言",
+        "title": "语言",
+        "default-language": "默认语言"
       },
-      "exporter": {
-        "productTitle": "导出目录产品",
-        "productSubtitle": "将目录产品导出为 JSON 或 CSV"
+      "catalogProperty": {
+        "blade-subtitle": "目录属性",
+        "title": "属性"
       },
-      "widgets": {
-        "catalogLanguages": {
-          "blade-subtitle": "管理语言",
-          "title": "语言",
-          "default-language": "默认语言"
-        },
-        "catalogProperty": {
-          "blade-subtitle": "目录属性",
-          "title": "属性"
-        },
-        "categoryProperty": {
-          "blade-subtitle": "类别属性",
-          "title": "属性"
-        },
-        "editorialReview": {
-          "blade-subtitle": "项目描述",
-          "title": "描述"
-        },
-        "categoryDescription": {
-          "blade-subtitle": "类别描述",
-          "title": "描述"
-        },
-        "itemAsset": {
-          "blade-subtitle": "项目资产",
-          "title": "资产"
-        },
-        "itemAssociations": {
-          "blade-subtitle": "关联",
-          "title": "关联"
-        },
-        "itemImage": {
-          "blade-subtitle": "管理图片",
-          "no-images": "无图片"
-        },
-        "itemProperty": {
-          "blade-subtitle": "项目属性",
-          "title": "属性"
-        },
-        "itemVariation": {
-          "blade-subtitle": "项目变体",
-          "title": "变体"
-        },
-        "itemDimensions": {
-          "title": "重量和尺寸",
-          "weight": "重量",
-          "length": "长度",
-          "width": "宽度",
-          "height": "高度"
-        },
-        "billOfMaterials": {
-          "title": "物料清单"
-        },
-        "videos": {
-          "blade-subtitle": "视频",
-          "title": "视频"
-        },
-        "links": {
-          "title": "链接"
-        },
-        "measure-units": {
-          "title": "单位"
-        },
-        "configuration": {
-          "title": "配置"
-        }
+      "categoryProperty": {
+        "blade-subtitle": "类别属性",
+        "title": "属性"
       },
-      "dialogs": {
-        "catalog-save": {
-          "title": "保存更改",
-          "message": "此目录已被修改。您要保存更改吗？"
-        },
-        "catalog-delete": {
-          "title": "确认删除",
-          "warning": "警告：此更改是永久性的，无法撤销。应用此更改可能会导致数据丢失",
-          "message": "您确定要删除此目录吗？",
-          "instruction": "输入 'yes' 以删除："
-        },
-        "catalog-items-delete": {
-          "title": "确认删除",
-          "warning": "警告：此更改是永久性的，无法撤销。应用此更改可能会导致数据丢失",
-          "message": "以下数据将被删除：",
-          "instruction": "输入 'yes' 以删除：",
-          "item": "{{count}} 项目",
-          "category": "{{count}} 类别及其内容",
-          "linked-item": "{{count}} 项目",
-          "linked-category": "{{count}} 关联类别"
-        },
-        "property-delete": {
-          "message": "您确定要删除 {{name}} 属性吗？",
-          "warning": "警告：此更改是永久性的，无法撤销。应用此更改可能会导致数据丢失",
-          "msg1": "选择适当的删除选项。选项：",
-          "msg2": "仅删除属性元数据并保留相关对象中的值",
-          "msg3": "完全删除及其所有相关值",
-          "shallow": "删除元数据",
-          "full": "完全删除"
-        },
-        "property-dictionary-item-delete": {
-          "message": "您确定要删除所选字典项吗？",
-          "warning": "警告：此更改是永久性的，无法撤销。应用此更改可能会导致数据丢失"
-        },
-        "virtual-catalog-save": {
-          "title": "保存更改",
-          "message": "此虚拟目录已被修改。您要保存更改吗？"
-        },
-        "category-save": {
-          "title": "保存更改",
-          "message": "此类别已被修改。您要保存更改吗？"
-        },
-        "item-save": {
-          "title": "保存更改",
-          "message": "此项目已被修改。您要保存更改吗？"
-        },
-        "variation-delete": {
-          "title": "确认删除",
-          "message": "您确定要删除所选变体吗？"
-        },
-        "property-save": {
-          "title": "保存更改",
-          "message": "此属性已被修改。您要保存更改吗？"
-        },
-        "item-property-delete": {
-          "message": "您确定要删除 {{name}} 属性吗？"
-        },
-        "dictionary-values-delete": {
-          "title": "确认删除",
-          "message": "您确定要删除所选字典值吗？"
-        },
-        "review-save": {
-          "title": "保存更改",
-          "message": "此描述已被修改。您要保存更改吗？"
-        },
-        "review-delete": {
-          "title": "确认删除",
-          "message": "您确定要删除此描述吗？"
-        },
-        "association-delete": {
-          "title": "确认删除",
-          "message": "您确定要删除所选关联吗？"
-        },
-        "attribut-delete": {
-          "title": "确认删除",
-          "message": "您确定要删除所选属性吗？"
-        },
-        "image-save": {
-          "title": "确认删除",
-          "message": "这些图片已被修改。您要保存更改吗？"
-        },
-        "video-save": {
-          "title": "保存更改",
-          "message": "此视频已被修改。您要保存更改吗？"
-        },
-        "video-delete": {
-          "title": "确认删除",
-          "message": "您确定要删除此视频吗？"
-        },
-        "video-list-delete": {
-          "title": "确认删除",
-          "message": "您确定要删除所选视频吗？"
-        },
-        "asset-save": {
-          "title": "保存更改",
-          "message": "这些资产已被修改。您要保存更改吗？"
-        },
-        "language-save": {
-          "title": "保存更改",
-          "message": "语言已被修改。您要保存更改吗？"
-        },
-        "bill-or-materials-associations-delete": {
-          "title": "确认删除",
-          "message": "您确定要删除所选产品吗？"
-        },
-        "links-delete": {
-          "title": "确认删除",
-          "message": "您确定要删除所选链接吗？"
-        },
-        "measures-delete": {
-          "title": "确认删除",
-          "message": "您确定要删除所选计量单位吗？"
-        },
-        "measure-unit-save": {
-          "title": "保存更改",
-          "message": "此计量单位已被修改。您要保存更改吗？"
-        },
-        "measure-unit-delete": {
-          "title": "确认删除",
-          "message": "您确定要删除所选计量单位吗？"
-        },
-        "measure-units-delete": {
-          "title": "确认删除",
-          "message": "您确定要删除所选计量单位吗？"
-        },
-        "measure-save": {
-          "title": "保存更改",
-          "message": "此计量单位已被修改。您要保存更改吗？"
-        },
-        "configuration-save": {
-          "title": "保存更改",
-          "message": "此配置已被修改。您要保存更改吗？"
-        }
+      "editorialReview": {
+        "blade-subtitle": "项目描述",
+        "title": "描述"
       },
-      "wizards": {
-        "category": {
-          "title": "新类别",
-          "subtitle": "提供类别信息",
-          "labels": {
-            "name": "名称",
-            "code": "代码"
-          },
-          "validations": {
-            "code": "代码不能包含以下字符：$+;=%{}[]|@~!^*&()?'<>"
-          },
-          "placeholders": {
-            "name": "输入类别名称",
-            "code": "输入类别代码"
-          }
-        },
-        "new-product": {
-          "title": "新产品",
-          "subtitle": "提供所有产品信息",
-          "labels": {
-            "sku": "SKU",
-            "name": "名称",
-            "fill-properties": "提供属性",
-            "fill-properties-summary": "已提供 {{ count }} 个属性，共 {{total}} 个",
-            "upload-images": "上传图片",
-            "upload-images-summary": "已上传 {{ count }} 张图片",
-            "add-review": "添加描述",
-            "add-review-summary": "已添加 {{ count }} 个描述",
-            "seo-information": "提供 SEO 信息",
-            "seo-information-summary-defined": "已提供 SEO 信息",
-            "seo-information-summary-undefined": "未提供 SEO 信息"
-          },
-          "validations": {
-            "sku": "SKU 不能包含以下字符：$+;=%{}[]|@~!^*&()?'<>",
-            "sku-required": "必填",
-            "name-required": "必填"
-          },
-          "placeholders": {
-            "name": "输入项目名称",
-            "sku": "输入项目 SKU"
-          }
-        },
-        "new-variation": {
-          "title": "新变体",
-          "subtitle": "提供变体信息",
-          "labels": {
-            "sku": "SKU",
-            "name": "名称",
-            "fill-properties": "提供属性",
-            "fill-properties-summary": "已提供 {{ count }} 个属性，共 {{total}} 个",
-            "upload-images": "上传图片",
-            "upload-images-summary": "已上传 {{ count }} 张图片"
-          },
-          "validations": {
-            "sku": "SKU 不能包含以下字符：$+;=%{}[]|@~!^*&()?'<>",
-            "sku-required": "必填",
-            "name-required": "必填"
-          },
-          "placeholders": {
-            "name": "输入项目名称",
-            "sku": "输入项目 SKU"
-          }
-        },
-        "item-images": {
-          "subtitle": "项目图片"
-        },
-        "association": {
-          "title": "新关联",
-          "labels": {
-            "group-name": "组名",
-            "tags": "标签",
-            "tags-placeholder": "输入标签",
-            "quantity": "数量",
-            "items": "项目",
-            "products-selected": "已选择产品",
-            "categories-selected": "已选择类别"
-          },
-          "placeholders": {
-            "group-name": "选择...",
-            "quantity": "输入数量"
-          }
-        }
+      "categoryDescription": {
+        "blade-subtitle": "类别描述",
+        "title": "描述"
       },
-      "commands": {
-        "copy-id": "复制 ID",
-        "clear-all": "清除所有",
-        "add-property": "添加属性",
-        "add-product-property": "添加自定义属性",
-        "add-variation-property": "添加自定义属性",
-        "gallery": "画廊",
-        "map": "地图",
-        "open-item": "打开项目",
-        "default": "设为默认",
-        "link": "链接",
-        "external-link": "外部链接"
+      "itemAsset": {
+        "blade-subtitle": "项目资产",
+        "title": "资产"
       },
-      "permissions": {
-        "catalog-scope": {
-          "title": "仅适用于所选目录",
-          "blade": {
-            "subtitle": "选择目录"
-          }
-        },
-        "category-scope": {
-          "title": "仅适用于所选类别"
-        }
+      "itemAssociations": {
+        "blade-subtitle": "关联",
+        "title": "关联"
       },
-      "selectors": {
-        "titles": {
-          "catalogs": "目录",
-          "categories": "类别",
-          "search-in-variations": "在产品变体中搜索",
-          "search-in-children": "在子类别中搜索"
-        },
+      "itemImage": {
+        "blade-subtitle": "管理图片",
+        "no-images": "无图片"
+      },
+      "itemProperty": {
+        "blade-subtitle": "项目属性",
+        "title": "属性"
+      },
+      "itemVariation": {
+        "blade-subtitle": "项目变体",
+        "title": "变体"
+      },
+      "itemDimensions": {
+        "title": "重量和尺寸",
+        "weight": "重量",
+        "length": "长度",
+        "width": "宽度",
+        "height": "高度"
+      },
+      "billOfMaterials": {
+        "title": "物料清单"
+      },
+      "videos": {
+        "blade-subtitle": "视频",
+        "title": "视频"
+      },
+      "links": {
+        "title": "链接"
+      },
+      "measure-units": {
+        "title": "单位"
+      },
+      "configuration": {
+        "title": "配置"
+      }
+    },
+    "dialogs": {
+      "catalog-save": {
+        "title": "保存更改",
+        "message": "此目录已被修改。您要保存更改吗？"
+      },
+      "catalog-delete": {
+        "title": "确认删除",
+        "warning": "警告：此更改是永久性的，无法撤销。应用此更改可能会导致数据丢失",
+        "message": "您确定要删除此目录吗？",
+        "instruction": "输入 'yes' 以删除："
+      },
+      "catalog-items-delete": {
+        "title": "确认删除",
+        "warning": "警告：此更改是永久性的，无法撤销。应用此更改可能会导致数据丢失",
+        "message": "以下数据将被删除：",
+        "instruction": "输入 'yes' 以删除：",
+        "item": "{{count}} 项目",
+        "category": "{{count}} 类别及其内容",
+        "linked-item": "{{count}} 项目",
+        "linked-category": "{{count}} 关联类别"
+      },
+      "property-delete": {
+        "message": "您确定要删除 {{name}} 属性吗？",
+        "warning": "警告：此更改是永久性的，无法撤销。应用此更改可能会导致数据丢失",
+        "msg1": "选择适当的删除选项。选项：",
+        "msg2": "仅删除属性元数据并保留相关对象中的值",
+        "msg3": "完全删除及其所有相关值",
+        "shallow": "删除元数据",
+        "full": "完全删除"
+      },
+      "property-dictionary-item-delete": {
+        "message": "您确定要删除所选字典项吗？",
+        "warning": "警告：此更改是永久性的，无法撤销。应用此更改可能会导致数据丢失"
+      },
+      "virtual-catalog-save": {
+        "title": "保存更改",
+        "message": "此虚拟目录已被修改。您要保存更改吗？"
+      },
+      "category-save": {
+        "title": "保存更改",
+        "message": "此类别已被修改。您要保存更改吗？"
+      },
+      "item-save": {
+        "title": "保存更改",
+        "message": "此项目已被修改。您要保存更改吗？"
+      },
+      "variation-delete": {
+        "title": "确认删除",
+        "message": "您确定要删除所选变体吗？"
+      },
+      "property-save": {
+        "title": "保存更改",
+        "message": "此属性已被修改。您要保存更改吗？"
+      },
+      "item-property-delete": {
+        "message": "您确定要删除 {{name}} 属性吗？"
+      },
+      "dictionary-values-delete": {
+        "title": "确认删除",
+        "message": "您确定要删除所选字典值吗？"
+      },
+      "review-save": {
+        "title": "保存更改",
+        "message": "此描述已被修改。您要保存更改吗？"
+      },
+      "review-delete": {
+        "title": "确认删除",
+        "message": "您确定要删除此描述吗？"
+      },
+      "association-delete": {
+        "title": "确认删除",
+        "message": "您确定要删除所选关联吗？"
+      },
+      "attribut-delete": {
+        "title": "确认删除",
+        "message": "您确定要删除所选属性吗？"
+      },
+      "image-save": {
+        "title": "确认删除",
+        "message": "这些图片已被修改。您要保存更改吗？"
+      },
+      "video-save": {
+        "title": "保存更改",
+        "message": "此视频已被修改。您要保存更改吗？"
+      },
+      "video-delete": {
+        "title": "确认删除",
+        "message": "您确定要删除此视频吗？"
+      },
+      "video-list-delete": {
+        "title": "确认删除",
+        "message": "您确定要删除所选视频吗？"
+      },
+      "asset-save": {
+        "title": "保存更改",
+        "message": "这些资产已被修改。您要保存更改吗？"
+      },
+      "language-save": {
+        "title": "保存更改",
+        "message": "语言已被修改。您要保存更改吗？"
+      },
+      "bill-or-materials-associations-delete": {
+        "title": "确认删除",
+        "message": "您确定要删除所选产品吗？"
+      },
+      "links-delete": {
+        "title": "确认删除",
+        "message": "您确定要删除所选链接吗？"
+      },
+      "measures-delete": {
+        "title": "确认删除",
+        "message": "您确定要删除所选计量单位吗？"
+      },
+      "measure-unit-save": {
+        "title": "保存更改",
+        "message": "此计量单位已被修改。您要保存更改吗？"
+      },
+      "measure-unit-delete": {
+        "title": "确认删除",
+        "message": "您确定要删除所选计量单位吗？"
+      },
+      "measure-units-delete": {
+        "title": "确认删除",
+        "message": "您确定要删除所选计量单位吗？"
+      },
+      "measure-save": {
+        "title": "保存更改",
+        "message": "此计量单位已被修改。您要保存更改吗？"
+      },
+      "configuration-save": {
+        "title": "保存更改",
+        "message": "此配置已被修改。您要保存更改吗？"
+      }
+    },
+    "wizards": {
+      "category": {
+        "title": "新类别",
+        "subtitle": "提供类别信息",
         "labels": {
-          "select": "选择",
-          "selected": "已选择: "
+          "name": "名称",
+          "code": "代码"
+        },
+        "validations": {
+          "code": "代码不能包含以下字符：$+;=%{}[]|@~!^*&()?'<>"
         },
         "placeholders": {
-          "catalog-lists": "选择目录"
+          "name": "输入类别名称",
+          "code": "输入类别代码"
+        }
+      },
+      "new-product": {
+        "title": "新产品",
+        "subtitle": "提供所有产品信息",
+        "labels": {
+          "sku": "SKU",
+          "name": "名称",
+          "fill-properties": "提供属性",
+          "fill-properties-summary": "已提供 {{ count }} 个属性，共 {{total}} 个",
+          "upload-images": "上传图片",
+          "upload-images-summary": "已上传 {{ count }} 张图片",
+          "add-review": "添加描述",
+          "add-review-summary": "已添加 {{ count }} 个描述",
+          "seo-information": "提供 SEO 信息",
+          "seo-information-summary-defined": "已提供 SEO 信息",
+          "seo-information-summary-undefined": "未提供 SEO 信息"
         },
-        "blades": {
-          "titles": {
-            "select-categories": "选择类别"
-          }
+        "validations": {
+          "sku": "SKU 不能包含以下字符：$+;=%{}[]|@~!^*&()?'<>",
+          "sku-required": "必填",
+          "name-required": "必填"
+        },
+        "placeholders": {
+          "name": "输入项目名称",
+          "sku": "输入项目 SKU"
+        }
+      },
+      "new-variation": {
+        "title": "新变体",
+        "subtitle": "提供变体信息",
+        "labels": {
+          "sku": "SKU",
+          "name": "名称",
+          "fill-properties": "提供属性",
+          "fill-properties-summary": "已提供 {{ count }} 个属性，共 {{total}} 个",
+          "upload-images": "上传图片",
+          "upload-images-summary": "已上传 {{ count }} 张图片"
+        },
+        "validations": {
+          "sku": "SKU 不能包含以下字符：$+;=%{}[]|@~!^*&()?'<>",
+          "sku-required": "必填",
+          "name-required": "必填"
+        },
+        "placeholders": {
+          "name": "输入项目名称",
+          "sku": "输入项目 SKU"
+        }
+      },
+      "item-images": {
+        "subtitle": "项目图片"
+      },
+      "association": {
+        "title": "新关联",
+        "labels": {
+          "group-name": "组名",
+          "tags": "标签",
+          "tags-placeholder": "输入标签",
+          "quantity": "数量",
+          "items": "项目",
+          "products-selected": "已选择产品",
+          "categories-selected": "已选择类别"
+        },
+        "placeholders": {
+          "group-name": "选择...",
+          "quantity": "输入数量"
         }
       }
     },
+    "commands": {
+      "copy-id": "复制 ID",
+      "clear-all": "清除所有",
+      "add-property": "添加属性",
+      "add-product-property": "添加自定义属性",
+      "add-variation-property": "添加自定义属性",
+      "gallery": "画廊",
+      "map": "地图",
+      "open-item": "打开项目",
+      "default": "设为默认",
+      "link": "链接",
+      "external-link": "外部链接"
+    },
+    "permissions": {
+      "catalog-scope": {
+        "title": "仅适用于所选目录",
+        "blade": {
+          "subtitle": "选择目录"
+        }
+      },
+      "category-scope": {
+        "title": "仅适用于所选类别"
+      }
+    },
+    "selectors": {
+      "titles": {
+        "catalogs": "目录",
+        "categories": "类别",
+        "search-in-variations": "在产品变体中搜索",
+        "search-in-children": "在子类别中搜索"
+      },
+      "labels": {
+        "select": "选择",
+        "selected": "已选择: "
+      },
+      "placeholders": {
+        "catalog-lists": "选择目录"
+      },
+      "blades": {
+        "titles": {
+          "select-categories": "选择类别"
+        }
+      }
+    }
+  },
   "permissions": {
     "catalog:access": "打开目录菜单",
     "catalog:create": "创建目录相关数据",
