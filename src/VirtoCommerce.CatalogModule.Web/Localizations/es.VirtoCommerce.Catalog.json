@@ -856,7 +856,7 @@
         "instruction": "Escriba 'yes' para eliminar:",
         "item": "{{count}} Artículo(s)",
         "category": "{{count}} Categoría(s) y cualquier contenido dentro",
-        "linked-item": "{{count}} Artículo(s)",
+        "linked-item": "{{count}} Artículo(s) vinculado(s)",
         "linked-category": "{{count}} Categoría(s) vinculada(s)"
       },
       "property-delete": {

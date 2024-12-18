@@ -854,10 +854,10 @@
         "warning": "ATTENZIONE: Questa modifica è permanente e non può essere annullata. Applicare questa modifica può comportare la perdita di dati",
         "message": "I seguenti dati verranno eliminati:",
         "instruction": "Digita 'yes' per eliminare:",
-        "item": "{{count}} Elemento(i)",
-        "category": "{{count}} Categoria(e) e qualsiasi contenuto all'interno",
-        "linked-item": "{{count}} Elemento(i)",
-        "linked-category": "{{count}} Categoria(e) collegata(e)"
+        "item": "{{count}} Articolo/i",
+        "category": "{{count}} Categoria/e e qualsiasi contenuto al suo interno",
+        "linked-item": "{{count}} Articolo/i collegata/e",
+        "linked-category": "{{count}} Categoria/e collegata/e"
       },
       "property-delete": {
         "message": "Sei sicuro di voler eliminare la proprietà {{name}}?",

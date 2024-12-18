@@ -854,9 +854,9 @@
         "warning": "AVERTISSEMENT : Ce changement est permanent et ne peut pas être annulé. L'application de ce changement peut entraîner une perte de données",
         "message": "Les données suivantes seront supprimées :",
         "instruction": "Tapez 'yes' pour supprimer :",
-        "item": "{{count}} Article(s)",
-        "category": "{{count}} Catégorie(s) et tout contenu à l'intérieur",
-        "linked-item": "{{count}} Article(s)",
+        "item": "{{count}} Élément(s)",
+        "category": "{{count}} Catégorie(s) et tout leur contenu",
+        "linked-item": "{{count}} Élément(s) liée(s)",
         "linked-category": "{{count}} Catégorie(s) liée(s)"
       },
       "property-delete": {
