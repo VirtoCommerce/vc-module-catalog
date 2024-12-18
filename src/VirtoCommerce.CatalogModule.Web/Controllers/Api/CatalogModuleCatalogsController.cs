@@ -13,6 +13,7 @@ using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Authorization;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.Settings;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
@@ -23,16 +24,19 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly ICatalogService _catalogService;
         private readonly ICatalogSearchService _catalogSearchService;
         private readonly IAuthorizationService _authorizationService;
+        private readonly ILocalizableSettingService _localizableSettingService;
 
         public CatalogModuleCatalogsController(
-            ICatalogService catalogService
-            , ICatalogSearchService catalogSearchService
-            , IAuthorizationService authorizationService
+            ICatalogService catalogService,
+            ICatalogSearchService catalogSearchService,
+            IAuthorizationService authorizationService,
+            ILocalizableSettingService localizableSettingService
             )
         {
             _catalogService = catalogService;
             _catalogSearchService = catalogSearchService;
             _authorizationService = authorizationService;
+            _localizableSettingService = localizableSettingService;
         }
 
         /// <summary>
@@ -156,6 +160,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             {
                 var defaultLanguage = catalog?.Languages.First(x => x.IsDefault).LanguageCode;
                 var seoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
+                var title = await _localizableSettingService.GetValuesAsync("catalog.main-menu-title", defaultLanguage);
                 seoInfo.LanguageCode = defaultLanguage;
                 seoInfo.SemanticUrl = "catalog";
                 catalog.SeoInfos = [seoInfo];
