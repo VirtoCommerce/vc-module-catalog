@@ -35,10 +35,10 @@
                     <li class="menu-item" ng-click='edit(contextMenuEntity)'>
                         <i class="menu-ico fa fa-edit"></i> {{'platform.commands.manage' | translate}}
                     </li>
-                    <li class="menu-item" ng-click='cut(contextMenuEntity)' va-permission="catalog:create">
+                    <li class="menu-item" ng-click='cut(contextMenuEntity)' va-permission="catalog:create" ng-if="!blade.isBrowsingLinkedCategory">
                         <i class="menu-ico fas fa-cut"></i> {{'platform.commands.cut' | translate}}
                     </li>
-                    <li class="menu-item" ng-click='delete(contextMenuEntity)' va-permission="catalog:delete">
+                    <li class="menu-item" ng-click='delete(contextMenuEntity)' va-permission="catalog:delete" ng-if="!blade.isBrowsingLinkedCategory">
                         <i class="menu-ico fas fa-trash-alt"></i> {{'platform.commands.delete' | translate}}
                     </li>
                     <li class="menu-item" ng-click='copyItemID(contextMenuEntity)' va-permission="catalog:read">
@@ -70,7 +70,7 @@
 <script type="text/ng-template" id="item-list-name.cell.html">
     <div class="ui-grid-cell-contents">
         <div class="inner-contents">
-            <i class="table-ico fas fa-link" ng-if="grid.appScope.hasLinks(row.entity)" title="It's mapped to this virtual location"></i>
+            <i class="table-ico fas fa-link" ng-if="grid.appScope.hasLinks(row.entity)" title="{{ 'catalog.blades.categories-items-list.descr.title-mapping' | translate }}"></i>
             <div class="table-t">{{COL_FIELD}}</div>
             <span class="table-status" ng-if="row.entity.type==='category' && !row.entity.isActive">{{ 'catalog.blades.categories-items-list.labels.hidden' | translate }}</span>
             <div class="table-descr" ng-if="row.entity.productType">{{ 'catalog.product-types.' + row.entity.productType | translate }}</div>

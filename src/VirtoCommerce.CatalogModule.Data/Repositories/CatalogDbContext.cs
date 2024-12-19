@@ -282,11 +282,33 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
             #endregion
 
+            #region ProductConfiguration
+
+            modelBuilder.Entity<ProductConfigurationEntity>().ToTable("ProductConfiguration").HasKey(x => x.Id);
+            modelBuilder.Entity<ProductConfigurationEntity>().Property(x => x.Id).HasMaxLength(128).ValueGeneratedOnAdd();
+            modelBuilder.Entity<ProductConfigurationEntity>().HasOne(x => x.Product).WithOne()
+                .HasForeignKey<ProductConfigurationEntity>(x => x.ProductId).IsRequired().OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ProductConfigurationSectionEntity>().ToTable("ProductConfigurationSection").HasKey(x => x.Id);
+            modelBuilder.Entity<ProductConfigurationSectionEntity>().Property(x => x.Id).HasMaxLength(128).ValueGeneratedOnAdd();
+            modelBuilder.Entity<ProductConfigurationSectionEntity>().HasOne(x => x.Configuration).WithMany(x => x.Sections)
+                .HasForeignKey(x => x.ConfigurationId).IsRequired().OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ProductConfigurationOptionEntity>().ToTable("ProductConfigurationOption").HasKey(x => x.Id);
+            modelBuilder.Entity<ProductConfigurationOptionEntity>().Property(x => x.Id).HasMaxLength(128).ValueGeneratedOnAdd();
+            modelBuilder.Entity<ProductConfigurationOptionEntity>().HasOne(x => x.Section).WithMany(x => x.Options)
+                .HasForeignKey(x => x.SectionId).IsRequired().OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<ProductConfigurationOptionEntity>().HasOne(x => x.Product).WithMany()
+                .HasForeignKey(x => x.ProductId).IsRequired().OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<ProductConfigurationOptionEntity>().Property(x => x.Quantity).HasDefaultValue(1);
+
+            #endregion
+
             base.OnModelCreating(modelBuilder);
 
             // Allows configuration for an entity type for different database types.
             // Applies configuration from all <see cref="IEntityTypeConfiguration{TEntity}" in VirtoCommerce.CatalogModule.Data.XXX project. /> 
-            switch (this.Database.ProviderName)
+            switch (Database.ProviderName)
             {
                 case "Pomelo.EntityFrameworkCore.MySql":
                     modelBuilder.ApplyConfigurationsFromAssembly(Assembly.Load("VirtoCommerce.CatalogModule.Data.MySql"));

@@ -263,7 +263,8 @@ namespace VirtoCommerce.CatalogModule.Web
 
             serviceCollection.AddTransient<ICategoryTreeService, CategoryTreeService>();
 
-            serviceCollection.AddTransient<IConfigurableProductService, ConfigurableProductService>();
+            serviceCollection.AddTransient<IProductConfigurationService, ProductConfigurationService>();
+            serviceCollection.AddTransient<IProductConfigurationSearchService, ProductConfigurationSearchService>();
         }
 
         public void PostInitialize(IApplicationBuilder appBuilder)

@@ -95,6 +95,9 @@
         },
         "placeholders": {
           "select-filter": "Select filter"
+        },
+        "descr": {
+          "title-mapping": "It is mapped to this virtual location"
         }
       },
       "category-detail": {
@@ -314,6 +317,7 @@
       "item-detail": {
         "subtitle": "{{ productTypeName }} item details",
         "subtitle-variation": "Variation details",
+        "hide-description": "Hide",
         "labels": {
           "id": "ID",
           "outer-id": "Outer ID",
@@ -542,7 +546,12 @@
           "name": "Name",
           "priority": "Priority",
           "group": "Group",
-          "quantity": "Quantity"
+          "quantity": "Quantity",
+          "tags": "Tags"
+        },
+        "descr": {
+          "no-associations": "No Associations yet.",
+          "quantity": "Association Quantity"
         }
       },
       "item-association-detail": {
@@ -708,6 +717,51 @@
           "conversion-factor": "Enter conversion",
           "symbol": "Symbol"
         }
+      },
+      "configuration-details": {
+        "title": "Product configuration",
+        "hide-description": "Hide",
+        "labels": {
+          "enable": "Enable configuration",
+          "name": "Section name",
+          "quantity": "Options",
+          "sections": "Sections"
+        },
+        "descr": {
+          "enable": "Activation of the product configuration functionality. For activation, the configuration must contain at least one section, and each section must contain at least one option",
+          "no-sections": "No sections in this configuration yet",
+          "sorting-prompt": "Set the order in which sections appear in the web store. Drag and drop the sections to change their order"
+        },
+        "commands": {
+          "add": "Add section"
+        }
+      },
+      "section-details": {
+        "title": "New section",
+        "labels": {
+          "name": "Section name",
+          "description": "Description",
+          "required": "Option selection is required",
+          "picture": "Img",
+          "quantity": "Quantity",
+          "product-name": "Product name",
+          "options": "Options"
+        },
+        "descr": {
+          "no-options": "No options in this section yet"
+        },
+        "commands": {
+          "add": "Add options"
+        }
+      },
+      "option-details": {
+        "title": "Select items as options",
+        "labels": {
+          "quantity": "Quantity"
+        },
+        "placeholders": {
+          "quantity": "Specify quantity"
+        } 
       }
     },
     "exporter-list": {
@@ -779,6 +833,9 @@
       },
       "measure-units": {
         "title": "Units"
+      },
+      "configuration": {
+        "title": "Configuration"
       }
     },
     "dialogs": {
@@ -799,7 +856,7 @@
         "instruction": "Type 'yes' to delete:",
         "item": "{{count}} Item(s)",
         "category": "{{count}} Category(ies) and any content within",
-        "linked-item": "{{count}} Item(s)",
+        "linked-item": "{{count}} Linked item(s)",
         "linked-category": "{{count}} Linked category(ies)"
       },
       "property-delete": {
@@ -909,6 +966,10 @@
       "measure-save": {
         "title": "Save changes",
         "message": "This measure has been modified. Do you want to save the changes?"
+      },
+      "configuration-save": {
+        "title": "Save changes",
+        "message": "This configuration has been modified. Do you want to save the changes?"
       }
     },
     "wizards": {

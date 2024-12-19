@@ -134,8 +134,8 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
     }])
 
     .run(
-        ['$injector', 'platformWebApp.mainMenuService', 'platformWebApp.widgetService', '$state', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.catalogExportService', 'platformWebApp.permissionScopeResolver', 'virtoCommerce.catalogModule.catalogs', 'virtoCommerce.catalogModule.predefinedSearchFilters', 'platformWebApp.metaFormsService', 'virtoCommerce.catalogModule.itemTypesResolverService', '$http', '$compile', 'platformWebApp.toolbarService', 'platformWebApp.breadcrumbHistoryService',
-            function ($injector, mainMenuService, widgetService, $state, bladeNavigationService, catalogExportService, scopeResolver, catalogs, predefinedSearchFilters, metaFormsService, itemTypesResolverService, $http, $compile, toolbarService, breadcrumbHistoryService) {
+        ['$injector', 'platformWebApp.mainMenuService', 'platformWebApp.widgetService', '$state', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.catalogExportService', 'platformWebApp.permissionScopeResolver', 'virtoCommerce.catalogModule.catalogs', 'virtoCommerce.catalogModule.predefinedSearchFilters', 'platformWebApp.metaFormsService', 'virtoCommerce.catalogModule.itemTypesResolverService', '$http', '$compile', 'platformWebApp.toolbarService', 'platformWebApp.breadcrumbHistoryService', 'platformWebApp.authService',
+            function ($injector, mainMenuService, widgetService, $state, bladeNavigationService, catalogExportService, scopeResolver, catalogs, predefinedSearchFilters, metaFormsService, itemTypesResolverService, $http, $compile, toolbarService, breadcrumbHistoryService, authService) {
 
                 //Register module in main menu
                 var menuItem = {
@@ -442,35 +442,37 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                 }]);
 
                 // category detail meta-fields
-                metaFormsService.registerMetaFields("categoryDetail", [{
-                    title: "catalog.blades.category-detail.labels.is-active",
-                    colSpan: 2,
-                    templateUrl: "category-details-is-active.html"
-                },
-                {
-                    name: 'name',
-                    title: "catalog.blades.category-detail.labels.name",
-                    placeholder: "catalog.blades.category-detail.placeholders.name",
-                    colSpan: 2,
-                    isRequired: true,
-                    valueType: "ShortText"
-                },
-                {
-                    title: "catalog.blades.category-detail.labels.code",
-                    templateUrl: "code.html"
-                },
-                {
-                    colSpan: 1,
-                    spanAllColumns: true,
-                    templateUrl: "taxType.html"
-                },
-                {
-                    name: 'priority',
-                    title: "catalog.blades.category-detail.labels.priority",
-                    placeholder: "catalog.blades.category-detail.placeholders.priority",
-                    colSpan: 2,
-                    valueType: "Integer"
-                }]);
+                metaFormsService.registerMetaFields("categoryDetail", [
+                    {
+                        title: "catalog.blades.category-detail.labels.is-active",
+                        colSpan: 2,
+                        templateUrl: "category-details-is-active.html"
+                    },
+                    {
+                        name: 'name',
+                        title: "catalog.blades.category-detail.labels.name",
+                        placeholder: "catalog.blades.category-detail.placeholders.name",
+                        colSpan: 2,
+                        isRequired: true,
+                        valueType: "ShortText"
+                    },
+                    {
+                        title: "catalog.blades.category-detail.labels.code",
+                        templateUrl: "code.html"
+                    },
+                    {
+                        colSpan: 1,
+                        spanAllColumns: true,
+                        templateUrl: "taxType.html"
+                    },
+                    {
+                        name: 'priority',
+                        title: "catalog.blades.category-detail.labels.priority",
+                        placeholder: "catalog.blades.category-detail.placeholders.priority",
+                        colSpan: 2,
+                        valueType: "Integer"
+                    }
+                ]);
 
                 // Item detail blade has 3 metaforms: productDetail, productDetail1 and productDetail2
                 metaFormsService.registerMetaFields("productDetail", [
@@ -480,137 +482,132 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                         templateUrl: "product-details-is-active.html"
                     },
                     {
-                    title: "catalog.blades.item-detail.labels.name",
-                    colSpan: 6,
-                    templateUrl: "name.html"
-                }]);
+                        title: "catalog.blades.item-detail.labels.name",
+                        colSpan: 6,
+                        templateUrl: "name.html"
+                    }
+                ]);
 
                 metaFormsService.registerMetaFields("productDetail1", [
-                {
-                    title: "catalog.blades.item-detail.labels.sku",
-                    colSpan: 6,
-                    templateUrl: "sku.html"
-                },
-                {
-                    title: "catalog.blades.item-detail.labels.gtin",
-                    colSpan: 3,
-                    templateUrl: "gtin.html"
+                    {
+                        title: "catalog.blades.item-detail.labels.sku",
+                        colSpan: 6,
+                        templateUrl: "sku.html"
                     },
-                {
-                    title: "catalog.blades.item-detail.labels.mpn",
-                    colSpan: 3,
-                    templateUrl: "mpn.html"
-                },
-                {
-                    colSpan: 3,
-                    spanAllColumns: true,
-                    templateUrl: "vendor.html"
-                },
-                {
-                    colSpan: 3,
-                    spanAllColumns: true,
-                    templateUrl: "taxType.html"
-                },
-                {
-                    name: 'id',
-                    title: "catalog.blades.item-detail.labels.id",
-                    colSpan: 3,
-                    isReadOnly: true,
-                    valueType: "ShortText"
-                },
-                {
-                    name: 'outerId',
-                    title: "catalog.blades.item-detail.labels.outer-id",
-                    colSpan: 3,
-                    placeholder: " ",
-                    isReadOnly: true,
-                    valueType: "ShortText"
-                }
+                    {
+                        title: "catalog.blades.item-detail.labels.gtin",
+                        colSpan: 3,
+                        templateUrl: "gtin.html"
+                        },
+                    {
+                        title: "catalog.blades.item-detail.labels.mpn",
+                        colSpan: 3,
+                        templateUrl: "mpn.html"
+                    },
+                    {
+                        colSpan: 3,
+                        spanAllColumns: true,
+                        templateUrl: "vendor.html"
+                    },
+                    {
+                        colSpan: 3,
+                        spanAllColumns: true,
+                        templateUrl: "taxType.html"
+                    },
+                    {
+                        name: 'id',
+                        title: "catalog.blades.item-detail.labels.id",
+                        colSpan: 3,
+                        isReadOnly: true,
+                        valueType: "ShortText"
+                    },
+                    {
+                        name: 'outerId',
+                        title: "catalog.blades.item-detail.labels.outer-id",
+                        colSpan: 3,
+                        placeholder: " ",
+                        isReadOnly: true,
+                        valueType: "ShortText"
+                    }
                 ]);
 
                 metaFormsService.registerMetaFields("productDetail2", [
-                {
-                    name: 'isBuyable',
-                    title: "catalog.blades.item-detail.labels.can-be-purchased",
-                    colSpan: 2,
-                    valueType: "Boolean"
-                },
-                {
-                    name: 'trackInventory',
-                    title: "catalog.blades.item-detail.labels.track-inventory",
-                    colSpan: 2,
-                    valueType: "Boolean"
-                },
-                {
-                    name: '_priority',
-                    title: "catalog.blades.item-detail.labels.priority",
-                    placeholder: "catalog.blades.item-detail.placeholders.priority",
-                    colSpan: 2,
-                    valueType: "Integer"
-                },
-                {
-                    name: 'minQuantity',
-                    title: "catalog.blades.item-detail.labels.min-quantity",
-                    colSpan: 2,
-                    valueType: "Integer"
-                },
-                {
-                    name: 'maxQuantity',
-                    title: "catalog.blades.item-detail.labels.max-quantity",
-                    colSpan: 2,
-                    valueType: "Integer"
-                },
-                {
-                    name: 'packSize',
-                    title: "catalog.blades.item-detail.labels.pack-size",
-                    colSpan: 2,
-                    valueType: "Integer"
-                },
-                {
-                    title: "catalog.blades.item-detail.labels.start-date",
-                    colSpan: 3,
-                    templateUrl: "startDate.html"
-                },
-                {
-                    title: "catalog.blades.item-detail.labels.end-date",
-                    colSpan: 3,
-                    templateUrl: "endDate.html"
-                },
-                {
-                    colSpan: 3,
-                    title: "catalog.blades.item-detail.labels.download-type",
-                    isVisibleFn: blade => blade.item.productType === 'Digital',
-                    templateUrl: "downloadType.html"
-                },
-                {
-                    name: 'hasUserAgreement',
-                    title: "catalog.blades.item-detail.labels.has-user-agreement",
-                    isVisibleFn: blade => blade.item.productType === 'Digital',
-                    colSpan: 3,
-                    valueType: "Boolean"
-                },
-                {
-                    name: 'maxNumberOfDownload',
-                    title: "catalog.blades.item-detail.labels.max-downloads",
-                    isVisibleFn: blade => blade.item.productType === 'Digital',
-                    colSpan: 3,
-                    valueType: "Integer"
-                },
-                {
-                    name: 'downloadExpiration',
-                    title: "catalog.blades.item-detail.labels.expiration-date",
-                    placeholder: "catalog.blades.item-detail.placeholders.expiration-date",
-                    isVisibleFn: blade => blade.item.productType === 'Digital',
-                    colSpan: 3,
-                    valueType: "DateTime"
-                }]);
-
-                metaFormsService.registerMetaFields("productDetail3", [
-                {
-                    name: 'isConfigurable',
-                    title: "catalog.blades.item-detail.labels.is-configurable",
-                    valueType: "Boolean"
-                }]);
+                    {
+                        name: 'isBuyable',
+                        title: "catalog.blades.item-detail.labels.can-be-purchased",
+                        colSpan: 2,
+                        valueType: "Boolean"
+                    },
+                    {
+                        name: 'trackInventory',
+                        title: "catalog.blades.item-detail.labels.track-inventory",
+                        colSpan: 2,
+                        valueType: "Boolean"
+                    },
+                    {
+                        name: '_priority',
+                        title: "catalog.blades.item-detail.labels.priority",
+                        placeholder: "catalog.blades.item-detail.placeholders.priority",
+                        colSpan: 2,
+                        valueType: "Integer"
+                    },
+                    {
+                        name: 'minQuantity',
+                        title: "catalog.blades.item-detail.labels.min-quantity",
+                        colSpan: 2,
+                        valueType: "Integer"
+                    },
+                    {
+                        name: 'maxQuantity',
+                        title: "catalog.blades.item-detail.labels.max-quantity",
+                        colSpan: 2,
+                        valueType: "Integer"
+                    },
+                    {
+                        name: 'packSize',
+                        title: "catalog.blades.item-detail.labels.pack-size",
+                        colSpan: 2,
+                        valueType: "Integer"
+                    },
+                    {
+                        title: "catalog.blades.item-detail.labels.start-date",
+                        colSpan: 3,
+                        templateUrl: "startDate.html"
+                    },
+                    {
+                        title: "catalog.blades.item-detail.labels.end-date",
+                        colSpan: 3,
+                        templateUrl: "endDate.html"
+                    },
+                    {
+                        colSpan: 3,
+                        title: "catalog.blades.item-detail.labels.download-type",
+                        isVisibleFn: blade => blade.item.productType === 'Digital',
+                        templateUrl: "downloadType.html"
+                    },
+                    {
+                        name: 'hasUserAgreement',
+                        title: "catalog.blades.item-detail.labels.has-user-agreement",
+                        isVisibleFn: blade => blade.item.productType === 'Digital',
+                        colSpan: 3,
+                        valueType: "Boolean"
+                    },
+                    {
+                        name: 'maxNumberOfDownload',
+                        title: "catalog.blades.item-detail.labels.max-downloads",
+                        isVisibleFn: blade => blade.item.productType === 'Digital',
+                        colSpan: 3,
+                        valueType: "Integer"
+                    },
+                    {
+                        name: 'downloadExpiration',
+                        title: "catalog.blades.item-detail.labels.expiration-date",
+                        placeholder: "catalog.blades.item-detail.placeholders.expiration-date",
+                        isVisibleFn: blade => blade.item.productType === 'Digital',
+                        colSpan: 3,
+                        valueType: "DateTime"
+                    }
+                ]);
 
                 metaFormsService.registerMetaFields('VirtoCommerce.CatalogModule.Core.Model.Export.ExportableProduct' + 'ExportFilter', [
                     {
@@ -742,4 +739,12 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                         valueType: "ShortText"
                     }
                 ]);
+
+                //Register product configuration widget
+                var productConfigurationWidget = {
+                    controller: 'virtoCommerce.catalogModule.productConfigurationWidgetController',
+                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/productConfigurationWidget.tpl.html',
+                    isVisible: function (blade) { return !blade.isNew && authService.checkPermission('catalog:configurations:read'); }
+                };
+                widgetService.registerWidget(productConfigurationWidget, 'itemDetail');
             }]);

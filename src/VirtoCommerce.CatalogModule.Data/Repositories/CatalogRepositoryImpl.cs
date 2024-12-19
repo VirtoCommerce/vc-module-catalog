@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
 using Microsoft.EntityFrameworkCore;
@@ -43,7 +44,46 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         public IQueryable<SeoInfoEntity> SeoInfos => DbContext.Set<SeoInfoEntity>();
         public IQueryable<MeasureEntity> Measures => DbContext.Set<MeasureEntity>();
         public IQueryable<MeasureUnitEntity> MeasureUnits => DbContext.Set<MeasureUnitEntity>();
+        public IQueryable<ProductConfigurationEntity> ProductConfigurations => DbContext.Set<ProductConfigurationEntity>();
+        public IQueryable<ProductConfigurationSectionEntity> ProductConfigurationSections => DbContext.Set<ProductConfigurationSectionEntity>();
+        public IQueryable<ProductConfigurationOptionEntity> ProductConfigurationOptions => DbContext.Set<ProductConfigurationOptionEntity>();
 
+
+        public virtual async Task<IList<ProductConfigurationEntity>> GetConfigurationsByIdsAsync(IList<string> ids, CancellationToken cancellationToken)
+        {
+            var configurations = await ProductConfigurations
+                .Where(x => ids.Contains(x.Id))
+                .ToListAsync(cancellationToken);
+
+            if (configurations.Count > 0)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                var configurationIds = configurations.Select(x => x.Id).ToList();
+
+                var sections = await ProductConfigurationSections
+                    .Where(x => configurationIds.Contains(x.ConfigurationId))
+                    .ToListAsync(cancellationToken);
+
+                if (sections.Count > 0)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    var sectionIds = sections.Select(x => x.Id).ToList();
+
+                    var options = await ProductConfigurationOptions
+                        .Where(x => sectionIds.Contains(x.SectionId))
+                        .ToListAsync(cancellationToken);
+
+                    if (options.Count > 0)
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        var productIds = options.Select(x => x.ProductId).ToList();
+                        await GetItemByIdsAsync(productIds, ItemResponseGroup.ItemInfo.ToString());
+                    }
+                }
+            }
+
+            return configurations;
+        }
 
         public virtual async Task<IList<CatalogEntity>> GetCatalogsByIdsAsync(IList<string> catalogIds)
         {

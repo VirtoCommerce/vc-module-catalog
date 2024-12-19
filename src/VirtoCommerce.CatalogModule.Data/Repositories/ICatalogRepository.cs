@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Data.Model;
@@ -27,6 +28,9 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         IQueryable<SeoInfoEntity> SeoInfos { get; }
         IQueryable<MeasureEntity> Measures { get; }
         IQueryable<MeasureUnitEntity> MeasureUnits { get; }
+        IQueryable<ProductConfigurationEntity> ProductConfigurations { get; }
+        IQueryable<ProductConfigurationSectionEntity> ProductConfigurationSections { get; }
+        IQueryable<ProductConfigurationOptionEntity> ProductConfigurationOptions { get; }
 
         Task<IList<string>> GetAllSeoDuplicatesIdsAsync();
 
@@ -59,5 +63,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         Task<IList<CategoryEntity>> SearchCategoriesHierarchyAsync(string categoryId);
 
         Task<IList<MeasureEntity>> GetMeasuresByIdsAsync(IList<string> ids);
+
+        Task<IList<ProductConfigurationEntity>> GetConfigurationsByIdsAsync(IList<string> ids, CancellationToken cancellationToken);
     }
 }
