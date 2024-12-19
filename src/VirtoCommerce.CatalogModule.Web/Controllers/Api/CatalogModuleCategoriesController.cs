@@ -134,7 +134,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                         var seoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
                         seoInfo.LanguageCode = defaultLanguage;
                         seoInfo.SemanticUrl = slugUrl;
-                        category.SeoInfos = new[] { seoInfo };
+                        seoInfo.PageTitle = category.Name;
+                        category.SeoInfos = [seoInfo];
                     }
                 }
             }

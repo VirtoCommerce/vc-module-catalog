@@ -9,6 +9,7 @@ using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
+using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.ExportImport;
 
@@ -232,8 +233,29 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 
         private async Task ImportCatalogsAsync(JsonTextReader reader, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
         {
-            await reader.DeserializeArrayWithPagingAsync<Catalog>(_jsonSerializer, _batchSize,
-                _catalogService.SaveChangesAsync,
+            await reader.DeserializeArrayWithPagingAsync<Catalog>(_jsonSerializer, _batchSize, async catalogs =>
+                {
+                    foreach (var catalog in catalogs)
+                    {
+                        if (catalog.SeoInfos == null || !catalog.SeoInfos.Any())
+                        {
+                            var defaultLanguage = catalog?.Languages.First(x => x.IsDefault).LanguageCode;
+                            var seoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
+                            seoInfo.LanguageCode = defaultLanguage;
+                            seoInfo.SemanticUrl = "catalog";
+                            seoInfo.PageTitle = "Catalog";
+                            catalog.SeoInfos = [seoInfo];
+                        }
+
+                        foreach (var seoInfo in catalog.SeoInfos)
+                        {
+                            seoInfo.SemanticUrl ??= "catalog";
+                            seoInfo.PageTitle ??= "Catalog";
+                        }
+                    }
+
+                    await _catalogService.SaveChangesAsync(catalogs);
+                },
                 processedCount =>
                 {
                     progressInfo.Description = $"{processedCount} catalogs have been imported";
@@ -252,29 +274,54 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             {
                 var categories = new List<Category>();
 
-                foreach (var item in items)
+                foreach (var category in items)
                 {
-                    // clear category links (to save later)
-                    foreach (var link in item.Links.Where(x => x.EntryId == null))
+                    var slugUrl = category.Name.GenerateSlug();
+
+                    if (category.SeoInfos == null || !category.SeoInfos.Any())
                     {
-                        link.ListEntryId = item.Id;
+                        if (!string.IsNullOrEmpty(slugUrl))
+                        {
+                            var catalog = await _catalogService.GetNoCloneAsync(category.CatalogId);
+                            var defaultLanguage = catalog?.Languages.First(x => x.IsDefault).LanguageCode;
+                            var seoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
+                            seoInfo.LanguageCode = defaultLanguage;
+                            seoInfo.SemanticUrl = slugUrl;
+                            seoInfo.PageTitle = category.Name;
+                            category.SeoInfos = [seoInfo];
+                        }
                     }
 
-                    categoryLinks.AddRange(item.Links);
-                    item.Links = new List<CategoryLink>();
-
-                    if (item.Level > 0)
+                    foreach (var seoInfo in category.SeoInfos)
                     {
-                        if (!categoriesByHierarchyLevel.ContainsKey(item.Level))
+                        if (string.IsNullOrEmpty(seoInfo.SemanticUrl) && !string.IsNullOrEmpty(slugUrl))
                         {
-                            categoriesByHierarchyLevel.Add(item.Level, new List<Category>());
+                            seoInfo.SemanticUrl = slugUrl;
+                        }
+                        seoInfo.PageTitle ??= category.Name;
+                    }
+
+                    // clear category links (to save later)
+                    foreach (var link in category.Links.Where(x => x.EntryId == null))
+                    {
+                        link.ListEntryId = category.Id;
+                    }
+
+                    categoryLinks.AddRange(category.Links);
+                    category.Links = new List<CategoryLink>();
+
+                    if (category.Level > 0)
+                    {
+                        if (!categoriesByHierarchyLevel.ContainsKey(category.Level))
+                        {
+                            categoriesByHierarchyLevel.Add(category.Level, new List<Category>());
                         }
 
-                        categoriesByHierarchyLevel[item.Level].Add(item);
+                        categoriesByHierarchyLevel[category.Level].Add(category);
                     }
                     else
                     {
-                        categories.Add(item);
+                        categories.Add(category);
                     }
                 }
 
@@ -369,11 +416,51 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         private async Task ImportProductsAsync(JsonTextReader reader, ExportImportOptions options, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
         {
             var associationBackupMap = new Dictionary<string, IList<ProductAssociation>>();
+            var uniqueNameDictionary = new Dictionary<string, int>();
 
-            await reader.DeserializeArrayWithPagingAsync<CatalogProduct>(_jsonSerializer, _batchSize, async items =>
+            await reader.DeserializeArrayWithPagingAsync<CatalogProduct>(_jsonSerializer, _batchSize, async products =>
             {
-                var products = items.Select(product =>
+                foreach (var product in products)
                 {
+                    var slugUrl = product.Name.GenerateSlug();
+
+                    if (!string.IsNullOrEmpty(slugUrl))
+                    {
+                        slugUrl = '/' + slugUrl;
+                        if (uniqueNameDictionary.ContainsKey(slugUrl))
+                        {
+                            slugUrl = $"{slugUrl}-{uniqueNameDictionary[slugUrl]}";
+                            ++uniqueNameDictionary[slugUrl];
+                        }
+                        else
+                        {
+                            uniqueNameDictionary.Add(slugUrl, 1);
+                        }
+                    }
+
+                    if (product.SeoInfos == null || !product.SeoInfos.Any())
+                    {
+                        if (!string.IsNullOrEmpty(slugUrl))
+                        {
+                            var catalog = await _catalogService.GetNoCloneAsync(product.CatalogId);
+                            var defaultLanguage = catalog?.Languages.First(x => x.IsDefault).LanguageCode;
+                            var seoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
+                            seoInfo.LanguageCode = defaultLanguage;
+                            seoInfo.SemanticUrl = slugUrl;
+                            seoInfo.PageTitle = product.Name;
+                            product.SeoInfos = [seoInfo];
+                        }
+                    }
+
+                    foreach (var seoInfo in product.SeoInfos)
+                    {
+                        if (string.IsNullOrEmpty(seoInfo.SemanticUrl) && !string.IsNullOrEmpty(slugUrl))
+                        {
+                            seoInfo.SemanticUrl = slugUrl;
+                        }
+                        seoInfo.PageTitle ??= product.Name;
+                    }
+
                     //Do not save associations withing product to prevent dependency conflicts in db
                     //we will save separately after product import
                     if (!product.Associations.IsNullOrEmpty())
@@ -382,9 +469,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                     }
 
                     product.Associations = null;
-
-                    return product;
-                }).ToArray();
+                }
 
                 await _itemService.SaveChangesAsync(products);
 
