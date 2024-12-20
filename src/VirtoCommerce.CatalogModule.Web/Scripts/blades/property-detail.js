@@ -55,6 +55,7 @@ angular.module('virtoCommerce.catalogModule')
 
             return properties.validateCategoryPropertyName({
                 propertyName: value,
+                propertyValueType: blade.currentEntity.valueType,
                 propertyType: blade.origEntity.type,
                 categoryId: blade.origEntity.categoryId,
                 catalogId: blade.origEntity.catalogId
