@@ -102,6 +102,24 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                     : query.Where(x => criteria.PropertyTypes.Contains(x.TargetType));
             }
 
+            if (!criteria.PropertyValueTypes.IsNullOrEmpty())
+            {
+                var propertyValueTypes = criteria.PropertyValueTypes.Cast<int>().ToList();
+
+                query = propertyValueTypes.Count == 1
+                    ? query.Where(x => x.PropertyValueType == propertyValueTypes.First())
+                    : query.Where(x => propertyValueTypes.Contains(x.PropertyValueType));
+            }
+
+            if (!criteria.ExcludedPropertyValueTypes.IsNullOrEmpty())
+            {
+                var excludedPropertyValueTypes = criteria.ExcludedPropertyValueTypes.Cast<int>().ToList();
+
+                query = excludedPropertyValueTypes.Count == 1
+                    ? query.Where(x => x.PropertyValueType != excludedPropertyValueTypes.First())
+                    : query.Where(x => !excludedPropertyValueTypes.Contains(x.PropertyValueType));
+            }
+
             return query;
         }
 
