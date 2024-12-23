@@ -416,51 +416,11 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         private async Task ImportProductsAsync(JsonTextReader reader, ExportImportOptions options, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
         {
             var associationBackupMap = new Dictionary<string, IList<ProductAssociation>>();
-            var uniqueNameDictionary = new Dictionary<string, int>();
 
-            await reader.DeserializeArrayWithPagingAsync<CatalogProduct>(_jsonSerializer, _batchSize, async products =>
+            await reader.DeserializeArrayWithPagingAsync<CatalogProduct>(_jsonSerializer, _batchSize, async items =>
             {
-                foreach (var product in products)
+                var products = items.Select(product =>
                 {
-                    var slugUrl = product.Name.GenerateSlug();
-
-                    if (!string.IsNullOrEmpty(slugUrl))
-                    {
-                        slugUrl = '/' + slugUrl;
-                        if (uniqueNameDictionary.ContainsKey(slugUrl))
-                        {
-                            slugUrl = $"{slugUrl}-{uniqueNameDictionary[slugUrl]}";
-                            ++uniqueNameDictionary[slugUrl];
-                        }
-                        else
-                        {
-                            uniqueNameDictionary.Add(slugUrl, 1);
-                        }
-                    }
-
-                    if (product.SeoInfos == null || !product.SeoInfos.Any())
-                    {
-                        if (!string.IsNullOrEmpty(slugUrl))
-                        {
-                            var catalog = await _catalogService.GetNoCloneAsync(product.CatalogId);
-                            var defaultLanguage = catalog?.Languages.First(x => x.IsDefault).LanguageCode;
-                            var seoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
-                            seoInfo.LanguageCode = defaultLanguage;
-                            seoInfo.SemanticUrl = slugUrl;
-                            seoInfo.PageTitle = product.Name;
-                            product.SeoInfos = [seoInfo];
-                        }
-                    }
-
-                    foreach (var seoInfo in product.SeoInfos)
-                    {
-                        if (string.IsNullOrEmpty(seoInfo.SemanticUrl) && !string.IsNullOrEmpty(slugUrl))
-                        {
-                            seoInfo.SemanticUrl = slugUrl;
-                        }
-                        seoInfo.PageTitle ??= product.Name;
-                    }
-
                     //Do not save associations withing product to prevent dependency conflicts in db
                     //we will save separately after product import
                     if (!product.Associations.IsNullOrEmpty())
@@ -469,7 +429,9 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                     }
 
                     product.Associations = null;
-                }
+
+                    return product;
+                }).ToArray();
 
                 await _itemService.SaveChangesAsync(products);
 
