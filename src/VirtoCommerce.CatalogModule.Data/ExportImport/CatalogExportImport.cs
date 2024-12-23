@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using VirtoCommerce.AssetsModule.Core.Assets;
+using VirtoCommerce.CatalogModule.Core.Extensions;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
@@ -287,7 +288,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                             var seoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
                             seoInfo.LanguageCode = defaultLanguage;
                             seoInfo.SemanticUrl = slugUrl;
-                            seoInfo.PageTitle = category.Name;
+                            seoInfo.PageTitle = category.Name.SoftTruncate(70);
                             category.SeoInfos = [seoInfo];
                         }
                     }
@@ -298,7 +299,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                         {
                             seoInfo.SemanticUrl = slugUrl;
                         }
-                        seoInfo.PageTitle ??= category.Name;
+                        seoInfo.PageTitle ??= category.Name.SoftTruncate(70);
                     }
 
                     // clear category links (to save later)
