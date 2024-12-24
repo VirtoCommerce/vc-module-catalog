@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using VirtoCommerce.AssetsModule.Core.Assets;
+using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Extensions;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
@@ -240,7 +241,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                     {
                         if (catalog.SeoInfos == null || !catalog.SeoInfos.Any())
                         {
-                            var defaultLanguage = catalog?.Languages.First(x => x.IsDefault).LanguageCode;
+                            var defaultLanguage = catalog.Languages.First(x => x.IsDefault).LanguageCode;
                             var seoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
                             seoInfo.LanguageCode = defaultLanguage;
                             seoInfo.SemanticUrl = "catalog";
@@ -267,7 +268,6 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         private async Task ImportCategoriesAsync(JsonTextReader reader, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
         {
             var processedCount = 0;
-
             var categoriesByHierarchyLevel = new Dictionary<int, IList<Category>>();
             var categoryLinks = new List<CategoryLink>();
 
@@ -279,18 +279,15 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 {
                     var slugUrl = category.Name.GenerateSlug();
 
-                    if (category.SeoInfos == null || !category.SeoInfos.Any())
+                    if (category.SeoInfos.IsNullOrEmpty() && !string.IsNullOrEmpty(slugUrl))
                     {
-                        if (!string.IsNullOrEmpty(slugUrl))
-                        {
-                            var catalog = await _catalogService.GetNoCloneAsync(category.CatalogId);
-                            var defaultLanguage = catalog?.Languages.First(x => x.IsDefault).LanguageCode;
-                            var seoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
-                            seoInfo.LanguageCode = defaultLanguage;
-                            seoInfo.SemanticUrl = slugUrl;
-                            seoInfo.PageTitle = category.Name.SoftTruncate(70);
-                            category.SeoInfos = [seoInfo];
-                        }
+                        var catalog = await _catalogService.GetNoCloneAsync(category.CatalogId);
+                        var defaultLanguage = catalog?.Languages.First(x => x.IsDefault).LanguageCode;
+                        var seoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
+                        seoInfo.LanguageCode = defaultLanguage;
+                        seoInfo.SemanticUrl = slugUrl;
+                        seoInfo.PageTitle = category.Name.SoftTruncate(ModuleConstants.MaxSEOTitleLength);
+                        category.SeoInfos = [seoInfo];
                     }
 
                     foreach (var seoInfo in category.SeoInfos)
@@ -299,7 +296,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                         {
                             seoInfo.SemanticUrl = slugUrl;
                         }
-                        seoInfo.PageTitle ??= category.Name.SoftTruncate(70);
+                        seoInfo.PageTitle ??= category.Name.SoftTruncate(ModuleConstants.MaxSEOTitleLength);
                     }
 
                     // clear category links (to save later)
