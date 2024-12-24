@@ -306,16 +306,17 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                     }
 
                     categoryLinks.AddRange(category.Links);
-                    category.Links = new List<CategoryLink>();
+                    category.Links = [];
 
                     if (category.Level > 0)
                     {
-                        if (!categoriesByHierarchyLevel.ContainsKey(category.Level))
+                        if (!categoriesByHierarchyLevel.TryGetValue(category.Level, out var levelCategories))
                         {
-                            categoriesByHierarchyLevel.Add(category.Level, new List<Category>());
+                            levelCategories = [];
+                            categoriesByHierarchyLevel.Add(category.Level, levelCategories);
                         }
 
-                        categoriesByHierarchyLevel[category.Level].Add(category);
+                        levelCategories.Add(category);
                     }
                     else
                     {
