@@ -141,7 +141,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                     return (GenericSearchResult<Category>)searchResult;
                 }, (processedCount, totalCount) =>
                 {
-                    progressInfo.Description = $"{processedCount} of {totalCount} Categories have been exported";
+                    progressInfo.Description = $"{processedCount} of {totalCount} categories have been exported";
                     progressCallback(progressInfo);
                 }, cancellationToken);
 
@@ -164,7 +164,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                     return (GenericSearchResult<CatalogProduct>)searchResult;
                 }, (processedCount, totalCount) =>
                 {
-                    progressInfo.Description = $"{processedCount} of {totalCount} Products have been exported";
+                    progressInfo.Description = $"{processedCount} of {totalCount} products have been exported";
                     progressCallback(progressInfo);
                 }, cancellationToken);
 
@@ -188,7 +188,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                     return (GenericSearchResult<ProductConfiguration>)searchResult;
                 }, (processedCount, totalCount) =>
                 {
-                    progressInfo.Description = $"{processedCount} of {totalCount} Product configurations have been exported";
+                    progressInfo.Description = $"{processedCount} of {totalCount} product configurations have been exported";
                     progressCallback(progressInfo);
                 }, cancellationToken);
 
@@ -236,6 +236,10 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 
                         case "Products":
                             await ImportProductsAsync(reader, options, progressInfo, progressCallback, cancellationToken);
+                            break;
+
+                        case "ProductConfigurations":
+                            await ImportProductConfigurationsAsync(reader, progressInfo, progressCallback, cancellationToken);
                             break;
 
                         default:
@@ -445,6 +449,27 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 progressInfo.Description = $"{Math.Min(totalProductsWithAssociationsCount, i + _batchSize)} of {totalProductsWithAssociationsCount} products associations imported";
                 progressCallback(progressInfo);
             }
+        }
+
+        private async Task ImportProductConfigurationsAsync(JsonTextReader reader, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
+        {
+            await reader.DeserializeArrayWithPagingAsync<ProductConfiguration>(_jsonSerializer, _batchSize, async configurations =>
+            {
+                foreach (var configuration in configurations)
+                {
+                    // Only the full configuration can be active
+                    if ((configuration.Sections is null or []) || configuration.Sections.Any(x => x.Options is null or []))
+                    {
+                        configuration.IsActive = false;
+                    }
+                }
+
+                await _configurationService.SaveChangesAsync(configurations);
+            }, processedCount =>
+            {
+                progressInfo.Description = $"{processedCount} product configurations have been imported";
+                progressCallback(progressInfo);
+            }, cancellationToken);
         }
 
         //Remove redundant references to reduce resulting JSON size
