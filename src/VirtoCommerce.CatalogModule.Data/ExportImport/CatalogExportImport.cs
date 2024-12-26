@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using VirtoCommerce.AssetsModule.Core.Assets;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CatalogModule.Core.Model.Configuration;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
@@ -29,12 +30,15 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         private readonly JsonSerializer _jsonSerializer;
         private readonly IBlobStorageProvider _blobStorageProvider;
         private readonly IAssociationService _associationService;
+        private readonly IProductConfigurationService _configurationService;
+        private readonly IProductConfigurationSearchService _configurationSearchService;
 
         private readonly int _batchSize = 50;
 
         public CatalogExportImport(ICatalogService catalogService, ICatalogSearchService catalogSearchService, IProductSearchService productSearchService, ICategorySearchService categorySearchService, ICategoryService categoryService,
                                   IItemService itemService, IPropertyService propertyService, IPropertySearchService propertySearchService, IPropertyDictionaryItemSearchService propertyDictionarySearchService,
-                                  IPropertyDictionaryItemService propertyDictionaryService, JsonSerializer jsonSerializer, IBlobStorageProvider blobStorageProvider, IAssociationService associationService)
+                                  IPropertyDictionaryItemService propertyDictionaryService, JsonSerializer jsonSerializer, IBlobStorageProvider blobStorageProvider, IAssociationService associationService,
+                                  IProductConfigurationService configurationService, IProductConfigurationSearchService configurationSearchService)
         {
             _catalogService = catalogService;
             _productSearchService = productSearchService;
@@ -49,6 +53,8 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             _blobStorageProvider = blobStorageProvider;
             _associationService = associationService;
             _catalogSearchService = catalogSearchService;
+            _configurationService = configurationService;
+            _configurationSearchService = configurationSearchService;
         }
 
         public async Task DoExportAsync(Stream outStream, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
@@ -159,6 +165,30 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 }, (processedCount, totalCount) =>
                 {
                     progressInfo.Description = $"{processedCount} of {totalCount} Products have been exported";
+                    progressCallback(progressInfo);
+                }, cancellationToken);
+
+                #endregion Export products
+
+                #region Export product configurations
+
+                progressInfo.Description = "Product configurations exporting...";
+                progressCallback(progressInfo);
+
+                await writer.WritePropertyNameAsync("ProductConfigurations");
+                await writer.SerializeArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
+                {
+                    var searchResult = await _configurationSearchService.SearchNoCloneAsync(new ProductConfigurationSearchCriteria { Skip = skip, Take = take });
+
+                    foreach (var item in searchResult.Results)
+                    {
+                        ResetRedundantReferences(item);
+                    }
+
+                    return (GenericSearchResult<ProductConfiguration>)searchResult;
+                }, (processedCount, totalCount) =>
+                {
+                    progressInfo.Description = $"{processedCount} of {totalCount} Product configurations have been exported";
                     progressCallback(progressInfo);
                 }, cancellationToken);
 
@@ -495,6 +525,17 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                     foreach (var variation in product.Variations)
                     {
                         ResetRedundantReferences(variation);
+                    }
+                }
+            }
+
+            if (entity is ProductConfiguration configuration)
+            {
+                foreach (var section in configuration.Sections)
+                {
+                    foreach (var option in section.Options)
+                    {
+                        option.Product = null;
                     }
                 }
             }
