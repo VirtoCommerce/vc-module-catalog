@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CatalogModule.Core.Model.Configuration;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Domain;
@@ -115,6 +116,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         public virtual ObservableCollection<ItemEntity> Childrens { get; set; }
             = new NullCollection<ItemEntity>();
 
+        public virtual ProductConfigurationEntity Configuration { get; set; }
         #endregion
 
         public virtual CatalogProduct ToModel(CatalogProduct product)
@@ -124,10 +126,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
         public virtual CatalogProduct ToModel(CatalogProduct product, bool convertChildrens, bool convertAssociations)
         {
-            if (product == null)
-            {
-                throw new ArgumentNullException(nameof(product));
-            }
+            ArgumentNullException.ThrowIfNull(product);
 
             product.Id = Id;
             product.CreatedDate = CreatedDate;
@@ -226,15 +225,18 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                     product.Variations.Add(productVariation);
                 }
             }
+
+            if (Configuration != null)
+            {
+                product.Configuration = Configuration.ToModel(AbstractTypeFactory<ProductConfiguration>.TryCreateInstance());
+            }
+
             return product;
         }
 
         public virtual ItemEntity FromModel(CatalogProduct product, PrimaryKeyResolvingMap pkMap)
         {
-            if (product == null)
-            {
-                throw new ArgumentNullException(nameof(product));
-            }
+            ArgumentNullException.ThrowIfNull(product);
 
             pkMap.AddPair(product, this);
 
@@ -385,10 +387,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
         public virtual void Patch(ItemEntity target)
         {
-            if (target == null)
-            {
-                throw new ArgumentNullException(nameof(target));
-            }
+            ArgumentNullException.ThrowIfNull(target);
 
             target.IsBuyable = IsBuyable;
             target.IsActive = IsActive;
@@ -474,7 +473,6 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 SeoInfos.Patch(target.SeoInfos, (sourceSeoInfo, targetSeoInfo) => sourceSeoInfo.Patch(targetSeoInfo));
             }
             #endregion
-
 
             #region Childrens
             if (!Childrens.IsNullCollection())

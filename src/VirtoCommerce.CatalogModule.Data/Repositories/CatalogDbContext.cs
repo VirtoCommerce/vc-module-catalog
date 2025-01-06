@@ -286,7 +286,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
             modelBuilder.Entity<ProductConfigurationEntity>().ToTable("ProductConfiguration").HasKey(x => x.Id);
             modelBuilder.Entity<ProductConfigurationEntity>().Property(x => x.Id).HasMaxLength(128).ValueGeneratedOnAdd();
-            modelBuilder.Entity<ProductConfigurationEntity>().HasOne(x => x.Product).WithOne()
+            modelBuilder.Entity<ProductConfigurationEntity>().HasOne(x => x.Product).WithOne(x => x.Configuration)
                 .HasForeignKey<ProductConfigurationEntity>(x => x.ProductId).IsRequired().OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<ProductConfigurationSectionEntity>().ToTable("ProductConfigurationSection").HasKey(x => x.Id);

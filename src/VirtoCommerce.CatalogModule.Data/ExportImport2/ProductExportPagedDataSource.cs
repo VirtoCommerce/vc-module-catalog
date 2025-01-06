@@ -26,7 +26,6 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             _productSearchService = productSearchService;
         }
 
-
         protected override ExportableSearchResult FetchData(ProductSearchCriteria searchCriteria)
         {
             CatalogProduct[] result;

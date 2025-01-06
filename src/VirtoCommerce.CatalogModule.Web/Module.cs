@@ -313,7 +313,7 @@ namespace VirtoCommerce.CatalogModule.Web
 
             // Ensure that required dynamic properties are always registered in the system
             var dynamicPropertyService = appBuilder.ApplicationServices.GetRequiredService<IDynamicPropertyService>();
-            dynamicPropertyService.SaveDynamicPropertiesAsync(new[] {
+            dynamicPropertyService.SaveDynamicPropertiesAsync([
                     new DynamicProperty
                     {
                         Id = BrowseFilterService.FilteredBrowsingPropertyId,
@@ -322,7 +322,7 @@ namespace VirtoCommerce.CatalogModule.Web
                         ValueType = DynamicPropertyValueType.LongText,
                         CreatedBy = "Auto"
                     }
-                }).GetAwaiter().GetResult();
+                ]).GetAwaiter().GetResult();
 
             #region Register types for generic Export
 
