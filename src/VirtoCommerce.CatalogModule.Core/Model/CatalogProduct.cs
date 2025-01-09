@@ -275,9 +275,6 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         public IList<Outline> Outlines { get; set; }
         #endregion
 
-        [JsonIgnore]
-        public ProductConfiguration Configuration { get; set; }
-
         #region IInheritable members
         /// <summary>
         /// System flag used to mark that object was inherited from other

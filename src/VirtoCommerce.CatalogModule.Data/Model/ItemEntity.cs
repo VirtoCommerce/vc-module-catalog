@@ -116,7 +116,6 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         public virtual ObservableCollection<ItemEntity> Childrens { get; set; }
             = new NullCollection<ItemEntity>();
 
-        public virtual ProductConfigurationEntity Configuration { get; set; }
         #endregion
 
         public virtual CatalogProduct ToModel(CatalogProduct product)
@@ -224,11 +223,6 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                     productVariation.MainProductId = product.Id;
                     product.Variations.Add(productVariation);
                 }
-            }
-
-            if (Configuration != null)
-            {
-                product.Configuration = Configuration.ToModel(AbstractTypeFactory<ProductConfiguration>.TryCreateInstance());
             }
 
             return product;

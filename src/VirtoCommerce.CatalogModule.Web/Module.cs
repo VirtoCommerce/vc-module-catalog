@@ -17,6 +17,7 @@ using VirtoCommerce.CatalogModule.BulkActions.Services;
 using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Events;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CatalogModule.Core.Model.Configuration;
 using VirtoCommerce.CatalogModule.Core.Model.Export;
 using VirtoCommerce.CatalogModule.Core.Model.OutlinePart;
 using VirtoCommerce.CatalogModule.Core.Options;
@@ -345,7 +346,10 @@ namespace VirtoCommerce.CatalogModule.Web
                             nameof(ExportableProduct.Associations),
                             nameof(ExportableProduct.ReferencedAssociations),
                             nameof(ExportableProduct.Outlines),
-                            nameof(ExportableProduct.Images)))
+                            nameof(ExportableProduct.Images),
+                            nameof(ExportableProduct.Configuration),
+                            $"{nameof(ExportableProduct.Configuration)}.{nameof(ProductConfiguration.Sections)}",
+                            $"{nameof(ExportableProduct.Configuration)}.{nameof(ProductConfiguration.Sections)}.{nameof(ProductConfigurationSection.Options)}"))
                         .WithTabularMetadata(typeof(ExportableProduct).GetPropertyNames()));
 
                 registrar.RegisterType(

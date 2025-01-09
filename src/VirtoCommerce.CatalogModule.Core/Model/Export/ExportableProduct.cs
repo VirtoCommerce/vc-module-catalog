@@ -12,7 +12,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model.Export
         public string ImageUrl { get; set; }
         public string Parent { get; set; }
         public string Type { get; set; }
-        public new ProductConfiguration Configuration { get; set; }
+        public ProductConfiguration Configuration { get; set; }
 
         public virtual ExportableProduct FromModel(CatalogProduct source)
         {
@@ -53,7 +53,6 @@ namespace VirtoCommerce.CatalogModule.Core.Model.Export
             Priority = source.Priority;
             OuterId = source.OuterId;
             ImageUrl = source.ImgSrc;
-            Configuration = source.Configuration?.Clone() as ProductConfiguration;
 
             Images = source.Images?.Select(x => x.Clone() as Image).ToList();
             Assets = source.Assets?.Select(x => x.Clone() as Asset).ToList();
