@@ -50,6 +50,20 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             modelBuilder.Entity<CategoryEntity>().ToTable(t =>
                 t.HasCheckConstraint("Parent_category_check", $"\"{nameof(CategoryEntity.ParentCategoryId)}\" != \"{nameof(CategoryEntity.Id)}\""));
 
+            modelBuilder.Entity<LocalizedStringEntity<CategoryEntity>>(builder =>
+            {
+                builder.ToTable("CategoryLocalizedName").HasKey(x => x.Id);
+                builder.Property(x => x.Id).HasMaxLength(128).ValueGeneratedOnAdd();
+
+                builder.HasOne(x => x.ParentEntity)
+                    .WithMany(p => p.LocalizedName)
+                    .HasForeignKey(x => x.ParentEntityId)
+                    .IsRequired()
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                builder.HasIndex(x => new { x.LanguageCode, x.ParentEntityId }).IsUnique()
+                    .HasDatabaseName("IX_CategoryLocalizedName_LanguageCode_ParentEntityId");
+            });
             #endregion Category
 
             #region Item
@@ -73,6 +87,21 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             modelBuilder.Entity<ItemEntity>().HasIndex(x => new { x.CreatedDate, x.ParentId }).IsUnique(false).HasDatabaseName("IX_CreatedDate_ParentId");
 
             modelBuilder.Entity<ItemEntity>().Property(x => x.PackSize).HasDefaultValue(1);
+
+            modelBuilder.Entity<LocalizedStringEntity<ItemEntity>>(builder =>
+            {
+                builder.ToTable("ItemLocalizedName").HasKey(x => x.Id);
+                builder.Property(x => x.Id).HasMaxLength(128).ValueGeneratedOnAdd();
+
+                builder.HasOne(x => x.ParentEntity)
+                    .WithMany(p => p.LocalizedName)
+                    .HasForeignKey(x => x.ParentEntityId)
+                    .IsRequired()
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                builder.HasIndex(x => new { x.LanguageCode, x.ParentEntityId }).IsUnique()
+                    .HasDatabaseName("IX_ItemLocalizedName_LanguageCode_ParentEntityId");
+            });
 
             #endregion Item
 

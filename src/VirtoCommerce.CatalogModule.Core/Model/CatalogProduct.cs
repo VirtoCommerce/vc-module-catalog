@@ -40,6 +40,9 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         /// </summary>
         public string Name { get; set; }
 
+        public LocalizedString LocalizedName { get; set; }
+
+
         /// <summary>
         /// The ID of the catalog to which this product belongs.
         /// </summary>
@@ -460,7 +463,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
             var result = this.CloneTyped();
 
             result.Id = null;
-
+            result.LocalizedName = (LocalizedString)LocalizedName?.GetCopy();
             result.Images = Images?.Select(x => x.GetCopy()).OfType<Image>().ToList();
             result.Assets = Assets?.Select(x => x.GetCopy()).OfType<Asset>().ToList();
             result.Properties = Properties?.Select(x => x.GetCopy()).OfType<Property>().ToList();
@@ -550,6 +553,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
             result.Links = Links?.Select(x => x.CloneTyped()).ToList();
             result.Variations = Variations?.Select(x => x.CloneTyped()).ToList();
             //result.Outlines = Outlines?.Select(x => x.CloneTyped()).ToList(); // Intentionally temporary disabled due to memory overhead
+            result.LocalizedName = LocalizedName?.CloneTyped();
 
             return result;
         }

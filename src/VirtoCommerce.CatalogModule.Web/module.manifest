@@ -26,7 +26,7 @@
   <iconUrl>Modules/$(VirtoCommerce.Catalog)/Content/logo.png</iconUrl>
   <requireLicenseAcceptance>false</requireLicenseAcceptance>
   <releaseNotes>Third version.</releaseNotes>
-  <copyright>Copyright © 2011-2024 Virto Commerce. All rights reserved</copyright>
+  <copyright>Copyright © 2011-2025 Virto Commerce. All rights reserved</copyright>
   <tags>catalog</tags>
   <assemblyFile>VirtoCommerce.CatalogModule.Web.dll</assemblyFile>
   <moduleType>VirtoCommerce.CatalogModule.Web.Module, VirtoCommerce.CatalogModule.Web</moduleType>

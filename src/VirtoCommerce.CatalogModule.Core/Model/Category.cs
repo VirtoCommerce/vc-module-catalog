@@ -27,6 +27,9 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         public string Code { get; set; }
 
         public string Name { get; set; }
+
+        public LocalizedString LocalizedName { get; set; }
+
         /// <summary>
         /// Category outline in physical catalog (all parent categories ids concatenated. E.g. (1/21/344))
         /// </summary>
@@ -166,6 +169,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
             result.Links = Links?.Select(x => x.CloneTyped()).ToList();
             result.Descriptions = Descriptions?.Select(x => x.CloneTyped()).ToList();
             //result.Images = Images?.Select(x => x.CloneTyped()).ToList(); // Intentionally temporary disabled due to memory overhead
+            result.LocalizedName = LocalizedName?.CloneTyped();
 
             return result;
         }

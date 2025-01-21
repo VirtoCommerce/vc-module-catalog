@@ -140,6 +140,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             }
 
             var result = await Categories
+                .Include(x => x.LocalizedName)
                 .Where(x => categoriesIds.Contains(x.Id))
                 .ToListAsync();
 
@@ -216,6 +217,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             // Use breaking query EF performance concept https://docs.microsoft.com/en-us/ef/ef6/fundamentals/performance/perf-whitepaper#8-loading-related-entities
             var result = await Items
                 .Include(x => x.Images)
+                .Include(x => x.LocalizedName)
                 .Where(x => itemIds.Contains(x.Id))
                 .ToListAsync();
 

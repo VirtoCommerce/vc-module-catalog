@@ -16,6 +16,10 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         [Required]
         public string Name { get; set; }
 
+
+        public ObservableCollection<LocalizedStringEntity<ItemEntity>> LocalizedName { get; set; }
+            = new NullCollection<LocalizedStringEntity<ItemEntity>>();
+
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
 
@@ -179,6 +183,15 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             product.Reviews = EditorialReviews.Select(x => x.ToModel(AbstractTypeFactory<EditorialReview>.TryCreateInstance())).ToList();
             // SeoInfos
             product.SeoInfos = SeoInfos.Select(x => x.ToModel(AbstractTypeFactory<SeoInfo>.TryCreateInstance())).ToList();
+            // LocalizedName
+            if (LocalizedName != null)
+            {
+                product.LocalizedName = new LocalizedString();
+                foreach (var localizedName in LocalizedName)
+                {
+                    product.LocalizedName.Set(localizedName.LanguageCode, localizedName.Value);
+                }
+            }
 
             product.Properties = new List<Property>();
             if (convertAssociations)
@@ -380,6 +393,13 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 Childrens = new ObservableCollection<ItemEntity>(product.Variations.Select(x => AbstractTypeFactory<ItemEntity>.TryCreateInstance().FromModel(x, pkMap)));
             }
 
+            #region LocalizedName
+            if (product.LocalizedName != null)
+            {
+                LocalizedName = new ObservableCollection<LocalizedStringEntity<ItemEntity>>(product.LocalizedName.Values.ToList().Select(x => AbstractTypeFactory<LocalizedStringEntity<ItemEntity>>.TryCreateInstance().FromModel(x.Key, x.Value)));
+            }
+            #endregion
+
             return this;
         }
 
@@ -480,6 +500,14 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             if (!Childrens.IsNullCollection())
             {
                 Childrens.Patch(target.Childrens, (sourceChildren, targetChildren) => sourceChildren.Patch(targetChildren));
+            }
+            #endregion
+
+            #region LocalizedName
+            if (!LocalizedName.IsNullCollection())
+            {
+                var localizedNameComparer = AnonymousComparer.Create((LocalizedStringEntity<ItemEntity> x) => $"{x.Value}-{x.LanguageCode}");
+                LocalizedName.Patch(target.LocalizedName, localizedNameComparer, (sourceDisplayName, targetDisplayName) => sourceDisplayName.Patch(targetDisplayName));
             }
             #endregion
         }

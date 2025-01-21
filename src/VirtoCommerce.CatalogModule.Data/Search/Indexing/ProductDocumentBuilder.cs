@@ -160,6 +160,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             document.AddFilterableStringAndContentString("sku", product.Code);
             document.AddFilterableStringAndContentString("code", product.Code);
             document.AddSuggestableStringAndContentString("name", product.Name);
+            IndexLocalizedName(document, product.LocalizedName);
             document.AddFilterableDateTime("startdate", product.StartDate);
             document.AddFilterableDateTime("enddate", product.EndDate ?? DateTime.MaxValue);
             document.AddFilterableDateTime("createddate", product.CreatedDate);
@@ -250,6 +251,17 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             IndexCustomProperties(document, variation.Properties, [PropertyType.Variation]);
             IndexDescriptions(document, variation.Reviews);
             IndexSeoInformation(document, variation.SeoInfos);
+        }
+
+        protected virtual void IndexLocalizedName(IndexDocument document, LocalizedString localizedString)
+        {
+            if (localizedString != null)
+            {
+                foreach (var langCode in localizedString.Values.Keys)
+                {
+                    document.AddContentString(localizedString.Get(langCode), langCode);
+                }
+            }
         }
 
         protected virtual void IndexTypeProperty(IndexDocument document, string value)

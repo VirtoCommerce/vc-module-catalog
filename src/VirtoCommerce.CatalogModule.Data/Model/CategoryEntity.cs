@@ -25,6 +25,9 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         [StringLength(128)]
         public string Name { get; set; }
 
+        public ObservableCollection<LocalizedStringEntity<CategoryEntity>> LocalizedName { get; set; }
+    = new NullCollection<LocalizedStringEntity<CategoryEntity>>();
+
         public DateTime StartDate { get; set; }
 
         public DateTime? EndDate { get; set; }
@@ -128,6 +131,17 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             category.Properties = Properties.Select(x => x.ToModel(AbstractTypeFactory<Property>.TryCreateInstance()))
                                            .OrderBy(x => x.Name)
                                            .ToList();
+
+            // LocalizedName
+            if (LocalizedName != null)
+            {
+                category.LocalizedName = new LocalizedString();
+                foreach (var localizedName in LocalizedName)
+                {
+                    category.LocalizedName.Set(localizedName.LanguageCode, localizedName.Value);
+                }
+            }
+
             foreach (var property in category.Properties)
             {
                 property.IsReadOnly = property.Type != PropertyType.Category;
@@ -258,6 +272,11 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 CategoryDescriptions = new ObservableCollection<CategoryDescriptionEntity>(category.Descriptions.Where(x => !x.IsInherited).Select(x => AbstractTypeFactory<CategoryDescriptionEntity>.TryCreateInstance().FromModel(x, pkMap)));
             }
 
+            if (category.LocalizedName != null)
+            {
+                LocalizedName = new ObservableCollection<LocalizedStringEntity<CategoryEntity>>(category.LocalizedName.Values.ToList().Select(x => AbstractTypeFactory<LocalizedStringEntity<CategoryEntity>>.TryCreateInstance().FromModel(x.Key, x.Value)));
+            }
+
             return this;
         }
 
@@ -300,6 +319,12 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             if (!CategoryDescriptions.IsNullCollection())
             {
                 CategoryDescriptions.Patch(target.CategoryDescriptions, (sourceDescription, targetDescription) => sourceDescription.Patch(targetDescription));
+            }
+
+            if (!LocalizedName.IsNullCollection())
+            {
+                var localizedNameComparer = AnonymousComparer.Create((LocalizedStringEntity<CategoryEntity> x) => $"{x.Value}-{x.LanguageCode}");
+                LocalizedName.Patch(target.LocalizedName, localizedNameComparer, (sourceDisplayName, targetDisplayName) => sourceDisplayName.Patch(targetDisplayName));
             }
         }
     }
