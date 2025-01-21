@@ -17,17 +17,15 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         private readonly IItemService _itemService;
         private readonly ICategorySearchService _categorySearchService;
         private readonly ICatalogSearchService _catalogSearchService;
-        private readonly IProductConfigurationSearchService _configurationSearchService;
 
         public CatalogExportPagedDataSourceFactory(
-            IPropertySearchService propertySearchService,
-            IPropertyDictionaryItemSearchService propertyDictionaryItemSearchService,
-            IBlobStorageProvider blobStorageProvider,
-            IProductSearchService productSearchService,
-            IItemService itemService,
-            ICategorySearchService categorySearchService,
-            ICatalogSearchService catalogSearchService,
-            IProductConfigurationSearchService configurationSearchService)
+            IPropertySearchService propertySearchService
+            , IPropertyDictionaryItemSearchService propertyDictionaryItemSearchService
+            , IBlobStorageProvider blobStorageProvider
+            , IProductSearchService productSearchService
+            , IItemService itemService
+            , ICategorySearchService categorySearchService
+            , ICatalogSearchService catalogSearchService)
         {
             _propertySearchService = propertySearchService;
             _propertyDictionaryItemSearchService = propertyDictionaryItemSearchService;
@@ -36,7 +34,6 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             _itemService = itemService;
             _categorySearchService = categorySearchService;
             _catalogSearchService = catalogSearchService;
-            _configurationSearchService = configurationSearchService;
         }
 
         public virtual IPagedDataSource Create(ExportDataQuery dataQuery)
@@ -53,7 +50,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             }
             else if (dataQuery is ProductFullExportDataQuery productFullExportQuery)
             {
-                result = new ProductExportPagedDataSource(_blobStorageProvider, _itemService, _productSearchService, productFullExportQuery.ToProductExportDataQuery(), _configurationSearchService);
+                result = new ProductExportPagedDataSource(_blobStorageProvider, _itemService, _productSearchService, productFullExportQuery.ToProductExportDataQuery());
             }
             else if (dataQuery is CategoryExportDataQuery categoryExportQuery)
             {
@@ -65,7 +62,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             }
             else if (dataQuery is ProductExportDataQuery productExportQuery)
             {
-                result = new ProductExportPagedDataSource(_blobStorageProvider, _itemService, _productSearchService, productExportQuery, _configurationSearchService);
+                result = new ProductExportPagedDataSource(_blobStorageProvider, _itemService, _productSearchService, productExportQuery);
             }
             else if (dataQuery is CatalogFullExportDataQuery catalogFullExportQuery)
             {

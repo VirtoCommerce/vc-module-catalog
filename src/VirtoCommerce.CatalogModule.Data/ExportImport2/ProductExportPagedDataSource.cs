@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using VirtoCommerce.AssetsModule.Core.Assets;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Export;
@@ -19,21 +18,14 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         private readonly IBlobStorageProvider _blobStorageProvider;
         private readonly IItemService _itemService;
         private readonly IProductSearchService _productSearchService;
-        private readonly IProductConfigurationSearchService _configurationSearchService;
 
-        public ProductExportPagedDataSource(
-            IBlobStorageProvider blobStorageProvider,
-            IItemService itemService,
-            IProductSearchService productSearchService,
-            ProductExportDataQuery dataQuery,
-            IProductConfigurationSearchService configurationSearchService)
-            : base(dataQuery)
+        public ProductExportPagedDataSource(IBlobStorageProvider blobStorageProvider, IItemService itemService, IProductSearchService productSearchService, ProductExportDataQuery dataQuery) : base(dataQuery)
         {
             _blobStorageProvider = blobStorageProvider;
             _itemService = itemService;
             _productSearchService = productSearchService;
-            _configurationSearchService = configurationSearchService;
         }
+
 
         protected override ExportableSearchResult FetchData(ProductSearchCriteria searchCriteria)
         {
@@ -72,17 +64,11 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         {
             var models = objects.Cast<CatalogProduct>();
 
-            var exportableProductsTasks = models.Select(async x =>
+            var exportableProducts = models.Select(x =>
             {
                 var exportableProduct = AbstractTypeFactory<ExportableProduct>.TryCreateInstance().FromModel(x);
-
-                var searchResult = await _configurationSearchService.SearchNoCloneAsync(new ProductConfigurationSearchCriteria { ProductId = exportableProduct.Id });
-                exportableProduct.Configuration = searchResult.Results.FirstOrDefault();
-
                 return exportableProduct;
             });
-
-            var exportableProducts = Task.WhenAll(exportableProductsTasks).Result;
 
             return exportableProducts;
         }

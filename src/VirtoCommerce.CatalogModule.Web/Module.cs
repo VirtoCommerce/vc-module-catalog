@@ -17,7 +17,6 @@ using VirtoCommerce.CatalogModule.BulkActions.Services;
 using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Events;
 using VirtoCommerce.CatalogModule.Core.Model;
-using VirtoCommerce.CatalogModule.Core.Model.Configuration;
 using VirtoCommerce.CatalogModule.Core.Model.Export;
 using VirtoCommerce.CatalogModule.Core.Model.OutlinePart;
 using VirtoCommerce.CatalogModule.Core.Options;
@@ -314,7 +313,7 @@ namespace VirtoCommerce.CatalogModule.Web
 
             // Ensure that required dynamic properties are always registered in the system
             var dynamicPropertyService = appBuilder.ApplicationServices.GetRequiredService<IDynamicPropertyService>();
-            dynamicPropertyService.SaveDynamicPropertiesAsync([
+            dynamicPropertyService.SaveDynamicPropertiesAsync(new[] {
                     new DynamicProperty
                     {
                         Id = BrowseFilterService.FilteredBrowsingPropertyId,
@@ -323,7 +322,7 @@ namespace VirtoCommerce.CatalogModule.Web
                         ValueType = DynamicPropertyValueType.LongText,
                         CreatedBy = "Auto"
                     }
-                ]).GetAwaiter().GetResult();
+                }).GetAwaiter().GetResult();
 
             #region Register types for generic Export
 
@@ -346,10 +345,7 @@ namespace VirtoCommerce.CatalogModule.Web
                             nameof(ExportableProduct.Associations),
                             nameof(ExportableProduct.ReferencedAssociations),
                             nameof(ExportableProduct.Outlines),
-                            nameof(ExportableProduct.Images),
-                            nameof(ExportableProduct.Configuration),
-                            $"{nameof(ExportableProduct.Configuration)}.{nameof(ProductConfiguration.Sections)}",
-                            $"{nameof(ExportableProduct.Configuration)}.{nameof(ProductConfiguration.Sections)}.{nameof(ProductConfigurationSection.Options)}"))
+                            nameof(ExportableProduct.Images)))
                         .WithTabularMetadata(typeof(ExportableProduct).GetPropertyNames()));
 
                 registrar.RegisterType(

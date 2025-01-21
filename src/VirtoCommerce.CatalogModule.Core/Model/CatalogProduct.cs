@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using VirtoCommerce.CatalogModule.Core.Extensions;
-using VirtoCommerce.CatalogModule.Core.Model.Configuration;
 using VirtoCommerce.CatalogModule.Core.Serialization;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.CoreModule.Core.Outlines;

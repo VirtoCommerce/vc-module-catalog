@@ -178,7 +178,10 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 await writer.WritePropertyNameAsync("ProductConfigurations");
                 await writer.SerializeArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
                 {
-                    var searchResult = await _configurationSearchService.SearchNoCloneAsync(new ProductConfigurationSearchCriteria { Skip = skip, Take = take });
+                    var searchCriteria = AbstractTypeFactory<ProductConfigurationSearchCriteria>.TryCreateInstance();
+                    searchCriteria.Skip = skip;
+                    searchCriteria.Take = take;
+                    var searchResult = await _configurationSearchService.SearchNoCloneAsync(searchCriteria);
 
                     foreach (var item in searchResult.Results)
                     {
