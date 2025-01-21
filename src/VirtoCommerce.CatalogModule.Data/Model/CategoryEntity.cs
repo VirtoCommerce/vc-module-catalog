@@ -274,7 +274,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
             if (category.LocalizedName != null)
             {
-                LocalizedName = new ObservableCollection<LocalizedStringEntity<CategoryEntity>>(category.LocalizedName.Values.ToList().Select(x => AbstractTypeFactory<LocalizedStringEntity<CategoryEntity>>.TryCreateInstance().FromModel(x.Key, x.Value)));
+                LocalizedName = new ObservableCollection<LocalizedStringEntity<CategoryEntity>>(category.LocalizedName.Values.Select(x => AbstractTypeFactory<LocalizedStringEntity<CategoryEntity>>.TryCreateInstance().FromModel(x.Key, x.Value)));
             }
 
             return this;
