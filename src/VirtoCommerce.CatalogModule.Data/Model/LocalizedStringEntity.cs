@@ -19,15 +19,15 @@ public class LocalizedStringEntity<T> : Entity
 
     public virtual LocalizedString ToModel(LocalizedString item)
     {
-        ArgumentNullException.ThrowIfNull(item, nameof(item));
+        ArgumentNullException.ThrowIfNull(item);
 
         return item;
     }
 
     public virtual LocalizedStringEntity<T> FromModel(string languageCode, string value)
     {
-        ArgumentNullException.ThrowIfNull(languageCode, nameof(languageCode));
-        ArgumentNullException.ThrowIfNull(value, nameof(value));
+        ArgumentNullException.ThrowIfNull(languageCode);
+        ArgumentNullException.ThrowIfNull(value);
 
         LanguageCode = languageCode;
         Value = value;

@@ -405,10 +405,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
         public virtual void Patch(ItemEntity target)
         {
-            if (target == null)
-            {
-                throw new ArgumentNullException(nameof(target));
-            }
+            ArgumentNullException.ThrowIfNull(target);
 
             target.IsBuyable = IsBuyable;
             target.IsActive = IsActive;
