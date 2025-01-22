@@ -25,9 +25,9 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly IAuthorizationService _authorizationService;
 
         public CatalogModuleCatalogsController(
-            ICatalogService catalogService
-            , ICatalogSearchService catalogSearchService
-            , IAuthorizationService authorizationService
+            ICatalogService catalogService,
+            ICatalogSearchService catalogSearchService,
+            IAuthorizationService authorizationService
             )
         {
             _catalogService = catalogService;
@@ -158,6 +158,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 var seoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
                 seoInfo.LanguageCode = defaultLanguage;
                 seoInfo.SemanticUrl = "catalog";
+                seoInfo.PageTitle = "Catalog";
                 catalog.SeoInfos = [seoInfo];
             }
 
