@@ -6,7 +6,7 @@
     "properties": {
       "catalog": "Właściwości katalogu",
       "product": "Właściwości produktu",
-      "variation": "Właściwości wariantu",
+      "variation": "Właściwości wariacji",
       "category": "Właściwości kategorii",
       "geoPoint": {
         "title": "Punkt geograficzny",
@@ -17,7 +17,7 @@
     "product-types": {
       "Physical": "Fizyczny",
       "Digital": "Cyfrowy",
-      "BillOfMaterials": "Produkt z listą materiałową"
+      "BillOfMaterials": "Produkt z listą materiałów"
     },
     "blades": {
       "catalogs-list": {
@@ -30,15 +30,15 @@
       },
       "catalog-add": {
         "title": "Nowy katalog",
-        "subtitle": "Wybierz typ nowego katalogu",
+        "subtitle": "Wybierz nowy typ katalogu",
         "menu": {
           "catalog": {
             "title": "Katalog fizyczny",
-            "description": "Katalog fizyczny to internetowa lista produktów lub usług oferowanych przez firmę. Produkty mogą być pogrupowane w kategorie lub być częścią katalogu bez przynależności do żadnej kategorii"
+            "description": "Katalog fizyczny to lista produktów lub usług oferowanych przez firmę online. Produkty mogą być grupowane w kategorie lub być częścią katalogu bez przynależności do jakiejkolwiek kategorii"
           },
           "virtual-catalog": {
             "title": "Katalog wirtualny",
-            "description": "Katalog wirtualny jest zbudowany z jednego lub więcej katalogów fizycznych. Służą do wyświetlania produktów poprzez łączenie elementów z różnych katalogów fizycznych"
+            "description": "Katalog wirtualny jest tworzony z jednego lub więcej katalogów fizycznych. Służą do wyświetlania produktów poprzez łączenie elementów z różnych katalogów fizycznych"
           }
         }
       },
@@ -59,7 +59,7 @@
         "subtitle": "Zarządzaj językami",
         "labels": {
           "note": "Przeciągnij i upuść, aby kontrolować kolejność. Pierwszy aktywny element staje się domyślnym językiem",
-          "language-dictionary": "Słownik języków",
+          "language-dictionary": "Słownik językowy",
           "active": "Aktywny",
           "language": "Język",
           "default-language": "Domyślny język",
@@ -74,34 +74,37 @@
         "subtitle": "Przeglądanie {{name}}",
         "subtitle-search": "Wyniki wyszukiwania dla \"{{keyword}}\"",
         "title-mapping": "Wybierz kategorie i elementy do mapowania",
-        "subtitle-mapping": "Tworzenie linku w twoim katalogu wirtualnym",
+        "subtitle-mapping": "Tworzenie linku w ramach twojego katalogu wirtualnego",
         "labels": {
           "filter-new": "Dodaj nowy filtr",
           "filter-priceless": "Bez ceny",
-          "filter-withPrice": "Zdefiniowana cena",
-          "filter-priceRange": "Zakres cenowy",
+          "filter-withPrice": "Określona cena",
+          "filter-priceRange": "Zakres cen",
           "filter-lowStock": "Niski stan magazynowy",
-          "filter-notActive": "Nieaktywne",
-          "filter-display-variations": "Wyświetl warianty",
+          "filter-notActive": "Nieaktywny",
+          "filter-display-variations": "Wyświetl wariacje",
           "unnamed-filter": "Filtruj według",
           "result-grouping": "Grupuj wyniki według:",
           "result-grouping-none": "Brak",
           "result-grouping-$path": "Kategoria",
-          "inactive": "Nieaktywne",
-          "hidden": "Ukryte",
-          "picture": "Zdjęcie",
+          "inactive": "Nieaktywny",
+          "hidden": "Ukryty",
+          "picture": "Obraz",
           "name": "Nazwa",
           "sku": "SKU"
         },
         "placeholders": {
           "select-filter": "Wybierz filtr"
+        },
+        "descr": {
+          "title-mapping": "Jest mapowany na tę wirtualną lokalizację"
         }
       },
       "category-detail": {
         "subtitle": "Szczegóły kategorii",
         "parent-disabled-alert": "Kategoria nadrzędna jest ukryta",
         "labels": {
-          "is-active": "Widoczna",
+          "is-active": "Widoczny",
           "name": "Nazwa",
           "code": "Kod",
           "tax-type": "Typ podatku",
@@ -114,16 +117,16 @@
           "name": "Wprowadź nazwę kategorii",
           "code": "Wprowadź kod kategorii",
           "select": "Wybierz...",
-          "priority": "Wprowadź liczbę"
+          "priority": "Wprowadź numer"
         }
       },
       "categories-items-add": {
         "title": "Nowy element kategorii",
-        "subtitle": "Wybierz typ nowego elementu",
+        "subtitle": "Wybierz nowy typ elementu",
         "menu": {
           "category": {
             "title": "Kategoria",
-            "description": "To jest kontener dla innych kategorii, produktów lub wariantów"
+            "description": "To jest kontener dla innych kategorii, produktów lub wariacji"
           },
           "link": {
             "title": "Link",
@@ -138,14 +141,14 @@
             "description": "To jest niematerialny przedmiot dostępny do zakupu. Może być pobrany bezpośrednio po zakupie, co oznacza, że nie wymaga fizycznej wysyłki. Produkty cyfrowe są również odpowiednie do ukierunkowanych promocji"
           },
           "bill-of-materials-product": {
-            "title": "Produkt z listą materiałową",
-            "description": "To jest produkt fizyczny, który zawiera listę materiałową (listę dodatkowych elementów). Może być używany do konkretnych promocji i wymaga fizycznej wysyłki"
+            "title": "Produkt z listą materiałów",
+            "description": "To jest produkt fizyczny, który zawiera listę materiałów (listę dodatkowych elementów). Może być używany do określonych promocji i wymaga fizycznej wysyłki"
           }
         },
         "catalog-item-name": "Katalog",
-        "catalog-item-description": "To jest centralny punkt do zarządzania towarem w sklepie i tworzenia katalogów dla marek, linii produktów lub konkretnych dostawców",
+        "catalog-item-description": "To jest centralny punkt zarządzania towarami w sklepie i tworzenia katalogów dla marek, linii produktów lub określonych dostawców",
         "virtual-catalog-item-name": "Katalog wirtualny",
-        "virtual-catalog-item-description": "Katalog wirtualny jest zbudowany z jednego lub więcej katalogów fizycznych. Służą do wyświetlania produktów poprzez łączenie elementów z różnych katalogów fizycznych"
+        "virtual-catalog-item-description": "Katalog wirtualny jest tworzony z jednego lub więcej katalogów fizycznych. Służą do wyświetlania produktów poprzez łączenie elementów z różnych katalogów fizycznych"
       },
       "catalog-property-list": {
         "subtitle": "Właściwości katalogu",
@@ -160,7 +163,7 @@
         "labels": {
           "criteria": "Fraza wyszukiwania",
           "name": "Nazwa filtra",
-          "searchInVariations": "Wyświetl warianty produktu"
+          "searchInVariations": "Wyświetl wariacje produktów"
         },
         "placeholders": {
           "criteria": "Wprowadź frazę wyszukiwania",
@@ -176,15 +179,15 @@
           "display-order": "Kolejność wyświetlania",
           "required": "Wymagane",
           "dictionary": "Słownik",
-          "multivalue": "Wielowartościowe",
-          "multi-language": "Wielojęzyczne",
+          "multivalue": "Wielowartościowy",
+          "multi-language": "Wielojęzyczny",
           "applies-to": "Dotyczy",
           "value-type": "Typ wartości",
           "manage-dictionary": "Zarządzaj słownikiem",
-          "new-dictionary-property-caution": "Możesz zarządzać elementami słownika dopiero po zapisaniu właściwości",
+          "new-dictionary-property-caution": "Możesz zarządzać elementami słownika tylko po zapisaniu właściwości",
           "attributes": "Atrybuty",
           "manage-attributes": "Zarządzaj atrybutami właściwości",
-          "hidden": "Ukryte"
+          "hidden": "Ukryty"
         },
         "placeholders": {
           "display-name": "Wprowadź nazwę wyświetlaną",
@@ -192,12 +195,12 @@
         }
       },
       "property-validationRule": {
-        "title": "Reguły walidacji",
-        "subtitle": "Zarządzaj regułami walidacji",
+        "title": "Zasady walidacji",
+        "subtitle": "Zarządzaj zasadami walidacji",
         "match-validation-pattern": "Dopasuj do określonego wzorca",
         "character-count": "Ogranicz liczbę znaków",
         "character-limit": {
-          "between": "między",
+          "between": "pomiędzy",
           "at-least": "co najmniej",
           "not-more-than": "nie więcej niż"
         },
@@ -210,7 +213,7 @@
         "descriptions": {
           "require": "Ta właściwość jest wymagana",
           "character-limit": "Określ minimalną i/lub maksymalną dozwoloną liczbę znaków",
-          "pattern": "Spraw, aby to pole pasowało do wzorca, takiego jak adres email, URL lub niestandardowe wyrażenie regularne. Na przykład: ^[a-z]{6,15}$"
+          "pattern": "Spraw, aby to pole pasowało do wzorca, takiego jak adres e-mail, URL lub niestandardowe wyrażenie regularne. Na przykład: ^[a-z]{6,15}$"
         }
       },
       "property-list": {
@@ -249,15 +252,15 @@
           "property-name": "Nazwa właściwości",
           "duplicate-property-in-product": "Właściwość o nazwie {{propertyName}} już istnieje w {{categoryName}}. Nazwa musi być unikalna",
           "duplicate-property-in-catalog": "Właściwość o nazwie {{propertyName}} już istnieje w katalogu głównym. Nazwa musi być unikalna",
-          "duplicate-property-in-variation1": "Właściwość o nazwie {{propertyName}} już istnieje dla tego wariantu",
+          "duplicate-property-in-variation1": "Właściwość o nazwie {{propertyName}} już istnieje dla tej wariacji",
           "duplicate-property-in-variation2": ". Nazwa musi być unikalna",
-          "property-naming-error": "Nazwa właściwości musi zaczynać się od znaku alfanumerycznego i zawierać tylko znaki łacińskie, cyfry i podkreślenia (_). Jeśli używasz podkreślenia (_), upewnij się, że przed nim i po nim znajduje się znak alfanumeryczny",
+          "property-naming-error": "Nazwa właściwości musi zaczynać się od znaku alfanumerycznego i zawierać tylko znaki łacińskie, cyfry i podkreślenia (_). Jeśli użyto podkreślenia (_), upewnij się, że przed i po nim znajduje się znak alfanumeryczny",
           "value-type": "Typ wartości"
         }
       },
       "catalogs-select": {
         "title": "Wybierz katalog",
-        "subtitle": "Tworzenie linku w twoim katalogu wirtualnym"
+        "subtitle": "Tworzenie linku w ramach twojego katalogu wirtualnego"
       },
       "property-valueType": {
         "title": "Typ wartości {{name}}",
@@ -268,14 +271,14 @@
         "subtitle": "Zarządzaj atrybutami",
         "labels": {
           "new-attribute": "Nowy atrybut",
-          "current-attributes": "Bieżące atrybuty",
+          "current-attributes": "Obecne atrybuty",
           "name": "Nazwa",
           "value": "Wartość"
         },
         "validations": {
           "name-required": "Wymagane",
           "value-required": "Wymagane",
-          "name-duplicate": "Znaleziono duplikat nazwy"
+          "name-duplicate": "Znaleziono zduplikowaną nazwę"
         },
         "placeholders": {
           "name": "Wprowadź nazwę",
@@ -284,14 +287,14 @@
       },
       "property-type": {
         "title": "{{name}} dotyczy",
-        "subtitle": "Odpowiednie zmiany"
+        "subtitle": "Соответствующие изменения"
       },
       "property-dictionary": {
         "title": "Słownik {{name}}",
         "subtitle": "Zarządzaj słownikiem",
         "labels": {
           "new-value": "Nowa wartość",
-          "current-values": "Aktualne wartości",
+          "current-values": "Obecne wartości",
           "value": "Wartość",
           "alias": "Alias",
           "sort-order": "Kolejność sortowania",
@@ -299,11 +302,11 @@
           "language-add": "Nowe wartości",
           "dictionary-edit": "Edytuj wartość słownika",
           "priority": "Priorytet",
-          "priority-description": "Najniższa wartość będzie użyta jako pierwsza"
+          "priority-description": "Najniższa wartość będzie używana jako pierwsza"
         },
         "validations": {
           "required": "Wymagane",
-          "duplicate": "Znaleziono duplikat nazwy"
+          "duplicate": "Znaleziono zduplikowaną nazwę"
         },
         "placeholders": {
           "value": "Wprowadź wartość",
@@ -313,14 +316,15 @@
       },
       "item-detail": {
         "subtitle": "Szczegóły elementu {{ productTypeName }}",
-        "subtitle-variation": "Szczegóły wariantu",
+        "subtitle-variation": "Szczegóły wariacji",
+        "hide-description": "Ukryj",
         "labels": {
           "id": "ID",
           "outer-id": "Zewnętrzne ID",
           "sku": "SKU",
           "priority": "Priorytet",
           "name": "Nazwa produktu",
-          "can-be-purchased": "Może być zakupiony",
+          "can-be-purchased": "Można kupić",
           "store-visible": "Widoczny",
           "track-inventory": "Śledź zapasy",
           "has-user-agreement": "Ma umowę użytkownika",
@@ -328,7 +332,7 @@
           "max-quantity": "Maksymalna ilość",
           "pack-size": "Rozmiar opakowania",
           "vendor": "Dostawca",
-          "vendor-denied": "Dostęp zabroniony",
+          "vendor-denied": "Odmowa dostępu",
           "tax-type": "Typ podatku",
           "package-type": "Typ opakowania",
           "weight-unit": "Jednostki masy",
@@ -337,19 +341,20 @@
           "use-package-type": "Takie samo jak opakowanie",
           "measure-unit": "Jednostka miary",
           "max-downloads": "Maksymalna liczba pobrań",
-          "expiration-date": "Data wygaśnięcia pobierania",
-          "download-type": "Typ pobierania",
+          "expiration-date": "Data wygaśnięcia pobrania",
+          "download-type": "Typ pobrania",
           "gtin": "GTIN",
           "mpn": "MPN",
-          "start-date": "Pierwsze wystawienie",
-          "end-date": "Oferta wygasa"
+          "start-date": "Pierwsze umieszczenie",
+          "end-date": "Data wygaśnięcia oferty",
+          "is-configurable": "Konfigurowalny"
         },
         "validations": {
           "sku": "SKU nie może zawierać następujących znaków: $+;=%{}[]|@~!^*&()?'<>"
         },
         "placeholders": {
           "sku": "Wprowadź SKU elementu",
-          "priority": "Wprowadź liczbę",
+          "priority": "Wprowadź numer",
           "name": "Wprowadź nazwę elementu",
           "vendor": "Wybierz...",
           "tax-type": "Wybierz...",
@@ -380,9 +385,9 @@
         }
       },
       "item-variation-list": {
-        "subtitle": "Warianty elementu",
+        "subtitle": "Wariacje elementu",
         "labels": {
-          "no-items": "Brak wariantów",
+          "no-items": "Brak jeszcze wariacji",
           "picture": "Obraz",
           "name": "Nazwa",
           "sku": "SKU",
@@ -390,9 +395,9 @@
         }
       },
       "editorialReviews-list": {
-        "subtitle": "Opisy elementu",
+        "subtitle": "Opisy elementów",
         "labels": {
-          "no-reviews": "Brak opisów elementu"
+          "no-reviews": "Brak jeszcze opisów elementów"
         }
       },
       "editorialReview-detail": {
@@ -412,7 +417,7 @@
       "categoryDescriptions-list": {
         "subtitle": "Opisy kategorii",
         "labels": {
-          "no-descriptions": "Brak opisów elementu"
+          "no-descriptions": "Brak jeszcze opisów elementów"
         }
       },
       "categoryDescription-detail": {
@@ -440,15 +445,15 @@
           "image-category": "Kategoria obrazu",
           "drag-drop-comment": "Przeciągnij i upuść swoje obrazy tutaj",
           "progress": "Postęp",
-          "make-default-image": "Przeciągnij i upuść obraz w lewy górny róg obszaru obrazu, aby ustawić go jako domyślny",
+          "make-default-image": "Przeciągnij i upuść obraz w lewym górnym rogu obszaru obrazu, aby ustawić go jako domyślny",
           "language": "Język",
           "preview": "Podgląd",
           "external-link": "Link zewnętrzny",
-          "altText": "Tekst alternatywny obrazu",
-          "description": "Meta opis"
+          "altText": "Alternatywny tekst obrazu",
+          "description": "Opis meta"
         },
         "placeholders": {
-          "image-url": "Wklej URL obrazu tutaj",
+          "image-url": "Wklej tutaj URL obrazu",
           "name": "Wprowadź nazwę",
           "image-category": "Wybierz",
           "language": "Wybierz język",
@@ -456,7 +461,7 @@
           "description": "Wprowadź opis"
         },
         "descr": {
-          "external-link": "Użyj zewnętrznego URL obrazu zamiast przesyłać go do zasobów",
+          "external-link": "Użyj zewnętrznego URL obrazu zamiast przesyłania go do zasobów",
           "external-link-warning": "Uwaga: Ze względów bezpieczeństwa dozwolone są tylko linki https"
         }
       },
@@ -476,7 +481,7 @@
         "create": "Utwórz",
         "labels": {
           "content-url": "URL treści",
-          "no-apikey": "Nie podano klucza API Google w pliku konfiguracyjnym platformy. Informacje o filmie będą niekompletne"
+          "no-apikey": "Nie podałeś żadnego klucza API Google w pliku konfiguracyjnym platformy. Informacje o filmie będą niekompletne"
         },
         "placeholders": {
           "content-url": "Wprowadź URL filmu"
@@ -493,7 +498,7 @@
           "language": "Język",
           "video": "Film",
           "content-url": "URL treści",
-          "embed-url": "URL osadzony",
+          "embed-url": "Osadzony URL",
           "video-preview": "Podgląd filmu",
           "thumbnail": "Miniatura",
           "thumbnail-url": "URL miniatury",
@@ -511,7 +516,7 @@
         "labels": {
           "category": "Kategoria",
           "language": "Język",
-          "description": "Meta opis"
+          "description": "Opis meta"
         },
         "placeholders": {
           "category": "Wybierz...",
@@ -536,12 +541,17 @@
       "item-associations-list": {
         "subtitle": "Powiązania",
         "labels": {
-          "sorting-prompt": "Ustaw, jak powiązane elementy będą wyświetlane w sklepie internetowym. Przeciągnij i upuść produkty, aby zmienić ich kolejność",
+          "sorting-prompt": "Ustaw, jak powiązane elementy będą się pojawiać w sklepie internetowym. Przeciągnij i upuść produkty, aby zmienić ich kolejność",
           "picture": "Obraz",
           "name": "Nazwa",
           "priority": "Priorytet",
           "group": "Grupa",
-          "quantity": "Ilość"
+          "quantity": "Ilość",
+          "tags": "Tagi"
+        },
+        "descr": {
+          "no-associations": "Brak jeszcze powiązań.",
+          "quantity": "Ilość powiązań"
         }
       },
       "item-association-detail": {
@@ -561,14 +571,14 @@
         "title": "Wyniki wyszukiwania"
       },
       "item-dimensions": {
-        "title": "Wymiary przedmiotu",
-        "subtitle": "Zmień właściwości wymiarów produktu"
+        "title": "Pomiar elementu",
+        "subtitle": "Zmień właściwości pomiaru produktu"
       },
       "asset-select": {
-        "title": "Linkuj obrazy"
+        "title": "Połącz obrazy"
       },
       "images-select": {
-        "title": "Linkuj zasoby"
+        "title": "Połącz zasoby"
       },
       "asset-upload": {
         "title": "Dodaj zasoby"
@@ -589,40 +599,40 @@
         "size": {
           "label": "Rozmiar agregacji",
           "placeholder": "Wprowadź rozmiar agregacji",
-          "description": "Maksymalna liczba wartości agregacji w wynikach wyszukiwania. 0 = bez ograniczeń"
+          "description": "Maksymalna liczba wartości agregacji w wynikach wyszukiwania. 0 = nieograniczone"
         },
         "values-Attribute": {
           "label": "Dozwolone wartości",
           "placeholder": "Wprowadź dozwolone wartości",
-          "description": "Wprowadź wartości agregacji dozwolone w wynikach wyszukiwania. Pozostaw puste, aby zezwolić na wszystkie wartości"
+          "description": "Wprowadź wartości agregacji dozwolone w wynikach wyszukiwania. Pozostaw to puste, aby zezwolić na wszystkie wartości"
         },
         "values-Range": {
           "label": "Granice zakresu",
           "placeholder": "Dodaj liczbę",
-          "description": "Granice zostaną automatycznie posortowane przed zapisaniem. Zakresy są konstruowane następująco: Poniżej [granica 1], [granica 1] do [granica 2], ... , Powyżej [granica N]"
+          "description": "Granice będą sortowane automatycznie przed zapisaniem. Zakresy są konstruowane w następujący sposób: Poniżej [granica 1], [granica 1] do [granica 2], ..., Powyżej [granica N]"
         },
         "values-PriceRange": {
           "label": "Granice zakresu cen",
           "placeholder": "Dodaj liczbę",
-          "description": "Granice zostaną automatycznie posortowane przed zapisaniem. Zakresy cen są konstruowane następująco: Poniżej [granica 1], [granica 1] do [granica 2], ... , Powyżej [granica N]"
+          "description": "Granice będą sortowane automatycznie przed zapisaniem. Zakresy cen są konstruowane w następujący sposób: Poniżej [granica 1], [granica 1] do [granica 2], ..., Powyżej [granica N]"
         }
       },
       "importers-list": {
         "title": "Typy importu",
-        "subtitle": "Wybierz jeden z dostępnych typów importu poniżej"
+        "subtitle": "Wybierz dowolny z dostępnych typów importu poniżej"
       },
       "exporter-list": {
         "title": "Typy eksportu",
-        "subtitle": "Wybierz jeden z dostępnych typów eksportu poniżej"
+        "subtitle": "Wybierz dowolny z dostępnych typów eksportu poniżej"
       },
       "exporter": {
         "productTitle": "Eksportuj produkty katalogu",
         "productSubtitle": "Eksportuj produkty katalogu do JSON lub CSV"
       },
       "bill-of-materials-list": {
-        "title": "Produkty z listą materiałową (BOM)",
+        "title": "Produkty z listą materiałów (BOM)",
         "subtitle": "Dodaj lub usuń produkty BOM",
-        "no-data": "Nie ma jeszcze żadnych produktów",
+        "no-data": "Nie ma jeszcze produktów",
         "labels": {
           "picture": "Obraz",
           "name": "Nazwa",
@@ -647,30 +657,30 @@
             "description": "Pojawia się tylko dla tego katalogu"
           },
           "Variation": {
-            "title": "Właściwość wariantu",
-            "description": "Pojawia się tylko dla powiązanych wariantów"
+            "title": "Właściwość wariacji",
+            "description": "Pojawia się tylko dla powiązanych wariacji"
           }
         }
       },
       "links-list": {
         "title": "Linki",
         "labels": {
-          "no-data": "Nie ma jeszcze żadnych linków",
+          "no-data": "Brak jeszcze linków",
           "add-links": "Dodaj nowy link",
-          "marked": "Zaznaczone"
+          "marked": "Oznaczone"
         }
       },
       "measures-list": {
-        "title": "Jednostki miar",
-        "subtitle": "Lista dostępnych miar",
+        "title": "Jednostki miary",
+        "subtitle": "Lista dostępnych jednostek",
         "labels": {
           "name": "Nazwa"
         }
       },
       "measure-details": {
-        "title": "Miara {{name}}",
-        "title-new": "Dodaj nową miarę",
-        "subtitle": "Szczegóły miary",
+        "title": "{{name}} jednostka",
+        "title-new": "Dodaj nową jednostkę",
+        "subtitle": "Szczegóły jednostki",
         "labels": {
           "name": "Nazwa",
           "code": "Kod",
@@ -683,7 +693,7 @@
         }
       },
       "measure-units-list": {
-        "title": "Jednostki miary {{name}}",
+        "title": "{{name}} jednostki miary",
         "subtitle": "Lista jednostek miary",
         "labels": {
           "name": "Nazwa",
@@ -692,7 +702,7 @@
         }
       },
       "measure-unit-details": {
-        "title": "Jednostka miary {{name}}",
+        "title": "{{name}} jednostka miary",
         "title-new": "Nowa jednostka miary",
         "subtitle": "Szczegóły jednostki miary",
         "labels": {
@@ -707,11 +717,56 @@
           "conversion-factor": "Wprowadź konwersję",
           "symbol": "Symbol"
         }
+      },
+      "configuration-details": {
+        "title": "Konfiguracja produktu",
+        "hide-description": "Ukryj",
+        "labels": {
+          "enable": "Włącz konfigurację",
+          "name": "Nazwa sekcji",
+          "quantity": "Opcje",
+          "sections": "Sekcje"
+        },
+        "descr": {
+          "enable": "Aktywacja funkcjonalności konfiguracji produktu. Aby aktywować, konfiguracja musi zawierać co najmniej jedną sekcję, a każda sekcja musi zawierać co najmniej jedną opcję",
+          "no-sections": "Brak jeszcze sekcji w tej konfiguracji",
+          "sorting-prompt": "Ustaw kolejność, w jakiej sekcje pojawiają się w sklepie internetowym. Przeciągnij i upuść sekcje, aby zmienić ich kolejność"
+        },
+        "commands": {
+          "add": "Dodaj sekcję"
+        }
+      },
+      "section-details": {
+        "title": "Nowa sekcja",
+        "labels": {
+          "name": "Nazwa sekcji",
+          "description": "Opis",
+          "required": "Wymagany wybór opcji",
+          "picture": "Obraz",
+          "quantity": "Ilość",
+          "product-name": "Nazwa produktu",
+          "options": "Opcje"
+        },
+        "descr": {
+          "no-options": "Brak jeszcze opcji w tej sekcji"
+        },
+        "commands": {
+          "add": "Dodaj opcje"
+        }
+      },
+      "option-details": {
+        "title": "Wybierz elementy jako opcje",
+        "labels": {
+          "quantity": "Ilość"
+        },
+        "placeholders": {
+          "quantity": "Określ ilość"
+        } 
       }
     },
     "exporter-list": {
       "title": "Typy eksportu",
-      "subtitle": "Wybierz jeden z dostępnych typów eksportu poniżej"
+      "subtitle": "Wybierz dowolny z dostępnych typów eksportu poniżej"
     },
     "exporter": {
       "productTitle": "Eksportuj produkty katalogu",
@@ -732,7 +787,7 @@
         "title": "Właściwości"
       },
       "editorialReview": {
-        "blade-subtitle": "Opisy przedmiotu",
+        "blade-subtitle": "Opisy elementów",
         "title": "Opisy"
       },
       "categoryDescription": {
@@ -740,7 +795,7 @@
         "title": "Opis"
       },
       "itemAsset": {
-        "blade-subtitle": "Zasoby przedmiotu",
+        "blade-subtitle": "Zasoby elementu",
         "title": "Zasoby"
       },
       "itemAssociations": {
@@ -752,22 +807,22 @@
         "no-images": "Brak obrazów"
       },
       "itemProperty": {
-        "blade-subtitle": "Właściwości przedmiotu",
+        "blade-subtitle": "Właściwości elementu",
         "title": "Właściwości"
       },
       "itemVariation": {
-        "blade-subtitle": "Warianty przedmiotu",
-        "title": "Warianty"
+        "blade-subtitle": "Wariacje elementu",
+        "title": "Wariacje"
       },
       "itemDimensions": {
-        "title": "Waga i Rozmiar",
+        "title": "Waga i rozmiar",
         "weight": "Waga",
         "length": "Długość",
         "width": "Szerokość",
         "height": "Wysokość"
       },
       "billOfMaterials": {
-        "title": "Lista materiałowa"
+        "title": "Lista materiałów"
       },
       "videos": {
         "blade-subtitle": "Filmy",
@@ -790,32 +845,32 @@
       },
       "catalog-delete": {
         "title": "Potwierdź usunięcie",
-        "warning": "UWAGA: Ta zmiana jest trwała i nie można jej cofnąć. Zastosowanie tej zmiany może spowodować utratę danych",
+        "warning": "OSTRZEŻENIE: Ta zmiana jest trwała i nie może zostać cofnięta. Zastosowanie tej zmiany może skutkować utratą danych",
         "message": "Czy na pewno chcesz usunąć ten katalog?",
-        "instruction": "Wpisz 'tak', aby usunąć:"
+        "instruction": "Wpisz 'yes', aby usunąć:"
       },
       "catalog-items-delete": {
         "title": "Potwierdź usunięcie",
-        "warning": "UWAGA: Ta zmiana jest trwała i nie można jej cofnąć. Zastosowanie tej zmiany może spowodować utratę danych",
+        "warning": "OSTRZEŻENIE: Ta zmiana jest trwała i nie może zostać cofnięta. Zastosowanie tej zmiany może skutkować utratą danych",
         "message": "Następujące dane zostaną usunięte:",
-        "instruction": "Wpisz 'tak', aby usunąć:",
-        "item": "{{count}} Przedmiot(ów)",
-        "category": "{{count}} Kategoria(e) i cała zawartość",
-        "linked-item": "{{count}} Powiązany(ch) przedmiot(ów)",
-        "linked-category": "{{count}} Powiązana(ych) kategoria(i)"
+        "instruction": "Wpisz 'yes', aby usunąć:",
+        "item": "{{count}} Element(y)",
+        "category": "{{count}} Kategoria(e) i wszelkie treści w nich zawarte",
+        "linked-item": "{{count}} Element(y)",
+        "linked-category": "{{count}} Powiązana(e) kategoria(e)"
       },
       "property-delete": {
         "message": "Czy na pewno chcesz usunąć właściwość {{name}}?",
-        "warning": "UWAGA: Ta zmiana jest trwała i nie można jej cofnąć. Zastosowanie tej zmiany może spowodować utratę danych",
-        "msg1": "Wybierz odpowiednią opcję usuwania. Opcje:",
+        "warning": "OSTRZEŻENIE: Ta zmiana jest trwała i nie może zostać cofnięta. Zastosowanie tej zmiany może skutkować utratą danych",
+        "msg1": "Wybierz odpowiednią opcję usunięcia. Opcje:",
         "msg2": "Usuń tylko metadane właściwości i zachowaj wartości w powiązanych obiektach",
-        "msg3": "Usuń całkowicie wraz ze wszystkimi powiązanymi wartościami",
+        "msg3": "Usuń całkowicie wraz z wszystkimi powiązanymi wartościami",
         "shallow": "Usuń metadane",
         "full": "Usuń całkowicie"
       },
       "property-dictionary-item-delete": {
         "message": "Czy na pewno chcesz usunąć wybrane elementy słownika?",
-        "warning": "UWAGA: Ta zmiana jest trwała i nie można jej cofnąć. Zastosowanie tej zmiany może spowodować utratę danych"
+        "warning": "OSTRZEŻENIE: Ta zmiana jest trwała i nie może zostać cofnięta. Zastosowanie tej zmiany może skutkować utratą danych"
       },
       "virtual-catalog-save": {
         "title": "Zapisz zmiany",
@@ -827,11 +882,11 @@
       },
       "item-save": {
         "title": "Zapisz zmiany",
-        "message": "Ten przedmiot został zmodyfikowany. Czy chcesz zapisać zmiany?"
+        "message": "Ten element został zmodyfikowany. Czy chcesz zapisać zmiany?"
       },
       "variation-delete": {
         "title": "Potwierdź usunięcie",
-        "message": "Czy na pewno chcesz usunąć wybrane warianty?"
+        "message": "Czy na pewno chcesz usunąć wybrane wariacje?"
       },
       "property-save": {
         "title": "Zapisz zmiany",
@@ -894,7 +949,7 @@
       },
       "measures-delete": {
         "title": "Potwierdź usunięcie",
-        "message": "Czy na pewno chcesz usunąć wybrane miary?"
+        "message": "Czy na pewno chcesz usunąć wybrane jednostki miary?"
       },
       "measure-unit-save": {
         "title": "Zapisz zmiany",
@@ -906,11 +961,15 @@
       },
       "measure-units-delete": {
         "title": "Potwierdź usunięcie",
-        "message": "Czy na pewno chcesz usunąć wybrane jednostki miary?"
+        "message": "Czy na pewno chcesz usunąć wybraną jednostkę miary?"
       },
       "measure-save": {
         "title": "Zapisz zmiany",
         "message": "Ta miara została zmodyfikowana. Czy chcesz zapisać zmiany?"
+      },
+      "configuration-save": {
+        "title": "Zapisz zmiany",
+        "message": "Ta konfiguracja została zmodyfikowana. Czy chcesz zapisać zmiany?"
       }
     },
     "wizards": {
@@ -936,11 +995,11 @@
           "sku": "SKU",
           "name": "Nazwa",
           "fill-properties": "Podaj właściwości",
-          "fill-properties-summary": "{{ count }} z {{total}} właściwości podanych",
+          "fill-properties-summary": "{{ count }} z {{total}} właściwości podano",
           "upload-images": "Prześlij obrazy",
-          "upload-images-summary": "Przesłano {{ count }} obraz(ów)",
+          "upload-images-summary": "{{ count }} obraz(y) przesłano",
           "add-review": "Dodaj opis",
-          "add-review-summary": "Dodano {{ count }} opis(ów)",
+          "add-review-summary": "{{ count }} opis(y) dodano",
           "seo-information": "Podaj informacje SEO",
           "seo-information-summary-defined": "Podano informacje SEO",
           "seo-information-summary-undefined": "Nie podano informacji SEO"
@@ -956,15 +1015,15 @@
         }
       },
       "new-variation": {
-        "title": "Nowy wariant",
-        "subtitle": "Podaj informacje o wariancie",
+        "title": "Nowa wariacja",
+        "subtitle": "Podaj informacje o wariacji",
         "labels": {
           "sku": "SKU",
           "name": "Nazwa",
           "fill-properties": "Podaj właściwości",
-          "fill-properties-summary": "{{ count }} z {{total}} właściwości podanych",
+          "fill-properties-summary": "{{ count }} z {{total}} właściwości podano",
           "upload-images": "Prześlij obrazy",
-          "upload-images-summary": "Przesłano {{ count }} obraz(ów)"
+          "upload-images-summary": "{{ count }} obraz(y) przesłano"
         },
         "validations": {
           "sku": "SKU nie może zawierać następujących znaków: $+;=%{}[]|@~!^*&()?'<>",
@@ -1000,8 +1059,8 @@
       "copy-id": "Kopiuj ID",
       "clear-all": "Wyczyść wszystko",
       "add-property": "Dodaj właściwość",
-      "add-product-property": "Dodaj niestandardową właściwość",
-      "add-variation-property": "Dodaj niestandardową właściwość",
+      "add-product-property": "Dodaj właściwość niestandardową",
+      "add-variation-property": "Dodaj właściwość niestandardową",
       "gallery": "Galeria",
       "map": "Mapa",
       "open-item": "Otwórz przedmiot",
@@ -1024,7 +1083,7 @@
       "titles": {
         "catalogs": "Katalogi",
         "categories": "Kategorie",
-        "search-in-variations": "Szukaj w wariantach produktu",
+        "search-in-variations": "Szukaj w wariacjach produktów",
         "search-in-children": "Szukaj w kategoriach podrzędnych"
       },
       "labels": {
@@ -1043,20 +1102,20 @@
   },
   "permissions": {
     "catalog:access": "Otwórz menu katalogu",
-    "catalog:create": "Twórz dane związane z katalogiem",
-    "catalog:read": "Przeglądaj dane związane z katalogiem",
+    "catalog:create": "Utwórz dane związane z katalogiem",
+    "catalog:read": "Wyświetl dane związane z katalogiem",
     "catalog:update": "Aktualizuj dane związane z katalogiem",
     "catalog:delete": "Usuń dane związane z katalogiem",
     "catalog:export": "Eksportuj dane katalogu",
     "catalog:import": "Importuj dane katalogu",
     "measures:access": "Otwórz menu jednostek miary",
-    "measures:create": "Twórz dane związane z jednostkami miary",
-    "measures:read": "Przeglądaj dane związane z jednostkami miary",
+    "measures:create": "Utwórz dane związane z jednostkami miary",
+    "measures:read": "Wyświetl dane związane z jednostkami miary",
     "measures:update": "Aktualizuj dane związane z jednostkami miary",
     "measures:delete": "Usuń dane związane z jednostkami miary",
     "catalog:metadata-property:edit": "Edytuj metadane właściwości",
     "catalog:custom-property:edit": "Edytuj niestandardowe właściwości produktu",
-    "catalog:dictionary-property:edit": "Edytuj wartości słownikowe właściwości"
+    "catalog:dictionary-property:edit": "Edytuj wartości słownika właściwości"
   },
   "settings": {
     "Catalog": {
@@ -1074,7 +1133,7 @@
       },
       "UseSeoDeduplication": {
         "description": "Włącz lub wyłącz wykrywanie duplikatów SEO",
-        "title": "Wykrywaj duplikaty SEO"
+        "title": "Wykrywanie duplikatów SEO"
       },
       "CategoryDescriptionTypes": {
         "description": "Słownik możliwych typów opisów dla tej kategorii",
@@ -1094,13 +1153,13 @@
           "title": "Przechowuj zserializowane obiekty katalogu w indeksie"
         },
         "DefaultAggregationSize": {
-          "description": "Określ rozmiar dla agregacji, gdy nie jest zdefiniowany we właściwościach agregacji sklepu. Ustaw na 0 dla nieograniczonego rozmiaru",
+          "description": "Określ rozmiar dla agregacji, gdy nie jest zdefiniowany w właściwościach agregacji sklepu. Ustaw na 0 dla nieograniczonego rozmiaru",
           "title": "Domyślna wartość dla rozmiaru agregacji"
         },
         "EventBasedIndexation": {
           "Enable": {
-            "title": "Włącz indeksowanie oparte na zdarzeniach dla encji katalogu",
-            "description": "Wszelkie zmiany dokonane w encji katalogu uruchamiają zadanie w tle, które stosuje te zmiany do indeksu wyszukiwania"
+            "title": "Włącz indeksowanie oparte na zdarzeniach dla jednostek katalogu",
+            "description": "Wszelkie zmiany wprowadzone w jednostce katalogu uruchamiają zadanie w tle, które stosuje te zmiany do indeksu wyszukiwania"
           }
         }
       }
@@ -1124,18 +1183,18 @@
   },
   "module": {
     "VirtoCommerce.Catalog": {
-      "description": "Eksportuj lub importuj katalogi, kategorie, produkty i właściwości wraz z plikami binarnymi obrazów, jeśli zaznaczysz pole wyboru plików binarnych"
+      "description": "Eksportuj lub importuj katalogi, kategorie, produkty i właściwości z binariami obrazów, jeśli zaznaczysz pole wyboru binarne"
     }
   },
   "export": {
     "types": {
       "VirtoCommerce.CatalogModule.Core.Model.Export.ExportableProduct": {
         "name": "Produkty",
-        "description": "Dane produktów katalogu z powiązanymi obiektami. Obsługuje formaty JSON i CSV"
+        "description": "Dane produktów katalogu z powiązanymi obiektami. Obsługuje JSON i CSV"
       },
       "VirtoCommerce.CatalogModule.Core.Model.Export.ExportableCatalogFull": {
         "name": "Katalog",
-        "description": "Dane katalogu z powiązanymi obiektami. Obsługuje format JSON"
+        "description": "Dane katalogu z powiązanymi obiektami. Obsługuje JSON"
       }
     },
     "groups": {
@@ -1145,12 +1204,12 @@
       }
     }
   },
-  "CategoryChangeBulkAction": "Zbiorcza zmiana kategorii",
-  "PropertiesUpdateBulkAction": "Zbiorcza aktualizacja właściwości",
+  "CategoryChangeBulkAction": "Masowa zmiana kategorii",
+  "PropertiesUpdateBulkAction": "Masowa aktualizacja właściwości",
   "virtoCommerce.catalogBulkActionsModule": {
     "blades": {
       "hello-world": {
-        "title": "Panel Witaj świecie"
+        "title": "Ostrzeżenie hello world"
       },
       "action-progress": {
         "title": "Postęp zadania"
