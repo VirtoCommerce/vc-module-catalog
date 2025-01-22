@@ -97,6 +97,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 .Include(x => x.IncomingLinks)
                 .Include(x => x.SeoInfos)
                 .Where(x => catalogIds.Contains(x.Id))
+                .AsSplitQuery()
                 .ToListAsync();
 
             if (result.Any())
@@ -109,6 +110,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     await PropertyValues
                         .Include(x => x.DictionaryItem.DictionaryItemValues)
                         .Where(x => x.CatalogId == catalogId && x.CategoryId == null)
+                        .AsSplitQuery()
                         .LoadAsync();
                 }
                 else
@@ -116,6 +118,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     await PropertyValues
                         .Include(x => x.DictionaryItem.DictionaryItemValues)
                         .Where(x => catalogIds.Contains(x.CatalogId) && x.CategoryId == null)
+                        .AsSplitQuery()
                         .LoadAsync();
                 }
 
@@ -140,8 +143,9 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             }
 
             var result = await Categories
-                .Include(x => x.LocalizedName)
+                .Include(x => x.LocalizedNames)
                 .Where(x => categoriesIds.Contains(x.Id))
+                .AsSplitQuery()
                 .ToListAsync();
 
             if (result.Any())
@@ -184,6 +188,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                         await PropertyValues
                             .Include(x => x.DictionaryItem.DictionaryItemValues)
                             .Where(x => x.CategoryId == categoryId)
+                            .AsSplitQuery()
                             .LoadAsync();
                     }
                     else
@@ -192,6 +197,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                         await PropertyValues
                             .Include(x => x.DictionaryItem.DictionaryItemValues)
                             .Where(x => categoriesIds.Contains(x.CategoryId))
+                            .AsSplitQuery()
                             .LoadAsync();
                     }
 
@@ -216,9 +222,10 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
             // Use breaking query EF performance concept https://docs.microsoft.com/en-us/ef/ef6/fundamentals/performance/perf-whitepaper#8-loading-related-entities
             var result = await Items
+                .Include(x => x.LocalizedNames)
                 .Include(x => x.Images)
-                .Include(x => x.LocalizedName)
                 .Where(x => itemIds.Contains(x.Id))
+                .AsSplitQuery()
                 .ToListAsync();
 
             if (result.Any())
@@ -238,6 +245,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                         await PropertyValues
                             .Include(x => x.DictionaryItem.DictionaryItemValues)
                             .Where(x => x.ItemId == itemId)
+                            .AsSplitQuery()
                             .LoadAsync();
                     }
                     else
@@ -245,6 +253,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                         await PropertyValues
                             .Include(x => x.DictionaryItem.DictionaryItemValues)
                             .Where(x => itemIds.Contains(x.ItemId))
+                            .AsSplitQuery()
                             .LoadAsync();
                     }
                 }
@@ -295,7 +304,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                         variationsQuery = variationsQuery.Include(x => x.SeoInfos);
                     }
 
-                    await variationsQuery.LoadAsync();
+                    await variationsQuery.AsSplitQuery().LoadAsync();
                 }
 
                 if (itemResponseGroup.HasFlag(ItemResponseGroup.ItemAssociations))
@@ -359,6 +368,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 .Include(x => x.PropertyAttributes)
                 .Include(x => x.DisplayNames)
                 .Include(x => x.ValidationRules)
+                .AsSplitQuery()
                 .ToListAsync();
 
             if (result.Any() && loadDictValues)
@@ -366,6 +376,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 await PropertyDictionaryItems
                     .Include(x => x.DictionaryItemValues)
                     .Where(x => propIds.Contains(x.PropertyId))
+                    .AsSplitQuery()
                     .LoadAsync();
             }
 
@@ -436,6 +447,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 .Include(x => x.PropertyAttributes)
                 .Include(x => x.DisplayNames)
                 .Include(x => x.ValidationRules)
+                .AsSplitQuery()
                 .ToListAsync();
         }
 
@@ -449,6 +461,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             return await PropertyDictionaryItems
                 .Include(x => x.DictionaryItemValues)
                 .Where(x => dictItemIds.Contains(x.Id))
+                .AsSplitQuery()
                 .ToListAsync();
         }
 
@@ -589,6 +602,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 await PropertyValues
                     .Include(x => x.DictionaryItem.DictionaryItemValues)
                     .Where(x => x.CategoryId == categoryId)
+                    .AsSplitQuery()
                     .LoadAsync();
 
                 await CategoryDescriptions

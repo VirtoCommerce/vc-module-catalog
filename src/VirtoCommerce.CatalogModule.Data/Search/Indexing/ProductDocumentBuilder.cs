@@ -257,9 +257,9 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         {
             if (localizedString != null)
             {
-                foreach (var langCode in localizedString.Values.Keys)
+                foreach (var languageCode in localizedString.Values.Keys)
                 {
-                    document.AddContentString(localizedString.Get(langCode), langCode);
+                    document.AddContentString(localizedString.Get(languageCode), languageCode);
                 }
             }
         }

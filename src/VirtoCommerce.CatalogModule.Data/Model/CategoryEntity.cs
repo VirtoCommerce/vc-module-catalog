@@ -25,7 +25,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         [StringLength(128)]
         public string Name { get; set; }
 
-        public ObservableCollection<LocalizedStringEntity<CategoryEntity>> LocalizedName { get; set; }
+        public ObservableCollection<LocalizedStringEntity<CategoryEntity>> LocalizedNames { get; set; }
     = new NullCollection<LocalizedStringEntity<CategoryEntity>>();
 
         public DateTime StartDate { get; set; }
@@ -110,33 +110,28 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             category.ModifiedBy = ModifiedBy;
             category.ModifiedDate = ModifiedDate;
             category.OuterId = OuterId;
-
             category.Code = Code;
             category.Name = Name;
             category.Priority = Priority;
             category.TaxType = TaxType;
-
             category.CatalogId = CatalogId;
-
             category.ParentId = ParentCategoryId;
             category.IsActive = IsActive;
             category.EnableDescription = EnableDescription;
             category.ExcludedProperties = ExcludedProperties?.Select(x => new ExcludedProperty(x)).ToList();
-
             category.Links = OutgoingLinks.Select(x => x.ToModel(new CategoryLink())).ToList();
             category.Images = Images.OrderBy(x => x.SortOrder).Select(x => x.ToModel(AbstractTypeFactory<Image>.TryCreateInstance())).ToList();
             category.Descriptions = CategoryDescriptions.Select(x => x.ToModel(AbstractTypeFactory<CategoryDescription>.TryCreateInstance())).ToList();
-            // SeoInfos
             category.SeoInfos = SeoInfos.Select(x => x.ToModel(AbstractTypeFactory<SeoInfo>.TryCreateInstance())).ToList();
+
             category.Properties = Properties.Select(x => x.ToModel(AbstractTypeFactory<Property>.TryCreateInstance()))
                                            .OrderBy(x => x.Name)
                                            .ToList();
 
-            // LocalizedName
-            if (LocalizedName != null)
+            if (LocalizedNames != null)
             {
                 category.LocalizedName = new LocalizedString();
-                foreach (var localizedName in LocalizedName)
+                foreach (var localizedName in LocalizedNames)
                 {
                     category.LocalizedName.Set(localizedName.LanguageCode, localizedName.Value);
                 }
@@ -146,6 +141,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             {
                 property.IsReadOnly = property.Type != PropertyType.Category;
             }
+
             // Transform property value into transient properties
             if (!CategoryPropertyValues.IsNullOrEmpty())
             {
@@ -274,7 +270,14 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
             if (category.LocalizedName != null)
             {
-                LocalizedName = new ObservableCollection<LocalizedStringEntity<CategoryEntity>>(category.LocalizedName.Values.Select(x => AbstractTypeFactory<LocalizedStringEntity<CategoryEntity>>.TryCreateInstance().FromModel(x.Key, x.Value)));
+                LocalizedNames = new ObservableCollection<LocalizedStringEntity<CategoryEntity>>(category.LocalizedName.Values
+                    .Select(x =>
+                    {
+                        var entity = AbstractTypeFactory<LocalizedStringEntity<CategoryEntity>>.TryCreateInstance();
+                        entity.LanguageCode = x.Key;
+                        entity.Value = x.Value;
+                        return entity;
+                    }));
             }
 
             return this;
@@ -321,10 +324,10 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 CategoryDescriptions.Patch(target.CategoryDescriptions, (sourceDescription, targetDescription) => sourceDescription.Patch(targetDescription));
             }
 
-            if (!LocalizedName.IsNullCollection())
+            if (!LocalizedNames.IsNullCollection())
             {
                 var localizedNameComparer = AnonymousComparer.Create((LocalizedStringEntity<CategoryEntity> x) => $"{x.Value}-{x.LanguageCode}");
-                LocalizedName.Patch(target.LocalizedName, localizedNameComparer, (sourceDisplayName, targetDisplayName) => sourceDisplayName.Patch(targetDisplayName));
+                LocalizedNames.Patch(target.LocalizedNames, localizedNameComparer, (sourceValue, targetValue) => { });
             }
         }
     }

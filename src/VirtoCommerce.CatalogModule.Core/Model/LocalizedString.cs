@@ -6,10 +6,6 @@ namespace VirtoCommerce.CatalogModule.Core.Model;
 
 public class LocalizedString : ValueObject
 {
-    public LocalizedString()
-    {
-    }
-
     private readonly Dictionary<string, string> _values = [];
 
     public Dictionary<string, string> Values => _values;

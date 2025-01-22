@@ -53,10 +53,10 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             modelBuilder.Entity<LocalizedStringEntity<CategoryEntity>>(builder =>
             {
                 builder.ToTable("CategoryLocalizedName").HasKey(x => x.Id);
-                builder.Property(x => x.Id).HasMaxLength(128).ValueGeneratedOnAdd();
+                builder.Property(x => x.Id).HasMaxLength(IdLength).ValueGeneratedOnAdd();
 
                 builder.HasOne(x => x.ParentEntity)
-                    .WithMany(p => p.LocalizedName)
+                    .WithMany(x => x.LocalizedNames)
                     .HasForeignKey(x => x.ParentEntityId)
                     .IsRequired()
                     .OnDelete(DeleteBehavior.Cascade);
@@ -91,10 +91,10 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             modelBuilder.Entity<LocalizedStringEntity<ItemEntity>>(builder =>
             {
                 builder.ToTable("ItemLocalizedName").HasKey(x => x.Id);
-                builder.Property(x => x.Id).HasMaxLength(128).ValueGeneratedOnAdd();
+                builder.Property(x => x.Id).HasMaxLength(IdLength).ValueGeneratedOnAdd();
 
                 builder.HasOne(x => x.ParentEntity)
-                    .WithMany(p => p.LocalizedName)
+                    .WithMany(x => x.LocalizedNames)
                     .HasForeignKey(x => x.ParentEntityId)
                     .IsRequired()
                     .OnDelete(DeleteBehavior.Cascade);
