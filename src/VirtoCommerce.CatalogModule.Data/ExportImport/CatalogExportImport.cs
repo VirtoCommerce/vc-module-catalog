@@ -181,7 +181,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                     var searchCriteria = AbstractTypeFactory<ProductConfigurationSearchCriteria>.TryCreateInstance();
                     searchCriteria.Skip = skip;
                     searchCriteria.Take = take;
-                    var searchResult = await _configurationSearchService.SearchNoCloneAsync(searchCriteria);
+                    var searchResult = await _configurationSearchService.SearchAsync(searchCriteria);
 
                     foreach (var item in searchResult.Results)
                     {
