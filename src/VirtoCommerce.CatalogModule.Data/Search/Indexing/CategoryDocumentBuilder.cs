@@ -81,6 +81,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             document.AddFilterableString("__type", category.GetType().Name);
             document.AddFilterableString("__sort", category.Name);
 
+            IndexLocalizedName(document, category.LocalizedName);
+
             var statusField = IsActiveInTotal(category) ? "visible" : "hidden";
             IndexIsProperty(document, statusField);
             IndexIsProperty(document, "category");
@@ -146,6 +148,16 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             return document;
         }
 
+        protected virtual void IndexLocalizedName(IndexDocument document, LocalizedString localizedString)
+        {
+            if (localizedString != null)
+            {
+                foreach (var languageCode in localizedString.Values.Keys)
+                {
+                    document.AddContentString(localizedString.Get(languageCode), languageCode);
+                }
+            }
+        }
         protected virtual void IndexDescriptions(IndexDocument document, IList<CategoryDescription> descriptions)
         {
             foreach (var description in descriptions.Where(x => !string.IsNullOrEmpty(x?.Content)))

@@ -16,6 +16,9 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         [Required]
         public string Name { get; set; }
 
+        public ObservableCollection<LocalizedStringEntity<ItemEntity>> LocalizedNames { get; set; }
+            = new NullCollection<LocalizedStringEntity<ItemEntity>>();
+
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
 
@@ -168,17 +171,20 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             product.Weight = Weight;
             product.WeightUnit = WeightUnit;
             product.Width = Width;
-
-            // Links
             product.Links = CategoryLinks.Select(x => x.ToModel(AbstractTypeFactory<CategoryLink>.TryCreateInstance())).ToList();
-            // Images
             product.Images = Images.OrderBy(x => x.SortOrder).Select(x => x.ToModel(AbstractTypeFactory<Image>.TryCreateInstance())).ToList();
-            // Assets
             product.Assets = Assets.OrderBy(x => x.CreatedDate).Select(x => x.ToModel(AbstractTypeFactory<Asset>.TryCreateInstance())).ToList();
-            // EditorialReviews
             product.Reviews = EditorialReviews.Select(x => x.ToModel(AbstractTypeFactory<EditorialReview>.TryCreateInstance())).ToList();
-            // SeoInfos
             product.SeoInfos = SeoInfos.Select(x => x.ToModel(AbstractTypeFactory<SeoInfo>.TryCreateInstance())).ToList();
+
+            if (LocalizedNames != null)
+            {
+                product.LocalizedName = new LocalizedString();
+                foreach (var localizedName in LocalizedNames)
+                {
+                    product.LocalizedName.Set(localizedName.LanguageCode, localizedName.Value);
+                }
+            }
 
             product.Properties = new List<Property>();
             if (convertAssociations)
@@ -188,7 +194,6 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 product.ReferencedAssociations = ReferencedAssociations.Select(x => x.ToReferencedAssociationModel(AbstractTypeFactory<ProductAssociation>.TryCreateInstance())).OrderBy(x => x.Priority).ToList();
             }
 
-            // Item property values
             if (!ItemPropertyValues.IsNullOrEmpty())
             {
                 var propertyValues = ItemPropertyValues.OrderBy(x => x.DictionaryItem?.SortOrder)
@@ -380,15 +385,24 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 Childrens = new ObservableCollection<ItemEntity>(product.Variations.Select(x => AbstractTypeFactory<ItemEntity>.TryCreateInstance().FromModel(x, pkMap)));
             }
 
+            if (product.LocalizedName != null)
+            {
+                LocalizedNames = new ObservableCollection<LocalizedStringEntity<ItemEntity>>(product.LocalizedName.Values
+                    .Select(x =>
+                    {
+                        var entity = AbstractTypeFactory<LocalizedStringEntity<ItemEntity>>.TryCreateInstance();
+                        entity.LanguageCode = x.Key;
+                        entity.Value = x.Value;
+                        return entity;
+                    }));
+            }
+
             return this;
         }
 
         public virtual void Patch(ItemEntity target)
         {
-            if (target == null)
-            {
-                throw new ArgumentNullException(nameof(target));
-            }
+            ArgumentNullException.ThrowIfNull(target);
 
             target.IsBuyable = IsBuyable;
             target.IsActive = IsActive;
@@ -480,6 +494,14 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             if (!Childrens.IsNullCollection())
             {
                 Childrens.Patch(target.Childrens, (sourceChildren, targetChildren) => sourceChildren.Patch(targetChildren));
+            }
+            #endregion
+
+            #region LocalizedName
+            if (!LocalizedNames.IsNullCollection())
+            {
+                var localizedNameComparer = AnonymousComparer.Create((LocalizedStringEntity<ItemEntity> x) => $"{x.Value}-{x.LanguageCode}");
+                LocalizedNames.Patch(target.LocalizedNames, localizedNameComparer, (sourceDisplayName, targetDisplayName) => { });
             }
             #endregion
         }

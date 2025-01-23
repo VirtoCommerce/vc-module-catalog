@@ -113,9 +113,9 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <returns></returns>
         [HttpPost]
         [Route("plenty")]
-        public async Task<ActionResult<CatalogProduct[]>> GetProductByPlentyIds([FromBody] List<string> ids, [FromQuery] string respGroup = null)
+        public Task<ActionResult<CatalogProduct[]>> GetProductByPlentyIds([FromBody] List<string> ids, [FromQuery] string respGroup = null)
         {
-            return await GetProductByIds(ids, respGroup);
+            return GetProductByIds(ids, respGroup);
         }
 
 
@@ -126,9 +126,9 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <param name="catalogId">The catalog id.</param>
         [HttpGet]
         [Route("~/api/catalog/{catalogId}/products/getnew")]
-        public async Task<ActionResult<CatalogProduct>> GetNewProductByCatalog(string catalogId)
+        public Task<ActionResult<CatalogProduct>> GetNewProductByCatalog(string catalogId)
         {
-            return await GetNewProductByCatalogAndCategory(catalogId, null);
+            return GetNewProductByCatalogAndCategory(catalogId, null);
         }
 
 

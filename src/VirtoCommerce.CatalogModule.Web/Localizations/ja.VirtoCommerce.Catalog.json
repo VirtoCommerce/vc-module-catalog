@@ -106,6 +106,7 @@
         "labels": {
           "is-active": "表示",
           "name": "名前",
+          "localizedName": "ローカライズされた名前",
           "code": "コード",
           "tax-type": "税タイプ",
           "priority": "優先度"
@@ -324,6 +325,8 @@
           "sku": "SKU",
           "priority": "優先度",
           "name": "製品名",
+          "localizedName": "Localized product name",
+          "localizedName": "ローカライズされた製品名",
           "can-be-purchased": "購入可能",
           "store-visible": "表示",
           "track-inventory": "在庫を追跡",

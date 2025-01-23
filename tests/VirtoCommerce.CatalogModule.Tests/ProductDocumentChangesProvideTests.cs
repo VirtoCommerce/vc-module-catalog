@@ -37,6 +37,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                 .Without(x => x.ItemPropertyValues)
                 .Without(x => x.SeoInfos)
                 .Without(x => x.Childrens)
+                .Without(x => x.LocalizedNames)
                 .With(i => i.ModifiedDate, () => DateTime.UtcNow.AddDays(new Random().Next(DAYS_OF_WEEK * 3)))
                 .Create());
         }

@@ -106,6 +106,7 @@
         "labels": {
           "is-active": "Visível",
           "name": "Nome",
+          "localizedName": "Nome localizado",
           "code": "Código",
           "tax-type": "Tipo de imposto",
           "priority": "Prioridade"
@@ -324,6 +325,7 @@
           "sku": "SKU",
           "priority": "Prioridade",
           "name": "Nome do produto",
+          "localizedName": "Nome do produto localizado",
           "can-be-purchased": "Pode ser comprado",
           "store-visible": "Visível",
           "track-inventory": "Rastrear inventário",

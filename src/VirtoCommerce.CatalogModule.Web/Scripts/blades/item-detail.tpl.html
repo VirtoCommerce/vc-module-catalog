@@ -1,18 +1,18 @@
 <div class="blade-content __medium-wide">
-    <div class="blade-inner">
-        <div class="inner-block">
-          <form class="form" name="detailForm">
-            <va-metaform registered-inputs="blade.metaFields" blade="blade" column-count="6" ng-if="blade.currentEntity" ng-init="setForm(detailForm)"></va-metaform>
+  <div class="blade-inner">
+    <div class="inner-block">
+      <form class="form" name="detailForm">
+        <va-metaform registered-inputs="blade.metaFields" blade="blade" column-count="6" ng-if="blade.currentEntity" ng-init="setForm(detailForm)"></va-metaform>
 
-            <va-metaform registered-inputs="blade.metaFields1" blade="blade" column-count="6" ng-if="blade.currentEntity" class="blade-gray-box"></va-metaform>
+        <va-metaform registered-inputs="blade.metaFields1" blade="blade" column-count="6" ng-if="blade.currentEntity" class="blade-gray-box"></va-metaform>
 
-            <va-metaform registered-inputs="blade.metaFields2" blade="blade" column-count="6" ng-if="blade.currentEntity"></va-metaform>
+        <va-metaform registered-inputs="blade.metaFields2" blade="blade" column-count="6" ng-if="blade.currentEntity"></va-metaform>
 
-            <va-metaform registered-inputs="blade.metaFields3" blade="blade" column-count="2" ng-if="blade.currentEntity"></va-metaform>
-          </form>
-            <va-widget-container group="itemDetail" blade="blade" data="blade.item" gridster-opts="{columns: 4}" class="form-group"></va-widget-container>
-        </div>
+        <va-metaform registered-inputs="blade.metaFields3" blade="blade" column-count="2" ng-if="blade.currentEntity"></va-metaform>
+      </form>
+      <va-widget-container group="itemDetail" blade="blade" data="blade.item" gridster-opts="{columns: 4}" class="form-group"></va-widget-container>
     </div>
+  </div>
 </div>
 <script type="text/ng-template" id="product-details-is-active.html">
   <div class="form-input">
@@ -31,22 +31,28 @@
   </div>
 </script>
 <script type="text/ng-template" id="name.html">
-    <div class="form-input">
-        <textarea class="__xsmall" ng-class="{'error': blade.formScope.itemName.$invalid && !blade.formScope.itemName.$pristine}" required cols="30" rows="1" ng-model="blade.item.name" name="itemName" placeholder="{{ 'catalog.blades.item-detail.placeholders.name' | translate }}"></textarea>
-    </div>
+  <div class="form-input">
+    <textarea class="__xsmall" ng-class="{'error': blade.formScope.itemName.$invalid && !blade.formScope.itemName.$pristine}" required cols="30" rows="1" ng-model="blade.item.name" name="itemName" placeholder="{{ 'catalog.blades.item-detail.placeholders.name' | translate }}"></textarea>
+  </div>
+</script>
+<script type="text/ng-template" id="localizedName.html">
+  <div class="vc-catalog form-input __langs" ng-repeat="language in blade.catalog.languages">
+    <label class="lang-code">{{language.languageCode}}</label>
+    <input ng-model="blade.currentEntity.localizedName.values[language.languageCode]" type="text" ng-maxlength="1024" placeholder="{{ 'catalog.blades.item-detail.placeholders.name' | translate }}" />
+  </div>
 </script>
 <script type="text/ng-template" id="sku.html">
-    <div class="form-input">
-        <input ng-class="{'error': blade.formScope.code.$invalid && !blade.formScope.code.$pristine}" required class="form-control" ng-model="blade.item.code" name="code" placeholder="{{ 'catalog.blades.item-detail.placeholders.sku' | translate }}" ui-validate=" 'blade.codeValidator($value)' " />
-    </div>
-    <div class="form-error" data-ng-show="blade.formScope.code.$error.validator">
-        {{ 'catalog.blades.item-detail.validations.sku' | translate }}
-    </div>
+  <div class="form-input">
+    <input ng-class="{'error': blade.formScope.code.$invalid && !blade.formScope.code.$pristine}" required class="form-control" ng-model="blade.item.code" name="code" placeholder="{{ 'catalog.blades.item-detail.placeholders.sku' | translate }}" ui-validate=" 'blade.codeValidator($value)' " />
+  </div>
+  <div class="form-error" data-ng-show="blade.formScope.code.$error.validator">
+    {{ 'catalog.blades.item-detail.validations.sku' | translate }}
+  </div>
 </script>
 <script type="text/ng-template" id="gtin.html">
-    <div class="form-input">
-        <input ng-class="{'error': blade.formScope.gtin.$invalid && !blade.formScope.gtin.$pristine}" placeholder="{{ 'catalog.blades.item-detail.placeholders.gtin' | translate }}" class="form-control" ng-model="blade.item.gtin" name="gtin" type="text" ng-maxlength="14" />
-    </div>
+  <div class="form-input">
+    <input ng-class="{'error': blade.formScope.gtin.$invalid && !blade.formScope.gtin.$pristine}" placeholder="{{ 'catalog.blades.item-detail.placeholders.gtin' | translate }}" class="form-control" ng-model="blade.item.gtin" name="gtin" type="text" ng-maxlength="14" />
+  </div>
 </script>
 <script type="text/ng-template" id="mpn.html">
   <div class="form-input">
@@ -54,61 +60,61 @@
   </div>
 </script>
 <script type="text/ng-template" id="startDate.html">
-    <i class="form-ico fa fa-question-circle __link __lightblue" ng-click="blade.setting.startDate_descrVisible=!blade.setting.startDate_descrVisible"></i>
-    <div class="form-input __calendar">
-        <input placeholder="{{ 'catalog.blades.item-detail.placeholders.start-date' | translate }}" ng-model="blade.item.startDate" datepicker-popup is-open="blade.datepickers.str" />
-        <button class="btn" type="button" ng-click="blade.open($event,'str')">
-            <i class="btn-ico fa fa-calendar"></i>
-        </button>
-    </div>
-    <div ng-if="blade.setting.startDate_descrVisible">
-        <div class="list __info list-descr">{{ 'catalog.blades.item-detail.descr.start-date' | translate }}</div>
-        <a href="" ng-click="blade.setting.startDate_descrVisible = null;">{{ 'catalog.blades.item-detail.hide-description' | translate }}</a>
-    </div>
+  <i class="form-ico fa fa-question-circle __link __lightblue" ng-click="blade.setting.startDate_descrVisible=!blade.setting.startDate_descrVisible"></i>
+  <div class="form-input __calendar">
+    <input placeholder="{{ 'catalog.blades.item-detail.placeholders.start-date' | translate }}" ng-model="blade.item.startDate" datepicker-popup is-open="blade.datepickers.str" />
+    <button class="btn" type="button" ng-click="blade.open($event,'str')">
+      <i class="btn-ico fa fa-calendar"></i>
+    </button>
+  </div>
+  <div ng-if="blade.setting.startDate_descrVisible">
+    <div class="list __info list-descr">{{ 'catalog.blades.item-detail.descr.start-date' | translate }}</div>
+    <a href="" ng-click="blade.setting.startDate_descrVisible = null;">{{ 'catalog.blades.item-detail.hide-description' | translate }}</a>
+  </div>
 </script>
 <script type="text/ng-template" id="endDate.html">
-    <i class="form-ico fa fa-question-circle __link __lightblue" ng-click="blade.setting.endDate_descrVisible=!blade.setting.endDate_descrVisible"></i>
-    <div class="form-input __calendar">
-        <input placeholder="{{ 'catalog.blades.item-detail.placeholders.end-date' | translate }}" ng-model="blade.item.endDate" datepicker-popup is-open="blade.datepickers.end" />
-        <button class="btn" type="button" ng-click="blade.open($event,'end')">
-            <i class="btn-ico fa fa-calendar"></i>
-        </button>
-    </div>
-    <div ng-if="blade.setting.endDate_descrVisible">
-        <div class="list __info list-descr">{{ 'catalog.blades.item-detail.descr.end-date' | translate }}</div>
-        <a href="" ng-click="blade.setting.startDate_descrVisible = null;">{{ 'catalog.blades.item-detail.hide-description' | translate }}</a>
-    </div>
+  <i class="form-ico fa fa-question-circle __link __lightblue" ng-click="blade.setting.endDate_descrVisible=!blade.setting.endDate_descrVisible"></i>
+  <div class="form-input __calendar">
+    <input placeholder="{{ 'catalog.blades.item-detail.placeholders.end-date' | translate }}" ng-model="blade.item.endDate" datepicker-popup is-open="blade.datepickers.end" />
+    <button class="btn" type="button" ng-click="blade.open($event,'end')">
+      <i class="btn-ico fa fa-calendar"></i>
+    </button>
+  </div>
+  <div ng-if="blade.setting.endDate_descrVisible">
+    <div class="list __info list-descr">{{ 'catalog.blades.item-detail.descr.end-date' | translate }}</div>
+    <a href="" ng-click="blade.setting.startDate_descrVisible = null;">{{ 'catalog.blades.item-detail.hide-description' | translate }}</a>
+  </div>
 </script>
 <script type="text/ng-template" id="downloadType.html">
-    <div class="form-input">
-        <ui-select ng-model="blade.item.downloadType" ng-init="downloadTypes=['Standard Product', 'Software', 'Music']">
-            <ui-select-match placeholder="{{ 'catalog.blades.item-detail.placeholders.download-type' | translate }}">{{$select.selected}}</ui-select-match>
-            <ui-select-choices repeat="x in downloadTypes | filter: $select.search">
-                <span ng-bind-html="x | highlight: $select.search"></span>
-            </ui-select-choices>
-        </ui-select>
-    </div>
+  <div class="form-input">
+    <ui-select ng-model="blade.item.downloadType" ng-init="downloadTypes=['Standard Product', 'Software', 'Music']">
+      <ui-select-match placeholder="{{ 'catalog.blades.item-detail.placeholders.download-type' | translate }}">{{$select.selected}}</ui-select-match>
+      <ui-select-choices repeat="x in downloadTypes | filter: $select.search">
+        <span ng-bind-html="x | highlight: $select.search"></span>
+      </ui-select-choices>
+    </ui-select>
+  </div>
 </script>
 <script type="text/ng-template" id="vendor.html">
-    <div class="form-group">
-        <label class="form-label">{{ 'catalog.blades.item-detail.labels.vendor' | translate }} <a href="" ng-click="blade.openVendorsManagement()" class="form-edit" va-permission="customer:read"><i class="form-ico fa fa-pencil"></i></a></label>
-        <ui-scroll-drop-down ng-model="blade.item.vendor"
-                             disabled="!blade.hasVendorsPermission"
-                             data="blade.fetchVendors(criteria)"
-                             placeholder="'catalog.blades.item-detail.placeholders.vendor'">
-        </ui-scroll-drop-down>
-    </div>
+  <div class="form-group">
+    <label class="form-label">{{ 'catalog.blades.item-detail.labels.vendor' | translate }} <a href="" ng-click="blade.openVendorsManagement()" class="form-edit" va-permission="customer:read"><i class="form-ico fa fa-pencil"></i></a></label>
+    <ui-scroll-drop-down ng-model="blade.item.vendor"
+                         disabled="!blade.hasVendorsPermission"
+                         data="blade.fetchVendors(criteria)"
+                         placeholder="'catalog.blades.item-detail.placeholders.vendor'">
+    </ui-scroll-drop-down>
+  </div>
 </script>
 <script type="text/ng-template" id="taxType.html">
-    <div class="form-group">
-        <label class="form-label">{{ 'catalog.blades.item-detail.labels.tax-type' | translate }} <a href="" ng-click="blade.openDictionarySettingManagement('TaxTypes')" class="form-edit" va-permission="platform:setting:update"><i class="form-ico fa fa-pencil"></i></a></label>
-        <div class="form-input">
-            <ui-select ng-model="blade.item.taxType">
-                <ui-select-match allow-clear="true" placeholder="{{ 'catalog.blades.item-detail.placeholders.tax-type' | translate }}">{{$select.selected}}</ui-select-match>
-                <ui-select-choices repeat="x in blade.taxTypes | filter: $select.search">
-                    <span ng-bind-html="x | highlight: $select.search"></span>
-                </ui-select-choices>
-            </ui-select>
-        </div>
+  <div class="form-group">
+    <label class="form-label">{{ 'catalog.blades.item-detail.labels.tax-type' | translate }} <a href="" ng-click="blade.openDictionarySettingManagement('TaxTypes')" class="form-edit" va-permission="platform:setting:update"><i class="form-ico fa fa-pencil"></i></a></label>
+    <div class="form-input">
+      <ui-select ng-model="blade.item.taxType">
+        <ui-select-match allow-clear="true" placeholder="{{ 'catalog.blades.item-detail.placeholders.tax-type' | translate }}">{{$select.selected}}</ui-select-match>
+        <ui-select-choices repeat="x in blade.taxTypes | filter: $select.search">
+          <span ng-bind-html="x | highlight: $select.search"></span>
+        </ui-select-choices>
+      </ui-select>
     </div>
+  </div>
 </script>
