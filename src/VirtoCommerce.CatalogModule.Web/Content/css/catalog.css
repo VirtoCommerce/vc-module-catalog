@@ -292,11 +292,13 @@ vc-item-search {
 }
 
 .vc-catalog.form-input.__langs label.lang-code {
-    position: absolute;
-    right: 0;
-    z-index: 100;
-    line-height: 34px;
-    padding-right: 15px;
+  position: absolute;
+  right: 0;
+  z-index: 100;
+  line-height: 34px;
+  padding-right: 15px;
+  font-size: 13px;
+  color: #999;
 }
 
 .vc-catalog .filtered-label {
@@ -321,7 +323,7 @@ vc-item-search {
 .blade-gray-box {
     background: #F9F9F9;
     margin: 15px -20px 0 -20px;
-    padding: 0 20px 30px 20px;
+    padding: 10px 20px 30px 20px;
 }
 .form-input textarea.__xsmall {
     height: 34px;

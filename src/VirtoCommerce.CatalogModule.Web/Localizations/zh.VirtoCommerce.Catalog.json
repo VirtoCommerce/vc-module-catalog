@@ -106,6 +106,7 @@
         "labels": {
           "is-active": "可见",
           "name": "名称",
+          "localizedName": "本地化名称",
           "code": "代码",
           "tax-type": "税种",
           "priority": "优先级"
@@ -324,6 +325,7 @@
           "sku": "SKU",
           "priority": "优先级",
           "name": "产品名称",
+          "localizedName": "本地化产品名称",
           "can-be-purchased": "可购买",
           "store-visible": "可见",
           "track-inventory": "跟踪库存",

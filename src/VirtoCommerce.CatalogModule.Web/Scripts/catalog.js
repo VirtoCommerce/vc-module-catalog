@@ -457,6 +457,12 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                         valueType: "ShortText"
                     },
                     {
+                        title: "catalog.blades.category-detail.labels.localizedName",
+                        placeholder: "catalog.blades.category-detail.placeholders.name",
+                        colSpan: 6,
+                        templateUrl: "localizedName.html"
+                    },
+                    {
                         title: "catalog.blades.category-detail.labels.code",
                         templateUrl: "code.html"
                     },
@@ -485,6 +491,11 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                         title: "catalog.blades.item-detail.labels.name",
                         colSpan: 6,
                         templateUrl: "name.html"
+                    },
+                    {
+                        title: "catalog.blades.item-detail.labels.localizedName",
+                        colSpan: 6,
+                        templateUrl: "localizedName.html"
                     }
                 ]);
 

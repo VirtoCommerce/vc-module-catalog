@@ -5,11 +5,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using VirtoCommerce.AssetsModule.Core.Assets;
+using VirtoCommerce.CatalogModule.Core;
+using VirtoCommerce.CatalogModule.Core.Extensions;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Configuration;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
+using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.ExportImport;
 
@@ -269,8 +272,29 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 
         private async Task ImportCatalogsAsync(JsonTextReader reader, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
         {
-            await reader.DeserializeArrayWithPagingAsync<Catalog>(_jsonSerializer, _batchSize,
-                _catalogService.SaveChangesAsync,
+            await reader.DeserializeArrayWithPagingAsync<Catalog>(_jsonSerializer, _batchSize, async catalogs =>
+                {
+                    foreach (var catalog in catalogs)
+                    {
+                        if (catalog.SeoInfos == null || !catalog.SeoInfos.Any())
+                        {
+                            var defaultLanguage = catalog.Languages.First(x => x.IsDefault).LanguageCode;
+                            var seoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
+                            seoInfo.LanguageCode = defaultLanguage;
+                            seoInfo.SemanticUrl = "catalog";
+                            seoInfo.PageTitle = "Catalog";
+                            catalog.SeoInfos = [seoInfo];
+                        }
+
+                        foreach (var seoInfo in catalog.SeoInfos)
+                        {
+                            seoInfo.SemanticUrl ??= "catalog";
+                            seoInfo.PageTitle ??= "Catalog";
+                        }
+                    }
+
+                    await _catalogService.SaveChangesAsync(catalogs);
+                },
                 processedCount =>
                 {
                     progressInfo.Description = $"{processedCount} catalogs have been imported";
@@ -281,7 +305,6 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         private async Task ImportCategoriesAsync(JsonTextReader reader, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
         {
             var processedCount = 0;
-
             var categoriesByHierarchyLevel = new Dictionary<int, IList<Category>>();
             var categoryLinks = new List<CategoryLink>();
 
@@ -289,29 +312,52 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             {
                 var categories = new List<Category>();
 
-                foreach (var item in items)
+                foreach (var category in items)
                 {
-                    // clear category links (to save later)
-                    foreach (var link in item.Links.Where(x => x.EntryId == null))
+                    var slugUrl = category.Name.GenerateSlug();
+
+                    if (category.SeoInfos.IsNullOrEmpty() && !string.IsNullOrEmpty(slugUrl))
                     {
-                        link.ListEntryId = item.Id;
+                        var catalog = await _catalogService.GetNoCloneAsync(category.CatalogId);
+                        var defaultLanguage = catalog?.Languages.First(x => x.IsDefault).LanguageCode;
+                        var seoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
+                        seoInfo.LanguageCode = defaultLanguage;
+                        seoInfo.SemanticUrl = slugUrl;
+                        seoInfo.PageTitle = category.Name.SoftTruncate(ModuleConstants.MaxSEOTitleLength);
+                        category.SeoInfos = [seoInfo];
                     }
 
-                    categoryLinks.AddRange(item.Links);
-                    item.Links = new List<CategoryLink>();
-
-                    if (item.Level > 0)
+                    foreach (var seoInfo in category.SeoInfos)
                     {
-                        if (!categoriesByHierarchyLevel.ContainsKey(item.Level))
+                        if (string.IsNullOrEmpty(seoInfo.SemanticUrl) && !string.IsNullOrEmpty(slugUrl))
                         {
-                            categoriesByHierarchyLevel.Add(item.Level, new List<Category>());
+                            seoInfo.SemanticUrl = slugUrl;
+                        }
+                        seoInfo.PageTitle ??= category.Name.SoftTruncate(ModuleConstants.MaxSEOTitleLength);
+                    }
+
+                    // clear category links (to save later)
+                    foreach (var link in category.Links.Where(x => x.EntryId == null))
+                    {
+                        link.ListEntryId = category.Id;
+                    }
+
+                    categoryLinks.AddRange(category.Links);
+                    category.Links = [];
+
+                    if (category.Level > 0)
+                    {
+                        if (!categoriesByHierarchyLevel.TryGetValue(category.Level, out var levelCategories))
+                        {
+                            levelCategories = [];
+                            categoriesByHierarchyLevel.Add(category.Level, levelCategories);
                         }
 
-                        categoriesByHierarchyLevel[item.Level].Add(item);
+                        levelCategories.Add(category);
                     }
                     else
                     {
-                        categories.Add(item);
+                        categories.Add(category);
                     }
                 }
 

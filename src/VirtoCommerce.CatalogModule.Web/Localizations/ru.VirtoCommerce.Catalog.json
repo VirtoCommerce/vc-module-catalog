@@ -106,6 +106,7 @@
         "labels": {
           "is-active": "Видимый",
           "name": "Имя",
+          "localizedName": "Локализованное имя",
           "code": "Код",
           "tax-type": "Тип налога",
           "priority": "Приоритет"
@@ -324,6 +325,7 @@
           "sku": "Артикул",
           "priority": "Приоритет",
           "name": "Название продукта",
+          "localizedName": "Локализованное имя продукта",
           "can-be-purchased": "Можно купить",
           "store-visible": "Видимый",
           "track-inventory": "Отслеживать инвентарь",
