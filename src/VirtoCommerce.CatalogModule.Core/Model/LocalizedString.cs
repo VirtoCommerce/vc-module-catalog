@@ -49,4 +49,9 @@ public class LocalizedString : ValueObject
         var result = Clone() as LocalizedString;
         return result;
     }
+
+    public IDictionary<string, string> ToDictionary()
+    {
+        return new Dictionary<string, string>(_values);
+    }
 }
