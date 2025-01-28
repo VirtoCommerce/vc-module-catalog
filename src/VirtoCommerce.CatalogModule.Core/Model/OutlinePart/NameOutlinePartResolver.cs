@@ -9,14 +9,14 @@ namespace VirtoCommerce.CatalogModule.Core.Model.OutlinePart
         {
             if (entity is Category category)
             {
-                return category.LocalizedName?.ToDictionary();
+                return category.LocalizedName?.ToDictionary() ?? new Dictionary<string, string>();
             }
             else if (entity is CatalogProduct product)
             {
-                return product.LocalizedName?.ToDictionary();
+                return product.LocalizedName?.ToDictionary() ?? new Dictionary<string, string>();
             }
 
-            return null;
+            return new Dictionary<string, string>();
         }
 
         public string ResolveOutlineName(IEntity entity)
