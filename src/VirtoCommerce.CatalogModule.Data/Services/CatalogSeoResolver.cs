@@ -111,6 +111,10 @@ public class CatalogSeoResolver : ISeoResolver
     private async Task<bool> DoesParentMatchCategoryOutline(IList<string> parentCategorieIds, string objectId)
     {
         var category = await _categoryService.GetByIdAsync(objectId, CategoryResponseGroup.WithOutlines.ToString(), false);
+        if (category == null)
+        {
+            throw new InvalidOperationException($"Category with ID '{objectId}' was not found.");
+        }
         var outlines = category.Outlines.Select(x => x.Items.Skip(x.Items.Count - 2).First().Id).Distinct().ToList();
         return outlines.Any(parentCategorieIds.Contains);
     }
@@ -118,6 +122,10 @@ public class CatalogSeoResolver : ISeoResolver
     private async Task<bool> DoesParentMatchProductOutline(IList<string> parentCategorieIds, string objectId)
     {
         var product = await _itemService.GetByIdAsync(objectId, CategoryResponseGroup.WithOutlines.ToString(), false);
+        if (product == null)
+        {
+            throw new InvalidOperationException($"Product with ID '{objectId}' was not found.");
+        }
         var outlines = product.Outlines.Select(x => x.Items.Skip(x.Items.Count - 2).First().Id).Distinct().ToList();
         return outlines.Any(parentCategorieIds.Contains);
     }
