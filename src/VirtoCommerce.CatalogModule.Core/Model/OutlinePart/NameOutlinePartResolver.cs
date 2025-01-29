@@ -1,22 +1,21 @@
-using System.Collections.Generic;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Core.Model.OutlinePart
 {
     public class NameOutlinePartResolver : IOutlinePartNameResolver
     {
-        public IDictionary<string, string> ResolveLocalizedOutlineName(IEntity entity)
+        public LocalizedString ResolveLocalizedOutlineName(IEntity entity)
         {
             if (entity is Category category)
             {
-                return category.LocalizedName?.ToDictionary() ?? new Dictionary<string, string>();
+                return category.LocalizedName ?? new LocalizedString();
             }
             else if (entity is CatalogProduct product)
             {
-                return product.LocalizedName?.ToDictionary() ?? new Dictionary<string, string>();
+                return product.LocalizedName ?? new LocalizedString();
             }
 
-            return new Dictionary<string, string>();
+            return new LocalizedString();
         }
 
         public string ResolveOutlineName(IEntity entity)
