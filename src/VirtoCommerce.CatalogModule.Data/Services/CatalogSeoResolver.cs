@@ -11,12 +11,14 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.Services;
 
-
 public class CatalogSeoResolver : ISeoResolver
 {
     private readonly Func<ICatalogRepository> _repositoryFactory;
     private readonly ICategoryService _categoryService;
     private readonly IItemService _itemService;
+
+    private const string CategoryObjectType = "Category";
+    private const string CatalogProductObjectType = "CatalogProduct";
 
     public CatalogSeoResolver(Func<ICatalogRepository> repositoryFactory,
         ICategoryService categoryService,
@@ -38,12 +40,12 @@ public class CatalogSeoResolver : ISeoResolver
             return [];
         }
 
-        var currentEntitySeoInfos = await SearchSeoInfo(criteria, segments.Last());
+        var currentEntitySeoInfos = await SearchSeoInfos(criteria.StoreId, criteria.LanguageCode, segments.Last());
 
         if (currentEntitySeoInfos.Count == 0)
         {
             // Try to find deactivated seo entries and revert it back if we found it
-            currentEntitySeoInfos = await SearchSeoInfo(criteria, segments.Last(), false);
+            currentEntitySeoInfos = await SearchSeoInfos(criteria.StoreId, criteria.LanguageCode, segments.Last(), false);
             if (currentEntitySeoInfos.Count == 0)
             {
                 return [];
@@ -72,60 +74,59 @@ public class CatalogSeoResolver : ISeoResolver
 
         foreach (var group in groups)
         {
-            if (group.Key.ObjectType == "Category")
+            if (group.Key.ObjectType == CategoryObjectType)
             {
-                var isMatch = await IsParentMatchesCategoryOutline(parentCategorieIds, group.Key.ObjectId);
+                var isMatch = await DoesParentMatchCategoryOutline(parentCategorieIds, group.Key.ObjectId);
                 if (isMatch)
                 {
                     return currentEntitySeoInfos.Where(x =>
                         x.ObjectId == group.Key.ObjectId
-                        && group.Key.ObjectType == "Category").ToList();
+                        && group.Key.ObjectType == CategoryObjectType).ToList();
                 }
             }
-            else if (group.Key.ObjectType == "CatalogProduct")
+
+            // Inside the method
+            else if (group.Key.ObjectType == CatalogProductObjectType)
             {
-                var isMatch = await IsParentMatchesProductOutline(parentCategorieIds, group.Key.ObjectId);
+                var isMatch = await DoesParentMatchProductOutline(parentCategorieIds, group.Key.ObjectId);
 
                 if (isMatch)
                 {
                     return currentEntitySeoInfos.Where(x =>
                         x.ObjectId == group.Key.ObjectId
-                        && group.Key.ObjectType == "CatalogProduct").ToList();
+                        && group.Key.ObjectType == CatalogProductObjectType).ToList();
                 }
             }
         }
 
-
         return [];
     }
 
-    private async Task<bool> IsParentMatchesCategoryOutline(IList<string> parentCategorieIds, string objectId)
+    private async Task<bool> DoesParentMatchCategoryOutline(IList<string> parentCategorieIds, string objectId)
     {
         var category = await _categoryService.GetByIdAsync(objectId, CategoryResponseGroup.WithOutlines.ToString(), false);
-
         var outlines = category.Outlines.Select(x => x.Items.Skip(x.Items.Count - 2).First().Id).Distinct().ToList();
         return outlines.Any(parentCategorieIds.Contains);
     }
 
-    private async Task<bool> IsParentMatchesProductOutline(IList<string> parentCategorieIds, string objectId)
+    private async Task<bool> DoesParentMatchProductOutline(IList<string> parentCategorieIds, string objectId)
     {
         var product = await _itemService.GetByIdAsync(objectId, CategoryResponseGroup.WithOutlines.ToString(), false);
-
         var outlines = product.Outlines.Select(x => x.Items.Skip(x.Items.Count - 2).First().Id).Distinct().ToList();
         return outlines.Any(parentCategorieIds.Contains);
     }
 
-    private async Task<List<SeoInfo>> SearchSeoInfo(SeoSearchCriteria criteria, string slug, bool isActive = true)
+    private async Task<List<SeoInfo>> SearchSeoInfos(string storeId, string languageCode, string slug, bool isActive = true)
     {
         using var repository = _repositoryFactory();
 
         return (await repository.SeoInfos.Where(s => s.IsActive == isActive
             && s.Keyword == slug
-            && (s.StoreId == null || s.StoreId == criteria.StoreId)
-            && (s.Language == null || s.Language == criteria.LanguageCode))
+            && (s.StoreId == null || s.StoreId == storeId)
+            && (s.Language == null || s.Language == languageCode))
             .ToListAsync())
             .Select(x => x.ToModel(AbstractTypeFactory<SeoInfo>.TryCreateInstance()))
-            .OrderByDescending(s => GetPriorityScore(s, criteria.StoreId, criteria.LanguageCode))
+            .OrderByDescending(s => GetPriorityScore(s, storeId, languageCode))
             .ToList();
     }
 
