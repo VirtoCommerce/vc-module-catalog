@@ -119,7 +119,10 @@ public class CatalogSeoResolver : ISeoResolver
     {
         using var repository = _repositoryFactory();
 
-        return (await repository.SeoInfos.Where(s => s.IsActive == isActive && s.Keyword == slug)
+        return (await repository.SeoInfos.Where(s => s.IsActive == isActive
+            && s.Keyword == slug
+            && (s.StoreId == null || s.StoreId == criteria.StoreId)
+            && (s.Language == null || s.Language == criteria.LanguageCode))
             .ToListAsync())
             .Select(x => x.ToModel(AbstractTypeFactory<SeoInfo>.TryCreateInstance()))
             .OrderByDescending(s => GetPriorityScore(s, criteria.StoreId, criteria.LanguageCode))

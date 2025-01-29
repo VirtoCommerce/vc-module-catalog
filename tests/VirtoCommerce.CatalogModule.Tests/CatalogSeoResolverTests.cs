@@ -11,6 +11,8 @@ namespace VirtoCommerce.CatalogModule.Tests
         {
         }
 
+
+
         [Fact]
         public async Task Resolve_Product_Without_Conflict()
         {
@@ -34,7 +36,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             var seoResolver = helper.CreateCatalogSeoResolver();
 
             // Arrange
-            var criteria = new SeoSearchCriteria { Permalink = "level1/level2/level3/product" };
+            var criteria = new SeoSearchCriteria { Permalink = "level1/level2/level3/product", StoreId = "B2B-store", LanguageCode = "en-US" };
 
             // Act
             var result = await seoResolver.FindSeoAsync(criteria);
@@ -72,7 +74,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             var seoResolver = helper.CreateCatalogSeoResolver();
 
             // Arrange
-            var criteria = new SeoSearchCriteria { Permalink = "level1/level2/level3/product" };
+            var criteria = new SeoSearchCriteria { Permalink = "level1/level2/level3/product", StoreId = "B2B-store", LanguageCode = "en-US" };
 
             // Act
             var result = await seoResolver.FindSeoAsync(criteria);
@@ -86,7 +88,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         public async Task Resolve_From_TwoCategories_Conflicts_Level3()
         {
             // Arrange
-            var criteria = new SeoSearchCriteria { Permalink = "level1/level2/level3/category" };
+            var criteria = new SeoSearchCriteria { Permalink = "level1/level2/level3/category", StoreId = "B2B-store", LanguageCode = "en-US" };
 
             var helper = new CatalogHierarchyHelper();
 
@@ -132,7 +134,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             helper.AddProduct("product1-wrong", "level1/level2/level3-wrong/product1-wrong");
 
             // Arrange
-            var criteria = new SeoSearchCriteria { Permalink = "non-existent" };
+            var criteria = new SeoSearchCriteria { Permalink = "non-existent", StoreId = "B2B-store", LanguageCode = "en-US" };
 
             var seoResolver = helper.CreateCatalogSeoResolver();
 
@@ -147,7 +149,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         public async Task Resolve_From_TwoProructs_Conflicts_Level3()
         {
             // Arrange
-            var criteria = new SeoSearchCriteria { Permalink = "level1/level2/level3/product" };
+            var criteria = new SeoSearchCriteria { Permalink = "level1/level2/level3/product", StoreId = "B2B-store", LanguageCode = "en-US" };
 
             var helper = new CatalogHierarchyHelper();
 
@@ -194,13 +196,72 @@ namespace VirtoCommerce.CatalogModule.Tests
             var seoResolver = helper.CreateCatalogSeoResolver();
 
             // Act
-            var criteria = new SeoSearchCriteria { Permalink = "level1/level2/level3/category" };
+            var criteria = new SeoSearchCriteria { Permalink = "level1/level2/level3/category", StoreId = "B2B-store", LanguageCode = "en-US" };
             var result = await seoResolver.FindSeoAsync(criteria);
 
             // Assert
             Assert.Single(result);
             Assert.Equal("category", result.First().ObjectId);
             Assert.Equal("Category", result.First().ObjectType);
+        }
+        [Fact]
+        public async Task Resolve_SeoInfo_For_Current_Store_Only()
+        {
+            // Arrange
+            var helper = new CatalogHierarchyHelper();
+
+            helper.AddSeoInfo("product1", "CatalogProduct", "product", true, "B2B-store", "en-US");
+            helper.AddSeoInfo("product1", "CatalogProduct", "product", true, null, "en-US");
+            helper.AddSeoInfo("product1-wrong", "CatalogProduct", "product", true, "Other-store", "en-US");
+
+            helper.AddCategory("level1", "level1");
+            helper.AddCategory("level2", "level1/level2");
+            helper.AddCategory("level3", "level1/level2/level3");
+
+            helper.AddProduct("product1", "level1/level2/level3/product1");
+            helper.AddProduct("product1-wrong", "level1/level2/level3-wrong/product1-wrong");
+
+            var seoResolver = helper.CreateCatalogSeoResolver();
+
+            var criteria = new SeoSearchCriteria { Permalink = "level1/level2/level3/product", StoreId = "B2B-store", LanguageCode = "en-US" };
+
+            // Act
+            var result = await seoResolver.FindSeoAsync(criteria);
+
+            // Assert
+            Assert.Single(result);
+            Assert.Equal("product1", result.First().ObjectId);
+            Assert.Equal("B2B-store", result.First().StoreId);
+        }
+
+        [Fact]
+        public async Task Resolve_SeoInfo_For_Null_Store()
+        {
+            // Arrange
+            var helper = new CatalogHierarchyHelper();
+
+            helper.AddSeoInfo("product1", "CatalogProduct", "product", true, "B2B-store", "en-US");
+            helper.AddSeoInfo("product1", "CatalogProduct", "product", true, null, "en-US");
+            helper.AddSeoInfo("product1-wrong", "CatalogProduct", "product", true, "Other-store", "en-US");
+
+            helper.AddCategory("level1", "level1");
+            helper.AddCategory("level2", "level1/level2");
+            helper.AddCategory("level3", "level1/level2/level3");
+
+            helper.AddProduct("product1", "level1/level2/level3/product1");
+            helper.AddProduct("product1-wrong", "level1/level2/level3-wrong/product1-wrong");
+
+            var seoResolver = helper.CreateCatalogSeoResolver();
+
+            var criteria = new SeoSearchCriteria { Permalink = "level1/level2/level3/product", StoreId = "B2B-store", LanguageCode = "en-US" };
+
+            // Act
+            var result = await seoResolver.FindSeoAsync(criteria);
+
+            // Assert
+            Assert.Single(result);
+            Assert.Equal("product1", result.First().ObjectId);
+            Assert.Equal("B2B-store", result.First().StoreId);
         }
     }
 }
