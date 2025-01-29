@@ -153,6 +153,7 @@ namespace VirtoCommerce.CatalogModule.Web
             serviceCollection.AddTransient<VideoOwnerChangingEventHandler>();
             serviceCollection.AddTransient<TrackSpecialChangesEventHandler>();
 
+            serviceCollection.AddTransient<ISeoResolver, CatalogSeoResolver>();
             serviceCollection.AddTransient<ISeoBySlugResolver, CatalogSeoBySlugResolver>();
 
             serviceCollection.AddTransient<IInternalListEntrySearchService, InternalListEntrySearchService>();
