@@ -60,6 +60,12 @@ public class CatalogSeoResolver : ISeoResolver
             return [currentEntitySeoInfos.First()];
         }
 
+        // It's not possibe to resolve because we don't have parent segment
+        if (segments.Length == 1)
+        {
+            return [];
+        }
+
         // We found multiple seo information by seo search criteria, need to find correct by checking parent.
         var parentSearchCriteria = criteria.Clone() as SeoSearchCriteria;
         parentSearchCriteria.Permalink = string.Join('/', segments.Take(segments.Length - 1));

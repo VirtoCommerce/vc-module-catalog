@@ -262,6 +262,30 @@ namespace VirtoCommerce.CatalogModule.Tests
             Assert.Equal("product1", result.First().ObjectId);
             Assert.Equal("B2B-store", result.First().StoreId);
         }
+        [Fact]
+        public async Task FindSeoAsync_TwoCategoriesWithSameSlugInRoot_ReturnsEmptyList()
+        {
+            // Arrange
+            var helper = new CatalogHierarchyHelper();
+
+            helper.AddSeoInfo("category1", CategoryType, "category", true, "B2B-store", "en-US");
+            helper.AddSeoInfo("category2", CategoryType, "category", true, "B2B-store", "en-US");
+
+            helper.AddCategory("category1", "category");
+            helper.AddCategory("category2", "category");
+
+            var seoResolver = helper.CreateCatalogSeoResolver();
+
+            var criteria = new SeoSearchCriteria { Permalink = "category", StoreId = "B2B-store", LanguageCode = "en-US" };
+
+            // Act
+            var result = await seoResolver.FindSeoAsync(criteria);
+
+            // Assert
+            Assert.Empty(result);
+        }
+
+
     }
 }
 
