@@ -1,4 +1,5 @@
 using System.Linq;
+using VirtoCommerce.CatalogModule.Core.Model.Configuration;
 using VirtoCommerce.CoreModule.Core.Outlines;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.ExportModule.Core.Model;
@@ -11,6 +12,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model.Export
         public string ImageUrl { get; set; }
         public string Parent { get; set; }
         public string Type { get; set; }
+        public ProductConfiguration Configuration { get; set; }
 
         public virtual ExportableProduct FromModel(CatalogProduct source)
         {
