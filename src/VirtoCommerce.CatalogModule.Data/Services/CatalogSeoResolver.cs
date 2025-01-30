@@ -78,29 +78,29 @@ public class CatalogSeoResolver : ISeoResolver
 
         var parentCategorieIds = parentSeoInfos.Select(x => x.ObjectId).Distinct().ToList();
 
-        foreach (var group in groups)
+        foreach (var groupKey in groups.Select(g => g.Key))
         {
-            if (group.Key.ObjectType == CategoryObjectType)
+            if (groupKey.ObjectType == CategoryObjectType)
             {
-                var isMatch = await DoesParentMatchCategoryOutline(parentCategorieIds, group.Key.ObjectId);
+                var isMatch = await DoesParentMatchCategoryOutline(parentCategorieIds, groupKey.ObjectId);
                 if (isMatch)
                 {
                     return currentEntitySeoInfos.Where(x =>
-                        x.ObjectId == group.Key.ObjectId
-                        && group.Key.ObjectType == CategoryObjectType).ToList();
+                        x.ObjectId == groupKey.ObjectId
+                        && groupKey.ObjectType == CategoryObjectType).ToList();
                 }
             }
 
             // Inside the method
-            else if (group.Key.ObjectType == CatalogProductObjectType)
+            else if (groupKey.ObjectType == CatalogProductObjectType)
             {
-                var isMatch = await DoesParentMatchProductOutline(parentCategorieIds, group.Key.ObjectId);
+                var isMatch = await DoesParentMatchProductOutline(parentCategorieIds, groupKey.ObjectId);
 
                 if (isMatch)
                 {
                     return currentEntitySeoInfos.Where(x =>
-                        x.ObjectId == group.Key.ObjectId
-                        && group.Key.ObjectType == CatalogProductObjectType).ToList();
+                        x.ObjectId == groupKey.ObjectId
+                        && groupKey.ObjectType == CatalogProductObjectType).ToList();
                 }
             }
         }
