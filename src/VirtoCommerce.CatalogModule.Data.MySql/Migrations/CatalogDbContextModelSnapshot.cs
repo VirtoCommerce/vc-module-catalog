@@ -1407,7 +1407,6 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
                         .HasColumnType("varchar(2083)");
 
                     b.Property<string>("LanguageCode")
-                        .IsRequired()
                         .HasMaxLength(5)
                         .HasColumnType("varchar(5)");
 
@@ -1635,7 +1634,7 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.LocalizedStringEntity<VirtoCommerce.CatalogModule.Data.Model.CategoryEntity>", b =>
                 {
                     b.HasOne("VirtoCommerce.CatalogModule.Data.Model.CategoryEntity", "ParentEntity")
-                        .WithMany("LocalizedName")
+                        .WithMany("LocalizedNames")
                         .HasForeignKey("ParentEntityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1646,7 +1645,7 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.LocalizedStringEntity<VirtoCommerce.CatalogModule.Data.Model.ItemEntity>", b =>
                 {
                     b.HasOne("VirtoCommerce.CatalogModule.Data.Model.ItemEntity", "ParentEntity")
-                        .WithMany("LocalizedName")
+                        .WithMany("LocalizedNames")
                         .HasForeignKey("ParentEntityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1855,7 +1854,7 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
 
                     b.Navigation("IncomingLinks");
 
-                    b.Navigation("LocalizedName");
+                    b.Navigation("LocalizedNames");
 
                     b.Navigation("OutgoingLinks");
 
@@ -1880,7 +1879,7 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
 
                     b.Navigation("ItemPropertyValues");
 
-                    b.Navigation("LocalizedName");
+                    b.Navigation("LocalizedNames");
 
                     b.Navigation("ReferencedAssociations");
 

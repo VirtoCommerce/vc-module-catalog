@@ -30,7 +30,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         [StringLength(20)]
         public string Duration { get; set; }
 
-        [Required, StringLength(5)]
+        [StringLength(5)]
         public string LanguageCode { get; set; }
 
         [Required, StringLength(128)]
@@ -41,8 +41,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
         public virtual Video ToModel(Video video)
         {
-            if (video == null)
-                throw new ArgumentNullException(nameof(video));
+            ArgumentNullException.ThrowIfNull(video);
 
             video.Id = Id;
             video.CreatedBy = CreatedBy;
@@ -67,8 +66,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
         public virtual VideoEntity FromModel(Video video, PrimaryKeyResolvingMap pkMap)
         {
-            if (video == null)
-                throw new ArgumentNullException(nameof(video));
+            ArgumentNullException.ThrowIfNull(video);
 
             pkMap.AddPair(video, this);
 
@@ -95,8 +93,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
         public virtual void Patch(VideoEntity target)
         {
-            if (target == null)
-                throw new ArgumentNullException(nameof(target));
+            ArgumentNullException.ThrowIfNull(target);
 
             target.Name = Name;
             target.Description = Description;
