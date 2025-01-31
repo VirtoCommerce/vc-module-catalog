@@ -182,7 +182,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 product.LocalizedName = new LocalizedString();
                 foreach (var localizedName in LocalizedNames)
                 {
-                    product.LocalizedName.Set(localizedName.LanguageCode, localizedName.Value);
+                    product.LocalizedName.SetValue(localizedName.LanguageCode, localizedName.Value);
                 }
             }
 
