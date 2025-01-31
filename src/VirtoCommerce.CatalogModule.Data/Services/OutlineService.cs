@@ -166,7 +166,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 Id = _outlinePartResolver.ResolveOutlinePart(entity),
                 SeoObjectType = seoSupport != null ? seoSupport.SeoObjectType : "Catalog",
                 SeoInfos = seoSupport?.SeoInfos,
-                Name = _outlinePartNameResolver.ResolveOutlineName(entity)
+                Name = _outlinePartNameResolver.ResolveOutlineName(entity),
+                LocalizedName = _outlinePartNameResolver.ResolveLocalizedOutlineName(entity)
             };
 
             return retVal;
