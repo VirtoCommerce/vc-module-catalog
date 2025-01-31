@@ -1407,9 +1407,8 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
                         .HasColumnType("character varying(2083)");
 
                     b.Property<string>("LanguageCode")
-                        .IsRequired()
-                        .HasMaxLength(5)
-                        .HasColumnType("character varying(5)");
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.Property<string>("ModifiedBy")
                         .HasMaxLength(64)
@@ -1635,7 +1634,7 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.LocalizedStringEntity<VirtoCommerce.CatalogModule.Data.Model.CategoryEntity>", b =>
                 {
                     b.HasOne("VirtoCommerce.CatalogModule.Data.Model.CategoryEntity", "ParentEntity")
-                        .WithMany("LocalizedName")
+                        .WithMany("LocalizedNames")
                         .HasForeignKey("ParentEntityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1646,7 +1645,7 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.LocalizedStringEntity<VirtoCommerce.CatalogModule.Data.Model.ItemEntity>", b =>
                 {
                     b.HasOne("VirtoCommerce.CatalogModule.Data.Model.ItemEntity", "ParentEntity")
-                        .WithMany("LocalizedName")
+                        .WithMany("LocalizedNames")
                         .HasForeignKey("ParentEntityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1855,7 +1854,7 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
 
                     b.Navigation("IncomingLinks");
 
-                    b.Navigation("LocalizedName");
+                    b.Navigation("LocalizedNames");
 
                     b.Navigation("OutgoingLinks");
 
@@ -1880,7 +1879,7 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
 
                     b.Navigation("ItemPropertyValues");
 
-                    b.Navigation("LocalizedName");
+                    b.Navigation("LocalizedNames");
 
                     b.Navigation("ReferencedAssociations");
 

@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CatalogModule.Core.Model.Configuration;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Domain;
@@ -127,10 +128,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
         public virtual CatalogProduct ToModel(CatalogProduct product, bool convertChildrens, bool convertAssociations)
         {
-            if (product == null)
-            {
-                throw new ArgumentNullException(nameof(product));
-            }
+            ArgumentNullException.ThrowIfNull(product);
 
             product.Id = Id;
             product.CreatedDate = CreatedDate;
@@ -231,15 +229,13 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                     product.Variations.Add(productVariation);
                 }
             }
+
             return product;
         }
 
         public virtual ItemEntity FromModel(CatalogProduct product, PrimaryKeyResolvingMap pkMap)
         {
-            if (product == null)
-            {
-                throw new ArgumentNullException(nameof(product));
-            }
+            ArgumentNullException.ThrowIfNull(product);
 
             pkMap.AddPair(product, this);
 
@@ -488,7 +484,6 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 SeoInfos.Patch(target.SeoInfos, (sourceSeoInfo, targetSeoInfo) => sourceSeoInfo.Patch(targetSeoInfo));
             }
             #endregion
-
 
             #region Childrens
             if (!Childrens.IsNullCollection())

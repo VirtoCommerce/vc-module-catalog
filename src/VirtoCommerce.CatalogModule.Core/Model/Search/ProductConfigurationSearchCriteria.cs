@@ -14,7 +14,7 @@ public class ProductConfigurationSearchCriteria : SearchCriteriaBase
         {
             if (_productIds == null && !string.IsNullOrEmpty(ProductId))
             {
-                _productIds = new[] { ProductId };
+                _productIds = [ProductId];
             }
             return _productIds;
         }
