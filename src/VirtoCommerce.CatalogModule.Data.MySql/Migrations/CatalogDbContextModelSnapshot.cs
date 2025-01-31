@@ -1407,8 +1407,8 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
                         .HasColumnType("varchar(2083)");
 
                     b.Property<string>("LanguageCode")
-                        .HasMaxLength(5)
-                        .HasColumnType("varchar(5)");
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
 
                     b.Property<string>("ModifiedBy")
                         .HasMaxLength(64)

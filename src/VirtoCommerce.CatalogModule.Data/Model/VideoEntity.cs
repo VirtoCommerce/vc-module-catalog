@@ -30,7 +30,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         [StringLength(20)]
         public string Duration { get; set; }
 
-        [StringLength(5)]
+        [StringLength(64)]
         public string LanguageCode { get; set; }
 
         [Required, StringLength(128)]

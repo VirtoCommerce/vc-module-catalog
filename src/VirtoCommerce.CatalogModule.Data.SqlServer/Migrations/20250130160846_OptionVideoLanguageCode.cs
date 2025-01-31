@@ -13,8 +13,8 @@ namespace VirtoCommerce.CatalogModule.Data.SqlServer.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "LanguageCode",
                 table: "CatalogVideo",
-                type: "nvarchar(5)",
-                maxLength: 5,
+                type: "nvarchar(64)",
+                maxLength: 64,
                 nullable: true,
                 oldClrType: typeof(string),
                 oldType: "nvarchar(5)",

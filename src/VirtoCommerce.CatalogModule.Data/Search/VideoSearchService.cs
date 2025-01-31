@@ -42,7 +42,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search
 
             if (!criteria.LanguageCode.IsNullOrEmpty())
             {
-                query = query.Where(x => x.LanguageCode == criteria.LanguageCode || x.LanguageCode == null); // Video without language code is considered as a video with any language - VCST-2600
+                // Video without language code is considered as a video with any language - VCST-2600
+                query = query.Where(x => x.LanguageCode == criteria.LanguageCode || x.LanguageCode == null);
             }
 
             if (!criteria.Keyword.IsNullOrEmpty())

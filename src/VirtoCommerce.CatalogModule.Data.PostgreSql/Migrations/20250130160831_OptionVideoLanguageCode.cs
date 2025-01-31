@@ -13,8 +13,8 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "LanguageCode",
                 table: "CatalogVideo",
-                type: "character varying(5)",
-                maxLength: 5,
+                type: "character varying(64)",
+                maxLength: 64,
                 nullable: true,
                 oldClrType: typeof(string),
                 oldType: "character varying(5)",
