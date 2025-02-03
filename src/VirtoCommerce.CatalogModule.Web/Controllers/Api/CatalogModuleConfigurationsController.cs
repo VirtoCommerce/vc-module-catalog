@@ -62,7 +62,8 @@ public class CatalogModuleConfigurationsController(
     public async Task<ActionResult> CreateOrUpdateConfiguration([FromBody] ProductConfiguration configuration)
     {
         // Only the full configuration can be active
-        if ((configuration.Sections is null or []) || configuration.Sections.Any(x => x.Options is null or []))
+        // Sections with Type as ProductConfigurationSectionType.Text and ProductConfigurationSectionType.File can be whithout options
+        if ((configuration.Sections is null or []) || configuration.Sections.Where(x => x.Type == ProductConfigurationSectionType.Product).Any(x => x.Options is null or []))
         {
             configuration.IsActive = false;
         }

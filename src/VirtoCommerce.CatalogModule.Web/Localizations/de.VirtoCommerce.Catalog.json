@@ -730,7 +730,7 @@
           "sections": "Abschnitte"
         },
         "descr": {
-          "enable": "Aktivierung der Produktkonfigurationsfunktionalität. Für die Aktivierung muss die Konfiguration mindestens einen Abschnitt enthalten, und jeder Abschnitt muss mindestens eine Option enthalten",
+          "enable": "Für die Aktivierung muss die Konfiguration mindestens einen Abschnitt enthalten, und jeder Abschnitt mit dem Typ 'Produkt' muss mindestens eine Option enthalten",
           "no-sections": "Noch keine Abschnitte in dieser Konfiguration",
           "sorting-prompt": "Legen Sie die Reihenfolge fest, in der Abschnitte im Webshop erscheinen. Ziehen Sie die Abschnitte, um ihre Reihenfolge zu ändern"
         },
@@ -743,17 +743,21 @@
         "labels": {
           "name": "Abschnittsname",
           "description": "Beschreibung",
-          "required": "Optionenauswahl ist erforderlich",
+          "required": "Abschnitt ist erforderlich",
           "picture": "Bild",
           "quantity": "Menge",
           "product-name": "Produktname",
-          "options": "Optionen"
+          "options": "Optionen",
+          "type": "Abschnitt-Typ"
         },
         "descr": {
           "no-options": "Noch keine Optionen in diesem Abschnitt"
         },
         "commands": {
           "add": "Optionen hinzufügen"
+        },
+        "placeholders": {
+          "type": "Bitte auswählen..."
         }
       },
       "option-details": {
@@ -763,7 +767,7 @@
         },
         "placeholders": {
           "quantity": "Menge angeben"
-        } 
+        }
       }
     },
     "exporter-list": {
@@ -1164,6 +1168,10 @@
             "description": "Änderungen an einer Katalogentität lösen eine Hintergrundaufgabe aus, die diese Änderungen auf den Suchindex anwendet"
           }
         }
+      },
+      "ProductConfigurationSectionTypes": {
+        "description": "Types of sections product configuration sections",
+        "title": "Types"
       }
     },
     "VirtoCommerce": {

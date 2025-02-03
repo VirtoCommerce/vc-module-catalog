@@ -730,7 +730,7 @@
           "sections": "Sections"
         },
         "descr": {
-          "enable": "Activation of the product configuration functionality. For activation, the configuration must contain at least one section, and each section must contain at least one option",
+          "enable": "For activation, the configuration must contain at least one section, and each section with the 'Product' type must contain at least one option",
           "no-sections": "No sections in this configuration yet",
           "sorting-prompt": "Set the order in which sections appear in the web store. Drag and drop the sections to change their order"
         },
@@ -743,17 +743,21 @@
         "labels": {
           "name": "Section name",
           "description": "Description",
-          "required": "Option selection is required",
+          "required": "Section is required",
           "picture": "Img",
           "quantity": "Quantity",
           "product-name": "Product name",
-          "options": "Options"
+          "options": "Options",
+          "type": "Type of section"
         },
         "descr": {
           "no-options": "No options in this section yet"
         },
         "commands": {
           "add": "Add options"
+        },
+        "placeholders": {
+          "type": "Please select..."
         }
       },
       "option-details": {
@@ -1164,6 +1168,10 @@
             "description": "Any changes made to a catalog entity trigger a background task that applies those changes to the search index"
           }
         }
+      },
+      "ProductConfigurationSectionTypes": {
+        "description": "Types of sections product configuration sections",
+        "title": "Types"
       }
     },
     "VirtoCommerce": {

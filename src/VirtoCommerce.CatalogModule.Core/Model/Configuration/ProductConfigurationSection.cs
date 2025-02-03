@@ -13,6 +13,7 @@ public class ProductConfigurationSection : AuditableEntity, ICloneable, IHasName
     public string Description { get; set; }
     public bool IsRequired { get; set; }
     public int DisplayOrder { get; set; }
+    public ProductConfigurationSectionType Type { get; set; }
 
     [JsonIgnore]
     public ProductConfiguration Configuration { get; set; }

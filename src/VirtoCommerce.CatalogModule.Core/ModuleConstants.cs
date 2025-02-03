@@ -76,7 +76,7 @@ namespace VirtoCommerce.CatalogModule.Core
                     GroupName = "Catalog|General",
                     ValueType = SettingValueType.ShortText,
                     IsDictionary = true,
-                    AllowedValues = new[] { "Images" }
+                    AllowedValues = ["Images"]
                 };
 
                 public static SettingDescriptor AssociationGroups { get; } = new SettingDescriptor
@@ -85,7 +85,7 @@ namespace VirtoCommerce.CatalogModule.Core
                     ValueType = SettingValueType.ShortText,
                     GroupName = "Catalog|General",
                     IsDictionary = true,
-                    AllowedValues = new[] { "Accessories", "Related Items" }
+                    AllowedValues = ["Accessories", "Related Items"]
                 };
 
                 public static SettingDescriptor EditorialReviewTypes { get; } = new SettingDescriptor
@@ -95,7 +95,7 @@ namespace VirtoCommerce.CatalogModule.Core
                     GroupName = "Catalog|General",
                     IsDictionary = true,
                     DefaultValue = "QuickReview",
-                    AllowedValues = new[] { "QuickReview", "FullReview" }
+                    AllowedValues = ["QuickReview", "FullReview"]
                 };
 
                 public static SettingDescriptor CategoryDescriptionTypes { get; } = new SettingDescriptor
@@ -105,7 +105,7 @@ namespace VirtoCommerce.CatalogModule.Core
                     GroupName = "Catalog|General",
                     IsDictionary = true,
                     DefaultValue = "QuickReview",
-                    AllowedValues = new[] { "QuickReview", "FullReview" }
+                    AllowedValues = ["QuickReview", "FullReview"]
                 };
 
                 public static SettingDescriptor UseSeoDeduplication { get; } = new SettingDescriptor
@@ -124,19 +124,31 @@ namespace VirtoCommerce.CatalogModule.Core
                     DefaultValue = false
                 };
 
+                public static SettingDescriptor ProductConfigurationSectionTypes = new SettingDescriptor
+                {
+                    Name = "Catalog.ProductConfigurationSectionTypes",
+                    ValueType = SettingValueType.ShortText,
+                    GroupName = "Catalog|General",
+                    IsDictionary = true,
+                    DefaultValue = "Product",
+                    AllowedValues = ["Product", "Text", "File"],
+                    IsHidden = true
+                };
+
                 public static IEnumerable<SettingDescriptor> AllSettings
                 {
                     get
                     {
-                        return new List<SettingDescriptor>
-                               {
+                        return
+                               [
                                    ImageCategories,
                                    AssociationGroups,
                                    EditorialReviewTypes,
                                    CategoryDescriptionTypes,
                                    UseSeoDeduplication,
-                                   EventBasedIndexation
-                               };
+                                   EventBasedIndexation,
+                                   ProductConfigurationSectionTypes
+                               ];
                     }
                 }
             }
