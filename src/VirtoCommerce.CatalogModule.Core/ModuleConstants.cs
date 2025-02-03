@@ -124,7 +124,7 @@ namespace VirtoCommerce.CatalogModule.Core
                     DefaultValue = false
                 };
 
-                public static SettingDescriptor ProductConfigurationSectionTypes = new SettingDescriptor
+                public static SettingDescriptor ProductConfigurationSectionTypes { get; } = new SettingDescriptor
                 {
                     Name = "Catalog.ProductConfigurationSectionTypes",
                     ValueType = SettingValueType.ShortText,
