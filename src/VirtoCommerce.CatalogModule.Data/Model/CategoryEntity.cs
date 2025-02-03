@@ -133,7 +133,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 category.LocalizedName = new LocalizedString();
                 foreach (var localizedName in LocalizedNames)
                 {
-                    category.LocalizedName.Set(localizedName.LanguageCode, localizedName.Value);
+                    category.LocalizedName.SetValue(localizedName.LanguageCode, localizedName.Value);
                 }
             }
 
