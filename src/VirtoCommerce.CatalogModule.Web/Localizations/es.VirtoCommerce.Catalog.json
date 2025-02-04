@@ -730,7 +730,7 @@
           "sections": "Secciones"
         },
         "descr": {
-          "enable": "Activación de la funcionalidad de configuración del producto. Para la activación, la configuración debe contener al menos una sección, y cada sección debe contener al menos una opción",
+          "enable": "Para la activación, la configuración debe contener al menos una sección, y cada sección con el tipo de 'Producto' debe contener al menos una opción",
           "no-sections": "Aún no hay secciones en esta configuración",
           "sorting-prompt": "Establecer el orden en que las secciones aparecen en la tienda web. Arrastra y suelta las secciones para cambiar su orden"
         },
@@ -743,17 +743,21 @@
         "labels": {
           "name": "Nombre de la sección",
           "description": "Descripción",
-          "required": "Se requiere selección de opción",
+          "required": "Sección obligatoria",
           "picture": "Img",
           "quantity": "Cantidad",
           "product-name": "Nombre del producto",
-          "options": "Opciones"
+          "options": "Opciones",
+          "type": "Tipo de sección"
         },
         "descr": {
           "no-options": "Aún no hay opciones en esta sección"
         },
         "commands": {
           "add": "Agregar opciones"
+        },
+        "placeholders": {
+          "type": "Elegid..."
         }
       },
       "option-details": {
@@ -763,7 +767,7 @@
         },
         "placeholders": {
           "quantity": "Especificar cantidad"
-        } 
+        }
       }
     },
     "exporter-list": {
@@ -1164,6 +1168,10 @@
             "description": "Cualquier cambio realizado en una entidad del catálogo desencadena una tarea en segundo plano que aplica esos cambios al índice de búsqueda"
           }
         }
+      },
+      "ProductConfigurationSectionTypes": {
+        "description": "Types of sections product configuration sections",
+        "title": "Types"
       }
     },
     "VirtoCommerce": {

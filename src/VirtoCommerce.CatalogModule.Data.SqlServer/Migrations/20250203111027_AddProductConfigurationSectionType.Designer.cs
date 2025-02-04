@@ -3,17 +3,20 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 
 #nullable disable
 
-namespace VirtoCommerce.CatalogModule.Data.Migrations
+namespace VirtoCommerce.CatalogModule.Data.SqlServer.Migrations
 {
     [DbContext(typeof(CatalogDbContext))]
-    partial class CatalogDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250203111027_AddProductConfigurationSectionType")]
+    partial class AddProductConfigurationSectionType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1412,8 +1415,9 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasColumnType("nvarchar(2083)");
 
                     b.Property<string>("LanguageCode")
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
+                        .IsRequired()
+                        .HasMaxLength(5)
+                        .HasColumnType("nvarchar(5)");
 
                     b.Property<string>("ModifiedBy")
                         .HasMaxLength(64)

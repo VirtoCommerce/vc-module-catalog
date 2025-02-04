@@ -973,6 +973,9 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
+                    b.Property<byte>("Type")
+                        .HasColumnType("smallint");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ConfigurationId");

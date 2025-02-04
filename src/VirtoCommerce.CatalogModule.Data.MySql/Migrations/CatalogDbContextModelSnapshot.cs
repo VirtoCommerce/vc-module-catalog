@@ -973,6 +973,9 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("varchar(256)");
 
+                    b.Property<byte>("Type")
+                        .HasColumnType("tinyint unsigned");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ConfigurationId");

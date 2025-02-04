@@ -18,6 +18,9 @@ public class ProductConfigurationSectionEntity : AuditableEntity, IDataEntity<Pr
     [StringLength(256)]
     public string Name { get; set; }
 
+    [Required]
+    public byte Type { get; set; }
+
     public string Description { get; set; }
     public bool IsRequired { get; set; }
     public int DisplayOrder { get; set; }
@@ -40,6 +43,7 @@ public class ProductConfigurationSectionEntity : AuditableEntity, IDataEntity<Pr
         model.Description = Description;
         model.IsRequired = IsRequired;
         model.DisplayOrder = DisplayOrder;
+        model.Type = EnumUtility.SafeParse(Type.ToString(), ProductConfigurationSectionType.Product);
 
         model.Options = Options.Select(x => x.ToModel(AbstractTypeFactory<ProductConfigurationOption>.TryCreateInstance())).ToList();
 
@@ -63,6 +67,7 @@ public class ProductConfigurationSectionEntity : AuditableEntity, IDataEntity<Pr
         Description = model.Description;
         IsRequired = model.IsRequired;
         DisplayOrder = model.DisplayOrder;
+        Type = (byte)model.Type;
 
         if (model.Options != null)
         {
@@ -78,6 +83,7 @@ public class ProductConfigurationSectionEntity : AuditableEntity, IDataEntity<Pr
         target.Description = Description;
         target.IsRequired = IsRequired;
         target.DisplayOrder = DisplayOrder;
+        target.Type = Type;
 
         if (!Options.IsNullCollection())
         {
