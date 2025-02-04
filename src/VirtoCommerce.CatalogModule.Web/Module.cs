@@ -154,7 +154,6 @@ namespace VirtoCommerce.CatalogModule.Web
             serviceCollection.AddTransient<TrackSpecialChangesEventHandler>();
 
             serviceCollection.AddTransient<ISeoResolver, CatalogSeoResolver>();
-            serviceCollection.AddTransient<ISeoBySlugResolver, CatalogSeoBySlugResolver>();
 
             serviceCollection.AddTransient<IInternalListEntrySearchService, InternalListEntrySearchService>();
             serviceCollection.AddTransient<ILinkSearchService, LinkSearchService>();

@@ -12,6 +12,7 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
+    [Obsolete("Use CatalogSeoResolver", DiagnosticId = "VC0010", UrlFormat = "https://docs.virtocommerce.org/platform/user-guide/versions/virto3-products-versions/")]
     public class CatalogSeoBySlugResolver : ISeoBySlugResolver
     {
         private readonly IPlatformMemoryCache _platformMemoryCache;
