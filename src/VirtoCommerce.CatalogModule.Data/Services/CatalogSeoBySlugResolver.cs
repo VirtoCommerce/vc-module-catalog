@@ -12,6 +12,7 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
+    [Obsolete("Use CatalogSeoResolver", DiagnosticId = "VC0010", UrlFormat = "https://docs.virtocommerce.org/platform/user-guide/versions/virto3-products-versions/")]
     public class CatalogSeoBySlugResolver : ISeoBySlugResolver
     {
         private readonly IPlatformMemoryCache _platformMemoryCache;
@@ -24,11 +25,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         }
 
         #region ISeoBySlugResolver members
-        public async Task<SeoInfo[]> FindSeoBySlugAsync(string slug)
+        public Task<SeoInfo[]> FindSeoBySlugAsync(string slug)
         {
-
             var cacheKey = CacheKey.With(GetType(), nameof(FindSeoBySlugAsync), slug);
-            return await _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async cacheEntry =>
+            return _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async cacheEntry =>
             {
                 cacheEntry.AddExpirationToken(SeoInfoCacheRegion.CreateChangeToken());
                 var result = new List<SeoInfo>();

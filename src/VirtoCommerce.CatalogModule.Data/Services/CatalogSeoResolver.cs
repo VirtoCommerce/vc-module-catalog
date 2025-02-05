@@ -8,6 +8,7 @@ using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.StoreModule.Core.Services;
 
 namespace VirtoCommerce.CatalogModule.Data.Services;
 
@@ -16,17 +17,20 @@ public class CatalogSeoResolver : ISeoResolver
     private readonly Func<ICatalogRepository> _repositoryFactory;
     private readonly ICategoryService _categoryService;
     private readonly IItemService _itemService;
+    private readonly IStoreService _storeService;
 
     private const string CategoryObjectType = "Category";
     private const string CatalogProductObjectType = "CatalogProduct";
 
     public CatalogSeoResolver(Func<ICatalogRepository> repositoryFactory,
         ICategoryService categoryService,
-        IItemService itemService)
+        IItemService itemService,
+        IStoreService storeService)
     {
         _repositoryFactory = repositoryFactory;
         _categoryService = categoryService;
         _itemService = itemService;
+        _storeService = storeService;
     }
 
     public async Task<IList<SeoInfo>> FindSeoAsync(SeoSearchCriteria criteria)
@@ -44,12 +48,15 @@ public class CatalogSeoResolver : ISeoResolver
 
         if (currentEntitySeoInfos.Count == 0)
         {
+            return [];
+
+            // TODO: Uncomment this block of code when frontend will support deactivated seo entries and redirect it to real seo 
             // Try to find deactivated seo entries and revert it back if we found it
-            currentEntitySeoInfos = await SearchSeoInfos(criteria.StoreId, criteria.LanguageCode, segments.Last(), false);
-            if (currentEntitySeoInfos.Count == 0)
-            {
-                return [];
-            }
+            //currentEntitySeoInfos = await SearchSeoInfos(criteria.StoreId, criteria.LanguageCode, segments.Last(), false);
+            //if (currentEntitySeoInfos.Count == 0)
+            //{
+            //    return [];
+            //}
         }
 
         var groups = currentEntitySeoInfos.GroupBy(x => new { x.ObjectType, x.ObjectId });
@@ -60,47 +67,52 @@ public class CatalogSeoResolver : ISeoResolver
             return [currentEntitySeoInfos.First()];
         }
 
+        var parentIds = new List<string>();
+
         // It's not possibe to resolve because we don't have parent segment
         if (segments.Length == 1)
         {
-            return [];
+            var store = await _storeService.GetByIdAsync(criteria.StoreId);
+            parentIds.Add(store.Catalog);
         }
-
-        // We found multiple seo information by seo search criteria, need to find correct by checking parent.
-        var parentSearchCriteria = criteria.Clone() as SeoSearchCriteria;
-        parentSearchCriteria.Permalink = string.Join('/', segments.Take(segments.Length - 1));
-        var parentSeoInfos = await FindSeoAsync(parentSearchCriteria);
-
-        if (parentSeoInfos.Count == 0)
+        else
         {
-            return [];
-        }
+            // We found multiple seo information by seo search criteria, need to find correct by checking parent.
+            var parentSearchCriteria = criteria.Clone() as SeoSearchCriteria;
+            parentSearchCriteria.Permalink = string.Join('/', segments.Take(segments.Length - 1));
+            var parentSeoInfos = await FindSeoAsync(parentSearchCriteria);
 
-        var parentCategorieIds = parentSeoInfos.Select(x => x.ObjectId).Distinct().ToList();
+            if (parentSeoInfos.Count == 0)
+            {
+                return [];
+            }
+
+            parentIds.AddRange(parentSeoInfos.Select(x => x.ObjectId).Distinct());
+        }
 
         foreach (var groupKey in groups.Select(g => g.Key))
         {
-            if (groupKey.ObjectType == CategoryObjectType)
+            if (groupKey.ObjectType.Equals(CategoryObjectType, StringComparison.OrdinalIgnoreCase))
             {
-                var isMatch = await DoesParentMatchCategoryOutline(parentCategorieIds, groupKey.ObjectId);
+                var isMatch = await DoesParentMatchCategoryOutline(parentIds, groupKey.ObjectId);
                 if (isMatch)
                 {
                     return currentEntitySeoInfos.Where(x =>
-                        x.ObjectId == groupKey.ObjectId
-                        && groupKey.ObjectType == CategoryObjectType).ToList();
+                        groupKey.ObjectId.Equals(x.ObjectId, StringComparison.OrdinalIgnoreCase)
+                        && groupKey.ObjectType.Equals(CategoryObjectType, StringComparison.OrdinalIgnoreCase)).ToList();
                 }
             }
 
             // Inside the method
-            else if (groupKey.ObjectType == CatalogProductObjectType)
+            else if (groupKey.ObjectType.Equals(CatalogProductObjectType, StringComparison.OrdinalIgnoreCase))
             {
-                var isMatch = await DoesParentMatchProductOutline(parentCategorieIds, groupKey.ObjectId);
+                var isMatch = await DoesParentMatchProductOutline(parentIds, groupKey.ObjectId);
 
                 if (isMatch)
                 {
                     return currentEntitySeoInfos.Where(x =>
-                        x.ObjectId == groupKey.ObjectId
-                        && groupKey.ObjectType == CatalogProductObjectType).ToList();
+                        groupKey.ObjectId.Equals(x.ObjectId, StringComparison.OrdinalIgnoreCase)
+                        && groupKey.ObjectType.Equals(CatalogProductObjectType, StringComparison.OrdinalIgnoreCase)).ToList();
                 }
             }
         }
@@ -115,7 +127,7 @@ public class CatalogSeoResolver : ISeoResolver
         {
             throw new InvalidOperationException($"Category with ID '{objectId}' was not found.");
         }
-        var outlines = category.Outlines.Select(x => x.Items.Skip(x.Items.Count - 2).First().Id).Distinct().ToList();
+        var outlines = category.Outlines.SelectMany(x => x.Items.Select(c => c.Id)).Distinct().Where(x => x != objectId).ToList();
         return outlines.Any(parentCategorieIds.Contains);
     }
 
@@ -126,7 +138,7 @@ public class CatalogSeoResolver : ISeoResolver
         {
             throw new InvalidOperationException($"Product with ID '{objectId}' was not found.");
         }
-        var outlines = product.Outlines.Select(x => x.Items.Skip(x.Items.Count - 2).First().Id).Distinct().ToList();
+        var outlines = product.Outlines.SelectMany(x => x.Items.Select(c => c.Id)).Distinct().ToList();
         return outlines.Any(parentCategorieIds.Contains);
     }
 
@@ -136,8 +148,8 @@ public class CatalogSeoResolver : ISeoResolver
 
         return (await repository.SeoInfos.Where(s => s.IsActive == isActive
             && s.Keyword == slug
-            && (s.StoreId == null || s.StoreId == storeId)
-            && (s.Language == null || s.Language == languageCode))
+            && (string.IsNullOrEmpty(s.StoreId) || s.StoreId == storeId)
+            && (string.IsNullOrEmpty(s.Language) || s.Language == languageCode))
             .ToListAsync())
             .Select(x => x.ToModel(AbstractTypeFactory<SeoInfo>.TryCreateInstance()))
             .OrderByDescending(s => GetPriorityScore(s, storeId, languageCode))
@@ -150,12 +162,12 @@ public class CatalogSeoResolver : ISeoResolver
         var hasStoreCriteria = !string.IsNullOrEmpty(storeId);
         var hasLangCriteria = !string.IsNullOrEmpty(language);
 
-        if (hasStoreCriteria && seoInfo.StoreId == storeId)
+        if (hasStoreCriteria && string.Equals(seoInfo.StoreId, storeId, StringComparison.OrdinalIgnoreCase))
         {
             score += 2;
         }
 
-        if (hasLangCriteria && seoInfo.LanguageCode == language)
+        if (hasLangCriteria && string.Equals(seoInfo.LanguageCode, language, StringComparison.OrdinalIgnoreCase))
         {
             score += 1;
         }

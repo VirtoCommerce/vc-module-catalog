@@ -10,20 +10,25 @@ using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Data.Services;
 using VirtoCommerce.CoreModule.Core.Outlines;
 using VirtoCommerce.CoreModule.Core.Seo;
+using VirtoCommerce.StoreModule.Core.Model;
+using VirtoCommerce.StoreModule.Core.Services;
 
 namespace VirtoCommerce.CatalogModule.Tests
 {
     public class CatalogHierarchyHelper
     {
+        private readonly string _catalogId;
         public List<CatalogProduct> Products { get; private set; }
         public List<Category> Categories { get; private set; }
         public List<SeoInfo> SeoInfos { get; private set; }
 
-        public CatalogHierarchyHelper()
+        public CatalogHierarchyHelper(string catalogId)
         {
-            Products = new List<CatalogProduct>();
-            Categories = new List<Category>();
-            SeoInfos = new List<SeoInfo>();
+            _catalogId = catalogId;
+
+            Products = [];
+            Categories = [];
+            SeoInfos = [];
         }
 
         public void AddProduct(string productId, params string[] outlineIds)
@@ -33,7 +38,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                 Id = productId,
                 Outlines = outlineIds.Select(id => new Outline
                 {
-                    Items = id.Split('/').Select(outlineId => new OutlineItem { Id = outlineId }).ToList()
+                    Items = id.Split('/').Append(productId).Select(outlineId => new OutlineItem { Id = outlineId }).ToList()
                 }).ToList()
             };
             Products.Add(product);
@@ -46,9 +51,10 @@ namespace VirtoCommerce.CatalogModule.Tests
                 Id = categoryId,
                 Outlines = outlineIds.Select(id => new Outline
                 {
-                    Items = id.Split('/').Select(outlineId => new OutlineItem { Id = outlineId }).ToList()
+                    Items = id.Split('/').Append(categoryId).Select(outlineId => new OutlineItem { Id = outlineId }).ToList()
                 }).ToList()
             };
+
             Categories.Add(category);
         }
 
@@ -71,11 +77,13 @@ namespace VirtoCommerce.CatalogModule.Tests
             var catalogRepositoryMock = CreateCatalogRepositoryMock();
             var categoryServiceMock = CreateCategoryServiceMock();
             var productServiceMock = CreateProductServiceMock();
+            var storeServiceMock = CreateStoreServiceMock();
 
             return new CatalogSeoResolver(
                catalogRepositoryMock.Object,
                categoryServiceMock.Object,
-               productServiceMock.Object);
+               productServiceMock.Object,
+               storeServiceMock.Object);
         }
 
         public Mock<ICategoryService> CreateCategoryServiceMock()
@@ -130,6 +138,21 @@ namespace VirtoCommerce.CatalogModule.Tests
             repositoryFactoryMock.Setup(f => f()).Returns(repository.Object);
             return repositoryFactoryMock;
         }
+
+        public Mock<IStoreService> CreateStoreServiceMock()
+        {
+            var storeService = new Mock<IStoreService>();
+
+            storeService.Setup(x =>
+               x.GetAsync(It.IsAny<IList<string>>(), It.IsAny<string>(), It.IsAny<bool>()))
+                   .ReturnsAsync((IList<string> ids, string responseGroup, bool clone) =>
+                   {
+                       return [new Store { Catalog = _catalogId }];
+                   });
+
+            return storeService;
+        }
     }
 }
+
 
