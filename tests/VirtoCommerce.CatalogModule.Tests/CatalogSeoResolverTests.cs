@@ -274,8 +274,8 @@ namespace VirtoCommerce.CatalogModule.Tests
             helper.AddSeoInfo("category1", CategoryType, "category", true, "B2B-store", "en-US");
             helper.AddSeoInfo("category2", CategoryType, "category", true, "B2B-store", "en-US");
 
-            helper.AddCategory("category1", "category");
-            helper.AddCategory("category2", "category");
+            helper.AddCategory("category1", $"{CatalogId}/category");
+            helper.AddCategory("category2", $"{CatalogId}/category");
 
             var seoResolver = helper.CreateCatalogSeoResolver();
 
@@ -359,35 +359,35 @@ namespace VirtoCommerce.CatalogModule.Tests
         }
 
         [Fact]
-        public async Task FindSeoAsync_Edication()
+        public async Task FindSeoAsync_Education()
         {
             // Arrange
-            var helper = new CatalogHierarchyHelper("21057e9c-14df-48c1-be58-0c59a4f38f06");
+            var helper = new CatalogHierarchyHelper("e7499b13-c61f-4bf9-9cc7-4c2b00903771");
 
             // Education
-            helper.AddCategory("64d8418e-3ddb-43ef-b6d7-ad614d74ecb5", "21057e9c-14df-48c1-be58-0c59a4f38f06");
+            helper.AddCategory("7962be21-5cfb-4f84-bd82-8da24de8a88e", "e7499b13-c61f-4bf9-9cc7-4c2b00903771");
 
             // Furniture & Furnishings
-            helper.AddCategory("1d1af0f8-7fdd-4001-b312-3379a157a7af", "21057e9c-14df-48c1-be58-0c59a4f38f06");
+            helper.AddCategory("0f330fc9-a4eb-41f5-9a98-0436efdd331d", "e7499b13-c61f-4bf9-9cc7-4c2b00903771");
 
             // Furniture & Furnishings > Education
-            helper.AddCategory("cbbb4dda-0b4a-4aab-9873-08cb9fa98ebf", "21057e9c-14df-48c1-be58-0c59a4f38f06", "21057e9c-14df-48c1-be58-0c59a4f38f06/1d1af0f8-7fdd-4001-b312-3379a157a7af");
+            helper.AddCategory("1b29a699-49ec-4ca5-8667-68e4c9c9124b", "e7499b13-c61f-4bf9-9cc7-4c2b00903771", "e7499b13-c61f-4bf9-9cc7-4c2b00903771/0f330fc9-a4eb-41f5-9a98-0436efdd331d");
 
 
-            helper.AddSeoInfo("64d8418e-3ddb-43ef-b6d7-ad614d74ecb5", CategoryType, "education", true, string.Empty, string.Empty);
-            helper.AddSeoInfo("1d1af0f8-7fdd-4001-b312-3379a157a7af", CategoryType, "furniture-furnishings", true, string.Empty, string.Empty);
-            helper.AddSeoInfo("cbbb4dda-0b4a-4aab-9873-08cb9fa98ebf", CategoryType, "education", true, null, null);
+            helper.AddSeoInfo("7962be21-5cfb-4f84-bd82-8da24de8a88e", CategoryType, "education", true, null, null);
+            helper.AddSeoInfo("0f330fc9-a4eb-41f5-9a98-0436efdd331d", CategoryType, "furniture-furnishings", true, string.Empty, string.Empty);
+            helper.AddSeoInfo("1b29a699-49ec-4ca5-8667-68e4c9c9124b", CategoryType, "education", true, "B2B-store", string.Empty);
 
 
             var seoResolver = helper.CreateCatalogSeoResolver();
 
             // Act
-            var criteria = new SeoSearchCriteria { Permalink = "education", StoreId = "opus", LanguageCode = "en-US" };
+            var criteria = new SeoSearchCriteria { Permalink = "education", StoreId = "B2B-store", LanguageCode = "en-US" };
             var result = await seoResolver.FindSeoAsync(criteria);
 
             // Assert
             Assert.Single(result);
-            Assert.Equal("64d8418e-3ddb-43ef-b6d7-ad614d74ecb5", result.First().ObjectId);
+            Assert.Equal("7962be21-5cfb-4f84-bd82-8da24de8a88e", result.First().ObjectId);
 
             // Act
             var criteria2 = new SeoSearchCriteria { Permalink = "furniture-furnishings/education", StoreId = "B2B-store", LanguageCode = "en-US" };
@@ -395,7 +395,7 @@ namespace VirtoCommerce.CatalogModule.Tests
 
             // Assert
             Assert.Single(result2);
-            Assert.Equal("cbbb4dda-0b4a-4aab-9873-08cb9fa98ebf", result2.First().ObjectId);
+            Assert.Equal("1b29a699-49ec-4ca5-8667-68e4c9c9124b", result2.First().ObjectId);
         }
     }
 }

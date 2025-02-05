@@ -69,10 +69,11 @@ public class CatalogSeoResolver : ISeoResolver
 
         var parentIds = new List<string>();
 
+        var store = await _storeService.GetByIdAsync(criteria.StoreId);
+
         // It's not possibe to resolve because we don't have parent segment
         if (segments.Length == 1)
         {
-            var store = await _storeService.GetByIdAsync(criteria.StoreId);
             parentIds.Add(store.Catalog);
         }
         else
@@ -94,7 +95,7 @@ public class CatalogSeoResolver : ISeoResolver
         {
             if (groupKey.ObjectType.Equals(CategoryObjectType, StringComparison.OrdinalIgnoreCase))
             {
-                var isMatch = await DoesParentMatchCategoryOutline(parentIds, groupKey.ObjectId);
+                var isMatch = await DoesParentMatchCategoryOutline(store.Catalog, parentIds, groupKey.ObjectId);
                 if (isMatch)
                 {
                     return currentEntitySeoInfos.Where(x =>
@@ -106,7 +107,7 @@ public class CatalogSeoResolver : ISeoResolver
             // Inside the method
             else if (groupKey.ObjectType.Equals(CatalogProductObjectType, StringComparison.OrdinalIgnoreCase))
             {
-                var isMatch = await DoesParentMatchProductOutline(parentIds, groupKey.ObjectId);
+                var isMatch = await DoesParentMatchProductOutline(store.Catalog, parentIds, groupKey.ObjectId);
 
                 if (isMatch)
                 {
@@ -120,26 +121,60 @@ public class CatalogSeoResolver : ISeoResolver
         return [];
     }
 
-    private async Task<bool> DoesParentMatchCategoryOutline(IList<string> parentCategorieIds, string objectId)
+    private async Task<bool> DoesParentMatchCategoryOutline(string catalogId, IList<string> parentCategorieIds, string objectId)
     {
         var category = await _categoryService.GetByIdAsync(objectId, CategoryResponseGroup.WithOutlines.ToString(), false);
         if (category == null)
         {
             throw new InvalidOperationException($"Category with ID '{objectId}' was not found.");
         }
-        var outlines = category.Outlines.SelectMany(x => x.Items.Select(c => c.Id)).Distinct().Where(x => x != objectId).ToList();
-        return outlines.Any(parentCategorieIds.Contains);
+
+        if (category.Outlines.Count == 0)
+        {
+            return false;
+        }
+
+        // Select outline for current catalog and longest path to find real parent
+        var maxLength = category.Outlines
+            .Where(x => x.Items.First().Id.Equals(catalogId))
+            .Select(x => x.Items.Count)
+            .DefaultIfEmpty(0)
+            .Max();
+
+        // Get parent from longest path. Keep in mind that latest element is current object id.
+        var categoryParents = category.Outlines
+            .Where(x => x.Items.Count == maxLength)
+            .SelectMany(x => x.Items.Skip(x.Items.Count - 2).Take(1).Select(i => i.Id))
+            .Distinct()
+            .ToList();
+
+        return categoryParents.Any(parentCategorieIds.Contains);
     }
 
-    private async Task<bool> DoesParentMatchProductOutline(IList<string> parentCategorieIds, string objectId)
+    private async Task<bool> DoesParentMatchProductOutline(string catalogId, IList<string> parentCategorieIds, string objectId)
     {
         var product = await _itemService.GetByIdAsync(objectId, CategoryResponseGroup.WithOutlines.ToString(), false);
         if (product == null)
         {
             throw new InvalidOperationException($"Product with ID '{objectId}' was not found.");
         }
-        var outlines = product.Outlines.SelectMany(x => x.Items.Select(c => c.Id)).Distinct().ToList();
-        return outlines.Any(parentCategorieIds.Contains);
+
+        // Select outline for current catalog and longest path to find real parent
+        var maxLength = product.Outlines
+            .Where(x => x.Items.First().Id.Equals(catalogId))
+            .Select(x => x.Items.Count)
+            .Max();
+
+        // Get parent from longest path. Keep in mind that latest element is current product id.
+        var categoryParents = product.Outlines
+            .Where(x => x.Items.Count == maxLength)
+            .SelectMany(x => x.Items.Select(x => x.Id)
+            .Skip(x.Items.Count - 2)
+            .Take(1))
+            .Distinct()
+            .ToList();
+
+        return categoryParents.Any(parentCategorieIds.Contains);
     }
 
     private async Task<List<SeoInfo>> SearchSeoInfos(string storeId, string languageCode, string slug, bool isActive = true)
