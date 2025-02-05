@@ -48,12 +48,15 @@ public class CatalogSeoResolver : ISeoResolver
 
         if (currentEntitySeoInfos.Count == 0)
         {
+            return [];
+
+            // TODO: Uncomment this block of code when frontend will support deactivated seo entries and redirect it to real seo 
             // Try to find deactivated seo entries and revert it back if we found it
-            currentEntitySeoInfos = await SearchSeoInfos(criteria.StoreId, criteria.LanguageCode, segments.Last(), false);
-            if (currentEntitySeoInfos.Count == 0)
-            {
-                return [];
-            }
+            //currentEntitySeoInfos = await SearchSeoInfos(criteria.StoreId, criteria.LanguageCode, segments.Last(), false);
+            //if (currentEntitySeoInfos.Count == 0)
+            //{
+            //    return [];
+            //}
         }
 
         var groups = currentEntitySeoInfos.GroupBy(x => new { x.ObjectType, x.ObjectId });
