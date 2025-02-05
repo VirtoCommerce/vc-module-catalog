@@ -518,9 +518,16 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                     var aggregationItemLabel = aggregationItem.Labels.FirstOrDefault();
                     if (aggregationItemLabel != null &&
                         caregoriesDictionary.TryGetValue(aggregationItemLabel.Label, out var category) &&
-                        category?.LocalizedName?.Values?.Any() == true)
+                        category != null)
                     {
-                        aggregationItem.Labels = category?.LocalizedName.Values.Select(x => new AggregationLabel { Language = x.Key, Label = x.Value }).ToArray();
+                        if (category.LocalizedName?.Values?.Any() == true) // Add the language code to the label
+                        {
+                            aggregationItemLabel.Label = category.LocalizedName.Values.First().Value;
+                        }
+                        else
+                        {
+                            aggregationItemLabel.Label = category.Name;
+                        }
                     }
                 }
             }
