@@ -357,6 +357,46 @@ namespace VirtoCommerce.CatalogModule.Tests
             Assert.Single(result2);
             Assert.Equal("category-child", result2.First().ObjectId);
         }
+
+        [Fact]
+        public async Task FindSeoAsync_Edication()
+        {
+            // Arrange
+            var helper = new CatalogHierarchyHelper("21057e9c-14df-48c1-be58-0c59a4f38f06");
+
+            // Education
+            helper.AddCategory("64d8418e-3ddb-43ef-b6d7-ad614d74ecb5", "21057e9c-14df-48c1-be58-0c59a4f38f06");
+
+            // Furniture & Furnishings
+            helper.AddCategory("1d1af0f8-7fdd-4001-b312-3379a157a7af", "21057e9c-14df-48c1-be58-0c59a4f38f06");
+
+            // Furniture & Furnishings > Education
+            helper.AddCategory("cbbb4dda-0b4a-4aab-9873-08cb9fa98ebf", "21057e9c-14df-48c1-be58-0c59a4f38f06", "21057e9c-14df-48c1-be58-0c59a4f38f06/1d1af0f8-7fdd-4001-b312-3379a157a7af");
+
+
+            helper.AddSeoInfo("64d8418e-3ddb-43ef-b6d7-ad614d74ecb5", CategoryType, "education", true, string.Empty, string.Empty);
+            helper.AddSeoInfo("1d1af0f8-7fdd-4001-b312-3379a157a7af", CategoryType, "furniture-furnishings", true, string.Empty, string.Empty);
+            helper.AddSeoInfo("cbbb4dda-0b4a-4aab-9873-08cb9fa98ebf", CategoryType, "education", true, null, null);
+
+
+            var seoResolver = helper.CreateCatalogSeoResolver();
+
+            // Act
+            var criteria = new SeoSearchCriteria { Permalink = "education", StoreId = "opus", LanguageCode = "en-US" };
+            var result = await seoResolver.FindSeoAsync(criteria);
+
+            // Assert
+            Assert.Single(result);
+            Assert.Equal("64d8418e-3ddb-43ef-b6d7-ad614d74ecb5", result.First().ObjectId);
+
+            // Act
+            var criteria2 = new SeoSearchCriteria { Permalink = "furniture-furnishings/education", StoreId = "B2B-store", LanguageCode = "en-US" };
+            var result2 = await seoResolver.FindSeoAsync(criteria2);
+
+            // Assert
+            Assert.Single(result2);
+            Assert.Equal("cbbb4dda-0b4a-4aab-9873-08cb9fa98ebf", result2.First().ObjectId);
+        }
     }
 }
 

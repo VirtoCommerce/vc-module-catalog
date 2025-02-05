@@ -89,27 +89,27 @@ public class CatalogSeoResolver : ISeoResolver
 
         foreach (var groupKey in groups.Select(g => g.Key))
         {
-            if (groupKey.ObjectType == CategoryObjectType)
+            if (groupKey.ObjectType.Equals(CategoryObjectType, StringComparison.OrdinalIgnoreCase))
             {
                 var isMatch = await DoesParentMatchCategoryOutline(parentIds, groupKey.ObjectId);
                 if (isMatch)
                 {
                     return currentEntitySeoInfos.Where(x =>
-                        x.ObjectId == groupKey.ObjectId
-                        && groupKey.ObjectType == CategoryObjectType).ToList();
+                        groupKey.ObjectId.Equals(x.ObjectId, StringComparison.OrdinalIgnoreCase)
+                        && groupKey.ObjectType.Equals(CategoryObjectType, StringComparison.OrdinalIgnoreCase)).ToList();
                 }
             }
 
             // Inside the method
-            else if (groupKey.ObjectType == CatalogProductObjectType)
+            else if (groupKey.ObjectType.Equals(CatalogProductObjectType, StringComparison.OrdinalIgnoreCase))
             {
                 var isMatch = await DoesParentMatchProductOutline(parentIds, groupKey.ObjectId);
 
                 if (isMatch)
                 {
                     return currentEntitySeoInfos.Where(x =>
-                        x.ObjectId == groupKey.ObjectId
-                        && groupKey.ObjectType == CatalogProductObjectType).ToList();
+                        groupKey.ObjectId.Equals(x.ObjectId, StringComparison.OrdinalIgnoreCase)
+                        && groupKey.ObjectType.Equals(CatalogProductObjectType, StringComparison.OrdinalIgnoreCase)).ToList();
                 }
             }
         }
@@ -145,8 +145,8 @@ public class CatalogSeoResolver : ISeoResolver
 
         return (await repository.SeoInfos.Where(s => s.IsActive == isActive
             && s.Keyword == slug
-            && (s.StoreId == null || s.StoreId == storeId)
-            && (s.Language == null || s.Language == languageCode))
+            && (string.IsNullOrEmpty(s.StoreId) || s.StoreId == storeId)
+            && (string.IsNullOrEmpty(s.Language) || s.Language == languageCode))
             .ToListAsync())
             .Select(x => x.ToModel(AbstractTypeFactory<SeoInfo>.TryCreateInstance()))
             .OrderByDescending(s => GetPriorityScore(s, storeId, languageCode))
@@ -159,12 +159,12 @@ public class CatalogSeoResolver : ISeoResolver
         var hasStoreCriteria = !string.IsNullOrEmpty(storeId);
         var hasLangCriteria = !string.IsNullOrEmpty(language);
 
-        if (hasStoreCriteria && seoInfo.StoreId == storeId)
+        if (hasStoreCriteria && string.Equals(seoInfo.StoreId, storeId, StringComparison.OrdinalIgnoreCase))
         {
             score += 2;
         }
 
-        if (hasLangCriteria && seoInfo.LanguageCode == language)
+        if (hasLangCriteria && string.Equals(seoInfo.LanguageCode, language, StringComparison.OrdinalIgnoreCase))
         {
             score += 1;
         }
