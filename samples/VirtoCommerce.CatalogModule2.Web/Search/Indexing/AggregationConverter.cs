@@ -13,7 +13,12 @@ namespace VirtoCommerce.CatalogModule2.Data.Search.Indexing
 {
     public class AggregationConverter2 : AggregationConverter
     {
-        public AggregationConverter2(IBrowseFilterService browseFilterService, IPropertyService propertyService, IPropertyDictionaryItemSearchService propDictItemsSearchService) : base(browseFilterService, propertyService, propDictItemsSearchService)
+        public AggregationConverter2(
+            IBrowseFilterService browseFilterService,
+            IPropertyService propertyService,
+            IPropertyDictionaryItemSearchService propDictItemsSearchService,
+            ICategoryService categoryService)
+            : base(browseFilterService, propertyService, propDictItemsSearchService, categoryService)
         {
         }
         protected override Task AddLabelsAsync(IList<Aggregation> aggregations, string catalogId)
