@@ -69,8 +69,6 @@ namespace VirtoCommerce.CatalogModule2.Web
 
             serviceCollection.AddTransient<IProductAssociationSearchService, ProductAssociationSearchService2>();
 
-            serviceCollection.AddTransient<ISeoBySlugResolver, CatalogSeoBySlugResolver2>();
-
             serviceCollection.AddTransient<IInternalListEntrySearchService, InternalListEntrySearchService2>();
 
             serviceCollection.AddTransient<ISeoDuplicatesDetector, CatalogSeoDuplicatesDetector2>();
