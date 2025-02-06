@@ -136,7 +136,7 @@ public class CatalogSeoResolver : ISeoResolver
 
         // Select outline for current catalog and longest path to find real parent
         var maxLength = category.Outlines
-            .Where(x => x.Items.First().Id.Equals(catalogId))
+            .Where(x => string.Equals(x.Items.FirstOrDefault()?.Id, catalogId, StringComparison.OrdinalIgnoreCase))
             .Select(x => x.Items.Count)
             .DefaultIfEmpty(0)
             .Max();
@@ -161,7 +161,7 @@ public class CatalogSeoResolver : ISeoResolver
 
         // Select outline for current catalog and longest path to find real parent
         var maxLength = product.Outlines
-            .Where(x => x.Items.First().Id.Equals(catalogId))
+            .Where(x => string.Equals(x.Items.FirstOrDefault()?.Id, catalogId, StringComparison.OrdinalIgnoreCase))
             .Select(x => x.Items.Count)
             .Max();
 
