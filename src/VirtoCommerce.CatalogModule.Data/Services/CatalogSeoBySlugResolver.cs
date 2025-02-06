@@ -25,11 +25,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         }
 
         #region ISeoBySlugResolver members
-        public async Task<SeoInfo[]> FindSeoBySlugAsync(string slug)
+        public Task<SeoInfo[]> FindSeoBySlugAsync(string slug)
         {
-
             var cacheKey = CacheKey.With(GetType(), nameof(FindSeoBySlugAsync), slug);
-            return await _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async cacheEntry =>
+            return _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async cacheEntry =>
             {
                 cacheEntry.AddExpirationToken(SeoInfoCacheRegion.CreateChangeToken());
                 var result = new List<SeoInfo>();

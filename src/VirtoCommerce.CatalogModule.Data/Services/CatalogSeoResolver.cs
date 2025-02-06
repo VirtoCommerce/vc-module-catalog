@@ -48,12 +48,15 @@ public class CatalogSeoResolver : ISeoResolver
 
         if (currentEntitySeoInfos.Count == 0)
         {
+            return [];
+
+            // TODO: Uncomment this block of code when frontend will support deactivated seo entries and redirect it to real seo 
             // Try to find deactivated seo entries and revert it back if we found it
-            currentEntitySeoInfos = await SearchSeoInfos(criteria.StoreId, criteria.LanguageCode, segments.Last(), false);
-            if (currentEntitySeoInfos.Count == 0)
-            {
-                return [];
-            }
+            //currentEntitySeoInfos = await SearchSeoInfos(criteria.StoreId, criteria.LanguageCode, segments.Last(), false);
+            //if (currentEntitySeoInfos.Count == 0)
+            //{
+            //    return [];
+            //}
         }
 
         var groups = currentEntitySeoInfos.GroupBy(x => new { x.ObjectType, x.ObjectId });
@@ -66,10 +69,11 @@ public class CatalogSeoResolver : ISeoResolver
 
         var parentIds = new List<string>();
 
+        var store = await _storeService.GetByIdAsync(criteria.StoreId);
+
         // It's not possibe to resolve because we don't have parent segment
         if (segments.Length == 1)
         {
-            var store = await _storeService.GetByIdAsync(criteria.StoreId);
             parentIds.Add(store.Catalog);
         }
         else
@@ -89,27 +93,27 @@ public class CatalogSeoResolver : ISeoResolver
 
         foreach (var groupKey in groups.Select(g => g.Key))
         {
-            if (groupKey.ObjectType == CategoryObjectType)
+            if (groupKey.ObjectType.Equals(CategoryObjectType, StringComparison.OrdinalIgnoreCase))
             {
-                var isMatch = await DoesParentMatchCategoryOutline(parentIds, groupKey.ObjectId);
+                var isMatch = await DoesParentMatchCategoryOutline(store.Catalog, parentIds, groupKey.ObjectId);
                 if (isMatch)
                 {
                     return currentEntitySeoInfos.Where(x =>
-                        x.ObjectId == groupKey.ObjectId
-                        && groupKey.ObjectType == CategoryObjectType).ToList();
+                        groupKey.ObjectId.Equals(x.ObjectId, StringComparison.OrdinalIgnoreCase)
+                        && groupKey.ObjectType.Equals(CategoryObjectType, StringComparison.OrdinalIgnoreCase)).ToList();
                 }
             }
 
             // Inside the method
-            else if (groupKey.ObjectType == CatalogProductObjectType)
+            else if (groupKey.ObjectType.Equals(CatalogProductObjectType, StringComparison.OrdinalIgnoreCase))
             {
-                var isMatch = await DoesParentMatchProductOutline(parentIds, groupKey.ObjectId);
+                var isMatch = await DoesParentMatchProductOutline(store.Catalog, parentIds, groupKey.ObjectId);
 
                 if (isMatch)
                 {
                     return currentEntitySeoInfos.Where(x =>
-                        x.ObjectId == groupKey.ObjectId
-                        && groupKey.ObjectType == CatalogProductObjectType).ToList();
+                        groupKey.ObjectId.Equals(x.ObjectId, StringComparison.OrdinalIgnoreCase)
+                        && groupKey.ObjectType.Equals(CatalogProductObjectType, StringComparison.OrdinalIgnoreCase)).ToList();
                 }
             }
         }
@@ -117,26 +121,60 @@ public class CatalogSeoResolver : ISeoResolver
         return [];
     }
 
-    private async Task<bool> DoesParentMatchCategoryOutline(IList<string> parentCategorieIds, string objectId)
+    private async Task<bool> DoesParentMatchCategoryOutline(string catalogId, IList<string> parentCategorieIds, string objectId)
     {
         var category = await _categoryService.GetByIdAsync(objectId, CategoryResponseGroup.WithOutlines.ToString(), false);
         if (category == null)
         {
             throw new InvalidOperationException($"Category with ID '{objectId}' was not found.");
         }
-        var outlines = category.Outlines.SelectMany(x => x.Items.Select(c => c.Id)).Distinct().Where(x => x != objectId).ToList();
-        return outlines.Any(parentCategorieIds.Contains);
+
+        if (category.Outlines.Count == 0)
+        {
+            return false;
+        }
+
+        // Select outline for current catalog and longest path to find real parent
+        var maxLength = category.Outlines
+            .Where(x => string.Equals(x.Items.FirstOrDefault()?.Id, catalogId, StringComparison.OrdinalIgnoreCase))
+            .Select(x => x.Items.Count)
+            .DefaultIfEmpty(0)
+            .Max();
+
+        // Get parent from longest path. Keep in mind that latest element is current object id.
+        var categoryParents = category.Outlines
+            .Where(x => x.Items.Count == maxLength)
+            .SelectMany(x => x.Items.Skip(x.Items.Count - 2).Take(1).Select(i => i.Id))
+            .Distinct()
+            .ToList();
+
+        return categoryParents.Any(parentCategorieIds.Contains);
     }
 
-    private async Task<bool> DoesParentMatchProductOutline(IList<string> parentCategorieIds, string objectId)
+    private async Task<bool> DoesParentMatchProductOutline(string catalogId, IList<string> parentCategorieIds, string objectId)
     {
         var product = await _itemService.GetByIdAsync(objectId, CategoryResponseGroup.WithOutlines.ToString(), false);
         if (product == null)
         {
             throw new InvalidOperationException($"Product with ID '{objectId}' was not found.");
         }
-        var outlines = product.Outlines.SelectMany(x => x.Items.Select(c => c.Id)).Distinct().ToList();
-        return outlines.Any(parentCategorieIds.Contains);
+
+        // Select outline for current catalog and longest path to find real parent
+        var maxLength = product.Outlines
+            .Where(x => string.Equals(x.Items.FirstOrDefault()?.Id, catalogId, StringComparison.OrdinalIgnoreCase))
+            .Select(x => x.Items.Count)
+            .Max();
+
+        // Get parent from longest path. Keep in mind that latest element is current product id.
+        var categoryParents = product.Outlines
+            .Where(x => x.Items.Count == maxLength)
+            .SelectMany(x => x.Items.Select(x => x.Id)
+            .Skip(x.Items.Count - 2)
+            .Take(1))
+            .Distinct()
+            .ToList();
+
+        return categoryParents.Any(parentCategorieIds.Contains);
     }
 
     private async Task<List<SeoInfo>> SearchSeoInfos(string storeId, string languageCode, string slug, bool isActive = true)
@@ -145,8 +183,8 @@ public class CatalogSeoResolver : ISeoResolver
 
         return (await repository.SeoInfos.Where(s => s.IsActive == isActive
             && s.Keyword == slug
-            && (s.StoreId == null || s.StoreId == storeId)
-            && (s.Language == null || s.Language == languageCode))
+            && (string.IsNullOrEmpty(s.StoreId) || s.StoreId == storeId)
+            && (string.IsNullOrEmpty(s.Language) || s.Language == languageCode))
             .ToListAsync())
             .Select(x => x.ToModel(AbstractTypeFactory<SeoInfo>.TryCreateInstance()))
             .OrderByDescending(s => GetPriorityScore(s, storeId, languageCode))
@@ -159,12 +197,12 @@ public class CatalogSeoResolver : ISeoResolver
         var hasStoreCriteria = !string.IsNullOrEmpty(storeId);
         var hasLangCriteria = !string.IsNullOrEmpty(language);
 
-        if (hasStoreCriteria && seoInfo.StoreId == storeId)
+        if (hasStoreCriteria && string.Equals(seoInfo.StoreId, storeId, StringComparison.OrdinalIgnoreCase))
         {
             score += 2;
         }
 
-        if (hasLangCriteria && seoInfo.LanguageCode == language)
+        if (hasLangCriteria && string.Equals(seoInfo.LanguageCode, language, StringComparison.OrdinalIgnoreCase))
         {
             score += 1;
         }
