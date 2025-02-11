@@ -63,7 +63,7 @@ public class CatalogModuleConfigurationsController(
     {
         // Only the full configuration can be active
         // Sections with Type as ProductConfigurationSectionType.Text and ProductConfigurationSectionType.File can be whithout options
-        if ((configuration.Sections is null or []) || configuration.Sections.Where(x => x.Type == ProductConfigurationSectionType.Product).Any(x => x.Options is null or []))
+        if ((configuration.Sections is null or []) || configuration.Sections.Where(x => x.Type == ModuleConstants.ConfigurationSectionTypeProduct).Any(x => x.Options is null or []))
         {
             configuration.IsActive = false;
         }

@@ -9,6 +9,10 @@ namespace VirtoCommerce.CatalogModule.Core
     [ExcludeFromCodeCoverage]
     public static class ModuleConstants
     {
+        public static readonly string ConfigurationSectionTypeProduct = "Product";
+        public static readonly string ConfigurationSectionTypeText = "Text";
+        public static readonly string ConfigurationSectionTypeFile = "File";
+
         public static class Security
         {
             public static class Permissions
@@ -124,17 +128,6 @@ namespace VirtoCommerce.CatalogModule.Core
                     DefaultValue = false
                 };
 
-                public static SettingDescriptor ProductConfigurationSectionTypes { get; } = new SettingDescriptor
-                {
-                    Name = "Catalog.ProductConfigurationSectionTypes",
-                    ValueType = SettingValueType.ShortText,
-                    GroupName = "Catalog|General",
-                    IsDictionary = true,
-                    DefaultValue = "Product",
-                    AllowedValues = ["Product", "Text", "File"],
-                    IsHidden = true
-                };
-
                 public static IEnumerable<SettingDescriptor> AllSettings
                 {
                     get
@@ -147,7 +140,6 @@ namespace VirtoCommerce.CatalogModule.Core
                                    CategoryDescriptionTypes,
                                    UseSeoDeduplication,
                                    EventBasedIndexation,
-                                   ProductConfigurationSectionTypes
                                ];
                     }
                 }

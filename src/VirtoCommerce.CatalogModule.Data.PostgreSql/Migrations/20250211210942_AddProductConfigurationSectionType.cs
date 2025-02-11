@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace VirtoCommerce.CatalogModule.Data.SqlServer.Migrations
+namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
 {
     /// <inheritdoc />
     public partial class AddProductConfigurationSectionType : Migration
@@ -10,12 +10,13 @@ namespace VirtoCommerce.CatalogModule.Data.SqlServer.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<byte>(
+            migrationBuilder.AddColumn<string>(
                 name: "Type",
                 table: "ProductConfigurationSection",
-                type: "tinyint",
+                type: "character varying(64)",
+                maxLength: 64,
                 nullable: false,
-                defaultValue: (byte)0);
+                defaultValue: "Product");
         }
 
         /// <inheritdoc />

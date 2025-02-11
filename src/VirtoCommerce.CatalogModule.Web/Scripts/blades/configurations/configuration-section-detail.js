@@ -1,6 +1,6 @@
 angular.module('virtoCommerce.catalogModule')
-    .controller('virtoCommerce.catalogModule.configurationSectionDetailController', ['$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.uiGridHelper', 'platformWebApp.settings',
-        function ($scope, bladeNavigationService, uiGridHelper, settingsService) {
+    .controller('virtoCommerce.catalogModule.configurationSectionDetailController', ['$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.uiGridHelper',
+        function ($scope, bladeNavigationService, uiGridHelper) {
             var blade = $scope.blade;
             blade.headIcon = 'fas fa-puzzle-piece';
             blade.title = blade.origEntity.name ? blade.origEntity.name : 'catalog.blades.section-details.title';
@@ -166,7 +166,7 @@ angular.module('virtoCommerce.catalogModule')
                 }
                 blade.currentEntity = angular.copy(item);
                 blade.isLoading = false;
-                $scope.sectionTypes = settingsService.getValues({ id: 'Catalog.ProductConfigurationSectionTypes' });
+                $scope.sectionTypes = ['Product', 'Text', 'File'];
             }
 
             initialize(blade.origEntity);

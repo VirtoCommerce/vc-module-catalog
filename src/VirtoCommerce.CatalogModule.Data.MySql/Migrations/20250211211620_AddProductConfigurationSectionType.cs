@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -10,12 +10,14 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<byte>(
+            migrationBuilder.AddColumn<string>(
                 name: "Type",
                 table: "ProductConfigurationSection",
-                type: "tinyint unsigned",
+                type: "varchar(64)",
+                maxLength: 64,
                 nullable: false,
-                defaultValue: (byte)0);
+                defaultValue: "Product")
+                .Annotation("MySql:CharSet", "utf8mb4");
         }
 
         /// <inheritdoc />
