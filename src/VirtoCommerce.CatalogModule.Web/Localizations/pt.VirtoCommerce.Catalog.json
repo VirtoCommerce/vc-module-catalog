@@ -109,7 +109,9 @@
           "localizedName": "Nome localizado",
           "code": "Código",
           "tax-type": "Tipo de imposto",
-          "priority": "Prioridade"
+          "priority": "Prioridade",
+          "show-more-languages": "Mostrar mais idiomas",
+          "show-less-languages": "Mostrar menos idiomas"
         },
         "validations": {
           "code": "O código não pode conter os seguintes caracteres: $+;=%{}[]|@~!^*&()?'<>"
@@ -349,7 +351,9 @@
           "mpn": "MPN",
           "start-date": "Primeira listagem",
           "end-date": "Listagem expira em",
-          "is-configurable": "Configurável"
+          "is-configurable": "Configurável",
+          "show-more-languages": "Mostrar mais idiomas",
+          "show-less-languages": "Mostrar menos idiomas"
         },
         "validations": {
           "sku": "O SKU não pode conter os seguintes caracteres: $+;=%{}[]|@~!^*&()?'<>"

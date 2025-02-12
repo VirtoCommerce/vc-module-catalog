@@ -109,7 +109,9 @@
           "localizedName": "ローカライズされた名前",
           "code": "コード",
           "tax-type": "税タイプ",
-          "priority": "優先度"
+          "priority": "優先度",
+          "show-more-languages": "さらに多くの言語を表示",
+          "show-less-languages": "少ない言語を表示"
         },
         "validations": {
           "code": "コードには次の文字を含めることはできません: $+;=%{}[]|@~!^*&()?'<>"
@@ -325,7 +327,6 @@
           "sku": "SKU",
           "priority": "優先度",
           "name": "製品名",
-          "localizedName": "Localized product name",
           "localizedName": "ローカライズされた製品名",
           "can-be-purchased": "購入可能",
           "store-visible": "表示",
@@ -350,7 +351,9 @@
           "mpn": "MPN",
           "start-date": "最初のリスト",
           "end-date": "リストの有効期限",
-          "is-configurable": "設定可能"
+          "is-configurable": "設定可能",
+          "show-more-languages": "さらに多くの言語を表示",
+          "show-less-languages": "少ない言語を表示"
         },
         "validations": {
           "sku": "SKU には次の文字を含めることはできません: $+;=%{}[]|@~!^*&()?'<>"

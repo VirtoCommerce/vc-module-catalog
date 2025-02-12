@@ -109,7 +109,9 @@
           "localizedName": "Localized name",
           "code": "Code",
           "tax-type": "Tax type",
-          "priority": "Priority"
+          "priority": "Priority",
+          "show-more-languages": "Show more languages",
+          "show-less-languages": "Show less languages"
         },
         "validations": {
           "code": "Code cannot contain the following characters: $+;=%{}[]|@~!^*&()?'<>"
@@ -349,7 +351,9 @@
           "mpn": "MPN",
           "start-date": "First listed",
           "end-date": "Listing expires on",
-          "is-configurable": "Configurable"
+          "is-configurable": "Configurable",
+          "show-more-languages": "Show more languages",
+          "show-less-languages": "Show less languages"
         },
         "validations": {
           "sku": "SKU cannot contain the following characters: $+;=%{}[]|@~!^*&()?'<>"

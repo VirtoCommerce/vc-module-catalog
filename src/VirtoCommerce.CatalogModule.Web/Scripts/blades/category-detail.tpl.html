@@ -48,8 +48,13 @@
   </div>
 </script>
 <script type="text/ng-template" id="localizedName.html">
-  <div class="vc-catalog form-input __langs" ng-repeat="language in blade.catalog.languages">
+  <div class="vc-catalog form-input __langs" ng-repeat="language in blade.catalog.languages | limitTo: blade.showAllLanguages ? blade.catalog.languages.length : 2">
     <label class="lang-code">{{language.languageCode}}</label>
     <input ng-model="blade.currentEntity.localizedName.values[language.languageCode]" type="text" ng-maxlength="1024" placeholder="{{ 'catalog.blades.item-detail.placeholders.name' | translate }}" />
+  </div>
+  <div ng-if="blade.catalog.languages.length > 2">
+    <a href="" ng-click="blade.showAllLanguages = !blade.showAllLanguages">
+      {{ (blade.showAllLanguages ? 'catalog.blades.category-detail.labels.show-less-languages' : 'catalog.blades.category-detail.labels.show-more-languages') | translate }}
+    </a>
   </div>
 </script>
