@@ -520,13 +520,14 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                         caregoriesDictionary.TryGetValue(aggregationItemLabel.Label, out var category) &&
                         category != null)
                     {
+                        aggregationItemLabel.Label = category.Name;
+
                         if (category.LocalizedName.Values.Count > 0) // Add the language code to the label
                         {
-                            aggregationItem.Labels = category.LocalizedName.Values.Select(x => new AggregationLabel { Language = x.Key, Label = x.Value }).ToArray();
-                        }
-                        else
-                        {
-                            aggregationItemLabel.Label = category.Name;
+                            var lozalizedLabels = category.LocalizedName.Values
+                                .Select(x => new AggregationLabel { Language = x.Key, Label = !string.IsNullOrEmpty(x.Value) ? x.Value : category.Name }).ToList();
+                            lozalizedLabels.Add(aggregationItemLabel);
+                            aggregationItem.Labels = lozalizedLabels.ToArray();
                         }
                     }
                 }
