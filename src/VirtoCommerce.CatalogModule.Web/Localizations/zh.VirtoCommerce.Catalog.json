@@ -109,7 +109,9 @@
           "localizedName": "本地化名称",
           "code": "代码",
           "tax-type": "税种",
-          "priority": "优先级"
+          "priority": "优先级",
+          "show-more-languages": "显示更多语言",
+          "show-less-languages": "显示更少语言"
         },
         "validations": {
           "code": "代码不能包含以下字符：$+;=%{}[]|@~!^*&()?'<>"
@@ -349,7 +351,9 @@
           "mpn": "MPN",
           "start-date": "首次列出",
           "end-date": "列表到期",
-          "is-configurable": "可配置"
+          "is-configurable": "可配置",
+          "show-more-languages": "显示更多语言",
+          "show-less-languages": "显示更少语言"
         },
         "validations": {
           "sku": "SKU 不能包含以下字符：$+;=%{}[]|@~!^*&()?'<>"
@@ -730,7 +734,7 @@
           "sections": "部分"
         },
         "descr": {
-          "enable": "产品配置功能的激活。要激活，配置必须包含至少一个部分，并且每个部分必须包含至少一个选项",
+          "enable": "要激活，配置必须至少包含一个部分，并且类型为'Product'的每个部分必须至少包含一个选项。",
           "no-sections": "此配置中尚无部分",
           "sorting-prompt": "设置部分在网上商店中出现的顺序。拖放部分以更改其顺序"
         },
@@ -743,17 +747,21 @@
         "labels": {
           "name": "部分名称",
           "description": "描述",
-          "required": "需要选择选项",
+          "required": "该部分是必需的",
           "picture": "图片",
           "quantity": "数量",
           "product-name": "产品名称",
-          "options": "选项"
+          "options": "选项",
+          "type": "部分类型"
         },
         "descr": {
           "no-options": "此部分中尚无选项"
         },
         "commands": {
           "add": "添加选项"
+        },
+        "placeholders": {
+          "type": "请选择..."
         }
       },
       "option-details": {
@@ -763,7 +771,7 @@
         },
         "placeholders": {
           "quantity": "指定数量"
-        } 
+        }
       }
     },
     "exporter-list": {
@@ -1164,6 +1172,10 @@
             "description": "对目录实体所做的任何更改都会触发后台任务，将这些更改应用于搜索索引"
           }
         }
+      },
+      "ProductConfigurationSectionTypes": {
+        "description": "Types of sections product configuration sections",
+        "title": "Types"
       }
     },
     "VirtoCommerce": {

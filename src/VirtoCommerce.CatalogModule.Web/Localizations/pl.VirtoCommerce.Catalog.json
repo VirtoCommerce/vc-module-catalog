@@ -109,7 +109,9 @@
           "localizedName": "Zlokalizowana nazwa",
           "code": "Kod",
           "tax-type": "Typ podatku",
-          "priority": "Priorytet"
+          "priority": "Priorytet",
+          "show-more-languages": "Pokaż więcej języków",
+          "show-less-languages": "Pokaż mniej języków"
         },
         "validations": {
           "code": "Kod nie może zawierać następujących znaków: $+;=%{}[]|@~!^*&()?'<>"
@@ -349,7 +351,9 @@
           "mpn": "MPN",
           "start-date": "Pierwsze umieszczenie",
           "end-date": "Data wygaśnięcia oferty",
-          "is-configurable": "Konfigurowalny"
+          "is-configurable": "Konfigurowalny",
+          "show-more-languages": "Pokaż więcej języków",
+          "show-less-languages": "Pokaż mniej języków"
         },
         "validations": {
           "sku": "SKU nie może zawierać następujących znaków: $+;=%{}[]|@~!^*&()?'<>"
@@ -730,7 +734,7 @@
           "sections": "Sekcje"
         },
         "descr": {
-          "enable": "Aktywacja funkcjonalności konfiguracji produktu. Aby aktywować, konfiguracja musi zawierać co najmniej jedną sekcję, a każda sekcja musi zawierać co najmniej jedną opcję",
+          "enable": "Aby aktywować, konfiguracja musi zawierać co najmniej jedną sekcję, a każda sekcja z typem 'Produkt' musi zawierać co najmniej jedną opcję",
           "no-sections": "Brak jeszcze sekcji w tej konfiguracji",
           "sorting-prompt": "Ustaw kolejność, w jakiej sekcje pojawiają się w sklepie internetowym. Przeciągnij i upuść sekcje, aby zmienić ich kolejność"
         },
@@ -743,17 +747,21 @@
         "labels": {
           "name": "Nazwa sekcji",
           "description": "Opis",
-          "required": "Wymagany wybór opcji",
+          "required": "Sekcja jest obowiązkowa",
           "picture": "Obraz",
           "quantity": "Ilość",
           "product-name": "Nazwa produktu",
-          "options": "Opcje"
+          "options": "Opcje",
+          "type": "Typ sekcji"
         },
         "descr": {
           "no-options": "Brak jeszcze opcji w tej sekcji"
         },
         "commands": {
           "add": "Dodaj opcje"
+        },
+        "placeholders": {
+          "type": "Wybrać..."
         }
       },
       "option-details": {
@@ -763,7 +771,7 @@
         },
         "placeholders": {
           "quantity": "Określ ilość"
-        } 
+        }
       }
     },
     "exporter-list": {
@@ -1164,6 +1172,10 @@
             "description": "Wszelkie zmiany wprowadzone w jednostce katalogu uruchamiają zadanie w tle, które stosuje te zmiany do indeksu wyszukiwania"
           }
         }
+      },
+      "ProductConfigurationSectionTypes": {
+        "description": "Types of sections product configuration sections",
+        "title": "Types"
       }
     },
     "VirtoCommerce": {

@@ -70,7 +70,7 @@ angular.module('virtoCommerce.catalogModule')
             $scope.$watch("blade.currentEntity", function () {
                 if (blade.currentEntity) {
                     var canBeEnabled = _.some(blade.currentEntity.sections) &&
-                        _.every(blade.currentEntity.sections, section => _.some(section.options));
+                        _.every(blade.currentEntity.sections.filter(section => section.type === 'Product'), section => _.some(section.options));
 
                     if (!canBeEnabled) {
                         blade.currentEntity.isActive = false;

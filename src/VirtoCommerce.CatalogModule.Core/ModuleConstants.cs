@@ -9,6 +9,10 @@ namespace VirtoCommerce.CatalogModule.Core
     [ExcludeFromCodeCoverage]
     public static class ModuleConstants
     {
+        public static readonly string ConfigurationSectionTypeProduct = "Product";
+        public static readonly string ConfigurationSectionTypeText = "Text";
+        public static readonly string ConfigurationSectionTypeFile = "File";
+
         public static class Security
         {
             public static class Permissions
@@ -76,7 +80,7 @@ namespace VirtoCommerce.CatalogModule.Core
                     GroupName = "Catalog|General",
                     ValueType = SettingValueType.ShortText,
                     IsDictionary = true,
-                    AllowedValues = new[] { "Images" }
+                    AllowedValues = ["Images"]
                 };
 
                 public static SettingDescriptor AssociationGroups { get; } = new SettingDescriptor
@@ -85,7 +89,7 @@ namespace VirtoCommerce.CatalogModule.Core
                     ValueType = SettingValueType.ShortText,
                     GroupName = "Catalog|General",
                     IsDictionary = true,
-                    AllowedValues = new[] { "Accessories", "Related Items" }
+                    AllowedValues = ["Accessories", "Related Items"]
                 };
 
                 public static SettingDescriptor EditorialReviewTypes { get; } = new SettingDescriptor
@@ -95,7 +99,7 @@ namespace VirtoCommerce.CatalogModule.Core
                     GroupName = "Catalog|General",
                     IsDictionary = true,
                     DefaultValue = "QuickReview",
-                    AllowedValues = new[] { "QuickReview", "FullReview" }
+                    AllowedValues = ["QuickReview", "FullReview"]
                 };
 
                 public static SettingDescriptor CategoryDescriptionTypes { get; } = new SettingDescriptor
@@ -105,7 +109,7 @@ namespace VirtoCommerce.CatalogModule.Core
                     GroupName = "Catalog|General",
                     IsDictionary = true,
                     DefaultValue = "QuickReview",
-                    AllowedValues = new[] { "QuickReview", "FullReview" }
+                    AllowedValues = ["QuickReview", "FullReview"]
                 };
 
                 public static SettingDescriptor UseSeoDeduplication { get; } = new SettingDescriptor
@@ -128,15 +132,15 @@ namespace VirtoCommerce.CatalogModule.Core
                 {
                     get
                     {
-                        return new List<SettingDescriptor>
-                               {
+                        return
+                               [
                                    ImageCategories,
                                    AssociationGroups,
                                    EditorialReviewTypes,
                                    CategoryDescriptionTypes,
                                    UseSeoDeduplication,
-                                   EventBasedIndexation
-                               };
+                                   EventBasedIndexation,
+                               ];
                     }
                 }
             }
