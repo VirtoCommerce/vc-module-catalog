@@ -24,12 +24,18 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         private readonly IBrowseFilterService _browseFilterService;
         private readonly IPropertyService _propertyService;
         private readonly IPropertyDictionaryItemSearchService _propDictItemsSearchService;
+        private readonly ICategoryService _categoryService;
 
-        public AggregationConverter(IBrowseFilterService browseFilterService, IPropertyService propertyService, IPropertyDictionaryItemSearchService propDictItemsSearchService)
+        public AggregationConverter(
+            IBrowseFilterService browseFilterService,
+            IPropertyService propertyService,
+            IPropertyDictionaryItemSearchService propDictItemsSearchService,
+            ICategoryService categoryService)
         {
             _browseFilterService = browseFilterService;
             _propertyService = propertyService;
             _propDictItemsSearchService = propDictItemsSearchService;
+            _categoryService = categoryService;
         }
 
         #region Request converter
@@ -474,6 +480,56 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 if (!labelAdded)
                 {
                     await TryAddLabelsAsyncForProperty(allProperties, aggregation);
+                }
+            }
+
+            var outlineAggregations = aggregations.Where(x => x.Field == "__outline");
+            await AddLabelsForOutlinesAsync(outlineAggregations);
+        }
+
+        private async Task AddLabelsForOutlinesAsync(IEnumerable<Aggregation> outlineAggregations)
+        {
+            var caregoriesDictionary = new Dictionary<string, Category>();
+
+            // Collect all category ids
+            foreach (var outlineAggregation in outlineAggregations)
+            {
+                foreach (var aggregationItem in outlineAggregation.Items)
+                {
+                    var aggregationItemLabel = aggregationItem.Labels.FirstOrDefault();
+                    if (aggregationItemLabel != null)
+                    {
+                        caregoriesDictionary.TryAdd(aggregationItemLabel.Label, null);
+                    }
+                }
+            }
+
+            var categries = await _categoryService.GetAsync(caregoriesDictionary.Keys.ToArray(), clone: false);
+            foreach (var category in categries)
+            {
+                caregoriesDictionary[category.Id] = category;
+            }
+
+            // Replace category ids with category names
+            foreach (var outlineAggregation in outlineAggregations)
+            {
+                foreach (var aggregationItem in outlineAggregation.Items)
+                {
+                    var aggregationItemLabel = aggregationItem.Labels.FirstOrDefault();
+                    if (aggregationItemLabel != null &&
+                        caregoriesDictionary.TryGetValue(aggregationItemLabel.Label, out var category) &&
+                        category != null)
+                    {
+                        aggregationItemLabel.Label = category.Name;
+
+                        if (category.LocalizedName.Values.Count > 0) // Add the language code to the label
+                        {
+                            var lozalizedLabels = category.LocalizedName.Values
+                                .Select(x => new AggregationLabel { Language = x.Key, Label = !string.IsNullOrEmpty(x.Value) ? x.Value : category.Name }).ToList();
+                            lozalizedLabels.Add(aggregationItemLabel);
+                            aggregationItem.Labels = lozalizedLabels.ToArray();
+                        }
+                    }
                 }
             }
         }
