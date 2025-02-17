@@ -734,7 +734,7 @@
           "sections": "セクション"
         },
         "descr": {
-          "enable": "製品構成機能の有効化。構成を有効にするには、少なくとも1つのセクションが含まれている必要があり、各セクションには少なくとも1つのオプションが含まれている必要があります",
+          "enable": "有効にするには、構成に少なくとも1つのセクションが含まれている必要があり、タイプ'Product'の各セクションには少なくとも1つのオプションが含まれている必要があります。",
           "no-sections": "この構成にはまだセクションがありません",
           "sorting-prompt": "セクションがウェブストアに表示される順序を設定します。セクションをドラッグ＆ドロップして順序を変更"
         },
@@ -747,17 +747,21 @@
         "labels": {
           "name": "セクション名",
           "description": "説明",
-          "required": "オプションの選択が必要",
+          "required": "セクションは必須です",
           "picture": "画像",
           "quantity": "数量",
           "product-name": "製品名",
-          "options": "オプション"
+          "options": "オプション",
+          "type": "セクションタイプ"
         },
         "descr": {
           "no-options": "このセクションにはまだオプションがありません"
         },
         "commands": {
           "add": "オプションを追加"
+        },
+        "placeholders": {
+          "type": "選択してください..."
         }
       },
       "option-details": {
@@ -1168,6 +1172,10 @@
             "description": "カタログエンティティに加えられた変更は、検索インデックスにその変更を適用するバックグラウンドタスクをトリガーします"
           }
         }
+      },
+      "ProductConfigurationSectionTypes": {
+        "description": "Types of sections product configuration sections",
+        "title": "Types"
       }
     },
     "VirtoCommerce": {

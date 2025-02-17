@@ -734,7 +734,7 @@
           "sections": "Sections"
         },
         "descr": {
-          "enable": "Activation de la fonctionnalité de configuration du produit. Pour l'activation, la configuration doit contenir au moins une section, et chaque section doit contenir au moins une option",
+          "enable": "Pour l'activation, la configuration doit contenir au moins une section, et chaque section avec le type de 'Produit' doit contenir au moins une option",
           "no-sections": "Pas encore de sections dans cette configuration",
           "sorting-prompt": "Définissez l'ordre dans lequel les sections apparaissent dans la boutique en ligne. Glissez-déposez les sections pour changer leur ordre"
         },
@@ -747,17 +747,21 @@
         "labels": {
           "name": "Nom de la section",
           "description": "Description",
-          "required": "La sélection d'une option est requise",
+          "required": "Section obligatoire",
           "picture": "Img",
           "quantity": "Quantité",
           "product-name": "Nom du produit",
-          "options": "Options"
+          "options": "Options",
+          "type": "Type de section"
         },
         "descr": {
           "no-options": "Pas encore d'options dans cette section"
         },
         "commands": {
           "add": "Ajouter des options"
+        },
+        "placeholders": {
+          "type": "Choisissez..."
         }
       },
       "option-details": {
@@ -1143,33 +1147,37 @@
       },
       "CategoryDescriptionTypes": {
         "description": "Dictionnaire des types possibles de descriptions pour cette catégorie",
-       "title": "Types de description de la catégorie"
-     },
-     "AllowToCopyID": {
-       "title": "Autoriser la copie de l'ID de l'article",
-       "description": "Activez-le pour voir l'élément de menu contextuel Copier l'ID"
-     },
-     "Search": {
-       "UseCatalogIndexedSearchInManager": {
-         "description": "Activer ou désactiver la recherche indexée pour le module Catalogue avec syntaxe avancée",
-         "title": "Utiliser la recherche indexée pour le Catalogue"
-       },
-       "UseFullObjectIndexStoring": {
-         "description": "Stocker les objets de catalogue sérialisés dans l'index et les retourner dans les résultats de recherche",
-         "title": "Stocker les objets de catalogue sérialisés dans l'index"
-       },
-       "DefaultAggregationSize": {
-         "description": "Spécifiez la taille des agrégations lorsqu'elle n'est pas définie dans les propriétés d'agrégation du magasin. Réglez sur 0 pour une taille illimitée",
-         "title": "Valeur par défaut pour la taille de l'agrégation"
-       },
-       "EventBasedIndexation": {
-         "Enable": {
-           "title": "Activer l'indexation basée sur les événements pour les entités du catalogue",
-           "description": "Toute modification apportée à une entité de catalogue déclenche une tâche en arrière-plan qui applique ces modifications à l'index de recherche"
-         }
-       }
-     }
-   },
+        "title": "Types de description de la catégorie"
+      },
+      "AllowToCopyID": {
+        "title": "Autoriser la copie de l'ID de l'article",
+        "description": "Activez-le pour voir l'élément de menu contextuel Copier l'ID"
+      },
+      "Search": {
+        "UseCatalogIndexedSearchInManager": {
+          "description": "Activer ou désactiver la recherche indexée pour le module Catalogue avec syntaxe avancée",
+          "title": "Utiliser la recherche indexée pour le Catalogue"
+        },
+        "UseFullObjectIndexStoring": {
+          "description": "Stocker les objets de catalogue sérialisés dans l'index et les retourner dans les résultats de recherche",
+          "title": "Stocker les objets de catalogue sérialisés dans l'index"
+        },
+        "DefaultAggregationSize": {
+          "description": "Spécifiez la taille des agrégations lorsqu'elle n'est pas définie dans les propriétés d'agrégation du magasin. Réglez sur 0 pour une taille illimitée",
+          "title": "Valeur par défaut pour la taille de l'agrégation"
+        },
+        "EventBasedIndexation": {
+          "Enable": {
+            "title": "Activer l'indexation basée sur les événements pour les entités du catalogue",
+            "description": "Toute modification apportée à une entité de catalogue déclenche une tâche en arrière-plan qui applique ces modifications à l'index de recherche"
+          }
+        }
+      },
+      "ProductConfigurationSectionTypes": {
+        "description": "Types of sections product configuration sections",
+        "title": "Types"
+      }
+    },
    "VirtoCommerce": {
      "Search": {
        "IndexingJobs": {

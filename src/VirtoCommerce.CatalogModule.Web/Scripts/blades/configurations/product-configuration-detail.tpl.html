@@ -53,7 +53,10 @@
   <div class="ui-grid-cell-contents">
     <div class="inner-contents">
       <div class="table-t">{{COL_FIELD}}</div>
-      <div class="table-descr">{{ 'catalog.blades.configuration-details.labels.quantity' | translate }}: {{row.entity.options.length}}</div>
+      <div class="table-descr">
+        <span>{{ 'catalog.blades.section-details.labels.type' | translate }}: {{row.entity.type}}</span>
+        <span ng-if="row.entity.type === 'Product'">| {{ 'catalog.blades.configuration-details.labels.quantity' | translate }}: {{row.entity.options.length}}</span>
+      </div>
       <div class="table-descr">{{ row.entity.isRequired ? ('catalog.blades.section-details.labels.required' | translate) : '&nbsp'}}</div>
     </div>
   </div>
