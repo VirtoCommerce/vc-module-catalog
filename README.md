@@ -26,16 +26,17 @@ The Catalog Module supports two types of catalogs - master and virtual.
 * Enterprise ready - supports millions of the products
 
 ## Documentation
-* [Catalog Module Documentation](https://docs.virtocommerce.org/platform/user-guide/catalog/overview/)
+* [Catalog module user documentation](https://docs.virtocommerce.org/platform/user-guide/catalog/overview/)
+* [GraphQL API documentation](https://docs.virtocommerce.org/platform/developer-guide/GraphQL-Storefront-API-Reference-xAPI/Catalog/overview/)
 * [View on GitHub](https://github.com/VirtoCommerce/vc-module-catalog)
 
 
 ## References
 
-* Deployment: https://docs.virtocommerce.org/platform/developer-guide/Tutorials-and-How-tos/Tutorials/deploy-module-from-source-code/
-* Installation: https://docs.virtocommerce.org/platform/user-guide/modules-installation/
-* Home: https://virtocommerce.com
-* Community: https://www.virtocommerce.org
+* [Deployment](https://docs.virtocommerce.org/platform/developer-guide/Tutorials-and-How-tos/Tutorials/deploy-module-from-source-code/)
+* [Installation](https://docs.virtocommerce.org/platform/user-guide/modules-installation/)
+* [Home](https://virtocommerce.com)
+* [Community](https://www.virtocommerce.org)
 * [Download latest release](https://github.com/VirtoCommerce/vc-module-catalog/releases/latest)
 
 ## License
