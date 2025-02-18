@@ -483,11 +483,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 }
             }
 
-            var outlineAggregations = aggregations.Where(x => x.Field == "__outline");
-            await AddLabelsForOutlinesAsync(outlineAggregations);
+            var outlineNamedAggregations = aggregations.Where(x => x.Field == "__outline_named");
+            await TryAddLabelsAsyncForOutlinesItems(outlineNamedAggregations);
         }
 
-        private async Task AddLabelsForOutlinesAsync(IEnumerable<Aggregation> outlineAggregations)
+        private async Task TryAddLabelsAsyncForOutlinesItems(IEnumerable<Aggregation> outlineAggregations)
         {
             var caregoriesDictionary = new Dictionary<string, Category>();
 
@@ -496,42 +496,63 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             {
                 foreach (var aggregationItem in outlineAggregation.Items)
                 {
-                    var aggregationItemLabel = aggregationItem.Labels.FirstOrDefault();
-                    if (aggregationItemLabel != null)
+                    var categoryId = GetNamedOutlineId(aggregationItem.Value as string);
+                    if (categoryId != null)
                     {
-                        caregoriesDictionary.TryAdd(aggregationItemLabel.Label, null);
+                        caregoriesDictionary.TryAdd(categoryId, null);
                     }
                 }
             }
 
+            // Load categories
             var categries = await _categoryService.GetAsync(caregoriesDictionary.Keys.ToArray(), clone: false);
             foreach (var category in categries)
             {
                 caregoriesDictionary[category.Id] = category;
             }
 
-            // Replace category ids with category names
+            // Add localized category names to labels
             foreach (var outlineAggregation in outlineAggregations)
             {
                 foreach (var aggregationItem in outlineAggregation.Items)
                 {
-                    var aggregationItemLabel = aggregationItem.Labels.FirstOrDefault();
-                    if (aggregationItemLabel != null &&
-                        caregoriesDictionary.TryGetValue(aggregationItemLabel.Label, out var category) &&
+                    var categoryId = GetNamedOutlineId(aggregationItem.Value as string);
+                    if (categoryId != null &&
+                        caregoriesDictionary.TryGetValue(categoryId, out var category) &&
                         category != null)
                     {
-                        aggregationItemLabel.Label = category.Name;
-
                         if (category.LocalizedName.Values.Count > 0) // Add the language code to the label
                         {
                             var lozalizedLabels = category.LocalizedName.Values
                                 .Select(x => new AggregationLabel { Language = x.Key, Label = !string.IsNullOrEmpty(x.Value) ? x.Value : category.Name }).ToList();
-                            lozalizedLabels.Add(aggregationItemLabel);
+
+                            var defaultCategoryLabel = aggregationItem.Labels.FirstOrDefault(x => x.Language == null);
+                            if (defaultCategoryLabel != null)
+                            {
+                                defaultCategoryLabel.Label = category.Name;
+                                lozalizedLabels.Add(defaultCategoryLabel);
+                            }
+
                             aggregationItem.Labels = lozalizedLabels.ToArray();
                         }
                     }
                 }
             }
+        }
+
+        private static string GetNamedOutlineId(string namedOutlineValue)
+        {
+            if (string.IsNullOrEmpty(namedOutlineValue))
+            {
+                return null;
+            }
+
+            // Outline structure: catalog/category1/.../categoryN/current-category-id___current-category-name
+            var outlineParts = namedOutlineValue.Split("/", StringSplitOptions.RemoveEmptyEntries);
+            var namedOutline = outlineParts[^1];
+
+            var namedOutlineParts = namedOutline.Split(ModuleConstants.OutlineDelimiter, StringSplitOptions.RemoveEmptyEntries);
+            return namedOutlineParts.Length == 2 ? namedOutlineParts[0] : namedOutline;
         }
 
         private async Task<bool> TryAddLabelsAsyncForProperty(IEnumerable<Property> allProperties, Aggregation aggregation)
