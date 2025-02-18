@@ -519,22 +519,20 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                     var categoryId = GetNamedOutlineId(aggregationItem.Value as string);
                     if (categoryId != null &&
                         caregoriesDictionary.TryGetValue(categoryId, out var category) &&
-                        category != null)
+                        category != null &&
+                        category.LocalizedName.Values.Count > 0)
                     {
-                        if (category.LocalizedName.Values.Count > 0) // Add the language code to the label
+                        var lozalizedLabels = category.LocalizedName.Values
+                            .Select(x => new AggregationLabel { Language = x.Key, Label = !string.IsNullOrEmpty(x.Value) ? x.Value : category.Name }).ToList();
+
+                        var defaultCategoryLabel = aggregationItem.Labels.FirstOrDefault(x => x.Language == null);
+                        if (defaultCategoryLabel != null)
                         {
-                            var lozalizedLabels = category.LocalizedName.Values
-                                .Select(x => new AggregationLabel { Language = x.Key, Label = !string.IsNullOrEmpty(x.Value) ? x.Value : category.Name }).ToList();
-
-                            var defaultCategoryLabel = aggregationItem.Labels.FirstOrDefault(x => x.Language == null);
-                            if (defaultCategoryLabel != null)
-                            {
-                                defaultCategoryLabel.Label = category.Name;
-                                lozalizedLabels.Add(defaultCategoryLabel);
-                            }
-
-                            aggregationItem.Labels = lozalizedLabels.ToArray();
+                            defaultCategoryLabel.Label = category.Name;
+                            lozalizedLabels.Add(defaultCategoryLabel);
                         }
+
+                        aggregationItem.Labels = lozalizedLabels.ToArray();
                     }
                 }
             }
