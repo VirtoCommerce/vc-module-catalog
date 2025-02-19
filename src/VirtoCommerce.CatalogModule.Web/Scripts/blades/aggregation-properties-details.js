@@ -4,9 +4,9 @@ angular.module('virtoCommerce.catalogModule')
         blade.updatePermission = 'store:update';
         blade.headIcon = 'fa fa-gear';
 
-        var attributeType = "Attribute";
-        var rangeType = "Range";
-        var priceRangeType = "PriceRange";
+        var attributeType = 'Attribute';
+        var rangeType = 'Range';
+        var priceRangeType = 'PriceRange';
         blade.propertyTypes = [attributeType, rangeType];
 
         function initializeBlade() {
@@ -20,7 +20,6 @@ angular.module('virtoCommerce.catalogModule')
 
             aggregationProperties.getValues({ storeId: blade.storeId, propertyName: blade.originalProperty.name }, function (results) {
                 blade.values = results;
-
                 blade.isLoading = false;
             }, function (error) {
                 bladeNavigationService.setError('Error: ' + error.status, blade);
@@ -65,7 +64,8 @@ angular.module('virtoCommerce.catalogModule')
         }
 
         blade.onClose = function (closeCallback) {
-            bladeNavigationService.showConfirmationIfNeeded(isDirty(), true, blade, $scope.saveChanges, closeCallback, "Save changes", "The property settings have been modified. Do you want to save changes?");
+            bladeNavigationService.showConfirmationIfNeeded(isDirty(), true, blade, $scope.saveChanges, closeCallback,
+                'Save changes', 'The property settings have been modified. Do you want to save changes?');
         };
 
         $scope.saveChanges = function () {
