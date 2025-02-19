@@ -27,9 +27,7 @@
                                         </a>
                                     </div>
                                     <div class="list-descr">
-                                        <span>{{data.type}}</span>
-                                        <span ng-if="data.values">, values: {{data.valuesCount}}</span>
-                                        <span ng-if="data.size !== undefined && data.size !== null">, size: {{data.size}}</span>
+                    <span>{{data.type}}</span><span ng-if="data.valuesCount > 0">, values: {{data.valuesCount}}</span><span ng-if="data.size !== undefined && data.size !== null">, size: {{data.size}}</span>
                                     </div>
                                 </li>
                             </ul>
