@@ -20,7 +20,7 @@ angular.module('virtoCommerce.catalogModule')
 
             aggregationProperties.getValues({ storeId: blade.storeId, propertyName: blade.originalProperty.name }, function (results) {
                 blade.values = results;
-                
+
                 blade.isLoading = false;
             }, function (error) {
                 bladeNavigationService.setError('Error: ' + error.status, blade);
@@ -73,6 +73,29 @@ angular.module('virtoCommerce.catalogModule')
             angular.copy(blade.property, blade.originalProperty);
             $scope.bladeClose();
         };
+
+        function openValueMapping() {
+            var newBlade = {
+                id: 'valueMappingFieldDetails',
+                controller: 'virtoCommerce.searchModule.valueMappingFieldDetailsController',
+                template: 'Modules/$(VirtoCommerce.Search)/Scripts/blades/value-mapping-field-details.html',
+                data: {
+                    documentType: 'Product',
+                    fieldName: blade.property.name,
+                },
+            };
+            bladeNavigationService.showBlade(newBlade, blade);
+        }
+
+        blade.toolbarCommands = [
+            {
+                name: 'search.commands.value-mapping',
+                icon: 'fas fa-wrench',
+                executeMethod: openValueMapping,
+                canExecuteMethod: true,
+                permission: 'search:index:manage',
+            },
+        ];
 
         initializeBlade();
     }]);
