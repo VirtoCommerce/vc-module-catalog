@@ -12,6 +12,7 @@ namespace VirtoCommerce.CatalogModule.Core
         public static readonly string ConfigurationSectionTypeProduct = "Product";
         public static readonly string ConfigurationSectionTypeText = "Text";
         public static readonly string ConfigurationSectionTypeFile = "File";
+        public static readonly string ConfigurationSectionFilesScope = "configuration-files";
 
         public static class Security
         {
@@ -128,6 +129,14 @@ namespace VirtoCommerce.CatalogModule.Core
                     DefaultValue = false
                 };
 
+                public static SettingDescriptor ProductConfigurationMaximumFiles { get; } = new SettingDescriptor
+                {
+                    Name = "Catalog.ProductConfigurationMaximumFiles",
+                    GroupName = "Catalog|Catalog",
+                    ValueType = SettingValueType.PositiveInteger,
+                    DefaultValue = 5,
+                };
+
                 public static IEnumerable<SettingDescriptor> AllSettings
                 {
                     get
@@ -140,6 +149,7 @@ namespace VirtoCommerce.CatalogModule.Core
                                    CategoryDescriptionTypes,
                                    UseSeoDeduplication,
                                    EventBasedIndexation,
+                                   ProductConfigurationMaximumFiles,
                                ];
                     }
                 }
