@@ -82,6 +82,7 @@ angular.module('virtoCommerce.catalogModule')
                 data: {
                     documentType: 'Product',
                     fieldName: blade.property.name,
+                    values: [],
                 },
             };
             bladeNavigationService.showBlade(newBlade, blade);
@@ -92,7 +93,9 @@ angular.module('virtoCommerce.catalogModule')
                 name: 'search.commands.value-mapping',
                 icon: 'fas fa-wrench',
                 executeMethod: openValueMapping,
-                canExecuteMethod: true,
+                canExecuteMethod: function () {
+                    return true;
+                },
                 permission: 'search:index:manage',
             },
         ];
