@@ -5,9 +5,9 @@ namespace VirtoCommerce.CatalogModule2.Web.Search
 {
     public class SanitizerService2(IHtmlSanitizer htmlSanitizer) : SanitizerService(htmlSanitizer)
     {
-        public override string Sanitize(string html)
+        public override string Sanitize(string input)
         {
-            return base.Sanitize(html);
+            return base.Sanitize(input);
         }
     }
 }
