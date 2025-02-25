@@ -173,6 +173,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 case (int)PropertyValueType.Number:
                     return DecimalValue;
                 case (int)PropertyValueType.LongText:
+                case (int)PropertyValueType.Html:
                     return LongTextValue;
                 case (int)PropertyValueType.Integer:
                     return IntegerValue;
@@ -186,6 +187,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             switch (valueType)
             {
                 case PropertyValueType.LongText:
+                case PropertyValueType.Html:
                     LongTextValue = Convert.ToString(value);
                     break;
                 case PropertyValueType.ShortText:

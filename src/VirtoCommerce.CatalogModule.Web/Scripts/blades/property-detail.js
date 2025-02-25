@@ -33,6 +33,9 @@ angular.module('virtoCommerce.catalogModule')
                     break;
                 case 'LongText':
                     blade.hasDictionary = blade.currentEntity.dictionary = false;
+                case 'Html':
+                    blade.hasDictionary = blade.currentEntity.dictionary = false;
+                    blade.hasMultivalue = blade.currentEntity.multivalue = false;
                     break;
             }
         });

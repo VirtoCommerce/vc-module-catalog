@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentValidation;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Data.Services;
 using VirtoCommerce.Platform.Core.Caching;
@@ -16,8 +17,9 @@ namespace VirtoCommerce.CatalogModule2.Web.Services
             Func<ICatalogRepository> catalogRepositoryFactory,
             IEventPublisher eventPublisher,
             IPlatformMemoryCache platformMemoryCache,
-            AbstractValidator<IHasProperties> hasPropertyValidator)
-            : base(catalogRepositoryFactory, eventPublisher, platformMemoryCache, hasPropertyValidator)
+            AbstractValidator<IHasProperties> hasPropertyValidator,
+            ISanitizerService sanitizerService)
+            : base(catalogRepositoryFactory, eventPublisher, platformMemoryCache, hasPropertyValidator, sanitizerService)
         {
         }
 

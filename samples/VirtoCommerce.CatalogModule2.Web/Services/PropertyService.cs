@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using FluentValidation;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Search;
+using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Data.Services;
 using VirtoCommerce.Platform.Core.Caching;
@@ -17,12 +18,14 @@ namespace VirtoCommerce.CatalogModule2.Data.Services
             IEventPublisher eventPublisher,
             IPlatformMemoryCache platformMemoryCache,
             ICatalogSearchService catalogSearchService,
-            AbstractValidator<Property> propertyValidator) : base(
+            AbstractValidator<Property> propertyValidator,
+            ISanitizerService sanitizerService) : base(
                 repositoryFactory,
                 eventPublisher,
                 platformMemoryCache,
                 catalogSearchService,
-                propertyValidator
+                propertyValidator,
+                sanitizerService
                 )
         {
         }

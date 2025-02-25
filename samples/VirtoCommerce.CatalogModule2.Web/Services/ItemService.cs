@@ -24,7 +24,8 @@ namespace VirtoCommerce.CatalogModule2.Web.Services
             IOutlineService outlineService,
             IBlobUrlResolver blobUrlResolver,
             ISkuGenerator skuGenerator,
-            AbstractValidator<CatalogProduct> productValidator)
+            AbstractValidator<CatalogProduct> productValidator,
+            ISanitizerService sanitizerService)
             : base(
                 repositoryFactory,
                 platformMemoryCache,
@@ -35,7 +36,8 @@ namespace VirtoCommerce.CatalogModule2.Web.Services
                 outlineService,
                 blobUrlResolver,
                 skuGenerator,
-                productValidator)
+                productValidator,
+                sanitizerService)
         {
         }
 

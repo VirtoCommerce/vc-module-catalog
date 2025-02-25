@@ -6,6 +6,7 @@ using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using VirtoCommerce.CatalogModule.Core.Events;
+using VirtoCommerce.CatalogModule.Core.Extensions;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
@@ -27,18 +28,21 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private readonly IPlatformMemoryCache _platformMemoryCache;
         private readonly ICatalogSearchService _catalogSearchService;
         private readonly AbstractValidator<Property> _propertyValidator;
+        private readonly ISanitizerService _sanitizerService;
 
         public PropertyService(Func<ICatalogRepository> repositoryFactory,
             IEventPublisher eventPublisher,
             IPlatformMemoryCache platformMemoryCache,
             ICatalogSearchService catalogSearchService,
-            AbstractValidator<Property> propertyValidator)
+            AbstractValidator<Property> propertyValidator,
+            ISanitizerService sanitizerService)
         {
             _repositoryFactory = repositoryFactory;
             _eventPublisher = eventPublisher;
             _platformMemoryCache = platformMemoryCache;
             _catalogSearchService = catalogSearchService;
             _propertyValidator = propertyValidator;
+            _sanitizerService = sanitizerService;
         }
 
         #region IPropertyService members
@@ -69,6 +73,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             var changedEntries = new List<GenericChangedEntry<Property>>();
 
             ValidateProperties(properties);
+            SanitizeProperties(properties);
 
             using (var repository = _repositoryFactory())
             {
@@ -235,6 +240,11 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             {
                 _propertyValidator.ValidateAndThrow(property);
             }
+        }
+
+        protected virtual void SanitizeProperties(IEnumerable<Property> properties)
+        {
+            properties.SanitizeProperties(_sanitizerService);
         }
 
         private void ClearCache(IEnumerable<Property> properties)

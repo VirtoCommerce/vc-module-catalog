@@ -6,6 +6,7 @@ using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using VirtoCommerce.CatalogModule.Core.Events;
+using VirtoCommerce.CatalogModule.Core.Extensions;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Caching;
@@ -26,18 +27,21 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private readonly Func<ICatalogRepository> _repositoryFactory;
         private readonly IEventPublisher _eventPublisher;
         private readonly AbstractValidator<IHasProperties> _hasPropertyValidator;
+        private readonly ISanitizerService _sanitizerService;
 
         public CatalogService(
             Func<ICatalogRepository> catalogRepositoryFactory,
             IEventPublisher eventPublisher,
             IPlatformMemoryCache platformMemoryCache,
-            AbstractValidator<IHasProperties> hasPropertyValidator)
+            AbstractValidator<IHasProperties> hasPropertyValidator,
+            ISanitizerService sanitizerService)
             : base(catalogRepositoryFactory, platformMemoryCache, eventPublisher)
         {
             _repositoryFactory = catalogRepositoryFactory;
             _eventPublisher = eventPublisher;
             _platformMemoryCache = platformMemoryCache;
             _hasPropertyValidator = hasPropertyValidator;
+            _sanitizerService = sanitizerService;
         }
 
         public override async Task DeleteAsync(IList<string> ids, bool softDelete = false)
@@ -97,6 +101,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
             await base.BeforeSaveChanges(models);
             await ValidateCatalogPropertiesAsync(models);
+            SanitizeCatalogProperties(models);
         }
 
         protected override Task<IList<CatalogEntity>> LoadEntities(IRepository repository, IList<string> ids, string responseGroup)
@@ -173,6 +178,11 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     throw new ArgumentException($"Catalog properties has validation error: {string.Join(Environment.NewLine, validationResult.Errors.Select(x => x.ToString()))}");
                 }
             }
+        }
+
+        protected virtual void SanitizeCatalogProperties(IList<Catalog> catalogs)
+        {
+            catalogs.OfType<IHasProperties>().SanitizeProperties(_sanitizerService);
         }
 
         protected override void ClearCache(IList<Catalog> models)

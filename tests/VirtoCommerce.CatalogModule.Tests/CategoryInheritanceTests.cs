@@ -33,6 +33,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         private readonly Mock<IOutlineService> _outlineServiceMock;
         private readonly Mock<IBlobUrlResolver> _blobUrlResolverMock;
         private readonly Mock<AbstractValidator<IHasProperties>> _hasPropertyValidatorMock;
+        private readonly Mock<ISanitizerService> _sanitizerService;
 
         public CategoryInheritanceTests()
         {
@@ -43,6 +44,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             _outlineServiceMock = new Mock<IOutlineService>();
             _blobUrlResolverMock = new Mock<IBlobUrlResolver>();
             _hasPropertyValidatorMock = new Mock<AbstractValidator<IHasProperties>>();
+            _sanitizerService = new Mock<ISanitizerService>();
         }
 
         [Fact]
@@ -160,7 +162,8 @@ namespace VirtoCommerce.CatalogModule.Tests
                 _hasPropertyValidatorMock.Object,
                 _catalogServiceMock.Object,
                 _outlineServiceMock.Object,
-                _blobUrlResolverMock.Object);
+                _blobUrlResolverMock.Object,
+                _sanitizerService.Object);
         }
 
 
@@ -173,7 +176,8 @@ namespace VirtoCommerce.CatalogModule.Tests
                 AbstractValidator<IHasProperties> hasPropertyValidator,
                 ICatalogService catalogService,
                 IOutlineService outlineService,
-                IBlobUrlResolver blobUrlResolver)
+                IBlobUrlResolver blobUrlResolver,
+                ISanitizerService sanitizerService)
                 : base(
                     repositoryFactory,
                     platformMemoryCache,
@@ -181,7 +185,8 @@ namespace VirtoCommerce.CatalogModule.Tests
                     hasPropertyValidator,
                     catalogService,
                     outlineService,
-                    blobUrlResolver)
+                    blobUrlResolver,
+                    sanitizerService)
             {
             }
 
