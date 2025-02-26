@@ -19,7 +19,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services;
 public class ProductConfigurationService : CrudService<ProductConfiguration, ProductConfigurationEntity, ProductConfigurationChangingEvent, ProductConfigurationChangedEvent>, IProductConfigurationService
 {
     private readonly IBlobUrlResolver _blobUrlResolver;
-    private readonly Func<ICatalogRepository> _repositoryFactory;
 
     public ProductConfigurationService(
         Func<ICatalogRepository> repositoryFactory,
@@ -29,7 +28,6 @@ public class ProductConfigurationService : CrudService<ProductConfiguration, Pro
         : base(repositoryFactory, platformMemoryCache, eventPublisher)
     {
         _blobUrlResolver = blobUrlResolver;
-        _repositoryFactory = repositoryFactory;
     }
 
     protected override Task<IList<ProductConfigurationEntity>> LoadEntities(IRepository repository, IList<string> ids, string responseGroup)
