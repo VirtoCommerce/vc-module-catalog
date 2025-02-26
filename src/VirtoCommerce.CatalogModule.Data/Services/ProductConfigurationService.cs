@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using VirtoCommerce.AssetsModule.Core.Assets;
 using VirtoCommerce.CatalogModule.Core.Events;
 using VirtoCommerce.CatalogModule.Core.Model.Configuration;
@@ -31,17 +30,6 @@ public class ProductConfigurationService : CrudService<ProductConfiguration, Pro
     {
         _blobUrlResolver = blobUrlResolver;
         _repositoryFactory = repositoryFactory;
-    }
-
-    public async Task<IList<ProductConfigurationSection>> GetConfigurationSectionsByIdsAsync(IList<string> ids, CancellationToken cancellationToken)
-    {
-        using var repository = _repositoryFactory();
-        return (await repository.ProductConfigurationSections
-                .Where(x => ids.Contains(x.Id))
-                .Include(x => x.Options)
-                .ToListAsync(cancellationToken))
-            .Select(x => x.ToModel(AbstractTypeFactory<ProductConfigurationSection>.TryCreateInstance()))
-            .ToList();
     }
 
     protected override Task<IList<ProductConfigurationEntity>> LoadEntities(IRepository repository, IList<string> ids, string responseGroup)
