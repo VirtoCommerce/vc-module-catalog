@@ -33,14 +33,15 @@ public class ProductConfigurationService : CrudService<ProductConfiguration, Pro
         _repositoryFactory = repositoryFactory;
     }
 
-    public async Task<ProductConfigurationSection> GetConfigurationSectionByIdAsync(string id, CancellationToken cancellationToken)
+    public async Task<IList<ProductConfigurationSection>> GetConfigurationSectionsByIdsAsync(IList<string> ids, CancellationToken cancellationToken)
     {
         using var repository = _repositoryFactory();
         return (await repository.ProductConfigurationSections
-            .Where(x => x.Id == id)
-            .Include(x => x.Options)
-            .SingleOrDefaultAsync(cancellationToken))
-            ?.ToModel(AbstractTypeFactory<ProductConfigurationSection>.TryCreateInstance());
+                .Where(x => ids.Contains(x.Id))
+                .Include(x => x.Options)
+                .ToListAsync(cancellationToken))
+            .Select(x => x.ToModel(AbstractTypeFactory<ProductConfigurationSection>.TryCreateInstance()))
+            .ToList();
     }
 
     protected override Task<IList<ProductConfigurationEntity>> LoadEntities(IRepository repository, IList<string> ids, string responseGroup)
