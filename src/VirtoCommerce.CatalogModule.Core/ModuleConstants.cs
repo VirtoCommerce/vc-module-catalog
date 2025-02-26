@@ -9,10 +9,10 @@ namespace VirtoCommerce.CatalogModule.Core
     [ExcludeFromCodeCoverage]
     public static class ModuleConstants
     {
-        public static readonly string ConfigurationSectionTypeProduct = "Product";
-        public static readonly string ConfigurationSectionTypeText = "Text";
-        public static readonly string ConfigurationSectionTypeFile = "File";
-        public static readonly string ConfigurationSectionFilesScope = "configuration-files";
+        public const string ConfigurationSectionTypeProduct = "Product";
+        public const string ConfigurationSectionTypeText = "Text";
+        public const string ConfigurationSectionTypeFile = "File";
+        public const string ConfigurationSectionFilesScope = "configuration-files";
 
         public static class Security
         {
