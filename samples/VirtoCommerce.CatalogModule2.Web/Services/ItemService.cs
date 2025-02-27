@@ -25,7 +25,7 @@ namespace VirtoCommerce.CatalogModule2.Web.Services
             IBlobUrlResolver blobUrlResolver,
             ISkuGenerator skuGenerator,
             AbstractValidator<CatalogProduct> productValidator,
-            ISanitizerService sanitizerService)
+            IPropertyValueSanitizer propertyValueSanitizer)
             : base(
                 repositoryFactory,
                 platformMemoryCache,
@@ -37,7 +37,7 @@ namespace VirtoCommerce.CatalogModule2.Web.Services
                 blobUrlResolver,
                 skuGenerator,
                 productValidator,
-                sanitizerService)
+                propertyValueSanitizer)
         {
         }
 

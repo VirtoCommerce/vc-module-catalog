@@ -1,6 +1,6 @@
 namespace VirtoCommerce.CatalogModule.Core.Services;
 
-public interface ISanitizerService
+public interface IPropertyValueSanitizer
 {
     string Sanitize(string input);
 }

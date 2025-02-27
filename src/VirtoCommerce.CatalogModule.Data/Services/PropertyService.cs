@@ -28,21 +28,21 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private readonly IPlatformMemoryCache _platformMemoryCache;
         private readonly ICatalogSearchService _catalogSearchService;
         private readonly AbstractValidator<Property> _propertyValidator;
-        private readonly ISanitizerService _sanitizerService;
+        private readonly IPropertyValueSanitizer _propertyValueSanitizer;
 
         public PropertyService(Func<ICatalogRepository> repositoryFactory,
             IEventPublisher eventPublisher,
             IPlatformMemoryCache platformMemoryCache,
             ICatalogSearchService catalogSearchService,
             AbstractValidator<Property> propertyValidator,
-            ISanitizerService sanitizerService)
+            IPropertyValueSanitizer propertyValueSanitizer)
         {
             _repositoryFactory = repositoryFactory;
             _eventPublisher = eventPublisher;
             _platformMemoryCache = platformMemoryCache;
             _catalogSearchService = catalogSearchService;
             _propertyValidator = propertyValidator;
-            _sanitizerService = sanitizerService;
+            _propertyValueSanitizer = propertyValueSanitizer;
         }
 
         #region IPropertyService members
@@ -244,7 +244,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         protected virtual void SanitizeProperties(IEnumerable<Property> properties)
         {
-            properties.SanitizeProperties(_sanitizerService);
+            properties.SanitizeValues(_propertyValueSanitizer);
         }
 
         private void ClearCache(IEnumerable<Property> properties)

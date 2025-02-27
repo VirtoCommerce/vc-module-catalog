@@ -33,7 +33,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private readonly ICatalogService _catalogService;
         private readonly IOutlineService _outlineService;
         private readonly IBlobUrlResolver _blobUrlResolver;
-        private readonly ISanitizerService _sanitizerService;
+        private readonly IPropertyValueSanitizer _propertyValueSanitizer;
 
         public CategoryService(
             Func<ICatalogRepository> repositoryFactory,
@@ -43,7 +43,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             ICatalogService catalogService,
             IOutlineService outlineService,
             IBlobUrlResolver blobUrlResolver,
-            ISanitizerService sanitizerService)
+            IPropertyValueSanitizer propertyValueSanitizer)
             : base(repositoryFactory, platformMemoryCache, eventPublisher)
         {
             _repositoryFactory = repositoryFactory;
@@ -53,7 +53,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _catalogService = catalogService;
             _outlineService = outlineService;
             _blobUrlResolver = blobUrlResolver;
-            _sanitizerService = sanitizerService;
+            _propertyValueSanitizer = propertyValueSanitizer;
         }
 
         public override Task<IList<Category>> GetAsync(IList<string> ids, string responseGroup = null, bool clone = true)
@@ -341,7 +341,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         protected virtual void SanitizeCategoryProperties(IList<Category> categories)
         {
-            categories.OfType<IHasProperties>().SanitizeProperties(_sanitizerService);
+            categories.OfType<IHasProperties>().SanitizePropertyValues(_propertyValueSanitizer);
         }
 
         protected override void ClearCache(IList<Category> models)

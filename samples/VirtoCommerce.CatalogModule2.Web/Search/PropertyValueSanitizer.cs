@@ -3,7 +3,7 @@ using VirtoCommerce.CatalogModule.Data.Services;
 
 namespace VirtoCommerce.CatalogModule2.Web.Search
 {
-    public class SanitizerService2(IHtmlSanitizer htmlSanitizer) : SanitizerService(htmlSanitizer)
+    public class PropertyValueSanitizer2(IHtmlSanitizer htmlSanitizer) : PropertyValueSanitizer(htmlSanitizer)
     {
         public override string Sanitize(string input)
         {

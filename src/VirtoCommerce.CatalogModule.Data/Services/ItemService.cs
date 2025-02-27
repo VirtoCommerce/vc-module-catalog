@@ -33,7 +33,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private readonly IBlobUrlResolver _blobUrlResolver;
         private readonly ISkuGenerator _skuGenerator;
         private readonly AbstractValidator<CatalogProduct> _productValidator;
-        private readonly ISanitizerService _sanitizerService;
+        private readonly IPropertyValueSanitizer _propertyValueSanitizer;
 
         public ItemService(
             Func<ICatalogRepository> repositoryFactory,
@@ -46,7 +46,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             IBlobUrlResolver blobUrlResolver,
             ISkuGenerator skuGenerator,
             AbstractValidator<CatalogProduct> productValidator,
-            ISanitizerService sanitizerService)
+            IPropertyValueSanitizer propertyValueSanitizer)
             : base(repositoryFactory, platformMemoryCache, eventPublisher)
         {
             _repositoryFactory = repositoryFactory;
@@ -59,7 +59,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _blobUrlResolver = blobUrlResolver;
             _skuGenerator = skuGenerator;
             _productValidator = productValidator;
-            _sanitizerService = sanitizerService;
+            _propertyValueSanitizer = propertyValueSanitizer;
         }
 
         public virtual async Task<IList<CatalogProduct>> GetByCodes(string catalogId, IList<string> codes, string responseGroup)
@@ -344,7 +344,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         protected virtual void SanitizeProductProperties(IList<CatalogProduct> products)
         {
-            products.OfType<IHasProperties>().SanitizeProperties(_sanitizerService);
+            products.OfType<IHasProperties>().SanitizePropertyValues(_propertyValueSanitizer);
         }
 
         protected class ProductCodeCacheItem : Entity

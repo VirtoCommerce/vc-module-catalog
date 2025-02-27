@@ -27,21 +27,21 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private readonly Func<ICatalogRepository> _repositoryFactory;
         private readonly IEventPublisher _eventPublisher;
         private readonly AbstractValidator<IHasProperties> _hasPropertyValidator;
-        private readonly ISanitizerService _sanitizerService;
+        private readonly IPropertyValueSanitizer _propertyValueSanitizer;
 
         public CatalogService(
             Func<ICatalogRepository> catalogRepositoryFactory,
             IEventPublisher eventPublisher,
             IPlatformMemoryCache platformMemoryCache,
             AbstractValidator<IHasProperties> hasPropertyValidator,
-            ISanitizerService sanitizerService)
+            IPropertyValueSanitizer propertyValueSanitizer)
             : base(catalogRepositoryFactory, platformMemoryCache, eventPublisher)
         {
             _repositoryFactory = catalogRepositoryFactory;
             _eventPublisher = eventPublisher;
             _platformMemoryCache = platformMemoryCache;
             _hasPropertyValidator = hasPropertyValidator;
-            _sanitizerService = sanitizerService;
+            _propertyValueSanitizer = propertyValueSanitizer;
         }
 
         public override async Task DeleteAsync(IList<string> ids, bool softDelete = false)
@@ -182,7 +182,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         protected virtual void SanitizeCatalogProperties(IList<Catalog> catalogs)
         {
-            catalogs.OfType<IHasProperties>().SanitizeProperties(_sanitizerService);
+            catalogs.OfType<IHasProperties>().SanitizePropertyValues(_propertyValueSanitizer);
         }
 
         protected override void ClearCache(IList<Catalog> models)

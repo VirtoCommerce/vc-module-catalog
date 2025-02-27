@@ -22,7 +22,7 @@ namespace VirtoCommerce.CatalogModule2.Web.Services
             ICatalogService catalogService,
             IOutlineService outlineService,
             IBlobUrlResolver blobUrlResolver,
-            ISanitizerService sanitizerService)
+            IPropertyValueSanitizer propertyValueSanitizer)
             : base(
                 repositoryFactory,
                 platformMemoryCache,
@@ -31,7 +31,7 @@ namespace VirtoCommerce.CatalogModule2.Web.Services
                 catalogService,
                 outlineService,
                 blobUrlResolver,
-                sanitizerService)
+                propertyValueSanitizer)
         {
         }
 

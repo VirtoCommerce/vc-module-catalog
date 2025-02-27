@@ -19,13 +19,13 @@ namespace VirtoCommerce.CatalogModule2.Data.Services
             IPlatformMemoryCache platformMemoryCache,
             ICatalogSearchService catalogSearchService,
             AbstractValidator<Property> propertyValidator,
-            ISanitizerService sanitizerService) : base(
+            IPropertyValueSanitizer propertyValueSanitizer) : base(
                 repositoryFactory,
                 eventPublisher,
                 platformMemoryCache,
                 catalogSearchService,
                 propertyValidator,
-                sanitizerService
+                propertyValueSanitizer
                 )
         {
         }

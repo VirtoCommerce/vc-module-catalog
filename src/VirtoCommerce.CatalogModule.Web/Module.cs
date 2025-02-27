@@ -271,7 +271,7 @@ namespace VirtoCommerce.CatalogModule.Web
             serviceCollection.AddTransient<IProductConfigurationSearchService, ProductConfigurationSearchService>();
 
             serviceCollection.AddSingleton<IHtmlSanitizer, HtmlSanitizer>();
-            serviceCollection.AddSingleton<ISanitizerService, SanitizerService>();
+            serviceCollection.AddSingleton<IPropertyValueSanitizer, PropertyValueSanitizer>();
         }
 
         public void PostInitialize(IApplicationBuilder appBuilder)

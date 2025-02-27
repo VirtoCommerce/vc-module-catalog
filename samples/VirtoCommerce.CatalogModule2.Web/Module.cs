@@ -76,7 +76,7 @@ namespace VirtoCommerce.CatalogModule2.Web
             serviceCollection.AddTransient<ListEntryMover<Category>, CategoryMover2>();
             serviceCollection.AddTransient<ListEntryMover<CatalogProduct>, ProductMover2>();
 
-            serviceCollection.AddSingleton<ISanitizerService, SanitizerService2>();
+            serviceCollection.AddSingleton<IPropertyValueSanitizer, PropertyValueSanitizer2>();
         }
 
         public void PostInitialize(IApplicationBuilder appBuilder)

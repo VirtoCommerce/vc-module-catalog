@@ -18,8 +18,8 @@ namespace VirtoCommerce.CatalogModule2.Web.Services
             IEventPublisher eventPublisher,
             IPlatformMemoryCache platformMemoryCache,
             AbstractValidator<IHasProperties> hasPropertyValidator,
-            ISanitizerService sanitizerService)
-            : base(catalogRepositoryFactory, eventPublisher, platformMemoryCache, hasPropertyValidator, sanitizerService)
+            IPropertyValueSanitizer propertyValueSanitizer)
+            : base(catalogRepositoryFactory, eventPublisher, platformMemoryCache, hasPropertyValidator, propertyValueSanitizer)
         {
         }
 

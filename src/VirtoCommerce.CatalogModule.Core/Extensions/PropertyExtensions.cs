@@ -35,15 +35,15 @@ namespace VirtoCommerce.CatalogModule.Core.Extensions
             }
         }
 
-        public static void SanitizeProperties(this IEnumerable<IHasProperties> propertyOwners, ISanitizerService sanitizerService)
+        public static void SanitizePropertyValues(this IEnumerable<IHasProperties> propertyOwners, IPropertyValueSanitizer propertyValueSanitizer)
         {
             foreach (var propertyOwner in propertyOwners)
             {
-                propertyOwner.Properties.SanitizeProperties(sanitizerService);
+                propertyOwner.Properties.SanitizeValues(propertyValueSanitizer);
             }
         }
 
-        public static void SanitizeProperties(this IEnumerable<Property> properties, ISanitizerService sanitizerService)
+        public static void SanitizeValues(this IEnumerable<Property> properties, IPropertyValueSanitizer propertyValueSanitizer)
         {
             if (properties.IsNullOrEmpty())
             {
@@ -56,7 +56,7 @@ namespace VirtoCommerce.CatalogModule.Core.Extensions
                 {
                     foreach (var propertyValue in property.Values)
                     {
-                        propertyValue.Value = sanitizerService.Sanitize(propertyValue.Value?.ToString());
+                        propertyValue.Value = propertyValueSanitizer.Sanitize(propertyValue.Value?.ToString());
                     }
                 }
             }
