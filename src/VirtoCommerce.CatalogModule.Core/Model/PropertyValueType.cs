@@ -1,4 +1,4 @@
-﻿
+
 namespace VirtoCommerce.CatalogModule.Core.Model
 {
     public enum PropertyValueType
@@ -9,6 +9,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         DateTime,
         Boolean,
         Integer,
-        GeoPoint
+        GeoPoint,
+        Html,
     }
 }

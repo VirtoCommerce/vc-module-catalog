@@ -1,4 +1,4 @@
-﻿angular.module('virtoCommerce.catalogModule')
+angular.module('virtoCommerce.catalogModule')
     .factory('virtoCommerce.catalogModule.valueTypes', function () {
         return {
             get: function() {
@@ -37,6 +37,11 @@
                         valueType: "GeoPoint",
                         title: "catalog.properties.geoPoint.title",
                         description: "catalog.properties.geoPoint.description"
+                    },
+                    {
+                        valueType: "Html",
+                        title: "platform.properties.html.title",
+                        description: "platform.properties.html.description"
                     }
                 ];
             }

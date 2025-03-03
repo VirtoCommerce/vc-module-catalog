@@ -13,9 +13,9 @@ namespace VirtoCommerce.CatalogModule.Core.Extensions
             switch (valueType)
             {
                 case PropertyValueType.LongText:
-                    result = Convert.ToString(value);
-                    break;
                 case PropertyValueType.ShortText:
+                case PropertyValueType.GeoPoint:
+                case PropertyValueType.Html:
                     result = Convert.ToString(value);
                     break;
                 case PropertyValueType.Number:
@@ -36,9 +36,6 @@ namespace VirtoCommerce.CatalogModule.Core.Extensions
                     break;
                 case PropertyValueType.Integer:
                     result = Convert.ToInt32(value);
-                    break;
-                case PropertyValueType.GeoPoint:
-                    result = Convert.ToString(value);
                     break;
                 default:
                     throw new NotSupportedException();

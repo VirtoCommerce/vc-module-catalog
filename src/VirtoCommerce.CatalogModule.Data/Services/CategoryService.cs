@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using VirtoCommerce.AssetsModule.Core.Assets;
 using VirtoCommerce.CatalogModule.Core.Events;
+using VirtoCommerce.CatalogModule.Core.Extensions;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Caching;
@@ -32,6 +33,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private readonly ICatalogService _catalogService;
         private readonly IOutlineService _outlineService;
         private readonly IBlobUrlResolver _blobUrlResolver;
+        private readonly IPropertyValueSanitizer _propertyValueSanitizer;
 
         public CategoryService(
             Func<ICatalogRepository> repositoryFactory,
@@ -40,7 +42,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             AbstractValidator<IHasProperties> hasPropertyValidator,
             ICatalogService catalogService,
             IOutlineService outlineService,
-            IBlobUrlResolver blobUrlResolver)
+            IBlobUrlResolver blobUrlResolver,
+            IPropertyValueSanitizer propertyValueSanitizer)
             : base(repositoryFactory, platformMemoryCache, eventPublisher)
         {
             _repositoryFactory = repositoryFactory;
@@ -50,6 +53,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _catalogService = catalogService;
             _outlineService = outlineService;
             _blobUrlResolver = blobUrlResolver;
+            _propertyValueSanitizer = propertyValueSanitizer;
         }
 
         public override Task<IList<Category>> GetAsync(IList<string> ids, string responseGroup = null, bool clone = true)
@@ -137,6 +141,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
             await base.BeforeSaveChanges(models);
             await ValidateCategoryPropertiesAsync(models);
+            SanitizeCategoryProperties(models);
         }
 
         protected override Task<IList<CategoryEntity>> LoadEntities(IRepository repository, IList<string> ids, string responseGroup)
@@ -332,6 +337,11 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     throw new PlatformException($"Category properties has validation error: {string.Join(Environment.NewLine, validationResult.Errors.Select(x => x.ToString()))}");
                 }
             }
+        }
+
+        protected virtual void SanitizeCategoryProperties(IList<Category> categories)
+        {
+            categories.OfType<IHasProperties>().SanitizePropertyValues(_propertyValueSanitizer);
         }
 
         protected override void ClearCache(IList<Category> models)
