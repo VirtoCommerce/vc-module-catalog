@@ -34,6 +34,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         private readonly Mock<IOutlineService> _outlineServiceMock;
         private readonly Mock<IBlobUrlResolver> _blobUrlResolverMock;
         private readonly Mock<ISkuGenerator> _skuGeneratorMock;
+        private readonly Mock<IPropertyValueSanitizer> _propertyValueSanitizerMock;
 
         public ItemServiceUnitTests()
         {
@@ -46,6 +47,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             _outlineServiceMock = new Mock<IOutlineService>();
             _blobUrlResolverMock = new Mock<IBlobUrlResolver>();
             _skuGeneratorMock = new Mock<ISkuGenerator>();
+            _propertyValueSanitizerMock = new Mock<IPropertyValueSanitizer>();
         }
 
         [Fact]
@@ -112,7 +114,8 @@ namespace VirtoCommerce.CatalogModule.Tests
                 _outlineServiceMock.Object,
                 _blobUrlResolverMock.Object,
                 _skuGeneratorMock.Object,
-                new ProductValidator(new PropertyValidator()));
+                new ProductValidator(new PropertyValidator()),
+                _propertyValueSanitizerMock.Object);
         }
     }
 }

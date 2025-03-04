@@ -66,6 +66,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                             schema.Add(new IndexDocumentField(propertyName, stringValue, IndexDocumentFieldValueType.String) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection });
                             break;
                         case PropertyValueType.LongText:
+                        case PropertyValueType.Html:
                             schema.Add(new IndexDocumentField(propertyName, stringValue, IndexDocumentFieldValueType.String) { IsRetrievable = true, IsSearchable = true, IsCollection = isCollection });
                             break;
                         case PropertyValueType.GeoPoint:
@@ -129,6 +130,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                             document.Add(new IndexDocumentField(propertyName, propValue.Value, IndexDocumentFieldValueType.Double) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection });
                             break;
                         case PropertyValueType.LongText:
+                        case PropertyValueType.Html:
                             document.Add(new IndexDocumentField(propertyName, propValue.Value.ToString().ToLowerInvariant(), IndexDocumentFieldValueType.String) { IsRetrievable = true, IsSearchable = true, IsCollection = isCollection });
                             break;
                         case PropertyValueType.ShortText:

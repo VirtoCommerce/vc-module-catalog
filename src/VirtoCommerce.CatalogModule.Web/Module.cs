@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using FluentValidation;
+using Ganss.Xss;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -268,6 +269,9 @@ namespace VirtoCommerce.CatalogModule.Web
 
             serviceCollection.AddTransient<IProductConfigurationService, ProductConfigurationService>();
             serviceCollection.AddTransient<IProductConfigurationSearchService, ProductConfigurationSearchService>();
+
+            serviceCollection.AddSingleton<IHtmlSanitizer, HtmlSanitizer>();
+            serviceCollection.AddSingleton<IPropertyValueSanitizer, PropertyValueSanitizer>();
         }
 
         public void PostInitialize(IApplicationBuilder appBuilder)
