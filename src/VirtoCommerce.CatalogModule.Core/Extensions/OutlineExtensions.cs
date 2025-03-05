@@ -43,19 +43,17 @@ public static class OutlineExtensions
         {
             case "Long":
                 pathSegments.AddRange(outline.Items
-                    .Where(x => x.SeoObjectType != "Catalog")
+                    .Where(x => !x.IsCatalog())
                     .Select(GetBestMatchingSeoSlug));
                 break;
             case "Collapsed":
                 {
                     // If last item is a linked category, we cannot build the SEO path
                     var lastItem = outline.Items.Last();
-                    var lastItemIsALinkedCategory = lastItem.SeoObjectType == "Category" && lastItem.HasVirtualParent;
-
-                    if (!lastItemIsALinkedCategory)
+                    if (!lastItem.IsLinkedCategory())
                     {
                         pathSegments.AddRange(outline.Items
-                            .Where(x => x.SeoObjectType != "Catalog" && (x.SeoObjectType != "Category" || x.HasVirtualParent != true))
+                            .Where(x => !x.IsCatalog() && !x.IsLinkedCategory())
                             .Select(GetBestMatchingSeoSlug));
                     }
                     break;
@@ -96,7 +94,7 @@ public static class OutlineExtensions
         }
 
         var pathSegments = outline.Items
-            .Where(x => x.SeoObjectType != "Catalog")
+            .Where(x => !x.IsCatalog())
             .Select(x => x.Id)
             .ToList();
 
@@ -115,6 +113,16 @@ public static class OutlineExtensions
     private static Outline GetOutlineForCatalog(this IEnumerable<Outline> outlines, string catalogId)
     {
         // Find any outline for the given catalog
-        return outlines.FirstOrDefault(outline => outline.Items.Any(item => item.SeoObjectType == "Catalog" && item.Id == catalogId));
+        return outlines.FirstOrDefault(outline => outline.Items.Any(item => item.IsCatalog() && item.Id == catalogId));
+    }
+
+    private static bool IsCatalog(this OutlineItem item)
+    {
+        return item.SeoObjectType == "Catalog";
+    }
+
+    private static bool IsLinkedCategory(this OutlineItem item)
+    {
+        return item.SeoObjectType == "Category" && item.HasVirtualParent;
     }
 }
