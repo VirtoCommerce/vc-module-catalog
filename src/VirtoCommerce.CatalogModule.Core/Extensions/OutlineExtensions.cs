@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.CoreModule.Core.Outlines;
 using VirtoCommerce.CoreModule.Core.Seo;
-using VirtoCommerce.Platform.Core.Settings;
+using VirtoCommerce.StoreModule.Core.Extensions;
 using VirtoCommerce.StoreModule.Core.Model;
-using StoreSettings = VirtoCommerce.StoreModule.Core.ModuleConstants.Settings.SEO;
+using static VirtoCommerce.StoreModule.Core.ModuleConstants.Settings.SEO;
 
 namespace VirtoCommerce.CatalogModule.Core.Extensions;
 
@@ -31,8 +31,8 @@ public static class OutlineExtensions
             return null;
         }
 
-        var seoLinksType = store.Settings?.GetValue<string>(StoreSettings.SeoLinksType);
-        if (seoLinksType == "None")
+        var seoLinksType = store.GetSeoLinksType();
+        if (seoLinksType == SeoNone)
         {
             return null;
         }
@@ -41,12 +41,12 @@ public static class OutlineExtensions
 
         switch (seoLinksType)
         {
-            case "Long":
+            case SeoLong:
                 pathSegments.AddRange(outline.Items
                     .Where(x => !x.IsCatalog())
                     .Select(GetBestMatchingSeoSlug));
                 break;
-            case "Collapsed":
+            case SeoCollapsed:
                 {
                     // If last item is a linked category, we cannot build the SEO path
                     var lastItem = outline.Items.Last();
@@ -58,7 +58,7 @@ public static class OutlineExtensions
                     }
                     break;
                 }
-            default: // Short
+            default: // SeoShort
                 {
                     var lastItem = outline.Items.LastOrDefault();
                     if (lastItem != null)
