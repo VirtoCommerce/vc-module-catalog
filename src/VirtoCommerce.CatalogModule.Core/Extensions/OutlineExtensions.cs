@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.CoreModule.Core.Outlines;
 using VirtoCommerce.CoreModule.Core.Seo;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.StoreModule.Core.Extensions;
 using VirtoCommerce.StoreModule.Core.Model;
 using static VirtoCommerce.StoreModule.Core.ModuleConstants.Settings.SEO;
@@ -11,19 +12,19 @@ namespace VirtoCommerce.CatalogModule.Core.Extensions;
 public static class OutlineExtensions
 {
     /// <summary>
-    /// Returns SEO path if all outline items of the first outline have SEO keywords, otherwise returns default value.
+    /// Returns SEO path if all outline items of the first outline for the store catalog have SEO keywords, otherwise returns null.
     /// Path: GrandParentCategory/ParentCategory/ProductCategory/Product
     /// </summary>
-    public static string GetSeoPath(this IHasOutlines hasOutlines, Store store, string language)
+    public static string GetSeoPath(this IHasOutlines hasOutlines, Store store, string language, string seoLinksType = null)
     {
-        return hasOutlines?.Outlines.GetSeoPath(store, language);
+        return hasOutlines?.Outlines?.GetSeoPath(store, language, seoLinksType);
     }
 
     /// <summary>
-    /// Returns SEO path if all outline items of the first outline have SEO keywords, otherwise returns default value.
+    /// Returns SEO path if all outline items of the first outline for the store catalog have SEO keywords, otherwise returns null.
     /// Path: GrandParentCategory/ParentCategory/ProductCategory/Product
     /// </summary>
-    public static string GetSeoPath(this IEnumerable<Outline> outlines, Store store, string language)
+    public static string GetSeoPath(this IEnumerable<Outline> outlines, Store store, string language, string seoLinksType = null)
     {
         var outline = outlines?.GetOutlineForCatalog(store.Catalog);
         if (outline is null)
@@ -31,7 +32,7 @@ public static class OutlineExtensions
             return null;
         }
 
-        var seoLinksType = store.GetSeoLinksType();
+        seoLinksType ??= store.GetSeoLinksType();
         if (seoLinksType == SeoNone)
         {
             return null;
@@ -71,7 +72,7 @@ public static class OutlineExtensions
 
         if (pathSegments.Count > 0 && pathSegments.All(x => x != null))
         {
-            return string.Join("/", pathSegments);
+            return string.Join('/', pathSegments);
         }
 
         return null;
@@ -100,7 +101,7 @@ public static class OutlineExtensions
 
         if (pathSegments.Count > 0 && pathSegments.All(x => x != null))
         {
-            return string.Join("/", pathSegments);
+            return string.Join('/', pathSegments);
         }
 
         return null;
@@ -118,11 +119,11 @@ public static class OutlineExtensions
 
     private static bool IsCatalog(this OutlineItem item)
     {
-        return item.SeoObjectType == "Catalog";
+        return item.SeoObjectType.EqualsIgnoreCase("Catalog");
     }
 
     private static bool IsLinkedCategory(this OutlineItem item)
     {
-        return item.SeoObjectType == "Category" && item.HasVirtualParent;
+        return item.SeoObjectType.EqualsIgnoreCase("Category") && item.HasVirtualParent;
     }
 }
