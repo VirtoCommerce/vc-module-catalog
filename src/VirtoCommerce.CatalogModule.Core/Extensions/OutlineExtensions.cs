@@ -15,27 +15,26 @@ public static class OutlineExtensions
     /// Returns SEO path if all outline items of the first outline for the store catalog have SEO keywords, otherwise returns null.
     /// Path: GrandParentCategory/ParentCategory/ProductCategory/Product
     /// </summary>
-    public static string GetSeoPath(this IHasOutlines hasOutlines, Store store, string language, string seoLinksType = null)
+    public static string GetSeoPath(this IHasOutlines hasOutlines, Store store, string language, string defaultValue = null, string seoLinksType = null)
     {
-        return hasOutlines?.Outlines?.GetSeoPath(store, language, seoLinksType);
+        return hasOutlines?.Outlines?.GetSeoPath(store, language, defaultValue, seoLinksType);
     }
 
     /// <summary>
     /// Returns SEO path if all outline items of the first outline for the store catalog have SEO keywords, otherwise returns null.
     /// Path: GrandParentCategory/ParentCategory/ProductCategory/Product
     /// </summary>
-    public static string GetSeoPath(this IEnumerable<Outline> outlines, Store store, string language, string seoLinksType = null)
+    public static string GetSeoPath(this IEnumerable<Outline> outlines, Store store, string language, string defaultValue = null, string seoLinksType = null)
     {
-        var outline = outlines?.GetOutlineForCatalog(store.Catalog);
-        if (outline is null)
+        if (store is null || !TryGetOutlineForCatalog(outlines, store.Catalog, out var outline))
         {
-            return null;
+            return defaultValue;
         }
 
         seoLinksType ??= store.GetSeoLinksType();
         if (seoLinksType == SeoNone)
         {
-            return null;
+            return defaultValue;
         }
 
         var pathSegments = new List<string>();
@@ -70,12 +69,12 @@ public static class OutlineExtensions
                 }
         }
 
-        if (pathSegments.Count > 0 && pathSegments.All(x => x != null))
+        if (pathSegments.Count == 0 || pathSegments.Any(x => x is null))
         {
-            return string.Join('/', pathSegments);
+            return defaultValue;
         }
 
-        return null;
+        return string.Join('/', pathSegments);
 
         string GetBestMatchingSeoSlug(ISeoSupport seoSupport)
         {
@@ -88,8 +87,7 @@ public static class OutlineExtensions
     /// </summary>
     public static string GetOutlinePath(this IEnumerable<Outline> outlines, string catalogId)
     {
-        var outline = outlines?.GetOutlineForCatalog(catalogId);
-        if (outline is null)
+        if (!TryGetOutlineForCatalog(outlines, catalogId, out var outline))
         {
             return null;
         }
@@ -99,22 +97,24 @@ public static class OutlineExtensions
             .Select(x => x.Id)
             .ToList();
 
-        if (pathSegments.Count > 0 && pathSegments.All(x => x != null))
+        if (pathSegments.Count == 0 || pathSegments.Any(x => x is null))
         {
-            return string.Join('/', pathSegments);
+            return null;
         }
 
-        return null;
+        return string.Join('/', pathSegments);
     }
 
 
     /// <summary>
     /// Returns first outline for the given catalog (if any)
     /// </summary>
-    private static Outline GetOutlineForCatalog(this IEnumerable<Outline> outlines, string catalogId)
+    private static bool TryGetOutlineForCatalog(IEnumerable<Outline> outlines, string catalogId, out Outline outline)
     {
         // Find any outline for the given catalog
-        return outlines.FirstOrDefault(outline => outline.Items.Any(item => item.IsCatalog() && item.Id == catalogId));
+        outline = outlines?.FirstOrDefault(outline => outline.Items.Any(item => item.IsCatalog() && item.Id == catalogId));
+
+        return outline != null;
     }
 
     private static bool IsCatalog(this OutlineItem item)
