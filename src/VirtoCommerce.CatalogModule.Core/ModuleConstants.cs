@@ -12,7 +12,7 @@ namespace VirtoCommerce.CatalogModule.Core
         public const string ConfigurationSectionTypeProduct = "Product";
         public const string ConfigurationSectionTypeText = "Text";
         public const string ConfigurationSectionTypeFile = "File";
-        public const string ConfigurationSectionFilesScope = "configuration-files";
+        public const string ConfigurationSectionFilesScope = "product-configuration";
 
         public static class Security
         {
@@ -132,7 +132,7 @@ namespace VirtoCommerce.CatalogModule.Core
                 public static SettingDescriptor ProductConfigurationMaximumFiles { get; } = new SettingDescriptor
                 {
                     Name = "Catalog.ProductConfigurationMaximumFiles",
-                    GroupName = "Catalog|Catalog",
+                    GroupName = "Catalog|General",
                     ValueType = SettingValueType.PositiveInteger,
                     DefaultValue = 5,
                 };
