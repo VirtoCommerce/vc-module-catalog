@@ -6,7 +6,6 @@ angular.module('virtoCommerce.catalogModule')
                 blade.headIcon = 'fas fa-ruler-combined';
                 blade.title = 'catalog.blades.measures-list.title';
                 blade.subtitle = 'catalog.blades.measures-list.subtitle';
-
                 $scope.uiGridConstants = uiGridHelper.uiGridConstants;
                 var bladeNavigationService = bladeUtils.bladeNavigationService;
 
@@ -73,7 +72,7 @@ angular.module('virtoCommerce.catalogModule')
 
                 function createMeasure() {
                     var newBlade = {
-                        id: 'createMeasure',                        
+                        id: 'createMeasure',
                         controller: 'virtoCommerce.catalogModule.measureDetailsController',
                         template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/measures/measure-details.html',
                         currentEntity: {},
