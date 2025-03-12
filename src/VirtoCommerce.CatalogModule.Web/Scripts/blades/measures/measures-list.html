@@ -1,28 +1,31 @@
 <div class="blade-static __bottom" ng-if="pageSettings.itemsPerPageCount < pageSettings.totalItems" ng-include="'pagerTemplate.html'"></div>
 
 <div class="blade-content __medium-wide">
-    <div class="blade-inner">
-        <div class="note" ng-if="!listEntries.length">{{ 'platform.list.no-data' | translate }}</div>
-
-        <div class="inner-block" ng-init="setGridOptions('measures-list-grid', {
+  <div class="blade-inner">
+    <div class="inner-block" ng-init="setGridOptions({
               useExternalSorting: true,
-              data: 'listEntries',
               rowTemplate: 'measure-list.row.html',
               rowHeight: 60,
               columnDefs: [
                 { name: 'actions', displayName: '', enableColumnResizing: false, enableSorting: false, width: 30, cellTemplate: 'list-actions.cell.html', pinnedLeft:true },
-                { name: 'name', displayName: 'catalog.blades.measures-list.labels.name' }
+                { name: 'name', displayName: 'catalog.blades.measures-list.labels.name', enableSorting: false }
               ]})">
-            <div class="table-wrapper" ng-if="listEntries.length">
-                <div ui-grid="gridOptions" ui-grid-auto-resize ui-grid-save-state ui-grid-selection ui-grid-resize-columns ui-grid-move-columns ui-grid-pinning ui-grid-height></div>
-                <ul class="menu __context" role="menu" id="measure_menu">
-                    <li class="menu-item" ng-click='deleteList([contextMenuEntity])' va-permission="measure:delete">
-                        <i class="menu-ico fas fa-trash-alt"></i> {{'platform.commands.delete' | translate}}
-                    </li>
-                </ul>
-            </div>
-        </div>
+      <div class="table-wrapper" ng-if="blade.currentEntities.length">
+        <div ui-grid="gridOptions" ui-grid-auto-resize ui-grid-save-state ui-grid-selection ui-grid-resize-columns ui-grid-move-columns ui-grid-pinning ui-grid-height></div>
+        <ul class="menu __context" role="menu" id="measure_menu">
+          <li class="menu-item" ng-click='deleteList([contextMenuEntity])' va-permission="measure:delete">
+            <i class="menu-ico fas fa-trash-alt"></i> {{'platform.commands.delete' | translate}}
+          </li>
+        </ul>
+      </div>
     </div>
+    <div class="note" ng-if="!blade.currentEntities.length">
+      <div>{{ 'platform.list.no-data' | translate }}</div>
+      <div>
+        <a style="font-size:14px" ng-click="blade.openCreateMeasures()">{{'catalog.blades.measures-list.labels.create-default' | translate}}</a>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script type="text/ng-template" id="list-actions.cell.html">
