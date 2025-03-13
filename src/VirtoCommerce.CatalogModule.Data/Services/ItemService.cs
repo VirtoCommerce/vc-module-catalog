@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using VirtoCommerce.AssetsModule.Core.Assets;
 using VirtoCommerce.CatalogModule.Core.Events;
+using VirtoCommerce.CatalogModule.Core.Extensions;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Caching;
@@ -32,6 +33,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private readonly IBlobUrlResolver _blobUrlResolver;
         private readonly ISkuGenerator _skuGenerator;
         private readonly AbstractValidator<CatalogProduct> _productValidator;
+        private readonly IPropertyValueSanitizer _propertyValueSanitizer;
 
         public ItemService(
             Func<ICatalogRepository> repositoryFactory,
@@ -43,7 +45,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             IOutlineService outlineService,
             IBlobUrlResolver blobUrlResolver,
             ISkuGenerator skuGenerator,
-            AbstractValidator<CatalogProduct> productValidator)
+            AbstractValidator<CatalogProduct> productValidator,
+            IPropertyValueSanitizer propertyValueSanitizer)
             : base(repositoryFactory, platformMemoryCache, eventPublisher)
         {
             _repositoryFactory = repositoryFactory;
@@ -56,6 +59,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _blobUrlResolver = blobUrlResolver;
             _skuGenerator = skuGenerator;
             _productValidator = productValidator;
+            _propertyValueSanitizer = propertyValueSanitizer;
         }
 
         public virtual async Task<IList<CatalogProduct>> GetByCodes(string catalogId, IList<string> codes, string responseGroup)
@@ -181,6 +185,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
             await base.BeforeSaveChanges(models);
             await ValidateProductsAsync(models);
+            SanitizeProductProperties(models);
         }
 
         protected virtual async Task<IList<ProductCodeCacheItem>> GetIdsByCodesNoCache(string catalogId, IList<string> codes)
@@ -335,6 +340,11 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     throw new ValidationException($"Product properties has validation error: {string.Join(Environment.NewLine, validationResult.Errors.Select(x => x.ToString()))}");
                 }
             }
+        }
+
+        protected virtual void SanitizeProductProperties(IList<CatalogProduct> products)
+        {
+            products.OfType<IHasProperties>().SanitizePropertyValues(_propertyValueSanitizer);
         }
 
         protected class ProductCodeCacheItem : Entity

@@ -249,6 +249,16 @@ angular.module('virtoCommerce.catalogModule').directive('vaProperty2', ['$compil
                 datepickerMode: 'day'
             };
 
+            /* Codemirror */
+            scope.editorOptions = {
+                lineWrapping: true,
+                lineNumbers: true,
+                foldGutter: true,
+                gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+                mode: 'htmlmixed',
+                onLoad: function (_editor) { }
+            };
+
             linker(function (clone) {
                 element.append(clone);
             });

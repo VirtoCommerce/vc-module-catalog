@@ -21,7 +21,8 @@ namespace VirtoCommerce.CatalogModule2.Web.Services
             AbstractValidator<IHasProperties> hasPropertyValidator,
             ICatalogService catalogService,
             IOutlineService outlineService,
-            IBlobUrlResolver blobUrlResolver)
+            IBlobUrlResolver blobUrlResolver,
+            IPropertyValueSanitizer propertyValueSanitizer)
             : base(
                 repositoryFactory,
                 platformMemoryCache,
@@ -29,7 +30,8 @@ namespace VirtoCommerce.CatalogModule2.Web.Services
                 hasPropertyValidator,
                 catalogService,
                 outlineService,
-                blobUrlResolver)
+                blobUrlResolver,
+                propertyValueSanitizer)
         {
         }
 

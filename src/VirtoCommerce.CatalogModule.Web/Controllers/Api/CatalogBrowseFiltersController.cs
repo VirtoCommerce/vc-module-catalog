@@ -189,7 +189,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                             IsSelected = true,
                             Type = _attributeType,
                             Name = attributeFilter.Key,
-                            Values = attributeFilter.Values?.Select(v => v.Id).OrderBy(v => v, StringComparer.OrdinalIgnoreCase).ToArray(),
+                            Values = attributeFilter.Values?.Select(v => v.Id).OrderBy(v => v, StringComparer.OrdinalIgnoreCase).ToArray() ?? [],
                             Size = attributeFilter.FacetSize,
                         },
                         RangeFilter rangeFilter => new AggregationProperty
