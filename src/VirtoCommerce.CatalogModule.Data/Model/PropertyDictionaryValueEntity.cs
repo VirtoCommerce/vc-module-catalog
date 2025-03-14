@@ -2,10 +2,11 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.Domain;
 
 namespace VirtoCommerce.CatalogModule.Data.Model
 {
-    public class PropertyDictionaryValueEntity : Entity
+    public class PropertyDictionaryValueEntity : Entity, IDataEntity<PropertyDictionaryValueEntity, PropertyDictionaryItemLocalizedValue>
     {
         [StringLength(512)]
         public string Value { get; set; }
