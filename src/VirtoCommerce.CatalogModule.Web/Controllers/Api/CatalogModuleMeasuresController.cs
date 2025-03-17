@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -16,6 +15,7 @@ using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Options;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
+using SystemFile = System.IO.File;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
@@ -26,15 +26,18 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private readonly IMeasureService _measureService;
         private readonly IMeasureSearchService _measureSearchService;
         private readonly MeasureOptions _measureOptions;
+        private readonly IHttpClientFactory _httpClientFactory;
 
         public CatalogModuleMeasuresController(
             IMeasureService measureService,
             IMeasureSearchService measureSearchService,
-            IOptions<MeasureOptions> measureOptions)
+            IOptions<MeasureOptions> measureOptions,
+            IHttpClientFactory httpClientFactory)
         {
             _measureService = measureService;
             _measureSearchService = measureSearchService;
             _measureOptions = measureOptions.Value;
+            _httpClientFactory = httpClientFactory;
         }
 
 
@@ -107,25 +110,24 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         public async Task<ActionResult<IList<Measure>>> GetDefaultMeasures()
         {
             var source = _measureOptions.DefaultSource;
-            var json = string.Empty;
 
             if (string.IsNullOrEmpty(source))
             {
                 throw new InvalidOperationException("Measure source is not defined");
             }
 
+            string json;
+
             if (source.StartsWith("http"))
             {
-                using var client = new HttpClient();
+                var client = _httpClientFactory.CreateClient();
                 using var response = await client.GetAsync(source);
                 response.EnsureSuccessStatusCode();
                 json = await response.Content.ReadAsStringAsync();
             }
             else
             {
-                using var inputStream = new FileStream(source, FileMode.Open);
-                using var streamReader = new StreamReader(inputStream);
-                json = await streamReader.ReadToEndAsync();
+                json = SystemFile.ReadAllText(source);
             }
 
             return Ok(JsonConvert.DeserializeObject<List<Measure>>(json));

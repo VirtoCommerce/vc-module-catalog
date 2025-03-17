@@ -145,7 +145,15 @@ namespace VirtoCommerce.CatalogModule.Web
             serviceCollection.AddTransient<IOutlineService, OutlineService>();
             serviceCollection.AddTransient<ISkuGenerator, DefaultSkuGenerator>();
 
-            serviceCollection.Configure<MeasureOptions>(Configuration.GetSection(MeasureOptions.SectionName));
+            serviceCollection.Configure<MeasureOptions>(options =>
+            {
+                Configuration.GetSection(MeasureOptions.SectionName).Bind(options);
+                if (string.IsNullOrEmpty(options.DefaultSource))
+                {
+                    options.DefaultSource = Path.Combine(ModuleInfo.FullPhysicalPath, "Content/measures.json");
+                }
+            });
+
             serviceCollection.AddTransient<IMeasureService, MeasureService>();
             serviceCollection.AddTransient<IMeasureSearchService, MeasureSearchService>();
 
