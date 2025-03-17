@@ -171,6 +171,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 case (int)PropertyValueType.DateTime:
                     return DateTimeValue;
                 case (int)PropertyValueType.Number:
+                case (int)PropertyValueType.Measure:
                     return DecimalValue;
                 case (int)PropertyValueType.LongText:
                 case (int)PropertyValueType.Html:
@@ -194,6 +195,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                     ShortTextValue = Convert.ToString(value);
                     break;
                 case PropertyValueType.Number:
+                case PropertyValueType.Measure:
                     DecimalValue = Convert.ToDecimal(value, CultureInfo.InvariantCulture);
                     break;
                 case PropertyValueType.DateTime:

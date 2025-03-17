@@ -42,6 +42,11 @@ angular.module('virtoCommerce.catalogModule')
                         valueType: "Html",
                         title: "platform.properties.html.title",
                         description: "platform.properties.html.description"
+                    },
+                    {
+                        valueType: "Measure",
+                        title: "catalog.properties.measure.title",
+                        description: "catalog.properties.measure.description"
                     }
                 ];
             }

@@ -12,6 +12,11 @@
         "title": "Geo point",
         "placeholder": "Enter latitude and longitude",
         "description": "Enter latitude and longitude separated by a comma without spaces, e.g. 41.40338,2.17403"
+      },
+      "measure": {
+        "title": "Measure",
+        "placeholder": "Enter measure",
+        "description": "Enter measure in the format: 1.23"
       }
     },
     "product-types": {
@@ -190,7 +195,8 @@
           "new-dictionary-property-caution": "You can manage dictionary items only after you save the property",
           "attributes": "Attributes",
           "manage-attributes": "Manage property attributes",
-          "hidden": "Hidden"
+          "hidden": "Hidden",
+          "measure": "Measure"
         },
         "placeholders": {
           "display-name": "Enter display name",
