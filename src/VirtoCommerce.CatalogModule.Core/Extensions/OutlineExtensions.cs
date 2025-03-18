@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.CoreModule.Core.Outlines;
 using VirtoCommerce.CoreModule.Core.Seo;
-using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.StoreModule.Core.Extensions;
 using VirtoCommerce.StoreModule.Core.Model;
 using static VirtoCommerce.StoreModule.Core.ModuleConstants.Settings.SEO;
@@ -106,24 +105,16 @@ public static class OutlineExtensions
     }
 
 
-    /// <summary>
-    /// Returns first outline for the given catalog (if any)
-    /// </summary>
-    private static bool TryGetOutlineForCatalog(IEnumerable<Outline> outlines, string catalogId, out Outline outline)
+    public static bool TryGetOutlineForCatalog(IEnumerable<Outline> outlines, string catalogId, out Outline outline)
     {
         // Find any outline for the given catalog
-        outline = outlines?.FirstOrDefault(outline => outline.Items.Any(item => item.IsCatalog() && item.Id == catalogId));
+        outline = outlines?.FirstOrDefault(x => x.Items.ContainsCatalog(catalogId));
 
         return outline != null;
     }
 
-    private static bool IsCatalog(this OutlineItem item)
+    public static bool IsLinkedCategory(this OutlineItem item)
     {
-        return item.SeoObjectType.EqualsIgnoreCase("Catalog");
-    }
-
-    private static bool IsLinkedCategory(this OutlineItem item)
-    {
-        return item.SeoObjectType.EqualsIgnoreCase("Category") && item.HasVirtualParent;
+        return item.HasVirtualParent && item.IsCategory();
     }
 }

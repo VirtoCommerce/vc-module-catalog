@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using VirtoCommerce.CatalogModule.Core.Extensions;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.OutlinePart;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CoreModule.Core.Outlines;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
+using static VirtoCommerce.CatalogModule.Core.Extensions.SeoExtensions;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
@@ -42,17 +44,17 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                         Entity parentEntity = null;
                         foreach (var entity in flatBranch)
                         {
-                            var outlineItem = Entity2Outline(entity);
+                            var outlineItem = ConvertToOutlineItem(entity);
                             outlineItem.HasVirtualParent = !IsVirtualEntity(entity) && IsVirtualEntity(parentEntity);
                             outlineItems.Add(outlineItem);
                             parentEntity = entity;
                         }
                         //filter branches with passed catalog
-                        if (string.IsNullOrEmpty(catalogId) || outlineItems.Any(x => x.Id.EqualsInvariant(catalogId) && x.SeoObjectType.EqualsInvariant("catalog")))
+                        if (string.IsNullOrEmpty(catalogId) || outlineItems.ContainsCatalog(catalogId))
                         {
                             var outline = new Outline
                             {
-                                Items = outlineItems.ToList()
+                                Items = outlineItems,
                             };
                             obj.Outlines.Add(outline);
                         }
@@ -142,29 +144,24 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return retVal;
         }
 
-        private bool IsVirtualEntity(Entity obj)
+        private static bool IsVirtualEntity(Entity obj)
         {
-            var retVal = false;
-            var catalog = obj as Catalog;
-            var category = obj as Category;
-            if (catalog != null)
+            return obj switch
             {
-                retVal = catalog.IsVirtual;
-            }
-            if (category != null)
-            {
-                retVal = category.IsVirtual;
-            }
-            return retVal;
+                Category category => category.IsVirtual,
+                Catalog catalog => catalog.IsVirtual,
+                _ => false,
+            };
         }
 
-        private OutlineItem Entity2Outline(Entity entity)
+        private OutlineItem ConvertToOutlineItem(Entity entity)
         {
             var seoSupport = entity as ISeoSupport;
+
             var retVal = new OutlineItem
             {
                 Id = _outlinePartResolver.ResolveOutlinePart(entity),
-                SeoObjectType = seoSupport != null ? seoSupport.SeoObjectType : "Catalog",
+                SeoObjectType = seoSupport != null ? seoSupport.SeoObjectType : SeoCatalog,
                 SeoInfos = seoSupport?.SeoInfos,
                 Name = _outlinePartNameResolver.ResolveOutlineName(entity),
                 LocalizedName = _outlinePartNameResolver.ResolveLocalizedOutlineName(entity)
