@@ -4,10 +4,11 @@ using System.ComponentModel.DataAnnotations;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.Domain;
 
 namespace VirtoCommerce.CatalogModule.Data.Model
 {
-    public class AssetEntity : AuditableEntity, IHasOuterId
+    public class AssetEntity : AuditableEntity, IHasOuterId, IDataEntity<AssetEntity, Asset>
     {
         [StringLength(2083)]
         [Required]
