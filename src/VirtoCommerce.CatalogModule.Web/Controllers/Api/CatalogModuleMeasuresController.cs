@@ -127,7 +127,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             }
             else
             {
-                json = SystemFile.ReadAllText(source);
+                json = await SystemFile.ReadAllTextAsync(source);
             }
 
             return Ok(JsonConvert.DeserializeObject<List<Measure>>(json));
