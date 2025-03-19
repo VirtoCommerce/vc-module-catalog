@@ -25,7 +25,7 @@ public static class OutlineExtensions
     /// </summary>
     public static string GetSeoPath(this IEnumerable<Outline> outlines, Store store, string language, string defaultValue = null, string seoLinksType = null)
     {
-        if (store is null || !TryGetOutlineForCatalog(outlines, store.Catalog, out var outline))
+        if (store is null || !outlines.TryGetOutlineForCatalog(store.Catalog, out var outline))
         {
             return defaultValue;
         }
@@ -86,7 +86,7 @@ public static class OutlineExtensions
     /// </summary>
     public static string GetOutlinePath(this IEnumerable<Outline> outlines, string catalogId)
     {
-        if (!TryGetOutlineForCatalog(outlines, catalogId, out var outline))
+        if (!outlines.TryGetOutlineForCatalog(catalogId, out var outline))
         {
             return null;
         }
@@ -105,7 +105,7 @@ public static class OutlineExtensions
     }
 
 
-    public static bool TryGetOutlineForCatalog(IEnumerable<Outline> outlines, string catalogId, out Outline outline)
+    public static bool TryGetOutlineForCatalog(this IEnumerable<Outline> outlines, string catalogId, out Outline outline)
     {
         // Find any outline for the given catalog
         outline = outlines?.FirstOrDefault(x => x.Items.ContainsCatalog(catalogId));
