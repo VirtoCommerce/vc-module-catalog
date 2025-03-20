@@ -680,8 +680,12 @@
         "title": "Unités de mesure",
         "subtitle": "Liste des mesures disponibles",
         "labels": {
-          "name": "Nom"
+          "name": "Nom",
+          "create-default": "Créer par défaut"
         }
+      },
+      "create-measures": {
+        "title": "Créer des mesures par défaut"
       },
       "measure-details": {
         "title": "Mesure de {{name}}",

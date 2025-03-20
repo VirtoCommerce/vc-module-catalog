@@ -1,0 +1,201 @@
+[
+  {
+    "code": "LENGTH",
+    "name": "Length",
+    "units": [
+      {
+        "code": "MM",
+        "name": "Millimeter",
+        "symbol": "mm",
+        "conversionFactor": 0.001,
+        "isDefault": false
+      },
+      {
+        "code": "CM",
+        "name": "Centimeter",
+        "symbol": "cm",
+        "conversionFactor": 0.01,
+        "isDefault": false
+      },
+      {
+        "code": "M",
+        "name": "Meter",
+        "symbol": "m",
+        "conversionFactor": 1.0,
+        "isDefault": true
+      },
+      {
+        "code": "KM",
+        "name": "Kilometer",
+        "symbol": "km",
+        "conversionFactor": 1000.0,
+        "isDefault": false
+      },
+      {
+        "code": "FT",
+        "name": "Foot",
+        "symbol": "′",
+        "conversionFactor": 0.3048,
+        "isDefault": false
+      },
+      {
+        "code": "IN",
+        "name": "Inch",
+        "symbol": "″",
+        "conversionFactor": 0.0254,
+        "isDefault": false
+      }
+    ]
+  },
+  {
+    "code": "QUANTITY",
+    "name": "Quantity",
+    "units": [
+      {
+        "code": "PCS",
+        "name": "Piece",
+        "symbol": "pcs",
+        "conversionFactor": 1.0,
+        "isDefault": true
+      },
+      {
+        "code": "CASE",
+        "name": "Case",
+        "symbol": "case",
+        "conversionFactor": 24.0,
+        "isDefault": false
+      },
+      {
+        "code": "DOZ",
+        "name": "Dozen",
+        "symbol": "doz",
+        "conversionFactor": 12.0,
+        "isDefault": false
+      },
+      {
+        "code": "PACK",
+        "name": "Pack",
+        "symbol": "pack",
+        "conversionFactor": 6.0,
+        "isDefault": false
+      }
+    ]
+  },
+  {
+    "code": "TIME",
+    "name": "Time",
+    "units": [
+      {
+        "code": "M",
+        "name": "Minute",
+        "symbol": "m",
+        "conversionFactor": 60.0,
+        "isDefault": false
+      },
+      {
+        "code": "S",
+        "name": "Second",
+        "symbol": "s",
+        "conversionFactor": 1.0,
+        "isDefault": true
+      },
+      {
+        "code": "H",
+        "name": "Hour",
+        "symbol": "h",
+        "conversionFactor": 3600.0,
+        "isDefault": false
+      },
+      {
+        "code": "D",
+        "name": "Day",
+        "symbol": "d",
+        "conversionFactor": 86400.0,
+        "isDefault": false
+      },
+      {
+        "code": "MS",
+        "name": "Millisecond",
+        "symbol": "ms",
+        "conversionFactor": 0.001,
+        "isDefault": false
+      },
+      {
+        "code": "W",
+        "name": "Week",
+        "symbol": "w",
+        "conversionFactor": 604800.0,
+        "isDefault": false
+      }
+    ]
+  },
+  {
+    "code": "VOLUME",
+    "name": "Volume",
+    "units": [
+      {
+        "code": "ML",
+        "name": "Milliliter",
+        "symbol": "ml",
+        "conversionFactor": 0.001,
+        "isDefault": false
+      },
+      {
+        "code": "FL OZ",
+        "name": "Fluid Ounce",
+        "symbol": "fl oz",
+        "conversionFactor": 0.029574,
+        "isDefault": false
+      },
+      {
+        "code": "GAL",
+        "name": "Gallon",
+        "symbol": "gal",
+        "conversionFactor": 3.78541,
+        "isDefault": false
+      },
+      {
+        "code": "L",
+        "name": "Liter",
+        "symbol": "l",
+        "conversionFactor": 1.0,
+        "isDefault": true
+      }
+    ]
+  },
+  {
+    "code": "WEIGHT",
+    "name": "Weight",
+    "units": [
+      {
+        "code": "G",
+        "name": "Gram",
+        "symbol": "g",
+        "conversionFactor": 0.001,
+        "isDefault": false
+      },
+      {
+        "code": "LB",
+        "name": "Pound",
+        "symbol": "lb",
+        "conversionFactor": 0.453592,
+        "isDefault": false
+      },
+      {
+        "code": "KG",
+        "name": "Kilogram",
+        "symbol": "kg",
+        "conversionFactor": 1.0,
+        "isDefault": true
+      },
+      {
+        "code": "OZ",
+        "name": "Ounce",
+        "symbol": "oz",
+        "conversionFactor": 0.02835,
+        "isDefault": false
+      }
+    ]
+  }
+]
+

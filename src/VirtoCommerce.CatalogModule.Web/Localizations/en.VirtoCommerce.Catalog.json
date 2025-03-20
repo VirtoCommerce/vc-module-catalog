@@ -686,8 +686,12 @@
         "title": "Units of measures",
         "subtitle": "List of available measures",
         "labels": {
-          "name": "Name"
+          "name": "Name",
+          "create-default": "Create default"
         }
+      },
+      "create-measures": {
+        "title": "Create default measures"
       },
       "measure-details": {
         "title": "{{name}} measure",

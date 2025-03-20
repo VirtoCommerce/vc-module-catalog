@@ -1,15 +1,21 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
+using VirtoCommerce.CatalogModule.Core.Options;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
+using SystemFile = System.IO.File;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
@@ -19,13 +25,19 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
     {
         private readonly IMeasureService _measureService;
         private readonly IMeasureSearchService _measureSearchService;
+        private readonly MeasureOptions _measureOptions;
+        private readonly IHttpClientFactory _httpClientFactory;
 
         public CatalogModuleMeasuresController(
             IMeasureService measureService,
-            IMeasureSearchService measureSearchService)
+            IMeasureSearchService measureSearchService,
+            IOptions<MeasureOptions> measureOptions,
+            IHttpClientFactory httpClientFactory)
         {
             _measureService = measureService;
             _measureSearchService = measureSearchService;
+            _measureOptions = measureOptions.Value;
+            _httpClientFactory = httpClientFactory;
         }
 
 
@@ -50,18 +62,18 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [HttpPost]
         [Route("")]
         [Authorize(ModuleConstants.Security.Permissions.MeasuresCreate)]
-        public async Task<ActionResult<Measure>> CreateMeasure([FromBody] Measure measure)
+        public async Task<ActionResult<IList<Measure>>> CreateMeasure([FromBody] IList<Measure> measures)
         {
             try
             {
-                await _measureService.SaveChangesAsync(new[] { measure });
+                await _measureService.SaveChangesAsync(measures);
             }
             catch (ValidationException ex)
             {
                 return BadRequest(GetErrorMessage(ex));
             }
 
-            return Ok(measure);
+            return Ok(measures);
         }
 
         [HttpPut]
@@ -72,7 +84,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         {
             try
             {
-                await _measureService.SaveChangesAsync(new[] { measure });
+                await _measureService.SaveChangesAsync([measure]);
             }
             catch (ValidationException ex)
             {
@@ -90,6 +102,35 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         {
             await _measureService.DeleteAsync(ids);
             return NoContent();
+        }
+
+        [HttpGet]
+        [Route("default")]
+        [Authorize(ModuleConstants.Security.Permissions.MeasuresRead)]
+        public async Task<ActionResult<IList<Measure>>> GetDefaultMeasures()
+        {
+            var source = _measureOptions.DefaultSource;
+
+            if (string.IsNullOrEmpty(source))
+            {
+                throw new InvalidOperationException("Measure source is not defined");
+            }
+
+            string json;
+
+            if (source.StartsWith("http"))
+            {
+                var client = _httpClientFactory.CreateClient();
+                using var response = await client.GetAsync(source);
+                response.EnsureSuccessStatusCode();
+                json = await response.Content.ReadAsStringAsync();
+            }
+            else
+            {
+                json = await SystemFile.ReadAllTextAsync(source);
+            }
+
+            return Ok(JsonConvert.DeserializeObject<List<Measure>>(json));
         }
 
         private static dynamic GetErrorMessage(ValidationException ex)
