@@ -147,14 +147,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             return criteria;
         }
 
-        [Obsolete("Use CreateDocumentAsync(CatalogProduct variation, CatalogProduct mainProduct)", DiagnosticId = "VC0010", UrlFormat = "https://docs.virtocommerce.org/platform/user-guide/versions/virto3-products-versions/")]
-        protected virtual IndexDocument CreateDocument(CatalogProduct variation, CatalogProduct mainProduct)
-        {
-            return CreateDocument(variation);
-        }
-
         /// <summary>
-        /// The mainProduct argument contains more information than variation.MainProduct
+        /// The mainProduct argument contains more information than variation.
         /// </summary>
         protected async virtual Task<IndexDocument> CreateDocumentAsync(CatalogProduct variation, CatalogProduct mainProduct)
         {
@@ -163,9 +157,23 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 #pragma warning restore VC0010 // Type or member is obsolete
 
             await IndexMeasurePropertiesAsync(document, variation.Properties, _contentPropertyTypes);
-
             return document;
+        }
 
+        protected virtual async Task<IndexDocument> CreateDocumentAsync(CatalogProduct product)
+        {
+#pragma warning disable VC0010 // Type or member is obsolete
+            var document = CreateDocument(product);
+#pragma warning restore VC0010 // Type or member is obsolete
+
+            await IndexMeasurePropertiesAsync(document, product.Properties, _contentPropertyTypes);
+            return document;
+        }
+
+        [Obsolete("Use CreateDocumentAsync(CatalogProduct variation, CatalogProduct mainProduct)", DiagnosticId = "VC0010", UrlFormat = "https://docs.virtocommerce.org/platform/user-guide/versions/virto3-products-versions/")]
+        protected virtual IndexDocument CreateDocument(CatalogProduct variation, CatalogProduct mainProduct)
+        {
+            return CreateDocument(variation);
         }
 
         [Obsolete("Use CreateDocumentAsync(CatalogProduct product)", DiagnosticId = "VC0010", UrlFormat = "https://docs.virtocommerce.org/platform/user-guide/versions/virto3-products-versions/")]
@@ -251,17 +259,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 // Index serialized product
                 document.AddObjectFieldValue(product);
             }
-
-            return document;
-        }
-
-        protected virtual async Task<IndexDocument> CreateDocumentAsync(CatalogProduct product)
-        {
-#pragma warning disable VC0010 // Type or member is obsolete
-            var document = CreateDocument(product);
-#pragma warning restore VC0010 // Type or member is obsolete
-
-            await IndexMeasurePropertiesAsync(document, product.Properties, _contentPropertyTypes);
 
             return document;
         }
