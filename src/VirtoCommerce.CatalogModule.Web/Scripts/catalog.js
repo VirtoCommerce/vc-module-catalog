@@ -76,10 +76,8 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
 
                         var blade = {
                             id: 'measures',
-                            title: 'catalog.blades.measures-list.title',
-                            subtitle: 'catalog.blades.measures-list.subtitle',
                             controller: 'virtoCommerce.catalogModule.measuresListController',
-                            template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/measures/measures-list.tpl.html',
+                            template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/measures/measures-list.html',
                             isClosingDisabled: true
                         };
                         bladeNavigationService.showBlade(blade);
@@ -720,7 +718,7 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
 
                 var measureUnitsWidget = {
                     controller: 'virtoCommerce.catalogModule.measureUnitsWidgetController',
-                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/measureUnitsWidget.tpl.html'
+                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/measureUnitsWidget.html'
                 };
                 widgetService.registerWidget(measureUnitsWidget, 'measureDetails');
 

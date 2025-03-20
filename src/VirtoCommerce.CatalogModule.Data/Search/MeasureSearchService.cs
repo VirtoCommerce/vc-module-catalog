@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Options;
 using VirtoCommerce.CatalogModule.Core.Model;
@@ -28,6 +29,21 @@ namespace VirtoCommerce.CatalogModule.Data.Search
         {
             var query = ((ICatalogRepository)repository).Measures;
             return query;
+        }
+
+        protected override IList<SortInfo> BuildSortExpression(MeasureSearchCriteria criteria)
+        {
+            var sortInfos = criteria.SortInfos;
+
+            if (sortInfos.IsNullOrEmpty())
+            {
+                sortInfos = new[]
+                {
+                    new SortInfo { SortColumn = nameof(MeasureEntity.Name) },
+                };
+            }
+
+            return sortInfos;
         }
     }
 }

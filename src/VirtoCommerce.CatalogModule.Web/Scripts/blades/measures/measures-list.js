@@ -4,7 +4,8 @@ angular.module('virtoCommerce.catalogModule')
             function ($scope, measures, bladeUtils, dialogService, gridOptionExtension, uiGridHelper) {
                 var blade = $scope.blade;
                 blade.headIcon = 'fas fa-ruler-combined';
-
+                blade.title = 'catalog.blades.measures-list.title';
+                blade.subtitle = 'catalog.blades.measures-list.subtitle';
                 $scope.uiGridConstants = uiGridHelper.uiGridConstants;
                 var bladeNavigationService = bladeUtils.bladeNavigationService;
 
@@ -56,7 +57,10 @@ angular.module('virtoCommerce.catalogModule')
                         blade.isLoading = false;
 
                         $scope.pageSettings.totalItems = data.totalCount;
-                        $scope.listEntries = data.results ? data.results : [];
+                        blade.currentEntities = data.results;
+                        if (!blade.currentEntities.length && $scope.gridApi) {
+                            $scope.gridApi.selection.clearSelectedRows();
+                        }
                     });
                 };
 
@@ -69,28 +73,37 @@ angular.module('virtoCommerce.catalogModule')
                 function createMeasure() {
                     var newBlade = {
                         id: 'createMeasure',
-                        isNew: true,
-                        currentEntity: {},
                         controller: 'virtoCommerce.catalogModule.measureDetailsController',
-                        template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/measures/measure-details.tpl.html'
+                        template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/measures/measure-details.html',
+                        currentEntity: {},
+                        isNew: true,
                     };
 
                     bladeNavigationService.showBlade(newBlade, blade);
                 }
 
-
                 blade.editMeasure = function (measure) {
                     var newBlade = {
                         id: 'editMeasure',
-                        isNew: false,
+                        controller: 'virtoCommerce.catalogModule.measureDetailsController',
+                        template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/measures/measure-details.html',
                         currentEntity: measure,
                         currentEntityId: measure.id,
-                        controller: 'virtoCommerce.catalogModule.measureDetailsController',
-                        template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/measures/measure-details.tpl.html'
+                        isNew: false
                     };
 
                     bladeNavigationService.showBlade(newBlade, blade);
                 };
+
+                blade.openCreateMeasures = function () {
+                    var newBlade = {
+                        id: 'createMeasures',
+                        controller: 'virtoCommerce.catalogModule.createMeasuresController',
+                        template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/measures/create-measures.html'
+                    };
+
+                    bladeNavigationService.showBlade(newBlade, blade);
+                }
 
                 $scope.deleteList = function (selection) {
                     var dialog = {
@@ -100,6 +113,7 @@ angular.module('virtoCommerce.catalogModule')
                         callback: function (remove) {
                             if (remove) {
                                 bladeNavigationService.closeChildrenBlades(blade, function () {
+                                    blade.isLoading = true;
                                     var itemIds = _.pluck(selection, 'id');
                                     measures.deleteMeasure({ ids: itemIds }, function () {
                                         blade.refresh();
@@ -114,21 +128,13 @@ angular.module('virtoCommerce.catalogModule')
                     dialogService.showConfirmationDialog(dialog);
                 }
 
-                $scope.setGridOptions = function (gridId, gridOptions) {
-                    $scope.gridOptions = gridOptions;
-                    gridOptionExtension.tryExtendGridOptions(gridId, gridOptions);
-
+                $scope.setGridOptions = function (gridOptions) {
                     uiGridHelper.initialize($scope, gridOptions, function (gridApi) {
+                        $scope.gridApi = gridApi;
                         uiGridHelper.bindRefreshOnSortChanged($scope);
                     });
 
-                    gridOptions.onRegisterApi = function (gridApi) {
-                        $scope.gridApi = gridApi;
-                    };
-
                     bladeUtils.initializePagination($scope);
-
-                    return gridOptions;
                 };
             }
         ]
