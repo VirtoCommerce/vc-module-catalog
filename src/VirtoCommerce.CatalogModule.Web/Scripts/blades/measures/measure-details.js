@@ -48,7 +48,7 @@ angular.module('virtoCommerce.catalogModule')
                     blade.isLoading = true;
 
                     if (blade.isNew) {
-                        measures.createMeasure(blade.currentEntity,
+                        measures.createMeasures([blade.currentEntity],
                             function () {
                                 blade.parentBlade.refresh(true);
                                 angular.copy(blade.currentEntity, blade.originalEntity);
@@ -58,7 +58,7 @@ angular.module('virtoCommerce.catalogModule')
                                 bladeNavigationService.setError(`${error.status}: ${error.statusText}`, blade);
 
                                 var errorDialog = {
-                                    id: "errorDetails",
+                                    id: 'errorDetails',
                                     title: 'platform.dialogs.error-details.title',
                                     message: error.data.message
                                 }

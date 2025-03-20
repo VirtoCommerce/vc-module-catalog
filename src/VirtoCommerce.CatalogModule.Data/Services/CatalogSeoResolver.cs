@@ -79,7 +79,7 @@ public class CatalogSeoResolver : ISeoResolver
         }
         else
         {
-            // We found multiple SEO records, need to find the correct one by checking the parents.
+            // We found multiple SEO records, need to choose the correct one by checking the parents recursively.
             var parentSearchCriteria = criteria.CloneTyped();
             parentSearchCriteria.Permalink = string.Join('/', segments.Take(segments.Length - 1));
             var parentSeoInfos = await FindSeoAsync(parentSearchCriteria);

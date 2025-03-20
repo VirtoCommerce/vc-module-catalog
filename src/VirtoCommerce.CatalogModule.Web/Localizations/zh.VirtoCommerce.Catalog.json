@@ -680,8 +680,12 @@
         "title": "计量单位",
         "subtitle": "可用计量单位列表",
         "labels": {
-          "name": "名称"
+          "name": "名称",
+          "create-default": "创建默认"
         }
+      },
+      "create-measures": {
+        "title": "创建默认度量"
       },
       "measure-details": {
         "title": "{{name}} 计量单位",

@@ -104,7 +104,7 @@ angular.module('virtoCommerce.catalogModule')
                                 measureUnit.isDefault = measureUnit.id === defaultUnit.id;
                             });
                         },
-                        template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/measures/measure-unit-details.tpl.html'
+                        template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/measures/measure-unit-details.html'
                     };
                     bladeNavigationService.showBlade(newBlade, $scope.blade);
                 }

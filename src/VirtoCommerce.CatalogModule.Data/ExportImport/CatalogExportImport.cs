@@ -35,13 +35,16 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         private readonly IAssociationService _associationService;
         private readonly IProductConfigurationService _configurationService;
         private readonly IProductConfigurationSearchService _configurationSearchService;
+        private readonly IMeasureService _measureService;
+        private readonly IMeasureSearchService _measureSearchService;
 
         private readonly int _batchSize = 50;
 
         public CatalogExportImport(ICatalogService catalogService, ICatalogSearchService catalogSearchService, IProductSearchService productSearchService, ICategorySearchService categorySearchService, ICategoryService categoryService,
                                   IItemService itemService, IPropertyService propertyService, IPropertySearchService propertySearchService, IPropertyDictionaryItemSearchService propertyDictionarySearchService,
                                   IPropertyDictionaryItemService propertyDictionaryService, JsonSerializer jsonSerializer, IBlobStorageProvider blobStorageProvider, IAssociationService associationService,
-                                  IProductConfigurationService configurationService, IProductConfigurationSearchService configurationSearchService)
+                                  IProductConfigurationService configurationService, IProductConfigurationSearchService configurationSearchService,
+                                  IMeasureService measureService, IMeasureSearchService measureSearchService)
         {
             _catalogService = catalogService;
             _productSearchService = productSearchService;
@@ -58,6 +61,8 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             _catalogSearchService = catalogSearchService;
             _configurationService = configurationService;
             _configurationSearchService = configurationSearchService;
+            _measureSearchService = measureSearchService;
+            _measureService = measureService;
         }
 
         public async Task DoExportAsync(Stream outStream, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
@@ -200,6 +205,30 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 
                 #endregion Export products
 
+                #region Export measures
+
+                progressInfo.Description = "Measures exporting...";
+                progressCallback(progressInfo);
+
+                await writer.WritePropertyNameAsync("Measures");
+                await writer.SerializeArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
+                {
+                    var searchResult = await _measureSearchService.SearchAsync(new MeasureSearchCriteria { Skip = skip, Take = take, ResponseGroup = ItemResponseGroup.Full.ToString() });
+
+                    foreach (var item in searchResult.Results)
+                    {
+                        ResetRedundantReferences(item);
+                    }
+
+                    return (GenericSearchResult<Measure>)searchResult;
+                }, (processedCount, totalCount) =>
+                {
+                    progressInfo.Description = $"{processedCount} of {totalCount} measures have been exported";
+                    progressCallback(progressInfo);
+                }, cancellationToken);
+
+                #endregion Export measures
+
                 await writer.WriteEndObjectAsync();
                 await writer.FlushAsync();
             }
@@ -246,6 +275,10 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 
                         case "ProductConfigurations":
                             await ImportProductConfigurationsAsync(reader, progressInfo, progressCallback, cancellationToken);
+                            break;
+
+                        case "Measures":
+                            await ImportMeasuresAsync(reader, progressInfo, progressCallback, cancellationToken);
                             break;
 
                         default:
@@ -517,6 +550,18 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             }, processedCount =>
             {
                 progressInfo.Description = $"{processedCount} product configurations have been imported";
+                progressCallback(progressInfo);
+            }, cancellationToken);
+        }
+
+        private async Task ImportMeasuresAsync(JsonTextReader reader, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
+        {
+            await reader.DeserializeArrayWithPagingAsync<Measure>(_jsonSerializer, _batchSize, async measures =>
+            {
+                await _measureService.SaveChangesAsync(measures);
+            }, processedCount =>
+            {
+                progressInfo.Description = $"{processedCount} measures have been imported";
                 progressCallback(progressInfo);
             }, cancellationToken);
         }
