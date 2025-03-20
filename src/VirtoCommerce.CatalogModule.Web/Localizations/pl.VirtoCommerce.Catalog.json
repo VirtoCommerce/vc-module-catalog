@@ -680,8 +680,12 @@
         "title": "Jednostki miary",
         "subtitle": "Lista dostępnych jednostek",
         "labels": {
-          "name": "Nazwa"
+          "name": "Nazwa",
+          "create-default": "Utwórz domyślny"
         }
+      },
+      "create-measures": {
+        "title": "Utwórz domyślne miary"
       },
       "measure-details": {
         "title": "{{name}} jednostka",
