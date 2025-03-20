@@ -39,6 +39,9 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         [StringLength(128)]
         public string OuterId { get; set; }
 
+        [StringLength(128)]
+        public string UnitOfMeasureId { get; set; }
+
         #region Navigation Properties
 
         public string ItemId { get; set; }
@@ -75,6 +78,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             propValue.ValueType = (PropertyValueType)ValueType;
             propValue.Value = DictionaryItem != null ? DictionaryItem.Alias : GetValue(propValue.ValueType);
             propValue.Alias = DictionaryItem?.Alias;
+            propValue.UnitOfMeasureId = UnitOfMeasureId;
             //Need to expand all dictionary values
             if (DictionaryItem != null && !DictionaryItem.DictionaryItemValues.IsNullOrEmpty())
             {
@@ -144,6 +148,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             //Store alias as value for dictionary properties values
             SetValue(propValue.ValueType, !string.IsNullOrEmpty(DictionaryItemId) ? propValue.Alias : propValue.Value);
             Locale = !string.IsNullOrEmpty(DictionaryItemId) ? null : propValue.LanguageCode;
+            UnitOfMeasureId = propValue.UnitOfMeasureId;
 
             return this;
         }
@@ -160,6 +165,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             target.Name = Name;
             target.ShortTextValue = ShortTextValue;
             target.ValueType = ValueType;
+            target.UnitOfMeasureId = UnitOfMeasureId;
         }
 
         protected virtual object GetValue(PropertyValueType valueType)

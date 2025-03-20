@@ -6,8 +6,8 @@ angular.module('virtoCommerce.catalogModule')
                 blade.updatePermission = 'catalog:metadata-property:edit';
                 blade.origEntity = {};
                 $scope.currentChild = undefined;
-                blade.title = "catalog.blades.property-detail.title";
-                blade.subtitle = "catalog.blades.property-detail.subtitle";
+                blade.title = 'catalog.blades.property-detail.title';
+                blade.subtitle = 'catalog.blades.property-detail.subtitle';
                 blade.availableValueTypes = valueTypes.get();
 
                 blade.hasMultivalue = true;
@@ -169,6 +169,11 @@ angular.module('virtoCommerce.catalogModule')
                         }
 
                         blade.currentEntity = angular.copy(data);
+
+                        if (blade.currentEntity.type !== 'Product' && blade.currentEntity.type !== 'Variation') {
+                            blade.availableValueTypes = blade.availableValueTypes.filter(item => item.valueType !== "Measure");
+                        }
+
                         blade.origEntity = data;
                         blade.isLoading = false;
                     });
