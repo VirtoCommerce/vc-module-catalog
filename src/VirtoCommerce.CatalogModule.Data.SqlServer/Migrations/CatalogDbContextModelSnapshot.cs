@@ -1164,6 +1164,10 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                     b.Property<bool>("IsSale")
                         .HasColumnType("bit");
 
+                    b.Property<string>("MeasureId")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
                     b.Property<string>("ModifiedBy")
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)");
@@ -1291,6 +1295,10 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                     b.Property<string>("ShortTextValue")
                         .HasMaxLength(512)
                         .HasColumnType("nvarchar(512)");
+
+                    b.Property<string>("UnitOfMeasureId")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<int>("ValueType")
                         .HasColumnType("int");

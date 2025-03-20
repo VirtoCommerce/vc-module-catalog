@@ -29,6 +29,10 @@ namespace VirtoCommerce.CatalogModule.Data.Validation
             RuleFor(property => property.Dictionary).NotEqual(true).When(property => property.ValueType == PropertyValueType.DateTime);
             RuleFor(property => property.Multivalue).NotEqual(true).When(property => property.ValueType == PropertyValueType.DateTime);
             RuleFor(property => property.Multilanguage).NotEqual(true).When(property => property.ValueType == PropertyValueType.DateTime);
+
+            RuleFor(property => property.Dictionary).NotEqual(true).When(property => property.ValueType == PropertyValueType.Measure);
+            RuleFor(property => property.Multivalue).NotEqual(true).When(property => property.ValueType == PropertyValueType.Measure);
+            RuleFor(property => property.Multilanguage).NotEqual(true).When(property => property.ValueType == PropertyValueType.Measure);
         }
     }
 }
