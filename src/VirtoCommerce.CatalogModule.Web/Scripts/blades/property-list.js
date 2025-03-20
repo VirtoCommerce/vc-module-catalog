@@ -1,7 +1,7 @@
 angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.propertyListController', [
         '$scope', '$localStorage',
-        'platformWebApp.bladeNavigationService', 'platformWebApp.authService', 
+        'platformWebApp.bladeNavigationService', 'platformWebApp.authService',
         'virtoCommerce.catalogModule.propDictItems', 'virtoCommerce.catalogModule.measures',
         function ($scope, $localStorage, bladeNavigationService, authService, propDictItems, measures) {
             var blade = $scope.blade;
