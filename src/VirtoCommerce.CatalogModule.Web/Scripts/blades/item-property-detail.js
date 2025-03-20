@@ -2,7 +2,8 @@ angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.itemPropertyDetailController', [
         '$scope', '$q',
         'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService',
-        'virtoCommerce.catalogModule.properties', 'virtoCommerce.catalogModule.valueTypes', 'virtoCommerce.catalogModule.propertyValidators', 'virtoCommerce.catalogModule.measures',
+        'virtoCommerce.catalogModule.properties', 'virtoCommerce.catalogModule.valueTypes',
+        'virtoCommerce.catalogModule.propertyValidators', 'virtoCommerce.catalogModule.measures',
         function ($scope, $q, bladeNavigationService, dialogService, properties, valueTypes, propertyValidators, measures) {
             var blade = $scope.blade;
             blade.availableValueTypes = valueTypes.get();
@@ -117,5 +118,4 @@ angular.module('virtoCommerce.catalogModule')
             // actions on load    
             initialize(blade.origEntity);
         }
-    ]
-    );
+    ]);
