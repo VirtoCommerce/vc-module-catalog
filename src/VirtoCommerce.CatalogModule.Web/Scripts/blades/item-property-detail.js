@@ -20,7 +20,7 @@ angular.module('virtoCommerce.catalogModule')
                 if (blade.currentEntity.valueType === 'Measure') {
                     blade.isLoading = true;
                     measures.searchMeasures({
-                        sort: "name:desc",
+                        sort: 'name:desc',
                         skip: 0,
                         take: 100
                     }, function (data) {
@@ -66,7 +66,7 @@ angular.module('virtoCommerce.catalogModule')
 
             $scope.openBlade = newBladeData => {
                 var newBlade = angular.extend({
-                    id: "duplicateVariationDetail",
+                    id: 'duplicateVariationDetail',
                     title: newBladeData.code,
                     catalog: blade.catalog,
                     controller: 'virtoCommerce.catalogModule.itemDetailController',
@@ -86,8 +86,8 @@ angular.module('virtoCommerce.catalogModule')
 
             function removeProperty(prop) {
                 var dialog = {
-                    id: "confirmDelete",
-                    title: "platform.dialogs.delete.title",
+                    id: 'confirmDelete',
+                    title: 'platform.dialogs.delete.title',
                     message: 'catalog.dialogs.item-property-delete.message',
                     messageValues: { name: prop.name },
                     callback: function (remove) {
@@ -107,7 +107,7 @@ angular.module('virtoCommerce.catalogModule')
                 blade.headIcon = 'fa fa-gear';
                 blade.toolbarCommands = [
                     {
-                        name: "platform.commands.delete", icon: 'fas fa-trash-alt',
+                        name: 'platform.commands.delete', icon: 'fas fa-trash-alt',
                         executeMethod: function () {
                             removeProperty(blade.origEntity);
                         },

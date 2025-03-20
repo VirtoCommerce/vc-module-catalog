@@ -49,7 +49,7 @@ angular.module('virtoCommerce.catalogModule')
                         blade.hasMultilanguage = blade.currentEntity.multilanguage = false;
                         blade.isLoading = true;
                         measures.searchMeasures({
-                            sort: "name:desc",
+                            sort: 'name:desc',
                             skip: 0,
                             take: 100
                         }, function (data) {
@@ -174,7 +174,7 @@ angular.module('virtoCommerce.catalogModule')
                     blade.currentEntity = angular.copy(data);
 
                     if (blade.currentEntity.type !== 'Product' && blade.currentEntity.type !== 'Variation') {
-                        blade.availableValueTypes = blade.availableValueTypes.filter(item => item.valueType !== "Measure");
+                        blade.availableValueTypes = blade.availableValueTypes.filter(item => item.valueType !== 'Measure');
                     }
 
                     blade.origEntity = data;
@@ -207,7 +207,7 @@ angular.module('virtoCommerce.catalogModule')
                     bladeNavigationService.closeChildrenBlades(blade);
 
                     delete blade.currentEntity.validationRule; // clear read-only property
-                    if (blade.currentEntity.valueType !== "ShortText" && blade.currentEntity.valueType !== "LongText") {
+                    if (blade.currentEntity.valueType !== 'ShortText' && blade.currentEntity.valueType !== 'LongText') {
                         delete blade.currentEntity.validationRules;
                     }
 
@@ -223,7 +223,7 @@ angular.module('virtoCommerce.catalogModule')
 
             function removeProperty(prop) {
                 var dialog = {
-                    id: "confirmDelete",
+                    id: 'confirmDelete',
                     messageValues: { name: prop.name },
                     callback: function (doDeleteValues) {
                         blade.isLoading = true;
@@ -244,7 +244,7 @@ angular.module('virtoCommerce.catalogModule')
             }
 
             blade.onClose = function (closeCallback) {
-                bladeNavigationService.showConfirmationIfNeeded(isDirty(), canSave(), blade, saveChanges, closeCallback, "catalog.dialogs.property-save.title", "catalog.dialogs.property-save.message");
+                bladeNavigationService.showConfirmationIfNeeded(isDirty(), canSave(), blade, saveChanges, closeCallback, 'catalog.dialogs.property-save.title', 'catalog.dialogs.property-save.message');
             };
 
             var formScope;
@@ -254,19 +254,19 @@ angular.module('virtoCommerce.catalogModule')
 
             blade.toolbarCommands = [
                 {
-                    name: "platform.commands.save", icon: 'fas fa-save',
+                    name: 'platform.commands.save', icon: 'fas fa-save',
                     executeMethod: saveChanges,
                     canExecuteMethod: canSave
                 },
                 {
-                    name: "platform.commands.reset", icon: 'fa fa-undo',
+                    name: 'platform.commands.reset', icon: 'fa fa-undo',
                     executeMethod: function () {
                         angular.copy(blade.origEntity, blade.currentEntity);
                     },
                     canExecuteMethod: isDirty
                 },
                 {
-                    name: "platform.commands.delete", icon: 'fas fa-trash-alt',
+                    name: 'platform.commands.delete', icon: 'fas fa-trash-alt',
                     executeMethod: function () {
                         removeProperty(blade.origEntity);
                     },
