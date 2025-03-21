@@ -46,6 +46,7 @@ public static class OutlineExtensions
             return defaultValue;
         }
 
+        language ??= store.DefaultLanguage;
         seoLinksType ??= store.GetSeoLinksType();
 
         return outlineItems.GetSeoPath(seoLinksType, store.Id, store.DefaultLanguage, language, defaultValue);
