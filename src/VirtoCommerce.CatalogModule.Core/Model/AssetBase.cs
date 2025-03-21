@@ -79,7 +79,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         {
             if (parent is AssetBase parentAssetBase)
             {
-                Id = null;
+                Id = parentAssetBase.Id;
                 IsInherited = true;
                 LanguageCode = parentAssetBase.LanguageCode;
                 Name = parentAssetBase.Name;
