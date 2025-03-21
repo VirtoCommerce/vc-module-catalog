@@ -12,6 +12,7 @@ using VirtoCommerce.CoreModule.Core.Outlines;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.StoreModule.Core.Model;
 using VirtoCommerce.StoreModule.Core.Services;
+using static VirtoCommerce.CatalogModule.Core.Extensions.SeoExtensions;
 
 namespace VirtoCommerce.CatalogModule.Tests
 {
@@ -31,31 +32,50 @@ namespace VirtoCommerce.CatalogModule.Tests
             SeoInfos = [];
         }
 
-        public void AddProduct(string productId, params string[] outlineIds)
+        public void AddProduct(string productId, params string[] parentPaths)
         {
             var product = new CatalogProduct
             {
                 Id = productId,
-                Outlines = outlineIds.Select(id => new Outline
-                {
-                    Items = id.Split('/').Append(productId).Select(outlineId => new OutlineItem { Id = outlineId }).ToList()
-                }).ToList()
+                Outlines = CreateOutlines(SeoProduct, productId, parentPaths),
             };
+
             Products.Add(product);
         }
 
-        public void AddCategory(string categoryId, params string[] outlineIds)
+        public void AddCategory(string categoryId, params string[] parentPaths)
         {
             var category = new Category
             {
                 Id = categoryId,
-                Outlines = outlineIds.Select(id => new Outline
-                {
-                    Items = id.Split('/').Append(categoryId).Select(outlineId => new OutlineItem { Id = outlineId }).ToList()
-                }).ToList()
+                Outlines = CreateOutlines(SeoCategory, categoryId, parentPaths),
             };
 
             Categories.Add(category);
+        }
+
+        private static List<Outline> CreateOutlines(string objectType, string objectId, string[] parentPaths)
+        {
+            return parentPaths
+                .Select(parentPath =>
+                {
+                    var outline = new Outline
+                    {
+                        Items = parentPath
+                            .Split('/')
+                            .Append(objectId)
+                            .Select(id => new OutlineItem
+                            {
+                                Id = id,
+                                SeoObjectType = SeoCategory,
+                            })
+                            .ToList(),
+                    };
+                    outline.Items.First().SeoObjectType = SeoCatalog;
+                    outline.Items.Last().SeoObjectType = objectType;
+                    return outline;
+                })
+                .ToList();
         }
 
         public void AddSeoInfo(string objectId, string objectType, string semanticUrl, bool isActive = true, string storeId = null, string languageCode = null)
@@ -154,5 +174,3 @@ namespace VirtoCommerce.CatalogModule.Tests
         }
     }
 }
-
-

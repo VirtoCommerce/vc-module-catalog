@@ -10,6 +10,7 @@ using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.ExportModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Model;
+using static VirtoCommerce.CatalogModule.Core.Extensions.SeoExtensions;
 
 namespace VirtoCommerce.CatalogModule.Core.Model
 {
@@ -262,7 +263,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         /// <summary>
         /// Each descendant type should override this property to use other object type for seo records
         /// </summary>
-        public virtual string SeoObjectType => "CatalogProduct";
+        public virtual string SeoObjectType => SeoProduct;
 
         public IList<SeoInfo> SeoInfos { get; set; }
         public IList<EditorialReview> Reviews { get; set; }

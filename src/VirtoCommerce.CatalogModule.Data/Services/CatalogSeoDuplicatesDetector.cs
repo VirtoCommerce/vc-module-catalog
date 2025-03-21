@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using VirtoCommerce.CatalogModule.Core;
+using VirtoCommerce.CatalogModule.Core.Extensions;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Repositories;
@@ -131,7 +132,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             //Here we try to find between SEO duplicates records for products with directly or indirectly (virtual) related to requested catalog
             foreach (var product in products)
             {
-                if (product.CatalogId == catalogId || product.Outlines.SelectMany(x => x.Items).Any(x => x.Id == catalogId))
+                if (product.CatalogId == catalogId || product.Outlines.Any(x => x.Items.ContainsCatalog(catalogId)))
                 {
                     foreach (var productSeo in product.SeoInfos)
                     {
@@ -143,7 +144,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             //Here we try to find between SEO duplicates records for categories with directly or indirectly related to requested catalog
             foreach (var category in categories)
             {
-                if (category.CatalogId == catalogId || category.Outlines.SelectMany(x => x.Items).Any(x => x.Id == catalogId))
+                if (category.CatalogId == catalogId || category.Outlines.Any(x => x.Items.ContainsCatalog(catalogId)))
                 {
                     foreach (var categorySeo in category.SeoInfos)
                     {
