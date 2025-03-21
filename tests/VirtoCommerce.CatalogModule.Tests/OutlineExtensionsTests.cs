@@ -53,7 +53,7 @@ public class OutlineExtensionsTests
     [Fact]
     public void When_HasNoSeoRecords_Expect_Null()
     {
-        var result = ((IEnumerable<Outline>)null).GetSeoPath(_store, "en-US");
+        var result = ((IHasOutlines)null).GetSeoPath(_store, "en-US");
         Assert.Null(result);
     }
 

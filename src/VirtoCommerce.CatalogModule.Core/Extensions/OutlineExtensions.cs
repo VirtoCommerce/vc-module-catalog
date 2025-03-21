@@ -11,27 +11,53 @@ namespace VirtoCommerce.CatalogModule.Core.Extensions;
 public static class OutlineExtensions
 {
     /// <summary>
-    /// Returns SEO path if all outline items of the first outline for the store catalog have SEO keywords, otherwise returns null.
+    /// Returns SEO path if all outline items of the first outline for the store catalog have SEO keywords, otherwise returns default value.
     /// Path: GrandParentCategory/ParentCategory/ProductCategory/Product
     /// </summary>
     public static string GetSeoPath(this IHasOutlines hasOutlines, Store store, string language, string defaultValue = null, string seoLinksType = null)
     {
-        return hasOutlines?.Outlines?.GetSeoPath(store, language, defaultValue, seoLinksType);
+        return hasOutlines?.Outlines is null || store is null
+            ? defaultValue
+            : hasOutlines.Outlines.GetSeoPath(store, language, defaultValue, seoLinksType);
     }
 
     /// <summary>
-    /// Returns SEO path if all outline items of the first outline for the store catalog have SEO keywords, otherwise returns null.
+    /// Returns SEO path if all outline items of the first outline for the store catalog have SEO keywords, otherwise returns default value.
     /// Path: GrandParentCategory/ParentCategory/ProductCategory/Product
     /// </summary>
     public static string GetSeoPath(this IEnumerable<Outline> outlines, Store store, string language, string defaultValue = null, string seoLinksType = null)
     {
-        if (store is null || !outlines.TryGetOutlineForCatalog(store.Catalog, out var outline))
+        if (outlines is null || store is null || !outlines.TryGetOutlineForCatalog(store.Catalog, out var outline))
+        {
+            return defaultValue;
+        }
+
+        return outline.Items.GetSeoPath(store, language, defaultValue, seoLinksType);
+    }
+
+    /// <summary>
+    /// Returns SEO path if all outline items have SEO keywords, otherwise returns default value.
+    /// Path: GrandParentCategory/ParentCategory/ProductCategory/Product
+    /// </summary>
+    public static string GetSeoPath(this ICollection<OutlineItem> outlineItems, Store store, string language, string defaultValue = null, string seoLinksType = null)
+    {
+        if (outlineItems is null || store is null)
         {
             return defaultValue;
         }
 
         seoLinksType ??= store.GetSeoLinksType();
-        if (seoLinksType == SeoNone)
+
+        return outlineItems.GetSeoPath(seoLinksType, store.Id, store.DefaultLanguage, language, defaultValue);
+    }
+
+    /// <summary>
+    /// Returns SEO path if all outline items have SEO keywords, otherwise returns default value.
+    /// Path: GrandParentCategory/ParentCategory/ProductCategory/Product
+    /// </summary>
+    public static string GetSeoPath(this ICollection<OutlineItem> outlineItems, string seoLinksType, string storeId, string storeDefaultLanguage, string language, string defaultValue = null)
+    {
+        if (outlineItems is null || seoLinksType == SeoNone)
         {
             return defaultValue;
         }
@@ -41,17 +67,17 @@ public static class OutlineExtensions
         switch (seoLinksType)
         {
             case SeoLong:
-                pathSegments.AddRange(outline.Items
+                pathSegments.AddRange(outlineItems
                     .Where(x => !x.IsCatalog())
                     .Select(GetBestMatchingSeoSlug));
                 break;
             case SeoCollapsed:
                 {
                     // If last item is a linked category, we cannot build the SEO path
-                    var lastItem = outline.Items.Last();
+                    var lastItem = outlineItems.Last();
                     if (!lastItem.IsLinkedCategory())
                     {
-                        pathSegments.AddRange(outline.Items
+                        pathSegments.AddRange(outlineItems
                             .Where(x => !x.IsCatalog() && !x.IsLinkedCategory())
                             .Select(GetBestMatchingSeoSlug));
                     }
@@ -59,7 +85,7 @@ public static class OutlineExtensions
                 }
             default: // SeoShort
                 {
-                    var lastItem = outline.Items.LastOrDefault();
+                    var lastItem = outlineItems.LastOrDefault();
                     if (lastItem != null)
                     {
                         pathSegments.Add(GetBestMatchingSeoSlug(lastItem));
@@ -77,7 +103,7 @@ public static class OutlineExtensions
 
         string GetBestMatchingSeoSlug(ISeoSupport seoSupport)
         {
-            return seoSupport.GetBestMatchingSeoInfo(store, language)?.SemanticUrl;
+            return seoSupport.GetBestMatchingSeoInfo(storeId, storeDefaultLanguage, language)?.SemanticUrl;
         }
     }
 
@@ -86,7 +112,7 @@ public static class OutlineExtensions
     /// </summary>
     public static string GetOutlinePath(this IEnumerable<Outline> outlines, string catalogId)
     {
-        if (!outlines.TryGetOutlineForCatalog(catalogId, out var outline))
+        if (outlines is null || !outlines.TryGetOutlineForCatalog(catalogId, out var outline))
         {
             return null;
         }
@@ -115,6 +141,6 @@ public static class OutlineExtensions
 
     public static bool IsLinkedCategory(this OutlineItem item)
     {
-        return item.HasVirtualParent && item.IsCategory();
+        return item != null && item.HasVirtualParent && item.IsCategory();
     }
 }
