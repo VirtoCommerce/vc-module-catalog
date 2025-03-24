@@ -12,6 +12,12 @@
         "title": "Punto geográfico",
         "placeholder": "Ingrese latitud y longitud",
         "description": "Ingrese latitud y longitud separadas por una coma sin espacios, por ejemplo, 41.40338,2.17403"
+      },
+      "measure": {
+        "title": "Medición",
+        "placeholder": "Ingresar medida",
+        "description": "Ingrese la medida en el formato: 1.23",
+        "select-placeholder": "Seleccionar medida"
       }
     },
     "product-types": {
@@ -190,7 +196,8 @@
           "new-dictionary-property-caution": "Puede gestionar los elementos del diccionario solo después de guardar la propiedad",
           "attributes": "Atributos",
           "manage-attributes": "Gestionar atributos de la propiedad",
-          "hidden": "Oculto"
+          "hidden": "Oculto",
+          "measure": "Medición"
         },
         "placeholders": {
           "display-name": "Ingrese nombre para mostrar",

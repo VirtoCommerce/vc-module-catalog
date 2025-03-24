@@ -37,7 +37,7 @@
               <label class="form-label">{{ 'catalog.blades.property-detail.labels.measure' | translate }}</label>
               <div class="form-input">
                 <ui-select ng-model="blade.currentEntity.measureId" required>
-                  <ui-select-match placeholder="">{{ $select.selected.name |translate}}</ui-select-match>
+                  <ui-select-match placeholder="{{ 'catalog.properties.measure.select-placeholder' | translate }}">{{ $select.selected.name |translate}}</ui-select-match>
                   <ui-select-choices repeat="x.id as x in blade.measures | filter: $select.search">
                     <div>{{ x.name }}</div>
                   </ui-select-choices>

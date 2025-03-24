@@ -12,6 +12,12 @@
         "title": "Punkt geograficzny",
         "placeholder": "Wprowadź szerokość i długość geograficzną",
         "description": "Wprowadź szerokość i długość geograficzną oddzielone przecinkiem bez spacji, np. 41.40338,2.17403"
+      },
+      "measure": {
+        "title": "Miara",
+        "placeholder": "Wprowadź miarę",
+        "description": "Wprowadź miarę w formacie: 1.23",
+        "select-placeholder": "Wybierz miarę"
       }
     },
     "product-types": {
@@ -190,7 +196,8 @@
           "new-dictionary-property-caution": "Możesz zarządzać elementami słownika tylko po zapisaniu właściwości",
           "attributes": "Atrybuty",
           "manage-attributes": "Zarządzaj atrybutami właściwości",
-          "hidden": "Ukryty"
+          "hidden": "Ukryty",
+          "measure": "Miara"
         },
         "placeholders": {
           "display-name": "Wprowadź nazwę wyświetlaną",

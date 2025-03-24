@@ -12,6 +12,12 @@
         "title": "Point géographique",
         "placeholder": "Entrez la latitude et la longitude",
         "description": "Entrez la latitude et la longitude séparées par une virgule sans espaces, par exemple 41.40338,2.17403"
+      },
+      "measure": {
+        "title": "Mesure",
+        "placeholder": "Entrer la mesure",
+        "description": "Entrez la mesure au format : 1.23",
+        "select-placeholder": "Sélectionner la mesure"
       }
     },
     "product-types": {
@@ -190,7 +196,8 @@
           "new-dictionary-property-caution": "Vous pouvez gérer les éléments du dictionnaire uniquement après avoir enregistré la propriété",
           "attributes": "Attributs",
           "manage-attributes": "Gérer les attributs de la propriété",
-          "hidden": "Caché"
+          "hidden": "Caché",
+          "measure": "Mesure"
         },
         "placeholders": {
           "display-name": "Entrez le nom d'affichage",

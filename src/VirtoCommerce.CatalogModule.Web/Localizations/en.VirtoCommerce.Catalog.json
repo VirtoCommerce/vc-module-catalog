@@ -16,7 +16,8 @@
       "measure": {
         "title": "Measure",
         "placeholder": "Enter measure",
-        "description": "Enter measure in the format: 1.23"
+        "description": "Enter measure in the format: 1.23",
+        "select-placeholder": "Select measure"
       }
     },
     "product-types": {

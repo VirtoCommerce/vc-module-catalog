@@ -113,7 +113,7 @@
                      ng-disabled="currentEntity.isReadOnly"
                      ng-required="currentEntity.required"
                      name="{{currentEntity.name}}">
-            <ui-select-match allow-clear="true" placeholder="{{ 'platform.genericValueInput.placeholders.number' | translate }}">{{$select.selected.symbol}}</ui-select-match>
+            <ui-select-match allow-clear="true">{{$select.selected.symbol}}</ui-select-match>
             <ui-select-choices repeat="x.id as x in context.unitOfMeasures | filter: $select.search" refresh="loadUnitOfMeasures($select, currentEntity.measureId)">
               <span ng-bind-html="x.symbol | highlight: $select.search"></span>
             </ui-select-choices>

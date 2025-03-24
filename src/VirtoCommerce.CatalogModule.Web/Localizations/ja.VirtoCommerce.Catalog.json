@@ -12,6 +12,12 @@
         "title": "ジオポイント",
         "placeholder": "緯度と経度を入力",
         "description": "緯度と経度をカンマで区切ってスペースなしで入力します。例: 41.40338,2.17403"
+      },
+      "measure": {
+        "title": "測定",
+        "placeholder": "測定値を入力",
+        "description": "測定値を次の形式で入力してください: 1.23",
+        "select-placeholder": "測定値を選択"
       }
     },
     "product-types": {
@@ -190,7 +196,8 @@
           "new-dictionary-property-caution": "プロパティを保存した後にのみ辞書項目を管理できます",
           "attributes": "属性",
           "manage-attributes": "プロパティ属性を管理",
-          "hidden": "非表示"
+          "hidden": "非表示",
+          "measure": "測定"
         },
         "placeholders": {
           "display-name": "表示名を入力",

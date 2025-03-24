@@ -12,6 +12,12 @@
         "title": "地理点",
         "placeholder": "输入纬度和经度",
         "description": "输入用逗号分隔的纬度和经度，不带空格，例如 41.40338,2.17403"
+      },
+      "measure": {
+        "title": "测量",
+        "placeholder": "输入测量值",
+        "description": "请输入格式为：1.23 的测量值",
+        "select-placeholder": "选择测量"
       }
     },
     "product-types": {
@@ -190,7 +196,8 @@
           "new-dictionary-property-caution": "只有在保存属性后才能管理字典项",
           "attributes": "属性",
           "manage-attributes": "管理属性",
-          "hidden": "隐藏"
+          "hidden": "隐藏",
+          "measure": "测量"
         },
         "placeholders": {
           "display-name": "输入显示名称",
