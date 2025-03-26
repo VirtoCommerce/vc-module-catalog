@@ -84,7 +84,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public virtual async Task<CatalogProduct> GetByIdAsync(string itemId, string responseGroup, string catalogId)
         {
-            var products = await GetByIdsAsync(new[] { itemId }, responseGroup, catalogId);
+            var products = await GetByIdsAsync([itemId], responseGroup, catalogId);
 
             return products.FirstOrDefault();
         }
@@ -103,9 +103,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     .Apply(product =>
                     {
                         product.Outlines = product.Outlines
-                            .Where(outline => outline.Items.Any(item =>
-                                item.Id.EqualsInvariant(catalogId) &&
-                                item.SeoObjectType.EqualsInvariant("catalog")))
+                            .Where(x => x.Items.ContainsCatalog(catalogId))
                             .ToList();
                     });
             }
