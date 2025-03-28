@@ -724,15 +724,19 @@
         "subtitle": "Details der Maßeinheit",
         "labels": {
           "name": "Name",
+          "localized-name": "Lokalisierter Name",
           "code": "Code",
           "conversion-factor": "Umrechnungsfaktor",
-          "symbol": "Symbol"
+          "symbol": "Symbol",
+          "localized-symbol": "Lokalisierter Symbol"
         },
         "placeholders": {
           "name": "Name eingeben",
+          "localized-name": "Lokalisierter Name eingeben",
           "code": "Code eingeben",
-          "conversion-factor": "Umrechnung eingeben",
-          "symbol": "Symbol"
+          "conversion-factor": "Umrechnungsfaktor eingeben",
+          "symbol": "Symbol eingeben",
+          "localized-symbol": "Lokalisierter Symbol eingeben"
         }
       },
       "configuration-details": {

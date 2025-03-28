@@ -724,15 +724,19 @@
         "subtitle": "測定単位の詳細",
         "labels": {
           "name": "名前",
+          "localized-name": "ローカライズされた名前",
           "code": "コード",
-          "conversion-factor": "変換係数",
-          "symbol": "シンボル"
+          "conversion-factor": "換算係数",
+          "symbol": "記号",
+          "localized-symbol": "ローカライズされた記号"
         },
         "placeholders": {
           "name": "名前を入力",
+          "localized-name": "ローカライズされた名前を入力",
           "code": "コードを入力",
-          "conversion-factor": "変換を入力",
-          "symbol": "シンボル"
+          "conversion-factor": "換算係数を入力",
+          "symbol": "記号を入力",
+          "localized-symbol": "ローカライズされた記号を入力"
         }
       },
       "configuration-details": {

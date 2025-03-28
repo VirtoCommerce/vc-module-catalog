@@ -724,15 +724,19 @@
         "subtitle": "计量单位详情",
         "labels": {
           "name": "名称",
+          "localized-name": "本地化名称",
           "code": "代码",
           "conversion-factor": "转换因子",
-          "symbol": "符号"
+          "symbol": "符号",
+          "localized-symbol": "本地化符号"
         },
         "placeholders": {
-          "name": "输入名称",
-          "code": "输入代码",
-          "conversion-factor": "输入转换因子",
-          "symbol": "符号"
+          "name": "请输入名称",
+          "localized-name": "请输入本地化名称",
+          "code": "请输入代码",
+          "conversion-factor": "请输入转换因子",
+          "symbol": "请输入符号",
+          "localized-symbol": "请输入本地化符号"
         }
       },
       "configuration-details": {

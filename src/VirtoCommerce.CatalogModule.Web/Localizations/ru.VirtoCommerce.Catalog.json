@@ -723,16 +723,20 @@
         "title-new": "Новая единица измерения",
         "subtitle": "Детали единицы измерения",
         "labels": {
-          "name": "Имя",
+          "name": "Название",
+          "localized-name": "Локализованное название",
           "code": "Код",
           "conversion-factor": "Коэффициент преобразования",
-          "symbol": "Символ"
+          "symbol": "Символ",
+          "localized-symbol": "Локализованный символ"
         },
         "placeholders": {
-          "name": "Введите имя",
+          "name": "Введите название",
+          "localized-name": "Введите локализованное название",
           "code": "Введите код",
           "conversion-factor": "Введите коэффициент преобразования",
-          "symbol": "Символ"
+          "symbol": "Введите символ",
+          "localized-symbol": "Введите локализованный символ"
         }
       },
       "configuration-details": {

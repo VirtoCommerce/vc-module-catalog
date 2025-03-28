@@ -724,15 +724,19 @@
         "subtitle": "Dettagli dell'unità di misura",
         "labels": {
           "name": "Nome",
+          "localized-name": "Nome localizzato",
           "code": "Codice",
           "conversion-factor": "Fattore di conversione",
-          "symbol": "Simbolo"
+          "symbol": "Simbolo",
+          "localized-symbol": "Simbolo localizzato"
         },
         "placeholders": {
           "name": "Inserisci nome",
-          "code": "Inserisci codice",
-          "conversion-factor": "Inserisci conversione",
-          "symbol": "Simbolo"
+          "localized-name": "Inserisci il nome localizzato",
+          "code": "Inserisci il codice",
+          "conversion-factor": "Inserisci il fattore di conversione",
+          "symbol": "Inserisci il simbolo",
+          "localized-symbol": "Inserisci il simbolo localizzato"
         }
       },
       "configuration-details": {

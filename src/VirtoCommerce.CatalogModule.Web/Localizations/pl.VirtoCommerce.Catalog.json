@@ -724,15 +724,19 @@
         "subtitle": "Szczegóły jednostki miary",
         "labels": {
           "name": "Nazwa",
+          "localized-name": "Zlokalizowana nazwa",
           "code": "Kod",
           "conversion-factor": "Współczynnik konwersji",
-          "symbol": "Symbol"
+          "symbol": "Symbol",
+          "localized-symbol": "Zlokalizowany symbol"
         },
         "placeholders": {
           "name": "Wprowadź nazwę",
+          "localized-name": "Wprowadź zlokalizowaną nazwę",
           "code": "Wprowadź kod",
-          "conversion-factor": "Wprowadź konwersję",
-          "symbol": "Symbol"
+          "conversion-factor": "Wprowadź współczynnik konwersji",
+          "symbol": "Wprowadź symbol",
+          "localized-symbol": "Wprowadź zlokalizowany symbol"
         }
       },
       "configuration-details": {
