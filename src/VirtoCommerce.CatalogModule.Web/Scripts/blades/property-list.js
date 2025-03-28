@@ -70,10 +70,10 @@ angular.module('virtoCommerce.catalogModule')
                     if (x.value.localeCompare !== undefined) {
                         return x.value.localeCompare(y.value);
                     }
-                    if (x.value === y.value) {
+                    if (x.value === y.value && x.unitOfMeasureId === y.unitOfMeasureId) {
                         return 0;
                     }
-                    return x.value < y.value ? -1 : 1
+                    return (x.value < y.value || x.unitOfMeasureId !== y.unitOfMeasureId) ? -1 : 1;
                 }
 
                 return x.valueId.localeCompare(y.valueId);
@@ -165,6 +165,7 @@ angular.module('virtoCommerce.catalogModule')
             }
 
             var isValid = () => {
+                console.log('isValid executed');
                 var isFormValid = formScope && formScope.$valid;
                 var isAnyChanges = blade.currentEntities.length !== blade.originalEntity.properties.length ||
                     blade.currentEntities.some(x => $scope.isPropertyChanged(x));

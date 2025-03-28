@@ -103,7 +103,10 @@ angular.module('virtoCommerce.catalogModule').directive('vaProperty2', ['$compil
 
                 var elementsNotEqual = _.any(nonNullNewValues, function (newValue) {
                     return _.all(nonNullCurrentValues, function (currentValue) {
-                        return !(newValue && currentValue.value === newValue.value && currentValue.languageCode === newValue.languageCode);
+                        return !(newValue &&
+                                 currentValue.value === newValue.value &&
+                                 currentValue.languageCode === newValue.languageCode &&
+                                 currentValue.unitOfMeasureId === newValue.unitOfMeasureId);
                     });
                 });
                 
