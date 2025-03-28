@@ -637,7 +637,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 .Where(x => ids.Contains(x.Id))
                 .ToListAsync();
 
-            if (measures.Any())
+            if (measures.Count != 0)
             {
                 var existingIds = measures.Select(x => x.Id).ToList();
 
