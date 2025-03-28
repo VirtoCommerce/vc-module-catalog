@@ -60,8 +60,6 @@ angular.module('virtoCommerce.catalogModule')
                     });
                 };
 
-                
-
                 blade.onClose = function (closeCallback) {
                     bladeNavigationService.showConfirmationIfNeeded(
                         isDirty(),
