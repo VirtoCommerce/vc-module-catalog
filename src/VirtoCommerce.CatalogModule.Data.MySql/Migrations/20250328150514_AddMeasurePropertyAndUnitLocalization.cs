@@ -2,22 +2,42 @@
 
 #nullable disable
 
-namespace VirtoCommerce.CatalogModule.Data.SqlServer.Migrations
+namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
 {
     /// <inheritdoc />
-    public partial class AddMeasureUnitLocalization : Migration
+    public partial class AddMeasurePropertyAndUnitLocalization : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AddColumn<string>(
+                name: "UnitOfMeasureId",
+                table: "PropertyValue",
+                type: "varchar(128)",
+                maxLength: 128,
+                nullable: true)
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.AddColumn<string>(
+                name: "MeasureId",
+                table: "Property",
+                type: "varchar(128)",
+                maxLength: 128,
+                nullable: true)
+                .Annotation("MySql:CharSet", "utf8mb4");
+
             migrationBuilder.CreateTable(
                 name: "MeasureUnitLocalizedName",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
-                    LanguageCode = table.Column<string>(type: "nvarchar(16)", maxLength: 16, nullable: false),
-                    Value = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ParentEntityId = table.Column<string>(type: "nvarchar(128)", nullable: false)
+                    Id = table.Column<string>(type: "varchar(128)", maxLength: 128, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    LanguageCode = table.Column<string>(type: "varchar(16)", maxLength: 16, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Value = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ParentEntityId = table.Column<string>(type: "varchar(128)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
@@ -28,16 +48,21 @@ namespace VirtoCommerce.CatalogModule.Data.SqlServer.Migrations
                         principalTable: "MeasureUnit",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "MeasureUnitLocalizedSymbol",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
-                    LanguageCode = table.Column<string>(type: "nvarchar(16)", maxLength: 16, nullable: false),
-                    Value = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ParentEntityId = table.Column<string>(type: "nvarchar(128)", nullable: false)
+                    Id = table.Column<string>(type: "varchar(128)", maxLength: 128, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    LanguageCode = table.Column<string>(type: "varchar(16)", maxLength: 16, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Value = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ParentEntityId = table.Column<string>(type: "varchar(128)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
@@ -48,7 +73,8 @@ namespace VirtoCommerce.CatalogModule.Data.SqlServer.Migrations
                         principalTable: "MeasureUnit",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MeasureUnitLocalizedName_LanguageCode_ParentEntityId",
@@ -81,6 +107,14 @@ namespace VirtoCommerce.CatalogModule.Data.SqlServer.Migrations
 
             migrationBuilder.DropTable(
                 name: "MeasureUnitLocalizedSymbol");
+
+            migrationBuilder.DropColumn(
+                name: "UnitOfMeasureId",
+                table: "PropertyValue");
+
+            migrationBuilder.DropColumn(
+                name: "MeasureId",
+                table: "Property");
         }
     }
 }
