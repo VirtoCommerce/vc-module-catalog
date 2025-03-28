@@ -37,6 +37,9 @@ namespace VirtoCommerce.CatalogModule.Core.Extensions
                 case PropertyValueType.Integer:
                     result = Convert.ToInt32(value);
                     break;
+                case PropertyValueType.Measure:
+                    result = Convert.ToDecimal(value, CultureInfo.InvariantCulture);
+                    break;
                 default:
                     throw new NotSupportedException();
             }

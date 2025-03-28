@@ -12,6 +12,12 @@
         "title": "Geo-Punkt",
         "placeholder": "Breitengrad und Längengrad eingeben",
         "description": "Geben Sie Breitengrad und Längengrad durch ein Komma getrennt ohne Leerzeichen ein, z.B. 41.40338,2.17403"
+      },
+      "measure": {
+        "title": "Messung",
+        "placeholder": "Messung eingeben",
+        "description": "Geben Sie die Messung im Format ein: 1,23",
+        "select-placeholder": "Messung auswählen"
       }
     },
     "product-types": {
@@ -190,7 +196,8 @@
           "new-dictionary-property-caution": "Sie können Wörterbucheinträge nur verwalten, nachdem Sie die Eigenschaft gespeichert haben",
           "attributes": "Attribute",
           "manage-attributes": "Eigenschaftsattribute verwalten",
-          "hidden": "Versteckt"
+          "hidden": "Versteckt",
+          "measure": "Messung"
         },
         "placeholders": {
           "display-name": "Anzeigename eingeben",
@@ -717,15 +724,19 @@
         "subtitle": "Details der Maßeinheit",
         "labels": {
           "name": "Name",
+          "localized-name": "Lokalisierter Name",
           "code": "Code",
           "conversion-factor": "Umrechnungsfaktor",
-          "symbol": "Symbol"
+          "symbol": "Symbol",
+          "localized-symbol": "Lokalisierter Symbol"
         },
         "placeholders": {
           "name": "Name eingeben",
+          "localized-name": "Lokalisierter Name eingeben",
           "code": "Code eingeben",
-          "conversion-factor": "Umrechnung eingeben",
-          "symbol": "Symbol"
+          "conversion-factor": "Umrechnungsfaktor eingeben",
+          "symbol": "Symbol eingeben",
+          "localized-symbol": "Lokalisierter Symbol eingeben"
         }
       },
       "configuration-details": {
