@@ -57,6 +57,9 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         public string CategoryId { get; set; }
         public virtual CategoryEntity Category { get; set; }
 
+        public string PropertyGroupId { get; set; }
+        public virtual PropertyGroupEntity PropertyGroup { get; set; }
+
         public virtual ObservableCollection<PropertyDictionaryItemEntity> DictionaryItems { get; set; }
             = new NullCollection<PropertyDictionaryItemEntity>();
 
@@ -87,6 +90,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
             property.CatalogId = CatalogId;
             property.CategoryId = CategoryId;
+            property.PropertyGroupId = PropertyGroupId;
 
             property.Name = Name;
             property.Required = IsRequired;
@@ -128,6 +132,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
             CatalogId = property.CatalogId;
             CategoryId = property.CategoryId;
+            PropertyGroupId = property.PropertyGroupId;
 
             Name = property.Name;
             PropertyValueType = (int)property.ValueType;
@@ -171,6 +176,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
             target.CatalogId = CatalogId;
             target.CategoryId = CategoryId;
+            target.PropertyGroupId = PropertyGroupId;
 
             if (!PropertyAttributes.IsNullCollection())
             {

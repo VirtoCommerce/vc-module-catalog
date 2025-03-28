@@ -38,6 +38,10 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         public string CategoryId { get; set; }
         [JsonIgnore]
         public Category Category { get; set; }
+
+        public string PropertyGroupId { get; set; }
+        public PropertyGroup PropertyGroup { get; set; }
+
         public string Name { get; set; }
         public bool Required { get; set; }
         public bool Dictionary { get; set; }
@@ -109,6 +113,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                 ValidationRules = parentProperty.ValidationRules;
                 CatalogId = parentProperty.CatalogId;
                 CategoryId = parentProperty.CategoryId;
+                PropertyGroupId = parentProperty.PropertyGroupId;
                 Hidden = parentProperty.Hidden;
                 DisplayOrder = parentProperty.DisplayOrder;
 

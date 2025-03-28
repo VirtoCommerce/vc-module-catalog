@@ -1,0 +1,24 @@
+using System;
+using VirtoCommerce.Platform.Core.Common;
+
+namespace VirtoCommerce.CatalogModule.Core.Model
+{
+    public class PropertyGroup : AuditableEntity, ICloneable
+    {
+        public string Name { get; set; }
+
+        public LocalizedString LocalizedName { get; set; }
+
+        public LocalizedString LocalizedDescription { get; set; }
+
+        public int Priority { get; set; }
+
+        public virtual object Clone()
+        {
+            var result = (PropertyGroup)MemberwiseClone();
+            result.LocalizedName = LocalizedName?.CloneTyped();
+            result.LocalizedDescription = LocalizedDescription?.CloneTyped();
+            return result;
+        }
+    }
+}
