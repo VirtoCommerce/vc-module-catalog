@@ -109,7 +109,7 @@ public static class OutlineExtensions
     }
 
     /// <summary>
-    /// Returns best matching outline path for the given catalog: CategoryId/CategoryId2.
+    /// Returns the path for a first outline with the given catalog: CategoryId/CategoryId2.
     /// </summary>
     public static string GetOutlinePath(this IEnumerable<Outline> outlines, string catalogId)
     {
@@ -118,17 +118,22 @@ public static class OutlineExtensions
             return null;
         }
 
-        var pathSegments = outline.Items
-            .Where(x => !x.IsCatalog())
+        return outline.Items.GetOutlinePath();
+    }
+
+    public static string GetOutlinePath(this IEnumerable<OutlineItem> outlineItems)
+    {
+        var ids = outlineItems
+            ?.Where(x => !x.IsCatalog())
             .Select(x => x.Id)
             .ToList();
 
-        if (pathSegments.Count == 0 || pathSegments.Any(x => x is null))
+        if (ids is null || ids.Count == 0 || ids.Any(x => x is null))
         {
             return null;
         }
 
-        return string.Join('/', pathSegments);
+        return string.Join('/', ids);
     }
 
 
