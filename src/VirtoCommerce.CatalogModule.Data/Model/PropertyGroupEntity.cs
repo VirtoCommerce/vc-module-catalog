@@ -7,15 +7,14 @@ using VirtoCommerce.Platform.Core.Domain;
 
 namespace VirtoCommerce.CatalogModule.Data.Model;
 
-public class PropertyGroupLocalizedNameEntity : LocalizedStringEntity<PropertyGroupEntity> { }
-
-public class LocalizedPropertyGroupDescriptionEntity : LocalizedStringEntity<PropertyGroupEntity> { }
-
 public class PropertyGroupEntity : AuditableEntity, IDataEntity<PropertyGroupEntity, PropertyGroup>
 {
     [Required]
     [StringLength(128)]
     public string Name { get; set; }
+
+    public string CatalogId { get; set; }
+    public virtual CatalogEntity Catalog { get; set; }
 
     public ObservableCollection<PropertyGroupLocalizedNameEntity> LocalizedNames { get; set; }
         = new NullCollection<PropertyGroupLocalizedNameEntity>();
@@ -32,6 +31,10 @@ public class PropertyGroupEntity : AuditableEntity, IDataEntity<PropertyGroupEnt
         model.CreatedDate = CreatedDate;
         model.ModifiedBy = ModifiedBy;
         model.ModifiedDate = ModifiedDate;
+
+        model.Name = Name;
+        model.Priority = Priority;
+        model.CatalogId = CatalogId;
 
         if (LocalizedNames != null)
         {
@@ -66,6 +69,7 @@ public class PropertyGroupEntity : AuditableEntity, IDataEntity<PropertyGroupEnt
 
         Name = model.Name;
         Priority = model.Priority;
+        CatalogId = model.CatalogId;
 
         if (model.LocalizedName != null)
         {
@@ -98,6 +102,7 @@ public class PropertyGroupEntity : AuditableEntity, IDataEntity<PropertyGroupEnt
     {
         target.Name = Name;
         target.Priority = Priority;
+        target.CatalogId = CatalogId;
 
         if (!LocalizedNames.IsNullCollection())
         {

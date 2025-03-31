@@ -7,6 +7,8 @@ namespace VirtoCommerce.CatalogModule.Core.Model
     {
         public string Name { get; set; }
 
+        public string CatalogId { get; set; }
+
         public LocalizedString LocalizedName { get; set; }
 
         public LocalizedString LocalizedDescription { get; set; }

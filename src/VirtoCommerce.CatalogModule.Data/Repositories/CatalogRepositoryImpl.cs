@@ -33,6 +33,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         public IQueryable<EditorialReviewEntity> EditorialReviews => DbContext.Set<EditorialReviewEntity>();
         public IQueryable<CategoryDescriptionEntity> CategoryDescriptions => DbContext.Set<CategoryDescriptionEntity>();
         public IQueryable<PropertyEntity> Properties => DbContext.Set<PropertyEntity>();
+        public IQueryable<PropertyGroupEntity> PropertyGroups => DbContext.Set<PropertyGroupEntity>();
         public IQueryable<PropertyDictionaryItemEntity> PropertyDictionaryItems => DbContext.Set<PropertyDictionaryItemEntity>();
         public IQueryable<PropertyDictionaryValueEntity> PropertyDictionaryValues => DbContext.Set<PropertyDictionaryValueEntity>();
         public IQueryable<PropertyDisplayNameEntity> PropertyDisplayNames => DbContext.Set<PropertyDisplayNameEntity>();
@@ -47,7 +48,6 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         public IQueryable<ProductConfigurationEntity> ProductConfigurations => DbContext.Set<ProductConfigurationEntity>();
         public IQueryable<ProductConfigurationSectionEntity> ProductConfigurationSections => DbContext.Set<ProductConfigurationSectionEntity>();
         public IQueryable<ProductConfigurationOptionEntity> ProductConfigurationOptions => DbContext.Set<ProductConfigurationOptionEntity>();
-
 
         public virtual async Task<IList<ProductConfigurationEntity>> GetConfigurationsByIdsAsync(IList<string> ids, CancellationToken cancellationToken)
         {
@@ -96,6 +96,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 .Include(x => x.CatalogLanguages)
                 .Include(x => x.IncomingLinks)
                 .Include(x => x.SeoInfos)
+                .Include(x => x.PropertyGroups)
                 .Where(x => catalogIds.Contains(x.Id))
                 .AsSplitQuery()
                 .ToListAsync();
@@ -379,6 +380,26 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     .AsSplitQuery()
                     .LoadAsync();
             }
+
+            return result;
+        }
+
+        public virtual async Task<IList<PropertyGroupEntity>> GetPropertyGroupsByIdsAsync(IList<string> ids, string responseGroup)
+        {
+            if (ids.IsNullOrEmpty())
+            {
+                return [];
+            }
+
+            var propertyGroupsQuery = ids.Count == 1
+                ? PropertyGroups.Where(x => x.Id == ids.First())
+                : PropertyGroups.Where(x => ids.Contains(x.Id));
+
+            var result = await propertyGroupsQuery
+                .Include(x => x.LocalizedNames)
+                .Include(x => x.LocalizedDescriptions)
+                .AsSplitQuery()
+                .ToListAsync();
 
             return result;
         }
