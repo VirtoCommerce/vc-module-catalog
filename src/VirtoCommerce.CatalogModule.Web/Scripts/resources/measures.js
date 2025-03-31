@@ -3,8 +3,9 @@ angular.module('virtoCommerce.catalogModule')
         return $resource('api/catalog/measures/', {}, {
             getMeasure: { method: 'GET', url: 'api/catalog/measures/:id' },
             searchMeasures: { method: 'POST', url: 'api/catalog/measures/search' },
-            createMeasure: { method: 'POST' },
+            createMeasures: { method: 'POST', isArray: true },
             updateMeasure: { method: 'PUT' },
-            deleteMeasure: { method: 'DELETE' }
+            deleteMeasure: { method: 'DELETE' },
+            getDefaultMeasures: { method: 'GET', url: 'api/catalog/measures/default', isArray: true },
         });
     }]);

@@ -12,7 +12,7 @@ angular.module('virtoCommerce.catalogModule')
                         currentEntity: blade.currentEntity,
                         subtitle: 'catalog.blades.measure-units-list.subtitle',
                         controller: 'virtoCommerce.catalogModule.measureUnitsListController',
-                        template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/measures/measure-units-list.tpl.html'
+                        template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/measures/measure-units-list.html'
                     };
                     bladeNavigationService.showBlade(newBlade, $scope.blade);
                 };

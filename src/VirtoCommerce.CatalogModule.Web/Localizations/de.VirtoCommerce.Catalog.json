@@ -680,8 +680,12 @@
         "title": "Maßeinheiten",
         "subtitle": "Liste der verfügbaren Maßeinheiten",
         "labels": {
-          "name": "Name"
+          "name": "Name",
+          "create-default": "Standard erstellen"
         }
+      },
+      "create-measures": {
+        "title": "Standardmessungen erstellen"
       },
       "measure-details": {
         "title": "{{name}} Maß",

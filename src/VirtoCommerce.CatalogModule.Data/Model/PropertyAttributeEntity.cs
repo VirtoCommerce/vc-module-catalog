@@ -2,10 +2,11 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.Domain;
 
 namespace VirtoCommerce.CatalogModule.Data.Model
 {
-    public class PropertyAttributeEntity : AuditableEntity
+    public class PropertyAttributeEntity : AuditableEntity, IDataEntity<PropertyAttributeEntity, PropertyAttribute>
     {
         [Required]
         [StringLength(128)]
