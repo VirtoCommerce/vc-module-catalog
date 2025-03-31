@@ -154,7 +154,14 @@ angular.module('virtoCommerce.catalogModule')
             };
 
             $scope.getUnitOfMeasures = function (measureId) {
+                blade.isLoading = true;
+                if (!measureId) {
+                    blade.isLoading = false;
+                    return Promise.resolve([]);
+                }
+
                 return measures.getMeasure({ id: measureId }).$promise.then(function (result) {
+                    blade.isLoading = false;
                     return result.units;
                 });
             };

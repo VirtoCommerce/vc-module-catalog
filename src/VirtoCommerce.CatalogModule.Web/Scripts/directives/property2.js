@@ -162,6 +162,10 @@ angular.module('virtoCommerce.catalogModule').directive('vaProperty2', ['$compil
             scope.loadUnitOfMeasures = function ($select, measureId) {
                 scope.getUnits()(measureId).then(function (result) {
                     scope.context.unitOfMeasures = result;
+                    if (!scope.context.currentPropValues[0].unitOfMeasureId) {
+                        const defaultUnit = _.find(result, function (x) { return x.isDefault; });
+                        scope.context.currentPropValues[0].unitOfMeasureId = defaultUnit.id;
+                    }
                 });
             };
 
