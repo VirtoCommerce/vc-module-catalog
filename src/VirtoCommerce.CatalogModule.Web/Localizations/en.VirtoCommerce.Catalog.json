@@ -190,11 +190,13 @@
           "new-dictionary-property-caution": "You can manage dictionary items only after you save the property",
           "attributes": "Attributes",
           "manage-attributes": "Manage property attributes",
-          "hidden": "Hidden"
+          "hidden": "Hidden",
+          "property-group": "Group"
         },
         "placeholders": {
           "display-name": "Enter display name",
-          "display-order": "Display order"
+          "display-order": "Display order",
+          "property-group": "Select property group"
         }
       },
       "property-validationRule": {
@@ -935,6 +937,10 @@
         "title": "Save changes",
         "message": "This property has been modified. Do you want to save the changes?"
       },
+      "property-group-save": {
+        "title": "Save changes",
+        "message": "This property group has been modified. Do you want to save the changes?"
+      },
       "item-property-delete": {
         "message": "Are you sure you want to delete the {{name}} property?"
       },
@@ -1013,6 +1019,10 @@
       "configuration-save": {
         "title": "Save changes",
         "message": "This configuration has been modified. Do you want to save the changes?"
+      },
+      "property-group-delete": {
+        "title": "Confirm delete",
+        "message": "Are you sure you want to delete the selected property groups?"
       }
     },
     "wizards": {

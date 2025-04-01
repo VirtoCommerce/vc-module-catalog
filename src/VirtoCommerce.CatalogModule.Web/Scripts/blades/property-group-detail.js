@@ -1,5 +1,5 @@
 angular.module('virtoCommerce.catalogModule')
-    .controller('virtoCommerce.catalogModule.propertyGroupDetailController', ['$scope', 'platformWebApp.metaFormsService', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', function ($scope, metaFormsService, bladeNavigationService, dialogService) {
+    .controller('virtoCommerce.catalogModule.propertyGroupDetailController', ['$scope', 'platformWebApp.metaFormsService', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'virtoCommerce.catalogModule.propertyGroups', function ($scope, metaFormsService, bladeNavigationService, dialogService, propertyGroups) {
         var blade = $scope.blade;
         blade.updatePermission = 'catalog:metadata-property:edit';
         blade.title = "catalog.blades.property-group-details.title";
@@ -9,22 +9,34 @@ angular.module('virtoCommerce.catalogModule')
 
         blade.metaFields = metaFormsService.getMetaFields("propertyGroupDetail");
 
-        blade.refresh = function () {
-            blade.origEntity = blade.propertyGroup;
-            blade.currentEntity = angular.copy(blade.origEntity);
-            blade.isLoading = false;
+        blade.refresh = function (parentRefresh) {
+            if (blade.isNew) {
+                initialize(blade.propertyGroup);
+            }
+            else {
+                propertyGroups.get({ id: blade.currentEntityId }, function (data) {
+                    initialize(data);
+                    if (parentRefresh) {
+                        blade.parentBlade.refresh();
+                    }
+                }, function (error) { bladeNavigationService.setError('Error ' + error.status, blade); });
+            }
         };
 
-        function saveChanges() {
-            if (blade.isNew) {
-                if (!blade.catalog.propertyGroups) {
-                    blade.catalog.propertyGroups = [];
-                }
-                blade.catalog.propertyGroups.push(blade.currentEntity);
-            }
-
-            angular.copy(blade.currentEntity, blade.origEntity);
+        function initialize(propertyGroup) {
+            blade.origEntity = propertyGroup;
+            blade.currentEntity = angular.copy(blade.origEntity);
+            blade.isLoading = false;
         }
+    
+        function saveChanges() {
+            blade.isLoading = true;
+            propertyGroups.save({}, blade.currentEntity, function (data) {
+                blade.isNew = false;
+                blade.currentEntityId = data.id;
+                blade.refresh(true);
+            }, function (error) { bladeNavigationService.setError('Error ' + error.status, blade); });
+        };
 
         function isDirty() {
             return !angular.equals(blade.currentEntity, blade.origEntity) && blade.hasUpdatePermission();
@@ -34,26 +46,29 @@ angular.module('virtoCommerce.catalogModule')
             return (blade.origEntity.isNew || isDirty()) && formScope && formScope.$valid;
         }
       
-        function remove(propertyGroup) {
+        $scope.deletePropertyGroups = function (propertyGroup) {
             var dialog = {
-                id: "confirmDelete",
-                messageValues: { name: prop.name },
-                callback: function (doDeleteValues) {
-                    blade.isLoading = true;
-
-                    properties.remove({ id: prop.id, doDeleteValues: doDeleteValues }, function () {
-                        $scope.bladeClose();
-                        blade.parentBlade.refresh();
-                    });
+                id: "confirmDeletePropertyValue",
+                title: "catalog.dialogs.property-group-delete.title",
+                message: "catalog.dialogs.property-group-delete.message",
+                callback: function (remove) {
+                    if (remove) {
+                        bladeNavigationService.closeChildrenBlades(blade, function () {
+                            propertyGroups.remove({ ids: [propertyGroup.id] }, function (data) {
+                                $scope.bladeClose();
+                                blade.parentBlade.refresh();
+                            });
+                        });
+                    }
                 }
             };
-            dialogService.showDialog(dialog, 'Modules/$(VirtoCommerce.Catalog)/Scripts/dialogs/deleteProperty-dialog.tpl.html', 'platformWebApp.confirmDialogController');
+            dialogService.showWarningDialog(dialog);
         }
 
-        //blade.onClose = function (closeCallback) {
-        //    bladeNavigationService.showConfirmationIfNeeded(isDirty(), canSave(), blade, saveChanges, closeCallback,
-        //        "catalog.dialogs.property-save.title", "catalog.dialogs.property-save.message");
-        //};
+        blade.onClose = function (closeCallback) {
+            bladeNavigationService.showConfirmationIfNeeded(isDirty(), canSave(), blade, saveChanges, closeCallback,
+                "catalog.dialogs.property-group-save.title", "catalog.dialogs.property-group-save.message");
+        };
 
         var formScope;
         $scope.setForm = function (form) {
@@ -79,7 +94,7 @@ angular.module('virtoCommerce.catalogModule')
                 name: "platform.commands.delete",
                 icon: 'fas fa-trash-alt',
                 executeMethod: function () {
-                    remove(blade.origEntity);
+                    $scope.deletePropertyGroups(blade.origEntity);
                 },
                 canExecuteMethod: function () {
                     return !blade.isNew;

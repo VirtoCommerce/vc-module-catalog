@@ -13,32 +13,37 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api;
 public class CatalogModulePropertyGroupsController : Controller
 {
     private readonly IPropertyGroupService _propertyGroupService;
+    private readonly IPropertyGroupSearchService _propertyGroupSearchService;
     private readonly IAuthorizationService _authorizationService;
 
-    public CatalogModulePropertyGroupsController(IPropertyGroupService propertyGroupService, IAuthorizationService authorizationService)
+    public CatalogModulePropertyGroupsController(
+        IPropertyGroupService propertyGroupService,
+        IPropertyGroupSearchService propertyGroupSearchService,
+        IAuthorizationService authorizationService)
     {
         _propertyGroupService = propertyGroupService;
+        _propertyGroupSearchService = propertyGroupSearchService;
         _authorizationService = authorizationService;
-    }
-
-    [HttpPost]
-    public Task<ActionResult<PropertyGroup>> Create([FromBody] PropertyGroup model)
-    {
-        model.Id = null;
-        return Update(model);
-    }
-
-    [HttpPut]
-    public async Task<ActionResult<PropertyGroup>> Update([FromBody] PropertyGroup model)
-    {
-        await _propertyGroupService.SaveChangesAsync([model]);
-        return Ok(model);
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<PropertyGroup>> Get([FromRoute] string id, [FromQuery] string responseGroup = null)
     {
         var model = await _propertyGroupService.GetNoCloneAsync(id, responseGroup);
+        return Ok(model);
+    }
+
+    [HttpPost("search")]
+    public async Task<ActionResult<PropertyGroupSearchResult>> Search([FromBody] PropertyGroupSearchCriteria criteria)
+    {
+        var result = await _propertyGroupSearchService.SearchNoCloneAsync(criteria);
+        return Ok(result);
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<PropertyGroup>> Update([FromBody] PropertyGroup model)
+    {
+        await _propertyGroupService.SaveChangesAsync([model]);
         return Ok(model);
     }
 

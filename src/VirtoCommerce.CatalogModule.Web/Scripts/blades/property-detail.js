@@ -1,5 +1,5 @@
 angular.module('virtoCommerce.catalogModule')
-    .controller('virtoCommerce.catalogModule.propertyDetailController', ['$scope', '$q', 'virtoCommerce.catalogModule.properties', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'virtoCommerce.catalogModule.valueTypes', 'virtoCommerce.catalogModule.propertyValidators', function ($scope, $q, properties, bladeNavigationService, dialogService, valueTypes, propertyValidators) {
+    .controller('virtoCommerce.catalogModule.propertyDetailController', ['$scope', '$q', 'virtoCommerce.catalogModule.properties', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'virtoCommerce.catalogModule.valueTypes', 'virtoCommerce.catalogModule.propertyValidators', 'virtoCommerce.catalogModule.propertyGroups', function ($scope, $q, properties, bladeNavigationService, dialogService, valueTypes, propertyValidators, propertyGroups) {
         var blade = $scope.blade;
         blade.updatePermission = 'catalog:metadata-property:edit';
         blade.origEntity = {};
@@ -251,6 +251,11 @@ angular.module('virtoCommerce.catalogModule')
                 }
             }
         ];
+
+        blade.fetchPropertyGroups = function (criteria) {
+            criteria.catalogId = blade.catalogId ?? balde.origEntity.catalogId;
+            return propertyGroups.search(criteria);
+        }
 
         // actions on load    
         blade.refresh();
