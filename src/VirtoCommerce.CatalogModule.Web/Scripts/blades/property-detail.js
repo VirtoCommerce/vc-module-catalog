@@ -253,7 +253,7 @@ angular.module('virtoCommerce.catalogModule')
         ];
 
         blade.fetchPropertyGroups = function (criteria) {
-            criteria.catalogId = blade.catalogId ?? balde.origEntity.catalogId;
+            criteria.catalogId = blade.catalogId ?? blade.currentEntity.catalogId;
             return propertyGroups.search(criteria);
         }
 
