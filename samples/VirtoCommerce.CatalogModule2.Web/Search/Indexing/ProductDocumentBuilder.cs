@@ -21,9 +21,9 @@ namespace VirtoCommerce.CatalogModule2.Data.Search.Indexing
             : base(settingsManager, propertySearchService, itemService, productsSearchService, measureService)
         {
         }
-        protected override async Task<IndexDocument> CreateDocumentAsync(CatalogProduct product)
+        protected override Task<IndexDocument> CreateDocumentAsync(CatalogProduct product)
         {
-            return await base.CreateDocumentAsync(product);
+            return base.CreateDocumentAsync(product);
         }
         protected override IEnumerable<string> ExpandOutline(Outline outline, bool getNameLatestItem)
         {

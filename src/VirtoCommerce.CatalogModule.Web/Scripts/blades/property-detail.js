@@ -254,19 +254,22 @@ angular.module('virtoCommerce.catalogModule')
 
             blade.toolbarCommands = [
                 {
-                    name: 'platform.commands.save', icon: 'fas fa-save',
+                    name: 'platform.commands.save',
+                    icon: 'fas fa-save',
                     executeMethod: saveChanges,
                     canExecuteMethod: canSave
                 },
                 {
-                    name: 'platform.commands.reset', icon: 'fa fa-undo',
+                    name: 'platform.commands.reset',
+                    icon: 'fa fa-undo',
                     executeMethod: function () {
                         angular.copy(blade.origEntity, blade.currentEntity);
                     },
                     canExecuteMethod: isDirty
                 },
                 {
-                    name: 'platform.commands.delete', icon: 'fas fa-trash-alt',
+                    name: 'platform.commands.delete',
+                    icon: 'fas fa-trash-alt',
                     executeMethod: function () {
                         removeProperty(blade.origEntity);
                     },

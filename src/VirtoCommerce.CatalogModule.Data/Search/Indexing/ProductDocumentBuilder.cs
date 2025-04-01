@@ -20,7 +20,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         private readonly IItemService _itemService;
         private readonly IProductSearchService _productsSearchService;
         private readonly IMeasureService _measureService;
-        private readonly PropertyType[] _contentPropertyTypes = [PropertyType.Product, PropertyType.Variation];
 
         public ProductDocumentBuilder(
             ISettingsManager settingsManager,
@@ -148,7 +147,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         }
 
         /// <summary>
-        /// The mainProduct argument contains more information than variation.
+        /// The mainProduct argument contains more information than variation.MainProduct
         /// </summary>
         protected async virtual Task<IndexDocument> CreateDocumentAsync(CatalogProduct variation, CatalogProduct mainProduct)
         {
@@ -156,7 +155,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             var document = CreateDocument(variation, mainProduct);
 #pragma warning restore VC0010 // Type or member is obsolete
 
-            await IndexMeasurePropertiesAsync(document, variation.Properties, _contentPropertyTypes);
+            await IndexMeasurePropertiesAsync(document, variation.Properties);
             return document;
         }
 
@@ -166,7 +165,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             var document = CreateDocument(product);
 #pragma warning restore VC0010 // Type or member is obsolete
 
-            await IndexMeasurePropertiesAsync(document, product.Properties, _contentPropertyTypes);
+            await IndexMeasurePropertiesAsync(document, product.Properties);
             return document;
         }
 
@@ -246,8 +245,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             // Add all physical and virtual paths
             document.AddFilterableCollection("__path", product.Outlines.Select(x => string.Join("/", x.Items.Take(x.Items.Count - 1).Select(i => i.Id))).ToList());
 
+            // Types of properties which values should be added to the searchable __content field
+            var contentPropertyTypes = new[] { PropertyType.Product, PropertyType.Variation };
+
             // Index custom product properties
-            IndexCustomProperties(document, product.Properties, _contentPropertyTypes);
+            IndexCustomProperties(document, product.Properties, contentPropertyTypes);
 
             // Index product descriptions
             IndexDescriptions(document, product.Reviews);
@@ -263,7 +265,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             return document;
         }
 
-        protected virtual async Task IndexMeasurePropertiesAsync(IndexDocument document, IList<Property> properties, PropertyType[] contentPropertyTypes)
+        protected virtual async Task IndexMeasurePropertiesAsync(IndexDocument document, IList<Property> properties)
         {
             var measureProperties = properties.Where(p => p.ValueType == PropertyValueType.Measure && !string.IsNullOrEmpty(p.MeasureId)).ToList();
 

@@ -609,6 +609,12 @@
         "type": {
           "label": "Tipo de agregación"
         },
+        "measure": {
+          "label": "Medida"
+        },
+        "unit": {
+          "label": "Unidad de medida"
+        },
         "size": {
           "label": "Tamaño de la agregación",
           "placeholder": "Ingrese tamaño de la agregación",

@@ -609,6 +609,12 @@
         "type": {
           "label": "集約タイプ"
         },
+        "measure": {
+          "label": "測定"
+        },
+        "unit": {
+          "label": "測定単位"
+        },
         "size": {
           "label": "集約サイズ",
           "placeholder": "集約サイズを入力",

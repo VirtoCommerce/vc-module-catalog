@@ -637,7 +637,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 .Where(x => ids.Contains(x.Id))
                 .ToListAsync();
 
-            if (measures.Count != 0)
+            if (measures.Count > 0)
             {
                 var existingIds = measures.Select(x => x.Id).ToList();
 
@@ -645,6 +645,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     .Include(x => x.LocalizedNames)
                     .Include(x => x.LocalizedSymbols)
                     .Where(x => existingIds.Contains(x.MeasureId))
+                    .AsSplitQuery()
                     .LoadAsync();
             }
 

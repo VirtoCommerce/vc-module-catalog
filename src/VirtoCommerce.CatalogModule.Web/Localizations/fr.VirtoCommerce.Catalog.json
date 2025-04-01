@@ -609,6 +609,12 @@
         "type": {
           "label": "Type d'agrégation"
         },
+        "measure": {
+          "label": "Mesure"
+        },
+        "unit": {
+          "label": "Unité de mesure"
+        },
         "size": {
           "label": "Taille de l'agrégation",
           "placeholder": "Entrez la taille de l'agrégation",

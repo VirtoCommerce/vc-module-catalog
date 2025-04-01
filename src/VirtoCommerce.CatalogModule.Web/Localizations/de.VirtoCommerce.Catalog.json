@@ -609,6 +609,12 @@
         "type": {
           "label": "Aggregationstyp"
         },
+        "measure": {
+          "label": "Maß"
+        },
+        "unit": {
+          "label": "Maßeinheit"
+        },
         "size": {
           "label": "Aggregationsgröße",
           "placeholder": "Aggregationsgröße eingeben",

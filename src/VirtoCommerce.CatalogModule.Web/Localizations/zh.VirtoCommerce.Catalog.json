@@ -609,6 +609,12 @@
         "type": {
           "label": "聚合类型"
         },
+        "measure": {
+          "label": "度量"
+        },
+        "unit": {
+          "label": "度量单位"
+        },
         "size": {
           "label": "聚合大小",
           "placeholder": "输入聚合大小",

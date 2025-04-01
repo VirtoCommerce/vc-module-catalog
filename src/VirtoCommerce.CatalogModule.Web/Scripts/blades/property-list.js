@@ -153,7 +153,7 @@ angular.module('virtoCommerce.catalogModule')
                 });
             };
 
-            $scope.getUnitOfMeasures = function (measureId) {
+            $scope.getUnitsOfMeasure = function (measureId) {
                 blade.isLoading = true;
                 if (!measureId) {
                     blade.isLoading = false;
