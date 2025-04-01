@@ -219,6 +219,31 @@
           "pattern": "Make this field match a pattern, such as email address, URL, or a custom regular expression. For example: ^[a-z]{6,15}$"
         }
       },
+      "property-group-list": {
+        "title": "Property groups",
+        "labels": {
+          "empty-list": "None",
+          "name": "Name",
+          "priority": "Priority"
+        }
+      },
+      "property-group-details": {
+        "title": "Manage property group",
+        "labels": {
+          "name": "Name",
+          "priority": "Priority",
+          "localizedName": "Localized name",
+          "display-name": "Display name",
+          "display-order": "Display order",
+          "properties": "Properties",
+          "manage-properties": "Manage properties",
+          "show-more-languages": "Show more languages",
+          "show-less-languages": "Show less languages"
+        },
+        "placeholders": {
+          "display-name": "Enter property name"
+        }
+      },
       "property-list": {
         "subtitle": "Property list",
         "labels": {
@@ -791,6 +816,10 @@
         "blade-subtitle": "Manage languages",
         "title": "Languages",
         "default-language": "Default language"
+      },
+      "catalogPropertyGroup": {
+        "blade-subtitle": "Property groups",
+        "title": "Property groups"
       },
       "catalogProperty": {
         "blade-subtitle": "Catalog properties",
