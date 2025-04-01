@@ -96,7 +96,6 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 .Include(x => x.CatalogLanguages)
                 .Include(x => x.IncomingLinks)
                 .Include(x => x.SeoInfos)
-                .Include(x => x.PropertyGroups)
                 .Where(x => catalogIds.Contains(x.Id))
                 .AsSplitQuery()
                 .ToListAsync();
@@ -124,6 +123,13 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 }
 
                 await SeoInfos.Where(x => catalogIds.Contains(x.CatalogId)).LoadAsync();
+
+                await PropertyGroups
+                    .Where(x => catalogIds.Contains(x.CatalogId))
+                    .Include(x => x.LocalizedNames)
+                    .Include(x => x.LocalizedDescriptions)
+                    .AsSplitQuery()
+                    .LoadAsync();
 
                 var catalogPropertiesIds = await Properties
                     .Where(x => catalogIds.Contains(x.CatalogId) && x.CategoryId == null)
