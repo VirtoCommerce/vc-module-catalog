@@ -14,6 +14,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         IQueryable<CatalogEntity> Catalogs { get; }
         IQueryable<ItemEntity> Items { get; }
         IQueryable<PropertyEntity> Properties { get; }
+        IQueryable<PropertyGroupEntity> PropertyGroups { get; }
         IQueryable<ImageEntity> Images { get; }
         IQueryable<AssetEntity> Assets { get; }
         IQueryable<VideoEntity> Videos { get; }
@@ -45,6 +46,8 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         Task<IList<PropertyEntity>> GetAllCatalogPropertiesAsync(string catalogId);
 
         Task<IList<PropertyEntity>> GetPropertiesByIdsAsync(IList<string> propIds, bool loadDictValues = false);
+
+        Task<IList<PropertyGroupEntity>> GetPropertyGroupsByIdsAsync(IList<string> ids, string responseGroup);
 
         Task<IList<PropertyDictionaryItemEntity>> GetPropertyDictionaryItemsByIdsAsync(IList<string> dictItemIds);
 

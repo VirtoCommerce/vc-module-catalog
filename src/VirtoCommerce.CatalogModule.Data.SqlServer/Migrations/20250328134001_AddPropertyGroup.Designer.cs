@@ -3,17 +3,20 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 
 #nullable disable
 
-namespace VirtoCommerce.CatalogModule.Data.Migrations
+namespace VirtoCommerce.CatalogModule.Data.SqlServer.Migrations
 {
     [DbContext(typeof(CatalogDbContext))]
-    partial class CatalogDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250328134001_AddPropertyGroup")]
+    partial class AddPropertyGroup
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1239,9 +1242,6 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasMaxLength(128)
                         .HasColumnType("nvarchar(128)");
 
-                    b.Property<string>("CatalogId")
-                        .HasColumnType("nvarchar(128)");
-
                     b.Property<string>("CreatedBy")
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)");
@@ -1265,8 +1265,6 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CatalogId");
 
                     b.ToTable("PropertyGroup", (string)null);
                 });
@@ -1896,16 +1894,6 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                     b.Navigation("PropertyGroup");
                 });
 
-            modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.PropertyGroupEntity", b =>
-                {
-                    b.HasOne("VirtoCommerce.CatalogModule.Data.Model.CatalogEntity", "Catalog")
-                        .WithMany("PropertyGroups")
-                        .HasForeignKey("CatalogId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("Catalog");
-                });
-
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.PropertyGroupLocalizedNameEntity", b =>
                 {
                     b.HasOne("VirtoCommerce.CatalogModule.Data.Model.PropertyGroupEntity", "ParentEntity")
@@ -1992,8 +1980,6 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                     b.Navigation("IncomingLinks");
 
                     b.Navigation("Properties");
-
-                    b.Navigation("PropertyGroups");
 
                     b.Navigation("SeoInfos");
                 });
