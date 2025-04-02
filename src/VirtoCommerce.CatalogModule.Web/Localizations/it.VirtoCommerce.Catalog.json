@@ -1195,9 +1195,9 @@
           }
         }
       },
-      "ProductConfigurationSectionTypes": {
-        "description": "Types of sections product configuration sections",
-        "title": "Types"
+      "ProductConfigurationMaximumFiles": {
+        "title": "Numero massimo di file nella sezione di configurazione",
+        "description": "Limitare il numero massimo di file nella sezione di configurazione"
       }
     },
     "VirtoCommerce": {
