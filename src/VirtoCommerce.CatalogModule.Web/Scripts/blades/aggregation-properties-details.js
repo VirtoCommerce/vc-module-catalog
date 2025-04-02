@@ -97,7 +97,7 @@ angular.module('virtoCommerce.catalogModule')
                     });
 
                     if (unit) {
-                        blade.property.indexFieldName = blade.property.name + "-" + unit.code;
+                        blade.property.indexFieldName = `${blade.property.name}-${unit.code}`;
                     }
                 }
 
