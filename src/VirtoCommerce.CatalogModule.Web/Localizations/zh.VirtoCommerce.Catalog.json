@@ -734,7 +734,8 @@
           "code": "代码",
           "conversion-factor": "转换因子",
           "symbol": "符号",
-          "localized-symbol": "本地化符号"
+          "localized-symbol": "本地化符号",
+          "code-naming-error": "代码必须以字母或数字开头，并且只能包含拉丁字母和数字。"
         },
         "placeholders": {
           "name": "请输入名称",

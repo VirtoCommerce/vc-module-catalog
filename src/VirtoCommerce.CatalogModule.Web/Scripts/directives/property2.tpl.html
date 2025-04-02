@@ -97,7 +97,7 @@
   <script type="text/ng-template" id="Measure.html">
     <div class="columns">
       <div class="column" style="width:70%">
-        <div class="form-input">
+        <div class="form-input" style="margin-bottom:15px;">
           <input smart-float num-type="float" fraction="6"
                  ng-disabled="currentEntity.isReadOnly"
                  ng-required="currentEntity.required && !currentEntity.isReadOnly"
@@ -108,7 +108,7 @@
         </div>
       </div>
       <div class="column" style="width:25%;margin-left:5%;">
-        <div class="form-input">
+        <div class="form-input" style="margin-bottom:15px;">
           <ui-select ng-model="context.currentPropValues[0].unitOfMeasureId"
                      ng-disabled="currentEntity.isReadOnly"
                      ng-required="currentEntity.required"

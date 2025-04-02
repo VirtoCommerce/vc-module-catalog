@@ -15,6 +15,12 @@
     <div class="form-input">
       <input required ng-readonly="!blade.isNew" class="form-control" ng-model="blade.currentEntity.code" name="code" placeholder="{{ 'catalog.blades.measure-unit-details.placeholders.code' | translate }}" />
     </div>
+    <span class="comment-text" ng-if="blade.errorMessage">
+      <img src="/images/layout/warning.svg" class="comment-icon">
+      <span ng-if="blade.errorMessage === 'code-naming-error'">
+        {{ 'catalog.blades.measure-unit-details.labels.code-naming-error' | translate }}
+      </span>
+    </span>
   </div>
 </script>
 

@@ -3,6 +3,7 @@ angular.module('virtoCommerce.catalogModule')
         ['$scope', 'platformWebApp.dialogService', 'platformWebApp.metaFormsService', 'platformWebApp.bladeNavigationService', 'platformWebApp.settings',
             function ($scope, dialogService, metaFormsService, bladeNavigationService, settings) {
                 var blade = $scope.blade;
+                var codePattern = /^\b[0-9a-z]+([0-9a-z]+)*\b$/i;
 
                 blade.metaFields = blade.metaFields && blade.metaFields.length ? blade.metaFields : metaFormsService.getMetaFields('measureUnitDetails');
 
@@ -85,11 +86,16 @@ angular.module('virtoCommerce.catalogModule')
                 };
 
                 $scope.saveChanges = function () {
-                    if (blade.confirmChangesFn) {
-                        blade.confirmChangesFn(blade.currentEntity, blade.isNew);
+                    if (!codePattern.test(blade.currentEntity.code)) {
+                        blade.errorMessage = 'code-naming-error';
                     }
-                    angular.copy(blade.currentEntity, blade.origEntity);
-                    $scope.bladeClose();
+                    else {
+                        if (blade.confirmChangesFn) {
+                            blade.confirmChangesFn(blade.currentEntity, blade.isNew);
+                        }
+                        angular.copy(blade.currentEntity, blade.origEntity);
+                        $scope.bladeClose();
+                    }
                 };
 
                 function isDirty() {

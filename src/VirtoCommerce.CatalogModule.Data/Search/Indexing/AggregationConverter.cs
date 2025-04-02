@@ -82,12 +82,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             return result;
         }
 
-
         protected virtual AggregationRequest GetAttributeFilterAggregationRequest(AttributeFilter attributeFilter, IEnumerable<IFilter> existingFilters)
         {
             return new TermAggregationRequest
             {
-                FieldName = attributeFilter.Key,
+                FieldName = attributeFilter.GetIndexFieldName(),
                 Values = !attributeFilter.Values.IsNullOrEmpty() ? attributeFilter.Values.Select(v => v.Id).ToArray() : null,
                 Filter = existingFilters.And(),
                 Size = attributeFilter.FacetSize,
@@ -96,7 +95,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         protected virtual IList<AggregationRequest> GetRangeFilterAggregationRequests(RangeFilter rangeFilter, IList<IFilter> existingFilters)
         {
-            var result = rangeFilter.Values?.Select(v => GetRangeFilterValueAggregationRequest(rangeFilter.Key, v, existingFilters)).ToList();
+            var result = rangeFilter.Values?.Select(v => GetRangeFilterValueAggregationRequest(rangeFilter.IndexFieldName ?? rangeFilter.Key, v, existingFilters)).ToList();
             return result;
         }
 
@@ -183,11 +182,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                         case AttributeFilter attributeFilter:
                             PreFilterOutlineAggregation(attributeFilter, aggregationResponses, criteria);
                             aggregation = GetAttributeAggregation(attributeFilter, aggregationResponses);
-                            termNames.Remove(filter.Key);
+                            termNames.Remove(attributeFilter.GetIndexFieldName());
                             break;
                         case RangeFilter rangeFilter:
                             aggregation = GetRangeAggregation(rangeFilter, aggregationResponses);
-                            RemoveRange(termNames, rangeFilter.Key);
+                            RemoveRange(termNames, rangeFilter.GetIndexFieldName());
                             break;
                         case PriceRangeFilter priceRangeFilter:
                             aggregation = GetPriceRangeAggregation(priceRangeFilter, aggregationResponses);
@@ -220,7 +219,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             // Add localized labels for names and values
             if (result.Any())
             {
-                await AddLabelsAsync(result, criteria.CatalogId);
+                await AddLabelsAsync(result, browseFilters, criteria.CatalogId);
             }
 
             return result.ToArray();
@@ -235,7 +234,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         {
             Aggregation result = null;
 
-            var fieldName = attributeFilter.Key;
+            var fieldName = attributeFilter.GetIndexFieldName();
             var aggregationResponse = aggregationResponses.FirstOrDefault(a => a.Id.EqualsInvariant(fieldName));
 
             if (aggregationResponse != null)
@@ -262,7 +261,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                     result = new Aggregation
                     {
                         AggregationType = "attr",
-                        Field = fieldName,
+                        Field = attributeFilter.GetIndexFieldName(),
                         Items = GetAttributeAggregationItems(aggregationResponseValues).ToArray(),
                     };
                 }
@@ -276,8 +275,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             var result = new Aggregation
             {
                 AggregationType = "range",
-                Field = rangeFilter.Key,
-                Items = GetRangeAggregationItems(rangeFilter.Key, rangeFilter.Values, aggregationResponses).ToArray(),
+                Field = rangeFilter.GetIndexFieldName(),
+                Items = GetRangeAggregationItems(rangeFilter.GetIndexFieldName(), rangeFilter.Values, aggregationResponses).ToArray(),
             };
 
             return result;
@@ -469,7 +468,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             return result;
         }
 
-        protected virtual async Task AddLabelsAsync(IList<Aggregation> aggregations, string catalogId)
+        protected virtual async Task AddLabelsAsync(IList<Aggregation> aggregations, IList<IBrowseFilter> browseFilters, string catalogId)
         {
             var allProperties = await _propertyService.GetAllCatalogPropertiesAsync(catalogId);
 
@@ -479,7 +478,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 var labelAdded = await TryAddLabelsAsyncForOutline(aggregation);
                 if (!labelAdded)
                 {
-                    await TryAddLabelsAsyncForProperty(allProperties, aggregation);
+                    await TryAddLabelsAsyncForProperty(allProperties, browseFilters, aggregation);
                 }
             }
 
@@ -553,10 +552,13 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             return namedOutlineParts.Length == 2 ? namedOutlineParts[0] : namedOutline;
         }
 
-        private async Task<bool> TryAddLabelsAsyncForProperty(IEnumerable<Property> allProperties, Aggregation aggregation)
+        private async Task<bool> TryAddLabelsAsyncForProperty(IEnumerable<Property> allProperties, IList<IBrowseFilter> browseFilters, Aggregation aggregation)
         {
+            IBrowseFilter filter = browseFilters.OfType<AttributeFilter>().FirstOrDefault(f => f.IndexFieldName.EqualsInvariant(aggregation.Field));
+            filter ??= browseFilters.OfType<RangeFilter>().FirstOrDefault(f => f.IndexFieldName.EqualsInvariant(aggregation.Field));
+
             // There can be many properties with the same name
-            var properties = allProperties.Where(p => p.Name.EqualsInvariant(aggregation.Field)).ToArray();
+            var properties = allProperties.Where(p => p.Name.EqualsInvariant(filter?.Key ?? aggregation.Field)).ToArray();
 
             if (!properties.Any())
             {

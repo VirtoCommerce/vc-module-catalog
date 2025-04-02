@@ -17,13 +17,14 @@ namespace VirtoCommerce.CatalogModule2.Data.Search.Indexing
             IBrowseFilterService browseFilterService,
             IPropertyService propertyService,
             IPropertyDictionaryItemSearchService propDictItemsSearchService,
-            ICategoryService categoryService)
+            ICategoryService categoryService,
+            IMeasureService measureService)
             : base(browseFilterService, propertyService, propDictItemsSearchService, categoryService)
         {
         }
-        protected override Task AddLabelsAsync(IList<Aggregation> aggregations, string catalogId)
+        protected override Task AddLabelsAsync(IList<Aggregation> aggregations, IList<IBrowseFilter> browseFilters, string catalogId)
         {
-            return base.AddLabelsAsync(aggregations, catalogId);
+            return base.AddLabelsAsync(aggregations, browseFilters, catalogId);
         }
         public override Task<Aggregation[]> ConvertAggregationsAsync(IList<AggregationResponse> aggregationResponses, ProductIndexedSearchCriteria criteria)
         {

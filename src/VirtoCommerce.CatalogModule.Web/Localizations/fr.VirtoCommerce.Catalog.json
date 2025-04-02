@@ -734,7 +734,8 @@
           "code": "Code",
           "conversion-factor": "Facteur de conversion",
           "symbol": "Symbole",
-          "localized-symbol": "Symbole localisé"
+          "localized-symbol": "Symbole localisé",
+          "code-naming-error": "Le code doit commencer par un caractère alphanumérique et ne contenir que des caractères latins et des chiffres"
         },
         "placeholders": {
           "name": "Entrez le nom",

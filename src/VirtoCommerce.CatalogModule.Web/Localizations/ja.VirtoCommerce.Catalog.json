@@ -734,7 +734,8 @@
           "code": "コード",
           "conversion-factor": "換算係数",
           "symbol": "記号",
-          "localized-symbol": "ローカライズされた記号"
+          "localized-symbol": "ローカライズされた記号",
+          "code-naming-error": "コードは英数字で始まり、ラテン文字と数字のみを含む必要があります。"
         },
         "placeholders": {
           "name": "名前を入力",

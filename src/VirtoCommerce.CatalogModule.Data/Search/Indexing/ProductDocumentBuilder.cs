@@ -287,7 +287,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                         foreach (var unit in measure.Units.Where(u => !u.IsDefault))
                         {
                             var unitValue = defaultUnitValue / unit.ConversionFactor;
-                            document.Add(new IndexDocumentField($"{propertyName}_{unit.Code}", unitValue, IndexDocumentFieldValueType.Double) { IsRetrievable = true, IsFilterable = true, IsCollection = false });
+                            document.Add(new IndexDocumentField($"{propertyName}-{unit.Code}", unitValue, IndexDocumentFieldValueType.Double) { IsRetrievable = true, IsFilterable = true, IsCollection = false });
                         }
                     }
                 }
