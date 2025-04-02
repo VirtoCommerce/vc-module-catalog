@@ -14,16 +14,13 @@ public class CatalogModulePropertyGroupsController : Controller
 {
     private readonly IPropertyGroupService _propertyGroupService;
     private readonly IPropertyGroupSearchService _propertyGroupSearchService;
-    private readonly IAuthorizationService _authorizationService;
 
     public CatalogModulePropertyGroupsController(
         IPropertyGroupService propertyGroupService,
-        IPropertyGroupSearchService propertyGroupSearchService,
-        IAuthorizationService authorizationService)
+        IPropertyGroupSearchService propertyGroupSearchService)
     {
         _propertyGroupService = propertyGroupService;
         _propertyGroupSearchService = propertyGroupSearchService;
-        _authorizationService = authorizationService;
     }
 
     [HttpGet("{id}")]
