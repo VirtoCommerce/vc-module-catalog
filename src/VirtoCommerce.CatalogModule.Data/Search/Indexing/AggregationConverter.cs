@@ -95,7 +95,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         protected virtual IList<AggregationRequest> GetRangeFilterAggregationRequests(RangeFilter rangeFilter, IList<IFilter> existingFilters)
         {
-            var result = rangeFilter.Values?.Select(v => GetRangeFilterValueAggregationRequest(rangeFilter.IndexFieldName ?? rangeFilter.Key, v, existingFilters)).ToList();
+            var result = rangeFilter.Values?.Select(v => GetRangeFilterValueAggregationRequest(rangeFilter.GetIndexFieldName(), v, existingFilters)).ToList();
             return result;
         }
 
@@ -219,7 +219,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             // Add localized labels for names and values
             if (result.Any())
             {
-                await AddLabelsAsync(result, browseFilters, criteria.CatalogId);
+                await AddLabelsAsync(result, criteria.CatalogId, browseFilters);
             }
 
             return result.ToArray();
@@ -468,7 +468,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             return result;
         }
 
-        protected virtual async Task AddLabelsAsync(IList<Aggregation> aggregations, IList<IBrowseFilter> browseFilters, string catalogId)
+        protected virtual async Task AddLabelsAsync(IList<Aggregation> aggregations, string catalogId, IList<IBrowseFilter> browseFilters)
         {
             var allProperties = await _propertyService.GetAllCatalogPropertiesAsync(catalogId);
 
@@ -478,7 +478,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 var labelAdded = await TryAddLabelsAsyncForOutline(aggregation);
                 if (!labelAdded)
                 {
-                    await TryAddLabelsAsyncForProperty(allProperties, browseFilters, aggregation);
+                    await TryAddLabelsAsyncForProperty(allProperties, aggregation, browseFilters);
                 }
             }
 
@@ -552,7 +552,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             return namedOutlineParts.Length == 2 ? namedOutlineParts[0] : namedOutline;
         }
 
-        private async Task<bool> TryAddLabelsAsyncForProperty(IEnumerable<Property> allProperties, IList<IBrowseFilter> browseFilters, Aggregation aggregation)
+        private async Task<bool> TryAddLabelsAsyncForProperty(IEnumerable<Property> allProperties, Aggregation aggregation, IList<IBrowseFilter> browseFilters)
         {
             IBrowseFilter filter = browseFilters.OfType<AttributeFilter>().FirstOrDefault(f => f.IndexFieldName.EqualsInvariant(aggregation.Field));
             filter ??= browseFilters.OfType<RangeFilter>().FirstOrDefault(f => f.IndexFieldName.EqualsInvariant(aggregation.Field));

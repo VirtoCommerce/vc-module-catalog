@@ -34,19 +34,22 @@ angular.module('virtoCommerce.catalogModule')
                             blade.subtitle = 'catalog.blades.measure-unit-details.subtitle';
 
                             blade.toolbarCommands = [{
-                                name: 'platform.commands.reset', icon: 'fa fa-undo',
+                                name: 'platform.commands.reset',
+                                icon: 'fa fa-undo',
                                 executeMethod: function () {
                                     angular.copy(blade.origEntity, blade.currentEntity);
                                 },
                                 canExecuteMethod: isDirty
                             }, {
-                                name: 'platform.commands.delete', icon: 'fas fa-trash-alt',
+                                name: 'platform.commands.delete',
+                                icon: 'fas fa-trash-alt',
                                 executeMethod: deleteEntry,
                                 canExecuteMethod: function () {
                                     return !blade.isNew;
                                 }
                             }, {
-                                name: 'catalog.commands.default', icon: 'fas fa-flag',
+                                name: 'catalog.commands.default',
+                                icon: 'fas fa-flag',
                                 executeMethod: function () {
                                     blade.currentEntity.isDefault = true;
                                     blade.setDefaultMeasureUnitFn(blade.currentEntity);
@@ -108,9 +111,9 @@ angular.module('virtoCommerce.catalogModule')
 
                 function deleteEntry() {
                     var dialog = {
-                        id: "confirmDelete",
-                        title: "catalog.dialogs.measure-unit-delete.title",
-                        message: "catalog.dialogs.measure-unit-delete.message",
+                        id: 'confirmDelete',
+                        title: 'catalog.dialogs.measure-unit-delete.title',
+                        message: 'catalog.dialogs.measure-unit-delete.message',
                         callback: function (remove) {
                             if (remove) {
                                 if (blade.deleteFn) {

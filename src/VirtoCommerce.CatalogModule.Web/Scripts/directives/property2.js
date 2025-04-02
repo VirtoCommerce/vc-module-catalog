@@ -159,7 +159,7 @@ angular.module('virtoCommerce.catalogModule').directive('vaProperty2', ['$compil
                 return true;
             }
 
-            scope.loadUnitOfMeasures = function ($select, measureId) {
+            scope.loadUnitsOfMeasure = function ($select, measureId) {
                 scope.getUnits()(measureId).then(function (result) {
                     scope.context.unitOfMeasures = result;
                     if (!scope.context.currentPropValues[0].unitOfMeasureId) {

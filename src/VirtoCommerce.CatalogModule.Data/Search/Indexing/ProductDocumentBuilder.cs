@@ -155,7 +155,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             var document = CreateDocument(variation, mainProduct);
 #pragma warning restore VC0010 // Type or member is obsolete
 
-            await IndexMeasurePropertiesAsync(document, variation.Properties);
+            await IndexMeasurePropertiesAsync(document, variation);
             return document;
         }
 
@@ -165,7 +165,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             var document = CreateDocument(product);
 #pragma warning restore VC0010 // Type or member is obsolete
 
-            await IndexMeasurePropertiesAsync(document, product.Properties);
+            await IndexMeasurePropertiesAsync(document, product);
             return document;
         }
 
@@ -265,9 +265,9 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             return document;
         }
 
-        protected virtual async Task IndexMeasurePropertiesAsync(IndexDocument document, IList<Property> properties)
+        protected virtual async Task IndexMeasurePropertiesAsync(IndexDocument document, CatalogProduct product)
         {
-            var measureProperties = properties.Where(p => p.ValueType == PropertyValueType.Measure && !string.IsNullOrEmpty(p.MeasureId)).ToList();
+            var measureProperties = product.Properties.Where(p => p.ValueType == PropertyValueType.Measure && !string.IsNullOrEmpty(p.MeasureId));
 
             foreach (var measureProperty in measureProperties)
             {
@@ -276,12 +276,12 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 if (propValue != null)
                 {
                     var measure = await _measureService.GetByIdAsync(measureProperty.MeasureId);
-                    var valueUnitOfMeasure = measure?.Units.FirstOrDefault(u => u.Id == propValue.UnitOfMeasureId);
+                    var valueUnit = measure?.Units.FirstOrDefault(u => u.Id == propValue.UnitOfMeasureId);
 
-                    if (measure != null && valueUnitOfMeasure != null)
+                    if (measure != null && valueUnit != null)
                     {
                         var propertyName = measureProperty.Name;
-                        var defaultUnitValue = (decimal)propValue.Value * valueUnitOfMeasure.ConversionFactor;
+                        var defaultUnitValue = (decimal)propValue.Value * valueUnit.ConversionFactor;
                         document.Add(new IndexDocumentField(propertyName, defaultUnitValue, IndexDocumentFieldValueType.Double) { IsRetrievable = true, IsFilterable = true, IsCollection = false });
 
                         foreach (var unit in measure.Units.Where(u => !u.IsDefault))

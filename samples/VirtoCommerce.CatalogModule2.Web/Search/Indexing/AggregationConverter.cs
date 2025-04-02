@@ -22,9 +22,9 @@ namespace VirtoCommerce.CatalogModule2.Data.Search.Indexing
             : base(browseFilterService, propertyService, propDictItemsSearchService, categoryService)
         {
         }
-        protected override Task AddLabelsAsync(IList<Aggregation> aggregations, IList<IBrowseFilter> browseFilters, string catalogId)
+        protected override Task AddLabelsAsync(IList<Aggregation> aggregations, string catalogId, IList<IBrowseFilter> browseFilters)
         {
-            return base.AddLabelsAsync(aggregations, browseFilters, catalogId);
+            return base.AddLabelsAsync(aggregations, catalogId, browseFilters);
         }
         public override Task<Aggregation[]> ConvertAggregationsAsync(IList<AggregationResponse> aggregationResponses, ProductIndexedSearchCriteria criteria)
         {
