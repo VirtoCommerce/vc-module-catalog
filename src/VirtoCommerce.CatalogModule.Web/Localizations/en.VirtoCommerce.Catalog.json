@@ -234,7 +234,8 @@
         "labels": {
           "name": "Name",
           "priority": "Priority",
-          "localizedName": "Localized name",
+          "localized-name": "Localized names",
+          "localized-description": "Localized descriptions",
           "display-name": "Display name",
           "display-order": "Display order",
           "properties": "Properties",
@@ -243,7 +244,8 @@
           "show-less-languages": "Show less languages"
         },
         "placeholders": {
-          "display-name": "Enter property name"
+          "display-name": "Enter group name",
+          "display-description": "Enter description"
         }
       },
       "property-list": {

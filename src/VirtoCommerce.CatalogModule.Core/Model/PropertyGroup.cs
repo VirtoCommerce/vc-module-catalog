@@ -1,9 +1,9 @@
-using System;
+using VirtoCommerce.ExportModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Core.Model
 {
-    public class PropertyGroup : AuditableEntity, ICloneable
+    public class PropertyGroup : AuditableEntity, IHasCatalogId, IExportable
     {
         public string Name { get; set; }
 

@@ -19,3 +19,15 @@
     </a>
   </div>
 </script>
+
+<script type="text/ng-template" id="localizedDescription.html">
+  <div class="vc-catalog form-input __langs" ng-repeat="language in blade.catalog.languages | limitTo: blade.showAllLanguages2 ? blade.catalog.languages.length : 2">
+    <label class="lang-code">{{language.languageCode}}</label>
+    <textarea cols="30" rows="10" ng-model="blade.currentEntity.localizedDescription.values[language.languageCode]" placeholder="{{ 'catalog.blades.property-group-details.placeholders.display-name' | translate }}"></textarea>
+  </div>
+  <div ng-if="blade.catalog.languages.length > 2">
+    <a href="" ng-click="blade.showAllLanguages2 = !blade.showAllLanguages2">
+      {{ (blade.showAllLanguages2 ? 'catalog.blades.property-group-details.labels.show-less-languages' : 'catalog.blades.property-group-details.labels.show-more-languages' ) | translate }}
+    </a>
+  </div>
+</script>

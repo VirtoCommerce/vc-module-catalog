@@ -781,9 +781,15 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                         valueType: "Integer"
                     },
                     {
-                        title: "catalog.blades.property-group-details.labels.localizedName",
+                        title: "catalog.blades.property-group-details.labels.localized-name",
                         colSpan: 6,
                         templateUrl: "localizedName.html"
+                    },
+                    {
+                        title: "catalog.blades.property-group-details.labels.localized-description",
+                        colSpan: 6,
+                        templateUrl: "localizedDescription.html"
                     }
+
                 ]);
             }]);
