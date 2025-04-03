@@ -21,6 +21,16 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         private readonly IProductSearchService _productsSearchService;
         private readonly IMeasureService _measureService;
 
+        [Obsolete("Use ProductDocumentBuilder(ISettingsManager settingsManager, IPropertySearchService propertySearchService, IItemService itemService, IProductSearchService productsSearchService, IMeasureService measureService)", DiagnosticId = "VC0010", UrlFormat = "https://docs.virtocommerce.org/platform/user-guide/versions/virto3-products-versions/")]
+        public ProductDocumentBuilder(
+            ISettingsManager settingsManager,
+            IPropertySearchService propertySearchService,
+            IItemService itemService,
+            IProductSearchService productsSearchService)
+            : this(settingsManager, propertySearchService, itemService, productsSearchService, null)
+        {
+        }
+
         public ProductDocumentBuilder(
             ISettingsManager settingsManager,
             IPropertySearchService propertySearchService,
@@ -149,13 +159,17 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         /// <summary>
         /// The mainProduct argument contains more information than variation.MainProduct
         /// </summary>
-        protected async virtual Task<IndexDocument> CreateDocumentAsync(CatalogProduct variation, CatalogProduct mainProduct)
+        protected virtual async Task<IndexDocument> CreateDocumentAsync(CatalogProduct variation, CatalogProduct mainProduct)
         {
 #pragma warning disable VC0010 // Type or member is obsolete
             var document = CreateDocument(variation, mainProduct);
 #pragma warning restore VC0010 // Type or member is obsolete
 
-            await IndexMeasurePropertiesAsync(document, variation);
+            if (_measureService != null)
+            {
+                await IndexMeasurePropertiesAsync(document, variation);
+            }
+
             return document;
         }
 
@@ -165,7 +179,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             var document = CreateDocument(product);
 #pragma warning restore VC0010 // Type or member is obsolete
 
-            await IndexMeasurePropertiesAsync(document, product);
+            if (_measureService != null)
+            {
+                await IndexMeasurePropertiesAsync(document, product);
+            }
+
             return document;
         }
 
