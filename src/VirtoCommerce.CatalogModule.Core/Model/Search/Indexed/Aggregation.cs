@@ -1,4 +1,4 @@
-﻿namespace VirtoCommerce.CatalogModule.Core.Model.Search
+namespace VirtoCommerce.CatalogModule.Core.Model.Search
 {
     public class Aggregation
     {

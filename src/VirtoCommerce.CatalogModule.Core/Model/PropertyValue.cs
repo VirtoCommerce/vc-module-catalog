@@ -23,7 +23,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         [JsonIgnore]
         public virtual bool IsEmpty => string.IsNullOrEmpty(ValueId) && string.IsNullOrEmpty(Value?.ToString());
         public string OuterId { get; set; }
-
+        public string UnitOfMeasureId { get; set; }
 
         public override string ToString()
         {

@@ -7,9 +7,12 @@ namespace VirtoCommerce.CatalogModule.Core.Model
     public class AggregationProperty : ICloneable
     {
         public string Name { get; set; }
-        public bool IsSelected { get; set; }
         public string Type { get; set; }
         public string Currency { get; set; }
+        public string MeasureId { get; set; }
+        public string UnitOfMeasureId { get; set; }
+        public string IndexFieldName { get; set; }
+        public bool IsSelected { get; set; }
         public int? Size { get; set; }
         public int ValuesCount => Values?.Count ?? 0;
         public IList<string> Values { get; set; }

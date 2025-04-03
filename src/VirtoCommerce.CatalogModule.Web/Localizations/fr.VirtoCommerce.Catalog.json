@@ -12,6 +12,12 @@
         "title": "Point géographique",
         "placeholder": "Entrez la latitude et la longitude",
         "description": "Entrez la latitude et la longitude séparées par une virgule sans espaces, par exemple 41.40338,2.17403"
+      },
+      "measure": {
+        "title": "Mesure",
+        "placeholder": "Entrer la mesure",
+        "description": "Entrez la mesure au format : 1.23",
+        "select-placeholder": "Sélectionner la mesure"
       }
     },
     "product-types": {
@@ -190,7 +196,8 @@
           "new-dictionary-property-caution": "Vous pouvez gérer les éléments du dictionnaire uniquement après avoir enregistré la propriété",
           "attributes": "Attributs",
           "manage-attributes": "Gérer les attributs de la propriété",
-          "hidden": "Caché"
+          "hidden": "Caché",
+          "measure": "Mesure"
         },
         "placeholders": {
           "display-name": "Entrez le nom d'affichage",
@@ -602,6 +609,12 @@
         "type": {
           "label": "Type d'agrégation"
         },
+        "measure": {
+          "label": "Mesure"
+        },
+        "unit": {
+          "label": "Unité de mesure"
+        },
         "size": {
           "label": "Taille de l'agrégation",
           "placeholder": "Entrez la taille de l'agrégation",
@@ -717,15 +730,20 @@
         "subtitle": "Détails de l'unité de mesure",
         "labels": {
           "name": "Nom",
+          "localized-name": "Nom localisé",
           "code": "Code",
           "conversion-factor": "Facteur de conversion",
-          "symbol": "Symbole"
+          "symbol": "Symbole",
+          "localized-symbol": "Symbole localisé",
+          "code-naming-error": "Le code doit commencer par un caractère alphanumérique et ne contenir que des caractères latins et des chiffres"
         },
         "placeholders": {
           "name": "Entrez le nom",
+          "localized-name": "Entrez le nom localisé",
           "code": "Entrez le code",
-          "conversion-factor": "Entrez la conversion",
-          "symbol": "Symbole"
+          "conversion-factor": "Entrez le facteur de conversion",
+          "symbol": "Entrez le symbole",
+          "localized-symbol": "Entrez le symbole localisé"
         }
       },
       "configuration-details": {

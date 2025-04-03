@@ -12,6 +12,12 @@
         "title": "Punto geográfico",
         "placeholder": "Ingrese latitud y longitud",
         "description": "Ingrese latitud y longitud separadas por una coma sin espacios, por ejemplo, 41.40338,2.17403"
+      },
+      "measure": {
+        "title": "Medición",
+        "placeholder": "Ingresar medida",
+        "description": "Ingrese la medida en el formato: 1.23",
+        "select-placeholder": "Seleccionar medida"
       }
     },
     "product-types": {
@@ -190,7 +196,8 @@
           "new-dictionary-property-caution": "Puede gestionar los elementos del diccionario solo después de guardar la propiedad",
           "attributes": "Atributos",
           "manage-attributes": "Gestionar atributos de la propiedad",
-          "hidden": "Oculto"
+          "hidden": "Oculto",
+          "measure": "Medición"
         },
         "placeholders": {
           "display-name": "Ingrese nombre para mostrar",
@@ -602,6 +609,12 @@
         "type": {
           "label": "Tipo de agregación"
         },
+        "measure": {
+          "label": "Medida"
+        },
+        "unit": {
+          "label": "Unidad de medida"
+        },
         "size": {
           "label": "Tamaño de la agregación",
           "placeholder": "Ingrese tamaño de la agregación",
@@ -717,15 +730,20 @@
         "subtitle": "Detalles de la unidad de medida",
         "labels": {
           "name": "Nombre",
+          "localized-name": "Nombre localizado",
           "code": "Código",
           "conversion-factor": "Factor de conversión",
-          "symbol": "Símbolo"
+          "symbol": "Símbolo",
+          "localized-symbol": "Símbolo localizado",
+          "code-naming-error": "El código debe comenzar con un carácter alfanumérico y contener solo caracteres latinos y dígitos"
         },
         "placeholders": {
-          "name": "Ingrese nombre",
-          "code": "Ingrese código",
-          "conversion-factor": "Ingrese conversión",
-          "symbol": "Símbolo"
+          "name": "Ingrese el nombre",
+          "localized-name": "Ingrese el nombre localizado",
+          "code": "Ingrese el código",
+          "conversion-factor": "Ingrese el factor de conversión",
+          "symbol": "Ingrese el símbolo",
+          "localized-symbol": "Ingrese el símbolo localizado"
         }
       },
       "configuration-details": {
