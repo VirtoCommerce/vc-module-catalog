@@ -28,6 +28,7 @@ angular.module('virtoCommerce.catalogModule')
                         blade.isLoading = false;
                     });
                 }
+                $scope.isValid = false;
             });
 
             function initialize(data) {
