@@ -18,7 +18,7 @@ angular.module('virtoCommerce.catalogModule')
                     name: "catalog.blades.section-details.commands.add",
                     icon: 'fas fa-plus',
                     executeMethod: openOptionSelectorBlade,
-                    canExecuteMethod: function () { return true; },
+                    canExecuteMethod: canAddOptions,
                     permission: 'catalog:configurations:update'
                 },
                 {
@@ -34,6 +34,16 @@ angular.module('virtoCommerce.catalogModule')
 
             $scope.$watch("blade.currentEntity", function () {
                 $scope.isValid = blade.formScope && blade.formScope.$valid;
+            }, true);
+            $scope.$watch("blade.currentEntity.allowCustomText", function (value) {
+                if (!value && !blade.currentEntity.allowPredefinedOptions) {
+                    blade.currentEntity.allowPredefinedOptions = true;
+                }
+            }, true);
+            $scope.$watch("blade.currentEntity.allowPredefinedOptions", function (value) {
+                if (!value && !blade.currentEntity.allowCustomText) {
+                    blade.currentEntity.allowCustomText = true;
+                }
             }, true);
 
             $scope.setForm = function (form) { blade.formScope = form; };
@@ -101,6 +111,12 @@ angular.module('virtoCommerce.catalogModule')
                 return !angular.equals(blade.currentEntity, blade.origEntity);
             }
 
+            function canAddOptions() {
+                return blade.currentEntity.type === 'Product'
+                    || blade.currentEntity.type === 'Text'
+                    && blade.currentEntity.allowPredefinedOptions;
+            }
+
             function openOptionSelectorBlade() {
                 var selection = [];
                 var options = {
@@ -163,6 +179,9 @@ angular.module('virtoCommerce.catalogModule')
             function initialize(item) {
                 if (item.options == null) {
                     item.options = [];
+                }
+                if (item.id == null) {
+                    item.allowCustomText = true;
                 }
                 blade.currentEntity = angular.copy(item);
                 blade.isLoading = false;

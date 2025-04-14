@@ -756,7 +756,9 @@
           "quantity": "Quantity",
           "product-name": "Product name",
           "options": "Options",
-          "type": "Type of section"
+          "type": "Type of section",
+          "allow-custom-text": "Allow custom text",
+          "allow-predefined-options": "Allow predefined options"
         },
         "descr": {
           "no-options": "No options in this section yet"

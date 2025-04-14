@@ -1,4 +1,4 @@
-<div class="blade-static" style="height: 300px; width: 550px; white-space: normal;">
+<div class="blade-static" style="height: 350px; width: 550px; white-space: normal;">
   <form class="form" name="sectionForm" style="margin:0; padding: 0;">
     <div class="form-group clearfix" ng-init="setForm(sectionForm)">
       <label class="form-label">{{'catalog.blades.section-details.labels.name' | translate}}</label>
@@ -14,7 +14,7 @@
     </div>
     <div class="form-group clearfix" style="padding-top: 0;">
       <div class="column">
-        <div class="form-group" style="padding-top: 0;">
+        <div class="form-group" style="padding-top: 0; padding-right: 10px;">
           <label class="form-label">{{ 'catalog.blades.section-details.labels.type' | translate }}</label>
           <div class="form-input">
             <ui-select ng-model="blade.currentEntity.type" required>
@@ -26,27 +26,43 @@
           </div>
         </div>
       </div>
-      <div class="column"><br></div>
       <div class="column">
-        <div class="form-group" style="padding-top: 0;">
-          <label class="form-label">{{ 'catalog.blades.section-details.labels.required' | translate }}</label>
+        <div class="form-group" style="padding-top: 0;" ng-if="blade.currentEntity.type === 'Text'">
+          <label class="form-label">{{ 'catalog.blades.section-details.labels.allow-custom-text' | translate }}</label>
           <div class="form-input" style="padding-top: 6px;">
             <label class="form-label __switch">
-              <input type="checkbox" ng-model="blade.currentEntity.isRequired" />
+              <input type="checkbox" ng-model="blade.currentEntity.allowCustomText" />
+              <span class="switch"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="column">
+        <div class="form-group" style="padding-top: 0;" ng-if="blade.currentEntity.type === 'Text'">
+          <label class="form-label">{{ 'catalog.blades.section-details.labels.allow-predefined-options' | translate }}</label>
+          <div class="form-input" style="padding-top: 6px;">
+            <label class="form-label __switch">
+              <input type="checkbox" ng-model="blade.currentEntity.allowPredefinedOptions" />
               <span class="switch"></span>
             </label>
           </div>
         </div>
       </div>
     </div>
-    <div class="form-group clearfix" style="padding-top: 0;" ng-if="blade.currentEntity.type === 'Product'">
-      <label class="form-label">{{ 'catalog.blades.section-details.labels.options' | translate }}</label>
+    <div class="form-group clearfix" style="padding-top: 0;">
+      <label class="form-label">{{ 'catalog.blades.section-details.labels.required' | translate }}</label>
+      <div class="form-input" style="padding-top: 6px;">
+        <label class="form-label __switch">
+          <input type="checkbox" ng-model="blade.currentEntity.isRequired" />
+          <span class="switch"></span>
+        </label>
+      </div>
     </div>
   </form>
 </div>
 <div class="blade-static __bottom" ng-include="'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/common/templates/ok-cancel.tpl.html'"></div>
-<div class="blade-content __medium-wide" style="height: calc(100% - 372px) !important;">
-  <div class="blade-inner" ng-if="blade.currentEntity.type === 'Product'">
+<div class="blade-content __medium-wide" style="height: calc(100% - 422px) !important;">
+  <div class="blade-inner" ng-if="blade.currentEntity.type === 'Product' || blade.currentEntity.type === 'Text' && blade.currentEntity.allowPredefinedOptions">
     <div class="inner-block" ng-init="setGridOptions({
                     rowTemplate: 'option-list.row.html',
                     data: 'blade.currentEntity.options',
