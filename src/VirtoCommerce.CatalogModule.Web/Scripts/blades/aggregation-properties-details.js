@@ -93,11 +93,13 @@ angular.module('virtoCommerce.catalogModule')
 
                 if (blade.property.unitOfMeasureId) {
                     const unit = _.find(blade.units, function (x) {
-                        return x.id === blade.property.unitOfMeasureId && !x.isDefault;
+                        return x.id === blade.property.unitOfMeasureId;
                     });
 
-                    if (unit) {
+                    if (!unit.isDefault) {
                         blade.property.indexFieldName = `${blade.property.name}-${unit.code}`;
+                    } else {
+                        blade.property.indexFieldName = blade.property.name;
                     }
                 }
 
