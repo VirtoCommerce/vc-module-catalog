@@ -61,5 +61,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
         public string SeoObjectType { get { return GetType().Name; } }
         public IList<SeoInfo> SeoInfos { get; set; }
+
+        public IList<PropertyGroup> PropertyGroups { get; set; }
     }
 }

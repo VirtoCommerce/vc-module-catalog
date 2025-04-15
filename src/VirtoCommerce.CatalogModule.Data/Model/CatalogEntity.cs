@@ -41,6 +41,9 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         public virtual ObservableCollection<PropertyEntity> Properties { get; set; }
             = new NullCollection<PropertyEntity>();
 
+        public virtual ObservableCollection<PropertyGroupEntity> PropertyGroups { get; set; }
+            = new NullCollection<PropertyGroupEntity>();
+
         public virtual ObservableCollection<SeoInfoEntity> SeoInfos { get; set; }
             = new NullCollection<SeoInfoEntity>();
 
@@ -73,6 +76,8 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             }
 
             catalog.SeoInfos = SeoInfos.Select(x => x.ToModel(AbstractTypeFactory<SeoInfo>.TryCreateInstance())).ToList();
+
+            catalog.PropertyGroups = PropertyGroups.Select(x => x.ToModel(AbstractTypeFactory<PropertyGroup>.TryCreateInstance())).ToList();
 
             // Self properties
             catalog.Properties = Properties.Where(x => x.CategoryId == null)
@@ -150,6 +155,11 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 }
             }
 
+            if (catalog.PropertyGroups != null)
+            {
+                PropertyGroups = new ObservableCollection<PropertyGroupEntity>(catalog.PropertyGroups.Select(x => AbstractTypeFactory<PropertyGroupEntity>.TryCreateInstance().FromModel(x, pkMap)));
+            }
+
             if (catalog.SeoInfos != null)
             {
                 SeoInfos = new ObservableCollection<SeoInfoEntity>(catalog.SeoInfos.Select(x => AbstractTypeFactory<SeoInfoEntity>.TryCreateInstance().FromModel(x, pkMap)));
@@ -180,6 +190,11 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             if (!CatalogPropertyValues.IsNullCollection())
             {
                 CatalogPropertyValues.Patch(target.CatalogPropertyValues, (sourcePropValue, targetPropValue) => sourcePropValue.Patch(targetPropValue));
+            }
+
+            if (!PropertyGroups.IsNullCollection())
+            {
+                PropertyGroups.Patch(target.PropertyGroups, (sourceSeoInfo, targetSeoInfo) => sourceSeoInfo.Patch(targetSeoInfo));
             }
 
             if (!SeoInfos.IsNullCollection())
