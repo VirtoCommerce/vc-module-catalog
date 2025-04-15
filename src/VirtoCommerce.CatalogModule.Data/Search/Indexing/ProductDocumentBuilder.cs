@@ -222,8 +222,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             document.AddFilterableString("productType", product.ProductType ?? string.Empty);
             document.AddFilterableString("mainProductId", product.MainProductId ?? string.Empty);
             document.AddFilterableString("productFamilyId", string.IsNullOrEmpty(product.MainProductId) ? product.Id : product.MainProductId);
-            document.AddFilterableString("gtin", product.Gtin ?? string.Empty);
-            document.AddFilterableString("manufacturerPartNumber", product.ManufacturerPartNumber ?? string.Empty);
+            document.AddFilterableStringAndContentString("gtin", product.Gtin ?? string.Empty);
+            document.AddFilterableStringAndContentString("manufacturerPartNumber", product.ManufacturerPartNumber ?? string.Empty);
             document.AddFilterableString("weightUnit", product.WeightUnit ?? string.Empty);
             document.AddFilterableDecimal("weight", product.Weight);
             document.AddFilterableString("measureUnit", product.MeasureUnit ?? string.Empty);
