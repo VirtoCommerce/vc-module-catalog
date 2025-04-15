@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Core.Model;
-using VirtoCommerce.CatalogModule.Core.Model.Configuration;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Domain;
@@ -17,8 +16,8 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         [Required]
         public string Name { get; set; }
 
-        public ObservableCollection<LocalizedStringEntity<ItemEntity>> LocalizedNames { get; set; }
-            = new NullCollection<LocalizedStringEntity<ItemEntity>>();
+        public ObservableCollection<ItemLocalizedNameEntity> LocalizedNames { get; set; }
+            = new NullCollection<ItemLocalizedNameEntity>();
 
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
@@ -383,10 +382,10 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
             if (product.LocalizedName != null)
             {
-                LocalizedNames = new ObservableCollection<LocalizedStringEntity<ItemEntity>>(product.LocalizedName.Values
+                LocalizedNames = new ObservableCollection<ItemLocalizedNameEntity>(product.LocalizedName.Values
                     .Select(x =>
                     {
-                        var entity = AbstractTypeFactory<LocalizedStringEntity<ItemEntity>>.TryCreateInstance();
+                        var entity = AbstractTypeFactory<ItemLocalizedNameEntity>.TryCreateInstance();
                         entity.LanguageCode = x.Key;
                         entity.Value = x.Value;
                         return entity;
@@ -495,7 +494,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             #region LocalizedName
             if (!LocalizedNames.IsNullCollection())
             {
-                var localizedNameComparer = AnonymousComparer.Create((LocalizedStringEntity<ItemEntity> x) => $"{x.Value}-{x.LanguageCode}");
+                var localizedNameComparer = AnonymousComparer.Create((ItemLocalizedNameEntity x) => $"{x.Value}-{x.LanguageCode}");
                 LocalizedNames.Patch(target.LocalizedNames, localizedNameComparer, (sourceDisplayName, targetDisplayName) => { });
             }
             #endregion

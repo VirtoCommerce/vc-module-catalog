@@ -12,6 +12,12 @@
         "title": "Punkt geograficzny",
         "placeholder": "Wprowadź szerokość i długość geograficzną",
         "description": "Wprowadź szerokość i długość geograficzną oddzielone przecinkiem bez spacji, np. 41.40338,2.17403"
+      },
+      "measure": {
+        "title": "Miara",
+        "placeholder": "Wprowadź miarę",
+        "description": "Wprowadź miarę w formacie: 1.23",
+        "select-placeholder": "Wybierz miarę"
       }
     },
     "product-types": {
@@ -190,7 +196,8 @@
           "new-dictionary-property-caution": "Możesz zarządzać elementami słownika tylko po zapisaniu właściwości",
           "attributes": "Atrybuty",
           "manage-attributes": "Zarządzaj atrybutami właściwości",
-          "hidden": "Ukryty"
+          "hidden": "Ukryty",
+          "measure": "Miara"
         },
         "placeholders": {
           "display-name": "Wprowadź nazwę wyświetlaną",
@@ -602,6 +609,12 @@
         "type": {
           "label": "Typ agregacji"
         },
+        "measure": {
+          "label": "Miara"
+        },
+        "unit": {
+          "label": "Jednostka miary"
+        },
         "size": {
           "label": "Rozmiar agregacji",
           "placeholder": "Wprowadź rozmiar agregacji",
@@ -717,15 +730,20 @@
         "subtitle": "Szczegóły jednostki miary",
         "labels": {
           "name": "Nazwa",
+          "localized-name": "Zlokalizowana nazwa",
           "code": "Kod",
           "conversion-factor": "Współczynnik konwersji",
-          "symbol": "Symbol"
+          "symbol": "Symbol",
+          "localized-symbol": "Zlokalizowany symbol",
+          "code-naming-error": "Kod musi zaczynać się od znaku alfanumerycznego i zawierać tylko znaki łacińskie oraz cyfry."
         },
         "placeholders": {
           "name": "Wprowadź nazwę",
+          "localized-name": "Wprowadź zlokalizowaną nazwę",
           "code": "Wprowadź kod",
-          "conversion-factor": "Wprowadź konwersję",
-          "symbol": "Symbol"
+          "conversion-factor": "Wprowadź współczynnik konwersji",
+          "symbol": "Wprowadź symbol",
+          "localized-symbol": "Wprowadź zlokalizowany symbol"
         }
       },
       "configuration-details": {

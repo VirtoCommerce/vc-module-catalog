@@ -2,7 +2,8 @@ using System.ComponentModel.DataAnnotations;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.Model;
-public class LocalizedStringEntity<T> : Entity
+
+public abstract class LocalizedStringEntity<T> : Entity
     where T : Entity
 {
     [Required]

@@ -24,6 +24,15 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
         [XmlAttribute("key")]
         public string Key { get; set; }
 
+        [XmlElement("measureId")]
+        public string MeasureId { get; set; }
+
+        [XmlElement("unitOfMeasureId")]
+        public string UnitOfMeasureId { get; set; }
+
+        [XmlElement("indexFieldName")]
+        public string IndexFieldName { get; set; }
+
         [XmlElement("facetSize")]
         public int? FacetSize { get; set; }
 
@@ -35,6 +44,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
         public IList<IBrowseFilterValue> GetValues()
         {
             return Values?.OfType<IBrowseFilterValue>().ToArray();
+        }
+
+        public string GetIndexFieldName()
+        {
+            return IndexFieldName ?? Key;
         }
     }
 
@@ -50,6 +64,15 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
         [XmlAttribute("key")]
         public string Key { get; set; }
 
+        [XmlElement("measureId")]
+        public string MeasureId { get; set; }
+
+        [XmlElement("unitOfMeasureId")]
+        public string UnitOfMeasureId { get; set; }
+
+        [XmlElement("indexFieldName")]
+        public string IndexFieldName { get; set; }
+
         public int Order { get; set; }
 
         [XmlElement("range")]
@@ -58,6 +81,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
         public IList<IBrowseFilterValue> GetValues()
         {
             return Values?.OfType<IBrowseFilterValue>().ToArray();
+        }
+
+        public string GetIndexFieldName()
+        {
+            return IndexFieldName ?? Key;
         }
     }
 

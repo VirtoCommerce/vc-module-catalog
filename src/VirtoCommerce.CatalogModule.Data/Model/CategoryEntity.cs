@@ -25,8 +25,8 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         [StringLength(128)]
         public string Name { get; set; }
 
-        public ObservableCollection<LocalizedStringEntity<CategoryEntity>> LocalizedNames { get; set; }
-    = new NullCollection<LocalizedStringEntity<CategoryEntity>>();
+        public ObservableCollection<CategoryLocalizedNameEntity> LocalizedNames { get; set; }
+            = new NullCollection<CategoryLocalizedNameEntity>();
 
         public DateTime StartDate { get; set; }
 
@@ -270,10 +270,10 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
             if (category.LocalizedName != null)
             {
-                LocalizedNames = new ObservableCollection<LocalizedStringEntity<CategoryEntity>>(category.LocalizedName.Values
+                LocalizedNames = new ObservableCollection<CategoryLocalizedNameEntity>(category.LocalizedName.Values
                     .Select(x =>
                     {
-                        var entity = AbstractTypeFactory<LocalizedStringEntity<CategoryEntity>>.TryCreateInstance();
+                        var entity = AbstractTypeFactory<CategoryLocalizedNameEntity>.TryCreateInstance();
                         entity.LanguageCode = x.Key;
                         entity.Value = x.Value;
                         return entity;
@@ -326,7 +326,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
             if (!LocalizedNames.IsNullCollection())
             {
-                var localizedNameComparer = AnonymousComparer.Create((LocalizedStringEntity<CategoryEntity> x) => $"{x.Value}-{x.LanguageCode}");
+                var localizedNameComparer = AnonymousComparer.Create((CategoryLocalizedNameEntity x) => $"{x.Value}-{x.LanguageCode}");
                 LocalizedNames.Patch(target.LocalizedNames, localizedNameComparer, (sourceValue, targetValue) => { });
             }
         }
