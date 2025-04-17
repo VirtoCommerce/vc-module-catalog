@@ -161,7 +161,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private async Task<IList<AggregationProperty>> GetAllPropertiesAsync(string catalogId, IEnumerable<string> currencies)
         {
             var result = (await _propertyService.GetAllCatalogPropertiesAsync(catalogId))
-                            .Select(p => new AggregationProperty { Type = _attributeType, Name = p.Name })
+                            .Select(p => new AggregationProperty { Type = _attributeType, Name = p.Name, MeasureId = p.MeasureId })
                             .ToList();
 
             result.AddRange(currencies.Select(c => new AggregationProperty { Type = _priceRangeType, Name = $"Price {c}", Currency = c }));
@@ -191,6 +191,9 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                             Name = attributeFilter.Key,
                             Values = attributeFilter.Values?.Select(v => v.Id).OrderBy(v => v, StringComparer.OrdinalIgnoreCase).ToArray() ?? [],
                             Size = attributeFilter.FacetSize,
+                            MeasureId = attributeFilter.MeasureId,
+                            UnitOfMeasureId = attributeFilter.UnitOfMeasureId,
+                            IndexFieldName = attributeFilter.IndexFieldName,
                         },
                         RangeFilter rangeFilter => new AggregationProperty
                         {
@@ -198,6 +201,9 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                             Type = _rangeType,
                             Name = rangeFilter.Key,
                             Values = GetRangeBounds(rangeFilter.Values),
+                            MeasureId = rangeFilter.MeasureId,
+                            UnitOfMeasureId = rangeFilter.UnitOfMeasureId,
+                            IndexFieldName = rangeFilter.IndexFieldName,
                         },
                         PriceRangeFilter priceRangeFilter => new AggregationProperty
                         {
@@ -236,6 +242,9 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                     {
                         Order = order,
                         Key = property.Name,
+                        MeasureId = property.MeasureId,
+                        UnitOfMeasureId = property.UnitOfMeasureId,
+                        IndexFieldName = property.IndexFieldName,
                         FacetSize = property.Size,
                         Values = property.Values?.OrderBy(v => v, StringComparer.OrdinalIgnoreCase).Select(v => new AttributeFilterValue { Id = v }).ToArray(),
                     };
@@ -245,6 +254,9 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                     {
                         Order = order,
                         Key = property.Name,
+                        MeasureId = property.MeasureId,
+                        UnitOfMeasureId = property.UnitOfMeasureId,
+                        IndexFieldName = property.IndexFieldName,
                         Values = GetRangeFilterValues(property.Values),
                     };
                     break;

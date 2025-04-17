@@ -19,12 +19,29 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
     {
         private readonly IItemService _itemService;
         private readonly IProductSearchService _productsSearchService;
+        private readonly IMeasureService _measureService;
 
-        public ProductDocumentBuilder(ISettingsManager settingsManager, IPropertySearchService propertySearchService, IItemService itemService, IProductSearchService productsSearchService)
+        [Obsolete("Use ProductDocumentBuilder(ISettingsManager settingsManager, IPropertySearchService propertySearchService, IItemService itemService, IProductSearchService productsSearchService, IMeasureService measureService)", DiagnosticId = "VC0010", UrlFormat = "https://docs.virtocommerce.org/platform/user-guide/versions/virto3-products-versions/")]
+        public ProductDocumentBuilder(
+            ISettingsManager settingsManager,
+            IPropertySearchService propertySearchService,
+            IItemService itemService,
+            IProductSearchService productsSearchService)
+            : this(settingsManager, propertySearchService, itemService, productsSearchService, null)
+        {
+        }
+
+        public ProductDocumentBuilder(
+            ISettingsManager settingsManager,
+            IPropertySearchService propertySearchService,
+            IItemService itemService,
+            IProductSearchService productsSearchService,
+            IMeasureService measureService)
             : base(settingsManager, propertySearchService)
         {
             _itemService = itemService;
             _productsSearchService = productsSearchService;
+            _measureService = measureService;
         }
 
         public virtual async Task BuildSchemaAsync(IndexDocument schema)
@@ -77,9 +94,10 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         {
             var result = new List<IndexDocument>();
             var products = await GetProducts(documentIds);
+
             foreach (var product in products)
             {
-                var doc = CreateDocument(product);
+                var doc = await CreateDocumentAsync(product);
                 result.Add(doc);
 
                 //Index product variants by separate chunked requests for performance reason
@@ -88,19 +106,22 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                     var variationsSearchCriteria = GetVariationSearchCriteria(product);
                     var skipCount = 0;
                     int totalCount;
+
                     do
                     {
                         variationsSearchCriteria.Skip = skipCount;
                         var productVariations = await _productsSearchService.SearchNoCloneAsync(variationsSearchCriteria);
+
                         foreach (var variation in productVariations.Results)
                         {
-                            result.Add(CreateDocument(variation, product));
+                            result.Add(await CreateDocumentAsync(variation, product));
 
                             if (variation.IsActive.HasValue && variation.IsActive.Value)
                             {
                                 IndexProductVariation(doc, variation);
                             }
                         }
+
                         totalCount = productVariations.TotalCount;
                         skipCount += variationsSearchCriteria.Take;
                     }
@@ -138,11 +159,41 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         /// <summary>
         /// The mainProduct argument contains more information than variation.MainProduct
         /// </summary>
+        protected virtual async Task<IndexDocument> CreateDocumentAsync(CatalogProduct variation, CatalogProduct mainProduct)
+        {
+#pragma warning disable VC0010 // Type or member is obsolete
+            var document = CreateDocument(variation, mainProduct);
+#pragma warning restore VC0010 // Type or member is obsolete
+
+            if (_measureService != null)
+            {
+                await IndexMeasurePropertiesAsync(document, variation);
+            }
+
+            return document;
+        }
+
+        protected virtual async Task<IndexDocument> CreateDocumentAsync(CatalogProduct product)
+        {
+#pragma warning disable VC0010 // Type or member is obsolete
+            var document = CreateDocument(product);
+#pragma warning restore VC0010 // Type or member is obsolete
+
+            if (_measureService != null)
+            {
+                await IndexMeasurePropertiesAsync(document, product);
+            }
+
+            return document;
+        }
+
+        [Obsolete("Use CreateDocumentAsync(CatalogProduct variation, CatalogProduct mainProduct)", DiagnosticId = "VC0010", UrlFormat = "https://docs.virtocommerce.org/platform/user-guide/versions/virto3-products-versions/")]
         protected virtual IndexDocument CreateDocument(CatalogProduct variation, CatalogProduct mainProduct)
         {
             return CreateDocument(variation);
         }
 
+        [Obsolete("Use CreateDocumentAsync(CatalogProduct product)", DiagnosticId = "VC0010", UrlFormat = "https://docs.virtocommerce.org/platform/user-guide/versions/virto3-products-versions/")]
         protected virtual IndexDocument CreateDocument(CatalogProduct product)
         {
             var document = new IndexDocument(product.Id);
@@ -171,8 +222,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             document.AddFilterableString("productType", product.ProductType ?? string.Empty);
             document.AddFilterableString("mainProductId", product.MainProductId ?? string.Empty);
             document.AddFilterableString("productFamilyId", string.IsNullOrEmpty(product.MainProductId) ? product.Id : product.MainProductId);
-            document.AddFilterableString("gtin", product.Gtin ?? string.Empty);
-            document.AddFilterableString("manufacturerPartNumber", product.ManufacturerPartNumber ?? string.Empty);
+            document.AddFilterableStringAndContentString("gtin", product.Gtin ?? string.Empty);
+            document.AddFilterableStringAndContentString("manufacturerPartNumber", product.ManufacturerPartNumber ?? string.Empty);
             document.AddFilterableString("weightUnit", product.WeightUnit ?? string.Empty);
             document.AddFilterableDecimal("weight", product.Weight);
             document.AddFilterableString("measureUnit", product.MeasureUnit ?? string.Empty);
@@ -230,6 +281,35 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             }
 
             return document;
+        }
+
+        protected virtual async Task IndexMeasurePropertiesAsync(IndexDocument document, CatalogProduct product)
+        {
+            var measureProperties = product.Properties.Where(p => p.ValueType == PropertyValueType.Measure && !string.IsNullOrEmpty(p.MeasureId));
+
+            foreach (var measureProperty in measureProperties)
+            {
+                var propValue = measureProperty.Values.FirstOrDefault();
+
+                if (propValue != null)
+                {
+                    var measure = await _measureService.GetByIdAsync(measureProperty.MeasureId);
+                    var valueUnit = measure?.Units.FirstOrDefault(u => u.Id == propValue.UnitOfMeasureId);
+
+                    if (measure != null && valueUnit != null)
+                    {
+                        var propertyName = measureProperty.Name;
+                        var defaultUnitValue = (decimal)propValue.Value * valueUnit.ConversionFactor;
+                        document.Add(new IndexDocumentField(propertyName, defaultUnitValue, IndexDocumentFieldValueType.Double) { IsRetrievable = true, IsFilterable = true, IsCollection = false });
+
+                        foreach (var unit in measure.Units.Where(u => !u.IsDefault))
+                        {
+                            var unitValue = defaultUnitValue / unit.ConversionFactor;
+                            document.Add(new IndexDocumentField($"{propertyName}-{unit.Code}", unitValue, IndexDocumentFieldValueType.Double) { IsRetrievable = true, IsFilterable = true, IsCollection = false });
+                        }
+                    }
+                }
+            }
         }
 
         protected virtual void IndexProductVariation(IndexDocument document, CatalogProduct variation)

@@ -12,13 +12,18 @@ namespace VirtoCommerce.CatalogModule2.Data.Search.Indexing
 {
     public class ProductDocumentBuilder2 : ProductDocumentBuilder
     {
-        public ProductDocumentBuilder2(ISettingsManager settingsManager, IPropertySearchService propertySearchService, IItemService itemService, IProductSearchService productsSearchService)
-            : base(settingsManager, propertySearchService, itemService, productsSearchService)
+        public ProductDocumentBuilder2(
+            ISettingsManager settingsManager,
+            IPropertySearchService propertySearchService,
+            IItemService itemService,
+            IProductSearchService productsSearchService,
+            IMeasureService measureService)
+            : base(settingsManager, propertySearchService, itemService, productsSearchService, measureService)
         {
         }
-        protected override IndexDocument CreateDocument(CatalogProduct product)
+        protected override Task<IndexDocument> CreateDocumentAsync(CatalogProduct product)
         {
-            return base.CreateDocument(product);
+            return base.CreateDocumentAsync(product);
         }
         protected override IEnumerable<string> ExpandOutline(Outline outline, bool getNameLatestItem)
         {

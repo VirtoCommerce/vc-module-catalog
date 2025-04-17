@@ -12,6 +12,12 @@
         "title": "ジオポイント",
         "placeholder": "緯度と経度を入力",
         "description": "緯度と経度をカンマで区切ってスペースなしで入力します。例: 41.40338,2.17403"
+      },
+      "measure": {
+        "title": "測定",
+        "placeholder": "測定値を入力",
+        "description": "測定値を次の形式で入力してください: 1.23",
+        "select-placeholder": "測定値を選択"
       }
     },
     "product-types": {
@@ -190,7 +196,8 @@
           "new-dictionary-property-caution": "プロパティを保存した後にのみ辞書項目を管理できます",
           "attributes": "属性",
           "manage-attributes": "プロパティ属性を管理",
-          "hidden": "非表示"
+          "hidden": "非表示",
+          "measure": "測定"
         },
         "placeholders": {
           "display-name": "表示名を入力",
@@ -602,6 +609,12 @@
         "type": {
           "label": "集約タイプ"
         },
+        "measure": {
+          "label": "測定"
+        },
+        "unit": {
+          "label": "測定単位"
+        },
         "size": {
           "label": "集約サイズ",
           "placeholder": "集約サイズを入力",
@@ -717,15 +730,20 @@
         "subtitle": "測定単位の詳細",
         "labels": {
           "name": "名前",
+          "localized-name": "ローカライズされた名前",
           "code": "コード",
-          "conversion-factor": "変換係数",
-          "symbol": "シンボル"
+          "conversion-factor": "換算係数",
+          "symbol": "記号",
+          "localized-symbol": "ローカライズされた記号",
+          "code-naming-error": "コードは英数字で始まり、ラテン文字と数字のみを含む必要があります。"
         },
         "placeholders": {
           "name": "名前を入力",
+          "localized-name": "ローカライズされた名前を入力",
           "code": "コードを入力",
-          "conversion-factor": "変換を入力",
-          "symbol": "シンボル"
+          "conversion-factor": "換算係数を入力",
+          "symbol": "記号を入力",
+          "localized-symbol": "ローカライズされた記号を入力"
         }
       },
       "configuration-details": {

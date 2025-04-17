@@ -2,38 +2,49 @@
 <div class="blade-content">
     <div class="blade-inner">
         <div class="inner-block">
-            <form name="formScope" class="form">
-                <div class="form-group" ng-init="setForm(formScope);">
-                    <label class="form-label" for="">{{ 'catalog.blades.item-property-detail.labels.property-name' | translate }}</label>
-                    <div class="form-input">
-                        <input required class="form-control" ng-model="blade.currentEntity.name" ng-model-options="{ debounce: 300 }" ui-validate-async="'doValidateNameAsync($value)'" />
-                    </div>
-                    <span class="comment-text" ng-if="errorData">
-                        <img src="/images/layout/warning.svg" class="comment-icon">
-                        <span ng-if="errorData.errorMessage=='duplicate-property'">
-                            {{ 'catalog.blades.item-property-detail.labels.duplicate-property-in-product' | translate: errorData.customState }}
-                        </span>
-                        <span ng-if="errorData.errorMessage=='duplicate-property-in-variation'">
-                            {{ 'catalog.blades.item-property-detail.labels.duplicate-property-in-variation1' | translate: errorData.customState }}
-                            <a href="" ng-click="openBlade(errorData.customState)">{{errorData.customState.name}}</a>{{ 'catalog.blades.item-property-detail.labels.duplicate-property-in-variation2' | translate: errorData.customState }}
-                        </span>
-                        <span ng-if="errorData.errorMessage=='property-naming-error'">
-                            {{ 'catalog.blades.item-property-detail.labels.property-naming-error' | translate }}
-                        </span>
-                    </span>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">{{ 'catalog.blades.property-detail.labels.value-type' | translate }}</label>
-                    <div class="form-input">
-                        <ui-select ng-model="blade.currentEntity.valueType">
-                            <ui-select-match placeholder="">{{ $select.selected.title |translate}}</ui-select-match>
-                            <ui-select-choices repeat="x.valueType as x in blade.availableValueTypes | filter: $select.search">
-                                <div>{{ x.title |translate }}</div>
-                            </ui-select-choices>
-                        </ui-select>
-                    </div>
-                </div>
-            </form>
+          <form name="formScope" class="form">
+            <div class="form-group" ng-init="setForm(formScope);">
+              <label class="form-label" for="">{{ 'catalog.blades.item-property-detail.labels.property-name' | translate }}</label>
+              <div class="form-input">
+                <input required class="form-control" ng-model="blade.currentEntity.name" ng-model-options="{ debounce: 300 }" ui-validate-async="'doValidateNameAsync($value)'" />
+              </div>
+              <span class="comment-text" ng-if="errorData">
+                <img src="/images/layout/warning.svg" class="comment-icon">
+                <span ng-if="errorData.errorMessage=='duplicate-property'">
+                  {{ 'catalog.blades.item-property-detail.labels.duplicate-property-in-product' | translate: errorData.customState }}
+                </span>
+                <span ng-if="errorData.errorMessage=='duplicate-property-in-variation'">
+                  {{ 'catalog.blades.item-property-detail.labels.duplicate-property-in-variation1' | translate: errorData.customState }}
+                  <a href="" ng-click="openBlade(errorData.customState)">{{errorData.customState.name}}</a>{{ 'catalog.blades.item-property-detail.labels.duplicate-property-in-variation2' | translate: errorData.customState }}
+                </span>
+                <span ng-if="errorData.errorMessage=='property-naming-error'">
+                  {{ 'catalog.blades.item-property-detail.labels.property-naming-error' | translate }}
+                </span>
+              </span>
+            </div>
+            <div class="form-group">
+              <label class="form-label">{{ 'catalog.blades.property-detail.labels.value-type' | translate }}</label>
+              <div class="form-input">
+                <ui-select ng-model="blade.currentEntity.valueType">
+                  <ui-select-match placeholder="">{{ $select.selected.title |translate}}</ui-select-match>
+                  <ui-select-choices repeat="x.valueType as x in blade.availableValueTypes | filter: $select.search">
+                    <div>{{ x.title |translate }}</div>
+                  </ui-select-choices>
+                </ui-select>
+              </div>
+            </div>
+            <div class="form-group" ng-if="blade.currentEntity.valueType === 'Measure'">
+              <label class="form-label">{{ 'catalog.blades.property-detail.labels.measure' | translate }}</label>
+              <div class="form-input">
+                <ui-select ng-model="blade.currentEntity.measureId" required>
+                  <ui-select-match placeholder="{{ 'catalog.properties.measure.select-placeholder' | translate }}">{{ $select.selected.name |translate}}</ui-select-match>
+                  <ui-select-choices repeat="x.id as x in blade.measures | filter: $select.search">
+                    <div>{{ x.name }}</div>
+                  </ui-select-choices>
+                </ui-select>
+              </div>
+            </div>
+          </form>
         </div>
     </div>
 </div>

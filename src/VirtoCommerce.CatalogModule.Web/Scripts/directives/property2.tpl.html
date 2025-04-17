@@ -94,6 +94,36 @@
     <va-property-messages></va-property-messages>
   </script>
 
+  <script type="text/ng-template" id="Measure.html">
+    <div class="columns">
+      <div class="column" style="width:70%;height:30px;">
+        <div class="form-input" style="margin-bottom:15px;">
+          <input smart-float num-type="float" fraction="6"
+                 ng-disabled="currentEntity.isReadOnly"
+                 ng-required="currentEntity.required && !currentEntity.isReadOnly"
+                 ng-model="context.currentPropValues[0].value"
+                 name="{{currentEntity.name}}"
+                 ng-class="{'error': context.currentEntity.valueType.$error.pattern}"
+                 placeholder="Please enter number">
+        </div>
+      </div>
+      <div class="column" style="width:25%;margin-left:5%;">
+        <div class="form-input" style="margin-bottom:15px;">
+          <ui-select ng-model="context.currentPropValues[0].unitOfMeasureId"
+                     ng-disabled="currentEntity.isReadOnly"
+                     ng-required="currentEntity.required"
+                     name="{{currentEntity.name}}">
+            <ui-select-match allow-clear="true">{{$select.selected.symbol}}</ui-select-match>
+            <ui-select-choices repeat="x.id as x in context.unitOfMeasures | filter: $select.search" refresh="loadUnitsOfMeasure($select, currentEntity.measureId)" refresh-delay="200">
+              <span ng-bind-html="x.symbol | highlight: $select.search"></span>
+            </ui-select-choices>
+          </ui-select>
+        </div>
+      </div>
+    </div>
+    <va-property-messages></va-property-messages>
+  </script>
+
   <script type="text/ng-template" id="ShortText-multivalue.html">
     <tags-input ng-model="context.currentPropValues"
                 ng-disabled="currentEntity.isReadOnly"

@@ -652,10 +652,16 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 .Where(x => ids.Contains(x.Id))
                 .ToListAsync();
 
-            if (measures.Any())
+            if (measures.Count > 0)
             {
                 var existingIds = measures.Select(x => x.Id).ToList();
-                await MeasureUnits.Where(x => existingIds.Contains(x.MeasureId)).LoadAsync();
+
+                await MeasureUnits
+                    .Include(x => x.LocalizedNames)
+                    .Include(x => x.LocalizedSymbols)
+                    .Where(x => existingIds.Contains(x.MeasureId))
+                    .AsSplitQuery()
+                    .LoadAsync();
             }
 
             return measures;

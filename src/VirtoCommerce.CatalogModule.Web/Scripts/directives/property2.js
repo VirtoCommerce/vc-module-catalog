@@ -1,4 +1,4 @@
-angular.module('virtoCommerce.catalogModule').directive('vaProperty2', ['$compile', '$filter', '$parse', '$templateCache', '$http', function ($compile, $filter, $parse, $templateCache, $http) {
+angular.module('virtoCommerce.catalogModule').directive('vaProperty2', ['$compile', '$templateCache', '$http', function ($compile, $templateCache, $http) {
 
     return {
         restrict: 'E',
@@ -11,6 +11,7 @@ angular.module('virtoCommerce.catalogModule').directive('vaProperty2', ['$compil
             hiddenLanguages: "=",
             defaultLanguage: "=",
             getPropValues: "&",
+            getUnits: "&",
             pageSize: "@?"
         },
         link: function (scope, element, attr, ctrls, linker) {
@@ -102,7 +103,10 @@ angular.module('virtoCommerce.catalogModule').directive('vaProperty2', ['$compil
 
                 var elementsNotEqual = _.any(nonNullNewValues, function (newValue) {
                     return _.all(nonNullCurrentValues, function (currentValue) {
-                        return !(newValue && currentValue.value === newValue.value && currentValue.languageCode === newValue.languageCode);
+                        return !(newValue &&
+                                 currentValue.value === newValue.value &&
+                                 currentValue.languageCode === newValue.languageCode &&
+                                 currentValue.unitOfMeasureId === newValue.unitOfMeasureId);
                     });
                 });
                 
@@ -154,6 +158,19 @@ angular.module('virtoCommerce.catalogModule').directive('vaProperty2', ['$compil
 
                 return true;
             }
+
+            scope.loadUnitsOfMeasure = function ($select, measureId) {
+                scope.getUnits()(measureId).then(function (result) {
+                    scope.context.unitOfMeasures = result;
+                    if (!scope.context.currentPropValues[0].unitOfMeasureId) {
+                        const defaultUnit = _.find(result, function (x) {
+                            return x.isDefault;
+                        });
+
+                        scope.context.currentPropValues[0].unitOfMeasureId = defaultUnit.id;
+                    }
+                });
+            };
 
             scope.loadDictionaryValues = function ($select) {
                 $select.page = 0;
