@@ -17,7 +17,7 @@
         <div class="form-group" style="padding-top: 0; padding-right: 10px;">
           <label class="form-label">{{ 'catalog.blades.section-details.labels.type' | translate }}</label>
           <div class="form-input">
-            <ui-select ng-model="blade.currentEntity.type" required>
+            <ui-select ng-model="blade.currentEntity.type" ng-disabled="isTypeChangeDisabled()" required>
               <ui-select-match placeholder="{{ 'catalog.blades.section-details.placeholders.type' | translate }}">{{$select.selected}}</ui-select-match>
               <ui-select-choices repeat="x in sectionTypes | filter: $select.search">
                 <span ng-bind-html="x | highlight: $select.search"></span>
@@ -62,7 +62,7 @@
 </div>
 <div class="blade-static __bottom" ng-include="'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/common/templates/ok-cancel.tpl.html'"></div>
 <div class="blade-content __medium-wide" style="height: calc(100% - 422px) !important;">
-  <div class="blade-inner" ng-if="blade.currentEntity.type === 'Product' || blade.currentEntity.type === 'Text' && blade.currentEntity.allowPredefinedOptions">
+  <div class="blade-inner" ng-if="blade.currentEntity.type === 'Product'">
     <div class="inner-block" ng-init="setGridOptions({
                     rowTemplate: 'option-list.row.html',
                     data: 'blade.currentEntity.options',
@@ -85,6 +85,30 @@
           </li>
           <li class="menu-item" ng-click='openItem(contextMenuEntity)'>
             <span class="menu-ico fa fa-edit"></span> {{'catalog.commands.open-item' | translate}}
+          </li>
+          <li class="menu-item" ng-click='delete(contextMenuEntity)'>
+            <span class="menu-ico fas fa-trash-alt"></span> {{'platform.commands.delete' | translate}}
+          </li>
+        </ul>
+      </div>
+      <div class="note" ng-if="!blade.currentEntity.options.length">{{ 'catalog.blades.section-details.descr.no-options' | translate }}</div>
+    </div>
+  </div>
+  <div class="blade-inner" ng-if="blade.currentEntity.type === 'Text' && blade.currentEntity.allowPredefinedOptions">
+    <div class="inner-block" ng-init="setGridOptions({
+                  rowTemplate: 'option-list.row.html',
+                  data: 'blade.currentEntity.options',
+                  rowHeight: 61,
+                  enableSorting: false,
+                  columnDefs: [
+                      { name: 'actions', displayName: '', enableColumnResizing: false, width: 30, cellTemplate: 'option-list-actions.cell.html', pinnedLeft:true },
+                      { name: 'text', displayName: 'catalog.blades.section-details.labels.text'}
+                  ]})">
+      <div class="table-wrapper" ng-if="blade.currentEntity.options.length" style="margin: 0 -21px 0;">
+        <div ui-grid="gridOptions" ui-grid-auto-resize ui-grid-save-state ui-grid-selection ui-grid-resize-columns ui-grid-move-columns ui-grid-pinning ui-grid-height></div>
+        <ul class="menu __context" role="menu" id="sol_menu">
+          <li class="menu-item" ng-click='edit(contextMenuEntity)'>
+            <span class="menu-ico fa fa-pencil"></span> {{'platform.commands.edit' | translate}}
           </li>
           <li class="menu-item" ng-click='delete(contextMenuEntity)'>
             <span class="menu-ico fas fa-trash-alt"></span> {{'platform.commands.delete' | translate}}

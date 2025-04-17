@@ -1,9 +1,9 @@
 angular.module('virtoCommerce.catalogModule')
-    .controller('virtoCommerce.catalogModule.configurationOptionDetailController', ['$scope', 'platformWebApp.bladeNavigationService',
-    function ($scope, bladeNavigationService) {
+    .controller('virtoCommerce.catalogModule.configurationOptionTextDetailController', ['$scope',
+    function ($scope) {
         var blade = $scope.blade;
-        blade.headIcon = blade.origEntity.productType === 'Digital' ? 'fa fa-file-zip-o' : 'fa fa-dropbox';
-        blade.title = blade.origEntity.productName;
+        blade.headIcon = 'fa fa-font';
+        blade.title = 'catalog.blades.option-details.labels.text';
         $scope.isValid = false;
 
         $scope.$watch("blade.currentEntity", function () {
@@ -17,18 +17,18 @@ angular.module('virtoCommerce.catalogModule')
                 executeMethod: function () { angular.copy(blade.origEntity, blade.currentEntity); },
                 canExecuteMethod: isDirty,
                 permission: 'catalog:configurations:update'
-            }, {
-                name: "catalog.commands.open-item",
-                icon: 'fa fa-edit',
-                executeMethod: function () { openCurrentItem(); },
-                canExecuteMethod: function () { return true; }
             }
         ];
 
         $scope.setForm = function (form) { $scope.formScope = form; };
 
         $scope.saveChanges = function () {
+            var isNew = !blade.origEntity.text;
             angular.copy(blade.currentEntity, blade.origEntity);
+
+            if (isNew && angular.isFunction(blade.onSaveNew)) {
+                blade.onSaveNew(blade.origEntity);
+            }
 
             $scope.bladeClose();
         };
@@ -40,18 +40,6 @@ angular.module('virtoCommerce.catalogModule')
         function initialize(item) {
             blade.currentEntity = angular.copy(item);
             blade.isLoading = false;
-        }
-
-        function openCurrentItem() {
-            var newBlade = {
-                id: 'optionItemDetail',
-                controller: 'virtoCommerce.catalogModule.itemDetailController',
-                template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/item-detail.tpl.html',
-                itemId: blade.currentEntity.productId,
-                productType: blade.currentEntity.productType,
-            };
-
-            bladeNavigationService.showBlade(newBlade, blade);
         }
 
         initialize(blade.origEntity);
