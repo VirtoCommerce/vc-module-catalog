@@ -76,7 +76,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     if (options.Count > 0)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
-                        var productIds = options.Select(x => x.ProductId).ToList();
+                        var productIds = options.Where(x => !string.IsNullOrEmpty(x.ProductId)).Select(x => x.ProductId).ToList();
                         await GetItemByIdsAsync(productIds, ItemResponseGroup.ItemInfo.ToString());
                     }
                 }

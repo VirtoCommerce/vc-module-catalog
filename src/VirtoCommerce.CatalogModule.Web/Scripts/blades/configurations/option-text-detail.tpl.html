@@ -1,0 +1,16 @@
+<div class="blade-static __bottom" ng-include="'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/common/templates/ok-cancel.tpl.html'"></div>
+<div class="blade-content">
+  <div class="blade-inner">
+    <div class="inner-block">
+      <form class="form" name="optionTextForm">
+        <div class="form-group" ng-init="setForm(optionTextForm)">
+          <label class="form-label">{{ 'catalog.blades.option-details.labels.text' | translate }}</label>
+          <div class="form-input __number">
+            <input required ng-model="blade.currentEntity.text"
+                   placeholder="{{ 'catalog.blades.option-details.placeholders.text' | translate }}">
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

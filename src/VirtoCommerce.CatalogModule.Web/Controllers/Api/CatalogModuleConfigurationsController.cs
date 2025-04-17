@@ -61,9 +61,25 @@ public class CatalogModuleConfigurationsController(
     [Authorize(ModuleConstants.Security.Permissions.ConfigurationsUpdate)]
     public async Task<ActionResult> CreateOrUpdateConfiguration([FromBody] ProductConfiguration configuration)
     {
+        // Clean up the options for sections that are not allowed to have predefined options
+        foreach (var section in configuration.Sections)
+        {
+            if (section.Type == ModuleConstants.ConfigurationSectionTypeText && !section.AllowPredefinedOptions)
+            {
+                section.Options = [];
+            }
+        }
+
         // Only the full configuration can be active
         // Sections with Type as ProductConfigurationSectionType.Text and ProductConfigurationSectionType.File can be whithout options
-        if ((configuration.Sections is null or []) || configuration.Sections.Where(x => x.Type == ModuleConstants.ConfigurationSectionTypeProduct).Any(x => x.Options is null or []))
+        if (
+            configuration.Sections.IsNullOrEmpty() ||
+            configuration.Sections.Where(x => x.Type == ModuleConstants.ConfigurationSectionTypeProduct)
+                .Any(x => x.Options.IsNullOrEmpty()) ||
+            configuration.Sections
+                .Where(x => x.Type == ModuleConstants.ConfigurationSectionTypeText && x.AllowPredefinedOptions)
+                .Any(x => x.Options.IsNullOrEmpty())
+        )
         {
             configuration.IsActive = false;
         }

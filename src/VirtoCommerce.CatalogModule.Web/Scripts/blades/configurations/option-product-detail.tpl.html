@@ -2,8 +2,8 @@
 <div class="blade-content">
   <div class="blade-inner">
     <div class="inner-block">
-      <form class="form" name="optionForm">
-        <div class="form-group" ng-init="setForm(optionForm)">
+      <form class="form" name="optionProductForm">
+        <div class="form-group" ng-init="setForm(optionProductForm)">
           <label class="form-label">{{ 'catalog.blades.option-details.labels.quantity' | translate }}</label>
           <div class="form-input __number">
             <input required ng-model="blade.currentEntity.quantity" ng-pattern="/^[1-9]+[0-9]*$/"

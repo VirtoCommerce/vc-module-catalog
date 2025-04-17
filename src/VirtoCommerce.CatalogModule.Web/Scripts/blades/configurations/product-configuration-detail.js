@@ -113,7 +113,7 @@ angular.module('virtoCommerce.catalogModule')
                     id: "sectionDetail",
                     controller: 'virtoCommerce.catalogModule.configurationSectionDetailController',
                     template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/configurations/configuration-section-detail.tpl.html',
-                    origEntity: section ,
+                    origEntity: section,
                     onSaveNew: function (newSection) {
                         newSection.displayOrder = blade.currentEntity.sections.length;
                         blade.currentEntity.sections.push(newSection);

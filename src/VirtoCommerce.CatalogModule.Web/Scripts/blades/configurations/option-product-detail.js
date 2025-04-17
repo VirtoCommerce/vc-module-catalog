@@ -1,5 +1,5 @@
 angular.module('virtoCommerce.catalogModule')
-    .controller('virtoCommerce.catalogModule.configurationOptionDetailController', ['$scope', 'platformWebApp.bladeNavigationService',
+    .controller('virtoCommerce.catalogModule.configurationOptionProductDetailController', ['$scope', 'platformWebApp.bladeNavigationService',
     function ($scope, bladeNavigationService) {
         var blade = $scope.blade;
         blade.headIcon = blade.origEntity.productType === 'Digital' ? 'fa fa-file-zip-o' : 'fa fa-dropbox';
