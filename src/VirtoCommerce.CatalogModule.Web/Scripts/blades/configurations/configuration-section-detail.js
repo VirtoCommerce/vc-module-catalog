@@ -33,8 +33,12 @@ angular.module('virtoCommerce.catalogModule')
 
             $scope.isValid = false;
 
-            $scope.$watch("blade.currentEntity", function () {
-                $scope.isValid = blade.formScope && blade.formScope.$valid;
+            $scope.$watch("blade.currentEntity", function (entity) {
+                $scope.isValid = blade.formScope && blade.formScope.$valid && entity.name;
+                if ($scope.isValid && blade.origEntity.name) {
+                    // Update case (form is valid when changes exist)
+                    $scope.isValid = !angular.equals(blade.origEntity, entity);
+                }
             }, true);
             $scope.$watch("blade.currentEntity.allowCustomText", function (value) {
                 if (!value && !blade.currentEntity.allowPredefinedOptions) {
@@ -217,7 +221,7 @@ angular.module('virtoCommerce.catalogModule')
                 }
 
                 if (blade.currentEntity.type === 'Text') {
-                    newBlade = {
+                    var newBlade = {
                         id: 'optionTextDetail',
                         controller: 'virtoCommerce.catalogModule.configurationOptionTextDetailController',
                         template:
@@ -227,9 +231,9 @@ angular.module('virtoCommerce.catalogModule')
                             blade.currentEntity.options.push(newOption);
                         },
                     };
-                }
 
-                bladeNavigationService.showBlade(newBlade, blade);
+                    bladeNavigationService.showBlade(newBlade, blade);
+                }
             }
 
             function initialize(item) {

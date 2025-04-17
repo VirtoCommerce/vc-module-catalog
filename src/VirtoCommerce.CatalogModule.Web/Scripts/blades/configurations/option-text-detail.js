@@ -6,8 +6,12 @@ angular.module('virtoCommerce.catalogModule')
         blade.title = 'catalog.blades.option-details.labels.text';
         $scope.isValid = false;
 
-        $scope.$watch("blade.currentEntity", function () {
-            $scope.isValid = $scope.formScope && $scope.formScope.$valid;
+        $scope.$watch("blade.currentEntity", function (entity) {
+            $scope.isValid = $scope.formScope && $scope.formScope.$valid && entity.text;
+            if ($scope.isValid && blade.origEntity.text) {
+                // Update case (form is valid when changes exist)
+                $scope.isValid = blade.origEntity.text !== entity.text;
+            }
         }, true);
 
         blade.toolbarCommands = [

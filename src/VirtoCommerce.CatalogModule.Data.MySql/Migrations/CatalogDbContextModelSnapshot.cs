@@ -910,7 +910,6 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("ProductId")
-                        .IsRequired()
                         .HasMaxLength(128)
                         .HasColumnType("varchar(128)");
 
@@ -923,6 +922,10 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
                         .IsRequired()
                         .HasMaxLength(128)
                         .HasColumnType("varchar(128)");
+
+                    b.Property<string>("Text")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("Id");
 
@@ -939,6 +942,12 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(128)
                         .HasColumnType("varchar(128)");
+
+                    b.Property<bool>("AllowCustomText")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("AllowPredefinedOptions")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("ConfigurationId")
                         .IsRequired()
@@ -1684,8 +1693,7 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
                     b.HasOne("VirtoCommerce.CatalogModule.Data.Model.ItemEntity", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("VirtoCommerce.CatalogModule.Data.Model.ProductConfigurationSectionEntity", "Section")
                         .WithMany("Options")
