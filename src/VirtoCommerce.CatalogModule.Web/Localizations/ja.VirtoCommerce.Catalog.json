@@ -756,7 +756,10 @@
           "quantity": "数量",
           "product-name": "製品名",
           "options": "オプション",
-          "type": "セクションタイプ"
+          "type": "セクションタイプ",
+          "allow-custom-text": "カスタムテキストを許可",
+          "allow-predefined-options": "既定のオプションを許可",
+          "text": "\"テキスト\""
         },
         "descr": {
           "no-options": "このセクションにはまだオプションがありません"
@@ -771,10 +774,15 @@
       "option-details": {
         "title": "オプションとしてアイテムを選択",
         "labels": {
-          "quantity": "数量"
+          "quantity": "数量",
+          "text": "オプションのテキスト"
         },
         "placeholders": {
-          "quantity": "数量を指定"
+          "quantity": "数量を指定",
+          "text": "テキストを入力"
+        },
+        "commands": {
+          "add": "オプションを追加"
         }
       }
     },
