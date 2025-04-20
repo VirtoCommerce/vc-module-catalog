@@ -226,7 +226,7 @@
         "labels": {
           "empty-list": "None",
           "name": "Name",
-          "priority": "Priority"
+          "display-order": "Display order"
         }
       },
       "property-group-details": {

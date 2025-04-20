@@ -13,7 +13,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
         public LocalizedString LocalizedDescription { get; set; }
 
-        public int Priority { get; set; }
+        public int DisplayOrder { get; set; }
 
         public virtual object Clone()
         {

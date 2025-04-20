@@ -22,7 +22,7 @@ public class PropertyGroupEntity : AuditableEntity, IDataEntity<PropertyGroupEnt
     public ObservableCollection<LocalizedPropertyGroupDescriptionEntity> LocalizedDescriptions { get; set; }
         = new NullCollection<LocalizedPropertyGroupDescriptionEntity>();
 
-    public int Priority { get; set; }
+    public int DisplayOrder { get; set; }
 
     public PropertyGroup ToModel(PropertyGroup model)
     {
@@ -33,7 +33,7 @@ public class PropertyGroupEntity : AuditableEntity, IDataEntity<PropertyGroupEnt
         model.ModifiedDate = ModifiedDate;
 
         model.Name = Name;
-        model.Priority = Priority;
+        model.DisplayOrder = DisplayOrder;
         model.CatalogId = CatalogId;
 
         if (LocalizedNames != null)
@@ -68,7 +68,7 @@ public class PropertyGroupEntity : AuditableEntity, IDataEntity<PropertyGroupEnt
         ModifiedDate = model.ModifiedDate;
 
         Name = model.Name;
-        Priority = model.Priority;
+        DisplayOrder = model.DisplayOrder;
         CatalogId = model.CatalogId;
 
         if (model.LocalizedName != null)
@@ -101,7 +101,7 @@ public class PropertyGroupEntity : AuditableEntity, IDataEntity<PropertyGroupEnt
     public void Patch(PropertyGroupEntity target)
     {
         target.Name = Name;
-        target.Priority = Priority;
+        target.DisplayOrder = DisplayOrder;
         target.CatalogId = CatalogId;
 
         if (!LocalizedNames.IsNullCollection())

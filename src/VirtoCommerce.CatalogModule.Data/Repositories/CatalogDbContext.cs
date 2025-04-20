@@ -120,10 +120,13 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
             #region PropertyGroup
 
-            modelBuilder.Entity<PropertyGroupEntity>().ToTable("PropertyGroup").HasKey(x => x.Id);
-            modelBuilder.Entity<PropertyGroupEntity>().Property(x => x.Id).HasMaxLength(128).ValueGeneratedOnAdd();
-            modelBuilder.Entity<PropertyGroupEntity>().HasOne(m => m.Catalog).WithMany(x => x.PropertyGroups).HasForeignKey(x => x.CatalogId)
-                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<PropertyGroupEntity>(builder =>
+            {
+                builder.ToTable("PropertyGroup").HasKey(x => x.Id);
+                builder.Property(x => x.Id).HasMaxLength(IdLength).ValueGeneratedOnAdd();
+                builder.HasOne(m => m.Catalog).WithMany(x => x.PropertyGroups).HasForeignKey(x => x.CatalogId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
 
             modelBuilder.Entity<PropertyGroupLocalizedNameEntity>(builder =>
             {

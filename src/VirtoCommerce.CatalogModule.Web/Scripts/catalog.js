@@ -774,8 +774,8 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                         valueType: "ShortText"
                     },
                     {
-                        name: 'priority',
-                        title: "catalog.blades.property-group-details.labels.priority",
+                        name: 'displayOrder',
+                        title: "catalog.blades.property-group-details.labels.display-order",
                         colSpan: 6,
                         isRequired: true,
                         valueType: "Integer"

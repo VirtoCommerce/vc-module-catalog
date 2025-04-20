@@ -28,7 +28,7 @@ angular.module('virtoCommerce.catalogModule')
                     executeMethod: function () {
                         openDetailsBlade({
                             catalogId: blade.catalog.id,
-                            priority: 1,
+                            displayOrder: 1,
                         }, true);
                     },
                     canExecuteMethod: function () {
