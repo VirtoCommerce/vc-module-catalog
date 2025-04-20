@@ -50,7 +50,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             modelBuilder.Entity<CategoryEntity>().ToTable(t =>
                 t.HasCheckConstraint("Parent_category_check", $"\"{nameof(CategoryEntity.ParentCategoryId)}\" != \"{nameof(CategoryEntity.Id)}\""));
 
-            modelBuilder.Entity<LocalizedStringEntity<CategoryEntity>>(builder =>
+            modelBuilder.Entity<CategoryLocalizedNameEntity>(builder =>
             {
                 builder.ToTable("CategoryLocalizedName").HasKey(x => x.Id);
                 builder.Property(x => x.Id).HasMaxLength(IdLength).ValueGeneratedOnAdd();
@@ -88,7 +88,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
             modelBuilder.Entity<ItemEntity>().Property(x => x.PackSize).HasDefaultValue(1);
 
-            modelBuilder.Entity<LocalizedStringEntity<ItemEntity>>(builder =>
+            modelBuilder.Entity<ItemLocalizedNameEntity>(builder =>
             {
                 builder.ToTable("ItemLocalizedName").HasKey(x => x.Id);
                 builder.Property(x => x.Id).HasMaxLength(IdLength).ValueGeneratedOnAdd();
@@ -352,6 +352,34 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             modelBuilder.Entity<MeasureUnitEntity>().Property(x => x.ConversionFactor).HasPrecision(21, 6);
             modelBuilder.Entity<MeasureUnitEntity>().HasOne(x => x.Measure).WithMany(x => x.Units).HasForeignKey(x => x.MeasureId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<MeasureUnitLocalizedNameEntity>(builder =>
+            {
+                builder.ToTable("MeasureUnitLocalizedName").HasKey(x => x.Id);
+                builder.Property(x => x.Id).HasMaxLength(IdLength).ValueGeneratedOnAdd();
+
+                builder.HasOne(x => x.ParentEntity)
+                    .WithMany(x => x.LocalizedNames)
+                    .HasForeignKey(x => x.ParentEntityId)
+                    .IsRequired();
+
+                builder.HasIndex(x => new { x.LanguageCode, x.ParentEntityId }).IsUnique()
+                    .HasDatabaseName("IX_MeasureUnitLocalizedName_LanguageCode_ParentEntityId");
+            });
+
+            modelBuilder.Entity<MeasureUnitLocalizedSymbolEntity>(builder =>
+            {
+                builder.ToTable("MeasureUnitLocalizedSymbol").HasKey(x => x.Id);
+                builder.Property(x => x.Id).HasMaxLength(IdLength).ValueGeneratedOnAdd();
+
+                builder.HasOne(x => x.ParentEntity)
+                    .WithMany(x => x.LocalizedSymbols)
+                    .HasForeignKey(x => x.ParentEntityId)
+                    .IsRequired();
+
+                builder.HasIndex(x => new { x.LanguageCode, x.ParentEntityId }).IsUnique()
+                    .HasDatabaseName("IX_MeasureUnitLocalizedSymbol_LanguageCode_ParentEntityId");
+            });
 
             #endregion
 

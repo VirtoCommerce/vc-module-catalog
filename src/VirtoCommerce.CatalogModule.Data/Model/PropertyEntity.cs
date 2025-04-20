@@ -47,6 +47,9 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         [StringLength(128)]
         public string OuterId { get; set; }
 
+        [StringLength(128)]
+        public string MeasureId { get; set; }
+
         public int? DisplayOrder { get; set; }
 
         #region Navigation Properties
@@ -90,6 +93,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
             property.CatalogId = CatalogId;
             property.CategoryId = CategoryId;
+            property.MeasureId = MeasureId;
             property.PropertyGroupId = PropertyGroupId;
 
             property.Name = Name;
@@ -132,6 +136,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
             CatalogId = property.CatalogId;
             CategoryId = property.CategoryId;
+            MeasureId = property.MeasureId;
             PropertyGroupId = property.PropertyGroupId;
 
             Name = property.Name;
@@ -176,6 +181,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
             target.CatalogId = CatalogId;
             target.CategoryId = CategoryId;
+            target.MeasureId = MeasureId;
             target.PropertyGroupId = PropertyGroupId;
 
             if (!PropertyAttributes.IsNullCollection())

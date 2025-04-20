@@ -12,6 +12,12 @@
         "title": "Geo point",
         "placeholder": "Enter latitude and longitude",
         "description": "Enter latitude and longitude separated by a comma without spaces, e.g. 41.40338,2.17403"
+      },
+      "measure": {
+        "title": "Measure",
+        "placeholder": "Enter measure",
+        "description": "Enter measure in the format: 1.23",
+        "select-placeholder": "Select measure"
       }
     },
     "product-types": {
@@ -191,6 +197,7 @@
           "attributes": "Attributes",
           "manage-attributes": "Manage property attributes",
           "hidden": "Hidden",
+          "measure": "Measure",
           "property-group": "Group"
         },
         "placeholders": {
@@ -631,6 +638,12 @@
         "type": {
           "label": "Aggregation type"
         },
+        "measure": {
+          "label": "Measure"
+        },
+        "unit": {
+          "label": "Unit of measure"
+        },
         "size": {
           "label": "Aggregation size",
           "placeholder": "Enter aggregation size",
@@ -746,15 +759,20 @@
         "subtitle": "Unit of measure details",
         "labels": {
           "name": "Name",
+          "localized-name": "Localized name",
           "code": "Code",
           "conversion-factor": "Conversion factor",
-          "symbol": "Symbol"
+          "symbol": "Symbol",
+          "localized-symbol": "Localized symbol",
+          "code-naming-error": "The code must start with an alphanumeric character and contain only Latin characters and digits."
         },
         "placeholders": {
           "name": "Enter name",
+          "localized-name": "Enter localized name",
           "code": "Enter code",
           "conversion-factor": "Enter conversion",
-          "symbol": "Symbol"
+          "symbol": "Enter symbol",
+          "localized-symbol": "Enter localized symbol"
         }
       },
       "configuration-details": {

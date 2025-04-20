@@ -733,27 +733,19 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                 metaFormsService.registerMetaFields('measureUnitDetails', [
                     {
                         colSpan: 6,
-                        templateUrl: "measure-details-code.html"
-                    },
-                    {
-                        name: 'name',
-                        title: "catalog.blades.measure-unit-details.labels.name",
-                        placeholder: "catalog.blades.measure-unit-details.placeholders.name",
-                        colSpan: 6,
-                        isRequired: true,
-                        valueType: "ShortText"
+                        templateUrl: "measure-unit-details-code.html"
                     },
                     {
                         colSpan: 6,
-                        templateUrl: "conversion-factor.html"
+                        templateUrl: "measure-unit-details-name.html"
                     },
                     {
-                        name: 'symbol',
-                        title: "catalog.blades.measure-unit-details.labels.symbol",
-                        placeholder: "catalog.blades.measure-unit-details.placeholders.symbol",
                         colSpan: 6,
-                        isRequired: true,
-                        valueType: "ShortText"
+                        templateUrl: "measure-unit-details-conversion-factor.html"
+                    },
+                    {
+                        colSpan: 6,
+                        templateUrl: "measure-unit-details-symbol.html"
                     }
                 ]);
 
