@@ -40,7 +40,6 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         public Category Category { get; set; }
 
         public string PropertyGroupId { get; set; }
-        public PropertyGroup PropertyGroup { get; set; }
 
         public string Name { get; set; }
         public bool Required { get; set; }
