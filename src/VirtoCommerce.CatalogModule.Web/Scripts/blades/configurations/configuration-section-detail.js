@@ -129,7 +129,7 @@ angular.module('virtoCommerce.catalogModule')
                 if (blade.currentEntity.id == null && !_.any(blade.currentEntity.options)) {
                     return false;
                 }
-                
+
                 return true;
             }
 
