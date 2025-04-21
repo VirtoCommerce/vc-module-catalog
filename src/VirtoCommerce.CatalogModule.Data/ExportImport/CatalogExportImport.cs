@@ -629,7 +629,6 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             {
                 property.Catalog = null;
                 property.Category = null;
-                property.PropertyGroup = null;
             }
 
             if (entity is CatalogProduct product)
