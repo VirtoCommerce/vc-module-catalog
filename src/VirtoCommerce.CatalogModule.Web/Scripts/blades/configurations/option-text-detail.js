@@ -24,7 +24,9 @@ angular.module('virtoCommerce.catalogModule')
             }
         ];
 
-        $scope.setForm = function (form) { $scope.formScope = form; };
+        $scope.setForm = function(form) {
+            $scope.formScope = form;
+        };
 
         $scope.saveChanges = function () {
             var isNew = !blade.origEntity.text;

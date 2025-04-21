@@ -25,7 +25,9 @@ angular.module('virtoCommerce.catalogModule')
             }
         ];
 
-        $scope.setForm = function (form) { $scope.formScope = form; };
+        $scope.setForm = function(form) {
+            $scope.formScope = form;
+        };
 
         $scope.saveChanges = function () {
             angular.copy(blade.currentEntity, blade.origEntity);
