@@ -7,7 +7,7 @@
             </li>
         </ul>
         <div class="form-input" style="flex-grow: 1;">
-            <input ng-model="filter.keyword" ng-keyup="$event.which === 13 && filter.criteriaChanged()" placeholder="{{'platform.placeholders.search-keyword' | translate}}">
+            <input ng-model="filter.keyword" ng-keyup="$event.which === 13 && filter.filterByKeyword()" placeholder="{{'platform.placeholders.search-keyword' | translate}}">
             <button class="btn __other" style="position: relative;right: 45px;" ng-click="filter.current=null;filter.change()">
                 <i class="btn-ico fa fa-remove" title="Clear"></i>
             </button>
