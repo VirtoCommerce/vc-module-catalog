@@ -99,12 +99,12 @@ namespace VirtoCommerce.CatalogModule.Core.Model.ListEntry
                 SeoInfos = seoSupport.SeoInfos;
             }
 
-            if (entity is IHasOutlines hasOutlines && hasOutlines.Outlines?.Count > 0)
+            if (entity is IHasOutlines hasOutlines)
             {
                 Outlines = hasOutlines.Outlines;
 
                 // Use only physical catalog outline which this entity belongs to
-                var firstOutline = hasOutlines.Outlines.FirstOrDefault();
+                var firstOutline = hasOutlines.Outlines?.FirstOrDefault();
                 if (firstOutline != null)
                 {
                     Outline = firstOutline.Items.Select(x => x.Id).ToList();
