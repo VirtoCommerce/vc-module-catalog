@@ -1,10 +1,10 @@
 angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.propertyDetailController', [
-        '$scope', '$q',
+        '$scope', '$q', '$timeout',
         'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService',
         'virtoCommerce.catalogModule.properties', 'virtoCommerce.catalogModule.valueTypes',
         'virtoCommerce.catalogModule.propertyValidators', 'virtoCommerce.catalogModule.measures', 'virtoCommerce.catalogModule.propertyGroups',
-        function ($scope, $q, bladeNavigationService, dialogService, properties, valueTypes, propertyValidators, measures, propertyGroups) {
+        function ($scope, $q, $timeout, bladeNavigationService, dialogService, properties, valueTypes, propertyValidators, measures, propertyGroups) {
             var blade = $scope.blade;
             blade.updatePermission = 'catalog:metadata-property:edit';
             blade.origEntity = {};
@@ -12,6 +12,7 @@ angular.module('virtoCommerce.catalogModule')
             blade.title = 'catalog.blades.property-detail.title';
             blade.subtitle = 'catalog.blades.property-detail.subtitle';
             blade.availableValueTypes = valueTypes.get();
+            $scope.propertyGroupSelectorShown = false;
 
             blade.hasMultivalue = true;
             blade.hasDictionary = true;
@@ -178,6 +179,7 @@ angular.module('virtoCommerce.catalogModule')
                     }
 
                     blade.origEntity = data;
+                    $timeout(resetPropertyGroupSelector, 0);
                     blade.isLoading = false;
                 });
             }
@@ -279,11 +281,15 @@ angular.module('virtoCommerce.catalogModule')
                 }
             ];
 
-        blade.fetchPropertyGroups = function (criteria) {
-            criteria.catalogId = blade.catalogId ?? blade.currentEntity.catalogId;
-            return propertyGroups.search(criteria);
-        }
+            function resetPropertyGroupSelector() {
+                $scope.propertyGroupSelectorShown = true;
+            }
 
-        // actions on load    
-        blade.refresh();
+            blade.fetchPropertyGroups = function (criteria) {
+                criteria.catalogId = blade.origEntity.catalogId;
+                return propertyGroups.search(criteria);
+            }
+
+            // actions on load    
+            blade.refresh();
     }]);

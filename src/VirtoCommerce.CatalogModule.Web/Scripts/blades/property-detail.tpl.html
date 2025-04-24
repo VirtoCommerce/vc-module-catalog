@@ -43,6 +43,7 @@
             <div class="form-group">
               <label class="form-label">{{'catalog.blades.property-detail.labels.property-group' | translate}}</label>
               <ui-scroll-drop-down page-size="50"
+                                   ng-if="propertyGroupSelectorShown"
                                    ng-model="blade.currentEntity.propertyGroupId"
                                    data="blade.fetchPropertyGroups(criteria)"
                                    placeholder="'catalog.blades.property-detail.placeholders.property-group'">
