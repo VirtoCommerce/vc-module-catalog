@@ -150,9 +150,8 @@ angular.module('virtoCommerce.catalogModule')
             }
 
             function canAddOptions() {
-                return blade.currentEntity.type === 'Product'
-                    || blade.currentEntity.type === 'Text'
-                    && blade.currentEntity.allowPredefinedOptions;
+                return blade.currentEntity.type === 'Product' ||
+                    blade.currentEntity.type === 'Text' && blade.currentEntity.allowPredefinedOptions;
             }
 
             function openOptionAddBlade() {

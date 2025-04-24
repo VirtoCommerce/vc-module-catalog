@@ -74,7 +74,8 @@ public class CatalogModuleConfigurationsController(
         // Sections with Type as ProductConfigurationSectionType.Text and ProductConfigurationSectionType.File can be whithout options
         if (
             configuration.Sections.IsNullOrEmpty() ||
-            configuration.Sections.Where(x => x.Type == ModuleConstants.ConfigurationSectionTypeProduct)
+            configuration.Sections
+                .Where(x => x.Type == ModuleConstants.ConfigurationSectionTypeProduct)
                 .Any(x => x.Options.IsNullOrEmpty()) ||
             configuration.Sections
                 .Where(x => x.Type == ModuleConstants.ConfigurationSectionTypeText && x.AllowPredefinedOptions)
