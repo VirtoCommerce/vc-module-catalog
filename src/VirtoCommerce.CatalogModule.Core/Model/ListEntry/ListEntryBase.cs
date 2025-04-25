@@ -1,13 +1,16 @@
 using System.Collections.Generic;
+using System.Linq;
+using VirtoCommerce.CoreModule.Core.Outlines;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.SearchModule.Core.Model;
 
 namespace VirtoCommerce.CatalogModule.Core.Model.ListEntry
 {
     /// <summary>
     /// Base class for all entries used in catalog categories browsing.
     /// </summary>
-	public class ListEntryBase : AuditableEntity, ISeoSupport
+	public class ListEntryBase : AuditableEntity, ISeoSupport, IHasOutlines, IHasRelevanceScore
     {
         /// <summary>
         /// Gets or sets the type. E.g. "product", "category"
@@ -54,6 +57,8 @@ namespace VirtoCommerce.CatalogModule.Core.Model.ListEntry
         /// </value>
 		public IList<CategoryLink> Links { get; set; }
 
+        public IList<Outline> Outlines { get; set; }
+
         /// <summary>
         /// All entry parents ids
         /// </summary>
@@ -75,6 +80,8 @@ namespace VirtoCommerce.CatalogModule.Core.Model.ListEntry
         public virtual IList<SeoInfo> SeoInfos { get; set; }
         #endregion
 
+        public double? RelevanceScore { get; set; }
+
         public virtual ListEntryBase FromModel(AuditableEntity entity)
         {
             // Entity
@@ -90,6 +97,24 @@ namespace VirtoCommerce.CatalogModule.Core.Model.ListEntry
             {
                 SeoObjectType = seoSupport.SeoObjectType;
                 SeoInfos = seoSupport.SeoInfos;
+            }
+
+            if (entity is IHasOutlines hasOutlines)
+            {
+                Outlines = hasOutlines.Outlines;
+
+                // Use only physical catalog outline which this entity belongs to
+                var firstOutline = hasOutlines.Outlines?.FirstOrDefault();
+                if (firstOutline != null)
+                {
+                    Outline = firstOutline.Items.Select(x => x.Id).ToList();
+                    Path = firstOutline.Items.Select(x => x.Name).ToList();
+                }
+            }
+
+            if (entity is IHasRelevanceScore hasRelevanceScore)
+            {
+                RelevanceScore = hasRelevanceScore.RelevanceScore;
             }
 
             return this;

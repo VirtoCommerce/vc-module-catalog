@@ -16,6 +16,11 @@ public static class SeoExtensions
         return items != null && items.Any(x => x.IsCatalog() && x.Id.EqualsIgnoreCase(catalogId));
     }
 
+    public static bool ContainsCategory(this IEnumerable<ISeoSupport> items, string categoryId)
+    {
+        return items != null && items.Any(x => x.IsCategory() && x.Id.EqualsIgnoreCase(categoryId));
+    }
+
     public static bool IsCatalog(this ISeoSupport item)
     {
         return item.SeoObjectType.EqualsIgnoreCase(SeoCatalog);
