@@ -1,4 +1,5 @@
-angular.module('virtoCommerce.catalogModule').directive('vcItemSearch', ['$localStorage', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.predefinedSearchFilters', function ($localStorage, bladeNavigationService, predefinedSearchFilters) {
+angular.module('virtoCommerce.catalogModule').directive('vcItemSearch', ['$localStorage', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.predefinedSearchFilters', 'platformWebApp.uiGridHelper',
+    function ($localStorage, bladeNavigationService, predefinedSearchFilters, uiGridHelper) {
         return {
             restrict: 'E',
             templateUrl: function (elem, attrs) {
@@ -17,6 +18,11 @@ angular.module('virtoCommerce.catalogModule').directive('vcItemSearch', ['$local
                     filter.keyword = filter.current ? filter.current.keyword : '';
                     filter.searchInVariations = filter.current ? filter.current.searchInVariations : false;
                 }
+
+                filter.filterByKeyword = function () {
+                    filter.ignoreSortingForRelevance = uiGridHelper.getSortExpression($scope);
+                    filter.criteriaChanged();
+                };
 
                 filter.change = function (isDetailBladeOpen) {
                     $localStorage.catalogSearchFilterId = filter.current ? filter.current.id : null;
