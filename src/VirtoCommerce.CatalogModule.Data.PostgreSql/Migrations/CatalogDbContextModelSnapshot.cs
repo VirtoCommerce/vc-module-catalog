@@ -1977,7 +1977,7 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
                     b.HasOne("VirtoCommerce.CatalogModule.Data.Model.PropertyGroupEntity", "PropertyGroup")
                         .WithMany()
                         .HasForeignKey("PropertyGroupId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Catalog");
 
@@ -1991,7 +1991,7 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
                     b.HasOne("VirtoCommerce.CatalogModule.Data.Model.CatalogEntity", "Catalog")
                         .WithMany("PropertyGroups")
                         .HasForeignKey("CatalogId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Catalog");
                 });

@@ -114,7 +114,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             modelBuilder.Entity<PropertyEntity>().HasOne(m => m.Category).WithMany(x => x.Properties).HasForeignKey(x => x.CategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<PropertyEntity>().HasOne(m => m.PropertyGroup).WithMany().HasForeignKey(x => x.PropertyGroupId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.SetNull);
 
             #endregion Property
 
@@ -124,7 +124,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             {
                 builder.ToTable("PropertyGroup").HasKey(x => x.Id);
                 builder.Property(x => x.Id).HasMaxLength(IdLength).ValueGeneratedOnAdd();
-                builder.HasOne(m => m.Catalog).WithMany(x => x.PropertyGroups).HasForeignKey(x => x.CatalogId)
+                builder.HasOne(x => x.Catalog).WithMany(x => x.PropertyGroups).HasForeignKey(x => x.CatalogId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
 

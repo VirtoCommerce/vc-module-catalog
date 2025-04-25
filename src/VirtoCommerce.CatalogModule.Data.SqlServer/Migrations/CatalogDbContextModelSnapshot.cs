@@ -1979,7 +1979,7 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                     b.HasOne("VirtoCommerce.CatalogModule.Data.Model.PropertyGroupEntity", "PropertyGroup")
                         .WithMany()
                         .HasForeignKey("PropertyGroupId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Catalog");
 
