@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Caching;
@@ -28,40 +29,33 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public async Task LoadAssociationsAsync(IHasAssociations[] owners)
         {
-            using (var repository = _repositoryFactory())
+            using var repository = _repositoryFactory();
+            //Optimize performance and CPU usage
+            repository.DisableChangesTracking();
+
+            var productEntities = await repository.GetItemByIdsAsync(owners.Select(x => x.Id).ToArray(), ItemResponseGroup.ItemAssociations.ToString());
+            foreach (var productEntity in productEntities)
             {
-                //Optimize performance and CPU usage
-                repository.DisableChangesTracking();
-
-                var productEntities = await repository.GetItemByIdsAsync(owners.Select(x => x.Id).ToArray(), ItemResponseGroup.ItemAssociations.ToString());
-                foreach (var productEntity in productEntities)
+                var owner = owners.FirstOrDefault(x => x.Id == productEntity.Id);
+                if (owner != null)
                 {
-                    var owner = owners.FirstOrDefault(x => x.Id == productEntity.Id);
-                    if (owner != null)
-                    {
-                        if (owner.Associations == null)
-                        {
-                            owner.Associations = new List<ProductAssociation>();
-                        }
+                    owner.Associations ??= [];
 
-                        owner.Associations.Clear();
-                        owner.Associations.AddRange(productEntity.Associations.Select(x => x.ToModel(AbstractTypeFactory<ProductAssociation>.TryCreateInstance())));
-                    }
+                    owner.Associations.Clear();
+                    owner.Associations.AddRange(productEntity.Associations.Select(x => x.ToModel(AbstractTypeFactory<ProductAssociation>.TryCreateInstance())));
                 }
             }
         }
 
         public async Task<ProductAssociation[]> GetAssociationsAsync(string[] ownerIds)
         {
-            using (var repository = _repositoryFactory())
-            {
-                //Optimize performance and CPU usage
-                repository.DisableChangesTracking();
+            using var repository = _repositoryFactory();
+            //Optimize performance and CPU usage
+            repository.DisableChangesTracking();
 
-                var productEntities = await repository.GetItemByIdsAsync(ownerIds, ItemResponseGroup.ItemAssociations.ToString());
-                return productEntities.SelectMany(x => x.Associations)
-                    .Select(x => x.ToModel(AbstractTypeFactory<ProductAssociation>.TryCreateInstance())).ToArray();
-            }
+            var productEntities = await repository.GetItemByIdsAsync(ownerIds, ItemResponseGroup.ItemAssociations.ToString());
+            return productEntities.SelectMany(x => x.Associations)
+                .Select(x => x.ToModel(AbstractTypeFactory<ProductAssociation>.TryCreateInstance())).ToArray();
         }
         /// <summary>
         /// Saves collections of associations for given objects. Replaces all collection - adds new, updates existing and deletes associations that are not presented in the saved objects associations.
@@ -85,19 +79,17 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 }
             }
 
-            using (var repository = _repositoryFactory())
-            {
-                var itemIds = owners.Where(x => x.Id != null).Select(x => x.Id).ToArray();
+            using var repository = _repositoryFactory();
+            var itemIds = owners.Where(x => x.Id != null).Select(x => x.Id).ToArray();
 
-                var associationComparer = AnonymousComparer.Create((AssociationEntity x) => x.ItemId + ":" + x.AssociationType + ":" + x.AssociatedItemId + ":" + x.AssociatedCategoryId);
+            var associationComparer = AnonymousComparer.Create((AssociationEntity x) => x.ItemId + ":" + x.AssociationType + ":" + x.AssociatedItemId + ":" + x.AssociatedCategoryId);
 
-                var existingEntities = new ObservableCollection<AssociationEntity>(repository.Associations.Where(x => itemIds.Contains(x.ItemId)).ToList());
+            var existingEntities = new ObservableCollection<AssociationEntity>(repository.Associations.Where(x => itemIds.Contains(x.ItemId)).ToList());
 
-                existingEntities.ObserveCollection(x => repository.Add(x), x => repository.Remove(x));
-                changedEntities.Patch(existingEntities, associationComparer, (sourceAssociation, targetAssociation) => sourceAssociation.Patch(targetAssociation));
+            existingEntities.ObserveCollection(x => repository.Add(x), x => repository.Remove(x));
+            changedEntities.Patch(existingEntities, associationComparer, (sourceAssociation, targetAssociation) => sourceAssociation.Patch(targetAssociation));
 
-                await repository.UnitOfWork.CommitAsync();
-            }
+            await repository.UnitOfWork.CommitAsync();
         }
 
         /// <summary>
@@ -107,7 +99,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         /// <returns></returns>
         public async Task UpdateAssociationsAsync(ProductAssociation[] associations)
         {
-
             await ValidateAssociationAsync(associations);
 
             using (var repository = _repositoryFactory())
@@ -125,7 +116,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                         if (modifiedEntity.ItemId != originalEntity.ItemId)
                         {
                             //Reset cache for item that has lost association 
-                            ClearCache(new[] { originalEntity.ItemId });
+                            ClearCache([originalEntity.ItemId]);
                         }
 
                         modifiedEntity.Patch(originalEntity);
@@ -145,19 +136,24 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public async Task DeleteAssociationAsync(string[] ids)
         {
-            using (var repository = _repositoryFactory())
+            using var repository = _repositoryFactory();
+            var associations = repository.Associations.Where(x => ids.Contains(x.Id)).ToArray();
+
+            foreach (var association in associations)
             {
-                var associations = repository.Associations.Where(x => ids.Contains(x.Id)).ToArray();
-
-                foreach (var association in associations)
-                {
-                    repository.Remove(association);
-                }
-
-                await repository.UnitOfWork.CommitAsync();
-
-                ClearCache(associations.Select(x => x.ItemId).ToArray());
+                repository.Remove(association);
             }
+
+            await repository.UnitOfWork.CommitAsync();
+
+            ClearCache(associations.Select(x => x.ItemId).ToArray());
+        }
+
+        public async Task<ProductAssociation> GetByIdAsync(string id)
+        {
+            using var repository = _repositoryFactory();
+            var association = await repository.Associations.FirstOrDefaultAsync(x => x.Id == id);
+            return association?.ToModel(AbstractTypeFactory<ProductAssociation>.TryCreateInstance());
         }
 
         #endregion

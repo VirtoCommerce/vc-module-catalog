@@ -1,6 +1,8 @@
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Model;
@@ -90,6 +92,41 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         {
             var result = await _productAssociationSearchService.SearchProductAssociationsAsync(criteria);
             return Ok(result);
+        }
+
+        /// <summary>
+        /// Partial update for the specified association
+        /// </summary>
+        /// <param name="id">Member id</param>
+        /// <param name="patchDocument">JsonPatchDocument object with fields to update</param>
+        /// <returns></returns>
+        [HttpPatch]
+        [Route("{id}")]
+        [Authorize(ModuleConstants.Security.Permissions.Update)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+        public async Task<ActionResult> PatchAssociation(string id, [FromBody] JsonPatchDocument<ProductAssociation> patchDocument)
+        {
+            if (patchDocument == null)
+            {
+                return BadRequest();
+            }
+
+            var association = await _associationService.GetByIdAsync(id);
+            if (association == null)
+            {
+                return NotFound();
+            }
+
+            patchDocument.ApplyTo(association, ModelState);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            await _associationService.UpdateAssociationsAsync([association]);
+
+            return NoContent();
         }
     }
 }
