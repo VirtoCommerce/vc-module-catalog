@@ -197,11 +197,13 @@
           "attributes": "Atrybuty",
           "manage-attributes": "Zarządzaj atrybutami właściwości",
           "hidden": "Ukryty",
-          "measure": "Miara"
+          "measure": "Miara",
+          "property-group": "Grupa"
         },
         "placeholders": {
           "display-name": "Wprowadź nazwę wyświetlaną",
-          "display-order": "Kolejność wyświetlania"
+          "display-order": "Kolejność wyświetlania",
+          "property-group": "Wybierz grupę właściwości"
         }
       },
       "property-validationRule": {
@@ -224,6 +226,33 @@
           "require": "Ta właściwość jest wymagana",
           "character-limit": "Określ minimalną i/lub maksymalną dozwoloną liczbę znaków",
           "pattern": "Spraw, aby to pole pasowało do wzorca, takiego jak adres e-mail, URL lub niestandardowe wyrażenie regularne. Na przykład: ^[a-z]{6,15}$"
+        }
+      },
+      "property-group-list": {
+        "title": "Grupy właściwości",
+        "labels": {
+          "empty-list": "Brak",
+          "name": "Nazwa",
+          "display-order": "Kolejność wyświetlania"
+        }
+      },
+      "property-group-details": {
+        "title": "Zarządzaj grupą właściwości",
+        "labels": {
+          "name": "Nazwa",
+          "priority": "Priorytet",
+          "localized-name": "Zlokalizowane nazwy",
+          "localized-description": "Zlokalizowane opisy",
+          "display-name": "Nazwa wyświetlana",
+          "display-order": "Kolejność wyświetlania",
+          "properties": "Właściwości",
+          "manage-properties": "Zarządzaj właściwościami",
+          "show-more-languages": "Pokaż więcej języków",
+          "show-less-languages": "Pokaż mniej języków"
+        },
+        "placeholders": {
+          "display-name": "Wprowadź nazwę grupy",
+          "display-description": "Wprowadź opis"
         }
       },
       "property-list": {
@@ -810,6 +839,10 @@
         "title": "Języki",
         "default-language": "Domyślny język"
       },
+      "catalogPropertyGroup": {
+        "blade-subtitle": "Grupy właściwości",
+        "title": "Grupy właściwości"
+      },
       "catalogProperty": {
         "blade-subtitle": "Właściwości katalogu",
         "title": "Właściwości"
@@ -923,6 +956,14 @@
       "property-save": {
         "title": "Zapisz zmiany",
         "message": "Ta właściwość została zmodyfikowana. Czy chcesz zapisać zmiany?"
+      },
+      "property-group-save": {
+        "title": "Zapisz zmiany",
+        "message": "Ta grupa właściwości została zmodyfikowana. Czy chcesz zapisać zmiany?"
+      },
+      "property-group-delete": {
+        "title": "Potwierdź usunięcie",
+        "message": "Czy na pewno chcesz usunąć wybrane grupy właściwości?"
       },
       "item-property-delete": {
         "message": "Czy na pewno chcesz usunąć właściwość {{name}}?"

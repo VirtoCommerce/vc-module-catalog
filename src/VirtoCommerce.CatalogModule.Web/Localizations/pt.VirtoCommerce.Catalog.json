@@ -197,11 +197,13 @@
           "attributes": "Atributos",
           "manage-attributes": "Gerenciar atributos da propriedade",
           "hidden": "Oculto",
-          "measure": "Medição"
+          "measure": "Medição",
+          "property-group": "Grupo"
         },
         "placeholders": {
           "display-name": "Insira o nome de exibição",
-          "display-order": "Ordem de exibição"
+          "display-order": "Ordem de exibição",
+          "property-group": "Selecionar grupo de propriedades"
         }
       },
       "property-validationRule": {
@@ -224,6 +226,33 @@
           "require": "Esta propriedade é obrigatória",
           "character-limit": "Especifique um número mínimo e/ou máximo permitido de caracteres",
           "pattern": "Faça este campo corresponder a um padrão, como endereço de email, URL ou uma expressão regular personalizada. Por exemplo: ^[a-z]{6,15}$"
+        }
+      },
+      "property-group-list": {
+        "title": "Grupos de propriedades",
+        "labels": {
+          "empty-list": "Nenhum",
+          "name": "Nome",
+          "display-order": "Ordem de exibição"
+        }
+      },
+      "property-group-details": {
+        "title": "Gerenciar grupo de propriedades",
+        "labels": {
+          "name": "Nome",
+          "priority": "Prioridade",
+          "localized-name": "Nomes localizados",
+          "localized-description": "Descrições localizadas",
+          "display-name": "Nome de exibição",
+          "display-order": "Ordem de exibição",
+          "properties": "Propriedades",
+          "manage-properties": "Gerenciar propriedades",
+          "show-more-languages": "Mostrar mais idiomas",
+          "show-less-languages": "Mostrar menos idiomas"
+        },
+        "placeholders": {
+          "display-name": "Digite o nome do grupo",
+          "display-description": "Digite a descrição"
         }
       },
       "property-list": {
@@ -810,6 +839,10 @@
         "title": "Idiomas",
         "default-language": "Idioma padrão"
       },
+      "catalogPropertyGroup": {
+        "blade-subtitle": "Grupos de propriedades",
+        "title": "Grupos de propriedades"
+      },
       "catalogProperty": {
         "blade-subtitle": "Propriedades do catálogo",
         "title": "Propriedades"
@@ -923,6 +956,14 @@
       "property-save": {
         "title": "Salvar alterações",
         "message": "Esta propriedade foi modificada. Deseja salvar as alterações?"
+      },
+      "property-group-save": {
+        "title": "Salvar alterações",
+        "message": "Este grupo de propriedades foi modificado. Deseja salvar as alterações?"
+      },
+      "property-group-delete": {
+        "title": "Confirmar exclusão",
+        "message": "Tem certeza de que deseja excluir os grupos de propriedades selecionados?"
       },
       "item-property-delete": {
         "message": "Tem certeza de que deseja excluir a propriedade {{name}}?"
