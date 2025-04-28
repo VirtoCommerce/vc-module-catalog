@@ -143,7 +143,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     .HasDatabaseName("IX_PropertyGroupLocalizedName_LanguageCode_ParentEntityId");
             });
 
-            modelBuilder.Entity<LocalizedPropertyGroupDescriptionEntity>(builder =>
+            modelBuilder.Entity<PropertyGroupLocalizedDescriptionEntity>(builder =>
             {
                 builder.ToTable("PropertyGroupLocalizedDescription").HasKey(x => x.Id);
                 builder.Property(x => x.Id).HasMaxLength(IdLength).ValueGeneratedOnAdd();

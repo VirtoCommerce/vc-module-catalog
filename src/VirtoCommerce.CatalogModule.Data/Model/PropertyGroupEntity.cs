@@ -19,8 +19,8 @@ public class PropertyGroupEntity : AuditableEntity, IDataEntity<PropertyGroupEnt
     public ObservableCollection<PropertyGroupLocalizedNameEntity> LocalizedNames { get; set; }
         = new NullCollection<PropertyGroupLocalizedNameEntity>();
 
-    public ObservableCollection<LocalizedPropertyGroupDescriptionEntity> LocalizedDescriptions { get; set; }
-        = new NullCollection<LocalizedPropertyGroupDescriptionEntity>();
+    public ObservableCollection<PropertyGroupLocalizedDescriptionEntity> LocalizedDescriptions { get; set; }
+        = new NullCollection<PropertyGroupLocalizedDescriptionEntity>();
 
     public int DisplayOrder { get; set; }
 
@@ -85,10 +85,10 @@ public class PropertyGroupEntity : AuditableEntity, IDataEntity<PropertyGroupEnt
 
         if (model.LocalizedDescription != null)
         {
-            LocalizedDescriptions = new ObservableCollection<LocalizedPropertyGroupDescriptionEntity>(model.LocalizedDescription.Values
+            LocalizedDescriptions = new ObservableCollection<PropertyGroupLocalizedDescriptionEntity>(model.LocalizedDescription.Values
                 .Select(x =>
                 {
-                    var entity = AbstractTypeFactory<LocalizedPropertyGroupDescriptionEntity>.TryCreateInstance();
+                    var entity = AbstractTypeFactory<PropertyGroupLocalizedDescriptionEntity>.TryCreateInstance();
                     entity.LanguageCode = x.Key;
                     entity.Value = x.Value;
                     return entity;
@@ -112,7 +112,7 @@ public class PropertyGroupEntity : AuditableEntity, IDataEntity<PropertyGroupEnt
 
         if (!LocalizedDescriptions.IsNullCollection())
         {
-            var localizedDescriptionComparer = AnonymousComparer.Create((LocalizedPropertyGroupDescriptionEntity x) => $"{x.Value}-{x.LanguageCode}");
+            var localizedDescriptionComparer = AnonymousComparer.Create((PropertyGroupLocalizedDescriptionEntity x) => $"{x.Value}-{x.LanguageCode}");
             LocalizedDescriptions.Patch(target.LocalizedDescriptions, localizedDescriptionComparer, (sourceValue, targetValue) => { });
         }
     }
