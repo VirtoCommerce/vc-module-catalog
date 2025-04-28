@@ -1,20 +1,14 @@
-using System.Collections.Generic;
-using System.Linq;
-using VirtoCommerce.CoreModule.Core.Outlines;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.SearchModule.Core.Model;
 
 namespace VirtoCommerce.CatalogModule.Core.Model.ListEntry
 {
     /// <summary>
     /// Product ListEntry record.
     /// </summary>
-    public class ProductListEntry : ListEntryBase, IHasOutlines, IHasRelevanceScore
+    public class ProductListEntry : ListEntryBase
     {
         public const string TypeName = "product";
         public string ProductType { get; set; }
-        public IList<Outline> Outlines { get; set; }
-        public double? RelevanceScore { get; set; }
 
         public override ListEntryBase FromModel(AuditableEntity entity)
         {
@@ -30,15 +24,6 @@ namespace VirtoCommerce.CatalogModule.Core.Model.ListEntry
                 ProductType = product.ProductType;
                 Links = product.Links;
                 CatalogId = product.CatalogId;
-                RelevanceScore = product.RelevanceScore;
-
-                if (!product.Outlines.IsNullOrEmpty())
-                {
-                    //TODO:  Use only physical catalog outline which this category belongs to
-                    Outline = product.Outlines.FirstOrDefault().Items.Select(x => x.Id).ToList();
-                    Path = product.Outlines.FirstOrDefault().Items.Select(x => x.Name).ToList();
-                    Outlines = product.Outlines;
-                }
             }
 
             return this;
