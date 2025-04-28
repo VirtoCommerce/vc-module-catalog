@@ -22,31 +22,17 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
     [Route("api/catalog/aggregationproperties")]
     [ApiExplorerSettings(IgnoreApi = true)]
     [Authorize]
-    public class CatalogBrowseFiltersController : Controller
+    public class CatalogBrowseFiltersController(
+        IStoreService storeService,
+        IPropertyService propertyService,
+        IBrowseFilterService browseFilterService,
+        IPropertyDictionaryItemSearchService propDictItemsSearchService,
+        ISettingsManager settingsManager
+        ) : Controller
     {
         private const string _attributeType = "Attribute";
         private const string _rangeType = "Range";
         private const string _priceRangeType = "PriceRange";
-
-        private readonly IStoreService _storeService;
-        private readonly IPropertyService _propertyService;
-        private readonly IBrowseFilterService _browseFilterService;
-        private readonly IPropertyDictionaryItemSearchService _propDictItemsSearchService;
-        private readonly ISettingsManager _settingsManager;
-
-        public CatalogBrowseFiltersController(
-            IStoreService storeService,
-            IPropertyService propertyService,
-            IBrowseFilterService browseFilterService,
-            IPropertyDictionaryItemSearchService propDictItemsSearchService,
-            ISettingsManager settingsManager)
-        {
-            _storeService = storeService;
-            _propertyService = propertyService;
-            _browseFilterService = browseFilterService;
-            _propDictItemsSearchService = propDictItemsSearchService;
-            _settingsManager = settingsManager;
-        }
 
         /// <summary>
         /// Get aggregation properties for store
@@ -62,7 +48,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         public async Task<ActionResult<AggregationProperty[]>> GetAggregationProperties(string storeId)
         {
-            var store = await _storeService.GetNoCloneAsync(storeId, StoreResponseGroup.StoreInfo.ToString());
+            var store = await storeService.GetNoCloneAsync(storeId, StoreResponseGroup.StoreInfo.ToString());
             if (store == null)
             {
                 return NoContent();
@@ -91,7 +77,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         public async Task<ActionResult> SetAggregationProperties(string storeId, [FromBody] AggregationProperty[] browseFilterProperties)
         {
-            var store = await _storeService.GetNoCloneAsync(storeId, StoreResponseGroup.StoreInfo.ToString());
+            var store = await storeService.GetNoCloneAsync(storeId, StoreResponseGroup.StoreInfo.ToString());
             if (store == null)
             {
                 return NoContent();
@@ -100,8 +86,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             // Add culture-specific aggregations for specific handling multivalue, multilanguage, non-dictionary properties.
             // Look for details at PT-3044, VP-7549
 
-            var catalogProperties = await _propertyService.GetAllCatalogPropertiesAsync(store.Catalog);
-            var defaultAggregationSize = await _settingsManager.GetValueAsync<int>(ModuleConstants.Settings.Search.DefaultAggregationSize);
+            var catalogProperties = await propertyService.GetAllCatalogPropertiesAsync(store.Catalog);
+            var defaultAggregationSize = await settingsManager.GetValueAsync<int>(ModuleConstants.Settings.Search.DefaultAggregationSize);
 
             var browseFilterPropertiesList = new List<AggregationProperty>();
             foreach (var aggregationProperty in browseFilterProperties)
@@ -133,7 +119,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 .Where(f => f != null)
                 .ToArray();
 
-            await _browseFilterService.SaveStoreAggregationsAsync(storeId, filters);
+            await browseFilterService.SaveStoreAggregationsAsync(storeId, filters);
 
             return NoContent();
         }
@@ -143,14 +129,14 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         public async Task<ActionResult<string[]>> GetPropertyValues(string storeId, string propertyName)
         {
             var result = Array.Empty<string>();
-            var store = await _storeService.GetNoCloneAsync(storeId, StoreResponseGroup.StoreInfo.ToString());
+            var store = await storeService.GetNoCloneAsync(storeId, StoreResponseGroup.StoreInfo.ToString());
             if (store != null)
             {
-                var catalogProperties = await _propertyService.GetAllCatalogPropertiesAsync(store.Catalog);
+                var catalogProperties = await propertyService.GetAllCatalogPropertiesAsync(store.Catalog);
                 var property = catalogProperties.FirstOrDefault(p => p.Name.EqualsInvariant(propertyName) && p.Dictionary);
                 if (property != null)
                 {
-                    var searchResult = await _propDictItemsSearchService.SearchAsync(new PropertyDictionaryItemSearchCriteria { PropertyIds = new[] { property.Id }, Take = int.MaxValue }, clone: true);
+                    var searchResult = await propDictItemsSearchService.SearchAsync(new PropertyDictionaryItemSearchCriteria { PropertyIds = new[] { property.Id }, Take = int.MaxValue }, clone: true);
                     result = searchResult.Results.Select(x => x.Alias).Distinct().ToArray();
                 }
             }
@@ -160,7 +146,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
         private async Task<IList<AggregationProperty>> GetAllPropertiesAsync(string catalogId, IEnumerable<string> currencies)
         {
-            var result = (await _propertyService.GetAllCatalogPropertiesAsync(catalogId))
+            var result = (await propertyService.GetAllCatalogPropertiesAsync(catalogId))
                             .Select(p => new AggregationProperty { Type = _attributeType, Name = p.Name, MeasureId = p.MeasureId })
                             .ToList();
 
@@ -177,7 +163,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         {
             var result = new List<AggregationProperty>();
 
-            var allFilters = await _browseFilterService.GetStoreAggregationsAsync(storeId);
+            var allFilters = await browseFilterService.GetStoreAggregationsAsync(storeId);
             if (allFilters != null)
             {
                 foreach (var filter in allFilters)

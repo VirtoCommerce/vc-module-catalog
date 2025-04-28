@@ -14,17 +14,11 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
     [Route("api/catalog/products/associations")]
     [Authorize]
-    public class CatalogModuleAssociationsController : Controller
+    public class CatalogModuleAssociationsController(
+        IAssociationService associationService,
+        IProductAssociationSearchService productAssociationSearchService
+        ) : Controller
     {
-        private readonly IAssociationService _associationService;
-        private readonly IProductAssociationSearchService _productAssociationSearchService;
-
-        public CatalogModuleAssociationsController(IAssociationService associationService, IProductAssociationSearchService productAssociationSearchService)
-        {
-            _associationService = associationService;
-            _productAssociationSearchService = productAssociationSearchService;
-        }
-
         /// <summary>
         /// Returns list of associations for specified product
         /// </summary>
@@ -35,7 +29,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Authorize(ModuleConstants.Security.Permissions.Read)]
         public async Task<ActionResult<ProductAssociation[]>> GetProductAssociations(string productId)
         {
-            var result = await _associationService.GetAssociationsAsync([productId]);
+            var result = await associationService.GetAssociationsAsync([productId]);
             return Ok(result);
         }
 
@@ -49,7 +43,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Authorize(ModuleConstants.Security.Permissions.Read)]
         public async Task<ActionResult<ProductAssociation[]>> GetProductsAssociations([FromBody] string[] productIds)
         {
-            var result = await _associationService.GetAssociationsAsync(productIds);
+            var result = await associationService.GetAssociationsAsync(productIds);
             return Ok(result);
         }
 
@@ -63,7 +57,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Authorize(ModuleConstants.Security.Permissions.Update)]
         public async Task<ActionResult> UpdateAssociations([FromBody] ProductAssociation[] associations)
         {
-            await _associationService.UpdateAssociationsAsync(associations);
+            await associationService.UpdateAssociationsAsync(associations);
             return Ok();
         }
 
@@ -77,7 +71,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Authorize(ModuleConstants.Security.Permissions.Delete)]
         public async Task<ActionResult> Delete([FromQuery] string[] ids)
         {
-            await _associationService.DeleteAssociationAsync(ids);
+            await associationService.DeleteAssociationAsync(ids);
             return Ok(HttpStatusCode.NoContent);
         }
 
@@ -90,14 +84,14 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Authorize(ModuleConstants.Security.Permissions.Read)]
         public async Task<ActionResult<ProductAssociationSearchResult>> Search([FromBody] ProductAssociationSearchCriteria criteria)
         {
-            var result = await _productAssociationSearchService.SearchProductAssociationsAsync(criteria);
+            var result = await productAssociationSearchService.SearchProductAssociationsAsync(criteria);
             return Ok(result);
         }
 
         /// <summary>
-        /// Partial update for the specified association
+        /// Partial update for the specified association by id
         /// </summary>
-        /// <param name="id">Member id</param>
+        /// <param name="id">ProductAssociation id</param>
         /// <param name="patchDocument">JsonPatchDocument object with fields to update</param>
         /// <returns></returns>
         [HttpPatch]
@@ -111,7 +105,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return BadRequest();
             }
 
-            var association = await _associationService.GetByIdAsync(id);
+            var association = await associationService.GetByIdAsync(id);
             if (association == null)
             {
                 return NotFound();
@@ -124,7 +118,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return BadRequest(ModelState);
             }
 
-            await _associationService.UpdateAssociationsAsync([association]);
+            await associationService.UpdateAssociationsAsync([association]);
 
             return NoContent();
         }

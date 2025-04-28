@@ -166,10 +166,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         protected virtual async Task ValidateAssociationAsync(IEnumerable<ProductAssociation> associations)
         {
-            if (associations == null)
-            {
-                throw new ArgumentNullException(nameof(associations));
-            }
+            ArgumentNullException.ThrowIfNull(associations);
 
             var validator = new ProductAssociationValidator();
             foreach (var association in associations)

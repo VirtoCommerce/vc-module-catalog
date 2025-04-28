@@ -1,6 +1,8 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Model.Configuration;
@@ -15,8 +17,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api;
 [Authorize]
 public class CatalogModuleConfigurationsController(
     IProductConfigurationService configurationService,
-    IProductConfigurationSearchService configurationSearchService)
-    : Controller
+    IProductConfigurationSearchService configurationSearchService
+    ) : Controller
 {
     /// <summary>
     /// Get configuration by id.
@@ -71,5 +73,40 @@ public class CatalogModuleConfigurationsController(
         await configurationService.SaveChangesAsync([configuration]);
 
         return Ok(configuration);
+    }
+
+    /// <summary>
+    /// Partial update for the specified Configuration by id
+    /// </summary>
+    /// <param name="id">Configuration id</param>
+    /// <param name="patchDocument">JsonPatchDocument object with fields to update</param>
+    /// <returns></returns>
+    [HttpPatch]
+    [Route("{id}")]
+    [Authorize(ModuleConstants.Security.Permissions.ConfigurationsUpdate)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+    public async Task<ActionResult> PatchConfiguration(string id, [FromBody] JsonPatchDocument<ProductConfiguration> patchDocument)
+    {
+        if (patchDocument == null)
+        {
+            return BadRequest();
+        }
+
+        var configuration = await configurationService.GetByIdAsync(id);
+        if (configuration == null)
+        {
+            return NotFound();
+        }
+
+        patchDocument.ApplyTo(configuration, ModelState);
+
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        await configurationService.SaveChangesAsync([configuration]);
+
+        return NoContent();
     }
 }
