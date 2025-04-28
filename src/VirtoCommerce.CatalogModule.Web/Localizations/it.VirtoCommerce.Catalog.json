@@ -237,7 +237,7 @@
         }
       },
       "property-group-details": {
-        "title": "Manage property group",
+        "title": "Gestisci gruppo di proprietà",
         "labels": {
           "name": "Nome",
           "priority": "Priorità",
