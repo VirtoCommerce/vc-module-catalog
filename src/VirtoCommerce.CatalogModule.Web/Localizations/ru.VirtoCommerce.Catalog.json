@@ -197,11 +197,13 @@
           "attributes": "Атрибуты",
           "manage-attributes": "Управление атрибутами свойства",
           "hidden": "Скрытый",
-          "measure": "Измерение"
+          "measure": "Измерение",
+          "property-group": "Группа"
         },
         "placeholders": {
           "display-name": "Введите отображаемое имя",
-          "display-order": "Порядок отображения"
+          "display-order": "Порядок отображения",
+          "property-group": "Выберите группу свойств"
         }
       },
       "property-validationRule": {
@@ -224,6 +226,33 @@
           "require": "Это свойство обязательно",
           "character-limit": "Укажите минимальное и/или максимальное допустимое количество символов",
           "pattern": "Сделайте это поле соответствующим шаблону, например, адрес электронной почты, URL или пользовательское регулярное выражение. Например: ^[a-z]{6,15}$"
+        }
+      },
+      "property-group-list": {
+        "title": "Группы свойств",
+        "labels": {
+          "empty-list": "Нет",
+          "name": "Имя",
+          "display-order": "Порядок отображения"
+        }
+      },
+      "property-group-details": {
+        "title": "Управление группой свойств",
+        "labels": {
+          "name": "Имя",
+          "priority": "Приоритет",
+          "localized-name": "Локализованные имена",
+          "localized-description": "Локализованные описания",
+          "display-name": "Отображаемое имя",
+          "display-order": "Порядок отображения",
+          "properties": "Свойства",
+          "manage-properties": "Управление свойствами",
+          "show-more-languages": "Показать больше языков",
+          "show-less-languages": "Показать меньше языков"
+        },
+        "placeholders": {
+          "display-name": "Введите название группы",
+          "display-description": "Введите описание"
         }
       },
       "property-list": {
@@ -810,6 +839,10 @@
         "title": "Языки",
         "default-language": "Язык по умолчанию"
       },
+      "catalogPropertyGroup": {
+        "blade-subtitle": "Группы свойств",
+        "title": "Группы свойств"
+      },
       "catalogProperty": {
         "blade-subtitle": "Свойства каталога",
         "title": "Свойства"
@@ -923,6 +956,14 @@
       "property-save": {
         "title": "Сохранить изменения",
         "message": "Это свойство было изменено. Вы хотите сохранить изменения?"
+      },
+      "property-group-save": {
+        "title": "Сохранить изменения",
+        "message": "Эта группа свойств была изменена. Хотите сохранить изменения?"
+      },
+      "property-group-delete": {
+        "title": "Подтвердить удаление",
+        "message": "Вы уверены, что хотите удалить выбранные группы свойств?"
       },
       "item-property-delete": {
         "message": "Вы уверены, что хотите удалить свойство {{name}}?"
