@@ -282,6 +282,14 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                 };
                 widgetService.registerWidget(catalogPropertyWidget, 'catalogDetail');
 
+                // Property Groups
+                var propertyGroupsWidget = {
+                    isVisible: function (blade) { return !blade.isNew; },
+                    controller: 'virtoCommerce.catalogModule.catalogPropertyGroupsWidgetController',
+                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/catalogPropertyGroupsWidget.tpl.html'
+                };
+                widgetService.registerWidget(propertyGroupsWidget, 'catalogDetail');
+
                 var catalogSeoWidget = {
                     controller: 'virtoCommerce.coreModule.seo.seoWidgetController',
                     template: 'Modules/$(VirtoCommerce.Core)/Scripts/SEO/widgets/seoWidget.tpl.html',
@@ -748,4 +756,32 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                     isVisible: function (blade) { return !blade.isNew && authService.checkPermission('catalog:configurations:read'); }
                 };
                 widgetService.registerWidget(productConfigurationWidget, 'itemDetail');
+
+                metaFormsService.registerMetaFields("propertyGroupDetail", [
+                    {
+                        name: 'name',
+                        title: "catalog.blades.property-group-details.labels.name",
+                        colSpan: 6,
+                        isRequired: true,
+                        valueType: "ShortText"
+                    },
+                    {
+                        name: 'displayOrder',
+                        title: "catalog.blades.property-group-details.labels.display-order",
+                        colSpan: 6,
+                        isRequired: true,
+                        valueType: "Integer"
+                    },
+                    {
+                        title: "catalog.blades.property-group-details.labels.localized-name",
+                        colSpan: 6,
+                        templateUrl: "localizedName.html"
+                    },
+                    {
+                        title: "catalog.blades.property-group-details.labels.localized-description",
+                        colSpan: 6,
+                        templateUrl: "localizedDescription.html"
+                    }
+
+                ]);
             }]);

@@ -113,8 +113,52 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<PropertyEntity>().HasOne(m => m.Category).WithMany(x => x.Properties).HasForeignKey(x => x.CategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<PropertyEntity>().HasOne(m => m.PropertyGroup).WithMany().HasForeignKey(x => x.PropertyGroupId)
+                .OnDelete(DeleteBehavior.SetNull);
 
             #endregion Property
+
+            #region PropertyGroup
+
+            modelBuilder.Entity<PropertyGroupEntity>(builder =>
+            {
+                builder.ToTable("PropertyGroup").HasKey(x => x.Id);
+                builder.Property(x => x.Id).HasMaxLength(IdLength).ValueGeneratedOnAdd();
+                builder.HasOne(x => x.Catalog).WithMany(x => x.PropertyGroups).HasForeignKey(x => x.CatalogId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<PropertyGroupLocalizedNameEntity>(builder =>
+            {
+                builder.ToTable("PropertyGroupLocalizedName").HasKey(x => x.Id);
+                builder.Property(x => x.Id).HasMaxLength(IdLength).ValueGeneratedOnAdd();
+
+                builder.HasOne(x => x.ParentEntity)
+                    .WithMany(x => x.LocalizedNames)
+                    .HasForeignKey(x => x.ParentEntityId)
+                    .IsRequired()
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                builder.HasIndex(x => new { x.LanguageCode, x.ParentEntityId }).IsUnique()
+                    .HasDatabaseName("IX_PropertyGroupLocalizedName_LanguageCode_ParentEntityId");
+            });
+
+            modelBuilder.Entity<PropertyGroupLocalizedDescriptionEntity>(builder =>
+            {
+                builder.ToTable("PropertyGroupLocalizedDescription").HasKey(x => x.Id);
+                builder.Property(x => x.Id).HasMaxLength(IdLength).ValueGeneratedOnAdd();
+
+                builder.HasOne(x => x.ParentEntity)
+                    .WithMany(x => x.LocalizedDescriptions)
+                    .HasForeignKey(x => x.ParentEntityId)
+                    .IsRequired()
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                builder.HasIndex(x => new { x.LanguageCode, x.ParentEntityId }).IsUnique()
+                    .HasDatabaseName("IX_PropertyGroupLocalizedDescription_LanguageCode_ParentEntityId");
+            });
+
+            #endregion PropertyGroup
 
             #region PropertyDictionaryItem
 

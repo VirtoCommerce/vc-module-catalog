@@ -197,11 +197,13 @@
           "attributes": "属性",
           "manage-attributes": "管理属性",
           "hidden": "隐藏",
-          "measure": "测量"
+          "measure": "测量",
+          "property-group": "组"
         },
         "placeholders": {
           "display-name": "输入显示名称",
-          "display-order": "显示顺序"
+          "display-order": "显示顺序",
+          "property-group": "选择属性组"
         }
       },
       "property-validationRule": {
@@ -224,6 +226,33 @@
           "require": "此属性是必需的",
           "character-limit": "指定允许的最小和/或最大字符数",
           "pattern": "使此字段匹配模式，例如电子邮件地址、URL或自定义正则表达式。例如：^[a-z]{6,15}$"
+        }
+      },
+      "property-group-list": {
+        "title": "属性组",
+        "labels": {
+          "empty-list": "无",
+          "name": "名称",
+          "display-order": "显示顺序"
+        }
+      },
+      "property-group-details": {
+        "title": "管理属性组",
+        "labels": {
+          "name": "名称",
+          "priority": "优先级",
+          "localized-name": "本地化名称",
+          "localized-description": "本地化描述",
+          "display-name": "显示名称",
+          "display-order": "显示顺序",
+          "properties": "属性",
+          "manage-properties": "管理属性",
+          "show-more-languages": "显示更多语言",
+          "show-less-languages": "显示较少语言"
+        },
+        "placeholders": {
+          "display-name": "输入组名称",
+          "display-description": "输入描述"
         }
       },
       "property-list": {
@@ -818,6 +847,10 @@
         "title": "语言",
         "default-language": "默认语言"
       },
+      "catalogPropertyGroup": {
+        "blade-subtitle": "属性组",
+        "title": "属性组"
+      },
       "catalogProperty": {
         "blade-subtitle": "目录属性",
         "title": "属性"
@@ -931,6 +964,14 @@
       "property-save": {
         "title": "保存更改",
         "message": "此属性已被修改。您要保存更改吗？"
+      },
+      "property-group-save": {
+        "title": "保存更改",
+        "message": "此属性组已被修改。是否要保存更改？"
+      },
+      "property-group-delete": {
+        "title": "确认删除",
+        "message": "您确定要删除所选的属性组吗？"
       },
       "item-property-delete": {
         "message": "您确定要删除 {{name}} 属性吗？"

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 
@@ -11,9 +12,11 @@ using VirtoCommerce.CatalogModule.Data.Repositories;
 namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
 {
     [DbContext(typeof(CatalogDbContext))]
-    partial class CatalogDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250428082445_AddPropertyGroup")]
+    partial class AddPropertyGroup
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -972,6 +975,7 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("ProductId")
+                        .IsRequired()
                         .HasMaxLength(128)
                         .HasColumnType("varchar(128)");
 
@@ -984,10 +988,6 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
                         .IsRequired()
                         .HasMaxLength(128)
                         .HasColumnType("varchar(128)");
-
-                    b.Property<string>("Text")
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
 
                     b.HasKey("Id");
 
@@ -1004,12 +1004,6 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(128)
                         .HasColumnType("varchar(128)");
-
-                    b.Property<bool>("AllowCustomText")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<bool>("AllowPredefinedOptions")
-                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("ConfigurationId")
                         .IsRequired()
@@ -1891,7 +1885,8 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
                     b.HasOne("VirtoCommerce.CatalogModule.Data.Model.ItemEntity", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("VirtoCommerce.CatalogModule.Data.Model.ProductConfigurationSectionEntity", "Section")
                         .WithMany("Options")

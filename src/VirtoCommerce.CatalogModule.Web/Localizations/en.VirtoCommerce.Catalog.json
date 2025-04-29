@@ -197,11 +197,13 @@
           "attributes": "Attributes",
           "manage-attributes": "Manage property attributes",
           "hidden": "Hidden",
-          "measure": "Measure"
+          "measure": "Measure",
+          "property-group": "Group"
         },
         "placeholders": {
           "display-name": "Enter display name",
-          "display-order": "Display order"
+          "display-order": "Display order",
+          "property-group": "Select property group"
         }
       },
       "property-validationRule": {
@@ -224,6 +226,33 @@
           "require": "This property is required",
           "character-limit": "Specify a minimum and/or maximum allowed number of characters",
           "pattern": "Make this field match a pattern, such as email address, URL, or a custom regular expression. For example: ^[a-z]{6,15}$"
+        }
+      },
+      "property-group-list": {
+        "title": "Property groups",
+        "labels": {
+          "empty-list": "None",
+          "name": "Name",
+          "display-order": "Display order"
+        }
+      },
+      "property-group-details": {
+        "title": "Manage property group",
+        "labels": {
+          "name": "Name",
+          "priority": "Priority",
+          "localized-name": "Localized names",
+          "localized-description": "Localized descriptions",
+          "display-name": "Display name",
+          "display-order": "Display order",
+          "properties": "Properties",
+          "manage-properties": "Manage properties",
+          "show-more-languages": "Show more languages",
+          "show-less-languages": "Show less languages"
+        },
+        "placeholders": {
+          "display-name": "Enter group name",
+          "display-description": "Enter description"
         }
       },
       "property-list": {
@@ -818,6 +847,10 @@
         "title": "Languages",
         "default-language": "Default language"
       },
+      "catalogPropertyGroup": {
+        "blade-subtitle": "Property groups",
+        "title": "Property groups"
+      },
       "catalogProperty": {
         "blade-subtitle": "Catalog properties",
         "title": "Properties"
@@ -932,6 +965,10 @@
         "title": "Save changes",
         "message": "This property has been modified. Do you want to save the changes?"
       },
+      "property-group-save": {
+        "title": "Save changes",
+        "message": "This property group has been modified. Do you want to save the changes?"
+      },
       "item-property-delete": {
         "message": "Are you sure you want to delete the {{name}} property?"
       },
@@ -1010,6 +1047,10 @@
       "configuration-save": {
         "title": "Save changes",
         "message": "This configuration has been modified. Do you want to save the changes?"
+      },
+      "property-group-delete": {
+        "title": "Confirm delete",
+        "message": "Are you sure you want to delete the selected property groups?"
       }
     },
     "wizards": {

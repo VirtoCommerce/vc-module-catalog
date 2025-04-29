@@ -197,11 +197,13 @@
           "attributes": "属性",
           "manage-attributes": "プロパティ属性を管理",
           "hidden": "非表示",
-          "measure": "測定"
+          "measure": "測定",
+          "property-group": "グループ"
         },
         "placeholders": {
           "display-name": "表示名を入力",
-          "display-order": "表示順序"
+          "display-order": "表示順序",
+          "property-group": "プロパティグループを選択"
         }
       },
       "property-validationRule": {
@@ -224,6 +226,33 @@
           "require": "このプロパティは必須です",
           "character-limit": "許可される文字数の最小値および/または最大値を指定します",
           "pattern": "このフィールドをメールアドレス、URL、またはカスタム正規表現などのパターンに一致させます。例: ^[a-z]{6,15}$"
+        }
+      },
+      "property-group-list": {
+        "title": "プロパティグループ",
+        "labels": {
+          "empty-list": "なし",
+          "name": "名前",
+          "display-order": "表示順序"
+        }
+      },
+      "property-group-details": {
+        "title": "プロパティグループを管理",
+        "labels": {
+          "name": "名前",
+          "priority": "優先度",
+          "localized-name": "ローカライズされた名前",
+          "localized-description": "ローカライズされた説明",
+          "display-name": "表示名",
+          "display-order": "表示順序",
+          "properties": "プロパティ",
+          "manage-properties": "プロパティを管理",
+          "show-more-languages": "さらに多くの言語を表示",
+          "show-less-languages": "少ない言語を表示"
+        },
+        "placeholders": {
+          "display-name": "グループ名を入力",
+          "display-description": "説明を入力"
         }
       },
       "property-list": {
@@ -818,6 +847,10 @@
         "title": "言語",
         "default-language": "デフォルトの言語"
       },
+      "catalogPropertyGroup": {
+        "blade-subtitle": "プロパティグループ",
+        "title": "プロパティグループ"
+      },
       "catalogProperty": {
         "blade-subtitle": "カタログプロパティ",
         "title": "プロパティ"
@@ -931,6 +964,14 @@
       "property-save": {
         "title": "変更を保存",
         "message": "このプロパティは変更されました。変更を保存しますか？"
+      },
+      "property-group-save": {
+        "title": "変更を保存",
+        "message": "このプロパティグループは変更されました。変更を保存しますか？"
+      },
+      "property-group-delete": {
+        "title": "削除の確認",
+        "message": "選択したプロパティグループを削除してもよろしいですか？"
       },
       "item-property-delete": {
         "message": "{{name}} プロパティを削除してもよろしいですか？"

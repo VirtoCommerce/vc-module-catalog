@@ -70,13 +70,15 @@ angular.module('virtoCommerce.catalogModule')
 
             // Search Criteria
             function getSearchCriteria() {
+                var sortCriteria = uiGridHelper.getSortExpression($scope);
+
                 var searchCriteria = {
                     catalogId: blade.catalogId,
                     categoryId: blade.categoryId,
                     keyword: filter.keyword ? filter.keyword : undefined,
                     searchInVariations: filter.searchInVariations ? filter.searchInVariations : false,
                     responseGroup: 'withCategories, withProducts',
-                    sort: uiGridHelper.getSortExpression($scope),
+                    sort: filter.keyword && filter.ignoreSortingForRelevance == sortCriteria ? '' : sortCriteria,
                     skip: ($scope.pageSettings.currentPage - 1) * $scope.pageSettings.itemsPerPageCount,
                     take: $scope.pageSettings.itemsPerPageCount
                 };
