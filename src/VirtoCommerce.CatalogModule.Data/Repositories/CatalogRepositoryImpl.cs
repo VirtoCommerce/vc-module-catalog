@@ -363,11 +363,20 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 .Distinct()
                 .ToListAsync();
 
-            //linked product categories links
+            // linked product categories
             var linkedProductCategoryIds = await CategoryItemRelations
                 .Where(x => x.CatalogId == catalogId)
                 .Join(Items, link => link.ItemId, item => item.Id, (link, item) => item)
                 .Select(x => x.CategoryId)
+                .Distinct()
+                .ToListAsync();
+
+            // linked products catalogs for products without category
+            var categorylessItemsCatalogIds = await CategoryItemRelations
+                .Where(x => x.CatalogId == catalogId)
+                .Join(Items, link => link.ItemId, item => item.Id, (link, item) => item)
+                .Where(x => x.CategoryId == null)
+                .Select(x => x.CatalogId)
                 .Distinct()
                 .ToListAsync();
 
@@ -386,12 +395,18 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 .Distinct()
                 .ToListAsync();
 
-            return await Properties
+            linkedCatalogIds = linkedCatalogIds.Concat(categorylessItemsCatalogIds)
+                .Distinct()
+                .ToList();
+
+            var result = await Properties
                 .Where(x => linkedCatalogIds.Contains(x.CatalogId))
                 .Include(x => x.PropertyAttributes)
                 .Include(x => x.DisplayNames)
                 .Include(x => x.ValidationRules)
                 .ToListAsync();
+
+            return result;
         }
 
         public virtual async Task<IList<PropertyDictionaryItemEntity>> GetPropertyDictionaryItemsByIdsAsync(IList<string> dictItemIds)
