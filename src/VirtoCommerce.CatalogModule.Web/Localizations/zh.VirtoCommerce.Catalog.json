@@ -803,7 +803,10 @@
           "quantity": "数量",
           "product-name": "产品名称",
           "options": "选项",
-          "type": "部分类型"
+          "type": "部分类型",
+          "allow-custom-text": "允许自定义文本",
+          "allow-predefined-options": "允许预定义选项",
+          "text": "文本"
         },
         "descr": {
           "no-options": "此部分中尚无选项"
@@ -818,10 +821,15 @@
       "option-details": {
         "title": "选择项目作为选项",
         "labels": {
-          "quantity": "数量"
+          "quantity": "数量",
+          "text": "选项文字"
         },
         "placeholders": {
-          "quantity": "指定数量"
+          "quantity": "指定数量",
+          "text": "输入文字"
+        },
+        "commands": {
+          "add": "添加选项"
         }
       }
     },

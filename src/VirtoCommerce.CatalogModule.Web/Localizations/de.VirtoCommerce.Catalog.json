@@ -803,7 +803,10 @@
           "quantity": "Menge",
           "product-name": "Produktname",
           "options": "Optionen",
-          "type": "Abschnitt-Typ"
+          "type": "Abschnitt-Typ",
+          "allow-custom-text": "Benutzerdefinierter Text erlaubt",
+          "allow-predefined-options": "Vordefinierte Optionen zulassen",
+          "text": "Text"
         },
         "descr": {
           "no-options": "Noch keine Optionen in diesem Abschnitt"
@@ -818,10 +821,15 @@
       "option-details": {
         "title": "Artikel als Optionen auswählen",
         "labels": {
-          "quantity": "Menge"
+          "quantity": "Menge",
+          "text": "Text für Option"
         },
         "placeholders": {
-          "quantity": "Menge angeben"
+          "quantity": "Menge angeben",
+          "text": "Text eingeben"
+        },
+        "commands": {
+          "add": "Option hinzufügen"
         }
       }
     },

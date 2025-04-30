@@ -12,11 +12,13 @@ public class ProductConfigurationOptionEntity : AuditableEntity, IDataEntity<Pro
     [StringLength(128)]
     public string SectionId { get; set; }
 
-    [Required]
     [StringLength(128)]
     public string ProductId { get; set; }
 
     public int Quantity { get; set; }
+
+    [StringLength(255)]
+    public string Text { get; set; }
 
     public virtual ProductConfigurationSectionEntity Section { get; set; }
     public virtual ItemEntity Product { get; set; }
@@ -34,6 +36,7 @@ public class ProductConfigurationOptionEntity : AuditableEntity, IDataEntity<Pro
         model.SectionId = SectionId;
         model.ProductId = ProductId;
         model.Quantity = Quantity;
+        model.Text = Text;
 
         if (Product != null)
         {
@@ -58,6 +61,7 @@ public class ProductConfigurationOptionEntity : AuditableEntity, IDataEntity<Pro
         SectionId = model.SectionId;
         ProductId = model.ProductId;
         Quantity = model.Quantity;
+        Text = model.Text;
 
         return this;
     }
@@ -65,5 +69,6 @@ public class ProductConfigurationOptionEntity : AuditableEntity, IDataEntity<Pro
     public virtual void Patch(ProductConfigurationOptionEntity target)
     {
         target.Quantity = Quantity;
+        target.Text = Text;
     }
 }

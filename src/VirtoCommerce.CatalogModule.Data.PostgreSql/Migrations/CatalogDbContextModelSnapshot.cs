@@ -972,7 +972,6 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ProductId")
-                        .IsRequired()
                         .HasMaxLength(128)
                         .HasColumnType("character varying(128)");
 
@@ -985,6 +984,10 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
                         .IsRequired()
                         .HasMaxLength(128)
                         .HasColumnType("character varying(128)");
+
+                    b.Property<string>("Text")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
 
                     b.HasKey("Id");
 
@@ -1001,6 +1004,12 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(128)
                         .HasColumnType("character varying(128)");
+
+                    b.Property<bool>("AllowCustomText")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("AllowPredefinedOptions")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("ConfigurationId")
                         .IsRequired()
@@ -1882,8 +1891,7 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
                     b.HasOne("VirtoCommerce.CatalogModule.Data.Model.ItemEntity", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("VirtoCommerce.CatalogModule.Data.Model.ProductConfigurationSectionEntity", "Section")
                         .WithMany("Options")

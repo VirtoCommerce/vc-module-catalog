@@ -803,7 +803,10 @@
           "quantity": "Quantity",
           "product-name": "Product name",
           "options": "Options",
-          "type": "Type of section"
+          "type": "Type of section",
+          "allow-custom-text": "Allow custom text",
+          "allow-predefined-options": "Allow predefined options",
+          "text": "Text"
         },
         "descr": {
           "no-options": "No options in this section yet"
@@ -818,11 +821,16 @@
       "option-details": {
         "title": "Select items as options",
         "labels": {
-          "quantity": "Quantity"
+          "quantity": "Quantity",
+          "text": "Text for option"
+        },
+        "commands": {
+          "add": "Add option"
         },
         "placeholders": {
-          "quantity": "Specify quantity"
-        } 
+          "quantity": "Specify quantity",
+          "text": "Enter the text"
+        }
       }
     },
     "exporter-list": {

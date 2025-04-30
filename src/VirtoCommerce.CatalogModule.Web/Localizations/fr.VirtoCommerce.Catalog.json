@@ -803,7 +803,10 @@
           "quantity": "Quantité",
           "product-name": "Nom du produit",
           "options": "Options",
-          "type": "Type de section"
+          "type": "Type de section",
+          "allow-custom-text": "Autoriser le texte personnalisé",
+          "allow-predefined-options": "Autoriser les options prédéfinies",
+          "text": "Texte"
         },
         "descr": {
           "no-options": "Pas encore d'options dans cette section"
@@ -818,10 +821,15 @@
       "option-details": {
         "title": "Sélectionner des articles comme options",
         "labels": {
-          "quantity": "Quantité"
+          "quantity": "Quantité",
+          "text": "Texte pour l'option"
         },
         "placeholders": {
-          "quantity": "Spécifiez la quantité"
+          "quantity": "Spécifiez la quantité",
+          "text": "Entrez le texte"
+        },
+        "commands": {
+          "add": "Ajouter une option"
         }
       }
     },
@@ -1111,15 +1119,15 @@
       "item-images": {
         "subtitle": "Images de l'article"
       },
-       "association": {
-         "title": "Nouvelle association",
-         "labels": {
-           "group-name": "Nom du groupe",
-           "tags": "Tags",
-           "tags-placeholder": "Entrez les tags",
-           "quantity": "Quantité",
-           "items": "Articles",
-           "products-selected": "Produits sélectionnés",
+      "association": {
+        "title": "Nouvelle association",
+        "labels": {
+          "group-name": "Nom du groupe",
+          "tags": "Tags",
+          "tags-placeholder": "Entrez les tags",
+          "quantity": "Quantité",
+          "items": "Articles",
+          "products-selected": "Produits sélectionnés",
           "categories-selected": "Catégories sélectionnées"
         },
         "placeholders": {
@@ -1241,68 +1249,68 @@
         "description": "Limiter le nombre maximum de fichiers dans la section de configuration"
       }
     },
-   "VirtoCommerce": {
-     "Search": {
-       "IndexingJobs": {
-         "IndexationDate": {
-           "Product": {
-             "title": "Date et heure d'indexation du produit",
-             "description": "Date et heure de début de la tâche d'indexation du produit"
-           },
-           "Category": {
-             "title": "Date et heure d'indexation de la catégorie",
-             "description": "Date et heure de début de l'indexation de la catégorie"
-           }
-         }
-       }
-     }
-   }
- },
- "module": {
-   "VirtoCommerce.Catalog": {
-     "description": "Exporter ou importer des catalogues, catégories, produits et propriétés avec des binaires d'image si vous cochez la case binaire"
-   }
- },
- "export": {
-   "types": {
-     "VirtoCommerce.CatalogModule.Core.Model.Export.ExportableProduct": {
-       "name": "Produits",
-       "description": "Données de produit de catalogue avec objets associés. Prend en charge JSON et CSV"
-     },
-     "VirtoCommerce.CatalogModule.Core.Model.Export.ExportableCatalogFull": {
-       "name": "Catalogue",
-       "description": "Données de catalogue avec objets associés. Prend en charge JSON"
-     }
-   },
-   "groups": {
-     "VirtoCommerce.CatalogModule.Core.Model.Export": {
-       "name": "Catalogue",
-       "description": "Catalogues, catégories et produits"
-     }
-   }
- },
- "CategoryChangeBulkAction": "Changement de catégorie en masse",
- "PropertiesUpdateBulkAction": "Mise à jour des propriétés en masse",
- "virtoCommerce.catalogBulkActionsModule": {
-   "blades": {
-     "hello-world": {
-       "title": "Bonjour le monde"
-     },
-     "action-progress": {
-       "title": "Progression de la tâche"
-     }
-   },
-   "actions": {
-     "types": {
-       "CategoryChangeBulkAction": {
-         "title": "Changer de catégorie",
-         "subtitle": "Déplacer les produits vers une autre catégorie"
-       },
-       "PropertiesUpdateBulkAction": {
-         "title": "Modifier les propriétés",
-         "subtitle": "Mettre à jour une ou plusieurs propriétés"
-       }
-     }
-   }
- }
+    "VirtoCommerce": {
+      "Search": {
+        "IndexingJobs": {
+          "IndexationDate": {
+            "Product": {
+              "title": "Date et heure d'indexation du produit",
+              "description": "Date et heure de début de la tâche d'indexation du produit"
+            },
+            "Category": {
+              "title": "Date et heure d'indexation de la catégorie",
+              "description": "Date et heure de début de l'indexation de la catégorie"
+            }
+          }
+        }
+      }
+    }
+  },
+  "module": {
+    "VirtoCommerce.Catalog": {
+      "description": "Exporter ou importer des catalogues, catégories, produits et propriétés avec des binaires d'image si vous cochez la case binaire"
+    }
+  },
+  "export": {
+    "types": {
+      "VirtoCommerce.CatalogModule.Core.Model.Export.ExportableProduct": {
+        "name": "Produits",
+        "description": "Données de produit de catalogue avec objets associés. Prend en charge JSON et CSV"
+      },
+      "VirtoCommerce.CatalogModule.Core.Model.Export.ExportableCatalogFull": {
+        "name": "Catalogue",
+        "description": "Données de catalogue avec objets associés. Prend en charge JSON"
+      }
+    },
+    "groups": {
+      "VirtoCommerce.CatalogModule.Core.Model.Export": {
+        "name": "Catalogue",
+        "description": "Catalogues, catégories et produits"
+      }
+    }
+  },
+  "CategoryChangeBulkAction": "Changement de catégorie en masse",
+  "PropertiesUpdateBulkAction": "Mise à jour des propriétés en masse",
+  "virtoCommerce.catalogBulkActionsModule": {
+    "blades": {
+      "hello-world": {
+        "title": "Bonjour le monde"
+      },
+      "action-progress": {
+        "title": "Progression de la tâche"
+      }
+    },
+    "actions": {
+      "types": {
+        "CategoryChangeBulkAction": {
+          "title": "Changer de catégorie",
+          "subtitle": "Déplacer les produits vers une autre catégorie"
+        },
+        "PropertiesUpdateBulkAction": {
+          "title": "Modifier les propriétés",
+          "subtitle": "Mettre à jour une ou plusieurs propriétés"
+        }
+      }
+    }
+  }
 }

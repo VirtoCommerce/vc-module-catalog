@@ -1,5 +1,5 @@
 angular.module('virtoCommerce.catalogModule')
-    .controller('virtoCommerce.catalogModule.configurationOptionDetailController', ['$scope', 'platformWebApp.bladeNavigationService',
+    .controller('virtoCommerce.catalogModule.configurationOptionProductDetailController', ['$scope', 'platformWebApp.bladeNavigationService',
     function ($scope, bladeNavigationService) {
         var blade = $scope.blade;
         blade.headIcon = blade.origEntity.productType === 'Digital' ? 'fa fa-file-zip-o' : 'fa fa-dropbox';
@@ -25,7 +25,9 @@ angular.module('virtoCommerce.catalogModule')
             }
         ];
 
-        $scope.setForm = function (form) { $scope.formScope = form; };
+        $scope.setForm = function(form) {
+            $scope.formScope = form;
+        };
 
         $scope.saveChanges = function () {
             angular.copy(blade.currentEntity, blade.origEntity);

@@ -803,7 +803,10 @@
           "quantity": "Quantità",
           "product-name": "Nome del prodotto",
           "options": "Opzioni",
-          "type": "Tipo di sezione"
+          "type": "Tipo di sezione",
+          "allow-custom-text": "Consenti testo personalizzato",
+          "allow-predefined-options": "Consenti opzioni predefinite",
+          "text": "Testo"
         },
         "descr": {
           "no-options": "Ancora nessuna opzione in questa sezione"
@@ -818,10 +821,15 @@
       "option-details": {
         "title": "Seleziona elementi come opzioni",
         "labels": {
-          "quantity": "Quantità"
+          "quantity": "Quantità",
+          "text": "Testo per l'opzione"
         },
         "placeholders": {
-          "quantity": "Specifica quantità"
+          "quantity": "Specifica quantità",
+          "text": "Inserisci il testo"
+        },
+        "commands": {
+          "add": "Aggiungi opzione"
         }
       }
     },
