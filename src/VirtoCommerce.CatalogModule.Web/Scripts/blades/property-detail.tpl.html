@@ -9,10 +9,22 @@
               </div>
               <span class="comment-text" ng-if="errorData">
                 <img src="/images/layout/warning.svg" class="comment-icon">
-                <span ng-if="errorData.errorMessage==='duplicate-property' && errorData.customState.categoryName">
+                <span ng-if="errorData.errorMessage==='duplicated-property' && errorData.customState.categoryName">
                   {{ 'catalog.blades.item-property-detail.labels.duplicate-property-in-product' | translate: errorData.customState }}
                 </span>
-                <span ng-if="errorData.errorMessage==='duplicate-property' && !errorData.customState.categoryName">
+                <span ng-if="errorData.errorMessage==='duplicated-property' && !errorData.customState.categoryName">
+                  {{ 'catalog.blades.item-property-detail.labels.duplicate-property-in-catalog' | translate: errorData.customState }}
+                </span>
+                <span ng-if="errorData.errorMessage==='inherited-duplicated-property' && errorData.customState.categoryName">
+                  {{ 'catalog.blades.item-property-detail.labels.duplicate-property-in-product' | translate: errorData.customState }}
+                </span>
+                <span ng-if="errorData.errorMessage==='inherited-duplicated-property' && !errorData.customState.categoryName">
+                  {{ 'catalog.blades.item-property-detail.labels.duplicate-property-in-catalog' | translate: errorData.customState }}
+                </span>
+                <span ng-if="errorData.errorMessage==='global-property-name-type' && errorData.customState.categoryName">
+                  {{ 'catalog.blades.item-property-detail.labels.duplicate-property-in-product' | translate: errorData.customState }}
+                </span>
+                <span ng-if="errorData.errorMessage==='global-property-name-type' && !errorData.customState.categoryName">
                   {{ 'catalog.blades.item-property-detail.labels.duplicate-property-in-catalog' | translate: errorData.customState }}
                 </span>
                 <span ng-if="errorData.errorMessage=='property-naming-error'">
