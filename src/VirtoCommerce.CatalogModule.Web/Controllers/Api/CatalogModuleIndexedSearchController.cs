@@ -13,40 +13,29 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
     [Route("api/catalog/search")]
     [Authorize]
-    public class CatalogModuleIndexedSearchController : Controller
+    public class CatalogModuleIndexedSearchController(
+        IProductIndexedSearchService productIndexedSearchService,
+        IProductSuggestionService productSuggestionService,
+        ICategoryIndexedSearchService categoryIndexedSearchService,
+        IOptions<MvcNewtonsoftJsonOptions> jsonOptions
+        ) : Controller
     {
-        private readonly IProductIndexedSearchService _productIndexedSearchService;
-        private readonly IProductSuggestionService _productSuggestionService;
-        private readonly ICategoryIndexedSearchService _categoryIndexedSearchService;
-        private readonly MvcNewtonsoftJsonOptions _jsonOptions;
-        public CatalogModuleIndexedSearchController(
-            IProductIndexedSearchService productIndexedSearchService,
-            IProductSuggestionService productSuggestionService,
-            ICategoryIndexedSearchService categoryIndexedSearchService,
-            IOptions<MvcNewtonsoftJsonOptions> jsonOptions)
-        {
-            _productIndexedSearchService = productIndexedSearchService;
-            _productSuggestionService = productSuggestionService;
-            _categoryIndexedSearchService = categoryIndexedSearchService;
-            _jsonOptions = jsonOptions.Value;
-        }
-
         [HttpPost]
         [Route("products")]
         public async Task<ActionResult<ProductIndexedSearchResult>> SearchProducts([FromBody] ProductIndexedSearchCriteria criteria)
         {
             criteria.ObjectType = KnownDocumentTypes.Product;
-            var result = await _productIndexedSearchService.SearchAsync(criteria);
+            var result = await productIndexedSearchService.SearchAsync(criteria);
 
             //It is important to return serialized data by such way. Otherwise, you will have slow responses for large outputs.
             //https://github.com/dotnet/aspnetcore/issues/19646
-            return Content(JsonConvert.SerializeObject(result, _jsonOptions.SerializerSettings), "application/json");
+            return Content(JsonConvert.SerializeObject(result, jsonOptions.Value.SerializerSettings), "application/json");
         }
 
         [HttpPost("products/suggestions")]
         public Task<SuggestionResponse> GetProductSuggestions(ProductSuggestionRequest request)
         {
-            return _productSuggestionService.GetSuggestionsAsync(request);
+            return productSuggestionService.GetSuggestionsAsync(request);
         }
 
         [HttpPost]
@@ -54,10 +43,10 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         public async Task<ActionResult<CategoryIndexedSearchResult>> SearchCategories([FromBody] CategoryIndexedSearchCriteria criteria)
         {
             criteria.ObjectType = KnownDocumentTypes.Category;
-            var result = await _categoryIndexedSearchService.SearchAsync(criteria);
+            var result = await categoryIndexedSearchService.SearchAsync(criteria);
             //It is important to return serialized data by such way. Otherwise, you will have slow responses for large outputs.
             //https://github.com/dotnet/aspnetcore/issues/19646
-            return Content(JsonConvert.SerializeObject(result, _jsonOptions.SerializerSettings), "application/json");
+            return Content(JsonConvert.SerializeObject(result, jsonOptions.Value.SerializerSettings), "application/json");
         }
     }
 }
