@@ -1008,7 +1008,9 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasColumnType("nvarchar(128)");
 
                     b.Property<bool>("AllowCustomText")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
                     b.Property<bool>("AllowPredefinedOptions")
                         .HasColumnType("bit");

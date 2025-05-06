@@ -1006,7 +1006,9 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
                         .HasColumnType("varchar(128)");
 
                     b.Property<bool>("AllowCustomText")
-                        .HasColumnType("tinyint(1)");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(true);
 
                     b.Property<bool>("AllowPredefinedOptions")
                         .HasColumnType("tinyint(1)");
