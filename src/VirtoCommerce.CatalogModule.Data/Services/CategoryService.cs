@@ -35,6 +35,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private readonly IBlobUrlResolver _blobUrlResolver;
         private readonly IPropertyValueSanitizer _propertyValueSanitizer;
 
+        private readonly StringComparer _ignoreCase = StringComparer.OrdinalIgnoreCase;
+
         public CategoryService(
             Func<ICatalogRepository> repositoryFactory,
             IPlatformMemoryCache platformMemoryCache,
@@ -58,52 +60,53 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public override Task<IList<Category>> GetAsync(IList<string> ids, string responseGroup = null, bool clone = true)
         {
-            return clone
-                ? GetByIdsAsync(ids, responseGroup, catalogId: null)
-                : GetNoCloneAsync(ids, responseGroup);
+            return GetByIdsAsync(ids, responseGroup, clone, catalogId: null);
         }
 
-        public virtual async Task<IList<Category>> GetByIdsAsync(IList<string> ids, string responseGroup, string catalogId)
+        public virtual Task<IList<Category>> GetByIdsAsync(IList<string> ids, string responseGroup, string catalogId)
+        {
+            return GetByIdsAsync(ids, responseGroup, clone: true, catalogId);
+        }
+
+        private async Task<IList<Category>> GetByIdsAsync(IList<string> ids, string responseGroup, bool clone, string catalogId)
         {
             var result = new List<Category>();
 
-            foreach (var categoryId in ids.Where(x => x != null))
+            ids = ids
+                ?.Where(x => !string.IsNullOrEmpty(x))
+                .Distinct(_ignoreCase)
+                .ToArray();
+
+            if (ids is null || ids.Count == 0)
             {
-                var categoryBranch = await PreloadCategoryBranchAsync(categoryId);
-
-                if (categoryBranch.TryGetValue(categoryId, out var category) && category != null)
-                {
-                    category = category.CloneTyped();
-
-                    if (HasFlag(responseGroup, CategoryResponseGroup.WithOutlines))
-                    {
-                        _outlineService.FillOutlinesForObjects(new List<Category> { category }, catalogId);
-                    }
-
-                    // Reduce details according to response group
-                    category.ReduceDetails(responseGroup);
-
-                    result.Add(category);
-                }
+                return result;
             }
 
-            return result;
-        }
-
-        /// <summary>
-        /// Returns data from the cache without cloning. This consumes less memory, but returned data must not be modified.
-        /// </summary>
-        protected virtual async Task<IList<Category>> GetNoCloneAsync(IList<string> ids, string responseGroup)
-        {
-            var result = new List<Category>();
-
             foreach (var categoryId in ids.Where(x => x != null))
             {
                 var categoryBranch = await PreloadCategoryBranchAsync(categoryId);
 
                 if (categoryBranch.TryGetValue(categoryId, out var category) && category != null)
                 {
-                    _outlineService.FillOutlinesForObjects(new List<Category> { category }, catalogId: null);
+                    if (!clone)
+                    {
+                        // Build all outlines
+                        _outlineService.FillOutlinesForObjects(new List<Category> { category }, catalogId: null);
+                    }
+                    else
+                    {
+                        category = category.CloneTyped();
+
+                        if (HasFlag(responseGroup, CategoryResponseGroup.WithOutlines))
+                        {
+                            // Build outlines only for the requested catalog
+                            _outlineService.FillOutlinesForObjects(new List<Category> { category }, catalogId);
+                        }
+
+                        // Reduce details according to response group
+                        category.ReduceDetails(responseGroup);
+                    }
+
                     result.Add(category);
                 }
             }
@@ -173,7 +176,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
                 var result = entities
                     .Select(x => x.ToModel(AbstractTypeFactory<Category>.TryCreateInstance()))
-                    .ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase)
+                    .ToDictionary(x => x.Id, _ignoreCase)
                     .WithDefaultValue(null);
 
                 // Prepare catalog cache tokens
@@ -231,7 +234,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         protected virtual async Task LoadDependencies(ICollection<Category> categories, IDictionary<string, Category> preloadedCategoriesMap)
         {
             var catalogsIds = new { categories }.GetFlatObjectsListWithInterface<IHasCatalogId>().Select(x => x.CatalogId).Where(x => x != null).Distinct().ToList();
-            var catalogsByIdDict = (await _catalogService.GetNoCloneAsync(catalogsIds)).ToDictionary(x => x.Id, StringComparer.OrdinalIgnoreCase);
+            var catalogsByIdDict = (await _catalogService.GetNoCloneAsync(catalogsIds)).ToDictionary(x => x.Id, _ignoreCase);
 
             foreach (var category in categories)
             {
