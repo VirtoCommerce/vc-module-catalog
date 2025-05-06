@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Extensions;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CatalogModule.Core.Model.Search;
+using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Authorization;
 using VirtoCommerce.CoreModule.Core.Seo;
@@ -19,21 +21,33 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
     [Authorize]
     public class CatalogModuleCategoriesController : Controller
     {
+        private readonly ICategorySearchService _categorySearchService;
         private readonly ICategoryService _categoryService;
         private readonly ICatalogService _catalogService;
         private readonly IAuthorizationService _authorizationService;
 
 
         public CatalogModuleCategoriesController(
-            ICategoryService categoryService
-            , ICatalogService catalogService
-            , IAuthorizationService authorizationService)
+            ICategorySearchService categorySearchService,
+            ICategoryService categoryService,
+            ICatalogService catalogService,
+            IAuthorizationService authorizationService)
         {
+            _categorySearchService = categorySearchService;
             _categoryService = categoryService;
             _catalogService = catalogService;
             _authorizationService = authorizationService;
         }
 
+        // TODO: Remove this test endpoint before merging to dev branch
+        [HttpGet("all")]
+        [Authorize(ModuleConstants.Security.Permissions.Read)]
+        public async Task<ActionResult<Category[]>> GetAllCategories([FromQuery] string catalogId, [FromQuery] int batchSize = 100)
+        {
+            var criteria = new CategorySearchCriteria { CatalogId = catalogId, Take = batchSize };
+            var categories = await _categorySearchService.SearchAllNoCloneAsync(criteria);
+            return Ok(categories);
+        }
 
         /// <summary>
         /// Gets category by id.

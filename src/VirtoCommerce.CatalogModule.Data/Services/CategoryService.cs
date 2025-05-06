@@ -113,7 +113,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         public override async Task DeleteAsync(IList<string> ids, bool softDelete = false)
         {
-            var categories = await GetAsync(ids, CategoryResponseGroup.Info.ToString());
+            var categories = await GetAsync(ids, nameof(CategoryResponseGroup.Info));
 
             if (categories.Any())
             {
@@ -215,7 +215,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             using var repository = _repositoryFactory();
             repository.DisableChangesTracking();
 
-            return await LoadEntities(repository, new[] { categoryId }, CategoryResponseGroup.Full.ToString());
+            return await LoadEntities(repository, [categoryId], nameof(CategoryResponseGroup.Full));
         }
 
         protected virtual void ResolveImageUrls(ICollection<Category> categories)
@@ -237,7 +237,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             {
                 category.Catalog = catalogsByIdDict.GetValueOrThrow(category.CatalogId, $"catalog with key {category.CatalogId} doesn't exist");
                 category.IsVirtual = category.Catalog.IsVirtual;
-                category.Parents = Array.Empty<Category>();
+                category.Parents = [];
 
                 // Load all parent categories
                 if (category.ParentId != null)
@@ -246,9 +246,9 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     category.Parent = category.Parents.LastOrDefault();
                 }
 
-                category.Level = category.Parents?.Length ?? 0;
+                category.Level = category.Parents.Length;
 
-                foreach (var link in category.Links ?? Array.Empty<CategoryLink>())
+                foreach (var link in category.Links ?? [])
                 {
                     link.Catalog = catalogsByIdDict.GetValueOrThrow(link.CatalogId, $"link catalog with key {link.CatalogId} doesn't exist");
                     if (link.CategoryId != null)
@@ -257,7 +257,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     }
                 }
 
-                foreach (var property in category.Properties ?? Array.Empty<Property>())
+                foreach (var property in category.Properties ?? [])
                 {
                     property.Catalog = property.CatalogId != null ? catalogsByIdDict[property.CatalogId] : null;
                     if (property.CategoryId != null)
@@ -341,7 +341,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         protected virtual void SanitizeCategoryProperties(IList<Category> categories)
         {
-            categories.OfType<IHasProperties>().SanitizePropertyValues(_propertyValueSanitizer);
+            categories.SanitizePropertyValues(_propertyValueSanitizer);
         }
 
         protected override void ClearCache(IList<Category> models)
