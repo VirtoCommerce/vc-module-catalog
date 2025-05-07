@@ -311,7 +311,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 // Load all parent categories
                 if (category.ParentId != null)
                 {
-                    category.Parents = (await GetParentsAsync(category, preloadedCategoriesMap)).ToArray();
+                    category.Parents = GetParents(category, preloadedCategoriesMap).ToArray();
                     category.Parent = category.Parents.LastOrDefault();
                 }
 
@@ -322,7 +322,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     link.Catalog = catalogsByIdDict.GetValueOrThrow(link.CatalogId, $"link catalog with key {link.CatalogId} doesn't exist");
                     if (link.CategoryId != null)
                     {
-                        link.Category = await GetCategoryAsync(link.CategoryId, preloadedCategoriesMap);
+                        link.Category = preloadedCategoriesMap.GetValueSafe(link.CategoryId);
                     }
                 }
 
@@ -331,42 +331,24 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     property.Catalog = property.CatalogId != null ? catalogsByIdDict[property.CatalogId] : null;
                     if (property.CategoryId != null)
                     {
-                        property.Category = await GetCategoryAsync(property.CategoryId, preloadedCategoriesMap);
+                        property.Category = preloadedCategoriesMap.GetValueSafe(property.CategoryId);
                     }
                 }
             }
         }
 
-        private async Task<IList<Category>> GetParentsAsync(Category category, IDictionary<string, Category> preloadedCategoriesMap)
+        private static List<Category> GetParents(Category category, IDictionary<string, Category> preloadedCategoriesMap)
         {
             var list = new List<Category>();
 
-            for (var parent = await GetCategoryAsync(category.ParentId, preloadedCategoriesMap);
+            for (var parent = preloadedCategoriesMap.GetValueSafe(category.ParentId);
                  parent != null;
-                 parent = await GetCategoryAsync(parent.ParentId, preloadedCategoriesMap))
+                 parent = preloadedCategoriesMap.GetValueSafe(parent.ParentId))
             {
                 list.Insert(0, parent);
             }
 
             return list;
-        }
-
-        private async Task<Category> GetCategoryAsync(string id, IDictionary<string, Category> preloadedCategoriesMap)
-        {
-            if (id is null)
-            {
-                return null;
-            }
-
-            if (preloadedCategoriesMap.TryGetValue(id, out var result))
-            {
-                return result;
-            }
-
-            result = (await PreloadCategoryBranchAsync(id))[id];
-            preloadedCategoriesMap[id] = result;
-
-            return result;
         }
 
         protected virtual void ApplyInheritanceRules(ICollection<Category> categories)
