@@ -82,33 +82,35 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 return result;
             }
 
-            foreach (var categoryId in ids.Where(x => x != null))
+            var categoryById = await GetAllRelatedCategories(ids);
+
+            foreach (var categoryId in ids)
             {
-                var categoryBranch = await PreloadCategoryBranchAsync(categoryId);
-
-                if (categoryBranch.TryGetValue(categoryId, out var category) && category != null)
+                if (!categoryById.TryGetValue(categoryId, out var category) || category is null)
                 {
-                    if (!clone)
-                    {
-                        // Build all outlines
-                        _outlineService.FillOutlinesForObjects(new List<Category> { category }, catalogId: null);
-                    }
-                    else
-                    {
-                        category = category.CloneTyped();
-
-                        if (HasFlag(responseGroup, CategoryResponseGroup.WithOutlines))
-                        {
-                            // Build outlines only for the requested catalog
-                            _outlineService.FillOutlinesForObjects(new List<Category> { category }, catalogId);
-                        }
-
-                        // Reduce details according to response group
-                        category.ReduceDetails(responseGroup);
-                    }
-
-                    result.Add(category);
+                    continue;
                 }
+
+                if (!clone)
+                {
+                    // Build all outlines
+                    _outlineService.FillOutlinesForObjects(new List<Category> { category }, catalogId: null);
+                }
+                else
+                {
+                    category = category.CloneTyped();
+
+                    if (HasFlag(responseGroup, CategoryResponseGroup.WithOutlines))
+                    {
+                        // Build outlines only for the requested catalog
+                        _outlineService.FillOutlinesForObjects(new List<Category> { category }, catalogId);
+                    }
+
+                    // Reduce details according to response group
+                    category.ReduceDetails(responseGroup);
+                }
+
+                result.Add(category);
             }
 
             return result;
@@ -159,6 +161,58 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return categoryResponseGroup.HasFlag(flag);
         }
 
+        private async Task<Dictionary<string, Category>> GetAllRelatedCategories(IList<string> ids)
+        {
+            var categoryById = new Dictionary<string, Category>();
+
+            while (ids.Count > 0)
+            {
+                var entities = await GetOrLoadEntities(ids);
+
+                foreach (var id in ids)
+                {
+                    var entity = entities.FirstOrDefault(x => x.Id.EqualsIgnoreCase(id));
+                    var model = entity is null ? null : ToModel(entity);
+                    categoryById.TryAdd(id, model);
+                }
+
+                var parentCategoryIds = entities
+                    .Select(x => x.ParentCategoryId);
+
+                var linkedCategoryIds = entities
+                    .Where(x => x.OutgoingLinks?.Count > 0)
+                    .SelectMany(x => x.OutgoingLinks.Select(y => y.TargetCategoryId));
+
+                ids = parentCategoryIds.Concat(linkedCategoryIds)
+                    .Where(x => !string.IsNullOrEmpty(x))
+                    .Distinct(_ignoreCase)
+                    .Except(categoryById.Keys)
+                    .ToArray();
+            }
+
+            var categories = categoryById.Values.Where(x => x != null).ToArray();
+
+            ResolveImageUrls(categories);
+            await LoadDependencies(categories, categoryById);
+            ApplyInheritanceRules(categories);
+
+            return categoryById;
+        }
+
+        private async Task<IList<CategoryEntity>> GetOrLoadEntities(IList<string> ids)
+        {
+            var cacheKeyPrefix = CacheKey.With(GetType(), nameof(GetOrLoadEntities));
+
+            return await _platformMemoryCache.GetOrLoadByIdsAsync(cacheKeyPrefix, ids,
+                async missingIds =>
+                {
+                    using var repository = _repositoryFactory();
+                    repository.DisableChangesTracking();
+                    return await LoadEntities(repository, missingIds, nameof(CategoryResponseGroup.Full));
+                },
+                ConfigureCache);
+        }
+
         protected virtual Task<IDictionary<string, Category>> PreloadCategoryBranchAsync(string categoryId)
         {
             if (categoryId == null)
@@ -168,21 +222,18 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
             var cacheKey = CacheKey.With(GetType(), nameof(PreloadCategoryBranchAsync), categoryId);
 
-            return _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async cacheEntry =>
+            return _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async cacheOptions =>
             {
-                cacheEntry.AddExpirationToken(CatalogTreeCacheRegion.CreateChangeTokenForKey(categoryId));
-
                 var entities = await SearchCategoriesHierarchyAsync(categoryId);
 
-                var result = entities
+                IDictionary<string, Category> result = entities
                     .Select(x => x.ToModel(AbstractTypeFactory<Category>.TryCreateInstance()))
-                    .ToDictionary(x => x.Id, _ignoreCase)
-                    .WithDefaultValue(null);
+                    .ToDictionary(x => x.Id, _ignoreCase);
 
                 // Prepare catalog cache tokens
-                foreach (var catalogId in entities.Select(x => x.CatalogId).Distinct())
+                foreach (var entity in entities)
                 {
-                    cacheEntry.AddExpirationToken(CatalogTreeCacheRegion.CreateChangeTokenForKey(catalogId));
+                    ConfigureCache(cacheOptions, entity.Id, entity);
                 }
 
                 // Find linked category ids to recursively load them
@@ -213,6 +264,16 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             });
         }
 
+        protected virtual void ConfigureCache(MemoryCacheEntryOptions cacheOptions, string id, CategoryEntity entity)
+        {
+            cacheOptions.AddExpirationToken(CatalogTreeCacheRegion.CreateChangeTokenForKey(id));
+
+            if (entity != null)
+            {
+                cacheOptions.AddExpirationToken(CatalogTreeCacheRegion.CreateChangeTokenForKey(entity.CatalogId));
+            }
+        }
+
         protected virtual async Task<IList<CategoryEntity>> SearchCategoriesHierarchyAsync(string categoryId)
         {
             using var repository = _repositoryFactory();
@@ -233,8 +294,13 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         protected virtual async Task LoadDependencies(ICollection<Category> categories, IDictionary<string, Category> preloadedCategoriesMap)
         {
-            var catalogsIds = new { categories }.GetFlatObjectsListWithInterface<IHasCatalogId>().Select(x => x.CatalogId).Where(x => x != null).Distinct().ToList();
-            var catalogsByIdDict = (await _catalogService.GetNoCloneAsync(catalogsIds)).ToDictionary(x => x.Id, _ignoreCase);
+            var catalogIds = new { categories }.GetFlatObjectsListWithInterface<IHasCatalogId>()
+                .Select(x => x.CatalogId)
+                .Where(x => !string.IsNullOrEmpty(x))
+                .Distinct(_ignoreCase)
+                .ToArray();
+
+            var catalogsByIdDict = (await _catalogService.GetNoCloneAsync(catalogIds)).ToDictionary(x => x.Id, _ignoreCase);
 
             foreach (var category in categories)
             {
@@ -292,7 +358,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 return null;
             }
 
-            if (preloadedCategoriesMap.TryGetValue(id, out var result) && result != null)
+            if (preloadedCategoriesMap.TryGetValue(id, out var result))
             {
                 return result;
             }
