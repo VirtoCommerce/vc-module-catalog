@@ -379,10 +379,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         protected virtual async Task ValidateCategoryPropertiesAsync(IList<Category> categories)
         {
-            if (categories == null)
-            {
-                throw new ArgumentNullException(nameof(categories));
-            }
+            ArgumentNullException.ThrowIfNull(categories);
 
             // Validate categories 
             var validator = new CategoryValidator();
@@ -391,12 +388,16 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             {
                 await validator.ValidateAndThrowAsync(category);
 
-                var group = new List<Category> { category };
-
                 var branchId = category.Id ?? category.ParentId;
-                var categoryBranch = await PreloadCategoryBranchAsync(branchId);
+                if (string.IsNullOrEmpty(branchId))
+                {
+                    continue;
+                }
 
-                await LoadDependencies(group, categoryBranch);
+                var group = new List<Category> { category };
+                var categoryById = await GetAllRelatedCategories([branchId]);
+
+                await LoadDependencies(group, categoryById);
                 ApplyInheritanceRules(group);
 
                 // PT-4999: fix validation call
