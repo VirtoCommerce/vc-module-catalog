@@ -68,7 +68,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return GetByIdsAsync(ids, responseGroup, clone: true, catalogId);
         }
 
-        private async Task<IList<Category>> GetByIdsAsync(IList<string> ids, string responseGroup, bool clone, string catalogId)
+        protected virtual async Task<IList<Category>> GetByIdsAsync(IList<string> ids, string responseGroup, bool clone, string catalogId)
         {
             var result = new List<Category>();
 
@@ -161,58 +161,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return categoryResponseGroup.HasFlag(flag);
         }
 
-        private async Task<Dictionary<string, Category>> GetAllRelatedCategories(IList<string> ids)
-        {
-            var categoryById = new Dictionary<string, Category>();
-
-            while (ids.Count > 0)
-            {
-                var entities = await GetOrLoadEntities(ids);
-
-                foreach (var id in ids)
-                {
-                    var entity = entities.FirstOrDefault(x => x.Id.EqualsIgnoreCase(id));
-                    var model = entity is null ? null : ToModel(entity);
-                    categoryById.TryAdd(id, model);
-                }
-
-                var parentCategoryIds = entities
-                    .Select(x => x.ParentCategoryId);
-
-                var linkedCategoryIds = entities
-                    .Where(x => x.OutgoingLinks?.Count > 0)
-                    .SelectMany(x => x.OutgoingLinks.Select(y => y.TargetCategoryId));
-
-                ids = parentCategoryIds.Concat(linkedCategoryIds)
-                    .Where(x => !string.IsNullOrEmpty(x))
-                    .Distinct(_ignoreCase)
-                    .Except(categoryById.Keys)
-                    .ToArray();
-            }
-
-            var categories = categoryById.Values.Where(x => x != null).ToArray();
-
-            ResolveImageUrls(categories);
-            await LoadDependencies(categories, categoryById);
-            ApplyInheritanceRules(categories);
-
-            return categoryById;
-        }
-
-        private async Task<IList<CategoryEntity>> GetOrLoadEntities(IList<string> ids)
-        {
-            var cacheKeyPrefix = CacheKey.With(GetType(), nameof(GetOrLoadEntities));
-
-            return await _platformMemoryCache.GetOrLoadByIdsAsync(cacheKeyPrefix, ids,
-                async missingIds =>
-                {
-                    using var repository = _repositoryFactory();
-                    repository.DisableChangesTracking();
-                    return await LoadEntities(repository, missingIds, nameof(CategoryResponseGroup.Full));
-                },
-                ConfigureCache);
-        }
-
+        [Obsolete("Use GetAllRelatedCategories(IList<string> ids)", DiagnosticId = "VC0010", UrlFormat = "https://docs.virtocommerce.org/platform/user-guide/versions/virto3-products-versions/")]
         protected virtual Task<IDictionary<string, Category>> PreloadCategoryBranchAsync(string categoryId)
         {
             if (categoryId == null)
@@ -262,16 +211,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
                 return result;
             });
-        }
-
-        protected virtual void ConfigureCache(MemoryCacheEntryOptions cacheOptions, string id, CategoryEntity entity)
-        {
-            cacheOptions.AddExpirationToken(CatalogTreeCacheRegion.CreateChangeTokenForKey(id));
-
-            if (entity != null)
-            {
-                cacheOptions.AddExpirationToken(CatalogTreeCacheRegion.CreateChangeTokenForKey(entity.CatalogId));
-            }
         }
 
         protected virtual async Task<IList<CategoryEntity>> SearchCategoriesHierarchyAsync(string categoryId)
@@ -394,6 +333,68 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         protected virtual void SanitizeCategoryProperties(IList<Category> categories)
         {
             categories.SanitizePropertyValues(_propertyValueSanitizer);
+        }
+
+        protected virtual async Task<Dictionary<string, Category>> GetAllRelatedCategories(IList<string> ids)
+        {
+            var categoryById = new Dictionary<string, Category>();
+
+            while (ids.Count > 0)
+            {
+                var entities = await GetOrLoadEntities(ids);
+
+                foreach (var id in ids)
+                {
+                    var entity = entities.FirstOrDefault(x => x.Id.EqualsIgnoreCase(id));
+                    var model = entity is null ? null : ToModel(entity);
+                    categoryById.TryAdd(id, model);
+                }
+
+                var parentCategoryIds = entities
+                    .Select(x => x.ParentCategoryId);
+
+                var linkedCategoryIds = entities
+                    .Where(x => x.OutgoingLinks?.Count > 0)
+                    .SelectMany(x => x.OutgoingLinks.Select(y => y.TargetCategoryId));
+
+                ids = parentCategoryIds.Concat(linkedCategoryIds)
+                    .Where(x => !string.IsNullOrEmpty(x))
+                    .Distinct(_ignoreCase)
+                    .Except(categoryById.Keys)
+                    .ToArray();
+            }
+
+            var categories = categoryById.Values.Where(x => x != null).ToArray();
+
+            ResolveImageUrls(categories);
+            await LoadDependencies(categories, categoryById);
+            ApplyInheritanceRules(categories);
+
+            return categoryById;
+        }
+
+        protected virtual async Task<IList<CategoryEntity>> GetOrLoadEntities(IList<string> ids)
+        {
+            var cacheKeyPrefix = CacheKey.With(GetType(), nameof(GetOrLoadEntities));
+
+            return await _platformMemoryCache.GetOrLoadByIdsAsync(cacheKeyPrefix, ids,
+                async missingIds =>
+                {
+                    using var repository = _repositoryFactory();
+                    repository.DisableChangesTracking();
+                    return await LoadEntities(repository, missingIds, nameof(CategoryResponseGroup.Full));
+                },
+                ConfigureCache);
+        }
+
+        protected virtual void ConfigureCache(MemoryCacheEntryOptions cacheOptions, string id, CategoryEntity entity)
+        {
+            cacheOptions.AddExpirationToken(CatalogTreeCacheRegion.CreateChangeTokenForKey(id));
+
+            if (entity != null)
+            {
+                cacheOptions.AddExpirationToken(CatalogTreeCacheRegion.CreateChangeTokenForKey(entity.CatalogId));
+            }
         }
 
         protected override void ClearCache(IList<Category> models)
