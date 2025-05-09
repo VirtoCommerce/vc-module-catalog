@@ -10,7 +10,7 @@ namespace VirtoCommerce.CatalogModule.Core.Extensions
     {
         public static bool HasPropertyExcluded(this IHasExcludedProperties obj, string propertyName)
         {
-            return obj.ExcludedProperties?.Any(x => x.Name.EqualsInvariant(propertyName)) == true;
+            return obj.ExcludedProperties?.Any(x => x.Name.EqualsIgnoreCase(propertyName)) == true;
         }
 
         public static void InheritExcludedProperties<T>(this T obj, IHasExcludedProperties parent)

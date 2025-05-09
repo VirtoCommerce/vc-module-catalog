@@ -102,7 +102,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
             foreach (var propertyName in source.Properties().Select(x => x.Name))
             {
-                var property = allProperties.FirstOrDefault(x => x.Name.EqualsInvariant(propertyName));
+                var property = allProperties.FirstOrDefault(x => x.Name.EqualsIgnoreCase(propertyName));
                 if (property == null)
                 {
                     result.Errors.Add($"Property '{propertyName}' is not allowed.");
@@ -137,7 +137,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
             if (property.Multivalue || property.Dictionary)
             {
-                var properties = product.Properties?.Where(prop => prop.Id.EqualsInvariant(property.Id)).ToArray();
+                var properties = product.Properties?.Where(prop => prop.Id.EqualsIgnoreCase(property.Id)).ToArray();
 
                 if (properties.IsNullOrEmpty())
                 {
@@ -156,8 +156,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             else
             {
                 var productProperty = property.Id == null
-                    ? product.Properties?.FirstOrDefault(prop => prop.Id == null && prop.Name.EqualsInvariant(property.Name))
-                    : product.Properties?.FirstOrDefault(prop => prop.Id.EqualsInvariant(property.Id));
+                    ? product.Properties?.FirstOrDefault(prop => prop.Id == null && prop.Name.EqualsIgnoreCase(property.Name))
+                    : product.Properties?.FirstOrDefault(prop => prop.Id.EqualsIgnoreCase(property.Id));
 
                 if (productProperty != null)
                 {
@@ -226,7 +226,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         private static bool AddPropertyValues(IHasProperties product, Property property)
         {
             bool result;
-            var foundProperty = product.Properties.FirstOrDefault(p => p.Id.EqualsInvariant(property.Id));
+            var foundProperty = product.Properties.FirstOrDefault(p => p.Id.EqualsIgnoreCase(property.Id));
             if (foundProperty == null)
             {
                 result = false;

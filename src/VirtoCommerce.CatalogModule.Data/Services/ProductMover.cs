@@ -33,7 +33,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             var result = new List<CatalogProduct>();
 
             foreach (var listEntryProduct in moveInfo.ListEntries.Where(
-                listEntry => listEntry.Type.EqualsInvariant(ProductListEntry.TypeName)))
+                listEntry => listEntry.Type.EqualsIgnoreCase(ProductListEntry.TypeName)))
             {
                 var product = await _itemService.GetByIdAsync(listEntryProduct.Id, ItemResponseGroup.ItemLarge.ToString());
                 if (product.CatalogId == moveInfo.Catalog)

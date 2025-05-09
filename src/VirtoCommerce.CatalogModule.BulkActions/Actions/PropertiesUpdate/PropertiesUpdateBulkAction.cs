@@ -41,12 +41,12 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Actions.PropertiesUpdate
         {
             var entries = entities.Cast<ListEntryBase>().ToArray();
 
-            if (entries.Any(entry => !entry.Type.EqualsInvariant(ProductListEntry.TypeName)))
+            if (entries.Any(entry => !entry.Type.EqualsIgnoreCase(ProductListEntry.TypeName)))
             {
                 throw new ArgumentException($"{GetType().Name} could be applied to product entities only.");
             }
 
-            var productQuery = entries.Where(entry => entry.Type.EqualsInvariant(ProductListEntry.TypeName));
+            var productQuery = entries.Where(entry => entry.Type.EqualsIgnoreCase(ProductListEntry.TypeName));
             var productIds = productQuery.Select(entry => entry.Id).ToList();
             var products = await _itemService.GetAsync(productIds, (ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemProperties).ToString());
 

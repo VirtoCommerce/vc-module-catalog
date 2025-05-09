@@ -13,7 +13,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model.Search
         public virtual IList<IFilter> GetFiltersExceptSpecified(string excludeFieldName)
         {
             var removableFilters = RemovableFilters
-                .Where(kvp => !kvp.Key.EqualsInvariant(excludeFieldName))
+                .Where(kvp => !kvp.Key.EqualsIgnoreCase(excludeFieldName))
                 .Select(kvp => kvp.Value)
                 .ToList();
 

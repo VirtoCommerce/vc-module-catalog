@@ -109,11 +109,11 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             Quantity = association.Quantity;
             ItemId = association.ItemId;
 
-            if (association.AssociatedObjectType.EqualsInvariant("product"))
+            if (association.AssociatedObjectType.EqualsIgnoreCase("product"))
             {
                 AssociatedItemId = association.AssociatedObjectId;
             }
-            else if (association.AssociatedObjectType.EqualsInvariant("category"))
+            else if (association.AssociatedObjectType.EqualsIgnoreCase("category"))
             {
                 AssociatedCategoryId = association.AssociatedObjectId;
             }

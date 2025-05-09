@@ -40,7 +40,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
                 foreach (var term in terms)
                 {
-                    var browseFilter = browseFilters?.SingleOrDefault(x => x.Key.EqualsInvariant(term.Key));
+                    var browseFilter = browseFilters?.SingleOrDefault(x => x.Key.EqualsIgnoreCase(term.Key));
 
                     // Handle special filter term with a key = "tags", it contains just values and we need to determine which filter to use
                     if (browseFilter == null && term.Key == "tags")
@@ -134,7 +134,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         {
             IFilter result = null;
 
-            if (string.IsNullOrEmpty(criteria.Currency) || priceRangeFilter.Currency.EqualsInvariant(criteria.Currency))
+            if (string.IsNullOrEmpty(criteria.Currency) || priceRangeFilter.Currency.EqualsIgnoreCase(criteria.Currency))
             {
                 var knownValues = priceRangeFilter.Values
                     ?.Where(v => valueIds.Contains(v.Id, StringComparer.OrdinalIgnoreCase))

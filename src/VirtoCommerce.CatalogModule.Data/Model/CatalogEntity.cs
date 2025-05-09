@@ -88,7 +88,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             foreach (var property in catalog.Properties)
             {
                 property.IsReadOnly = property.Type != PropertyType.Catalog;
-                property.Values = CatalogPropertyValues.Where(pr => pr.Name.EqualsInvariant(property.Name)).OrderBy(x => x.DictionaryItem?.SortOrder)
+                property.Values = CatalogPropertyValues.Where(pr => pr.Name.EqualsIgnoreCase(property.Name)).OrderBy(x => x.DictionaryItem?.SortOrder)
                     .ThenBy(x => x.Name)
                     .SelectMany(x => x.ToModel(AbstractTypeFactory<PropertyValue>.TryCreateInstance())).ToList();
             }

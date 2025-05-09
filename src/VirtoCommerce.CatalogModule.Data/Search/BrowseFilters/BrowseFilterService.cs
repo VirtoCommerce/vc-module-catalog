@@ -57,7 +57,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
             }
 
             var result = aggregations
-                ?.Where(f => !(f is PriceRangeFilter) || ((PriceRangeFilter)f).Currency.EqualsInvariant(criteria.Currency))
+                ?.Where(f => !(f is PriceRangeFilter) || ((PriceRangeFilter)f).Currency.EqualsIgnoreCase(criteria.Currency))
                 .ToList();
 
             return result;

@@ -356,6 +356,31 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return Ok();
         }
 
+        /// <summary>
+        /// Gets product by outer id.
+        /// </summary>
+        /// <remarks>Gets product by outer id (integration key) with full information loaded</remarks>
+        /// <param name="id">Product outer id</param>
+        [HttpGet]
+        [Route("outer/{id}")]
+        public async Task<ActionResult<Catalog>> GetProductByOuterId(string id)
+        {
+            var product = await _itemsService.GetByOuterIdNoCloneAsync(id, ItemResponseGroup.Full.ToString());
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, product, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
+            if (!authorizationResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            return Ok(product);
+        }
+
         private async Task<CatalogProduct[]> InnerSaveProducts(CatalogProduct[] products)
         {
             var toSaveList = new List<CatalogProduct>();
@@ -367,12 +392,12 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                     var slugUrl = GenerateProductDefaultSlugUrl(product);
                     if (!string.IsNullOrEmpty(slugUrl))
                     {
-                        var catalog = catalogs.FirstOrDefault(c => c.Id.EqualsInvariant(product.CatalogId));
+                        var catalog = catalogs.FirstOrDefault(c => c.Id.EqualsIgnoreCase(product.CatalogId));
                         var defaultLanguageCode = catalog?.Languages.First(x => x.IsDefault).LanguageCode;
                         var seoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
                         seoInfo.LanguageCode = defaultLanguageCode;
                         seoInfo.SemanticUrl = slugUrl;
-                        product.SeoInfos = new[] { seoInfo };
+                        product.SeoInfos = [seoInfo];
                     }
                 }
 
