@@ -56,9 +56,9 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _propertyValueSanitizer = propertyValueSanitizer;
         }
 
-        public override async Task<Category> GetByOuterIdAsync(string outerId, string responseGroup = null, bool clone = true)
+        public override async Task<Category> GetByOuterIdAsync(string id, string responseGroup = null, bool clone = true)
         {
-            var category = await base.GetByOuterIdAsync(outerId, responseGroup, clone);
+            var category = await base.GetByOuterIdAsync(id, responseGroup, clone);
 
             if (category != null)
             {
