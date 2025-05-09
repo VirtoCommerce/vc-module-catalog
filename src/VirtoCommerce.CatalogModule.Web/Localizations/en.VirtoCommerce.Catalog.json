@@ -831,6 +831,17 @@
           "quantity": "Specify quantity",
           "text": "Enter the text"
         }
+      },
+      "brand-store-detail": {
+        "title": "Brand settings",
+        "labels": {
+          "catalog": "Catalog",
+          "property": "Property"
+        },
+        "placeholders": {
+          "catalog": "Select catalog",
+          "property": "Select property"
+        }
       }
     },
     "exporter-list": {
@@ -909,6 +920,9 @@
       },
       "configuration": {
         "title": "Configuration"
+      },
+      "brandSetting": {
+        "title": "Brand settings"
       }
     },
     "dialogs": {

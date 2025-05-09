@@ -405,6 +405,13 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
             #endregion
 
+            #region Brands
+
+            modelBuilder.Entity<BrandStoreSettingEntity>().ToTable("BrandStoreSettings").HasKey(x => x.Id);
+            modelBuilder.Entity<BrandStoreSettingEntity>().Property(x => x.Id).HasMaxLength(128).ValueGeneratedOnAdd();
+
+            #endregion Brands
+
             base.OnModelCreating(modelBuilder);
 
             // Allows configuration for an entity type for different database types.
