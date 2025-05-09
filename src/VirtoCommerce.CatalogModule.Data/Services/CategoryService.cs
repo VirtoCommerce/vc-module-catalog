@@ -56,6 +56,31 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _propertyValueSanitizer = propertyValueSanitizer;
         }
 
+        public override async Task<Category> GetByOuterIdAsync(string outerId, string responseGroup = null, bool clone = true)
+        {
+            var category = await base.GetByOuterIdAsync(outerId, responseGroup, clone);
+
+            if (category != null)
+            {
+                ResolveImageUrls([category]);
+                await LoadDependencies([category], new Dictionary<string, Category> { { category.Id, category } });
+                ApplyInheritanceRules([category]);
+
+                if (HasFlag(responseGroup, CategoryResponseGroup.WithOutlines))
+                {
+                    _outlineService.FillOutlinesForObjects(new List<Category> { category }, catalogId: null);
+                }
+
+                if (clone)
+                {
+                    // Reduce details according to response group
+                    category.ReduceDetails(responseGroup);
+                }
+            }
+
+            return category;
+        }
+
         public override Task<IList<Category>> GetAsync(IList<string> ids, string responseGroup = null, bool clone = true)
         {
             return clone
@@ -135,7 +160,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 await _eventPublisher.Publish(new ProductChangedEvent(changedEntries.ProductEntries));
             }
         }
-
 
         protected override async Task BeforeSaveChanges(IList<Category> models)
         {

@@ -45,7 +45,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.DataSources
             var categoryProductsSkip = 0;
             var categoryProductsTake = 0;
 
-            var categoryIds = entries.Where(entry => entry.Type.EqualsInvariant(CategoryListEntry.TypeName))
+            var categoryIds = entries.Where(entry => entry.Type.EqualsIgnoreCase(CategoryListEntry.TypeName))
                 .Select(entry => entry.Id).ToArray();
             if (categoryIds.IsNullOrEmpty())
             {
@@ -70,7 +70,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.DataSources
             skip -= categoryProductsSkip;
             take -= categoryProductsTake;
 
-            var products = entries.Where(entry => entry.Type.EqualsInvariant(ProductListEntry.TypeName)).Skip(skip)
+            var products = entries.Where(entry => entry.Type.EqualsIgnoreCase(ProductListEntry.TypeName)).Skip(skip)
                 .Take(take).ToArray();
             result.AddRange(products);
 
@@ -80,7 +80,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.DataSources
         protected override async Task<int> GetEntitiesCountAsync(ListEntryBase[] entries)
         {
             var inCategoriesCount = 0;
-            var categoryIds = entries.Where(entry => entry.Type.EqualsInvariant(ProductListEntry.TypeName))
+            var categoryIds = entries.Where(entry => entry.Type.EqualsIgnoreCase(ProductListEntry.TypeName))
                 .Select(entry => entry.Id).ToArray();
 
             if (categoryIds.IsNullOrEmpty())
@@ -95,7 +95,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.DataSources
             }
 
             // find product list entry count
-            var productCount = entries.Count(entry => entry.Type.EqualsInvariant(ProductListEntry.TypeName));
+            var productCount = entries.Count(entry => entry.Type.EqualsIgnoreCase(ProductListEntry.TypeName));
 
             return inCategoriesCount + productCount;
         }

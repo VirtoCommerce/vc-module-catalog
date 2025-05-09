@@ -44,6 +44,24 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _propertyValueSanitizer = propertyValueSanitizer;
         }
 
+        public override async Task<Catalog> GetByOuterIdAsync(string outerId, string responseGroup = null, bool clone = true)
+        {
+            var catalog = await base.GetByOuterIdAsync(outerId, responseGroup, clone);
+
+            if (catalog != null)
+            {
+                LoadDependencies([catalog], new Dictionary<string, Catalog> { { catalog.Id, catalog } });
+
+                if (clone)
+                {
+                    // Reduce details according to response group
+                    catalog.ReduceDetails(responseGroup);
+                }
+            }
+
+            return catalog;
+        }
+
         public override async Task DeleteAsync(IList<string> ids, bool softDelete = false)
         {
             var catalogs = await GetAsync(ids);
@@ -144,10 +162,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         protected virtual void LoadDependencies(IEnumerable<Catalog> catalogs, IDictionary<string, Catalog> preloadedCatalogsMap)
         {
-            if (catalogs == null)
-            {
-                throw new ArgumentNullException(nameof(catalogs));
-            }
+            ArgumentNullException.ThrowIfNull(catalogs);
 
             foreach (var catalog in catalogs.Where(x => !x.IsTransient()))
             {

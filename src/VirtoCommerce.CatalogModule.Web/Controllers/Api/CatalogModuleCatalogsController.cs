@@ -181,7 +181,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             {
                 return Forbid();
             }
-            await _catalogService.SaveChangesAsync(new[] { catalog });
+            await _catalogService.SaveChangesAsync([catalog]);
             return Ok(catalog);
         }
 
@@ -204,8 +204,33 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return Forbid();
             }
 
-            await _catalogService.DeleteAsync(new[] { id });
+            await _catalogService.DeleteAsync([id]);
             return NoContent();
+        }
+
+        /// <summary>
+        /// Gets catalog by outer id.
+        /// </summary>
+        /// <remarks>Gets catalog by outer id (integration key) with full information loaded</remarks>
+        /// <param name="id">Catalog outer id</param>
+        [HttpGet]
+        [Route("outer/{id}")]
+        public async Task<ActionResult<Catalog>> GetCatalogByOuterId(string id)
+        {
+            var catalog = await _catalogService.GetByOuterIdAsync(id, CatalogResponseGroup.Full.ToString(), clone: false);
+
+            if (catalog == null)
+            {
+                return NotFound();
+            }
+
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, catalog, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
+            if (!authorizationResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            return Ok(catalog);
         }
     }
 }
