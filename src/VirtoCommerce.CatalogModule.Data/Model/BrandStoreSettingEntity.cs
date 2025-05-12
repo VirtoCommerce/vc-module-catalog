@@ -7,7 +7,7 @@ public class BrandStoreSettingEntity : AuditableEntity, IDataEntity<BrandStoreSe
 {
     public string StoreId { get; set; }
 
-    public string BrandPropertyId { get; set; }
+    public string BrandPropertyName { get; set; }
 
     public string BrandCatalogId { get; set; }
 
@@ -22,7 +22,7 @@ public class BrandStoreSettingEntity : AuditableEntity, IDataEntity<BrandStoreSe
         ModifiedDate = model.ModifiedDate;
 
         StoreId = model.StoreId;
-        BrandPropertyId = model.BrandPropertyId;
+        BrandPropertyName = model.BrandPropertyName;
         BrandCatalogId = model.BrandCatalogId;
 
         return this;
@@ -37,7 +37,7 @@ public class BrandStoreSettingEntity : AuditableEntity, IDataEntity<BrandStoreSe
         model.ModifiedDate = ModifiedDate;
 
         model.StoreId = StoreId;
-        model.BrandPropertyId = BrandPropertyId;
+        model.BrandPropertyName = BrandPropertyName;
         model.BrandCatalogId = BrandCatalogId;
 
         return model;
@@ -46,7 +46,7 @@ public class BrandStoreSettingEntity : AuditableEntity, IDataEntity<BrandStoreSe
     public void Patch(BrandStoreSettingEntity target)
     {
         target.StoreId = StoreId;
-        target.BrandPropertyId = BrandPropertyId;
+        target.BrandPropertyName = BrandPropertyName;
         target.BrandCatalogId = BrandCatalogId;
     }
 }

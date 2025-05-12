@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace VirtoCommerce.CatalogModule.Data.SqlServer.Migrations
 {
     /// <inheritdoc />
-    public partial class BrandStoreSettings : Migration
+    public partial class AddBrandStoreSettings : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -17,7 +17,7 @@ namespace VirtoCommerce.CatalogModule.Data.SqlServer.Migrations
                 {
                     Id = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
                     StoreId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    BrandPropertyId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BrandPropertyName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     BrandCatalogId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: true),

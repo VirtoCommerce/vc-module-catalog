@@ -160,7 +160,7 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                     b.Property<string>("BrandCatalogId")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("BrandPropertyId")
+                    b.Property<string>("BrandPropertyName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CreatedBy")

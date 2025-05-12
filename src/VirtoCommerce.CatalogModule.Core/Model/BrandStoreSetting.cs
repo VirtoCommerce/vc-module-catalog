@@ -7,7 +7,7 @@ public class BrandStoreSetting : AuditableEntity, ICloneable
 {
     public string StoreId { get; set; }
 
-    public string BrandPropertyId { get; set; }
+    public string BrandPropertyName { get; set; }
 
     public string BrandCatalogId { get; set; }
 

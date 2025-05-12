@@ -12,8 +12,8 @@ using VirtoCommerce.CatalogModule.Data.Repositories;
 namespace VirtoCommerce.CatalogModule.Data.SqlServer.Migrations
 {
     [DbContext(typeof(CatalogDbContext))]
-    [Migration("20250505142223_BrandStoreSettings")]
-    partial class BrandStoreSettings
+    [Migration("20250512083106_AddBrandStoreSettings")]
+    partial class AddBrandStoreSettings
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -163,7 +163,7 @@ namespace VirtoCommerce.CatalogModule.Data.SqlServer.Migrations
                     b.Property<string>("BrandCatalogId")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("BrandPropertyId")
+                    b.Property<string>("BrandPropertyName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CreatedBy")

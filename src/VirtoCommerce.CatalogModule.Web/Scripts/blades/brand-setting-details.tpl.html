@@ -18,7 +18,7 @@
             <label class="form-label">{{'catalog.blades.brand-store-detail.labels.property' | translate}}</label>
             <ui-scroll-drop-down page-size="50"
                                  ng-if="brandSettingsLoaded"
-                                 ng-model="blade.currentEntity.brandPropertyId"
+                                 ng-model="blade.currentEntity.brandPropertyName"
                                  data="blade.fetchProperties(criteria)"
                                  placeholder="'catalog.blades.brand-store-detail.placeholders.property'">
             </ui-scroll-drop-down>
