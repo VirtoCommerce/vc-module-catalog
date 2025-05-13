@@ -75,7 +75,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 .Distinct(_ignoreCase)
                 .ToArray();
 
-            if (ids is null || ids.Count == 0)
+            if (ids.IsNullOrEmpty())
             {
                 return [];
             }
