@@ -13,6 +13,7 @@ using MockQueryable.Moq;
 using Moq;
 using VirtoCommerce.AssetsModule.Core.Assets;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CatalogModule.Core.Model.OutlinePart;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Model;
@@ -30,18 +31,25 @@ namespace VirtoCommerce.CatalogModule.Tests;
 public class CategoryPerformanceTests
 {
     [Fact]
-    public async Task Test()
+    public async Task SearchAll_ShouldLoadCategoriesInBatches()
     {
         // Arrange
+        const int catalogsCount = 2;
         const int childCategoriesCount = 100;
         const int batchSize = 10;
 
-        var catalogs = CreateCatalogs(2);
-        var catalogId = catalogs.Last().Id;
-        var allCategories = CreateCategories(catalogId, childCategoriesCount);
+        var catalogs = CreateCatalogs(catalogsCount);
+        var allCategories = CreateCategories(catalogs, childCategoriesCount);
 
         var repositoryMock = GetCatalogRepositoryMock(catalogs, allCategories);
         var categorySearchService = GetCategorySearchService(repositoryMock);
+
+        var catalogId = catalogs.Last().Id;
+        var expectedCategoriesCount = allCategories.Count(x => x.CatalogId == catalogId);
+
+        const int expectedRepositoryCallCount = childCategoriesCount / batchSize
+            + 1  // get parent2 and linked1
+            + 1; // get parent1
 
         // Act
         var criteria = new CategorySearchCriteria { CatalogId = catalogId, Take = batchSize };
@@ -49,47 +57,75 @@ public class CategoryPerformanceTests
 
         // Assert
         categories.Should().NotBeNull();
-        categories.Count.Should().Be(allCategories.Count);
+        categories.Count.Should().Be(expectedCategoriesCount);
 
-        const int expectedRepositoryCalls = childCategoriesCount / batchSize
-            + 1  // get parent2 and linked1
-            + 1; // get parent1
-
-        repositoryMock.Verify(x => x.GetCategoriesByIdsAsync(It.IsAny<IList<string>>(), It.IsAny<string>()), Times.Exactly(expectedRepositoryCalls));
+        repositoryMock.Verify(x => x.GetCategoriesByIdsAsync(It.IsAny<IList<string>>(), It.IsAny<string>()), Times.Exactly(expectedRepositoryCallCount));
     }
 
 
-    private static CategorySearchService GetCategorySearchService(Mock<ICatalogRepository> repositoryMock)
+    private static List<CatalogEntity> CreateCatalogs(int count)
     {
-        var repositoryFactory = () => repositoryMock.Object;
+        var catalogs = new List<CatalogEntity>();
 
-        var memoryCache = new MemoryCache(Options.Create(new MemoryCacheOptions()));
-        var platformMemoryCache = new PlatformMemoryCache(memoryCache, Options.Create(new CachingOptions()), new Mock<ILogger<PlatformMemoryCache>>().Object);
+        for (var i = 1; i <= count; i++)
+        {
+            var catalog = new CatalogEntity
+            {
+                Id = $"catalog{i}",
+                Name = $"Catalog {i}",
+            };
 
-        var eventPublisherMock = new Mock<IEventPublisher>();
+            catalogs.Add(catalog);
+        }
 
-        var propertyValidatorMock = new Mock<AbstractValidator<IHasProperties>>();
+        return catalogs;
+    }
 
-        propertyValidatorMock
-            .Setup(x => x.ValidateAsync(It.IsAny<ValidationContext<IHasProperties>>(), CancellationToken.None))
-            .ReturnsAsync(new ValidationResult());
+    private static List<CategoryEntity> CreateCategories(List<CatalogEntity> catalogs, int count)
+    {
+        var categories = new List<CategoryEntity>();
 
-        var propertyValueSanitizerMock = new Mock<IPropertyValueSanitizer>();
+        foreach (var catalog in catalogs)
+        {
+            var catalogId = catalog.Id;
 
-        var crudService = new CategoryService(
-            repositoryFactory,
-            platformMemoryCache,
-            eventPublisherMock.Object,
-            propertyValidatorMock.Object,
-            GetCatalogService(repositoryFactory, eventPublisherMock, platformMemoryCache, propertyValidatorMock, propertyValueSanitizerMock),
-            new Mock<IOutlineService>().Object,
-            new Mock<IBlobUrlResolver>().Object,
-            propertyValueSanitizerMock.Object);
+            var parent1 = AddCategory(categories, "parent1", "Parent 1", catalogId);
+            var parent2 = AddCategory(categories, "parent2", "Parent 2", catalogId, parent1.Id);
+            var linked1 = AddCategory(categories, "linked1", "Linked 1", catalogId, parent1.Id);
 
-        var crudOptions = Options.Create(new CrudOptions());
-        var searchService = new CategorySearchService(repositoryFactory, platformMemoryCache, crudService, crudOptions);
+            for (var i = 1; i <= count; i++)
+            {
+                AddCategory(categories, $"category{i}", $"Category {i:0000}", catalogId, parent2.Id, linked1.Id);
+            }
+        }
 
-        return searchService;
+        return categories;
+    }
+
+    private static CategoryEntity AddCategory(List<CategoryEntity> categories, string id, string name, string catalogId, string parentCategoryId = null, string targetCategoryId = null)
+    {
+        var category = new CategoryEntity
+        {
+            Id = $"{catalogId}_{id}",
+            Name = name,
+            CatalogId = catalogId,
+            ParentCategoryId = parentCategoryId,
+        };
+
+        if (targetCategoryId != null)
+        {
+            category.OutgoingLinks = [
+                new CategoryRelationEntity
+                {
+                    TargetCatalogId = catalogId,
+                    TargetCategoryId = targetCategoryId,
+                },
+            ];
+        }
+
+        categories.Add(category);
+
+        return category;
     }
 
     private static Mock<ICatalogRepository> GetCatalogRepositoryMock(List<CatalogEntity> catalogs, List<CategoryEntity> categories)
@@ -119,77 +155,37 @@ public class CategoryPerformanceTests
         return repositoryMock;
     }
 
-    private static List<CatalogEntity> CreateCatalogs(int count)
+    private static CategorySearchService GetCategorySearchService(Mock<ICatalogRepository> repositoryMock)
     {
-        var catalogs = new List<CatalogEntity>();
+        var repositoryFactory = () => repositoryMock.Object;
 
-        for (var i = 1; i <= count; i++)
-        {
-            var catalog = new CatalogEntity
-            {
-                Id = $"catalog{i}",
-                Name = $"Catalog {i}",
-            };
+        var memoryCache = new MemoryCache(Options.Create(new MemoryCacheOptions()));
+        var platformMemoryCache = new PlatformMemoryCache(memoryCache, Options.Create(new CachingOptions()), new Mock<ILogger<PlatformMemoryCache>>().Object);
 
-            catalogs.Add(catalog);
-        }
+        var eventPublisherMock = new Mock<IEventPublisher>();
 
-        return catalogs;
-    }
+        var propertyValidatorMock = new Mock<AbstractValidator<IHasProperties>>();
 
-    private static List<CategoryEntity> CreateCategories(string catalogId, int count)
-    {
-        var categories = new List<CategoryEntity>();
+        propertyValidatorMock
+            .Setup(x => x.ValidateAsync(It.IsAny<ValidationContext<IHasProperties>>(), CancellationToken.None))
+            .ReturnsAsync(new ValidationResult());
 
-        var parent1 = new CategoryEntity
-        {
-            Id = "parent1",
-            CatalogId = catalogId,
-            Name = "Parent 1",
-        };
+        var propertyValueSanitizerMock = new Mock<IPropertyValueSanitizer>();
 
-        var parent2 = new CategoryEntity
-        {
-            Id = "parent2",
-            CatalogId = catalogId,
-            Name = "Parent 2",
-            ParentCategoryId = parent1.Id,
-        };
+        var crudService = new CategoryService(
+            repositoryFactory,
+            platformMemoryCache,
+            eventPublisherMock.Object,
+            propertyValidatorMock.Object,
+            GetCatalogService(repositoryFactory, eventPublisherMock, platformMemoryCache, propertyValidatorMock, propertyValueSanitizerMock),
+            new OutlineService(new NameOutlinePartResolver(), new IdOutlinePartResolver()),
+            new Mock<IBlobUrlResolver>().Object,
+            propertyValueSanitizerMock.Object);
 
-        var linked1 = new CategoryEntity
-        {
-            Id = "linked1",
-            CatalogId = catalogId,
-            Name = "Linked 1",
-            ParentCategoryId = parent1.Id,
-        };
+        var crudOptions = Options.Create(new CrudOptions());
+        var searchService = new CategorySearchService(repositoryFactory, platformMemoryCache, crudService, crudOptions);
 
-        for (var i = 1; i <= count; i++)
-        {
-            var number = i.ToString("0000");
-
-            var category = new CategoryEntity
-            {
-                Id = $"category{i}",
-                CatalogId = catalogId,
-                Name = $"Category {number}",
-                ParentCategoryId = parent2.Id,
-                OutgoingLinks = [
-                    new CategoryRelationEntity
-                    {
-                        TargetCatalogId = catalogId,
-                        TargetCategoryId = linked1.Id,
-                    }],
-            };
-
-            categories.Add(category);
-        }
-
-        categories.Add(parent1);
-        categories.Add(parent2);
-        categories.Add(linked1);
-
-        return categories;
+        return searchService;
     }
 
     private static CatalogService GetCatalogService(

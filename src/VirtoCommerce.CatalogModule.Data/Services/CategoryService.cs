@@ -70,8 +70,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         protected virtual async Task<IList<Category>> GetByIdsAsync(IList<string> ids, string responseGroup, bool clone, string catalogId)
         {
-            var result = new List<Category>();
-
             ids = ids
                 ?.Where(x => !string.IsNullOrEmpty(x))
                 .Distinct(_ignoreCase)
@@ -79,41 +77,21 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
             if (ids is null || ids.Count == 0)
             {
-                return result;
+                return [];
             }
 
-            var categoryById = await GetAllRelatedCategories(ids);
+            var cacheKeyPrefix = CacheKey.With(GetType(), nameof(GetByIdsAsync));
+            var categories = await _platformMemoryCache.GetOrLoadByIdsAsync(cacheKeyPrefix, ids, GetByIdsNoCache, ConfigureCache);
 
-            foreach (var categoryId in ids)
+            if (!clone && string.IsNullOrEmpty(catalogId) && HasFlag(responseGroup, CategoryResponseGroup.Full))
             {
-                if (!categoryById.TryGetValue(categoryId, out var category) || category is null)
-                {
-                    continue;
-                }
-
-                if (!clone)
-                {
-                    // Build all outlines
-                    _outlineService.FillOutlinesForObjects(new List<Category> { category }, catalogId: null);
-                }
-                else
-                {
-                    category = category.CloneTyped();
-
-                    if (HasFlag(responseGroup, CategoryResponseGroup.WithOutlines))
-                    {
-                        // Build outlines only for the requested catalog
-                        _outlineService.FillOutlinesForObjects(new List<Category> { category }, catalogId);
-                    }
-
-                    // Reduce details according to response group
-                    category.ReduceDetails(responseGroup);
-                }
-
-                result.Add(category);
+                return categories;
             }
 
-            return result;
+            return categories
+                .Select(x =>
+                    ReduceDetails(x.CloneTyped(), responseGroup, catalogId))
+                .ToList();
         }
 
         public override async Task DeleteAsync(IList<string> ids, bool softDelete = false)
@@ -213,6 +191,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             });
         }
 
+        [Obsolete("Use GetOrLoadEntities(IList<string> ids)", DiagnosticId = "VC0010", UrlFormat = "https://docs.virtocommerce.org/platform/user-guide/versions/virto3-products-versions/")]
         protected virtual async Task<IList<CategoryEntity>> SearchCategoriesHierarchyAsync(string categoryId)
         {
             using var repository = _repositoryFactory();
@@ -335,6 +314,30 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             categories.SanitizePropertyValues(_propertyValueSanitizer);
         }
 
+        protected virtual Category ReduceDetails(Category category, string responseGroup, string catalogId)
+        {
+            // Reduce details according to response group
+            category.ReduceDetails(responseGroup);
+
+            // Keep outlines for the requested catalog only
+            if (category.Outlines != null && !string.IsNullOrEmpty(catalogId))
+            {
+                category.Outlines = category.Outlines.Where(x => x.Items.ContainsCatalog(catalogId)).ToList();
+            }
+
+            return category;
+        }
+
+        protected virtual async Task<IList<Category>> GetByIdsNoCache(IList<string> ids)
+        {
+            var categoryById = await GetAllRelatedCategories(ids);
+            var categories = categoryById.Values.Where(x => ids.Contains(x.Id, _ignoreCase)).ToList();
+
+            _outlineService.FillOutlinesForObjects(categories, catalogId: null);
+
+            return categories;
+        }
+
         protected virtual async Task<Dictionary<string, Category>> GetAllRelatedCategories(IList<string> ids)
         {
             var categoryById = new Dictionary<string, Category>();
@@ -389,11 +392,21 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         protected virtual void ConfigureCache(MemoryCacheEntryOptions cacheOptions, string id, CategoryEntity entity)
         {
+            ConfigureCache(cacheOptions, id, entity?.CatalogId);
+        }
+
+        protected override void ConfigureCache(MemoryCacheEntryOptions cacheOptions, string id, Category model)
+        {
+            ConfigureCache(cacheOptions, id, model?.CatalogId);
+        }
+
+        protected virtual void ConfigureCache(MemoryCacheEntryOptions cacheOptions, string id, string catalogId)
+        {
             cacheOptions.AddExpirationToken(CatalogTreeCacheRegion.CreateChangeTokenForKey(id));
 
-            if (entity != null)
+            if (catalogId != null)
             {
-                cacheOptions.AddExpirationToken(CatalogTreeCacheRegion.CreateChangeTokenForKey(entity.CatalogId));
+                cacheOptions.AddExpirationToken(CatalogTreeCacheRegion.CreateChangeTokenForKey(catalogId));
             }
         }
 
