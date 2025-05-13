@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Domain;
+using VirtoCommerce.Seo.Core.Models;
 
 namespace VirtoCommerce.CatalogModule.Data.Model
 {

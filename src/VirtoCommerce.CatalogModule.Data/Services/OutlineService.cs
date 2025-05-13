@@ -4,10 +4,10 @@ using System.Linq;
 using VirtoCommerce.CatalogModule.Core.Extensions;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.OutlinePart;
+using VirtoCommerce.CatalogModule.Core.Outlines;
 using VirtoCommerce.CatalogModule.Core.Services;
-using VirtoCommerce.CoreModule.Core.Outlines;
-using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Seo.Core.Models;
 using static VirtoCommerce.CatalogModule.Core.Extensions.SeoExtensions;
 
 namespace VirtoCommerce.CatalogModule.Data.Services

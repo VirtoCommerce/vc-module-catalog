@@ -59,6 +59,8 @@ using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
 using VirtoCommerce.StoreModule.Core.Model;
 using AuthorizationOptions = Microsoft.AspNetCore.Authorization.AuthorizationOptions;
+using ISeoDuplicatesDetector = VirtoCommerce.Seo.Core.Services.ISeoDuplicatesDetector;
+using ISeoResolver = VirtoCommerce.Seo.Core.Services.ISeoResolver;
 
 namespace VirtoCommerce.CatalogModule.Web
 {
@@ -167,10 +169,9 @@ namespace VirtoCommerce.CatalogModule.Web
             serviceCollection.AddTransient<TrackSpecialChangesEventHandler>();
 
             serviceCollection.AddTransient<ISeoResolver, CatalogSeoResolver>();
-#pragma warning disable VC0010 // Type or member is obsolete
+#pragma warning disable VC0011 // Type or member is obsolete
             serviceCollection.AddTransient<ISeoBySlugResolver, CatalogSeoBySlugResolver>();
-#pragma warning restore VC0010 // Type or member is obsolete
-
+#pragma warning restore VC0011 // Type or member is obsolete
             serviceCollection.AddTransient<IInternalListEntrySearchService, InternalListEntrySearchService>();
             serviceCollection.AddTransient<ILinkSearchService, LinkSearchService>();
 

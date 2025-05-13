@@ -12,7 +12,7 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
-    [Obsolete("Use CatalogSeoResolver", DiagnosticId = "VC0010", UrlFormat = "https://docs.virtocommerce.org/platform/user-guide/versions/virto3-products-versions/")]
+    [Obsolete("Use CatalogSeoResolver", DiagnosticId = "VC0011", UrlFormat = "https://docs.virtocommerce.org/platform/user-guide/versions/virto3-products-versions/")]
     public class CatalogSeoBySlugResolver : ISeoBySlugResolver
     {
         private readonly IPlatformMemoryCache _platformMemoryCache;
@@ -37,7 +37,31 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     // Find seo entries for specified keyword. Also add other seo entries related to found object.
                     result = (await repository.SeoInfos.Where(x => x.Keyword == slug)
                         .Join(repository.SeoInfos, x => new { x.ItemId, x.CategoryId }, y => new { y.ItemId, y.CategoryId }, (x, y) => y)
-                        .ToArrayAsync()).Select(x => x.ToModel(AbstractTypeFactory<SeoInfo>.TryCreateInstance())).ToList();
+                        .ToArrayAsync()).Select(x =>
+                    {
+                        // this is obsolete code, but we need to keep it for backward compatibility
+                        // the old ToModel method cannot be used
+
+                        var seoInfoResult = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
+
+                        seoInfoResult.Id = x.Id;
+                        seoInfoResult.CreatedBy = x.CreatedBy;
+                        seoInfoResult.CreatedDate = x.CreatedDate;
+                        seoInfoResult.ModifiedBy = x.ModifiedBy;
+                        seoInfoResult.ModifiedDate = x.ModifiedDate;
+                        seoInfoResult.LanguageCode = x.Language;
+                        seoInfoResult.SemanticUrl = x.Keyword;
+                        seoInfoResult.PageTitle = x.Title;
+                        seoInfoResult.ImageAltDescription = x.ImageAltDescription;
+                        seoInfoResult.IsActive = x.IsActive;
+                        seoInfoResult.MetaDescription = x.MetaDescription;
+                        seoInfoResult.MetaKeywords = x.MetaKeywords;
+                        seoInfoResult.ObjectId = x.ItemId ?? x.CategoryId ?? x.CatalogId;
+                        seoInfoResult.ObjectType = x.ItemId != null ? "CatalogProduct" : x.CategoryId != null ? "Category" : "Catalog";
+                        seoInfoResult.StoreId = x.StoreId;
+
+                        return seoInfoResult;
+                    }).ToList();
                 }
 
                 return result.ToArray();
