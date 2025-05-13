@@ -331,7 +331,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         protected virtual async Task<IList<Category>> GetByIdsNoCache(IList<string> ids)
         {
             var categoryById = await GetAllRelatedCategories(ids);
-            var categories = categoryById.Values.Where(x => ids.Contains(x.Id, _ignoreCase)).ToList();
+            var categories = categoryById.Values.Where(x => x != null && ids.Contains(x.Id, _ignoreCase)).ToList();
 
             _outlineService.FillOutlinesForObjects(categories, catalogId: null);
 

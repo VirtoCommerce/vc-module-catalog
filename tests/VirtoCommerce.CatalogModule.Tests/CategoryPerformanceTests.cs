@@ -42,7 +42,7 @@ public class CategoryPerformanceTests
         var allCategories = CreateCategories(catalogs, childCategoriesCount);
 
         var repositoryMock = GetCatalogRepositoryMock(catalogs, allCategories);
-        var categorySearchService = GetCategorySearchService(repositoryMock);
+        var (_, searchService) = GetCategoryServices(repositoryMock);
 
         var catalogId = catalogs.Last().Id;
         var expectedCategoriesCount = allCategories.Count(x => x.CatalogId == catalogId);
@@ -53,13 +53,32 @@ public class CategoryPerformanceTests
 
         // Act
         var criteria = new CategorySearchCriteria { CatalogId = catalogId, Take = batchSize };
-        var categories = await categorySearchService.SearchAllNoCloneAsync(criteria);
+        var categories1 = await searchService.SearchAllNoCloneAsync(criteria);
+        var categories2 = await searchService.SearchAllNoCloneAsync(criteria);
 
         // Assert
-        categories.Should().NotBeNull();
-        categories.Count.Should().Be(expectedCategoriesCount);
-
+        categories1.Should().NotBeNull();
+        categories2.Should().NotBeNull();
+        categories1.Count.Should().Be(expectedCategoriesCount);
+        categories2.Count.Should().Be(expectedCategoriesCount);
         repositoryMock.Verify(x => x.GetCategoriesByIdsAsync(It.IsAny<IList<string>>(), It.IsAny<string>()), Times.Exactly(expectedRepositoryCallCount));
+    }
+
+    [Fact]
+    public async Task GetAsync_WithUnknownId_ShouldReturnNull()
+    {
+        // Arrange
+        var repositoryMock = GetCatalogRepositoryMock(catalogs: [], categories: []);
+        var (crudService, _) = GetCategoryServices(repositoryMock);
+
+        // Act
+        var category1 = await crudService.GetNoCloneAsync("unknown_id"); // First call should access the repository
+        var category2 = await crudService.GetNoCloneAsync("unknown_id"); // Second call should get data from the cache
+
+        // Assert
+        category1.Should().BeNull();
+        category2.Should().BeNull();
+        repositoryMock.Verify(x => x.GetCategoriesByIdsAsync(It.IsAny<IList<string>>(), It.IsAny<string>()), Times.Once());
     }
 
 
@@ -155,7 +174,7 @@ public class CategoryPerformanceTests
         return repositoryMock;
     }
 
-    private static CategorySearchService GetCategorySearchService(Mock<ICatalogRepository> repositoryMock)
+    private static (CategoryService, CategorySearchService) GetCategoryServices(Mock<ICatalogRepository> repositoryMock)
     {
         var repositoryFactory = () => repositoryMock.Object;
 
@@ -185,7 +204,7 @@ public class CategoryPerformanceTests
         var crudOptions = Options.Create(new CrudOptions());
         var searchService = new CategorySearchService(repositoryFactory, platformMemoryCache, crudService, crudOptions);
 
-        return searchService;
+        return (crudService, searchService);
     }
 
     private static CatalogService GetCatalogService(
