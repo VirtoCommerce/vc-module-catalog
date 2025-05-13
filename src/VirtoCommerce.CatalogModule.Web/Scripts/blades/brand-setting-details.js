@@ -12,8 +12,12 @@ angular.module('virtoCommerce.catalogModule')
                     blade.isLoading = true;
 
                     if (blade.store) {
-                        var getStorePromise = brandSettings.getByStore({ storeId: blade.store.id }).$promise.then(function (data) { return data });
-                        var getPropertiesPromise = aggregationProperties.getProperties({ storeId: blade.store.id }).$promise.then(function (data) { return data });
+                        var getStorePromise = brandSettings.getByStore({ storeId: blade.store.id }).$promise.then(function (data) {
+                            return data
+                        });
+                        var getPropertiesPromise = aggregationProperties.getProperties({ storeId: blade.store.id }).$promise.then(function (data) {
+                            return data
+                        });
 
                         $q.all([
                             getStorePromise,
@@ -79,14 +83,12 @@ angular.module('virtoCommerce.catalogModule')
                 }
 
                 blade.fetchProperties = function () {
-                    var result = _.map(blade.properties, function (x) {
+                    return _.map(blade.properties, function (x) {
                         return {
                             id: x.name,
                             name: x.name,
                         }
                     });
-
-                    return result;
                 }
 
                 function resetBrandSettings() {
