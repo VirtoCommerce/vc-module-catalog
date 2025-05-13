@@ -53,8 +53,8 @@ public class CategoryPerformanceTests
 
         // Act
         var criteria = new CategorySearchCriteria { CatalogId = catalogId, Take = batchSize };
-        var categories1 = await searchService.SearchAllNoCloneAsync(criteria);
-        var categories2 = await searchService.SearchAllNoCloneAsync(criteria);
+        var categories1 = await searchService.SearchAllNoCloneAsync(criteria); // First call should access the repository
+        var categories2 = await searchService.SearchAllNoCloneAsync(criteria); // Second call should get data from the cache
 
         // Assert
         categories1.Should().NotBeNull();
