@@ -1238,6 +1238,16 @@
         "title": "Allow to copy item's ID",
         "description": "Enable it to see the Copy ID context menu item"
       },
+      "BrandStoreSetting": {
+        "BrandCatalogId": {
+          "title": "Brand catalog ID",
+          "description": "Catalog ID for the brands"
+        },
+        "BrandPropertyName": {
+          "title": "Brand property name",
+          "description": "Property name for the brand"
+        }
+      },
       "Search": {
         "UseCatalogIndexedSearchInManager": {
           "description": "Enable or disable indexed search for the Catalog module with advanced syntax",

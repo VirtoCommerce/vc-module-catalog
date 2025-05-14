@@ -1,11 +1,14 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
+    [Authorize]
     [Route("api/brand-setting")]
     public class CatalogModuleBrandSettingController : Controller
     {
@@ -17,6 +20,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         }
 
         [HttpGet("store/{storeId}")]
+        [Authorize(ModuleConstants.Security.Permissions.Read)]
         public async Task<ActionResult<BrandStoreSetting>> GetByStoreId([FromRoute] string storeId)
         {
             var result = await _brandSettingService.GetByStoreIdAsync(storeId);
@@ -27,6 +31,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [HttpPut]
         [Route("")]
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+        [Authorize(ModuleConstants.Security.Permissions.Update)]
         public async Task<ActionResult> Update([FromBody] BrandStoreSetting model)
         {
             await _brandSettingService.UpdateAsync(model);

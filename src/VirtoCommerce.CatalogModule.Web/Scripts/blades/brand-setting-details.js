@@ -24,7 +24,7 @@ angular.module('virtoCommerce.catalogModule')
                             getPropertiesPromise,
                         ]).then(function (results) {
                             if (results) {
-                                initialize(results[0], blade.store.id);
+                                initialize(results[0]);
 
                                 blade.properties = results[1];
 
@@ -35,34 +35,19 @@ angular.module('virtoCommerce.catalogModule')
                     }
                 };
 
-                function initialize(data, storeId) {
-                    if (data.id) {
-                        blade.currentEntity = angular.copy(data);
-                        blade.originalEntity = data;
-                    }
-                    else {
-                        blade.isNew = true;
-                        blade.originalEntity = {
-                            storeId: storeId
-                        };
-                        blade.currentEntity = angular.copy(blade.originalEntity);
-                    }
+                function initialize(data) {
+                    blade.currentEntity = angular.copy(data);
+                    blade.originalEntity = data;
                 }
 
                 blade.saveChanges = function () {
                     blade.isLoading = true;
 
-                    if (blade.isNew) {
-                        brandSettings.createSetting(blade.currentEntity,
-                            function () {
-                                $scope.bladeClose();
-                            });
-                    } else {
-                        brandSettings.updateSetting(blade.currentEntity,
-                            function () {
-                                blade.refresh();
-                            });
-                    }
+                    brandSettings.updateSetting(blade.currentEntity,
+                        function () {
+                            blade.isNew = false;
+                            blade.refresh();
+                        });
                 };
 
                 $scope.setForm = function (form) {
