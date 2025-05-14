@@ -360,7 +360,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// Gets product by outer id.
         /// </summary>
         /// <remarks>Gets product by outer id (integration key) with full information loaded</remarks>
-        /// <param name="outerId">Product outer outerId</param>
+        /// <param name="outerId">Product outer id</param>
         [HttpGet]
         [Route("outer/{outerId}")]
         public async Task<ActionResult<Catalog>> GetProductByOuterId(string outerId)
