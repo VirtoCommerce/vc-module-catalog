@@ -1,8 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using VirtoCommerce.CatalogModule.Core;
@@ -16,19 +16,12 @@ using VirtoCommerce.Platform.Core.Common;
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
     [Route("api/catalog/videos")]
-    public class CatalogModuleVideosController : Controller
+    public class CatalogModuleVideosController(
+        IVideoSearchService videoSearchService,
+        IVideoService videoService,
+        IOptions<VideoOptions> videoOptions
+        ) : Controller
     {
-        private readonly IVideoSearchService _videoSearchService;
-        private readonly IVideoService _videoService;
-        private readonly VideoOptions _videoOptions;
-
-        public CatalogModuleVideosController(IVideoSearchService videoSearchService, IVideoService videoService, IOptions<VideoOptions> videoOptions)
-        {
-            _videoSearchService = videoSearchService;
-            _videoService = videoService;
-            _videoOptions = videoOptions.Value;
-        }
-
         /// <summary>
         /// Get video options from configuration
         /// </summary>
@@ -38,7 +31,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Authorize(ModuleConstants.Security.Permissions.Access)]
         public ActionResult<VideoOptions> GetOptions()
         {
-            return Ok(_videoOptions);
+            return Ok(videoOptions.Value);
         }
 
         /// <summary>
@@ -55,21 +48,21 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             {
                 var searchCriteria = new VideoSearchCriteria
                 {
-                    OwnerIds = new List<string> { createRequest.OwnerId },
+                    OwnerIds = [createRequest.OwnerId],
                     OwnerType = createRequest.OwnerType,
                     Sort = "SortOrder:desc",
                     Skip = 0,
                     Take = 1,
                 };
 
-                var searchResult = await _videoSearchService.SearchNoCloneAsync(searchCriteria);
+                var searchResult = await videoSearchService.SearchNoCloneAsync(searchCriteria);
 
                 createRequest.SortOrder = searchResult.Results.Count != 0 ? searchResult.Results[0].SortOrder + 1 : 1;
             }
 
             try
             {
-                var video = await _videoService.CreateVideo(createRequest);
+                var video = await videoService.CreateVideo(createRequest);
 
                 return Ok(video);
             }
@@ -87,7 +80,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Authorize(ModuleConstants.Security.Permissions.Read)]
         public async Task<ActionResult<VideoSearchResult>> SearchVideos([FromBody] VideoSearchCriteria criteria)
         {
-            var result = await _videoSearchService.SearchNoCloneAsync(criteria);
+            var result = await videoSearchService.SearchNoCloneAsync(criteria);
 
             return result;
         }
@@ -102,7 +95,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Authorize(ModuleConstants.Security.Permissions.Update)]
         public async Task<ActionResult<Video[]>> Update([FromBody] Video[] videos)
         {
-            await _videoService.SaveChangesAsync(videos);
+            await videoService.SaveChangesAsync(videos);
 
             return Ok(videos);
         }
@@ -117,7 +110,42 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Authorize(ModuleConstants.Security.Permissions.Delete)]
         public async Task<ActionResult> Delete([FromQuery] string[] ids)
         {
-            await _videoService.DeleteAsync(ids);
+            await videoService.DeleteAsync(ids);
+
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Partial update for the specified Video by id
+        /// </summary>
+        /// <param name="id">Video id</param>
+        /// <param name="patchDocument">JsonPatchDocument object with fields to update</param>
+        /// <returns></returns>
+        [HttpPatch]
+        [Route("{id}")]
+        [Authorize(ModuleConstants.Security.Permissions.Update)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+        public async Task<ActionResult> PatchVideo(string id, [FromBody] JsonPatchDocument<Video> patchDocument)
+        {
+            if (patchDocument == null)
+            {
+                return BadRequest();
+            }
+
+            var video = await videoService.GetByIdAsync(id);
+            if (video == null)
+            {
+                return NotFound();
+            }
+
+            patchDocument.ApplyTo(video, ModelState);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            await videoService.SaveChangesAsync([video]);
 
             return NoContent();
         }
