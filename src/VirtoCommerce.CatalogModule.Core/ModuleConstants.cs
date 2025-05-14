@@ -137,6 +137,20 @@ namespace VirtoCommerce.CatalogModule.Core
                     DefaultValue = 5,
                 };
 
+                public static SettingDescriptor BrandCatalogId { get; } = new SettingDescriptor
+                {
+                    Name = "Catalog.BrandStoreSetting.BrandCatalogId",
+                    GroupName = "Catalog|Brands",
+                    ValueType = SettingValueType.ShortText,
+                };
+
+                public static SettingDescriptor BrandPropertyName { get; } = new SettingDescriptor
+                {
+                    Name = "Catalog.BrandStoreSetting.BrandPropertyName",
+                    GroupName = "Catalog|Brands",
+                    ValueType = SettingValueType.ShortText,
+                };
+
                 public static IEnumerable<SettingDescriptor> AllSettings
                 {
                     get
@@ -150,6 +164,8 @@ namespace VirtoCommerce.CatalogModule.Core
                                    UseSeoDeduplication,
                                    EventBasedIndexation,
                                    ProductConfigurationMaximumFiles,
+                                   BrandCatalogId,
+                                   BrandPropertyName,
                                ];
                     }
                 }
@@ -215,6 +231,15 @@ namespace VirtoCommerce.CatalogModule.Core
                 get
                 {
                     return General.AllSettings.Concat(Search.AllSettings);
+                }
+            }
+
+            public static IEnumerable<SettingDescriptor> StoreLevelSettings
+            {
+                get
+                {
+                    yield return General.BrandCatalogId;
+                    yield return General.BrandPropertyName;
                 }
             }
 #pragma warning restore S3218

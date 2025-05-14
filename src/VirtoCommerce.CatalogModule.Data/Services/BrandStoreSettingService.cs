@@ -1,31 +1,67 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
-using VirtoCommerce.CatalogModule.Data.Model;
-using VirtoCommerce.CatalogModule.Data.Repositories;
-using VirtoCommerce.Platform.Core.Caching;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.Events;
-using VirtoCommerce.Platform.Data.GenericCrud;
+using VirtoCommerce.Platform.Core.Settings;
+using VirtoCommerce.StoreModule.Core.Services;
+using static VirtoCommerce.CatalogModule.Core.ModuleConstants.Settings.General;
 
 namespace VirtoCommerce.CatalogModule.Data.Services;
 
-public class BrandStoreSettingService : CrudService<BrandStoreSetting, BrandStoreSettingEntity, GenericChangedEntryEvent<BrandStoreSetting>, GenericChangedEntryEvent<BrandStoreSetting>>, IBrandStoreSettingService
+public class BrandStoreSettingService : IBrandStoreSettingService
 {
-    public BrandStoreSettingService(
-        Func<ICatalogRepository> repositoryFactory,
-        IPlatformMemoryCache platformMemoryCache,
-        IEventPublisher eventPublisher)
-    : base(repositoryFactory, platformMemoryCache, eventPublisher)
+    private readonly IStoreService _storeService;
+
+    public BrandStoreSettingService(IStoreService storeService)
     {
+        _storeService = storeService;
     }
 
-    protected override async Task<IList<BrandStoreSettingEntity>> LoadEntities(IRepository repository, IList<string> ids, string responseGroup)
+    public async Task<BrandStoreSetting> GetByStoreIdAsync(string storeId)
     {
-        return await ((ICatalogRepository)repository).BrandStoreSettings.Where(x => ids.Contains(x.Id)).ToListAsync();
+        var store = await _storeService.GetNoCloneAsync(storeId);
+
+        if (store == null)
+        {
+            return null;
+        }
+
+        var brandStoreSetting = AbstractTypeFactory<BrandStoreSetting>.TryCreateInstance();
+
+        brandStoreSetting.StoreId = store.Id;
+
+        brandStoreSetting.BrandCatalogId = store.Settings.GetValue<string>(BrandCatalogId);
+        brandStoreSetting.BrandPropertyName = store.Settings.GetValue<string>(BrandPropertyName);
+
+        return brandStoreSetting;
+    }
+
+    public async Task UpdateAsync(BrandStoreSetting brandStoreSetting)
+    {
+        var store = await _storeService.GetByIdAsync(brandStoreSetting.StoreId);
+
+        if (store == null)
+        {
+            return;
+        }
+
+        var brandCatalogIdSetting = store.Settings.FirstOrDefault(x => x.Name.EqualsIgnoreCase(BrandCatalogId.Name));
+        if (brandCatalogIdSetting == null)
+        {
+            brandCatalogIdSetting = new ObjectSettingEntry(BrandCatalogId);
+            store.Settings.Add(brandCatalogIdSetting);
+        }
+        brandCatalogIdSetting.Value = brandStoreSetting.BrandCatalogId;
+
+        var brandPropertyNameSetting = store.Settings.FirstOrDefault(x => x.Name.EqualsIgnoreCase(BrandPropertyName.Name));
+        if (brandPropertyNameSetting == null)
+        {
+            brandPropertyNameSetting = new ObjectSettingEntry(BrandPropertyName);
+            store.Settings.Add(brandPropertyNameSetting);
+        }
+        brandPropertyNameSetting.Value = brandStoreSetting.BrandPropertyName;
+
+        await _storeService.SaveChangesAsync([store]);
     }
 }

@@ -286,7 +286,6 @@ namespace VirtoCommerce.CatalogModule.Web
             serviceCollection.AddSingleton<IPropertyValueSanitizer, PropertyValueSanitizer>();
 
             serviceCollection.AddTransient<IBrandStoreSettingService, BrandStoreSettingService>();
-            serviceCollection.AddTransient<IBrandStoreSettingSearchService, BrandStoreSettingSearchService>();
         }
 
         public void PostInitialize(IApplicationBuilder appBuilder)
@@ -295,6 +294,7 @@ namespace VirtoCommerce.CatalogModule.Web
 
             var settingsRegistrar = appBuilder.ApplicationServices.GetRequiredService<ISettingsRegistrar>();
             settingsRegistrar.RegisterSettings(ModuleConstants.Settings.AllSettings, ModuleInfo.Id);
+            settingsRegistrar.RegisterSettingsForType(ModuleConstants.Settings.StoreLevelSettings, nameof(Store));
 
             //Register module permissions
             var permissionsRegistrar = appBuilder.ApplicationServices.GetRequiredService<IPermissionsRegistrar>();

@@ -32,7 +32,6 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         IQueryable<ProductConfigurationEntity> ProductConfigurations { get; }
         IQueryable<ProductConfigurationSectionEntity> ProductConfigurationSections { get; }
         IQueryable<ProductConfigurationOptionEntity> ProductConfigurationOptions { get; }
-        IQueryable<BrandStoreSettingEntity> BrandStoreSettings { get; }
 
         Task<IList<string>> GetAllSeoDuplicatesIdsAsync();
 
