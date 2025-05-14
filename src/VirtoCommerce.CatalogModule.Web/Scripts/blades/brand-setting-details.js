@@ -1,9 +1,9 @@
 angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.brandSettingDetailsController',
-        ['$scope', '$q', '$timeout', 'virtoCommerce.catalogModule.brandStoreSetting', 'virtoCommerce.catalogModule.catalogs', 'virtoCommerce.catalogModule.aggregationProperties',
+        ['$scope', '$q', '$timeout', 'virtoCommerce.catalogModule.brandSettings', 'virtoCommerce.catalogModule.catalogs', 'virtoCommerce.catalogModule.aggregationProperties',
             function ($scope, $q, $timeout, brandSettings, catalogs, aggregationProperties) {
                 const blade = $scope.blade;
-                blade.title = 'catalog.blades.brand-store-detail.title';
+                blade.title = 'catalog.blades.brand-setting-details.title';
                 blade.updatePermission = 'brands:update';
                 blade.properties = [];
                 $scope.brandSettingsLoaded = false;

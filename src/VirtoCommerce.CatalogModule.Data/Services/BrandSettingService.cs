@@ -9,11 +9,11 @@ using static VirtoCommerce.CatalogModule.Core.ModuleConstants.Settings.General;
 
 namespace VirtoCommerce.CatalogModule.Data.Services;
 
-public class BrandStoreSettingService : IBrandStoreSettingService
+public class BrandSettingService : IBrandSettingService
 {
     private readonly IStoreService _storeService;
 
-    public BrandStoreSettingService(IStoreService storeService)
+    public BrandSettingService(IStoreService storeService)
     {
         _storeService = storeService;
     }

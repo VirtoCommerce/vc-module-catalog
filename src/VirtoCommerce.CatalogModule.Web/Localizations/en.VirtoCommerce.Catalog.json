@@ -832,7 +832,7 @@
           "text": "Enter the text"
         }
       },
-      "brand-store-detail": {
+      "brand-setting-details": {
         "title": "Brand settings",
         "labels": {
           "catalog": "Catalog",
@@ -921,7 +921,7 @@
       "configuration": {
         "title": "Configuration"
       },
-      "brandSetting": {
+      "brand-settings": {
         "title": "Brand settings"
       }
     },
