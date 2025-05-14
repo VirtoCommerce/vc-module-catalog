@@ -177,13 +177,12 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// Gets category by outer id.
         /// </summary>
         /// <remarks>Gets category by outer id (integration key) with full information loaded</remarks>
-        /// <param name="id">Category outer id</param>
+        /// <param name="outerId">Category outer id</param>
         [HttpGet]
-        [Route("outer/{id}")]
-        public async Task<ActionResult<Catalog>> GetCategoryByOuterId(string id)
+        [Route("outer/{outerId}")]
+        public async Task<ActionResult<Catalog>> GetCategoryByOuterId(string outerId)
         {
-            var category = await _categoryService.GetByOuterIdAsync(id, CategoryResponseGroup.Full.ToString(), clone: false);
-
+            var category = await _categoryService.GetByOuterIdNoCloneAsync(outerId, nameof(CategoryResponseGroup.Full));
             if (category == null)
             {
                 return NotFound();

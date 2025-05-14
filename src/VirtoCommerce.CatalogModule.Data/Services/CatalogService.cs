@@ -21,7 +21,7 @@ using VirtoCommerce.Platform.Data.Infrastructure;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
-    public class CatalogService : CrudService<Catalog, CatalogEntity, CatalogChangingEvent, CatalogChangedEvent>, ICatalogService
+    public class CatalogService : OuterEntityService<Catalog, CatalogEntity, CatalogChangingEvent, CatalogChangedEvent>, ICatalogService
     {
         private readonly IPlatformMemoryCache _platformMemoryCache;
         private readonly Func<ICatalogRepository> _repositoryFactory;
@@ -42,24 +42,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _platformMemoryCache = platformMemoryCache;
             _hasPropertyValidator = hasPropertyValidator;
             _propertyValueSanitizer = propertyValueSanitizer;
-        }
-
-        public override async Task<Catalog> GetByOuterIdAsync(string id, string responseGroup = null, bool clone = true)
-        {
-            var catalog = await base.GetByOuterIdAsync(id, responseGroup, clone);
-
-            if (catalog != null)
-            {
-                LoadDependencies([catalog], new Dictionary<string, Catalog> { { catalog.Id, catalog } });
-
-                if (clone)
-                {
-                    // Reduce details according to response group
-                    catalog.ReduceDetails(responseGroup);
-                }
-            }
-
-            return catalog;
         }
 
         public override async Task DeleteAsync(IList<string> ids, bool softDelete = false)
@@ -125,6 +107,11 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         protected override Task<IList<CatalogEntity>> LoadEntities(IRepository repository, IList<string> ids, string responseGroup)
         {
             return ((ICatalogRepository)repository).GetCatalogsByIdsAsync(ids);
+        }
+
+        protected override IQueryable<CatalogEntity> GetEntitiesQuery(IRepository repository)
+        {
+            return ((ICatalogRepository)repository).Catalogs;
         }
 
         protected virtual Task<IDictionary<string, Catalog>> PreloadCatalogsAsync()

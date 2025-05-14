@@ -4,7 +4,7 @@
   <version>3.862.0</version>
   <version-tag />
 
-  <platformVersion>3.888.0-alpha.13078-vcst-3154</platformVersion>
+  <platformVersion>3.888.0-alpha.13082-vcst-3154</platformVersion>
   <dependencies>
     <dependency id="VirtoCommerce.Assets" version="3.808.0" />
     <dependency id="VirtoCommerce.BulkActionsModule" version="3.802.0" optional="true" />

@@ -154,7 +154,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             //Ensure that new category has SeoInfo
             if (catalog.SeoInfos == null || !catalog.SeoInfos.Any())
             {
-                var defaultLanguage = catalog?.Languages.First(x => x.IsDefault).LanguageCode;
+                var defaultLanguage = catalog.Languages.First(x => x.IsDefault).LanguageCode;
                 var seoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
                 seoInfo.LanguageCode = defaultLanguage;
                 seoInfo.SemanticUrl = "catalog";
@@ -212,13 +212,12 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// Gets catalog by outer id.
         /// </summary>
         /// <remarks>Gets catalog by outer id (integration key) with full information loaded</remarks>
-        /// <param name="id">Catalog outer id</param>
+        /// <param name="outerId">Catalog outer id</param>
         [HttpGet]
-        [Route("outer/{id}")]
-        public async Task<ActionResult<Catalog>> GetCatalogByOuterId(string id)
+        [Route("outer/{outerId}")]
+        public async Task<ActionResult<Catalog>> GetCatalogByOuterId(string outerId)
         {
-            var catalog = await _catalogService.GetByOuterIdAsync(id, CatalogResponseGroup.Full.ToString(), clone: false);
-
+            var catalog = await _catalogService.GetByOuterIdNoCloneAsync(outerId, nameof(CatalogResponseGroup.Full));
             if (catalog == null)
             {
                 return NotFound();

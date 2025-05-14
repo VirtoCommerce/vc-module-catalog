@@ -24,7 +24,7 @@ using VirtoCommerce.Platform.Data.Infrastructure;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
-    public class CategoryService : CrudService<Category, CategoryEntity, CategoryChangingEvent, CategoryChangedEvent>, ICategoryService
+    public class CategoryService : OuterEntityService<Category, CategoryEntity, CategoryChangingEvent, CategoryChangedEvent>, ICategoryService
     {
         private readonly Func<ICatalogRepository> _repositoryFactory;
         private readonly IPlatformMemoryCache _platformMemoryCache;
@@ -54,31 +54,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             _outlineService = outlineService;
             _blobUrlResolver = blobUrlResolver;
             _propertyValueSanitizer = propertyValueSanitizer;
-        }
-
-        public override async Task<Category> GetByOuterIdAsync(string id, string responseGroup = null, bool clone = true)
-        {
-            var category = await base.GetByOuterIdAsync(id, responseGroup, clone);
-
-            if (category != null)
-            {
-                ResolveImageUrls([category]);
-                await LoadDependencies([category], new Dictionary<string, Category> { { category.Id, category } });
-                ApplyInheritanceRules([category]);
-
-                if (HasFlag(responseGroup, CategoryResponseGroup.WithOutlines))
-                {
-                    _outlineService.FillOutlinesForObjects(new List<Category> { category }, catalogId: null);
-                }
-
-                if (clone)
-                {
-                    // Reduce details according to response group
-                    category.ReduceDetails(responseGroup);
-                }
-            }
-
-            return category;
         }
 
         public override Task<IList<Category>> GetAsync(IList<string> ids, string responseGroup = null, bool clone = true)
@@ -161,6 +136,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
         }
 
+
         protected override async Task BeforeSaveChanges(IList<Category> models)
         {
             await base.BeforeSaveChanges(models);
@@ -171,6 +147,11 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         protected override Task<IList<CategoryEntity>> LoadEntities(IRepository repository, IList<string> ids, string responseGroup)
         {
             return ((ICatalogRepository)repository).GetCategoriesByIdsAsync(ids, responseGroup);
+        }
+
+        protected override IQueryable<CategoryEntity> GetEntitiesQuery(IRepository repository)
+        {
+            return ((ICatalogRepository)repository).Categories;
         }
 
         protected virtual bool HasFlag(string responseGroup, CategoryResponseGroup flag)
