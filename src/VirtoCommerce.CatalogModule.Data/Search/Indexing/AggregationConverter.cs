@@ -62,7 +62,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                         case RangeFilter rangeFilter:
                             aggregationRequests = GetRangeFilterAggregationRequests(rangeFilter, existingFilters);
                             break;
-                        case PriceRangeFilter priceRangeFilter when priceRangeFilter.Currency.EqualsInvariant(criteria.Currency):
+                        case PriceRangeFilter priceRangeFilter when priceRangeFilter.Currency.EqualsIgnoreCase(criteria.Currency):
                             aggregationRequests = GetPriceRangeFilterAggregationRequests(priceRangeFilter, criteria, existingFilters);
                             break;
                     }
@@ -235,7 +235,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             Aggregation result = null;
 
             var fieldName = attributeFilter.GetIndexFieldName();
-            var aggregationResponse = aggregationResponses.FirstOrDefault(a => a.Id.EqualsInvariant(fieldName));
+            var aggregationResponse = aggregationResponses.FirstOrDefault(a => a.Id.EqualsIgnoreCase(fieldName));
 
             if (aggregationResponse != null)
             {
@@ -251,7 +251,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                     // Return predefined values
                     aggregationResponseValues = attributeFilter.Values
                         .GroupBy(v => v.Id, StringComparer.OrdinalIgnoreCase)
-                        .Select(g => aggregationResponse.Values.FirstOrDefault(v => v.Id.EqualsInvariant(g.Key)))
+                        .Select(g => aggregationResponse.Values.FirstOrDefault(v => v.Id.EqualsIgnoreCase(g.Key)))
                         .Where(v => v != null)
                         .ToArray();
                 }
@@ -364,7 +364,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         protected virtual void PreFilterOutlineAggregation(AttributeFilter attributeFilter, IList<AggregationResponse> aggregationResponses, ProductIndexedSearchCriteria criteria)
         {
             var fieldName = attributeFilter.Key;
-            var aggregationResponse = aggregationResponses.FirstOrDefault(a => a.Id.EqualsInvariant(fieldName));
+            var aggregationResponse = aggregationResponses.FirstOrDefault(a => a.Id.EqualsIgnoreCase(fieldName));
 
             if (aggregationResponse == null)
             {
@@ -443,7 +443,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 {
                     var valueId = group.Key;
                     var aggregationValueId = $"{aggregationId}-{valueId}";
-                    var aggregationResponse = aggregationResponses.FirstOrDefault(v => v.Id.EqualsInvariant(aggregationValueId));
+                    var aggregationResponse = aggregationResponses.FirstOrDefault(v => v.Id.EqualsIgnoreCase(aggregationValueId));
 
                     if (aggregationResponse?.Values?.Any() == true)
                     {
@@ -554,11 +554,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         private async Task<bool> TryAddLabelsAsyncForProperty(IEnumerable<Property> allProperties, Aggregation aggregation, IList<IBrowseFilter> browseFilters)
         {
-            IBrowseFilter filter = browseFilters.OfType<AttributeFilter>().FirstOrDefault(f => f.IndexFieldName.EqualsInvariant(aggregation.Field));
-            filter ??= browseFilters.OfType<RangeFilter>().FirstOrDefault(f => f.IndexFieldName.EqualsInvariant(aggregation.Field));
+            IBrowseFilter filter = browseFilters.OfType<AttributeFilter>().FirstOrDefault(f => f.IndexFieldName.EqualsIgnoreCase(aggregation.Field));
+            filter ??= browseFilters.OfType<RangeFilter>().FirstOrDefault(f => f.IndexFieldName.EqualsIgnoreCase(aggregation.Field));
 
             // There can be many properties with the same name
-            var properties = allProperties.Where(p => p.Name.EqualsInvariant(filter?.Key ?? aggregation.Field)).ToArray();
+            var properties = allProperties.Where(p => p.Name.EqualsIgnoreCase(filter?.Key ?? aggregation.Field)).ToArray();
 
             if (!properties.Any())
             {
@@ -599,14 +599,14 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         protected virtual Task<bool> TryAddLabelsAsyncForOutline(Aggregation aggregation)
         {
             // Add Label For Outline Named
-            if (aggregation.Field.EqualsInvariant("__outline_named"))
+            if (aggregation.Field.EqualsIgnoreCase("__outline_named"))
             {
                 aggregation.Labels = new AggregationLabel[] { new AggregationLabel { Label = "Categories" } };
                 return Task.FromResult(true);
             }
 
             // Add Label For Outline and Path
-            if (aggregation.Field.EqualsInvariant("__outline") || aggregation.Field.EqualsInvariant("__path"))
+            if (aggregation.Field.EqualsIgnoreCase("__outline") || aggregation.Field.EqualsIgnoreCase("__path"))
             {
                 aggregation.Labels = new AggregationLabel[] { new AggregationLabel { Label = "Categories" } };
                 foreach (var aggregationItem in aggregation.Items)
