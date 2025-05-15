@@ -367,7 +367,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                     var slugUrl = GenerateProductDefaultSlugUrl(product);
                     if (!string.IsNullOrEmpty(slugUrl))
                     {
-                        var catalog = catalogs.FirstOrDefault(c => c.Id.EqualsInvariant(product.CatalogId));
+                        var catalog = catalogs.FirstOrDefault(c => c.Id.EqualsIgnoreCase(product.CatalogId));
                         var defaultLanguageCode = catalog?.Languages.First(x => x.IsDefault).LanguageCode;
                         var seoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
                         seoInfo.LanguageCode = defaultLanguageCode;
