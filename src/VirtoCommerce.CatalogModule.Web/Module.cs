@@ -167,6 +167,7 @@ namespace VirtoCommerce.CatalogModule.Web
             serviceCollection.AddTransient<TrackSpecialChangesEventHandler>();
 
             serviceCollection.AddTransient<ISeoResolver, CatalogSeoResolver>();
+            serviceCollection.AddTransient<ISeoResolver, BrandSeoResolver>();
 #pragma warning disable VC0010 // Type or member is obsolete
             serviceCollection.AddTransient<ISeoBySlugResolver, CatalogSeoBySlugResolver>();
 #pragma warning restore VC0010 // Type or member is obsolete
