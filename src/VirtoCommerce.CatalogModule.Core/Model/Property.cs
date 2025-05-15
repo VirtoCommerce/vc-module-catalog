@@ -74,7 +74,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
             {
                 throw new ArgumentNullException(nameof(other));
             }
-            var result = Name.EqualsInvariant(other.Name) && ValueType == other.ValueType && (Type == other.Type || (additionalTypes?.Any(x => x == other.Type) ?? false));
+            var result = Name.EqualsIgnoreCase(other.Name) && ValueType == other.ValueType && (Type == other.Type || (additionalTypes?.Any(x => x == other.Type) ?? false));
             return result;
         }
         /// <summary>

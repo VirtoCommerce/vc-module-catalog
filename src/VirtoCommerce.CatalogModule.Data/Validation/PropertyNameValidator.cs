@@ -27,7 +27,7 @@ namespace VirtoCommerce.CatalogModule.Data.Validation
             var result = new ValidationResult();
             var request = context.InstanceToValidate;
 
-            if (request.Name.EqualsInvariant(request.OriginalName))
+            if (request.Name.EqualsIgnoreCase(request.OriginalName))
             {
                 return result;
             }
@@ -38,7 +38,7 @@ namespace VirtoCommerce.CatalogModule.Data.Validation
                 return result;
             }
 
-            var duplicate = product.Properties.FirstOrDefault(x => x.Name.EqualsInvariant(request.Name) && x.Name != request.OriginalName);
+            var duplicate = product.Properties.FirstOrDefault(x => x.Name.EqualsIgnoreCase(request.Name) && x.Name != request.OriginalName);
             if (duplicate != null)
             {
                 var failure = new ValidationFailure(nameof(Property.Name), "duplicate-property")
@@ -66,7 +66,7 @@ namespace VirtoCommerce.CatalogModule.Data.Validation
                 {
                     CustomState = new
                     {
-                        propertyName = duplicateVariation.Properties.FirstOrDefault(x => x.Name.EqualsInvariant(request.Name))?.Name,
+                        propertyName = duplicateVariation.Properties.FirstOrDefault(x => x.Name.EqualsIgnoreCase(request.Name))?.Name,
                         duplicateVariation.Code,
                         duplicateVariation.Name,
                         itemId = duplicateVariation.Id,
