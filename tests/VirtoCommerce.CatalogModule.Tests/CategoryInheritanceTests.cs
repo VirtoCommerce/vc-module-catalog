@@ -1,7 +1,6 @@
-using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using FluentValidation;
@@ -18,7 +17,6 @@ using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Data.Services;
 using VirtoCommerce.Platform.Caching;
 using VirtoCommerce.Platform.Core.Caching;
-using VirtoCommerce.Platform.Core.Domain;
 using VirtoCommerce.Platform.Core.Events;
 using Xunit;
 
@@ -26,29 +24,16 @@ namespace VirtoCommerce.CatalogModule.Tests
 {
     public class CategoryInheritanceTests
     {
-        private readonly Mock<IUnitOfWork> _unitOfWorkMock;
-        private readonly Mock<ICatalogRepository> _repositoryMock;
-        private readonly Mock<IEventPublisher> _eventPublisherMock;
-        private readonly Mock<ICatalogService> _catalogServiceMock;
-        private readonly Mock<IOutlineService> _outlineServiceMock;
-        private readonly Mock<IBlobUrlResolver> _blobUrlResolverMock;
-        private readonly Mock<AbstractValidator<IHasProperties>> _hasPropertyValidatorMock;
-        private readonly Mock<IPropertyValueSanitizer> _propertyValueSanitizerMock;
-
-        public CategoryInheritanceTests()
-        {
-            _unitOfWorkMock = new Mock<IUnitOfWork>();
-            _repositoryMock = new Mock<ICatalogRepository>();
-            _eventPublisherMock = new Mock<IEventPublisher>();
-            _catalogServiceMock = new Mock<ICatalogService>();
-            _outlineServiceMock = new Mock<IOutlineService>();
-            _blobUrlResolverMock = new Mock<IBlobUrlResolver>();
-            _hasPropertyValidatorMock = new Mock<AbstractValidator<IHasProperties>>();
-            _propertyValueSanitizerMock = new Mock<IPropertyValueSanitizer>();
-        }
+        private readonly Mock<ICatalogRepository> _repositoryMock = new();
+        private readonly Mock<IEventPublisher> _eventPublisherMock = new();
+        private readonly Mock<ICatalogService> _catalogServiceMock = new();
+        private readonly Mock<IOutlineService> _outlineServiceMock = new();
+        private readonly Mock<IBlobUrlResolver> _blobUrlResolverMock = new();
+        private readonly Mock<AbstractValidator<IHasProperties>> _hasPropertyValidatorMock = new();
+        private readonly Mock<IPropertyValueSanitizer> _propertyValueSanitizerMock = new();
 
         [Fact]
-        public async Task PreloadCategoryBranch_CategoriesHaveProperties_ShouldInheritProperties()
+        public async Task GetAsync_CategoriesHaveProperties_ShouldInheritProperties()
         {
             // Arrange
             var catalogProperty = new Property
@@ -89,39 +74,42 @@ namespace VirtoCommerce.CatalogModule.Tests
             {
                 Id = "root",
                 CatalogId = catalog.Id,
-                Properties = new ObservableCollection<PropertyEntity> { rootProperty },
+                Properties = [rootProperty],
             };
             var level1Category = new CategoryEntity
             {
                 Id = "Level1",
                 ParentCategoryId = rootCategory.Id,
                 CatalogId = catalog.Id,
-                Properties = new ObservableCollection<PropertyEntity> { level1Property },
+                Properties = [level1Property],
             };
             var level2Category = new CategoryEntity
             {
                 Id = "Level2",
                 ParentCategoryId = level1Category.Id,
                 CatalogId = catalog.Id,
-                Properties = new ObservableCollection<PropertyEntity> { level2Property },
+                Properties = [level2Property],
             };
 
-            var categoriesBranchResult = new List<CategoryEntity> { rootCategory, level1Category, level2Category };
+            var catalogs = new[] { catalog };
+            var categoryEntities = new[] { rootCategory, level1Category, level2Category };
 
             _repositoryMock
-                .Setup(x => x.GetCategoriesByIdsAsync(It.IsAny<string[]>(), It.IsAny<string>()))
-                .ReturnsAsync((string[] ids, string _) => categoriesBranchResult.Where(x => ids.Contains(x.Id)).ToArray());
+                .Setup(x => x.GetCategoriesByIdsAsync(It.IsAny<IList<string>>(), It.IsAny<string>()))
+                .ReturnsAsync((IList<string> ids, string _) => categoryEntities.Where(x => ids.Contains(x.Id)).ToArray());
 
             _catalogServiceMock
-                .Setup(t => t.GetAsync(new[] { catalog.Id }, It.IsAny<string>(), false))
-                .ReturnsAsync(new[] { catalog });
+                .Setup(x => x.GetAsync(It.IsAny<IList<string>>(), It.IsAny<string>(), It.IsAny<bool>()))
+                .ReturnsAsync((IList<string> ids, string _, bool _) => catalogs.Where(x => ids.Contains(x.Id)).ToArray());
 
             // Act
-            var target = GetCategoryServiceWithPlatformMemoryCache();
-            var hierarchyResult = await target.PreloadCategoryBranchAsyncStub(level2Category.Id);
+            var target = GetCategoryService();
+            var categories = await target.GetAsync([level2Category.Id]);
 
             // Assert
-            var category = hierarchyResult[level2Category.Id];
+            categories.Should().HaveCount(1);
+            var category = categories.First();
+            category.Id.Should().Be(level2Category.Id);
             category.Properties.Should().HaveCount(4);
             category.Properties.Should().Contain(x => x.Id == catalogProperty.Id);
             category.Properties.Should().Contain(x => x.Id == rootProperty.Id);
@@ -130,70 +118,38 @@ namespace VirtoCommerce.CatalogModule.Tests
         }
 
         [Fact]
-        public async Task PreloadCategoryBranch_CategoryIdIsNull_ShouldReturnEmptyResult()
+        public async Task GetAsync_CategoryIdIsNull_ShouldReturnEmptyResult()
         {
             // Act
-            var target = GetCategoryServiceWithPlatformMemoryCache();
-            var hierarchyResult = await target.PreloadCategoryBranchAsyncStub(null);
+            var target = GetCategoryService();
+            var hierarchyResult = await target.GetAsync([null]);
 
             // Assert
             hierarchyResult.Should().HaveCount(0);
         }
 
-        private CategoryServiceStub GetCategoryServiceWithPlatformMemoryCache()
+        private CategoryService GetCategoryService()
         {
             var memoryCache = new MemoryCache(Options.Create(new MemoryCacheOptions()));
             var platformMemoryCache = new PlatformMemoryCache(memoryCache, Options.Create(new CachingOptions()), new Mock<ILogger<PlatformMemoryCache>>().Object);
 
-            _repositoryMock.Setup(ss => ss.UnitOfWork).Returns(_unitOfWorkMock.Object);
-
             return GetCategoryService(platformMemoryCache, _repositoryMock.Object);
         }
 
-        private CategoryServiceStub GetCategoryService(IPlatformMemoryCache platformMemoryCache, ICatalogRepository catalogRepository)
+        private CategoryService GetCategoryService(IPlatformMemoryCache platformMemoryCache, ICatalogRepository catalogRepository)
         {
             _hasPropertyValidatorMock
-                .Setup(x => x.ValidateAsync(It.IsAny<ValidationContext<IHasProperties>>(), default))
+                .Setup(x => x.ValidateAsync(It.IsAny<ValidationContext<IHasProperties>>(), CancellationToken.None))
                 .ReturnsAsync(new ValidationResult());
 
-            return new CategoryServiceStub(() => catalogRepository,
-                _eventPublisherMock.Object,
+            return new CategoryService(() => catalogRepository,
                 platformMemoryCache,
+                _eventPublisherMock.Object,
                 _hasPropertyValidatorMock.Object,
                 _catalogServiceMock.Object,
                 _outlineServiceMock.Object,
                 _blobUrlResolverMock.Object,
                 _propertyValueSanitizerMock.Object);
-        }
-
-
-        public class CategoryServiceStub : CategoryService
-        {
-            public CategoryServiceStub(
-                Func<ICatalogRepository> repositoryFactory,
-                IEventPublisher eventPublisher,
-                IPlatformMemoryCache platformMemoryCache,
-                AbstractValidator<IHasProperties> hasPropertyValidator,
-                ICatalogService catalogService,
-                IOutlineService outlineService,
-                IBlobUrlResolver blobUrlResolver,
-                IPropertyValueSanitizer propertyValueSanitizer)
-                : base(
-                    repositoryFactory,
-                    platformMemoryCache,
-                    eventPublisher,
-                    hasPropertyValidator,
-                    catalogService,
-                    outlineService,
-                    blobUrlResolver,
-                    propertyValueSanitizer)
-            {
-            }
-
-            public async Task<IDictionary<string, Category>> PreloadCategoryBranchAsyncStub(string categoryId)
-            {
-                return await PreloadCategoryBranchAsync(categoryId);
-            }
         }
     }
 }
