@@ -58,17 +58,17 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                         //Return only display names for requested language
                         foreach (var property in product.Properties)
                         {
-                            property.DisplayNames = property.DisplayNames?.Where(x => string.IsNullOrEmpty(x.LanguageCode) || x.LanguageCode.EqualsInvariant(criteria.LanguageCode)).ToList();
+                            property.DisplayNames = property.DisplayNames?.Where(x => string.IsNullOrEmpty(x.LanguageCode) || x.LanguageCode.EqualsIgnoreCase(criteria.LanguageCode)).ToList();
                             //if (!property.Values.IsNullOrEmpty())
                             //{
-                            //    property.Values = property.Values.Where(x => string.IsNullOrEmpty(x.LanguageCode) || x.LanguageCode.EqualsInvariant(criteria.LanguageCode)).ToList();
+                            //    property.Values = property.Values.Where(x => string.IsNullOrEmpty(x.LanguageCode) || x.LanguageCode.EqualsIgnoreCase(criteria.LanguageCode)).ToList();
                             //}
                         }
                     }
                     //Return  only reviews for requested language
                     if (!product.Reviews.IsNullOrEmpty())
                     {
-                        product.Reviews = product.Reviews.Where(x => string.IsNullOrEmpty(x.LanguageCode) || x.LanguageCode.EqualsInvariant(criteria.LanguageCode)).ToList();
+                        product.Reviews = product.Reviews.Where(x => string.IsNullOrEmpty(x.LanguageCode) || x.LanguageCode.EqualsIgnoreCase(criteria.LanguageCode)).ToList();
                     }
                 }
             }

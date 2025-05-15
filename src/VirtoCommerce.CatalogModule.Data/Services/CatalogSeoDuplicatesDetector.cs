@@ -54,7 +54,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 var objectType = tenantIdentity.Type;
                 var objectId = tenantIdentity.Id;
 
-                if (objectType.EqualsInvariant(nameof(Store)))
+                if (objectType.EqualsIgnoreCase(nameof(Store)))
                 {
                     var store = await _storeService.GetNoCloneAsync(tenantIdentity.Id);
                     if (store != null)
@@ -62,7 +62,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                         catalogId = store.Catalog;
                     }
                 }
-                else if (objectType.EqualsInvariant(nameof(Category)))
+                else if (objectType.EqualsIgnoreCase(nameof(Category)))
                 {
                     var category = await _categoryService.GetNoCloneAsync(objectId, CategoryResponseGroup.Info.ToString());
                     if (category != null)
@@ -70,7 +70,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                         catalogId = category.CatalogId;
                     }
                 }
-                else if (objectType.EqualsInvariant(nameof(CatalogProduct)))
+                else if (objectType.EqualsIgnoreCase(nameof(CatalogProduct)))
                 {
                     var product = await _productService.GetNoCloneAsync(objectId, ItemResponseGroup.ItemInfo.ToString());
                     if (product != null)
@@ -114,13 +114,13 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             var allDuplicates = await GetAllSeoDuplicatesAsync();
 
             var productIds = allDuplicates
-                .Where(x => x.ObjectType.EqualsInvariant(nameof(CatalogProduct)))
+                .Where(x => x.ObjectType.EqualsIgnoreCase(nameof(CatalogProduct)))
                 .Select(x => x.ObjectId)
                 .Distinct()
                 .ToList();
 
             var categoryIds = allDuplicates
-                .Where(x => x.ObjectType.EqualsInvariant(nameof(Category)))
+                .Where(x => x.ObjectType.EqualsIgnoreCase(nameof(Category)))
                 .Select(x => x.ObjectId)
                 .Distinct()
                 .ToList();

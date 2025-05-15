@@ -604,12 +604,12 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             {
                 var properties = await GetPropertiesByIdsAsync(new[] { propertyId });
 
-                var catalogProperty = properties.FirstOrDefault(x => x.TargetType.EqualsInvariant(PropertyType.Catalog.ToString()));
-                var categoryProperty = properties.FirstOrDefault(x => x.TargetType.EqualsInvariant(PropertyType.Category.ToString()));
+                var catalogProperty = properties.FirstOrDefault(x => x.TargetType.EqualsIgnoreCase(PropertyType.Catalog.ToString()));
+                var categoryProperty = properties.FirstOrDefault(x => x.TargetType.EqualsIgnoreCase(PropertyType.Category.ToString()));
 
                 var itemProperty = properties.FirstOrDefault(x =>
-                    x.TargetType.EqualsInvariant(PropertyType.Product.ToString()) ||
-                    x.TargetType.EqualsInvariant(PropertyType.Variation.ToString()));
+                    x.TargetType.EqualsIgnoreCase(PropertyType.Product.ToString()) ||
+                    x.TargetType.EqualsIgnoreCase(PropertyType.Variation.ToString()));
 
                 await _rawDatabaseCommand.RemoveAllPropertyValuesAsync(DbContext, catalogProperty, categoryProperty, itemProperty);
 
