@@ -7,6 +7,7 @@ using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Data.Extensions;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Platform.Core.ChangeLog;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
 
@@ -39,13 +40,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             }
             else
             {
-                var criteria = new ChangeLogSearchCriteria
-                {
-                    ObjectType = ChangeLogObjectType,
-                    StartDate = startDate,
-                    EndDate = endDate,
-                    Take = 0
-                };
+                var criteria = GetChangeLogSearchCriteria(startDate, endDate, 0, 0);
                 // Get changes count from operation log
                 result = (await _changeLogSearchService.SearchAsync(criteria)).TotalCount;
             }
@@ -81,14 +76,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             }
             else
             {
-                var criteria = new ChangeLogSearchCriteria
-                {
-                    ObjectType = ChangeLogObjectType,
-                    StartDate = startDate,
-                    EndDate = endDate,
-                    Skip = (int)skip,
-                    Take = (int)take
-                };
+                var criteria = GetChangeLogSearchCriteria(startDate, endDate, skip, take);
 
                 // Get changes from operation log
                 var operations = (await _changeLogSearchService.SearchAsync(criteria)).Results;
@@ -104,6 +92,30 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             }
 
             return result;
+        }
+
+        protected virtual ChangeLogSearchCriteria GetChangeLogSearchCriteria(DateTime? startDate, DateTime? endDate, long skip, long take)
+        {
+            var criteria = AbstractTypeFactory<ChangeLogSearchCriteria>.TryCreateInstance();
+
+            var types = AbstractTypeFactory<Category>.AllTypeInfos.Select(x => x.TypeName).ToList();
+
+            if (types.Count != 0)
+            {
+                types.Add(nameof(Category));
+                criteria.ObjectTypes = types;
+            }
+            else
+            {
+                criteria.ObjectType = nameof(Category);
+            }
+
+            criteria.StartDate = startDate;
+            criteria.EndDate = endDate;
+            criteria.Skip = (int)skip;
+            criteria.Take = (int)take;
+
+            return criteria;
         }
     }
 }
