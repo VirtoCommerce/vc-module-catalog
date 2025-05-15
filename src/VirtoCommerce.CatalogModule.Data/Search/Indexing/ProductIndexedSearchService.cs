@@ -61,7 +61,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                             property.DisplayNames = property.DisplayNames?.Where(x => string.IsNullOrEmpty(x.LanguageCode) || x.LanguageCode.EqualsIgnoreCase(criteria.LanguageCode)).ToList();
                             //if (!property.Values.IsNullOrEmpty())
                             //{
-                            //    property.Values = property.Values.Where(x => string.IsNullOrEmpty(x.LanguageCode) || x.LanguageCode.EqualsInvariant(criteria.LanguageCode)).ToList();
+                            //    property.Values = property.Values.Where(x => string.IsNullOrEmpty(x.LanguageCode) || x.LanguageCode.EqualsIgnoreCase(criteria.LanguageCode)).ToList();
                             //}
                         }
                     }
