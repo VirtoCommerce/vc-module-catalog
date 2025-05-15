@@ -31,6 +31,7 @@ public class BrandSettingService : IBrandSettingService
 
         brandStoreSetting.StoreId = store.Id;
 
+        brandStoreSetting.BrandsEnabled = store.Settings.GetValue<bool>(BrandsEnabled);
         brandStoreSetting.BrandCatalogId = store.Settings.GetValue<string>(BrandCatalogId);
         brandStoreSetting.BrandPropertyName = store.Settings.GetValue<string>(BrandPropertyName);
 
@@ -45,6 +46,14 @@ public class BrandSettingService : IBrandSettingService
         {
             return;
         }
+
+        var brandsEnabledSetting = store.Settings.FirstOrDefault(x => x.Name.EqualsIgnoreCase(BrandsEnabled.Name));
+        if (brandsEnabledSetting == null)
+        {
+            brandsEnabledSetting = new ObjectSettingEntry(BrandsEnabled);
+            store.Settings.Add(brandsEnabledSetting);
+        }
+        brandsEnabledSetting.Value = brandStoreSetting.BrandsEnabled;
 
         var brandCatalogIdSetting = store.Settings.FirstOrDefault(x => x.Name.EqualsIgnoreCase(BrandCatalogId.Name));
         if (brandCatalogIdSetting == null)

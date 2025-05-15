@@ -137,6 +137,14 @@ namespace VirtoCommerce.CatalogModule.Core
                     DefaultValue = 5,
                 };
 
+                public static SettingDescriptor BrandsEnabled { get; } = new SettingDescriptor
+                {
+                    Name = "Catalog.BrandStoreSetting.BrandsEnabled",
+                    GroupName = "Catalog|Brands",
+                    ValueType = SettingValueType.Boolean,
+                    IsPublic = true,
+                };
+
                 public static SettingDescriptor BrandCatalogId { get; } = new SettingDescriptor
                 {
                     Name = "Catalog.BrandStoreSetting.BrandCatalogId",
@@ -164,6 +172,7 @@ namespace VirtoCommerce.CatalogModule.Core
                                    UseSeoDeduplication,
                                    EventBasedIndexation,
                                    ProductConfigurationMaximumFiles,
+                                   BrandsEnabled,
                                    BrandCatalogId,
                                    BrandPropertyName,
                                ];
@@ -238,6 +247,7 @@ namespace VirtoCommerce.CatalogModule.Core
             {
                 get
                 {
+                    yield return General.BrandsEnabled;
                     yield return General.BrandCatalogId;
                     yield return General.BrandPropertyName;
                 }

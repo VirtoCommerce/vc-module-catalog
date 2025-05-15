@@ -835,12 +835,13 @@
       "brand-setting-details": {
         "title": "Brand settings",
         "labels": {
-          "catalog": "Catalog",
-          "property": "Property"
+          "enabled": "Enable brands",
+          "catalog": "Brands catalog",
+          "property": "Brands property"
         },
         "placeholders": {
-          "catalog": "Select catalog",
-          "property": "Select property"
+          "catalog": "Select brands catalog",
+          "property": "Select brands property"
         }
       }
     },
@@ -1239,6 +1240,10 @@
         "description": "Enable it to see the Copy ID context menu item"
       },
       "BrandStoreSetting": {
+        "BrandsEnabled": {
+          "title": "Enable brands",
+          "description": "Brands feature flag"
+        },
         "BrandCatalogId": {
           "title": "Brand catalog ID",
           "description": "Catalog ID for the brands"

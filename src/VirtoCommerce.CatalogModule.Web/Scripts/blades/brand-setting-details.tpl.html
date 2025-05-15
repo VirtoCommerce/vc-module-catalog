@@ -5,6 +5,16 @@
         <fieldset ng-init="setForm(formScope)">
 
           <div class="form-group">
+            <label class="form-label">{{ 'catalog.blades.brand-setting-details.labels.enabled' | translate }}</label>
+            <div class="form-input">
+              <label class="form-label __switch">
+                <input type="checkbox" ng-model="blade.currentEntity.brandsEnabled">
+                <span class="switch"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
             <label class="form-label">{{'catalog.blades.brand-setting-details.labels.catalog' | translate}}</label>
             <ui-scroll-drop-down page-size="50"
                                  ng-if="brandSettingsLoaded"

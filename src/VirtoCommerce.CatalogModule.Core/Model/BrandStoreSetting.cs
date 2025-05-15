@@ -4,6 +4,8 @@ public class BrandStoreSetting
 {
     public string StoreId { get; set; }
 
+    public bool BrandsEnabled { get; set; }
+
     public string BrandPropertyName { get; set; }
 
     public string BrandCatalogId { get; set; }
