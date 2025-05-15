@@ -267,7 +267,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             {
                 var listEntries = await _internalListEntrySearchService.InnerListEntrySearchAsync(criteria);
                 idsToDelete = listEntries.ListEntries
-                    .Where(x => x.Type.EqualsInvariant(ProductListEntry.TypeName) || x.Type.EqualsInvariant(CategoryListEntry.TypeName))
+                    .Where(x => x.Type.EqualsIgnoreCase(ProductListEntry.TypeName) || x.Type.EqualsIgnoreCase(CategoryListEntry.TypeName))
                     .Select(x => x.Id)
                     .ToList();
             }
