@@ -1012,7 +1012,9 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
                         .HasColumnType("character varying(128)");
 
                     b.Property<bool>("AllowCustomText")
-                        .HasColumnType("boolean");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
 
                     b.Property<bool>("AllowPredefinedOptions")
                         .HasColumnType("boolean");

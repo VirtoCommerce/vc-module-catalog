@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 
@@ -11,9 +12,11 @@ using VirtoCommerce.CatalogModule.Data.Repositories;
 namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
 {
     [DbContext(typeof(CatalogDbContext))]
-    partial class CatalogDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250506101328_FixProductConfigurationOptionText")]
+    partial class FixProductConfigurationOptionText
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -194,8 +197,6 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OuterId");
-
                     b.ToTable("Catalog", (string)null);
                 });
 
@@ -345,8 +346,6 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CatalogId");
-
-                    b.HasIndex("OuterId");
 
                     b.HasIndex("ParentCategoryId");
 
@@ -717,8 +716,6 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
-
-                    b.HasIndex("OuterId");
 
                     b.HasIndex("ParentId");
 
