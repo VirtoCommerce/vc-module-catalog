@@ -81,7 +81,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
 
             var cacheKeyPrefix = CacheKey.With(GetType(), nameof(GetByIdsAsync));
-            var categories = await _platformMemoryCache.GetOrLoadByIdsAsync(cacheKeyPrefix, ids, GetByIdsNoCache, ConfigureCache);
+            var categories = await _platformMemoryCache.GetOrLoadByIdsAsync(cacheKeyPrefix, ids, GetByIdsNoCache, ConfigureCacheOptions);
 
             if (!clone && string.IsNullOrEmpty(catalogId) && HasFlag(responseGroup, CategoryResponseGroup.Full))
             {
@@ -160,7 +160,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 // Prepare catalog cache tokens
                 foreach (var entity in entities)
                 {
-                    ConfigureCache(cacheOptions, entity.Id, entity);
+                    ConfigureCacheOptions(cacheOptions, entity.Id, entity);
                 }
 
                 // Find linked category ids to recursively load them
@@ -387,10 +387,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     repository.DisableChangesTracking();
                     return await LoadEntities(repository, missingIds, nameof(CategoryResponseGroup.Full));
                 },
-                ConfigureCache);
+                ConfigureCacheOptions);
         }
 
-        protected virtual void ConfigureCache(MemoryCacheEntryOptions cacheOptions, string id, IHasCatalogId hasCatalogId)
+        protected virtual void ConfigureCacheOptions(MemoryCacheEntryOptions cacheOptions, string id, IHasCatalogId hasCatalogId)
         {
             cacheOptions.AddExpirationToken(CatalogTreeCacheRegion.CreateChangeTokenForKey(id));
 
