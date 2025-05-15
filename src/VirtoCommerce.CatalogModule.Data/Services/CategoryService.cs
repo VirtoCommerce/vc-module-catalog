@@ -390,23 +390,13 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 ConfigureCache);
         }
 
-        protected virtual void ConfigureCache(MemoryCacheEntryOptions cacheOptions, string id, CategoryEntity entity)
-        {
-            ConfigureCache(cacheOptions, id, entity?.CatalogId);
-        }
-
-        protected override void ConfigureCache(MemoryCacheEntryOptions cacheOptions, string id, Category model)
-        {
-            ConfigureCache(cacheOptions, id, model?.CatalogId);
-        }
-
-        protected virtual void ConfigureCache(MemoryCacheEntryOptions cacheOptions, string id, string catalogId)
+        protected virtual void ConfigureCache(MemoryCacheEntryOptions cacheOptions, string id, IHasCatalogId hasCatalogId)
         {
             cacheOptions.AddExpirationToken(CatalogTreeCacheRegion.CreateChangeTokenForKey(id));
 
-            if (catalogId != null)
+            if (hasCatalogId?.CatalogId != null)
             {
-                cacheOptions.AddExpirationToken(CatalogTreeCacheRegion.CreateChangeTokenForKey(catalogId));
+                cacheOptions.AddExpirationToken(CatalogTreeCacheRegion.CreateChangeTokenForKey(hasCatalogId.CatalogId));
             }
         }
 
