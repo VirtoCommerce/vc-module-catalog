@@ -61,7 +61,7 @@ public class BrandSettingService : IBrandSettingService
             brandCatalogIdSetting = new ObjectSettingEntry(BrandCatalogId);
             store.Settings.Add(brandCatalogIdSetting);
         }
-        brandCatalogIdSetting.Value = brandStoreSetting.BrandCatalogId;
+        brandCatalogIdSetting.Value = brandStoreSetting.BrandCatalogId ?? string.Empty;
 
         var brandPropertyNameSetting = store.Settings.FirstOrDefault(x => x.Name.EqualsIgnoreCase(BrandPropertyName.Name));
         if (brandPropertyNameSetting == null)
@@ -69,7 +69,7 @@ public class BrandSettingService : IBrandSettingService
             brandPropertyNameSetting = new ObjectSettingEntry(BrandPropertyName);
             store.Settings.Add(brandPropertyNameSetting);
         }
-        brandPropertyNameSetting.Value = brandStoreSetting.BrandPropertyName;
+        brandPropertyNameSetting.Value = brandStoreSetting.BrandPropertyName ?? string.Empty;
 
         await _storeService.SaveChangesAsync([store]);
     }
