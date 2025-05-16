@@ -3,7 +3,7 @@ using VirtoCommerce.Platform.Core.GenericCrud;
 
 namespace VirtoCommerce.CatalogModule.Core.Services
 {
-    public interface ICatalogService : ICrudService<Catalog>
+    public interface ICatalogService : IOuterEntityService<Catalog>
     {
     }
 }
