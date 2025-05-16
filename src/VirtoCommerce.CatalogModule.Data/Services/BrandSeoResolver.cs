@@ -61,15 +61,7 @@ public class BrandSeoResolver : ISeoResolver
 
         if (permalink.EqualsIgnoreCase(BrandsSeoType))
         {
-            var seoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
-            seoInfo.ObjectType = BrandsSeoType;
-            seoInfo.Id = BrandsSeoType;
-            seoInfo.ObjectId = BrandsSeoType;
-
-            seoInfo.SemanticUrl = criteria.Permalink;
-            seoInfo.LanguageCode = criteria.LanguageCode;
-            seoInfo.StoreId = criteria.StoreId;
-
+            var seoInfo = CreateSeoInfo(BrandsSeoType, BrandsSeoType, criteria);
             return [seoInfo];
         }
 
@@ -82,25 +74,32 @@ public class BrandSeoResolver : ISeoResolver
                 return [];
             }
 
-            var seoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
-            seoInfo.ObjectType = BrandSeoType;
-            seoInfo.Id = seoInfo.ObjectId = criteria.Slug;
-            seoInfo.StoreId = criteria.StoreId;
-
-            seoInfo.SemanticUrl = criteria.Permalink;
-            seoInfo.LanguageCode = criteria.LanguageCode;
-            seoInfo.StoreId = criteria.StoreId;
+            var seoInfo = CreateSeoInfo(BrandSeoType, criteria.Slug, criteria);
 
             var brandCategory = await GetCategorySeo(criteria, segments, catalog);
             if (brandCategory != null)
             {
-                seoInfo.Id = seoInfo.ObjectId = brandCategory.Id;
+                seoInfo.Id = brandCategory.Id;
+                seoInfo.ObjectId = brandCategory.Id;
             }
 
             return [seoInfo];
         }
 
         return [];
+    }
+
+    private static SeoInfo CreateSeoInfo(string seoType, string id, SeoSearchCriteria criteria)
+    {
+        var seoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
+        seoInfo.ObjectType = seoType;
+        seoInfo.Id = id;
+        seoInfo.ObjectId = id;
+        seoInfo.StoreId = criteria.StoreId;
+        seoInfo.SemanticUrl = criteria.Permalink;
+        seoInfo.LanguageCode = criteria.LanguageCode;
+
+        return seoInfo;
     }
 
     private async Task<Category> GetCategorySeo(SeoSearchCriteria criteria, string[] segments, Catalog catalog)
