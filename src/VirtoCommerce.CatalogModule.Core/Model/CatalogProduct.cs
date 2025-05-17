@@ -499,6 +499,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
             if (!productResponseGroup.HasFlag(ItemResponseGroup.ItemAssets))
             {
                 Assets = null;
+                Images = null;
             }
             if (!productResponseGroup.HasFlag(ItemResponseGroup.ItemAssociations))
             {
