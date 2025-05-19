@@ -10,6 +10,7 @@ using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.Services;
+
 public class BrandSeoResolver : ISeoResolver
 {
     private readonly IBrandSettingService _brandSettingService;
