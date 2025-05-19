@@ -831,6 +831,18 @@
           "quantity": "Specify quantity",
           "text": "Enter the text"
         }
+      },
+      "brand-setting-details": {
+        "title": "Brand settings",
+        "labels": {
+          "enabled": "Enable brands",
+          "catalog": "Brands catalog",
+          "property": "Brands property"
+        },
+        "placeholders": {
+          "catalog": "Select brands catalog",
+          "property": "Select brands property"
+        }
       }
     },
     "exporter-list": {
@@ -909,6 +921,9 @@
       },
       "configuration": {
         "title": "Configuration"
+      },
+      "brand-settings": {
+        "title": "Brand settings"
       }
     },
     "dialogs": {
@@ -1140,8 +1155,8 @@
       "copy-id": "Copy ID",
       "clear-all": "Clear all",
       "add-property": "Add property",
-      "add-product-property": "Add a custom property",
-      "add-variation-property": "Add a custom property",
+      "add-product-property": "Add custom property",
+      "add-variation-property": "Add custom property",
       "gallery": "Gallery",
       "map": "Map",
       "open-item": "Open item",
@@ -1223,6 +1238,20 @@
       "AllowToCopyID": {
         "title": "Allow to copy item's ID",
         "description": "Enable it to see the Copy ID context menu item"
+      },
+      "BrandStoreSetting": {
+        "BrandsEnabled": {
+          "title": "Enable brands",
+          "description": "Brands feature flag"
+        },
+        "BrandCatalogId": {
+          "title": "Brand catalog ID",
+          "description": "Catalog ID for the brands"
+        },
+        "BrandPropertyName": {
+          "title": "Brand property name",
+          "description": "Property name for the brand"
+        }
       },
       "Search": {
         "UseCatalogIndexedSearchInManager": {

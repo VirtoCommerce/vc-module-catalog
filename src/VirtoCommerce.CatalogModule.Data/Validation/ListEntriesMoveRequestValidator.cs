@@ -26,7 +26,7 @@ namespace VirtoCommerce.CatalogModule.Data.Validation
                     return;
                 }
 
-                foreach (var movedCategory in moveInfo.ListEntries.Where(x => x.Type.EqualsInvariant(CategoryListEntry.TypeName)))
+                foreach (var movedCategory in moveInfo.ListEntries.Where(x => x.Type.EqualsIgnoreCase(CategoryListEntry.TypeName)))
                 {
                     var movedCategoryPath = string.Join("/", movedCategory.Outline);
                     var targetCategoryPath = string.Join("/", targetCategory.CatalogId, targetCategory.Outline);
@@ -35,7 +35,7 @@ namespace VirtoCommerce.CatalogModule.Data.Validation
                     // Target category path - Catalog1\Cat1\Cat2, moved category path - Catalog1\Cat1.
                     // Target category path should not be part of moved category full physical path.
                     // Because if moved category is a parent of a target one, it should be in target category path.                    
-                    if (targetCategoryPath.EqualsInvariant(movedCategoryPath)
+                    if (targetCategoryPath.EqualsIgnoreCase(movedCategoryPath)
                         || targetCategoryPath.StartsWith($"{movedCategoryPath}/"))
                     {
                         context.AddFailure("Cannot move category under itself.");

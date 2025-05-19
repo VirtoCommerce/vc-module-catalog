@@ -169,6 +169,7 @@ namespace VirtoCommerce.CatalogModule.Web
             serviceCollection.AddTransient<TrackSpecialChangesEventHandler>();
 
             serviceCollection.AddTransient<ISeoResolver, CatalogSeoResolver>();
+            serviceCollection.AddTransient<ISeoResolver, BrandSeoResolver>();
 #pragma warning disable VC0011 // Type or member is obsolete
             serviceCollection.AddTransient<ISeoBySlugResolver, CatalogSeoBySlugResolver>();
 #pragma warning restore VC0011 // Type or member is obsolete
@@ -285,6 +286,8 @@ namespace VirtoCommerce.CatalogModule.Web
 
             serviceCollection.AddSingleton<IHtmlSanitizer, HtmlSanitizer>();
             serviceCollection.AddSingleton<IPropertyValueSanitizer, PropertyValueSanitizer>();
+
+            serviceCollection.AddTransient<IBrandSettingService, BrandSettingService>();
         }
 
         public void PostInitialize(IApplicationBuilder appBuilder)
@@ -293,6 +296,7 @@ namespace VirtoCommerce.CatalogModule.Web
 
             var settingsRegistrar = appBuilder.ApplicationServices.GetRequiredService<ISettingsRegistrar>();
             settingsRegistrar.RegisterSettings(ModuleConstants.Settings.AllSettings, ModuleInfo.Id);
+            settingsRegistrar.RegisterSettingsForType(ModuleConstants.Settings.StoreLevelSettings, nameof(Store));
 
             //Register module permissions
             var permissionsRegistrar = appBuilder.ApplicationServices.GetRequiredService<IPermissionsRegistrar>();
