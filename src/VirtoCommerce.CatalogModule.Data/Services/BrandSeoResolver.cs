@@ -8,7 +8,6 @@ using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.StoreModule.Core.Services;
 
 namespace VirtoCommerce.CatalogModule.Data.Services;
 public class BrandSeoResolver : ISeoResolver
@@ -16,7 +15,6 @@ public class BrandSeoResolver : ISeoResolver
     private readonly IBrandSettingService _brandSettingService;
     private readonly ICategoryService _categoryService;
     private readonly ICatalogService _catalogService;
-    private readonly IStoreService _storeService;
     private readonly Func<ICatalogRepository> _repositoryFactory;
 
     private const string BrandSeoType = "Brand";
@@ -26,13 +24,11 @@ public class BrandSeoResolver : ISeoResolver
         IBrandSettingService brandSettingService,
         ICategoryService categoryService,
         ICatalogService catalogService,
-        IStoreService storeService,
         Func<ICatalogRepository> repositoryFactory)
     {
         _brandSettingService = brandSettingService;
         _categoryService = categoryService;
         _catalogService = catalogService;
-        _storeService = storeService;
         _repositoryFactory = repositoryFactory;
     }
 
