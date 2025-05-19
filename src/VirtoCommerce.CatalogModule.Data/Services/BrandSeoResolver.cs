@@ -8,9 +8,7 @@ using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.StoreModule.Core.Services;
-using static VirtoCommerce.CatalogModule.Core.ModuleConstants.Settings.General;
 
 namespace VirtoCommerce.CatalogModule.Data.Services;
 public class BrandSeoResolver : ISeoResolver
@@ -40,14 +38,8 @@ public class BrandSeoResolver : ISeoResolver
 
     public async Task<IList<SeoInfo>> FindSeoAsync(SeoSearchCriteria criteria)
     {
-        var store = await _storeService.GetNoCloneAsync(criteria.StoreId);
-        if (store == null)
-        {
-            return [];
-        }
-
-        var brandsEnabled = store.Settings.GetValue<bool>(BrandsEnabled);
-        if (!brandsEnabled)
+        var brandStoreSettings = await _brandSettingService.GetByStoreIdAsync(criteria.StoreId);
+        if (brandStoreSettings == null || !brandStoreSettings.BrandsEnabled)
         {
             return [];
         }
@@ -65,8 +57,7 @@ public class BrandSeoResolver : ISeoResolver
             return [seoInfo];
         }
 
-        var brandStoreSettings = await _brandSettingService.GetByStoreIdAsync(criteria.StoreId);
-        if (brandStoreSettings != null && brandStoreSettings.BrandCatalogId != null)
+        if (brandStoreSettings.BrandCatalogId != null)
         {
             var catalog = await _catalogService.GetNoCloneAsync(brandStoreSettings.BrandCatalogId);
             if (!IsBrandCatalogQuery(catalog, segments))
