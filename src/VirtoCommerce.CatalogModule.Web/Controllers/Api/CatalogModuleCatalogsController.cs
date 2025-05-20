@@ -82,17 +82,42 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("{id}")]
         public async Task<ActionResult<Catalog>> GetCatalog(string id)
         {
-            var catalog = await _catalogService.GetNoCloneAsync(id, CatalogResponseGroup.Full.ToString());
-
+            var catalog = await _catalogService.GetNoCloneAsync(id, nameof(CatalogResponseGroup.Full));
             if (catalog == null)
             {
                 return NotFound();
             }
+
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, catalog, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
             if (!authorizationResult.Succeeded)
             {
                 return Forbid();
             }
+
+            return Ok(catalog);
+        }
+
+        /// <summary>
+        /// Gets catalog by outer id.
+        /// </summary>
+        /// <remarks>Gets catalog by outer id</remarks>
+        /// <param name="outerId">Catalog outer id</param>
+        [HttpGet]
+        [Route("outer/{outerId}")]
+        public async Task<ActionResult<Catalog>> GetCatalogByOuterId(string outerId)
+        {
+            var catalog = await _catalogService.GetByOuterIdNoCloneAsync(outerId, nameof(CatalogResponseGroup.Full));
+            if (catalog == null)
+            {
+                return NotFound();
+            }
+
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, catalog, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
+            if (!authorizationResult.Succeeded)
+            {
+                return Forbid();
+            }
+
             return Ok(catalog);
         }
 
@@ -206,30 +231,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             await _catalogService.DeleteAsync([id]);
             return NoContent();
-        }
-
-        /// <summary>
-        /// Gets catalog by outer id.
-        /// </summary>
-        /// <remarks>Gets catalog by outer id (integration key) with full information loaded</remarks>
-        /// <param name="outerId">Catalog outer id</param>
-        [HttpGet]
-        [Route("outer/{outerId}")]
-        public async Task<ActionResult<Catalog>> GetCatalogByOuterId(string outerId)
-        {
-            var catalog = await _catalogService.GetByOuterIdNoCloneAsync(outerId, nameof(CatalogResponseGroup.Full));
-            if (catalog == null)
-            {
-                return NotFound();
-            }
-
-            var authorizationResult = await _authorizationService.AuthorizeAsync(User, catalog, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
-            if (!authorizationResult.Succeeded)
-            {
-                return Forbid();
-            }
-
-            return Ok(catalog);
         }
     }
 }
