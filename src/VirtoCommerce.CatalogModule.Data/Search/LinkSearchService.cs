@@ -34,7 +34,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             {
                 repository.DisableChangesTracking();
 
-                if (criteria.ObjectType.EqualsInvariant(nameof(CatalogProduct)))
+                if (criteria.ObjectType.EqualsIgnoreCase(nameof(CatalogProduct)))
                 {
                     var productLinksQuery = GetProductLinksQuery(repository.CategoryItemRelations, criteria);
 
@@ -51,7 +51,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                         result.Results = productLinks.Select(x => ToCategoryLink(x)).ToList();
                     }
                 }
-                else if (criteria.ObjectType.EqualsInvariant(nameof(Category)))
+                else if (criteria.ObjectType.EqualsIgnoreCase(nameof(Category)))
                 {
                     var categoryLinksQuery = GetCategoryLinksQuery(repository.CategoryLinks, criteria);
 

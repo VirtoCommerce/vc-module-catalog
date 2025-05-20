@@ -147,7 +147,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             if (store != null)
             {
                 var catalogProperties = await _propertyService.GetAllCatalogPropertiesAsync(store.Catalog);
-                var property = catalogProperties.FirstOrDefault(p => p.Name.EqualsInvariant(propertyName) && p.Dictionary);
+                var property = catalogProperties.FirstOrDefault(p => p.Name.EqualsIgnoreCase(propertyName) && p.Dictionary);
                 if (property != null)
                 {
                     var searchResult = await _propDictItemsSearchService.SearchAsync(new PropertyDictionaryItemSearchCriteria { PropertyIds = new[] { property.Id }, Take = int.MaxValue }, clone: true);
