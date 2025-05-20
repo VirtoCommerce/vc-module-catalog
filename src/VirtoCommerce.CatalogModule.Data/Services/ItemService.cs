@@ -21,7 +21,7 @@ using VirtoCommerce.Platform.Data.GenericCrud;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
-    public class ItemService : CrudService<CatalogProduct, ItemEntity, ProductChangingEvent, ProductChangedEvent>, IItemService
+    public class ItemService : OuterEntityService<CatalogProduct, ItemEntity, ProductChangingEvent, ProductChangedEvent>, IItemService
     {
         private readonly Func<ICatalogRepository> _repositoryFactory;
         private readonly IPlatformMemoryCache _platformMemoryCache;
@@ -141,6 +141,11 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         protected override Task<IList<ItemEntity>> LoadEntities(IRepository repository, IList<string> ids, string responseGroup)
         {
             return ((ICatalogRepository)repository).GetItemByIdsAsync(ids, responseGroup);
+        }
+
+        protected override IQueryable<ItemEntity> GetEntitiesQuery(IRepository repository)
+        {
+            return ((ICatalogRepository)repository).Items;
         }
 
         protected override IList<CatalogProduct> ProcessModels(IList<ItemEntity> entities, string responseGroup)

@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Newtonsoft.Json;
 using VirtoCommerce.CatalogModule.Data.Model;
+using VirtoCommerce.Platform.Data.Extensions;
 using VirtoCommerce.Platform.Data.Infrastructure;
 
 namespace VirtoCommerce.CatalogModule.Data.Repositories
@@ -27,33 +28,43 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         {
             #region Catalog
 
-            modelBuilder.Entity<CatalogEntity>().ToTable("Catalog").HasKey(x => x.Id);
-            modelBuilder.Entity<CatalogEntity>().Property(x => x.Id).HasMaxLength(128).ValueGeneratedOnAdd();
+            modelBuilder.Entity<CatalogEntity>(builder =>
+            {
+                builder.ToAuditableEntityTable("Catalog");
+                builder.HasIndex(x => x.OuterId).IsUnique(false);
+            });
 
             #endregion Catalog
 
             #region Category
 
-            modelBuilder.Entity<CategoryEntity>().ToTable("Category");
-            modelBuilder.Entity<CategoryEntity>().Property(x => x.Id).HasMaxLength(128).ValueGeneratedOnAdd();
-            modelBuilder.Entity<CategoryEntity>().HasOne(x => x.ParentCategory)
-                .WithMany().HasForeignKey(x => x.ParentCategoryId).OnDelete(DeleteBehavior.Restrict);
-            modelBuilder.Entity<CategoryEntity>().HasOne(x => x.Catalog)
-                .WithMany().HasForeignKey(x => x.CatalogId).IsRequired().OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<CategoryEntity>().Property(x => x.ExcludedProperties).HasConversion(
-                x => x != null && x.Count > 0 ? JsonConvert.SerializeObject(x) : null,
-                x => x != null ? JsonConvert.DeserializeObject<List<string>>(x) : null,
-                new ValueComparer<IList<string>>(
-                    (c1, c2) => c1.SequenceEqual(c2),
-                    c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
-                    c => c.ToList())); // take a reference about value comparers here: https://learn.microsoft.com/en-us/ef/core/modeling/value-comparers?tabs=ef5#mutable-classes
-            modelBuilder.Entity<CategoryEntity>().ToTable(t =>
-                t.HasCheckConstraint("Parent_category_check", $"\"{nameof(CategoryEntity.ParentCategoryId)}\" != \"{nameof(CategoryEntity.Id)}\""));
+            modelBuilder.Entity<CategoryEntity>(builder =>
+            {
+                builder.ToAuditableEntityTable("Category");
+
+                builder.HasOne(x => x.ParentCategory)
+                    .WithMany().HasForeignKey(x => x.ParentCategoryId).OnDelete(DeleteBehavior.Restrict);
+
+                builder.HasOne(x => x.Catalog)
+                    .WithMany().HasForeignKey(x => x.CatalogId).IsRequired().OnDelete(DeleteBehavior.Cascade);
+
+                builder.Property(x => x.ExcludedProperties).HasConversion(
+                    x => x != null && x.Count > 0 ? JsonConvert.SerializeObject(x) : null,
+                    x => x != null ? JsonConvert.DeserializeObject<List<string>>(x) : null,
+                    new ValueComparer<IList<string>>(
+                        (c1, c2) => c1.SequenceEqual(c2),
+                        c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
+                        c => c.ToList())); // take a reference about value comparers here: https://learn.microsoft.com/en-us/ef/core/modeling/value-comparers?tabs=ef5#mutable-classes
+
+                builder.ToTable(t =>
+                    t.HasCheckConstraint("Parent_category_check", $"\"{nameof(CategoryEntity.ParentCategoryId)}\" != \"{nameof(CategoryEntity.Id)}\""));
+
+                builder.HasIndex(x => x.OuterId).IsUnique(false);
+            });
 
             modelBuilder.Entity<CategoryLocalizedNameEntity>(builder =>
             {
-                builder.ToTable("CategoryLocalizedName").HasKey(x => x.Id);
-                builder.Property(x => x.Id).HasMaxLength(IdLength).ValueGeneratedOnAdd();
+                builder.ToEntityTable("CategoryLocalizedName");
 
                 builder.HasOne(x => x.ParentEntity)
                     .WithMany(x => x.LocalizedNames)
@@ -64,34 +75,41 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 builder.HasIndex(x => new { x.LanguageCode, x.ParentEntityId }).IsUnique()
                     .HasDatabaseName("IX_CategoryLocalizedName_LanguageCode_ParentEntityId");
             });
+
             #endregion Category
 
             #region Item
 
-            modelBuilder.Entity<ItemEntity>().ToTable("Item").HasKey(x => x.Id);
-            modelBuilder.Entity<ItemEntity>().Property(x => x.Id).HasMaxLength(128).ValueGeneratedOnAdd();
-            modelBuilder.Entity<ItemEntity>().Property(x => x.Weight).HasPrecision(18, 4);
-            modelBuilder.Entity<ItemEntity>().Property(x => x.Height).HasPrecision(18, 4);
-            modelBuilder.Entity<ItemEntity>().Property(x => x.Length).HasPrecision(18, 4);
-            modelBuilder.Entity<ItemEntity>().Property(x => x.Width).HasPrecision(18, 4);
-            modelBuilder.Entity<ItemEntity>().Property(x => x.MaxQuantity).HasPrecision(18, 2);
-            modelBuilder.Entity<ItemEntity>().Property(x => x.MinQuantity).HasPrecision(18, 2);
-            modelBuilder.Entity<ItemEntity>().HasOne(m => m.Catalog).WithMany().HasForeignKey(x => x.CatalogId)
-                .IsRequired().OnDelete(DeleteBehavior.Restrict);
-            modelBuilder.Entity<ItemEntity>().HasOne(m => m.Category).WithMany().HasForeignKey(x => x.CategoryId)
-                .OnDelete(DeleteBehavior.Restrict);
-            modelBuilder.Entity<ItemEntity>().HasOne(m => m.Parent).WithMany(x => x.Childrens).HasForeignKey(x => x.ParentId)
-                .OnDelete(DeleteBehavior.Restrict);
-            modelBuilder.Entity<ItemEntity>().HasIndex(x => new { x.Code, x.CatalogId }).HasDatabaseName("IX_Code_CatalogId").IsUnique();
-            modelBuilder.Entity<ItemEntity>().HasIndex(x => new { x.CatalogId, x.ParentId }).IsUnique(false).HasDatabaseName("IX_CatalogId_ParentId");
-            modelBuilder.Entity<ItemEntity>().HasIndex(x => new { x.CreatedDate, x.ParentId }).IsUnique(false).HasDatabaseName("IX_CreatedDate_ParentId");
+            modelBuilder.Entity<ItemEntity>(builder =>
+            {
+                builder.ToAuditableEntityTable("Item");
 
-            modelBuilder.Entity<ItemEntity>().Property(x => x.PackSize).HasDefaultValue(1);
+                builder.Property(x => x.Weight).HasPrecision(18, 4);
+                builder.Property(x => x.Height).HasPrecision(18, 4);
+                builder.Property(x => x.Length).HasPrecision(18, 4);
+                builder.Property(x => x.Width).HasPrecision(18, 4);
+                builder.Property(x => x.MaxQuantity).HasPrecision(18, 2);
+                builder.Property(x => x.MinQuantity).HasPrecision(18, 2);
+                builder.Property(x => x.PackSize).HasDefaultValue(1);
+
+                builder.HasOne(m => m.Catalog).WithMany().HasForeignKey(x => x.CatalogId)
+                    .IsRequired().OnDelete(DeleteBehavior.Restrict);
+
+                builder.HasOne(m => m.Category).WithMany().HasForeignKey(x => x.CategoryId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                builder.HasOne(m => m.Parent).WithMany(x => x.Childrens).HasForeignKey(x => x.ParentId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                builder.HasIndex(x => new { x.Code, x.CatalogId }).HasDatabaseName("IX_Code_CatalogId").IsUnique();
+                builder.HasIndex(x => new { x.CatalogId, x.ParentId }).IsUnique(false).HasDatabaseName("IX_CatalogId_ParentId");
+                builder.HasIndex(x => new { x.CreatedDate, x.ParentId }).IsUnique(false).HasDatabaseName("IX_CreatedDate_ParentId");
+                builder.HasIndex(x => x.OuterId).IsUnique(false);
+            });
 
             modelBuilder.Entity<ItemLocalizedNameEntity>(builder =>
             {
-                builder.ToTable("ItemLocalizedName").HasKey(x => x.Id);
-                builder.Property(x => x.Id).HasMaxLength(IdLength).ValueGeneratedOnAdd();
+                builder.ToEntityTable("ItemLocalizedName");
 
                 builder.HasOne(x => x.ParentEntity)
                     .WithMany(x => x.LocalizedNames)

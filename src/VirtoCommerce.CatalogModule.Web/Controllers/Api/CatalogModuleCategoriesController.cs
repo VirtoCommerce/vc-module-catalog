@@ -172,5 +172,29 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             await _categoryService.DeleteAsync(ids);
             return NoContent();
         }
+
+        /// <summary>
+        /// Gets category by outer id.
+        /// </summary>
+        /// <remarks>Gets category by outer id (integration key) with full information loaded</remarks>
+        /// <param name="outerId">Category outer id</param>
+        [HttpGet]
+        [Route("outer/{outerId}")]
+        public async Task<ActionResult<Catalog>> GetCategoryByOuterId(string outerId)
+        {
+            var category = await _categoryService.GetByOuterIdNoCloneAsync(outerId, nameof(CategoryResponseGroup.Full));
+            if (category == null)
+            {
+                return NotFound();
+            }
+
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, category, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
+            if (!authorizationResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            return Ok(category);
+        }
     }
 }

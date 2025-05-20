@@ -356,6 +356,30 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return Ok();
         }
 
+        /// <summary>
+        /// Gets product by outer id.
+        /// </summary>
+        /// <remarks>Gets product by outer id (integration key) with full information loaded</remarks>
+        /// <param name="outerId">Product outer id</param>
+        [HttpGet]
+        [Route("outer/{outerId}")]
+        public async Task<ActionResult<Catalog>> GetProductByOuterId(string outerId)
+        {
+            var product = await _itemsService.GetByOuterIdNoCloneAsync(outerId, nameof(ItemResponseGroup.Full));
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, product, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
+            if (!authorizationResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            return Ok(product);
+        }
+
         private async Task<CatalogProduct[]> InnerSaveProducts(CatalogProduct[] products)
         {
             var toSaveList = new List<CatalogProduct>();
@@ -372,7 +396,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                         var seoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
                         seoInfo.LanguageCode = defaultLanguageCode;
                         seoInfo.SemanticUrl = slugUrl;
-                        product.SeoInfos = new[] { seoInfo };
+                        product.SeoInfos = [seoInfo];
                     }
                 }
 

@@ -5,7 +5,7 @@ using VirtoCommerce.Platform.Core.GenericCrud;
 
 namespace VirtoCommerce.CatalogModule.Core.Services
 {
-    public interface ICategoryService : ICrudService<Category>
+    public interface ICategoryService : IOuterEntityService<Category>
     {
         Task<IList<Category>> GetByIdsAsync(IList<string> ids, string responseGroup, string catalogId);
     }

@@ -21,7 +21,7 @@ using VirtoCommerce.Platform.Data.Infrastructure;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
-    public class CatalogService : CrudService<Catalog, CatalogEntity, CatalogChangingEvent, CatalogChangedEvent>, ICatalogService
+    public class CatalogService : OuterEntityService<Catalog, CatalogEntity, CatalogChangingEvent, CatalogChangedEvent>, ICatalogService
     {
         private readonly IPlatformMemoryCache _platformMemoryCache;
         private readonly Func<ICatalogRepository> _repositoryFactory;
@@ -109,6 +109,11 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return ((ICatalogRepository)repository).GetCatalogsByIdsAsync(ids);
         }
 
+        protected override IQueryable<CatalogEntity> GetEntitiesQuery(IRepository repository)
+        {
+            return ((ICatalogRepository)repository).Catalogs;
+        }
+
         protected virtual Task<IDictionary<string, Catalog>> PreloadCatalogsAsync()
         {
             var cacheKey = CacheKey.With(GetType(), nameof(PreloadCatalogsAsync));
@@ -144,10 +149,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         protected virtual void LoadDependencies(IEnumerable<Catalog> catalogs, IDictionary<string, Catalog> preloadedCatalogsMap)
         {
-            if (catalogs == null)
-            {
-                throw new ArgumentNullException(nameof(catalogs));
-            }
+            ArgumentNullException.ThrowIfNull(catalogs);
 
             foreach (var catalog in catalogs.Where(x => !x.IsTransient()))
             {
