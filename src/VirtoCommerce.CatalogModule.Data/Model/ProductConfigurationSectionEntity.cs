@@ -24,6 +24,8 @@ public class ProductConfigurationSectionEntity : AuditableEntity, IDataEntity<Pr
 
     public string Description { get; set; }
     public bool IsRequired { get; set; }
+    public bool AllowCustomText { get; set; }
+    public bool AllowPredefinedOptions { get; set; }
     public int DisplayOrder { get; set; }
 
     public virtual ProductConfigurationEntity Configuration { get; set; }
@@ -43,6 +45,8 @@ public class ProductConfigurationSectionEntity : AuditableEntity, IDataEntity<Pr
         model.Name = Name;
         model.Description = Description;
         model.IsRequired = IsRequired;
+        model.AllowCustomText = AllowCustomText;
+        model.AllowPredefinedOptions = AllowPredefinedOptions;
         model.DisplayOrder = DisplayOrder;
         model.Type = Type;
 
@@ -67,6 +71,8 @@ public class ProductConfigurationSectionEntity : AuditableEntity, IDataEntity<Pr
         Name = model.Name;
         Description = model.Description;
         IsRequired = model.IsRequired;
+        AllowCustomText = model.AllowCustomText;
+        AllowPredefinedOptions = model.AllowPredefinedOptions;
         DisplayOrder = model.DisplayOrder;
         Type = model.Type;
 
@@ -83,6 +89,8 @@ public class ProductConfigurationSectionEntity : AuditableEntity, IDataEntity<Pr
         target.Name = Name;
         target.Description = Description;
         target.IsRequired = IsRequired;
+        target.AllowCustomText = AllowCustomText;
+        target.AllowPredefinedOptions = AllowPredefinedOptions;
         target.DisplayOrder = DisplayOrder;
         target.Type = Type;
 

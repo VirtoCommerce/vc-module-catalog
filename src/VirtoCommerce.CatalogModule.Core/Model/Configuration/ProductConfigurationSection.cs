@@ -14,6 +14,8 @@ public class ProductConfigurationSection : AuditableEntity, ICloneable, IHasName
     public bool IsRequired { get; set; }
     public int DisplayOrder { get; set; }
     public string Type { get; set; }
+    public bool AllowCustomText { get; set; }
+    public bool AllowPredefinedOptions { get; set; }
 
     [JsonIgnore]
     public ProductConfiguration Configuration { get; set; }

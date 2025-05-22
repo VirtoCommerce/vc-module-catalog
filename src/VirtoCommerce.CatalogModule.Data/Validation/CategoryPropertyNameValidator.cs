@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -10,10 +8,7 @@ using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
-using VirtoCommerce.CatalogModule.Data.Search;
-using VirtoCommerce.CatalogModule.Data.Services;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Data.ExportImport;
 
 namespace VirtoCommerce.CatalogModule.Data.Validation
 {
@@ -34,14 +29,15 @@ namespace VirtoCommerce.CatalogModule.Data.Validation
 
         private void AttachValidators()
         {
+            // 1. Global: Ensure that properties with the same name across the all catalogs have the same type to prevent indexing issues.
             RuleFor(r => r)
                .CustomAsync(async (r, context, _) =>
                {
-                   var (isPropertyUniqueForHierarchy, categoryName) = await CheckPropertyUniquenessAsync(r);
+                   var (isPropertyUnique, categoryName) = await CheckPropertyUniquenessInGlobalAsync(r);
 
-                   if (!isPropertyUniqueForHierarchy)
+                   if (!isPropertyUnique)
                    {
-                       context.AddFailure(new ValidationFailure(r.PropertyName, "duplicate-property")
+                       context.AddFailure(new ValidationFailure(r.PropertyName, "global-property-name-type")
                        {
                            CustomState = new
                            {
@@ -51,37 +47,144 @@ namespace VirtoCommerce.CatalogModule.Data.Validation
                        });
                    }
                });
+
+            // 2. Catalog: Prevent adding a property that already exists in the current category or catalog.
+            RuleFor(r => r)
+              .CustomAsync(async (r, context, _) =>
+              {
+                  var (isPropertyUnique, categoryName) = await CheckPropertyUniquenessInParentAsync(r);
+
+                  if (!isPropertyUnique)
+                  {
+                      context.AddFailure(new ValidationFailure(r.PropertyName, "duplicated-property")
+                      {
+                          CustomState = new
+                          {
+                              PropertyName = r.PropertyName,
+                              CategoryName = categoryName,
+                          },
+                      });
+                  }
+              });
+
+            // 3. Catalog: Prevent adding a property that already inherited from either parent category or catalog.
+            RuleFor(r => r)
+              .CustomAsync(async (r, context, _) =>
+              {
+                  var (isPropertyUnique, categoryName) = await CheckPropertyUniquenessInInheritedCategoriesAsync(r);
+
+                  if (!isPropertyUnique)
+                  {
+                      context.AddFailure(new ValidationFailure(r.PropertyName, "inherited-duplicated-property")
+                      {
+                          CustomState = new
+                          {
+                              PropertyName = r.PropertyName,
+                              CategoryName = categoryName,
+                          },
+                      });
+                  }
+              });
+
         }
 
-        /// <summary>
-        /// Check the property uniqueness for the whole catalog
-        /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
-        protected virtual async Task<(bool, string)> CheckPropertyUniquenessAsync(CategoryPropertyValidationRequest request)
+        protected virtual async Task<(bool, string)> CheckPropertyUniquenessInParentAsync(CategoryPropertyValidationRequest request)
+        {
+            var property = await FindPropertyWithSameName(request);
+
+            if (property != null)
+            {
+                return (false, await GetPropertyParentCategoryName(property));
+            }
+
+            return (true, null);
+        }
+
+        protected virtual async Task<(bool, string)> CheckPropertyUniquenessInInheritedCategoriesAsync(CategoryPropertyValidationRequest request)
+        {
+            if (string.IsNullOrEmpty(request.CategoryId))
+            {
+                return (true, null);
+            }
+
+            var category = await _categoryService.GetNoCloneAsync(request.CategoryId, CategoryResponseGroup.WithProperties.ToString());
+            if (category == null)
+            {
+                return (true, null);
+            }
+
+            var propertyNamesForSearch = GetPropertiesNameForSearch(request);
+
+            var property = category.Properties.FirstOrDefault(x => propertyNamesForSearch.Contains(x.Name, StringComparer.OrdinalIgnoreCase));
+
+
+            if (property != null)
+            {
+                if (property.IsInherited)
+                {
+                    return (false, await GetPropertyParentCategoryName(property));
+                }
+                else
+                {
+                    return (false, category.Name);
+                }
+            }
+
+            return (true, null);
+        }
+
+        protected virtual async Task<(bool, string)> CheckPropertyUniquenessInGlobalAsync(CategoryPropertyValidationRequest request)
         {
             // Allow to create a new property with the same name and same type
-            var existingProperty = await FindProperty(request);
+            var existingProperty = await FindPropertyWithSameNameAndDifferentType(request);
 
             if (existingProperty != null)
             {
-                var categoryName = (await _categoryService.GetNoCloneAsync(existingProperty.CategoryId, CategoryResponseGroup.Info.ToString()))?.Name;
+                var categoryName = await GetPropertyParentCategoryName(existingProperty);
                 return (false, categoryName);
             }
 
             return (true, null);
         }
 
-        private async Task<Property> FindProperty(CategoryPropertyValidationRequest request)
+        private async Task<string> GetPropertyParentCategoryName(Property property)
         {
-            var propertyName = request.PropertyName;
-            // "Alcholic % Volume" == "Alcholic_Volume"
-            var azureFieldPropertyName = Regex.Replace(propertyName, @"\W", "_");
+            if (string.IsNullOrEmpty(property.CategoryId))
+            {
+                // Null means root catalog
+                return null;
+            }
+            else
+            {
+                return (await _categoryService.GetNoCloneAsync(property.CategoryId, CategoryResponseGroup.Info.ToString()))?.Name;
+            }
+        }
+
+        private async Task<Property> FindPropertyWithSameName(CategoryPropertyValidationRequest request)
+        {
+            var propertyNamesForSearch = GetPropertiesNameForSearch(request);
 
             var properties = await _propertySearchService.SearchPropertiesAsync(new PropertySearchCriteria
             {
                 PropertyTypes = [request.PropertyType],
-                PropertyNames = [propertyName, azureFieldPropertyName],
+                PropertyNames = propertyNamesForSearch,
+                CatalogId = request.CatalogId,
+                CategoryId = request.CategoryId,
+                Take = 1
+            });
+
+
+            return properties.Results.FirstOrDefault();
+        }
+
+        private async Task<Property> FindPropertyWithSameNameAndDifferentType(CategoryPropertyValidationRequest request)
+        {
+            var propertyNamesForSearch = GetPropertiesNameForSearch(request);
+
+            var properties = await _propertySearchService.SearchPropertiesAsync(new PropertySearchCriteria
+            {
+                PropertyTypes = [request.PropertyType],
+                PropertyNames = propertyNamesForSearch,
                 ExcludedPropertyValueTypes = [request.PropertyValueType],
                 Take = 1
             });
@@ -89,5 +192,15 @@ namespace VirtoCommerce.CatalogModule.Data.Validation
 
             return properties.Results.FirstOrDefault();
         }
+
+        private static string[] GetPropertiesNameForSearch(CategoryPropertyValidationRequest request)
+        {
+            var propertyName = request.PropertyName;
+            // "Alcholic % Volume" == "Alcholic_Volume"
+            var azureFieldPropertyName = Regex.Replace(propertyName, @"\W", "_");
+            return [propertyName, azureFieldPropertyName];
+        }
+
+
     }
 }

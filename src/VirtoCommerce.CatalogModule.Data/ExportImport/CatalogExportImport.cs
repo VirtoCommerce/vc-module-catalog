@@ -37,6 +37,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         private readonly IProductConfigurationSearchService _configurationSearchService;
         private readonly IMeasureService _measureService;
         private readonly IMeasureSearchService _measureSearchService;
+        private readonly IPropertyGroupSearchService _propertyGroupSearchService;
 
         private readonly int _batchSize = 50;
 
@@ -44,7 +45,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                                   IItemService itemService, IPropertyService propertyService, IPropertySearchService propertySearchService, IPropertyDictionaryItemSearchService propertyDictionarySearchService,
                                   IPropertyDictionaryItemService propertyDictionaryService, JsonSerializer jsonSerializer, IBlobStorageProvider blobStorageProvider, IAssociationService associationService,
                                   IProductConfigurationService configurationService, IProductConfigurationSearchService configurationSearchService,
-                                  IMeasureService measureService, IMeasureSearchService measureSearchService)
+                                  IMeasureService measureService, IMeasureSearchService measureSearchService, IPropertyGroupSearchService propertyGroupSearchService)
         {
             _catalogService = catalogService;
             _productSearchService = productSearchService;
@@ -63,6 +64,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             _configurationSearchService = configurationSearchService;
             _measureSearchService = measureSearchService;
             _measureService = measureService;
+            _propertyGroupSearchService = propertyGroupSearchService;
         }
 
         public async Task DoExportAsync(Stream outStream, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
@@ -75,6 +77,25 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             using (var writer = new JsonTextWriter(sw))
             {
                 await writer.WriteStartObjectAsync();
+
+                #region Export propertyGroups
+
+                progressInfo.Description = "Property groups exporting...";
+                progressCallback(progressInfo);
+
+                await writer.WritePropertyNameAsync("PropertyGroups");
+                await writer.SerializeArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
+                {
+                    var searchResult = await _propertyGroupSearchService.SearchAsync(new PropertyGroupSearchCriteria { Skip = skip, Take = take });
+                    return (GenericSearchResult<PropertyGroup>)searchResult;
+                }
+                , (processedCount, totalCount) =>
+                {
+                    progressInfo.Description = $"{processedCount} of {totalCount} property groups have been exported";
+                    progressCallback(progressInfo);
+                }, cancellationToken);
+
+                #endregion Export propertyGroups
 
                 #region Export properties
 

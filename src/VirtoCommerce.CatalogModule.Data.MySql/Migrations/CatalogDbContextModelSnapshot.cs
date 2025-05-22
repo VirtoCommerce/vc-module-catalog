@@ -972,7 +972,6 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("ProductId")
-                        .IsRequired()
                         .HasMaxLength(128)
                         .HasColumnType("varchar(128)");
 
@@ -985,6 +984,10 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
                         .IsRequired()
                         .HasMaxLength(128)
                         .HasColumnType("varchar(128)");
+
+                    b.Property<string>("Text")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("Id");
 
@@ -1001,6 +1004,14 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(128)
                         .HasColumnType("varchar(128)");
+
+                    b.Property<bool>("AllowCustomText")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("AllowPredefinedOptions")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("ConfigurationId")
                         .IsRequired()
@@ -1244,6 +1255,9 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
                         .HasMaxLength(128)
                         .HasColumnType("varchar(128)");
 
+                    b.Property<string>("PropertyGroupId")
+                        .HasColumnType("varchar(128)");
+
                     b.Property<int>("PropertyValueType")
                         .HasColumnType("int");
 
@@ -1257,7 +1271,110 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
 
                     b.HasIndex("CategoryId");
 
+                    b.HasIndex("PropertyGroupId");
+
                     b.ToTable("Property", (string)null);
+                });
+
+            modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.PropertyGroupEntity", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(128)
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<string>("CatalogId")
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("varchar(128)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CatalogId");
+
+                    b.ToTable("PropertyGroup", (string)null);
+                });
+
+            modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.PropertyGroupLocalizedDescriptionEntity", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(128)
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<string>("LanguageCode")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("varchar(16)");
+
+                    b.Property<string>("ParentEntityId")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentEntityId");
+
+                    b.HasIndex("LanguageCode", "ParentEntityId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_PropertyGroupLocalizedDescription_LanguageCode_ParentEntityId");
+
+                    b.ToTable("PropertyGroupLocalizedDescription", (string)null);
+                });
+
+            modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.PropertyGroupLocalizedNameEntity", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(128)
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<string>("LanguageCode")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("varchar(16)");
+
+                    b.Property<string>("ParentEntityId")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentEntityId");
+
+                    b.HasIndex("LanguageCode", "ParentEntityId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_PropertyGroupLocalizedName_LanguageCode_ParentEntityId");
+
+                    b.ToTable("PropertyGroupLocalizedName", (string)null);
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.PropertyValidationRuleEntity", b =>
@@ -1776,8 +1893,7 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
                     b.HasOne("VirtoCommerce.CatalogModule.Data.Model.ItemEntity", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("VirtoCommerce.CatalogModule.Data.Model.ProductConfigurationSectionEntity", "Section")
                         .WithMany("Options")
@@ -1857,9 +1973,48 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("VirtoCommerce.CatalogModule.Data.Model.PropertyGroupEntity", "PropertyGroup")
+                        .WithMany()
+                        .HasForeignKey("PropertyGroupId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.Navigation("Catalog");
 
                     b.Navigation("Category");
+
+                    b.Navigation("PropertyGroup");
+                });
+
+            modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.PropertyGroupEntity", b =>
+                {
+                    b.HasOne("VirtoCommerce.CatalogModule.Data.Model.CatalogEntity", "Catalog")
+                        .WithMany("PropertyGroups")
+                        .HasForeignKey("CatalogId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Catalog");
+                });
+
+            modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.PropertyGroupLocalizedDescriptionEntity", b =>
+                {
+                    b.HasOne("VirtoCommerce.CatalogModule.Data.Model.PropertyGroupEntity", "ParentEntity")
+                        .WithMany("LocalizedDescriptions")
+                        .HasForeignKey("ParentEntityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ParentEntity");
+                });
+
+            modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.PropertyGroupLocalizedNameEntity", b =>
+                {
+                    b.HasOne("VirtoCommerce.CatalogModule.Data.Model.PropertyGroupEntity", "ParentEntity")
+                        .WithMany("LocalizedNames")
+                        .HasForeignKey("ParentEntityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ParentEntity");
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.PropertyValidationRuleEntity", b =>
@@ -1937,6 +2092,8 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
                     b.Navigation("IncomingLinks");
 
                     b.Navigation("Properties");
+
+                    b.Navigation("PropertyGroups");
 
                     b.Navigation("SeoInfos");
                 });
@@ -2019,6 +2176,13 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
                     b.Navigation("PropertyAttributes");
 
                     b.Navigation("ValidationRules");
+                });
+
+            modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.PropertyGroupEntity", b =>
+                {
+                    b.Navigation("LocalizedDescriptions");
+
+                    b.Navigation("LocalizedNames");
                 });
 #pragma warning restore 612, 618
         }

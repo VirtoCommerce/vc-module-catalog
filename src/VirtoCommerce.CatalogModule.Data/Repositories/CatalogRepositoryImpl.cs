@@ -33,6 +33,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         public IQueryable<EditorialReviewEntity> EditorialReviews => DbContext.Set<EditorialReviewEntity>();
         public IQueryable<CategoryDescriptionEntity> CategoryDescriptions => DbContext.Set<CategoryDescriptionEntity>();
         public IQueryable<PropertyEntity> Properties => DbContext.Set<PropertyEntity>();
+        public IQueryable<PropertyGroupEntity> PropertyGroups => DbContext.Set<PropertyGroupEntity>();
         public IQueryable<PropertyDictionaryItemEntity> PropertyDictionaryItems => DbContext.Set<PropertyDictionaryItemEntity>();
         public IQueryable<PropertyDictionaryValueEntity> PropertyDictionaryValues => DbContext.Set<PropertyDictionaryValueEntity>();
         public IQueryable<PropertyDisplayNameEntity> PropertyDisplayNames => DbContext.Set<PropertyDisplayNameEntity>();
@@ -47,7 +48,6 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         public IQueryable<ProductConfigurationEntity> ProductConfigurations => DbContext.Set<ProductConfigurationEntity>();
         public IQueryable<ProductConfigurationSectionEntity> ProductConfigurationSections => DbContext.Set<ProductConfigurationSectionEntity>();
         public IQueryable<ProductConfigurationOptionEntity> ProductConfigurationOptions => DbContext.Set<ProductConfigurationOptionEntity>();
-
 
         public virtual async Task<IList<ProductConfigurationEntity>> GetConfigurationsByIdsAsync(IList<string> ids, CancellationToken cancellationToken)
         {
@@ -76,7 +76,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     if (options.Count > 0)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
-                        var productIds = options.Select(x => x.ProductId).ToList();
+                        var productIds = options.Where(x => !string.IsNullOrEmpty(x.ProductId)).Select(x => x.ProductId).ToList();
                         await GetItemByIdsAsync(productIds, ItemResponseGroup.ItemInfo.ToString());
                     }
                 }
@@ -123,6 +123,13 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 }
 
                 await SeoInfos.Where(x => catalogIds.Contains(x.CatalogId)).LoadAsync();
+
+                await PropertyGroups
+                    .Where(x => catalogIds.Contains(x.CatalogId))
+                    .Include(x => x.LocalizedNames)
+                    .Include(x => x.LocalizedDescriptions)
+                    .AsSplitQuery()
+                    .LoadAsync();
 
                 var catalogPropertiesIds = await Properties
                     .Where(x => catalogIds.Contains(x.CatalogId) && x.CategoryId == null)
@@ -383,6 +390,26 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             return result;
         }
 
+        public virtual async Task<IList<PropertyGroupEntity>> GetPropertyGroupsByIdsAsync(IList<string> ids, string responseGroup)
+        {
+            if (ids.IsNullOrEmpty())
+            {
+                return [];
+            }
+
+            var propertyGroupsQuery = ids.Count == 1
+                ? PropertyGroups.Where(x => x.Id == ids.First())
+                : PropertyGroups.Where(x => ids.Contains(x.Id));
+
+            var result = await propertyGroupsQuery
+                .Include(x => x.LocalizedNames)
+                .Include(x => x.LocalizedDescriptions)
+                .AsSplitQuery()
+                .ToListAsync();
+
+            return result;
+        }
+
         /// <summary>
         /// Returned all properties belongs to specified catalog
         /// For virtual catalog also include all properties for categories linked to this virtual catalog
@@ -577,12 +604,12 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             {
                 var properties = await GetPropertiesByIdsAsync(new[] { propertyId });
 
-                var catalogProperty = properties.FirstOrDefault(x => x.TargetType.EqualsInvariant(PropertyType.Catalog.ToString()));
-                var categoryProperty = properties.FirstOrDefault(x => x.TargetType.EqualsInvariant(PropertyType.Category.ToString()));
+                var catalogProperty = properties.FirstOrDefault(x => x.TargetType.EqualsIgnoreCase(PropertyType.Catalog.ToString()));
+                var categoryProperty = properties.FirstOrDefault(x => x.TargetType.EqualsIgnoreCase(PropertyType.Category.ToString()));
 
                 var itemProperty = properties.FirstOrDefault(x =>
-                    x.TargetType.EqualsInvariant(PropertyType.Product.ToString()) ||
-                    x.TargetType.EqualsInvariant(PropertyType.Variation.ToString()));
+                    x.TargetType.EqualsIgnoreCase(PropertyType.Product.ToString()) ||
+                    x.TargetType.EqualsIgnoreCase(PropertyType.Variation.ToString()));
 
                 await _rawDatabaseCommand.RemoveAllPropertyValuesAsync(DbContext, catalogProperty, categoryProperty, itemProperty);
 

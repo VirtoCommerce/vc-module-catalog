@@ -216,7 +216,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             {
                 if (property.ValueType == PropertyValueType.GeoPoint)
                 {
-                    var geoPointValidationRule = property.ValidationRules?.FirstOrDefault(x => x.RegExp.EqualsInvariant(GeoPoint.Regexp.ToString()));
+                    var geoPointValidationRule = property.ValidationRules?.FirstOrDefault(x => x.RegExp.EqualsIgnoreCase(GeoPoint.Regexp.ToString()));
                     if (geoPointValidationRule == null)
                     {
                         if (property.ValidationRules == null)

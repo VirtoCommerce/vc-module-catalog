@@ -197,11 +197,13 @@
           "attributes": "属性",
           "manage-attributes": "管理属性",
           "hidden": "隐藏",
-          "measure": "测量"
+          "measure": "测量",
+          "property-group": "组"
         },
         "placeholders": {
           "display-name": "输入显示名称",
-          "display-order": "显示顺序"
+          "display-order": "显示顺序",
+          "property-group": "选择属性组"
         }
       },
       "property-validationRule": {
@@ -224,6 +226,33 @@
           "require": "此属性是必需的",
           "character-limit": "指定允许的最小和/或最大字符数",
           "pattern": "使此字段匹配模式，例如电子邮件地址、URL或自定义正则表达式。例如：^[a-z]{6,15}$"
+        }
+      },
+      "property-group-list": {
+        "title": "属性组",
+        "labels": {
+          "empty-list": "无",
+          "name": "名称",
+          "display-order": "显示顺序"
+        }
+      },
+      "property-group-details": {
+        "title": "管理属性组",
+        "labels": {
+          "name": "名称",
+          "priority": "优先级",
+          "localized-name": "本地化名称",
+          "localized-description": "本地化描述",
+          "display-name": "显示名称",
+          "display-order": "显示顺序",
+          "properties": "属性",
+          "manage-properties": "管理属性",
+          "show-more-languages": "显示更多语言",
+          "show-less-languages": "显示较少语言"
+        },
+        "placeholders": {
+          "display-name": "输入组名称",
+          "display-description": "输入描述"
         }
       },
       "property-list": {
@@ -774,7 +803,10 @@
           "quantity": "数量",
           "product-name": "产品名称",
           "options": "选项",
-          "type": "部分类型"
+          "type": "部分类型",
+          "allow-custom-text": "允许自定义文本",
+          "allow-predefined-options": "允许预定义选项",
+          "text": "文本"
         },
         "descr": {
           "no-options": "此部分中尚无选项"
@@ -789,10 +821,15 @@
       "option-details": {
         "title": "选择项目作为选项",
         "labels": {
-          "quantity": "数量"
+          "quantity": "数量",
+          "text": "选项文字"
         },
         "placeholders": {
-          "quantity": "指定数量"
+          "quantity": "指定数量",
+          "text": "输入文字"
+        },
+        "commands": {
+          "add": "添加选项"
         }
       }
     },
@@ -809,6 +846,10 @@
         "blade-subtitle": "管理语言",
         "title": "语言",
         "default-language": "默认语言"
+      },
+      "catalogPropertyGroup": {
+        "blade-subtitle": "属性组",
+        "title": "属性组"
       },
       "catalogProperty": {
         "blade-subtitle": "目录属性",
@@ -923,6 +964,14 @@
       "property-save": {
         "title": "保存更改",
         "message": "此属性已被修改。您要保存更改吗？"
+      },
+      "property-group-save": {
+        "title": "保存更改",
+        "message": "此属性组已被修改。是否要保存更改？"
+      },
+      "property-group-delete": {
+        "title": "确认删除",
+        "message": "您确定要删除所选的属性组吗？"
       },
       "item-property-delete": {
         "message": "您确定要删除 {{name}} 属性吗？"

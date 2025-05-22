@@ -20,7 +20,7 @@ angular.module('virtoCommerce.catalogModule').directive('vcItemSearch', ['$local
                 }
 
                 filter.filterByKeyword = function () {
-                    filter.ignoreSortingForRelevance = uiGridHelper.getSortExpression($scope);
+                    filter.ignoreSortingForRelevance = uiGridHelper.getSortExpression(blade.$scope);
                     filter.criteriaChanged();
                 };
 

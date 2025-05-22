@@ -1,0 +1,33 @@
+<div class="blade-content __medium-wide">
+  <div class="blade-inner">
+    <div class="inner-block">
+      <form class="form" name="detailForm">
+        <va-metaform registered-inputs="blade.metaFields" blade="blade" column-count="6" ng-init="setForm(detailForm)"></va-metaform>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script type="text/ng-template" id="localizedName.html">
+  <div class="vc-catalog form-input __langs" ng-repeat="language in blade.catalog.languages | limitTo: blade.showAllLanguages ? blade.catalog.languages.length : 2">
+    <label class="lang-code">{{language.languageCode}}</label>
+    <input ng-model="blade.currentEntity.localizedName.values[language.languageCode]" type="text" ng-maxlength="1024" placeholder="{{ 'catalog.blades.property-group-details.placeholders.display-name' | translate }}" />
+  </div>
+  <div ng-if="blade.catalog.languages.length > 2">
+    <a href="" ng-click="blade.showAllLanguages = !blade.showAllLanguages">
+      {{ (blade.showAllLanguages ? 'catalog.blades.property-group-details.labels.show-less-languages' : 'catalog.blades.property-group-details.labels.show-more-languages' ) | translate }}
+    </a>
+  </div>
+</script>
+
+<script type="text/ng-template" id="localizedDescription.html">
+  <div class="vc-catalog form-input __langs" ng-repeat="language in blade.catalog.languages | limitTo: blade.showAllLanguages2 ? blade.catalog.languages.length : 2">
+    <label class="lang-code">{{language.languageCode}}</label>
+    <textarea cols="30" rows="10" ng-model="blade.currentEntity.localizedDescription.values[language.languageCode]" placeholder="{{ 'catalog.blades.property-group-details.placeholders.display-name' | translate }}"></textarea>
+  </div>
+  <div ng-if="blade.catalog.languages.length > 2">
+    <a href="" ng-click="blade.showAllLanguages2 = !blade.showAllLanguages2">
+      {{ (blade.showAllLanguages2 ? 'catalog.blades.property-group-details.labels.show-less-languages' : 'catalog.blades.property-group-details.labels.show-more-languages' ) | translate }}
+    </a>
+  </div>
+</script>

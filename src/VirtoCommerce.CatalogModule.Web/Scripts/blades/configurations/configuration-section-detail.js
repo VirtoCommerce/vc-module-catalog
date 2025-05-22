@@ -1,5 +1,6 @@
 angular.module('virtoCommerce.catalogModule')
-    .controller('virtoCommerce.catalogModule.configurationSectionDetailController', ['$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.uiGridHelper',
+    .controller('virtoCommerce.catalogModule.configurationSectionDetailController',
+        ['$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.uiGridHelper',
         function ($scope, bladeNavigationService, uiGridHelper) {
             var blade = $scope.blade;
             blade.headIcon = 'fas fa-puzzle-piece';
@@ -17,8 +18,8 @@ angular.module('virtoCommerce.catalogModule')
                 {
                     name: "catalog.blades.section-details.commands.add",
                     icon: 'fas fa-plus',
-                    executeMethod: openOptionSelectorBlade,
-                    canExecuteMethod: function () { return true; },
+                    executeMethod: openOptionAddBlade,
+                    canExecuteMethod: canAddOptions,
                     permission: 'catalog:configurations:update'
                 },
                 {
@@ -32,8 +33,22 @@ angular.module('virtoCommerce.catalogModule')
 
             $scope.isValid = false;
 
-            $scope.$watch("blade.currentEntity", function () {
-                $scope.isValid = blade.formScope && blade.formScope.$valid;
+            $scope.$watch("blade.currentEntity", function (entity) {
+                $scope.isValid = blade.formScope && blade.formScope.$valid && entity.name;
+                if ($scope.isValid && blade.origEntity.name) {
+                    // Update case (form is valid when changes exist)
+                    $scope.isValid = !angular.equals(blade.origEntity, entity);
+                }
+            }, true);
+            $scope.$watch("blade.currentEntity.allowCustomText", function (value) {
+                if (!value && !blade.currentEntity.allowPredefinedOptions) {
+                    blade.currentEntity.allowPredefinedOptions = true;
+                }
+            }, true);
+            $scope.$watch("blade.currentEntity.allowPredefinedOptions", function (value) {
+                if (!value && !blade.currentEntity.allowCustomText) {
+                    blade.currentEntity.allowCustomText = true;
+                }
             }, true);
 
             $scope.setForm = function (form) { blade.formScope = form; };
@@ -71,19 +86,52 @@ angular.module('virtoCommerce.catalogModule')
             $scope.edit = function (item) {
                 $scope.selectedNodeId = item.productId;
 
-                var newBlade = {
-                    id: 'optionDetail',
-                    controller: 'virtoCommerce.catalogModule.configurationOptionDetailController',
-                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/configurations/option-detail.tpl.html',
-                    origEntity: item,
-                };
+                if (blade.currentEntity.type === 'Product' || blade.currentEntity.type === 'Text') {
+                    var newBlade = {};
 
-                bladeNavigationService.showBlade(newBlade, blade);
+                    if (blade.currentEntity.type === 'Product') {
+                        newBlade = {
+                            id: 'optionProductDetail',
+                            controller: 'virtoCommerce.catalogModule.configurationOptionProductDetailController',
+                            template:
+                                'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/configurations/option-product-detail.tpl.html',
+                            origEntity: item,
+                        };
+                    }
+
+                    if (blade.currentEntity.type === 'Text') {
+                        newBlade = {
+                            id: 'optionTextDetail',
+                            controller: 'virtoCommerce.catalogModule.configurationOptionTextDetailController',
+                            template:
+                                'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/configurations/option-text-detail.tpl.html',
+                            origEntity: item,
+                        };
+                    }
+
+                    bladeNavigationService.showBlade(newBlade, blade);
+                }
             }
 
             $scope.delete = function (data) {
                 deleteList([data]);
             };
+
+            $scope.isTypeChangeDisabled = function() {
+                if (blade.currentEntity == null || blade.currentEntity.type == null) {
+                    return false;
+                }
+
+                if (blade.currentEntity.id == null && blade.currentEntity.type === 'File') {
+                    return false;
+                }
+
+                if (blade.currentEntity.id == null && !_.any(blade.currentEntity.options)) {
+                    return false;
+                }
+
+                return true;
+            }
 
             function deleteList(list) {
                 bladeNavigationService.closeChildrenBlades(blade,
@@ -101,61 +149,89 @@ angular.module('virtoCommerce.catalogModule')
                 return !angular.equals(blade.currentEntity, blade.origEntity);
             }
 
-            function openOptionSelectorBlade() {
-                var selection = [];
-                var options = {
-                    allowCheckingCategory: false,
-                    selectedItemIds: [],
-                    checkItemFn: function (listItem, isSelected) {
-                        if (isSelected) {
-                            if (!_.find(selection, function (x) { return x.id === listItem.id; })) {
-                                selection.push(listItem);
+            function canAddOptions() {
+                return blade.currentEntity.type === 'Product' ||
+                    blade.currentEntity.type === 'Text' && blade.currentEntity.allowPredefinedOptions;
+            }
+
+            function openOptionAddBlade() {
+                var newBlade = {};
+
+                if (blade.currentEntity.type === 'Product') {
+                    var selection = [];
+                    var options = {
+                        allowCheckingCategory: false,
+                        selectedItemIds: [],
+                        checkItemFn: function(listItem, isSelected) {
+                            if (isSelected) {
+                                if (!_.find(selection, function(x) { return x.id === listItem.id; })) {
+                                    selection.push(listItem);
+                                }
+                            } else {
+                                selection = _.reject(selection, function(x) { return x.id === listItem.id; });
                             }
                         }
-                        else {
-                            selection = _.reject(selection, function (x) { return x.id === listItem.id; });
-                        }
-                    }
-                };
-                var newBlade = {
-                    id: "CatalogItemsSelect",
-                    controller: 'virtoCommerce.catalogModule.catalogItemSelectController',
-                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/common/catalog-items-select.tpl.html',
-                    title: "catalog.blades.option-details.title",
-                    options: options,
-                    headIcon: "fas fa-list",
-                    breadcrumbs: [],
-                    toolbarCommands: [
-                        {
-                            name: "platform.commands.confirm", icon: 'fa fa-check',
-                            executeMethod: function (pickingBlade) {
-                                var currentSelection = _.map(blade.currentEntity.options, function (x) {
-                                    return { id: x.productId, productType: x.productType, option: x }
-                                });
+                    };
 
-                                currentSelection = _.uniq(_.union(currentSelection, selection), function (x) {
-                                    return [x.productType, x.id].join();
-                                });
+                    newBlade = {
+                        id: "CatalogItemsSelect",
+                        controller: 'virtoCommerce.catalogModule.catalogItemSelectController',
+                        template:
+                            'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/common/catalog-items-select.tpl.html',
+                        title: "catalog.blades.option-details.title",
+                        options: options,
+                        headIcon: "fas fa-list",
+                        breadcrumbs: [],
+                        toolbarCommands: [
+                            {
+                                name: "platform.commands.confirm",
+                                icon: 'fa fa-check',
+                                executeMethod: function(pickingBlade) {
+                                    var currentSelection = _.map(blade.currentEntity.options,
+                                        function(x) {
+                                            return { id: x.productId, productType: x.productType, option: x }
+                                        });
 
-                                blade.currentEntity.options = _.map(currentSelection, function (x) {
-                                    var option = x.option;
-                                    if (!option) {
-                                        option = {
-                                            productType: x.productType,
-                                            productId: x.id,
-                                            productName: x.name,
-                                            productImageUrl: x.imageUrl,
-                                            quantity: 1
-                                        };
-                                    }
-                                    return option;
-                                });
+                                    currentSelection = _.uniq(_.union(currentSelection, selection),
+                                        function(x) {
+                                            return [x.productType, x.id].join();
+                                        });
 
-                                bladeNavigationService.closeBlade(pickingBlade);
-                            },
-                            canExecuteMethod: function () { return _.any(selection); }
-                        }]
-                };
+                                    blade.currentEntity.options = _.map(currentSelection,
+                                        function(x) {
+                                            var option = x.option;
+                                            if (!option) {
+                                                option = {
+                                                    productType: x.productType,
+                                                    productId: x.id,
+                                                    productName: x.name,
+                                                    productImageUrl: x.imageUrl,
+                                                    quantity: 1
+                                                };
+                                            }
+                                            return option;
+                                        });
+
+                                    bladeNavigationService.closeBlade(pickingBlade);
+                                },
+                                canExecuteMethod: function() { return _.any(selection); }
+                            }
+                        ]
+                    };
+                }
+
+                if (blade.currentEntity.type === 'Text') {
+                    newBlade = {
+                        id: 'optionTextDetail',
+                        controller: 'virtoCommerce.catalogModule.configurationOptionTextDetailController',
+                        template:
+                            'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/configurations/option-text-detail.tpl.html',
+                        origEntity: {},
+                        onSaveNew: function (newOption) {
+                            blade.currentEntity.options.push(newOption);
+                        },
+                    };
+                }
 
                 bladeNavigationService.showBlade(newBlade, blade);
             }
@@ -164,6 +240,11 @@ angular.module('virtoCommerce.catalogModule')
                 if (item.options == null) {
                     item.options = [];
                 }
+
+                if (item.id == null) {
+                    item.allowCustomText = true;
+                }
+
                 blade.currentEntity = angular.copy(item);
                 blade.isLoading = false;
                 $scope.sectionTypes = ['Product', 'Text', 'File'];

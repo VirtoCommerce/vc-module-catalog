@@ -113,8 +113,52 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<PropertyEntity>().HasOne(m => m.Category).WithMany(x => x.Properties).HasForeignKey(x => x.CategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<PropertyEntity>().HasOne(m => m.PropertyGroup).WithMany().HasForeignKey(x => x.PropertyGroupId)
+                .OnDelete(DeleteBehavior.SetNull);
 
             #endregion Property
+
+            #region PropertyGroup
+
+            modelBuilder.Entity<PropertyGroupEntity>(builder =>
+            {
+                builder.ToTable("PropertyGroup").HasKey(x => x.Id);
+                builder.Property(x => x.Id).HasMaxLength(IdLength).ValueGeneratedOnAdd();
+                builder.HasOne(x => x.Catalog).WithMany(x => x.PropertyGroups).HasForeignKey(x => x.CatalogId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<PropertyGroupLocalizedNameEntity>(builder =>
+            {
+                builder.ToTable("PropertyGroupLocalizedName").HasKey(x => x.Id);
+                builder.Property(x => x.Id).HasMaxLength(IdLength).ValueGeneratedOnAdd();
+
+                builder.HasOne(x => x.ParentEntity)
+                    .WithMany(x => x.LocalizedNames)
+                    .HasForeignKey(x => x.ParentEntityId)
+                    .IsRequired()
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                builder.HasIndex(x => new { x.LanguageCode, x.ParentEntityId }).IsUnique()
+                    .HasDatabaseName("IX_PropertyGroupLocalizedName_LanguageCode_ParentEntityId");
+            });
+
+            modelBuilder.Entity<PropertyGroupLocalizedDescriptionEntity>(builder =>
+            {
+                builder.ToTable("PropertyGroupLocalizedDescription").HasKey(x => x.Id);
+                builder.Property(x => x.Id).HasMaxLength(IdLength).ValueGeneratedOnAdd();
+
+                builder.HasOne(x => x.ParentEntity)
+                    .WithMany(x => x.LocalizedDescriptions)
+                    .HasForeignKey(x => x.ParentEntityId)
+                    .IsRequired()
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                builder.HasIndex(x => new { x.LanguageCode, x.ParentEntityId }).IsUnique()
+                    .HasDatabaseName("IX_PropertyGroupLocalizedDescription_LanguageCode_ParentEntityId");
+            });
+
+            #endregion PropertyGroup
 
             #region PropertyDictionaryItem
 
@@ -350,13 +394,14 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             modelBuilder.Entity<ProductConfigurationSectionEntity>().Property(x => x.Id).HasMaxLength(128).ValueGeneratedOnAdd();
             modelBuilder.Entity<ProductConfigurationSectionEntity>().HasOne(x => x.Configuration).WithMany(x => x.Sections)
                 .HasForeignKey(x => x.ConfigurationId).IsRequired().OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<ProductConfigurationSectionEntity>().Property(x => x.AllowCustomText).HasDefaultValue(true);
 
             modelBuilder.Entity<ProductConfigurationOptionEntity>().ToTable("ProductConfigurationOption").HasKey(x => x.Id);
             modelBuilder.Entity<ProductConfigurationOptionEntity>().Property(x => x.Id).HasMaxLength(128).ValueGeneratedOnAdd();
             modelBuilder.Entity<ProductConfigurationOptionEntity>().HasOne(x => x.Section).WithMany(x => x.Options)
                 .HasForeignKey(x => x.SectionId).IsRequired().OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<ProductConfigurationOptionEntity>().HasOne(x => x.Product).WithMany()
-                .HasForeignKey(x => x.ProductId).IsRequired().OnDelete(DeleteBehavior.NoAction);
+                .HasForeignKey(x => x.ProductId).OnDelete(DeleteBehavior.NoAction);
             modelBuilder.Entity<ProductConfigurationOptionEntity>().Property(x => x.Quantity).HasDefaultValue(1);
 
             #endregion
