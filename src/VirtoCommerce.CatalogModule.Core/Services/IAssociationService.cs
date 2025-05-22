@@ -10,5 +10,6 @@ namespace VirtoCommerce.CatalogModule.Core.Services
         Task UpdateAssociationsAsync(ProductAssociation[] associations);
         Task SaveChangesAsync(IHasAssociations[] owners);
         Task DeleteAssociationAsync(string[] ids);
+        Task<ProductAssociation> GetByIdAsync(string id);
     }
 }
