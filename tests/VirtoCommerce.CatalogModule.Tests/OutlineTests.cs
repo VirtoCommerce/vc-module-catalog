@@ -3,9 +3,9 @@ using System.Linq;
 using Moq;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.OutlinePart;
+using VirtoCommerce.CatalogModule.Core.Outlines;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Services;
-using VirtoCommerce.CoreModule.Core.Outlines;
 using Xunit;
 
 namespace VirtoCommerce.CatalogModule.Tests
