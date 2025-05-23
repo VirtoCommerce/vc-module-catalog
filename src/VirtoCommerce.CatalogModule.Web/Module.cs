@@ -170,9 +170,9 @@ namespace VirtoCommerce.CatalogModule.Web
 
             serviceCollection.AddTransient<ISeoResolver, CatalogSeoResolver>();
             serviceCollection.AddTransient<ISeoResolver, BrandSeoResolver>();
-#pragma warning disable VC0011 // Type or member is obsolete
+#pragma warning disable VC0010 // Type or member is obsolete
             serviceCollection.AddTransient<ISeoBySlugResolver, CatalogSeoBySlugResolver>();
-#pragma warning restore VC0011 // Type or member is obsolete
+#pragma warning restore VC0010 // Type or member is obsolete
             serviceCollection.AddTransient<IInternalListEntrySearchService, InternalListEntrySearchService>();
             serviceCollection.AddTransient<ILinkSearchService, LinkSearchService>();
 

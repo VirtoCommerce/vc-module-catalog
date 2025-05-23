@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using VirtoCommerce.CoreModule.Core.Seo;
+using VirtoCommerce.Seo.Core.Models;
 using Xunit;
 
 namespace VirtoCommerce.CatalogModule.Tests
