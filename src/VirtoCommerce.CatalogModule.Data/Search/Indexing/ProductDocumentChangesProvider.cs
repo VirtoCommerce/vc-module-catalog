@@ -104,33 +104,15 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         private async Task<ChangeLogSearchResult> SearchDeleteOperationsInLog(DateTime? startDate, DateTime? endDate, long skip, long take)
         {
-            var criteria = new ChangeLogSearchCriteria
-            {
-                ObjectType = ChangeLogObjectType,
-                OperationTypes = new[] { EntryState.Deleted },
-                StartDate = startDate,
-                EndDate = endDate,
-                Skip = Convert.ToInt32(skip),
-                Take = Convert.ToInt32(take)
-            };
-
-            var searchResult = await _changeLogSearchService.SearchAsync(criteria);
-
+            var changeLogSearchCriteria = GetChangeLogSearchCriteria([EntryState.Deleted], startDate, endDate, skip, take);
+            var searchResult = await _changeLogSearchService.SearchAsync(changeLogSearchCriteria);
             return searchResult;
         }
 
         private async Task<int> GetTotalDeletedProductsCount(DateTime? startDate, DateTime? endDate)
         {
-            var criteria = new ChangeLogSearchCriteria
-            {
-                ObjectType = ChangeLogObjectType,
-                OperationTypes = new[] { EntryState.Deleted },
-                StartDate = startDate,
-                EndDate = endDate,
-                Take = 0
-            };
-
-            var deletedOperationsResult = await _changeLogSearchService.SearchAsync(criteria);
+            var changeLogSearchCriteria = GetChangeLogSearchCriteria([EntryState.Deleted], startDate, endDate, 0, 0);
+            var deletedOperationsResult = await _changeLogSearchService.SearchAsync(changeLogSearchCriteria);
             var deletedCount = deletedOperationsResult.TotalCount;
             return deletedCount;
         }
@@ -149,13 +131,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                .Take(Convert.ToInt32(take))
                .ToArrayAsync();
 
-            var changeLogSearchCriteria = new ChangeLogSearchCriteria
-            {
-                StartDate = startDate,
-                EndDate = endDate,
-                OperationTypes = new[] { EntryState.Added },
-                ObjectType = ChangeLogObjectType,
-            };
+            var changeLogSearchCriteria = GetChangeLogSearchCriteria([EntryState.Added], startDate, endDate, skip, take);
             var changeLogSearchSkip = 0;
             ChangeLogSearchResult changeLogSearchResult;
 
@@ -187,14 +163,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         {
             var result = new List<IndexDocumentChange>();
 
-            var changeLogSearchCriteria = new ChangeLogSearchCriteria
-            {
-                StartDate = startDate,
-                EndDate = endDate,
-                ObjectType = ChangeLogObjectType,
-                OperationTypes = new[] { EntryState.Deleted, EntryState.Added, EntryState.Modified },
-                Take = 0,
-            };
+            var changeLogSearchCriteria = GetChangeLogSearchCriteria([EntryState.Deleted, EntryState.Added, EntryState.Modified], startDate, endDate, 0, 0);
 
             var changeLogSearchResult = await _changeLogSearchService.SearchAsync(changeLogSearchCriteria);
 
@@ -232,6 +201,31 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             }
 
             return result;
+        }
+
+        protected virtual ChangeLogSearchCriteria GetChangeLogSearchCriteria(EntryState[] entryStates, DateTime? startDate, DateTime? endDate, long skip, long take)
+        {
+            var criteria = AbstractTypeFactory<ChangeLogSearchCriteria>.TryCreateInstance();
+
+            var types = AbstractTypeFactory<CatalogProduct>.AllTypeInfos.Select(x => x.TypeName).ToList();
+
+            if (types.Count != 0)
+            {
+                types.Add(nameof(CatalogProduct));
+                criteria.ObjectTypes = types;
+            }
+            else
+            {
+                criteria.ObjectType = nameof(CatalogProduct);
+            }
+
+            criteria.OperationTypes = entryStates;
+            criteria.StartDate = startDate;
+            criteria.EndDate = endDate;
+            criteria.Skip = (int)skip;
+            criteria.Take = (int)take;
+
+            return criteria;
         }
 
         private static IndexDocumentChange ConvertOperationLogToIndexDocumentChange(OperationLog operation)
