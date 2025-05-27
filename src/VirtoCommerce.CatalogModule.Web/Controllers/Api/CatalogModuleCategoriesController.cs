@@ -28,12 +28,37 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// Gets category by id.
         /// </summary>
         /// <param name="id">Category id.</param>
+        /// <param name="responseGroup">Response group</param>
         [HttpGet]
         [Route("{id}")]
-        public async Task<ActionResult<Category>> GetCategory(string id)
+        public async Task<ActionResult<Category>> GetCategory([FromRoute] string id, [FromQuery] string responseGroup = null)
         {
-            var category = await categoryService.GetNoCloneAsync(id);
+            var category = await categoryService.GetNoCloneAsync(id, responseGroup);
+            if (category == null)
+            {
+                return NotFound();
+            }
 
+            var authorizationResult = await authorizationService.AuthorizeAsync(User, category, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
+            if (!authorizationResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            return Ok(category);
+        }
+
+        /// <summary>
+        /// Gets category by outer id.
+        /// </summary>
+        /// <remarks>Gets category by outer id (integration key) with full information loaded</remarks>
+        /// <param name="outerId">Category outer id</param>
+        /// <param name="responseGroup">Response group</param>
+        [HttpGet]
+        [Route("outer/{outerId}")]
+        public async Task<ActionResult<Catalog>> GetCategoryByOuterId([FromRoute] string outerId, [FromQuery] string responseGroup = null)
+        {
+            var category = await categoryService.GetByOuterIdNoCloneAsync(outerId, responseGroup);
             if (category == null)
             {
                 return NotFound();

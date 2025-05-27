@@ -51,8 +51,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
         public virtual Catalog ToModel(Catalog catalog)
         {
-            if (catalog == null)
-                throw new ArgumentNullException(nameof(catalog));
+            ArgumentNullException.ThrowIfNull(catalog);
 
             catalog.Id = Id;
 
@@ -98,8 +97,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
         public virtual CatalogEntity FromModel(Catalog catalog, PrimaryKeyResolvingMap pkMap)
         {
-            if (catalog == null)
-                throw new ArgumentNullException(nameof(catalog));
+            ArgumentNullException.ThrowIfNull(catalog);
 
             if (catalog.DefaultLanguage == null)
             {
@@ -175,6 +173,9 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
         public virtual void Patch(CatalogEntity target)
         {
+            ArgumentNullException.ThrowIfNull(target);
+
+            target.OuterId = OuterId;
             target.Name = Name;
             target.DefaultLanguage = DefaultLanguage;
 
