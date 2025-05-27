@@ -11,7 +11,7 @@ using VirtoCommerce.Seo.Core.Models;
 
 namespace VirtoCommerce.CatalogModule.Data.Model
 {
-    public class CategoryEntity : AuditableEntity, IHasOuterId, IDataEntity<CategoryEntity, Category>
+    public class CategoryEntity : AuditableEntity, IHasOuterId, IHasCatalogId, IDataEntity<CategoryEntity, Category>
     {
         [Required]
         [StringLength(64)]
