@@ -6,6 +6,7 @@ using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Model;
@@ -19,35 +20,16 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
     [Route("api/catalog/properties")]
     [Authorize]
-    public class CatalogModulePropertiesController : Controller
+    public class CatalogModulePropertiesController(
+        IPropertyService propertyService,
+        ICategoryService categoryService,
+        ICatalogService catalogService,
+        IPropertyDictionaryItemSearchService propertyDictionarySearchService,
+        IAuthorizationService authorizationService,
+        AbstractValidator<PropertyValidationRequest> propertyValidationRequestValidator,
+        AbstractValidator<CategoryPropertyValidationRequest> categoryPropertyNameValidator
+        ) : Controller
     {
-        private readonly AbstractValidator<PropertyValidationRequest> _propertyValidationRequestValidator;
-        private readonly AbstractValidator<CategoryPropertyValidationRequest> _categoryPropertyNameValidator;
-        private readonly IPropertyService _propertyService;
-        private readonly ICategoryService _categoryService;
-        private readonly ICatalogService _catalogService;
-        private readonly IPropertyDictionaryItemSearchService _propertyDictionarySearchService;
-        private readonly IAuthorizationService _authorizationService;
-
-        //Workaround: Bad design to use repository in the controller layer, need to extend in the future IPropertyService.Delete with new parameter DeleteAllValues
-        public CatalogModulePropertiesController(
-            IPropertyService propertyService
-            , ICategoryService categoryService
-            , ICatalogService catalogService
-            , IPropertyDictionaryItemSearchService propertyDictionarySearchService
-            , IAuthorizationService authorizationService
-            , AbstractValidator<PropertyValidationRequest> propertyValidationRequestValidator
-            , AbstractValidator<CategoryPropertyValidationRequest> categoryPropertyNameValidator)
-        {
-            _propertyService = propertyService;
-            _categoryService = categoryService;
-            _catalogService = catalogService;
-            _propertyDictionarySearchService = propertyDictionarySearchService;
-            _authorizationService = authorizationService;
-            _propertyValidationRequestValidator = propertyValidationRequestValidator;
-            _categoryPropertyNameValidator = categoryPropertyNameValidator;
-        }
-
         /// <summary>
         /// Gets all dictionary values that specified property can have.
         /// </summary>
@@ -59,7 +41,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Obsolete("Use POST api/catalog/properties/dictionaryitems/search instead")]
         public async Task<ActionResult<PropertyDictionaryItem[]>> GetPropertyValues(string propertyId, [FromQuery] string keyword = null)
         {
-            var dictValues = await _propertyDictionarySearchService.SearchAsync(new PropertyDictionaryItemSearchCriteria { Keyword = keyword, PropertyIds = new[] { propertyId }, Take = int.MaxValue }, clone: true);
+            var dictValues = await propertyDictionarySearchService.SearchAsync(new PropertyDictionaryItemSearchCriteria { Keyword = keyword, PropertyIds = new[] { propertyId }, Take = int.MaxValue }, clone: true);
 
             return Ok(dictValues.Results);
         }
@@ -72,12 +54,12 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("{propertyId}")]
         public async Task<ActionResult<Property>> GetProperty(string propertyId)
         {
-            var property = (await _propertyService.GetByIdsAsync(new[] { propertyId })).FirstOrDefault();
+            var property = (await propertyService.GetByIdsAsync([propertyId])).FirstOrDefault();
             if (property == null)
             {
                 return NotFound();
             }
-            var authorizationResult = await _authorizationService.AuthorizeAsync(User, property, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
+            var authorizationResult = await authorizationService.AuthorizeAsync(User, property, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
             if (!authorizationResult.Succeeded)
             {
                 return Forbid();
@@ -94,7 +76,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("~/api/catalog/{catalogId}/properties/getnew")]
         public async Task<ActionResult<Property>> GetNewCatalogProperty(string catalogId)
         {
-            var catalog = await _catalogService.GetNoCloneAsync(catalogId);
+            var catalog = await catalogService.GetNoCloneAsync(catalogId);
             var retVal = new Property
             {
                 Id = Guid.NewGuid().ToString(),
@@ -118,7 +100,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("~/api/catalog/categories/{categoryId}/properties/getnew")]
         public async Task<ActionResult<Property>> GetNewCategoryProperty(string categoryId)
         {
-            var category = await _categoryService.GetNoCloneAsync(categoryId, CategoryResponseGroup.Info.ToString());
+            var category = await categoryService.GetNoCloneAsync(categoryId, CategoryResponseGroup.Info.ToString());
             var retVal = new Property
             {
                 Id = Guid.NewGuid().ToString(),
@@ -145,13 +127,13 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         public async Task<ActionResult> SaveProperty([FromBody] Property property)
         {
-            var authorizationResult = await _authorizationService.AuthorizeAsync(User, property, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.CatalogMetadataPropertyEdit));
+            var authorizationResult = await authorizationService.AuthorizeAsync(User, property, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.CatalogMetadataPropertyEdit));
             if (!authorizationResult.Succeeded)
             {
                 return Forbid();
             }
 
-            await _propertyService.SaveChangesAsync(new[] { property });
+            await propertyService.SaveChangesAsync([property]);
 
             return NoContent();
         }
@@ -168,7 +150,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return BadRequest(request);
             }
 
-            var result = await _propertyValidationRequestValidator.ValidateAsync(request);
+            var result = await propertyValidationRequestValidator.ValidateAsync(request);
 
             return Ok(result);
         }
@@ -182,7 +164,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return BadRequest(request);
             }
 
-            var result = await _categoryPropertyNameValidator.ValidateAsync(request);
+            var result = await categoryPropertyNameValidator.ValidateAsync(request);
 
             return Ok(result);
         }
@@ -198,14 +180,54 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         public async Task<ActionResult> DeleteProperty(string id, bool doDeleteValues = false)
         {
-            var property = await _propertyService.GetByIdsAsync(new[] { id });
+            var property = await propertyService.GetByIdsAsync([id]);
 
-            var authorizationResult = await _authorizationService.AuthorizeAsync(User, property, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.CatalogMetadataPropertyEdit));
+            var authorizationResult = await authorizationService.AuthorizeAsync(User, property, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.CatalogMetadataPropertyEdit));
             if (!authorizationResult.Succeeded)
             {
                 return Forbid();
             }
-            await _propertyService.DeleteAsync(new[] { id }, doDeleteValues);
+            await propertyService.DeleteAsync([id], doDeleteValues);
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Partial update for the specified Property by id
+        /// </summary>
+        /// <param name="id">Property id</param>
+        /// <param name="patchDocument">JsonPatchDocument object with fields to update</param>
+        /// <returns></returns>
+        [HttpPatch]
+        [Route("{id}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+        public async Task<ActionResult> PatchProperty(string id, [FromBody] JsonPatchDocument<Property> patchDocument)
+        {
+            if (patchDocument == null)
+            {
+                return BadRequest();
+            }
+
+            var property = (await propertyService.GetByIdsAsync([id])).FirstOrDefault();
+            if (property == null)
+            {
+                return NotFound();
+            }
+
+            var authorizationResult = await authorizationService.AuthorizeAsync(User, property, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.CatalogMetadataPropertyEdit));
+            if (!authorizationResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            patchDocument.ApplyTo(property, ModelState);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            await propertyService.SaveChangesAsync([property]);
+
             return NoContent();
         }
     }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -21,32 +22,19 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
     [Route("api/catalog/measures")]
     [Authorize]
-    public class CatalogModuleMeasuresController : Controller
+    public class CatalogModuleMeasuresController(
+        IMeasureService measureService,
+        IMeasureSearchService measureSearchService,
+        IOptions<MeasureOptions> measureOptions,
+        IHttpClientFactory httpClientFactory
+        ) : Controller
     {
-        private readonly IMeasureService _measureService;
-        private readonly IMeasureSearchService _measureSearchService;
-        private readonly MeasureOptions _measureOptions;
-        private readonly IHttpClientFactory _httpClientFactory;
-
-        public CatalogModuleMeasuresController(
-            IMeasureService measureService,
-            IMeasureSearchService measureSearchService,
-            IOptions<MeasureOptions> measureOptions,
-            IHttpClientFactory httpClientFactory)
-        {
-            _measureService = measureService;
-            _measureSearchService = measureSearchService;
-            _measureOptions = measureOptions.Value;
-            _httpClientFactory = httpClientFactory;
-        }
-
-
         [HttpGet]
         [Route("{id}")]
         [Authorize(ModuleConstants.Security.Permissions.MeasuresAccess)]
         public async Task<ActionResult<Measure>> GetMeasureById(string id)
         {
-            var measure = await _measureService.GetNoCloneAsync(id);
+            var measure = await measureService.GetNoCloneAsync(id);
             return Ok(measure);
         }
 
@@ -55,7 +43,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Authorize(ModuleConstants.Security.Permissions.MeasuresRead)]
         public async Task<ActionResult<MeasureSearchResult>> SearchMeasures([FromBody] MeasureSearchCriteria searchCriteria)
         {
-            var searchResult = await _measureSearchService.SearchNoCloneAsync(searchCriteria);
+            var searchResult = await measureSearchService.SearchNoCloneAsync(searchCriteria);
             return Ok(searchResult);
         }
 
@@ -66,7 +54,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         {
             try
             {
-                await _measureService.SaveChangesAsync(measures);
+                await measureService.SaveChangesAsync(measures);
             }
             catch (ValidationException ex)
             {
@@ -84,7 +72,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         {
             try
             {
-                await _measureService.SaveChangesAsync([measure]);
+                await measureService.SaveChangesAsync([measure]);
             }
             catch (ValidationException ex)
             {
@@ -100,7 +88,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         public async Task<ActionResult> DeleteMeasures([FromQuery] string[] ids)
         {
-            await _measureService.DeleteAsync(ids);
+            await measureService.DeleteAsync(ids);
             return NoContent();
         }
 
@@ -109,7 +97,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Authorize(ModuleConstants.Security.Permissions.MeasuresRead)]
         public async Task<ActionResult<IList<Measure>>> GetDefaultMeasures()
         {
-            var source = _measureOptions.DefaultSource;
+            var source = measureOptions.Value.DefaultSource;
 
             if (string.IsNullOrEmpty(source))
             {
@@ -120,7 +108,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             if (source.StartsWith("http"))
             {
-                var client = _httpClientFactory.CreateClient();
+                var client = httpClientFactory.CreateClient();
                 using var response = await client.GetAsync(source);
                 response.EnsureSuccessStatusCode();
                 json = await response.Content.ReadAsStringAsync();
@@ -131,6 +119,41 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             }
 
             return Ok(JsonConvert.DeserializeObject<List<Measure>>(json));
+        }
+
+        /// <summary>
+        /// Partial update for the specified Measure by id
+        /// </summary>
+        /// <param name="id">Measure id</param>
+        /// <param name="patchDocument">JsonPatchDocument object with fields to update</param>
+        /// <returns></returns>
+        [HttpPatch]
+        [Route("{id}")]
+        [Authorize(ModuleConstants.Security.Permissions.MeasuresUpdate)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+        public async Task<ActionResult> PatchMeasure(string id, [FromBody] JsonPatchDocument<Measure> patchDocument)
+        {
+            if (patchDocument == null)
+            {
+                return BadRequest();
+            }
+
+            var measure = await measureService.GetByIdAsync(id);
+            if (measure == null)
+            {
+                return NotFound();
+            }
+
+            patchDocument.ApplyTo(measure, ModelState);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            await measureService.SaveChangesAsync([measure]);
+
+            return NoContent();
         }
 
         private static dynamic GetErrorMessage(ValidationException ex)
