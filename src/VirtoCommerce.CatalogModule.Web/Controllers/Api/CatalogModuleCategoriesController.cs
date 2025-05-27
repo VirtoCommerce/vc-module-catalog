@@ -21,8 +21,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
     public class CatalogModuleCategoriesController(
         ICategoryService categoryService,
         ICatalogService catalogService,
-        IAuthorizationService authorizationService
-        ) : Controller
+        IAuthorizationService authorizationService)
+        : Controller
     {
         /// <summary>
         /// Gets category by id.
@@ -150,7 +150,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         public async Task<ActionResult> DeleteCategory([FromQuery] List<string> ids)
         {
-            var categories = await categoryService.GetNoCloneAsync(ids, CategoryResponseGroup.Info.ToString());
+            var categories = await categoryService.GetNoCloneAsync(ids, nameof(CategoryResponseGroup.Info));
             var authorizationResult = await authorizationService.AuthorizeAsync(User, categories, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Delete));
             if (!authorizationResult.Succeeded)
             {
