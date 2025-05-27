@@ -28,11 +28,12 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// Gets category by id.
         /// </summary>
         /// <param name="id">Category id.</param>
+        /// <param name="responseGroup">Response group</param>
         [HttpGet]
         [Route("{id}")]
-        public async Task<ActionResult<Category>> GetCategory(string id)
+        public async Task<ActionResult<Category>> GetCategory([FromRoute] string id, [FromQuery] string responseGroup = null)
         {
-            var category = await categoryService.GetNoCloneAsync(id, nameof(CategoryResponseGroup.Full));
+            var category = await categoryService.GetNoCloneAsync(id, responseGroup);
             if (category == null)
             {
                 return NotFound();

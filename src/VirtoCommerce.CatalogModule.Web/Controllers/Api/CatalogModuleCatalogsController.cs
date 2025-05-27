@@ -68,11 +68,12 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// </summary>
         /// <remarks>Gets Catalog by id with full information loaded</remarks>
         /// <param name="id">The Catalog id.</param>
+        /// <param name="responseGroup">Response group</param>
         [HttpGet]
         [Route("{id}")]
-        public async Task<ActionResult<Catalog>> GetCatalog(string id)
+        public async Task<ActionResult<Catalog>> GetCatalog([FromRoute] string id, [FromQuery] string responseGroup = null)
         {
-            var catalog = await catalogService.GetNoCloneAsync(id, nameof(CatalogResponseGroup.Full));
+            var catalog = await catalogService.GetNoCloneAsync(id, responseGroup);
             if (catalog == null)
             {
                 return NotFound();
