@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Model;
@@ -18,23 +19,12 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
     [Route("api/catalog/catalogs")]
     [Authorize]
-    public class CatalogModuleCatalogsController : Controller
+    public class CatalogModuleCatalogsController(
+        ICatalogService catalogService,
+        ICatalogSearchService catalogSearchService,
+        IAuthorizationService authorizationService)
+        : Controller
     {
-        private readonly ICatalogService _catalogService;
-        private readonly ICatalogSearchService _catalogSearchService;
-        private readonly IAuthorizationService _authorizationService;
-
-        public CatalogModuleCatalogsController(
-            ICatalogService catalogService,
-            ICatalogSearchService catalogSearchService,
-            IAuthorizationService authorizationService
-            )
-        {
-            _catalogService = catalogService;
-            _catalogSearchService = catalogSearchService;
-            _authorizationService = authorizationService;
-        }
-
         /// <summary>
         /// Get Catalogs list
         /// </summary>
@@ -49,13 +39,13 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             criteria.Skip = skip;
             criteria.Take = take;
 
-            var authorizationResult = await _authorizationService.AuthorizeAsync(User, criteria, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
+            var authorizationResult = await authorizationService.AuthorizeAsync(User, criteria, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
             if (!authorizationResult.Succeeded)
             {
                 return Forbid();
             }
 
-            var result = await _catalogSearchService.SearchNoCloneAsync(criteria);
+            var result = await catalogSearchService.SearchNoCloneAsync(criteria);
             return Ok(result.Results);
         }
 
@@ -63,18 +53,18 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("search")]
         public async Task<ActionResult<CatalogSearchResult>> SearchCatalogs([FromBody] CatalogSearchCriteria criteria)
         {
-            var authorizationResult = await _authorizationService.AuthorizeAsync(User, criteria, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
+            var authorizationResult = await authorizationService.AuthorizeAsync(User, criteria, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
             if (!authorizationResult.Succeeded)
             {
                 return Forbid();
             }
 
-            var result = await _catalogSearchService.SearchNoCloneAsync(criteria);
+            var result = await catalogSearchService.SearchNoCloneAsync(criteria);
             return Ok(result);
         }
 
         /// <summary>
-        /// Gets Catalog by id.
+        /// Gets Catalog by id
         /// </summary>
         /// <remarks>Gets Catalog by id with full information loaded</remarks>
         /// <param name="id">The Catalog id.</param>
@@ -82,13 +72,13 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("{id}")]
         public async Task<ActionResult<Catalog>> GetCatalog(string id)
         {
-            var catalog = await _catalogService.GetNoCloneAsync(id, nameof(CatalogResponseGroup.Full));
+            var catalog = await catalogService.GetNoCloneAsync(id, nameof(CatalogResponseGroup.Full));
             if (catalog == null)
             {
                 return NotFound();
             }
 
-            var authorizationResult = await _authorizationService.AuthorizeAsync(User, catalog, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
+            var authorizationResult = await authorizationService.AuthorizeAsync(User, catalog, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
             if (!authorizationResult.Succeeded)
             {
                 return Forbid();
@@ -102,17 +92,18 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// </summary>
         /// <remarks>Gets catalog by outer id</remarks>
         /// <param name="outerId">Catalog outer id</param>
+        /// <param name="responseGroup">Response group</param>
         [HttpGet]
         [Route("outer/{outerId}")]
-        public async Task<ActionResult<Catalog>> GetCatalogByOuterId(string outerId)
+        public async Task<ActionResult<Catalog>> GetCatalogByOuterId([FromRoute] string outerId, [FromQuery] string responseGroup = null)
         {
-            var catalog = await _catalogService.GetByOuterIdNoCloneAsync(outerId, nameof(CatalogResponseGroup.Full));
+            var catalog = await catalogService.GetByOuterIdNoCloneAsync(outerId, responseGroup);
             if (catalog == null)
             {
                 return NotFound();
             }
 
-            var authorizationResult = await _authorizationService.AuthorizeAsync(User, catalog, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
+            var authorizationResult = await authorizationService.AuthorizeAsync(User, catalog, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
             if (!authorizationResult.Succeeded)
             {
                 return Forbid();
@@ -122,7 +113,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         }
 
         /// <summary>
-        /// Gets the template for a new catalog.
+        /// Gets the template for a new catalog
         /// </summary>
         /// <remarks>Gets the template for a new common catalog</remarks>
         [HttpGet]
@@ -145,7 +136,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         }
 
         /// <summary>
-        /// Gets the template for a new virtual catalog.
+        /// Gets the template for a new virtual catalog
         /// </summary>
         [HttpGet]
         [Route("getnewvirtual")]
@@ -167,7 +158,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         }
 
         /// <summary>
-        /// Creates the specified catalog.
+        /// Creates the specified catalog
         /// </summary>
         /// <remarks>Creates the specified catalog</remarks>
         /// <param name="catalog">The catalog to create</param>
@@ -187,12 +178,12 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 catalog.SeoInfos = [seoInfo];
             }
 
-            await _catalogService.SaveChangesAsync([catalog]);
+            await catalogService.SaveChangesAsync([catalog]);
             return Ok(catalog);
         }
 
         /// <summary>
-        /// Updates the specified catalog.
+        /// Updates the specified catalog
         /// </summary>
         /// <remarks>Updates the specified catalog.</remarks>
         /// <param name="catalog">The catalog.</param>
@@ -201,17 +192,17 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Authorize(ModuleConstants.Security.Permissions.Update)]
         public async Task<ActionResult> UpdateCatalog([FromBody] Catalog catalog)
         {
-            var authorizationResult = await _authorizationService.AuthorizeAsync(User, catalog, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
+            var authorizationResult = await authorizationService.AuthorizeAsync(User, catalog, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
             if (!authorizationResult.Succeeded)
             {
                 return Forbid();
             }
-            await _catalogService.SaveChangesAsync([catalog]);
+            await catalogService.SaveChangesAsync([catalog]);
             return Ok(catalog);
         }
 
         /// <summary>
-        /// Deletes catalog by id.
+        /// Deletes catalog by id
         /// </summary>
         /// <remarks>Deletes catalog by id</remarks>
         /// <param name="id">Catalog id.</param>
@@ -222,14 +213,54 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         public async Task<ActionResult> DeleteCatalog(string id)
         {
-            var catalog = await _catalogService.GetNoCloneAsync(id);
-            var authorizationResult = await _authorizationService.AuthorizeAsync(User, catalog, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Delete));
+            var catalog = await catalogService.GetNoCloneAsync(id);
+            var authorizationResult = await authorizationService.AuthorizeAsync(User, catalog, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Delete));
             if (!authorizationResult.Succeeded)
             {
                 return Forbid();
             }
 
-            await _catalogService.DeleteAsync([id]);
+            await catalogService.DeleteAsync([id]);
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Partial update for the specified Catalog by id
+        /// </summary>
+        /// <param name="id">Catalog id</param>
+        /// <param name="patchDocument">JsonPatchDocument object with fields to update</param>
+        /// <returns></returns>
+        [HttpPatch]
+        [Route("{id}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+        public async Task<ActionResult> PatchCatalog(string id, [FromBody] JsonPatchDocument<Catalog> patchDocument)
+        {
+            if (patchDocument == null)
+            {
+                return BadRequest();
+            }
+
+            var catalog = await catalogService.GetByIdAsync(id);
+            if (catalog == null)
+            {
+                return NotFound();
+            }
+
+            var authorizationResult = await authorizationService.AuthorizeAsync(User, catalog, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
+            if (!authorizationResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            patchDocument.ApplyTo(catalog, ModelState);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            await catalogService.SaveChangesAsync([catalog]);
+
             return NoContent();
         }
     }
