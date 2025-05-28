@@ -1,6 +1,6 @@
 using VirtoCommerce.CatalogModule.Data.Model;
-using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Seo.Core.Models;
 
 namespace VirtoCommerce.CatalogModule2.Data.Model
 {
