@@ -173,6 +173,7 @@ namespace VirtoCommerce.CatalogModule.Web
 #pragma warning disable VC0010 // Type or member is obsolete
             serviceCollection.AddTransient<ISeoBySlugResolver, CatalogSeoBySlugResolver>();
 #pragma warning restore VC0010 // Type or member is obsolete
+
             serviceCollection.AddTransient<IInternalListEntrySearchService, InternalListEntrySearchService>();
             serviceCollection.AddTransient<ILinkSearchService, LinkSearchService>();
 
