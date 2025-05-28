@@ -27,8 +27,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         ISkuGenerator skuGenerator,
         IAuthorizationService authorizationService,
         IPropertyUpdateManager updateManager,
-        IOptions<MvcNewtonsoftJsonOptions> jsonOptions
-        ) : Controller
+        IOptions<MvcNewtonsoftJsonOptions> jsonOptions)
+        : Controller
     {
         /// <summary>
         /// Gets product by id.
@@ -37,19 +37,45 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         ///<param name="respGroup">Response group.</param>
         [HttpGet]
         [Route("{id}")]
-        public async Task<ActionResult<CatalogProduct>> GetProductById(string id, [FromQuery] string respGroup = null)
+        public async Task<ActionResult<CatalogProduct>> GetProductById([FromRoute] string id, [FromQuery] string respGroup = null)
         {
-
             var product = await itemsService.GetNoCloneAsync(id, respGroup);
             if (product == null)
             {
                 return NotFound();
             }
+
             var authorizationResult = await authorizationService.AuthorizeAsync(User, product, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
             if (!authorizationResult.Succeeded)
             {
                 return Forbid();
             }
+
+            return Ok(product);
+        }
+
+        /// <summary>
+        /// Gets product by outer id.
+        /// </summary>
+        /// <remarks>Gets product by outer id (integration key) with full information loaded</remarks>
+        /// <param name="outerId">Product outer id</param>
+        /// <param name="responseGroup">>Response group</param>
+        [HttpGet]
+        [Route("outer/{outerId}")]
+        public async Task<ActionResult<Catalog>> GetProductByOuterId([FromRoute] string outerId, [FromQuery] string responseGroup = null)
+        {
+            var product = await itemsService.GetByOuterIdNoCloneAsync(outerId, responseGroup);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            var authorizationResult = await authorizationService.AuthorizeAsync(User, product, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
+            if (!authorizationResult.Succeeded)
+            {
+                return Forbid();
+            }
+
             return Ok(product);
         }
 

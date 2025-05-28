@@ -602,7 +602,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         {
             using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                var properties = await GetPropertiesByIdsAsync(new[] { propertyId });
+                var properties = await GetPropertiesByIdsAsync([propertyId]);
 
                 var catalogProperty = properties.FirstOrDefault(x => x.TargetType.EqualsIgnoreCase(PropertyType.Catalog.ToString()));
                 var categoryProperty = properties.FirstOrDefault(x => x.TargetType.EqualsIgnoreCase(PropertyType.Category.ToString()));

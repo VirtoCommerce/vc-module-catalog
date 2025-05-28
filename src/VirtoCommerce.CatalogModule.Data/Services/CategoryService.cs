@@ -24,7 +24,7 @@ using VirtoCommerce.Platform.Data.Infrastructure;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
-    public class CategoryService : CrudService<Category, CategoryEntity, CategoryChangingEvent, CategoryChangedEvent>, ICategoryService
+    public class CategoryService : OuterEntityService<Category, CategoryEntity, CategoryChangingEvent, CategoryChangedEvent>, ICategoryService
     {
         private readonly Func<ICatalogRepository> _repositoryFactory;
         private readonly IPlatformMemoryCache _platformMemoryCache;
@@ -130,6 +130,11 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         protected override Task<IList<CategoryEntity>> LoadEntities(IRepository repository, IList<string> ids, string responseGroup)
         {
             return ((ICatalogRepository)repository).GetCategoriesByIdsAsync(ids, responseGroup);
+        }
+
+        protected override IQueryable<CategoryEntity> GetEntitiesQuery(IRepository repository)
+        {
+            return ((ICatalogRepository)repository).Categories;
         }
 
         protected virtual bool HasFlag(string responseGroup, CategoryResponseGroup flag)
