@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Moq;
 using VirtoCommerce.CatalogModule.Core;
+using VirtoCommerce.CatalogModule.Core.Outlines;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Data.Search.Indexing;
-using VirtoCommerce.CoreModule.Core.Outlines;
 using VirtoCommerce.Platform.Core.Settings;
 using Xunit;
 
