@@ -138,6 +138,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             {
                 ItemId = x.ObjectType == "CatalogProduct" ? x.ObjectId : null,
                 CategoryId = x.ObjectType == "Category" ? x.ObjectId : null,
+                CatalogId = x.ObjectType == "Catalog" ? x.ObjectId : null,
                 Keyword = x.SemanticUrl,
                 StoreId = x.StoreId,
                 Language = x.LanguageCode,

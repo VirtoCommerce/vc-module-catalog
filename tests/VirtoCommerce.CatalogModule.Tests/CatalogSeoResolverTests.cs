@@ -407,6 +407,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             // Arrange
             var helper = new CatalogHierarchyHelper(CatalogId);
             helper.AddSeoInfo(CatalogId, CatalogType, "catalog", true, StoreId, string.Empty);
+            helper.AddSeoInfo("CatalogId+localized", CatalogType, "catalog", true, StoreId, "en-US");
             var seoResolver = helper.CreateCatalogSeoResolver();
 
             // Act
