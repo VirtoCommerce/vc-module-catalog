@@ -22,9 +22,6 @@ public class CatalogSeoResolver : ISeoResolver
     private readonly IItemService _itemService;
     private readonly IStoreService _storeService;
 
-    private const string SeoCategory = "Category";
-    private const string SeoProduct = "CatalogProduct";
-
     public CatalogSeoResolver(
         Func<ICatalogRepository> repositoryFactory,
         ICategoryService categoryService,
@@ -93,12 +90,12 @@ public class CatalogSeoResolver : ISeoResolver
             parentIds.AddRange(parentSeoInfos.Select(x => x.ObjectId).Distinct());
         }
 
-        foreach (var groupKey in groups.Select(g => g.Key))
+        foreach (var group in groups)
         {
-            var objectType = groupKey.ObjectType;
-            var objectId = groupKey.ObjectId;
+            var objectType = group.Key.ObjectType;
+            var objectId = group.Key.ObjectId;
 
-            var outlines = await GetOutlines(objectType, objectId);
+            var outlines = await GetOutlines(objectType, objectId, group.ToList());
 
             if (LongestOutlineContainsAnyParentId(outlines, store.Catalog, parentIds))
             {
@@ -113,12 +110,13 @@ public class CatalogSeoResolver : ISeoResolver
         return [];
     }
 
-    private async Task<IList<Outline>> GetOutlines(string objectType, string objectId)
+    private async Task<IList<Outline>> GetOutlines(string objectType, string objectId, IList<SeoInfo> infos)
     {
         var outlines = objectType switch
         {
-            SeoCategory => (await _categoryService.GetByIdAsync(objectId, CategoryResponseGroup.WithOutlines.ToString(), clone: false))?.Outlines,
-            SeoProduct => (await _itemService.GetByIdAsync(objectId, ItemResponseGroup.WithOutlines.ToString(), clone: false))?.Outlines,
+            SeoExtensions.SeoCatalog => CreateCatalogOutline(objectId, infos),
+            SeoExtensions.SeoCategory => (await _categoryService.GetByIdAsync(objectId, CategoryResponseGroup.WithOutlines.ToString(), clone: false))?.Outlines,
+            SeoExtensions.SeoProduct => (await _itemService.GetByIdAsync(objectId, ItemResponseGroup.WithOutlines.ToString(), clone: false))?.Outlines,
             _ => [],
         };
 
@@ -128,6 +126,27 @@ public class CatalogSeoResolver : ISeoResolver
         }
 
         return outlines;
+    }
+
+    private static IList<Outline> CreateCatalogOutline(string catalogId, IList<SeoInfo> infos)
+    {
+        // For the catalog, we create a single outline with the catalog ID as the only item.
+        return
+        [
+            new Outline
+            {
+                Items =
+                [
+                    new OutlineItem
+                    {
+                        Id = catalogId,
+                        Name = catalogId,
+                        SeoInfos = infos,
+                        SeoObjectType = SeoExtensions.SeoCatalog,
+                    }
+                ]
+            }
+        ];
     }
 
     private static bool LongestOutlineContainsAnyParentId(IList<Outline> outlines, string catalogId, IList<string> parentIds)
