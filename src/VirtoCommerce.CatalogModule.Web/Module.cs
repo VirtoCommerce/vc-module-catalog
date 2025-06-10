@@ -59,6 +59,8 @@ using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
 using VirtoCommerce.StoreModule.Core.Model;
 using AuthorizationOptions = Microsoft.AspNetCore.Authorization.AuthorizationOptions;
+using ISeoDuplicatesDetector = VirtoCommerce.Seo.Core.Services.ISeoDuplicatesDetector;
+using ISeoResolver = VirtoCommerce.Seo.Core.Services.ISeoResolver;
 
 namespace VirtoCommerce.CatalogModule.Web
 {

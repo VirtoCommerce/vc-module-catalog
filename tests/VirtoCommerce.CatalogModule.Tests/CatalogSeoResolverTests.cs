@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using VirtoCommerce.CoreModule.Core.Seo;
+using VirtoCommerce.Seo.Core.Models;
 using Xunit;
 
 namespace VirtoCommerce.CatalogModule.Tests
@@ -11,6 +11,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         private const string CatalogId = "CatalogId";
         private const string ProductType = "CatalogProduct";
         private const string CategoryType = "Category";
+        private const string CatalogType = "Catalog";
 
         private const string StoreId = "B2B-store";
 
@@ -398,6 +399,24 @@ namespace VirtoCommerce.CatalogModule.Tests
             // Assert
             Assert.Single(result2);
             Assert.Equal("EducationInFurnitureCategoryId", result2.First().ObjectId);
+        }
+
+        [Fact]
+        public async Task FindSeoAsync_Catalog()
+        {
+            // Arrange
+            var helper = new CatalogHierarchyHelper(CatalogId);
+            helper.AddSeoInfo(CatalogId, CatalogType, "catalog", true, StoreId, string.Empty);
+            helper.AddSeoInfo("CatalogId+localized", CatalogType, "catalog", true, StoreId, "en-US");
+            var seoResolver = helper.CreateCatalogSeoResolver();
+
+            // Act
+            var criteria = new SeoSearchCriteria { Permalink = "catalog", StoreId = StoreId, LanguageCode = "en-US" };
+            var result = await seoResolver.FindSeoAsync(criteria);
+
+            // Assert
+            Assert.Single(result);
+            Assert.Equal("catalog", result.First().SemanticUrl);
         }
     }
 }

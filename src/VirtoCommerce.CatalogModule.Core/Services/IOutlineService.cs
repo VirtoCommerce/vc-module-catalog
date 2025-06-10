@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using VirtoCommerce.CoreModule.Core.Outlines;
+using VirtoCommerce.CatalogModule.Core.Outlines;
 
 namespace VirtoCommerce.CatalogModule.Core.Services
 {
