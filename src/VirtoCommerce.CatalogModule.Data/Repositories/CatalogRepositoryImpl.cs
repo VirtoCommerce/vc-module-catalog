@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Data.Model;
@@ -21,6 +22,10 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             : base(dbContext)
         {
             _rawDatabaseCommand = rawDatabaseCommand;
+
+            // Resolves Breaking changes in EF Core 7.0 (EF7) when EF Core will not automatically delete orphans because all FKs are nullable.
+            // https://learn.microsoft.com/en-us/ef/core/what-is-new/ef-core-7.0/breaking-changes?tabs=v7#orphaned-dependents-of-optional-relationships-are-not-automatically-deleted
+            dbContext.SavingChanges += OnSavingChanges;
         }
 
         public IQueryable<CategoryEntity> Categories => DbContext.Set<CategoryEntity>();
@@ -692,6 +697,48 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             }
 
             return measures;
+        }
+
+        private void OnSavingChanges(object sender, SavingChangesEventArgs args)
+        {
+            var ctx = (DbContext)sender;
+            var entries = ctx.ChangeTracker.Entries();
+
+            foreach (var entry in entries)
+            {
+                if (entry.State != EntityState.Modified)
+                {
+                    continue;
+                }
+
+                MarkOrphanedEntitiesForDeletion(entry);
+            }
+        }
+
+        /// <summary>
+        /// Mark orphaned Catalog Entity records that no longer have a parent as Deleted.
+        /// </summary>
+        /// <param name="entry">The entry</param>
+        /// <remarks>
+        /// Resolves Breaking changes in EF Core 7.0 (EF7) - EF Core | Microsoft Learn
+        /// EF Core will not automatically delete orphans because both FKs are nullable!
+        /// https://learn.microsoft.com/en-us/ef/core/what-is-new/ef-core-7.0/breaking-changes?tabs=v7#orphaned-dependents-of-optional-relationships-are-not-automatically-deleted
+        /// </remarks>
+        protected virtual void MarkOrphanedEntitiesForDeletion(EntityEntry entry)
+        {
+            switch (entry.Entity)
+            {
+                case AssociationEntity association when association.ItemId == null && association.AssociatedItemId == null && association.AssociatedCategoryId == null:
+                case CategoryItemRelationEntity cir when cir.ItemId == null && cir.CategoryId == null && cir.CatalogId == null:
+                case CategoryRelationEntity cr when cr.SourceCategoryId == null && cr.TargetCatalogId == null && cr.TargetCategoryId == null:
+                case ImageEntity image when image.ItemId == null && image.CategoryId == null:
+                case Property property when property.CatalogId == null && property.CategoryId == null:
+                case ProductConfigurationOptionEntity productConfigurationOption when productConfigurationOption.SectionId == null && productConfigurationOption.ProductId == null:
+                case PropertyValueEntity pv when pv.ItemId == null && pv.CategoryId == null && pv.CatalogId == null && pv.DictionaryItemId == null:
+                case SeoInfoEntity seo when seo.ItemId == null && seo.CategoryId == null && seo.CatalogId == null:
+                    entry.State = EntityState.Deleted;
+                    break;
+            }
         }
     }
 }
