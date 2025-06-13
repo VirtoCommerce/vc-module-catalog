@@ -706,25 +706,15 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
             foreach (var entry in entries)
             {
-                if (entry.State != EntityState.Modified)
+                if (entry.State == EntityState.Modified &&
+                    IsOrphanedEntity(entry))
                 {
-                    continue;
+                    entry.State = EntityState.Deleted;
                 }
-
-                MarkOrphanedEntitiesForDeletion(entry);
             }
         }
 
-        /// <summary>
-        /// Mark orphaned Catalog Entity records that no longer have a parent as Deleted.
-        /// </summary>
-        /// <param name="entry">The entry</param>
-        /// <remarks>
-        /// Resolves Breaking changes in EF Core 7.0 (EF7) - EF Core | Microsoft Learn
-        /// EF Core will not automatically delete orphans because both FKs are nullable!
-        /// https://learn.microsoft.com/en-us/ef/core/what-is-new/ef-core-7.0/breaking-changes?tabs=v7#orphaned-dependents-of-optional-relationships-are-not-automatically-deleted
-        /// </remarks>
-        protected virtual void MarkOrphanedEntitiesForDeletion(EntityEntry entry)
+        protected virtual bool IsOrphanedEntity(EntityEntry entry)
         {
             switch (entry.Entity)
             {
@@ -736,9 +726,10 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 case ProductConfigurationOptionEntity productConfigurationOption when productConfigurationOption.SectionId == null && productConfigurationOption.ProductId == null:
                 case PropertyValueEntity pv when pv.ItemId == null && pv.CategoryId == null && pv.CatalogId == null && pv.DictionaryItemId == null:
                 case SeoInfoEntity seo when seo.ItemId == null && seo.CategoryId == null && seo.CatalogId == null:
-                    entry.State = EntityState.Deleted;
-                    break;
+                    return true;
             }
+
+            return false;
         }
     }
 }
