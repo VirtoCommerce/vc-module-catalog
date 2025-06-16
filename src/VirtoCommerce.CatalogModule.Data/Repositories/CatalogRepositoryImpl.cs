@@ -699,6 +699,15 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             return measures;
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && DbContext != null)
+            {
+                DbContext.SavingChanges -= OnSavingChanges;
+            }
+            base.Dispose(disposing);
+        }
+
         private void OnSavingChanges(object sender, SavingChangesEventArgs args)
         {
             var ctx = (DbContext)sender;
@@ -731,5 +740,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
             return false;
         }
+
+
     }
 }
