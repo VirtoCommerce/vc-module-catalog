@@ -241,7 +241,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             }
 
             await categoryService.SaveChangesAsync(categories);
-            return Ok();
+            return Ok(categories);
         }
     }
 }
