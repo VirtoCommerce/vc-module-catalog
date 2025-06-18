@@ -200,10 +200,9 @@ public class CatalogSeoResolver : ISeoResolver
         int GetScore(SeoInfo seoInfo)
         {
             var score = 0;
-            var hasStoreCriteria = !string.IsNullOrEmpty(store.Id);
             var hasLangCriteria = !string.IsNullOrEmpty(languageCode);
 
-            if (hasStoreCriteria && seoInfo.StoreId.EqualsIgnoreCase(store.Id))
+            if (seoInfo.StoreId.EqualsIgnoreCase(store.Id))
             {
                 score += 2;
             }

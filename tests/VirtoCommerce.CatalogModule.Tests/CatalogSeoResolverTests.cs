@@ -424,8 +424,8 @@ namespace VirtoCommerce.CatalogModule.Tests
         {
             // Arrange
             var helper = new CatalogHierarchyHelper(CatalogId);
-            helper.AddSeoInfo(CatalogId, CatalogType, "catalog", true, StoreId, string.Empty);
-            helper.AddSeoInfo("CatalogId+localized", CatalogType, "catalog", true, StoreId, "en-US");
+            helper.AddSeoInfo(CatalogId, CatalogType, "catalog", isActive: true, StoreId, string.Empty);
+            helper.AddSeoInfo("CatalogId1", CatalogType, "catalog", isActive: true, StoreId, "en-US");
             var seoResolver = helper.CreateCatalogSeoResolver();
 
             // Act
@@ -435,6 +435,24 @@ namespace VirtoCommerce.CatalogModule.Tests
             // Assert
             Assert.Empty(result);
         }
+
+        [Fact]
+        public async Task FindSeoAsync_ReturnsBestMatchingRecord()
+        {
+            // Arrange
+            var helper = new CatalogHierarchyHelper(CatalogId);
+            helper.AddSeoInfo(CatalogId, CatalogType, "catalog", isActive: true, storeId: null, languageCode: string.Empty);
+            helper.AddSeoInfo(CatalogId, CatalogType, "catalog", isActive: true, StoreId, languageCode: string.Empty);
+            helper.AddSeoInfo(CatalogId, CatalogType, "catalog", isActive: true, storeId: null, "en-US");
+            var seoResolver = helper.CreateCatalogSeoResolver();
+
+            // Act
+            var criteria = new SeoSearchCriteria { Permalink = "catalog", StoreId = StoreId, LanguageCode = "en-US" };
+            var result = await seoResolver.FindSeoAsync(criteria);
+
+            // Assert
+            Assert.Single(result);
+            Assert.Equal(StoreId, result.First().StoreId);
+        }
     }
 }
-
