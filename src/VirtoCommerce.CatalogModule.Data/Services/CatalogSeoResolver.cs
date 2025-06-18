@@ -47,6 +47,12 @@ public class CatalogSeoResolver : ISeoResolver
         }
 
         var store = await _storeService.GetByIdAsync(criteria.StoreId);
+
+        if (store == null)
+        {
+            return [];
+        }
+
         var currentEntitySeoInfos = await SearchSeoInfos(segments.Last(), store, criteria.LanguageCode);
 
         if (currentEntitySeoInfos.Count == 0)
@@ -183,8 +189,7 @@ public class CatalogSeoResolver : ISeoResolver
                 x.IsActive == isActive &&
                 x.Keyword == slug &&
                 (string.IsNullOrEmpty(x.StoreId) || x.StoreId == store.Id) &&
-                (string.IsNullOrEmpty(x.Language) || x.Language == languageCode ||
-                 (!string.IsNullOrEmpty(store.DefaultLanguage) && x.Language == store.DefaultLanguage)))
+                (string.IsNullOrEmpty(x.Language) || x.Language == languageCode || x.Language == store.DefaultLanguage))
             .ToListAsync();
 
         return entities

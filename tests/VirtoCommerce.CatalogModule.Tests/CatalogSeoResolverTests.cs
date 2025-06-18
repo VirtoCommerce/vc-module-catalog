@@ -418,6 +418,23 @@ namespace VirtoCommerce.CatalogModule.Tests
             Assert.Single(result);
             Assert.Equal("catalog", result.First().SemanticUrl);
         }
+
+        [Fact]
+        public async Task FindSeoAsync_WithoutStore_ReturnsEmpty()
+        {
+            // Arrange
+            var helper = new CatalogHierarchyHelper(CatalogId);
+            helper.AddSeoInfo(CatalogId, CatalogType, "catalog", true, StoreId, string.Empty);
+            helper.AddSeoInfo("CatalogId+localized", CatalogType, "catalog", true, StoreId, "en-US");
+            var seoResolver = helper.CreateCatalogSeoResolver();
+
+            // Act
+            var criteria = new SeoSearchCriteria { Permalink = "catalog", StoreId = null, LanguageCode = "en-US" };
+            var result = await seoResolver.FindSeoAsync(criteria);
+
+            // Assert
+            Assert.Empty(result);
+        }
     }
 }
 
