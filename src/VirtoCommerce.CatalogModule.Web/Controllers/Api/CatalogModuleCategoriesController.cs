@@ -225,5 +225,23 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             return NoContent();
         }
+
+        /// <summary>
+        /// Create/Update the specified categories.
+        /// </summary>
+        /// <param name="categories">The categories.</param>
+        [HttpPost]
+        [Route("batch")]
+        public async Task<ActionResult<Category[]>> SaveCategories([FromBody] Category[] categories)
+        {
+            var authorizationResult = await authorizationService.AuthorizeAsync(User, categories, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
+            if (!authorizationResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            await categoryService.SaveChangesAsync(categories);
+            return Ok(categories);
+        }
     }
 }
