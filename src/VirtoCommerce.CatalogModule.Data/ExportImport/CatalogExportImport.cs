@@ -323,10 +323,10 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 }
             }
 
-            //Update property associations after all required data are saved (Catalogs and Categories)
+            //Update property group associations after all required data are saved (Catalogs and Categories)
             if (propertyGroupsWithForeignKeys.Count > 0)
             {
-                progressInfo.Description = $"Updating {propertyGroupsWithForeignKeys.Count} property groups associations…";
+                progressInfo.Description = $"Updating {propertyGroupsWithForeignKeys.Count} property group associations…";
                 progressCallback(progressInfo);
 
                 var totalCount = propertyGroupsWithForeignKeys.Count;
@@ -345,8 +345,8 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 {
                     foreach (var catalog in catalogs)
                     {
-                        catalog.PropertyGroups = null; // Do not import property groups, they are imported separately
-
+                        // Do not import property groups, they are imported separately
+                        catalog.PropertyGroups = null;
 
                         if (catalog.SeoInfos == null || !catalog.SeoInfos.Any())
                         {
@@ -510,6 +510,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 progressCallback(progressInfo);
             }, cancellationToken);
         }
+
         private Task ImportPropertiesAsync(JsonTextReader reader, List<Property> propertiesWithForeignKeys, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
         {
             return reader.DeserializeArrayWithPagingAsync<Property>(_jsonSerializer, _batchSize, async items =>
@@ -592,7 +593,6 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 progressCallback(progressInfo);
             }
         }
-
         private Task ImportProductConfigurationsAsync(JsonTextReader reader, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
         {
             return reader.DeserializeArrayWithPagingAsync<ProductConfiguration>(_jsonSerializer, _batchSize, async configurations =>
