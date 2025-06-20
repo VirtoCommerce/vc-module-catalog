@@ -11,6 +11,7 @@ using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Seo.Core.Models;
 using VirtoCommerce.Seo.Core.Services;
+using VirtoCommerce.StoreModule.Core.Model;
 using VirtoCommerce.StoreModule.Core.Services;
 
 namespace VirtoCommerce.CatalogModule.Data.Services;
@@ -45,7 +46,14 @@ public class CatalogSeoResolver : ISeoResolver
             return [];
         }
 
-        var currentEntitySeoInfos = await SearchSeoInfos(segments.Last(), criteria.StoreId, criteria.LanguageCode);
+        var store = await _storeService.GetByIdAsync(criteria.StoreId);
+
+        if (store == null)
+        {
+            return [];
+        }
+
+        var currentEntitySeoInfos = await SearchSeoInfos(segments.Last(), store, criteria.LanguageCode);
 
         if (currentEntitySeoInfos.Count == 0)
         {
@@ -68,7 +76,6 @@ public class CatalogSeoResolver : ISeoResolver
         }
 
         var parentIds = new List<string>();
-        var store = await _storeService.GetByIdAsync(criteria.StoreId);
 
         // It's not possible to resolve because we don't have parent segment
         if (segments.Length == 1)
@@ -173,7 +180,7 @@ public class CatalogSeoResolver : ISeoResolver
         return immediateParentIds.Any(x => parentIds.Contains(x, StringComparer.OrdinalIgnoreCase));
     }
 
-    private async Task<List<SeoInfo>> SearchSeoInfos(string slug, string storeId, string languageCode, bool isActive = true)
+    private async Task<List<SeoInfo>> SearchSeoInfos(string slug, Store store, string languageCode, bool isActive = true)
     {
         using var repository = _repositoryFactory();
 
@@ -181,8 +188,8 @@ public class CatalogSeoResolver : ISeoResolver
             .Where(x =>
                 x.IsActive == isActive &&
                 x.Keyword == slug &&
-                (string.IsNullOrEmpty(x.StoreId) || x.StoreId == storeId) &&
-                (string.IsNullOrEmpty(x.Language) || x.Language == languageCode))
+                (string.IsNullOrEmpty(x.StoreId) || x.StoreId == store.Id) &&
+                (string.IsNullOrEmpty(x.Language) || x.Language == languageCode || x.Language == store.DefaultLanguage))
             .ToListAsync();
 
         return entities
@@ -193,10 +200,9 @@ public class CatalogSeoResolver : ISeoResolver
         int GetScore(SeoInfo seoInfo)
         {
             var score = 0;
-            var hasStoreCriteria = !string.IsNullOrEmpty(storeId);
             var hasLangCriteria = !string.IsNullOrEmpty(languageCode);
 
-            if (hasStoreCriteria && seoInfo.StoreId.EqualsIgnoreCase(storeId))
+            if (seoInfo.StoreId.EqualsIgnoreCase(store.Id))
             {
                 score += 2;
             }

@@ -168,7 +168,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                x.GetAsync(It.IsAny<IList<string>>(), It.IsAny<string>(), It.IsAny<bool>()))
                    .ReturnsAsync((IList<string> ids, string responseGroup, bool clone) =>
                    {
-                       return [new Store { Catalog = _catalogId }];
+                       return [new Store { Id = "B2B-store", Catalog = _catalogId }];
                    });
 
             return storeService;
