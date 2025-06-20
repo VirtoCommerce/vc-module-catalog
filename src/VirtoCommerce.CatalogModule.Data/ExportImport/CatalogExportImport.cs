@@ -561,14 +561,8 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                     return product;
                 }).ToArray();
 
-                try
-                {
-                    await _itemService.SaveChangesAsync(products);
-                }
-                catch (Exception ex)
-                {
-                    var msg = ex.ToString();
-                }
+
+                await _itemService.SaveChangesAsync(products);
 
                 if (options != null && options.HandleBinaryData)
                 {
