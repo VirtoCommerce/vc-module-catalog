@@ -65,8 +65,8 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             _configurationSearchService = configurationSearchService;
             _measureSearchService = measureSearchService;
             _measureService = measureService;
-            _propertyGroupSearchService = propertyGroupSearchService;
             _propertyGroupService = propertyGroupService;
+            _propertyGroupSearchService = propertyGroupSearchService;
         }
 
         public async Task DoExportAsync(Stream outStream, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
@@ -561,7 +561,6 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 
                     return product;
                 }).ToArray();
-
 
                 await _itemService.SaveChangesAsync(products);
 
