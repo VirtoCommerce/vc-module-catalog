@@ -522,8 +522,6 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                         //Need to reset property foreign keys to prevent FK violation during  inserting into database
                         property.CategoryId = null;
                         property.CatalogId = null;
-                        //Reset property group foreign key to prevent FK violation during inserting into database
-                        property.PropertyGroupId = null;
                     }
                 }
                 await _propertyService.SaveChangesAsync(items);
