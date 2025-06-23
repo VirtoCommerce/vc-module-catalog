@@ -640,9 +640,8 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 case CategoryRelationEntity cr when cr.SourceCategoryId == null && cr.TargetCatalogId == null && cr.TargetCategoryId == null:
                 case ImageEntity image when image.ItemId == null && image.CategoryId == null:
                 case Property property when property.CatalogId == null && property.CategoryId == null:
-                case ProductConfigurationOptionEntity productConfigurationOption when productConfigurationOption.SectionId == null && productConfigurationOption.ProductId == null:
                 case PropertyValueEntity pv when pv.ItemId == null && pv.CategoryId == null && pv.CatalogId == null && pv.DictionaryItemId == null:
-                case SeoInfoEntity seo when seo.ItemId == null && seo.CategoryId == null && seo.CatalogId == null:
+                case SeoInfoEntity seo when seo.ItemId == null && seo.CategoryId == null:
                     return true;
             }
 
