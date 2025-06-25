@@ -132,8 +132,8 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
     }])
 
     .run(
-        ['$injector', 'platformWebApp.mainMenuService', 'platformWebApp.widgetService', '$state', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.catalogExportService', 'platformWebApp.permissionScopeResolver', 'virtoCommerce.catalogModule.catalogs', 'virtoCommerce.catalogModule.predefinedSearchFilters', 'platformWebApp.metaFormsService', 'virtoCommerce.catalogModule.itemTypesResolverService', '$http', '$compile', 'platformWebApp.toolbarService', 'platformWebApp.breadcrumbHistoryService', 'platformWebApp.authService',
-            function ($injector, mainMenuService, widgetService, $state, bladeNavigationService, catalogExportService, scopeResolver, catalogs, predefinedSearchFilters, metaFormsService, itemTypesResolverService, $http, $compile, toolbarService, breadcrumbHistoryService, authService) {
+        ['$injector', 'platformWebApp.mainMenuService', 'platformWebApp.widgetService', '$state', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.catalogExportService', 'platformWebApp.permissionScopeResolver', 'virtoCommerce.catalogModule.catalogs', 'virtoCommerce.catalogModule.predefinedSearchFilters', 'platformWebApp.metaFormsService', 'virtoCommerce.catalogModule.itemTypesResolverService', 'platformWebApp.dynamicTemplateService', 'platformWebApp.toolbarService', 'platformWebApp.breadcrumbHistoryService', 'platformWebApp.authService',
+            function ($injector, mainMenuService, widgetService, $state, bladeNavigationService, catalogExportService, scopeResolver, catalogs, predefinedSearchFilters, metaFormsService, itemTypesResolverService, dynamicTemplateService, toolbarService, breadcrumbHistoryService, authService) {
 
                 //Register module in main menu
                 var menuItem = {
@@ -708,10 +708,7 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                     });
                 }
 
-                $http.get('Modules/$(VirtoCommerce.Catalog)/Scripts/directives/itemSearch.tpl.html').then(function (response) {
-                    // compile the response, which will put stuff into the cache
-                    $compile(response.data);
-                });
+                dynamicTemplateService.ensureTemplateLoaded('Modules/$(VirtoCommerce.Catalog)/Scripts/directives/itemSearch.tpl.html');
 
                 metaFormsService.registerMetaFields('measureDetails', [
                     {
