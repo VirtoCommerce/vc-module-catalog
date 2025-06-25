@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
-using VirtoCommerce.CoreModule.Core.Outlines;
-using VirtoCommerce.CoreModule.Core.Seo;
+using VirtoCommerce.CatalogModule.Core.Outlines;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Model;
+using VirtoCommerce.Seo.Core.Models;
 
 namespace VirtoCommerce.CatalogModule.Core.Model.ListEntry
 {

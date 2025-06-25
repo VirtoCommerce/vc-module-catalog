@@ -5,13 +5,13 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Core.Model;
-using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Domain;
+using VirtoCommerce.Seo.Core.Models;
 
 namespace VirtoCommerce.CatalogModule.Data.Model
 {
-    public class CategoryEntity : AuditableEntity, IHasOuterId, IDataEntity<CategoryEntity, Category>
+    public class CategoryEntity : AuditableEntity, IHasOuterId, IHasCatalogId, IDataEntity<CategoryEntity, Category>
     {
         [Required]
         [StringLength(64)]
@@ -99,10 +99,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
         public virtual Category ToModel(Category category)
         {
-            if (category == null)
-            {
-                throw new ArgumentNullException(nameof(category));
-            }
+            ArgumentNullException.ThrowIfNull(category);
 
             category.Id = Id;
             category.CreatedBy = CreatedBy;
@@ -182,10 +179,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
         public virtual CategoryEntity FromModel(Category category, PrimaryKeyResolvingMap pkMap)
         {
-            if (category == null)
-            {
-                throw new ArgumentNullException(nameof(category));
-            }
+            ArgumentNullException.ThrowIfNull(category);
 
             pkMap.AddPair(category, this);
 
@@ -285,9 +279,9 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
         public virtual void Patch(CategoryEntity target)
         {
-            if (target == null)
-                throw new ArgumentNullException(nameof(target));
+            ArgumentNullException.ThrowIfNull(target);
 
+            target.OuterId = OuterId;
             target.CatalogId = CatalogId;
             target.ParentCategoryId = ParentCategoryId;
             target.Code = Code;

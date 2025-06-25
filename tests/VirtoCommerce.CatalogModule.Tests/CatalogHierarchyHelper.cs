@@ -4,12 +4,12 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CatalogModule.Core.Outlines;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Data.Services;
-using VirtoCommerce.CoreModule.Core.Outlines;
-using VirtoCommerce.CoreModule.Core.Seo;
+using VirtoCommerce.Seo.Core.Models;
 using VirtoCommerce.StoreModule.Core.Model;
 using VirtoCommerce.StoreModule.Core.Services;
 using static VirtoCommerce.CatalogModule.Core.Extensions.SeoExtensions;
@@ -138,6 +138,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             {
                 ItemId = x.ObjectType == "CatalogProduct" ? x.ObjectId : null,
                 CategoryId = x.ObjectType == "Category" ? x.ObjectId : null,
+                CatalogId = x.ObjectType == "Catalog" ? x.ObjectId : null,
                 Keyword = x.SemanticUrl,
                 StoreId = x.StoreId,
                 Language = x.LanguageCode,
@@ -167,7 +168,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                x.GetAsync(It.IsAny<IList<string>>(), It.IsAny<string>(), It.IsAny<bool>()))
                    .ReturnsAsync((IList<string> ids, string responseGroup, bool clone) =>
                    {
-                       return [new Store { Catalog = _catalogId }];
+                       return [new Store { Id = "B2B-store", Catalog = _catalogId }];
                    });
 
             return storeService;

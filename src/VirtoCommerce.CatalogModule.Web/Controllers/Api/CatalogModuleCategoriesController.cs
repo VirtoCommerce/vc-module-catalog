@@ -4,53 +4,67 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Extensions;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Authorization;
-using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Seo.Core.Models;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
     [Route("api/catalog/categories")]
     [Authorize]
-    public class CatalogModuleCategoriesController : Controller
+    public class CatalogModuleCategoriesController(
+        ICategoryService categoryService,
+        ICatalogService catalogService,
+        IAuthorizationService authorizationService)
+        : Controller
     {
-        private readonly ICategoryService _categoryService;
-        private readonly ICatalogService _catalogService;
-        private readonly IAuthorizationService _authorizationService;
-
-
-        public CatalogModuleCategoriesController(
-            ICategoryService categoryService
-            , ICatalogService catalogService
-            , IAuthorizationService authorizationService)
-        {
-            _categoryService = categoryService;
-            _catalogService = catalogService;
-            _authorizationService = authorizationService;
-        }
-
-
         /// <summary>
         /// Gets category by id.
         /// </summary>
         /// <param name="id">Category id.</param>
+        /// <param name="responseGroup">Response group</param>
         [HttpGet]
         [Route("{id}")]
-        public async Task<ActionResult<Category>> GetCategory(string id)
+        public async Task<ActionResult<Category>> GetCategory([FromRoute] string id, [FromQuery] string responseGroup = null)
         {
-            var category = await _categoryService.GetNoCloneAsync(id);
-
+            var category = await categoryService.GetNoCloneAsync(id, responseGroup);
             if (category == null)
             {
                 return NotFound();
             }
 
-            var authorizationResult = await _authorizationService.AuthorizeAsync(User, category, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
+            var authorizationResult = await authorizationService.AuthorizeAsync(User, category, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
+            if (!authorizationResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            return Ok(category);
+        }
+
+        /// <summary>
+        /// Gets category by outer id.
+        /// </summary>
+        /// <remarks>Gets category by outer id (integration key) with full information loaded</remarks>
+        /// <param name="outerId">Category outer id</param>
+        /// <param name="responseGroup">Response group</param>
+        [HttpGet]
+        [Route("outer/{outerId}")]
+        public async Task<ActionResult<Catalog>> GetCategoryByOuterId([FromRoute] string outerId, [FromQuery] string responseGroup = null)
+        {
+            var category = await categoryService.GetByOuterIdNoCloneAsync(outerId, responseGroup);
+            if (category == null)
+            {
+                return NotFound();
+            }
+
+            var authorizationResult = await authorizationService.AuthorizeAsync(User, category, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
             if (!authorizationResult.Succeeded)
             {
                 return Forbid();
@@ -68,9 +82,9 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("")]
         public async Task<ActionResult<Category[]>> GetCategoriesByIdsAsync([FromQuery] List<string> ids, [FromQuery] string respGroup = null)
         {
-            var categories = await _categoryService.GetNoCloneAsync(ids, respGroup);
+            var categories = await categoryService.GetNoCloneAsync(ids, respGroup);
 
-            var authorizationResult = await _authorizationService.AuthorizeAsync(User, categories, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
+            var authorizationResult = await authorizationService.AuthorizeAsync(User, categories, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
             if (!authorizationResult.Succeeded)
             {
                 return Forbid();
@@ -130,7 +144,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                     var slugUrl = category.Name.GenerateSlug();
                     if (!string.IsNullOrEmpty(slugUrl))
                     {
-                        var catalog = await _catalogService.GetNoCloneAsync(category.CatalogId);
+                        var catalog = await catalogService.GetNoCloneAsync(category.CatalogId);
                         var defaultLanguage = catalog?.Languages.First(x => x.IsDefault).LanguageCode;
                         var seoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
                         seoInfo.LanguageCode = defaultLanguage;
@@ -141,17 +155,16 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 }
             }
 
-            var authorizationResult = await _authorizationService.AuthorizeAsync(User, category, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
+            var authorizationResult = await authorizationService.AuthorizeAsync(User, category, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
             if (!authorizationResult.Succeeded)
             {
                 return Forbid();
             }
 
-            await _categoryService.SaveChangesAsync(new[] { category });
+            await categoryService.SaveChangesAsync([category]);
             return Ok(category);
 
         }
-
 
         /// <summary>
         /// Deletes the specified categories by id.
@@ -162,15 +175,73 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         public async Task<ActionResult> DeleteCategory([FromQuery] List<string> ids)
         {
-            var categories = await _categoryService.GetNoCloneAsync(ids, CategoryResponseGroup.Info.ToString());
-            var authorizationResult = await _authorizationService.AuthorizeAsync(User, categories, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Delete));
+            var categories = await categoryService.GetNoCloneAsync(ids, nameof(CategoryResponseGroup.Info));
+            var authorizationResult = await authorizationService.AuthorizeAsync(User, categories, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Delete));
             if (!authorizationResult.Succeeded)
             {
                 return Forbid();
             }
 
-            await _categoryService.DeleteAsync(ids);
+            await categoryService.DeleteAsync(ids);
             return NoContent();
+        }
+
+        /// <summary>
+        /// Partial update for the specified Category by id
+        /// </summary>
+        /// <param name="id">Category id</param>
+        /// <param name="patchDocument">JsonPatchDocument object with fields to update</param>
+        /// <returns></returns>
+        [HttpPatch]
+        [Route("{id}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+        public async Task<ActionResult> PatchCategory(string id, [FromBody] JsonPatchDocument<Category> patchDocument)
+        {
+            if (patchDocument == null)
+            {
+                return BadRequest();
+            }
+
+            var category = await categoryService.GetByIdAsync(id);
+            if (category == null)
+            {
+                return NotFound();
+            }
+
+            var authorizationResult = await authorizationService.AuthorizeAsync(User, category, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
+            if (!authorizationResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            patchDocument.ApplyTo(category, ModelState);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            await categoryService.SaveChangesAsync([category]);
+
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Create/Update the specified categories.
+        /// </summary>
+        /// <param name="categories">The categories.</param>
+        [HttpPost]
+        [Route("batch")]
+        public async Task<ActionResult<Category[]>> SaveCategories([FromBody] Category[] categories)
+        {
+            var authorizationResult = await authorizationService.AuthorizeAsync(User, categories, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
+            if (!authorizationResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            await categoryService.SaveChangesAsync(categories);
+            return Ok(categories);
         }
     }
 }

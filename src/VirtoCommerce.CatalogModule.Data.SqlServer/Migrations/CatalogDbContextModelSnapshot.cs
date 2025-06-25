@@ -194,6 +194,8 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("OuterId");
+
                     b.ToTable("Catalog", (string)null);
                 });
 
@@ -343,6 +345,8 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CatalogId");
+
+                    b.HasIndex("OuterId");
 
                     b.HasIndex("ParentCategoryId");
 
@@ -713,6 +717,8 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("OuterId");
 
                     b.HasIndex("ParentId");
 

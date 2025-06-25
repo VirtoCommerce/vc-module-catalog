@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Data.Model;
@@ -21,6 +22,10 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             : base(dbContext)
         {
             _rawDatabaseCommand = rawDatabaseCommand;
+
+            // Resolves Breaking changes in EF Core 7.0 (EF7) when EF Core will not automatically delete orphans because all FKs are nullable.
+            // https://learn.microsoft.com/en-us/ef/core/what-is-new/ef-core-7.0/breaking-changes?tabs=v7#orphaned-dependents-of-optional-relationships-are-not-automatically-deleted
+            dbContext.SavingChanges += OnSavingChanges;
         }
 
         public IQueryable<CategoryEntity> Categories => DbContext.Set<CategoryEntity>();
@@ -602,7 +607,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         {
             using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                var properties = await GetPropertiesByIdsAsync(new[] { propertyId });
+                var properties = await GetPropertiesByIdsAsync([propertyId]);
 
                 var catalogProperty = properties.FirstOrDefault(x => x.TargetType.EqualsIgnoreCase(PropertyType.Catalog.ToString()));
                 var categoryProperty = properties.FirstOrDefault(x => x.TargetType.EqualsIgnoreCase(PropertyType.Category.ToString()));
@@ -693,5 +698,49 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
             return measures;
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && DbContext != null)
+            {
+                DbContext.SavingChanges -= OnSavingChanges;
+            }
+            base.Dispose(disposing);
+        }
+
+        private void OnSavingChanges(object sender, SavingChangesEventArgs args)
+        {
+            var ctx = (DbContext)sender;
+            var entries = ctx.ChangeTracker.Entries();
+
+            foreach (var entry in entries)
+            {
+                if (entry.State == EntityState.Modified &&
+                    IsOrphanedEntity(entry))
+                {
+                    entry.State = EntityState.Deleted;
+                }
+            }
+        }
+
+        protected virtual bool IsOrphanedEntity(EntityEntry entry)
+        {
+            switch (entry.Entity)
+            {
+                case AssociationEntity association when association.ItemId == null && association.AssociatedItemId == null && association.AssociatedCategoryId == null:
+                case CategoryItemRelationEntity cir when cir.ItemId == null && cir.CategoryId == null && cir.CatalogId == null:
+                case CategoryRelationEntity cr when cr.SourceCategoryId == null && cr.TargetCatalogId == null && cr.TargetCategoryId == null:
+                case ImageEntity image when image.ItemId == null && image.CategoryId == null:
+                case Property property when property.CatalogId == null && property.CategoryId == null:
+                case ProductConfigurationOptionEntity productConfigurationOption when productConfigurationOption.SectionId == null && productConfigurationOption.ProductId == null:
+                case PropertyValueEntity pv when pv.ItemId == null && pv.CategoryId == null && pv.CatalogId == null && pv.DictionaryItemId == null:
+                case SeoInfoEntity seo when seo.ItemId == null && seo.CategoryId == null && seo.CatalogId == null:
+                    return true;
+            }
+
+            return false;
+        }
+
+
     }
 }

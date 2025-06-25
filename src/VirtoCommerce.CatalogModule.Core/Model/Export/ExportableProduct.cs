@@ -1,9 +1,9 @@
 using System.Linq;
 using VirtoCommerce.CatalogModule.Core.Model.Configuration;
-using VirtoCommerce.CoreModule.Core.Outlines;
-using VirtoCommerce.CoreModule.Core.Seo;
+using VirtoCommerce.CatalogModule.Core.Outlines;
 using VirtoCommerce.ExportModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Seo.Core.Models;
 
 namespace VirtoCommerce.CatalogModule.Core.Model.Export
 {
