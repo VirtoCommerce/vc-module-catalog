@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <id>VirtoCommerce.Catalog</id>
-  <version>3.871.0</version>
+  <version>3.873.0</version>
   <version-tag />
 
-  <platformVersion>3.889.0</platformVersion>
+  <platformVersion>3.891.0</platformVersion>
   <dependencies>
     <dependency id="VirtoCommerce.Assets" version="3.808.0" />
     <dependency id="VirtoCommerce.BulkActionsModule" version="3.802.0" optional="true" />
