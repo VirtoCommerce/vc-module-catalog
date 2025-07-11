@@ -37,6 +37,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         private readonly IProductConfigurationSearchService _configurationSearchService;
         private readonly IMeasureService _measureService;
         private readonly IMeasureSearchService _measureSearchService;
+        private readonly IPropertyGroupService _propertyGroupService;
         private readonly IPropertyGroupSearchService _propertyGroupSearchService;
 
         private readonly int _batchSize = 50;
@@ -45,7 +46,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                                   IItemService itemService, IPropertyService propertyService, IPropertySearchService propertySearchService, IPropertyDictionaryItemSearchService propertyDictionarySearchService,
                                   IPropertyDictionaryItemService propertyDictionaryService, JsonSerializer jsonSerializer, IBlobStorageProvider blobStorageProvider, IAssociationService associationService,
                                   IProductConfigurationService configurationService, IProductConfigurationSearchService configurationSearchService,
-                                  IMeasureService measureService, IMeasureSearchService measureSearchService, IPropertyGroupSearchService propertyGroupSearchService)
+                                  IMeasureService measureService, IMeasureSearchService measureSearchService, IPropertyGroupService propertyGroupService, IPropertyGroupSearchService propertyGroupSearchService)
         {
             _catalogService = catalogService;
             _productSearchService = productSearchService;
@@ -64,6 +65,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             _configurationSearchService = configurationSearchService;
             _measureSearchService = measureSearchService;
             _measureService = measureService;
+            _propertyGroupService = propertyGroupService;
             _propertyGroupSearchService = propertyGroupSearchService;
         }
 
@@ -260,6 +262,8 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             cancellationToken.ThrowIfCancellationRequested();
 
             var progressInfo = new ExportImportProgressInfo();
+
+            var propertyGroupsWithForeignKeys = new List<PropertyGroup>();
             var propertiesWithForeignKeys = new List<Property>();
 
             using (var streamReader = new StreamReader(inputStream))
@@ -274,34 +278,30 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 
                     switch (reader.Value.ToString())
                     {
+                        case "PropertyGroups":
+                            await ImportPropertyGroups(reader, propertyGroupsWithForeignKeys, progressInfo, progressCallback, cancellationToken);
+                            break;
                         case "Properties":
                             await ImportPropertiesAsync(reader, propertiesWithForeignKeys, progressInfo, progressCallback, cancellationToken);
                             break;
-
                         case "PropertyDictionaryItems":
                             await ImportPropertyDictionaryItemsAsync(reader, progressInfo, progressCallback, cancellationToken);
                             break;
-
                         case "Catalogs":
                             await ImportCatalogsAsync(reader, progressInfo, progressCallback, cancellationToken);
                             break;
-
                         case "Categories":
                             await ImportCategoriesAsync(reader, progressInfo, progressCallback, cancellationToken);
                             break;
-
                         case "Products":
                             await ImportProductsAsync(reader, options, progressInfo, progressCallback, cancellationToken);
                             break;
-
                         case "ProductConfigurations":
                             await ImportProductConfigurationsAsync(reader, progressInfo, progressCallback, cancellationToken);
                             break;
-
                         case "Measures":
                             await ImportMeasuresAsync(reader, progressInfo, progressCallback, cancellationToken);
                             break;
-
                         default:
                             continue;
                     }
@@ -322,14 +322,32 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                     progressCallback(progressInfo);
                 }
             }
+
+            //Update property group associations after all required data are saved (Catalogs and Categories)
+            if (propertyGroupsWithForeignKeys.Count > 0)
+            {
+                progressInfo.Description = $"Updating {propertyGroupsWithForeignKeys.Count} property group associations…";
+                progressCallback(progressInfo);
+
+                var totalCount = propertyGroupsWithForeignKeys.Count;
+                for (var i = 0; i < totalCount; i += _batchSize)
+                {
+                    await _propertyGroupService.SaveChangesAsync(propertyGroupsWithForeignKeys.Skip(i).Take(_batchSize).ToArray());
+                    progressInfo.Description = $"{Math.Min(totalCount, i + _batchSize)} of {totalCount} property group associations updated.";
+                    progressCallback(progressInfo);
+                }
+            }
         }
 
-        private async Task ImportCatalogsAsync(JsonTextReader reader, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
+        private Task ImportCatalogsAsync(JsonTextReader reader, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
         {
-            await reader.DeserializeArrayWithPagingAsync<Catalog>(_jsonSerializer, _batchSize, async catalogs =>
+            return reader.DeserializeArrayWithPagingAsync<Catalog>(_jsonSerializer, _batchSize, async catalogs =>
                 {
                     foreach (var catalog in catalogs)
                     {
+                        // Do not import property groups, they are imported separately
+                        catalog.PropertyGroups = null;
+
                         if (catalog.SeoInfos == null || !catalog.SeoInfos.Any())
                         {
                             var defaultLanguage = catalog.Languages.First(x => x.IsDefault).LanguageCode;
@@ -472,13 +490,34 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             return itemsArray.Length;
         }
 
-        private async Task ImportPropertiesAsync(JsonTextReader reader, List<Property> propertiesWithForeignKeys, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
+        private Task ImportPropertyGroups(JsonTextReader reader, List<PropertyGroup> propertyGroupsWithForeignKeys, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
         {
-            await reader.DeserializeArrayWithPagingAsync<Property>(_jsonSerializer, _batchSize, async items =>
+            return reader.DeserializeArrayWithPagingAsync<PropertyGroup>(_jsonSerializer, _batchSize, async items =>
+            {
+                foreach (var propertyGroup in items)
+                {
+                    if (propertyGroup.CatalogId != null)
+                    {
+                        propertyGroupsWithForeignKeys.Add(propertyGroup.CloneTyped());
+                        //Need to reset property foreign keys to prevent FK violation during  inserting into database
+                        propertyGroup.CatalogId = null;
+                    }
+                }
+                await _propertyGroupService.SaveChangesAsync(items);
+            }, processedCount =>
+            {
+                progressInfo.Description = $"{processedCount} property groups have been imported";
+                progressCallback(progressInfo);
+            }, cancellationToken);
+        }
+
+        private Task ImportPropertiesAsync(JsonTextReader reader, List<Property> propertiesWithForeignKeys, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
+        {
+            return reader.DeserializeArrayWithPagingAsync<Property>(_jsonSerializer, _batchSize, async items =>
             {
                 foreach (var property in items)
                 {
-                    if (property.CategoryId != null || property.CatalogId != null)
+                    if (property.CategoryId != null || property.CatalogId != null || property.PropertyGroupId != null)
                     {
                         propertiesWithForeignKeys.Add(property.Clone() as Property);
                         //Need to reset property foreign keys to prevent FK violation during  inserting into database
@@ -494,9 +533,9 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             }, cancellationToken);
         }
 
-        private async Task ImportPropertyDictionaryItemsAsync(JsonTextReader reader, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
+        private Task ImportPropertyDictionaryItemsAsync(JsonTextReader reader, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
         {
-            await reader.DeserializeArrayWithPagingAsync<PropertyDictionaryItem>(_jsonSerializer, _batchSize, items => _propertyDictionaryService.SaveChangesAsync(items), processedCount =>
+            return reader.DeserializeArrayWithPagingAsync<PropertyDictionaryItem>(_jsonSerializer, _batchSize, items => _propertyDictionaryService.SaveChangesAsync(items), processedCount =>
             {
                 progressInfo.Description = $"{processedCount} property dictionary items have been imported";
                 progressCallback(progressInfo);
@@ -553,10 +592,9 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 progressCallback(progressInfo);
             }
         }
-
-        private async Task ImportProductConfigurationsAsync(JsonTextReader reader, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
+        private Task ImportProductConfigurationsAsync(JsonTextReader reader, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
         {
-            await reader.DeserializeArrayWithPagingAsync<ProductConfiguration>(_jsonSerializer, _batchSize, async configurations =>
+            return reader.DeserializeArrayWithPagingAsync<ProductConfiguration>(_jsonSerializer, _batchSize, async configurations =>
             {
                 foreach (var configuration in configurations)
                 {
@@ -575,9 +613,9 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             }, cancellationToken);
         }
 
-        private async Task ImportMeasuresAsync(JsonTextReader reader, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
+        private Task ImportMeasuresAsync(JsonTextReader reader, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
         {
-            await reader.DeserializeArrayWithPagingAsync<Measure>(_jsonSerializer, _batchSize, async measures =>
+            return reader.DeserializeArrayWithPagingAsync<Measure>(_jsonSerializer, _batchSize, async measures =>
             {
                 await _measureService.SaveChangesAsync(measures);
             }, processedCount =>
@@ -602,6 +640,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 
             if (entity is Catalog catalog)
             {
+                catalog.PropertyGroups = null;
                 catalog.Properties = null;
                 foreach (var lang in catalog.Languages)
                 {
