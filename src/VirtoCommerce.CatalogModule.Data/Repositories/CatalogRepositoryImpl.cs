@@ -378,12 +378,10 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             var result = new List<PropertyEntity>();
             // Used breaking query EF performance concept https://msdn.microsoft.com/en-us/data/hh949853.aspx#8
             // Split query to avoid excessive memory usage for large number of properties
-            for (var i = 0; i < propIds.Count; i += PageSize)
+            foreach (var idsPage in propIds.Paginate(PageSize))
             {
-                var idsBatch = propIds.Skip(i).Take(PageSize).ToList();
-
                 var resultBatch = await Properties
-                    .Where(x => idsBatch.Contains(x.Id))
+                    .Where(x => idsPage.Contains(x.Id))
                     .Include(x => x.PropertyAttributes)
                     .Include(x => x.DisplayNames)
                     .Include(x => x.ValidationRules)
@@ -395,13 +393,11 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
             if (result.Count != 0 && loadDictValues)
             {
-                for (var i = 0; i < propIds.Count; i += PageSize)
+                foreach (var idsPage in propIds.Paginate(PageSize))
                 {
-                    var idsBatch = propIds.Skip(i).Take(PageSize).ToList();
-
                     await PropertyDictionaryItems
                         .Include(x => x.DictionaryItemValues)
-                        .Where(x => idsBatch.Contains(x.PropertyId))
+                        .Where(x => idsPage.Contains(x.PropertyId))
                         .AsSplitQuery()
                         .LoadAsync();
                 }
