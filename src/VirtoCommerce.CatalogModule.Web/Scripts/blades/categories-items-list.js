@@ -371,8 +371,8 @@ angular.module('virtoCommerce.catalogModule')
                 }
 
                 if (blade.catalog && blade.catalog.isVirtual) {
-                    const link = _.find(listEntry.links, function (link) {
-                        return link.catalogId === blade.catalogId && (!blade.categoryId || link.categoryId === blade.categoryId);
+                    const link = _.find(listEntry.links, function (x) {
+                        return x.catalogId === blade.catalogId && (!blade.categoryId || x.categoryId === blade.categoryId);
                     });
 
                     if (link) {

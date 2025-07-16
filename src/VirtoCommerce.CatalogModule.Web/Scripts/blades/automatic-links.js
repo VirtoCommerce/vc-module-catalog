@@ -13,7 +13,9 @@ angular.module('virtoCommerce.catalogModule')
             blade.title = 'catalog.blades.automatic-links.title';
 
             var formScope;
-            $scope.setForm = function (form) { formScope = form; };
+            $scope.setForm = function (form) {
+                formScope = form;
+            };
 
             $scope.fetchCatalogs = function (criteria) {
                 criteria.isVirtual = false;
