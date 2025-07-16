@@ -86,9 +86,9 @@ public class AutomaticLinkService(
 
         await foreach (var searchResult in productIndexedSearchService.SearchBatchesAsync(criteria, cancellationToken))
         {
-            foreach (var product in searchResult.Items)
+            foreach (var productId in searchResult.Items.Select(x => x.Id))
             {
-                var existingLink = linksToRemove.FirstOrDefault(x => x.ListEntryId.EqualsIgnoreCase(product.Id));
+                var existingLink = linksToRemove.FirstOrDefault(x => x.ListEntryId.EqualsIgnoreCase(productId));
 
                 if (existingLink != null)
                 {
@@ -97,7 +97,7 @@ public class AutomaticLinkService(
                 }
                 else
                 {
-                    newProductIds.Add(product.Id);
+                    newProductIds.Add(productId);
 
                     if (newProductIds.Count >= BatchSize)
                     {

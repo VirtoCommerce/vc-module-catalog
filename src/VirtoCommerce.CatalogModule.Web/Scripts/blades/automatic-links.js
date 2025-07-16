@@ -101,18 +101,18 @@ angular.module('virtoCommerce.catalogModule')
 
             function isDirty() {
                 return !angular.equals(blade.currentEntity, blade.originalEntity) && blade.hasUpdatePermission();
-            };
+            }
 
             function saveChanges() {
                 blade.isLoading = true;
                 automaticLinkQueryApi.update({}, blade.currentEntity, function () {
                     blade.refresh();
                 });
-            };
+            }
 
             function reset() {
                 angular.copy(blade.originalEntity, blade.currentEntity);
-            };
+            }
 
             function preview() {
                 var newBlade = {
