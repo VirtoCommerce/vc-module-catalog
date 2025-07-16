@@ -20,7 +20,7 @@ angular.module('virtoCommerce.catalogModule')
             $scope.fetchCatalogs = function (criteria) {
                 criteria.isVirtual = false;
                 return catalogs.search(criteria);
-            }
+            };
 
             blade.refresh = function () {
                 const criteria = {

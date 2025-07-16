@@ -381,7 +381,7 @@ angular.module('virtoCommerce.catalogModule')
                 }
 
                 return listEntry.$labels;
-            }
+            };
 
             blade.toolbarCommands = [
                 {
