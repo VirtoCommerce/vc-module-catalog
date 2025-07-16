@@ -831,6 +831,36 @@
         "commands": {
           "add": "Добавить опцию"
         }
+      },
+      "brand-setting-details": {
+        "title": "Настройки бренда",
+        "labels": {
+          "enabled": "Активировать бренды",
+          "catalog": "Каталог брендов",
+          "property": "Свойство для бренда"
+        },
+        "placeholders": {
+          "catalog": "Выберите каталог брендов",
+          "property": "Выберите свойство для бренда"
+        }
+      },
+      "automatic-links": {
+        "title": "Автоматические ссылки",
+        "preview-title": "Предпросмотр автоматических ссылок",
+        "commands": {
+          "preview": "Предпросмотр",
+          "create-links": "Создать ссылки"
+        },
+        "fields": {
+          "catalog": {
+            "label": "Каталог",
+            "placeholder": "Выберите каталог"
+          },
+          "query": {
+            "label": "Запрос",
+            "placeholder": "Введите запрос для поиска продуктов"
+          }
+        }
       }
     },
     "exporter-list": {
@@ -909,6 +939,12 @@
       },
       "configuration": {
         "title": "Конфигурация"
+      },
+      "brand-settings": {
+        "title": "Настройки брендов"
+      },
+      "automatic-links": {
+        "title": "Автоматические ссылки"
       }
     },
     "dialogs": {
@@ -1051,6 +1087,14 @@
       "configuration-save": {
         "title": "Сохранить изменения",
         "message": "Эта конфигурация была изменена. Вы хотите сохранить изменения?"
+      },
+      "automatic-links-save": {
+        "title": "Сохранить изменения",
+        "message": "Настройки автоматических ссылок были изменены. Сохранить изменения?"
+      },
+      "automatic-links-create": {
+        "title": "Создать автоматические ссылки",
+        "message": "{{number}} автоматических ссылок будет создано в фоновом режиме. Вы действительно хотите их создать?"
       }
     },
     "wizards": {
@@ -1179,6 +1223,10 @@
           "select-categories": "Выберите категории"
         }
       }
+    },
+    "link-types": {
+      "manual": "Ссылка",
+      "automatic": "Автоматическая ссылка"
     }
   },
   "permissions": {
@@ -1247,6 +1295,20 @@
       "ProductConfigurationMaximumFiles": {
         "title": "Максимальное количество файлов в разделе конфигурации",
         "description": "Ограничение максимального количества файлов в разделе конфигурации"
+      },
+      "BrandStoreSetting": {
+        "BrandsEnabled": {
+          "title": "Активировать бренды",
+          "description": "Флаг функции брендов"
+        },
+        "BrandCatalogId": {
+          "title": "ID каталога с брендами",
+          "description": "ID каталога с брендами"
+        },
+        "BrandPropertyName": {
+          "title": "Название свойства для бренда",
+          "description": "Название свойства для бренда"
+        }
       }
     },
     "VirtoCommerce": {

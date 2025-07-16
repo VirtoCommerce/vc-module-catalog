@@ -49,8 +49,10 @@
   <div class="ui-grid-cell-contents">
       <i class="table-ico fa" ng-class="row.entity.isVirtual ? 'fa-cloud' : 'fa-folder'"></i>
       <div class="inner-contents">
-          <span class="table-t">{{COL_FIELD}}</span>
-          <span class="table-descr" ng-if="row.entity.isVirtual">{{ 'catalog.blades.catalogs-list.labels.virtual' | translate }}</span>
+        <div class="table-t">{{COL_FIELD}}</div>
+        <div class="table-descr" ng-if="row.entity.isVirtual">
+          <span class="label">{{ 'catalog.blades.catalogs-list.labels.virtual' | translate }}</span>
+        </div>
       </div>
   </div>
 </script>

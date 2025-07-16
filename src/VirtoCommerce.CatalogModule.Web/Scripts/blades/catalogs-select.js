@@ -4,14 +4,19 @@ angular.module('virtoCommerce.catalogModule')
 
     blade.refresh = function () {
         blade.isLoading = true;
-        //ToDo: Apply Infinite scrolling
-        catalogs.search({take: 1000}, function (data) {
-            if (blade.doShowAllCatalogs) {
-                $scope.objects = data.results;
-            } else {
-                $scope.objects = _.where(data.results, { isVirtual: false });
-            }
 
+        const criteria = {
+            sort: 'name',
+            take: 1000,
+        };
+
+        if (!blade.doShowAllCatalogs) {
+            criteria.isVirtual = false;
+        }
+
+        //ToDo: Apply Infinite scrolling
+        catalogs.search(criteria, function (data) {
+            $scope.objects = data.results;
             blade.isLoading = false;
         },
         function (error) { bladeNavigationService.setError('Error ' + error.status, blade); });

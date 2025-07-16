@@ -75,9 +75,9 @@ angular.module('virtoCommerce.catalogModule')
                 var searchCriteria = {
                     catalogId: blade.catalogId,
                     categoryId: blade.categoryId,
+                    objectTypes: blade.objectTypes,
                     keyword: filter.keyword ? filter.keyword : undefined,
                     searchInVariations: filter.searchInVariations ? filter.searchInVariations : false,
-                    responseGroup: 'withCategories, withProducts',
                     sort: filter.keyword && filter.ignoreSortingForRelevance == sortCriteria ? '' : sortCriteria,
                     skip: ($scope.pageSettings.currentPage - 1) * $scope.pageSettings.itemsPerPageCount,
                     take: $scope.pageSettings.itemsPerPageCount
@@ -149,7 +149,7 @@ angular.module('virtoCommerce.catalogModule')
 
             $scope.edit = function (listItem) {
                 if (listItem.type === 'category') {
-                    blade.setSelectedItem(listItem);
+                    blade.setSelectedItem(listItem, true);
                     blade.showCategoryBlade(listItem);
                 } else
                     $scope.selectItem(null, listItem);
@@ -291,13 +291,13 @@ angular.module('virtoCommerce.catalogModule')
                 }
             }
 
-            blade.setSelectedItem = function (listItem) {
+            blade.setSelectedItem = function (listItem, edit) {
                 $scope.selectedNodeId = listItem.id;
                 if (listItem.type === 'category') {
-                    $location.search({ categoryId: listItem.id, catalogId: listItem.catalogId });
+                    $location.search({ categoryId: listItem.id, catalogId: listItem.catalogId, edit: edit });
                 }
                 else {
-                    $location.search({ productId: listItem.id});
+                    $location.search({ productId: listItem.id });
                 }
             };
 
@@ -348,12 +348,39 @@ angular.module('virtoCommerce.catalogModule')
                 }
             };
 
-
             $scope.hasLinks = function (listEntry) {
                 return blade.catalog && blade.catalog.isVirtual &&
                     _.any(listEntry.links, function (l) {
                         return l.catalogId === blade.catalogId && (!blade.categoryId || l.categoryId === blade.categoryId);
                     });
+            }
+
+            $scope.getLabels = function (listEntry) {
+                if (listEntry.$labels) {
+                    return listEntry.$labels;
+                }
+
+                listEntry.$labels = [];
+
+                if (listEntry.type === 'category' && !listEntry.isActive) {
+                    listEntry.$labels.push({ text: 'catalog.blades.categories-items-list.labels.hidden', important: true });
+                }
+
+                if (listEntry.productType) {
+                    listEntry.$labels.push({ text: 'catalog.product-types.' + listEntry.productType });
+                }
+
+                if (blade.catalog && blade.catalog.isVirtual) {
+                    const link = _.find(listEntry.links, function (link) {
+                        return link.catalogId === blade.catalogId && (!blade.categoryId || link.categoryId === blade.categoryId);
+                    });
+
+                    if (link) {
+                        listEntry.$labels.push({ text: link.isAutomatic ? 'catalog.link-types.automatic' : 'catalog.link-types.manual' });
+                    }
+                }
+
+                return listEntry.$labels;
             }
 
             blade.toolbarCommands = [
