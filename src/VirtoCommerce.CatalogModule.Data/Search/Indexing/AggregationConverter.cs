@@ -289,7 +289,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             // Merge All Virtual Price Ranges in rangeAggregations
             var priceFieldName = "price";
 
-            var priceValues = aggregationResponses.Where(a => a.Id.StartsWith(priceFieldName)).SelectMany(x => x.Values).ToArray();
+            var priceAggregations = aggregationResponses.Where(a => a.Id.StartsWith(priceFieldName));
+            var priceValues = priceAggregations.SelectMany(x => x.Values).ToArray();
 
             if (priceValues.Length == 0)
             {
@@ -308,7 +309,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 return new AggregationResponse { Id = $@"{priceFieldName}-{x.Id}", Values = new List<AggregationResponseValue> { x } };
             }));
 
-
             var result = new Aggregation
             {
                 AggregationType = "pricerange",
@@ -316,6 +316,15 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 Items = GetRangeAggregationItems(priceRangeFilter.Key, priceRangeFilter.Values, rangeAggregations).ToArray(),
             };
 
+            var aggregationStatistics = priceAggregations.FirstOrDefault(x => x.Statistics != null);
+            if (aggregationStatistics != null)
+            {
+                result.Statistics = new Core.Model.Search.AggregationStatistics
+                {
+                    Min = aggregationStatistics.Statistics.Min,
+                    Max = aggregationStatistics.Statistics.Max
+                };
+            }
 
             return result;
         }
