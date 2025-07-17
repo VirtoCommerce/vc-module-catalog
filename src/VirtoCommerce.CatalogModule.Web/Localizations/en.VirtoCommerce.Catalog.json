@@ -1223,11 +1223,11 @@
           "select-categories": "Select categories"
         }
       }
+    },
+    "link-types": {
+      "manual": "Link",
+      "automatic": "Automatic link"
     }
-  },
-  "link-types": {
-    "manual": "Link",
-    "automatic": "Automatic link"
   },
   "permissions": {
     "catalog:access": "Open catalog menu",
