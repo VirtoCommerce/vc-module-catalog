@@ -1,8 +1,10 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.Model;
 
+[Obsolete("Use VirtoCommerce.Platform.Data.Model.LocalizedStringEntity<T> instead.", DiagnosticId = "VC0011", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions")]
 public abstract class LocalizedStringEntity<T> : Entity
     where T : Entity
 {

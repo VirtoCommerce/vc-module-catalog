@@ -1,3 +1,3 @@
-﻿namespace VirtoCommerce.CatalogModule.Data.Model;
+namespace VirtoCommerce.CatalogModule.Data.Model;
 
-public class PropertyGroupLocalizedNameEntity : LocalizedStringEntity<PropertyGroupEntity> { }
+public class PropertyGroupLocalizedNameEntity : Platform.Data.Model.LocalizedStringEntity<PropertyGroupEntity> { }

@@ -1,9 +1,8 @@
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.Domain;
 
 namespace VirtoCommerce.CatalogModule.Core.Model
 {
-    public class PropertyDisplayName : ValueObject, IHasLanguage
+    public class PropertyDisplayName : ValueObject, IHasLanguageCode
     {
         public string Name { get; set; }
         #region IHasLanguage members

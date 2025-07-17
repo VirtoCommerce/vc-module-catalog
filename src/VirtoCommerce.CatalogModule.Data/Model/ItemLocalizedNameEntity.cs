@@ -1,5 +1,5 @@
 namespace VirtoCommerce.CatalogModule.Data.Model;
 
-public class ItemLocalizedNameEntity : LocalizedStringEntity<ItemEntity>
+public class ItemLocalizedNameEntity : Platform.Data.Model.LocalizedStringEntity<ItemEntity>
 {
 }
