@@ -1,9 +1,8 @@
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.Domain;
 
 namespace VirtoCommerce.CatalogModule.Core.Model
 {
-    public class PropertyDictionaryItemLocalizedValue : ValueObject, IHasLanguage
+    public class PropertyDictionaryItemLocalizedValue : ValueObject, IHasLanguageCode
     {
         #region ILanguageSupport members
         public string LanguageCode { get; set; }
