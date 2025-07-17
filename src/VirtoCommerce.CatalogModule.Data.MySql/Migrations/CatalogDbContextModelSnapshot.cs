@@ -150,6 +150,49 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
                     b.ToTable("Association", (string)null);
                 });
 
+            modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.AutomaticLinkQueryEntity", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(128)
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("SourceCatalogId")
+                        .HasMaxLength(128)
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<string>("SourceCatalogQuery")
+                        .HasMaxLength(2048)
+                        .HasColumnType("varchar(2048)");
+
+                    b.Property<string>("TargetCategoryId")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("varchar(128)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SourceCatalogId");
+
+                    b.HasIndex("TargetCategoryId");
+
+                    b.ToTable("AutomaticLinkQuery", (string)null);
+                });
+
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.CatalogEntity", b =>
                 {
                     b.Property<string>("Id")
@@ -369,6 +412,9 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
 
                     b.Property<string>("CategoryId")
                         .HasColumnType("varchar(128)");
+
+                    b.Property<bool>("IsAutomatic")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("ItemId")
                         .IsRequired()
@@ -1683,6 +1729,24 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
                     b.Navigation("AssociatedItem");
 
                     b.Navigation("Item");
+                });
+
+            modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.AutomaticLinkQueryEntity", b =>
+                {
+                    b.HasOne("VirtoCommerce.CatalogModule.Data.Model.CatalogEntity", "SourceCatalog")
+                        .WithMany()
+                        .HasForeignKey("SourceCatalogId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("VirtoCommerce.CatalogModule.Data.Model.CategoryEntity", "TargetCategory")
+                        .WithMany()
+                        .HasForeignKey("TargetCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SourceCatalog");
+
+                    b.Navigation("TargetCategory");
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.CatalogLanguageEntity", b =>

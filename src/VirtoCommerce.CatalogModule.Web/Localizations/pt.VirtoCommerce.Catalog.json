@@ -831,6 +831,36 @@
         "commands": {
           "add": "Adicionar opção"
         }
+      },
+      "brand-setting-details": {
+        "title": "Configurações da marca",
+        "labels": {
+          "enabled": "Ativar marcas",
+          "catalog": "Catálogo de marcas",
+          "property": "Propriedade de marcas"
+        },
+        "placeholders": {
+          "catalog": "Selecionar catálogo de marcas",
+          "property": "Selecionar propriedade de marcas"
+        }
+      },
+      "automatic-links": {
+        "title": "Links automáticos",
+        "preview-title": "Prévia automática de links",
+        "commands": {
+          "preview": "Visualizar",
+          "create-links": "Criar links"
+        },
+        "fields": {
+          "catalog": {
+            "label": "Catálogo",
+            "placeholder": "Selecionar catálogo"
+          },
+          "query": {
+            "label": "Consulta",
+            "placeholder": "Digite a consulta de pesquisa do produto"
+          }
+        }
       }
     },
     "exporter-list": {
@@ -909,6 +939,12 @@
       },
       "configuration": {
         "title": "Configuração"
+      },
+      "brand-settings": {
+        "title": "Configurações da marca"
+      },
+      "automatic-links": {
+        "title": "Links automáticos"
       }
     },
     "dialogs": {
@@ -1051,6 +1087,14 @@
       "configuration-save": {
         "title": "Salvar alterações",
         "message": "Esta configuração foi modificada. Deseja salvar as alterações?"
+      },
+      "automatic-links-save": {
+        "title": "Salvar alterações",
+        "message": "As configurações automáticas de links foram modificadas. Deseja salvar as alterações?"
+      },
+      "automatic-links-create": {
+        "title": "Criar links automáticos",
+        "message": "{{number}} links automáticos serão criados no trabalho em segundo plano. Tem certeza de que deseja criá-los?"
       }
     },
     "wizards": {
@@ -1179,6 +1223,10 @@
           "select-categories": "Selecionar categorias"
         }
       }
+    },
+    "link-types": {
+      "manual": "Link",
+      "automatic": "Link automático"
     }
   },
   "permissions": {
@@ -1247,6 +1295,20 @@
       "ProductConfigurationMaximumFiles": {
         "title": "Número máximo de arquivos na seção de configuração",
         "description": "Limitar o número máximo de arquivos na seção de configuração"
+      },
+      "BrandStoreSetting": {
+        "BrandsEnabled": {
+          "title": "Ativar marcas",
+          "description": "Sinalizador de recursos de marcas"
+        },
+        "BrandCatalogId": {
+          "title": "ID do catálogo da marca",
+          "description": "ID do catálogo para as marcas"
+        },
+        "BrandPropertyName": {
+          "title": "Nome da propriedade da marca",
+          "description": "Nome da propriedade para a marca"
+        }
       }
     },
     "VirtoCommerce": {

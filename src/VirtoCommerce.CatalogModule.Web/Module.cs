@@ -289,6 +289,10 @@ namespace VirtoCommerce.CatalogModule.Web
             serviceCollection.AddSingleton<IPropertyValueSanitizer, PropertyValueSanitizer>();
 
             serviceCollection.AddTransient<IBrandSettingService, BrandSettingService>();
+
+            serviceCollection.AddTransient<IAutomaticLinkQueryService, AutomaticLinkQueryService>();
+            serviceCollection.AddTransient<IAutomaticLinkQuerySearchService, AutomaticLinkQuerySearchService>();
+            serviceCollection.AddTransient<IAutomaticLinkService, AutomaticLinkService>();
         }
 
         public void PostInitialize(IApplicationBuilder appBuilder)

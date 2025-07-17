@@ -1,0 +1,24 @@
+<div class="blade-content">
+  <div class="blade-inner">
+    <div class="inner-block form">
+      <form name="formScope">
+
+        <div class="form-group" ng-init="setForm(formScope)">
+          <label class="form-label">{{ 'catalog.blades.automatic-links.fields.catalog.label' | translate }}</label>
+          <ui-scroll-drop-down ng-model="blade.currentEntity.sourceCatalogId"
+                               data="fetchCatalogs(criteria)"
+                               placeholder="'catalog.blades.automatic-links.fields.catalog.placeholder'">
+          </ui-scroll-drop-down>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label"> {{ 'catalog.blades.automatic-links.fields.query.label' | translate }} </label>
+          <div class="form-input">
+            <textarea ng-model="blade.currentEntity.sourceCatalogQuery" placeholder="{{ 'catalog.blades.automatic-links.fields.query.placeholder' | translate }}"></textarea>
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>

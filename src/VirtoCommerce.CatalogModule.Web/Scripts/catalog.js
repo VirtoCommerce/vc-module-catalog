@@ -17,6 +17,7 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                         var productId = $location.search().productId;
                         var categoryId = $location.search().categoryId;
                         var catalogId = $location.search().catalogId;
+                        var edit = $location.search().edit;
 
                         if (productId) {
                             var productBlade = {
@@ -34,7 +35,13 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                             bladeNavigationService.showBlade(productBlade);
                         }
                         else if (categoryId) {
-                            var categoryBlade = {
+                            var categoryBlade = edit ? {
+                                id: "categories",
+                                controller: 'virtoCommerce.catalogModule.categoryDetailController',
+                                template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/category-detail.tpl.html',
+                                currentEntityId: categoryId,
+                                isClosingDisabled: true
+                            } : {
                                 id: 'categories',
                                 level: 0,
                                 isBrowsingLinkedCategory: false,
@@ -267,6 +274,13 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                     template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/categoryDescriptionWidget.tpl.html'
                 };
                 widgetService.registerWidget(categoryDescriptionWidget, 'categoryDetail');
+
+                // Register category automatic links widget
+                var categoryAutomaticLinksWidget = {
+                    controller: 'virtoCommerce.catalogModule.automaticLinksWidgetController',
+                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/automatic-links-widget.html'
+                };
+                widgetService.registerWidget(categoryAutomaticLinksWidget, 'categoryDetail');
 
                 //Register catalog widgets
                 var catalogLanguagesWidget = {
@@ -522,7 +536,7 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                         title: "catalog.blades.item-detail.labels.gtin",
                         colSpan: 3,
                         templateUrl: "gtin.html"
-                        },
+                    },
                     {
                         title: "catalog.blades.item-detail.labels.mpn",
                         colSpan: 3,

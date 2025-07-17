@@ -8,6 +8,8 @@ namespace VirtoCommerce.CatalogModule.Data.Model
     {
         public int Priority { get; set; }
 
+        public bool IsAutomatic { get; set; }
+
         #region Navigation Properties
 
         public string ItemId { get; set; }
@@ -30,6 +32,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             link.CategoryId = CategoryId;
             link.CatalogId = CatalogId;
             link.Priority = Priority;
+            link.IsAutomatic = IsAutomatic;
 
             return link;
         }
@@ -43,6 +46,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             CategoryId = link.CategoryId;
             CatalogId = link.CatalogId;
             Priority = link.Priority;
+            IsAutomatic = link.IsAutomatic;
 
             return this;
         }

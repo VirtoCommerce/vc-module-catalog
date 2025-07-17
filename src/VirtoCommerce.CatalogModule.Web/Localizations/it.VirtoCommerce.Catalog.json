@@ -831,6 +831,36 @@
         "commands": {
           "add": "Aggiungi opzione"
         }
+      },
+      "brand-setting-details": {
+        "title": "Impostazioni del brand",
+        "labels": {
+          "enabled": "Abilita marchi",
+          "catalog": "Catalogo marchi",
+          "property": "Proprietà del marchio"
+        },
+        "placeholders": {
+          "catalog": "Seleziona catalogo marchi",
+          "property": "Seleziona proprietà marchi"
+        }
+      },
+      "automatic-links": {
+        "title": "Link automatici",
+        "preview-title": "Anteprima collegamenti automatici",
+        "commands": {
+          "preview": "Anteprima",
+          "create-links": "Crea collegamenti"
+        },
+        "fields": {
+          "catalog": {
+            "label": "Catalogo",
+            "placeholder": "Seleziona catalogo"
+          },
+          "query": {
+            "label": "Query",
+            "placeholder": "Inserisci la query di ricerca del prodotto"
+          }
+        }
       }
     },
     "exporter-list": {
@@ -909,6 +939,12 @@
       },
       "configuration": {
         "title": "Configurazione"
+      },
+      "brand-settings": {
+        "title": "Impostazioni del brand"
+      },
+      "automatic-links": {
+        "title": "Link automatici"
       }
     },
     "dialogs": {
@@ -1051,6 +1087,14 @@
       "configuration-save": {
         "title": "Salva modifiche",
         "message": "Questa configurazione è stata modificata. Vuoi salvare le modifiche?"
+      },
+      "automatic-links-save": {
+        "title": "Salva modifiche",
+        "message": "Le impostazioni automatiche dei collegamenti sono state modificate. Vuoi salvare le modifiche?"
+      },
+      "automatic-links-create": {
+        "title": "Crea collegamenti automatici",
+        "message": "{{number}} collegamenti automatici verranno creati nel processo in background. Sei sicuro di volerli creare?"
       }
     },
     "wizards": {
@@ -1179,6 +1223,10 @@
           "select-categories": "Seleziona categorie"
         }
       }
+    },
+    "link-types": {
+      "manual": "Collegamento",
+      "automatic": "Collegamento automatico"
     }
   },
   "permissions": {
@@ -1247,6 +1295,20 @@
       "ProductConfigurationMaximumFiles": {
         "title": "Numero massimo di file nella sezione di configurazione",
         "description": "Limitare il numero massimo di file nella sezione di configurazione"
+      },
+      "BrandStoreSetting": {
+        "BrandsEnabled": {
+          "title": "Abilita marchi",
+          "description": "Segnalazione brand"
+        },
+        "BrandCatalogId": {
+          "title": "ID catalogo brand",
+          "description": "ID catalogo per i marchi"
+        },
+        "BrandPropertyName": {
+          "title": "Nome proprietà del brand",
+          "description": "Nome della proprietà per il marchio"
+        }
       }
     },
     "VirtoCommerce": {

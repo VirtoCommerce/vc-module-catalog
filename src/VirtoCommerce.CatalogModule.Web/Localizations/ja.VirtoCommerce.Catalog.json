@@ -831,6 +831,36 @@
         "commands": {
           "add": "オプションを追加"
         }
+      },
+      "brand-setting-details": {
+        "title": "ブランド設定",
+        "labels": {
+          "enabled": "ブランドを有効にする",
+          "catalog": "ブランドカタログ",
+          "property": "ブランドプロパティ"
+        },
+        "placeholders": {
+          "catalog": "ブランドカタログを選択",
+          "property": "ブランドのプロパティを選択"
+        }
+      },
+      "automatic-links": {
+        "title": "自動リンク",
+        "preview-title": "自動リンクプレビュー",
+        "commands": {
+          "preview": "プレビュー",
+          "create-links": "リンクを作成"
+        },
+        "fields": {
+          "catalog": {
+            "label": "カタログ",
+            "placeholder": "カタログを選択"
+          },
+          "query": {
+            "label": "クエリ",
+            "placeholder": "商品検索クエリを入力"
+          }
+        }
       }
     },
     "exporter-list": {
@@ -909,6 +939,12 @@
       },
       "configuration": {
         "title": "構成"
+      },
+      "brand-settings": {
+        "title": "ブランド設定"
+      },
+      "automatic-links": {
+        "title": "自動リンク"
       }
     },
     "dialogs": {
@@ -1051,6 +1087,14 @@
       "configuration-save": {
         "title": "変更を保存",
         "message": "この構成は変更されました。変更を保存しますか？"
+      },
+      "automatic-links-save": {
+        "title": "変更を保存",
+        "message": "自動リンク設定が変更されました。変更を保存しますか？"
+      },
+      "automatic-links-create": {
+        "title": "自動リンクを作成",
+        "message": "{{number}}個の自動リンクがバックグラウンドジョブで作成されます。作成しますか？"
       }
     },
     "wizards": {
@@ -1179,6 +1223,10 @@
           "select-categories": "カテゴリを選択"
         }
       }
+    },
+    "link-types": {
+      "manual": "リンク",
+      "automatic": "自動リンク"
     }
   },
   "permissions": {
@@ -1247,6 +1295,20 @@
       "ProductConfigurationMaximumFiles": {
         "title": "構成セクションの最大ファイル数",
         "description": "構成セクションの最大ファイル数を制限する"
+      },
+      "BrandStoreSetting": {
+        "BrandsEnabled": {
+          "title": "ブランドを有効にする",
+          "description": "ブランドフィーチャーフラグ"
+        },
+        "BrandCatalogId": {
+          "title": "ブランドカタログID",
+          "description": "ブランドのカタログID"
+        },
+        "BrandPropertyName": {
+          "title": "ブランドプロパティ名",
+          "description": "ブランドのプロパティ名"
+        }
       }
     },
     "VirtoCommerce": {

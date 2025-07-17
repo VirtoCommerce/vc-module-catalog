@@ -150,6 +150,49 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
                     b.ToTable("Association", (string)null);
                 });
 
+            modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.AutomaticLinkQueryEntity", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("SourceCatalogId")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<string>("SourceCatalogQuery")
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)");
+
+                    b.Property<string>("TargetCategoryId")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SourceCatalogId");
+
+                    b.HasIndex("TargetCategoryId");
+
+                    b.ToTable("AutomaticLinkQuery", (string)null);
+                });
+
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.CatalogEntity", b =>
                 {
                     b.Property<string>("Id")
@@ -369,6 +412,9 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
 
                     b.Property<string>("CategoryId")
                         .HasColumnType("character varying(128)");
+
+                    b.Property<bool>("IsAutomatic")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("ItemId")
                         .IsRequired()
@@ -1683,6 +1729,24 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
                     b.Navigation("AssociatedItem");
 
                     b.Navigation("Item");
+                });
+
+            modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.AutomaticLinkQueryEntity", b =>
+                {
+                    b.HasOne("VirtoCommerce.CatalogModule.Data.Model.CatalogEntity", "SourceCatalog")
+                        .WithMany()
+                        .HasForeignKey("SourceCatalogId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("VirtoCommerce.CatalogModule.Data.Model.CategoryEntity", "TargetCategory")
+                        .WithMany()
+                        .HasForeignKey("TargetCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SourceCatalog");
+
+                    b.Navigation("TargetCategory");
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.CatalogLanguageEntity", b =>

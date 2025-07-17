@@ -1,17 +1,15 @@
-
-
 <div class="blade-static" ng-class="{'__expanded': blade.catalogId, '__expanded-search-criteria': appliedKeyword}">
-    <va-breadcrumb ng-model="blade.breadcrumbs" blade-id="blade.id" blade-maximized="blade.isMaximized" ng-if="blade.catalogId"></va-breadcrumb>
-    <div class="form-group">
-        <vc-item-search blade="blade"></vc-item-search>
-    </div>
-    <div class="search-criteria" ng-if="appliedKeyword">
-        <vc-item-search-criteria blade="blade"></vc-item-search-criteria>
-    </div>
+  <va-breadcrumb ng-model="blade.breadcrumbs" blade-id="blade.id" blade-maximized="blade.isMaximized" ng-if="blade.catalogId"></va-breadcrumb>
+  <div class="form-group">
+    <vc-item-search blade="blade"></vc-item-search>
+  </div>
+  <div class="search-criteria" ng-if="appliedKeyword">
+    <vc-item-search-criteria blade="blade"></vc-item-search-criteria>
+  </div>
 </div>
 <div class="blade-content __medium-wide">
-    <div class="blade-inner">
-        <div class="inner-block" ng-init="setGridOptions({
+  <div class="blade-inner">
+    <div class="inner-block" ng-init="setGridOptions({
                 useExternalSorting: true,
                 showTreeRowHeader: false,
                 data: 'items',
@@ -29,55 +27,55 @@
                         { name: 'code', displayName: 'catalog.blades.categories-items-list.labels.sku', width: 170, cellTemplate: 'item-list-SKU.cell.html' },
                         { name: '$path', displayName: 'Parent', enableSorting: false, visible: false, cellTooltip: true }
                  ]})">
-            <div class="table-wrapper" ng-if="items.length > 0">
-                <div ui-grid="gridOptions" ui-grid-auto-resize ui-grid-save-state ui-grid-selection ui-grid-resize-columns ui-grid-move-columns ui-grid-pinning ui-grid-height ui-grid-infinite-scroll></div>
-                <ul class="menu __context" role="menu" id="cil_menu_{{blade.level}}">
-                    <li class="menu-item" ng-click='edit(contextMenuEntity)'>
-                        <i class="menu-ico fa fa-edit"></i> {{'platform.commands.manage' | translate}}
-                    </li>
-                    <li class="menu-item" ng-click='cut(contextMenuEntity)' va-permission="catalog:create" ng-if="!blade.isBrowsingLinkedCategory">
-                        <i class="menu-ico fas fa-cut"></i> {{'platform.commands.cut' | translate}}
-                    </li>
-                    <li class="menu-item" ng-click='delete(contextMenuEntity)' va-permission="catalog:delete" ng-if="!blade.isBrowsingLinkedCategory">
-                        <i class="menu-ico fas fa-trash-alt"></i> {{'platform.commands.delete' | translate}}
-                    </li>
-                    <li class="menu-item" ng-click='copyItemID(contextMenuEntity)' va-permission="catalog:read">
-                        <i class="menu-ico far fa-copy"></i> {{ 'catalog.commands.copy-id' | translate }}
-                    </li>
-                </ul>
-            </div>
-            <div class="note" ng-if="!items.length">{{ 'platform.list.no-data' | translate }}</div>
-        </div>
+      <div class="table-wrapper" ng-if="items.length > 0">
+        <div ui-grid="gridOptions" ui-grid-auto-resize ui-grid-save-state ui-grid-selection ui-grid-resize-columns ui-grid-move-columns ui-grid-pinning ui-grid-height ui-grid-infinite-scroll></div>
+        <ul class="menu __context" role="menu" id="cil_menu_{{blade.level}}">
+          <li class="menu-item" ng-click='edit(contextMenuEntity)'>
+            <i class="menu-ico fa fa-edit"></i> {{'platform.commands.manage' | translate}}
+          </li>
+          <li class="menu-item" ng-click='cut(contextMenuEntity)' va-permission="catalog:create" ng-if="!blade.isBrowsingLinkedCategory">
+            <i class="menu-ico fas fa-cut"></i> {{'platform.commands.cut' | translate}}
+          </li>
+          <li class="menu-item" ng-click='delete(contextMenuEntity)' va-permission="catalog:delete" ng-if="!blade.isBrowsingLinkedCategory">
+            <i class="menu-ico fas fa-trash-alt"></i> {{'platform.commands.delete' | translate}}
+          </li>
+          <li class="menu-item" ng-click='copyItemID(contextMenuEntity)' va-permission="catalog:read">
+            <i class="menu-ico far fa-copy"></i> {{ 'catalog.commands.copy-id' | translate }}
+          </li>
+        </ul>
+      </div>
+      <div class="note" ng-if="!items.length">{{ 'platform.list.no-data' | translate }}</div>
     </div>
+  </div>
 </div>
 
 <script type="text/ng-template" id="item-list.row.html">
-    <div ng-click='grid.appScope.selectItem($event, row.entity)' ng-repeat="(colRenderIndex, col) in colContainer.renderedColumns track by col.uid" ui-grid-one-bind-id-grid="rowRenderIndex + '-' + col.uid + '-cell'" class="ui-grid-cell" ng-class="{'ui-grid-row-header-cell': col.isRowHeader, '__hovered': grid.appScope.contextMenuEntity === row.entity, '__selected': row.entity.id===grid.appScope.selectedNodeId }" role="{{col.isRowHeader ? 'rowheader' : 'gridcell' }}" ui-grid-cell context-menu="grid.appScope.contextMenuEntity = row.entity" data-target="cil_menu_{{grid.appScope.blade.level}}"></div>
+  <div ng-click='grid.appScope.selectItem($event, row.entity)' ng-repeat="(colRenderIndex, col) in colContainer.renderedColumns track by col.uid" ui-grid-one-bind-id-grid="rowRenderIndex + '-' + col.uid + '-cell'" class="ui-grid-cell" ng-class="{'ui-grid-row-header-cell': col.isRowHeader, '__hovered': grid.appScope.contextMenuEntity === row.entity, '__selected': row.entity.id===grid.appScope.selectedNodeId }" role="{{col.isRowHeader ? 'rowheader' : 'gridcell' }}" ui-grid-cell context-menu="grid.appScope.contextMenuEntity = row.entity" data-target="cil_menu_{{grid.appScope.blade.level}}"></div>
 </script>
 <script type="text/ng-template" id="item-list-actions.cell.html">
-    <div class="ui-grid-actions" left-click-menu="grid.appScope.contextMenuEntity = row.entity" data-target="cil_menu_{{grid.appScope.blade.level}}">
-        <i class="fa fa-ellipsis-v"></i>
-    </div>
+  <div class="ui-grid-actions" left-click-menu="grid.appScope.contextMenuEntity = row.entity" data-target="cil_menu_{{grid.appScope.blade.level}}">
+    <i class="fa fa-ellipsis-v"></i>
+  </div>
 </script>
 <script type="text/ng-template" id="item-list-icon.cell.html">
-    <div class="ui-grid-cell-contents">
-        <div class="product-img">
-            <img class="image" fallback-src="{{ COL_FIELD }}" ng-src="{{ COL_FIELD | thumbnail: '_64x64' }}" ng-if="row.entity.type !== 'category' && COL_FIELD">
-            <i class="table-ico fa" ng-class="row.entity.type == 'category' ? 'fa-folder' : 'fa-image'" ng-if="row.entity.type ==='category' || !COL_FIELD"></i>
-        </div>
+  <div class="ui-grid-cell-contents">
+    <div class="product-img">
+      <img class="image" fallback-src="{{ COL_FIELD }}" ng-src="{{ COL_FIELD | thumbnail: '_64x64' }}" ng-if="row.entity.type !== 'category' && COL_FIELD">
+      <i class="table-ico fa" ng-class="row.entity.type == 'category' ? 'fa-folder' : 'fa-image'" ng-if="row.entity.type ==='category' || !COL_FIELD"></i>
     </div>
+  </div>
 </script>
 <script type="text/ng-template" id="item-list-name.cell.html">
-    <div class="ui-grid-cell-contents">
-        <div class="inner-contents">
-            <i class="table-ico fas fa-link" ng-if="grid.appScope.hasLinks(row.entity)" title="{{ 'catalog.blades.categories-items-list.descr.title-mapping' | translate }}"></i>
-            <div class="table-t">{{COL_FIELD}}</div>
-            <span class="table-status" ng-if="row.entity.type==='category' && !row.entity.isActive">{{ 'catalog.blades.categories-items-list.labels.hidden' | translate }}</span>
-            <div class="table-descr" ng-if="row.entity.productType">{{ 'catalog.product-types.' + row.entity.productType | translate }}</div>
-        </div>
+  <div class="ui-grid-cell-contents">
+    <div class="inner-contents">
+      <div class="table-t">{{COL_FIELD}}</div>
+      <div class="table-descr">
+        <span ng-repeat="label in grid.appScope.getLabels(row.entity)" class="label" ng-class="label.important ? 'inverse' : ''">{{ label.text | translate }}</span>
+      </div>
     </div>
+  </div>
 </script>
 
 <script type="text/ng-template" id="item-list-SKU.cell.html">
-    <div class="ui-grid-cell-contents">{{row.entity.type!=='category'?COL_FIELD:''}}</div>
+  <div class="ui-grid-cell-contents">{{row.entity.type!=='category'?COL_FIELD:''}}</div>
 </script>

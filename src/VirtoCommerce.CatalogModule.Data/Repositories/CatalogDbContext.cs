@@ -424,6 +424,21 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
             #endregion
 
+            modelBuilder.Entity<AutomaticLinkQueryEntity>(builder =>
+            {
+                builder.ToAuditableEntityTable("AutomaticLinkQuery");
+
+                builder.HasOne(x => x.TargetCategory)
+                    .WithMany()
+                    .HasForeignKey(x => x.TargetCategoryId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                builder.HasOne(x => x.SourceCatalog)
+                    .WithMany()
+                    .HasForeignKey(x => x.SourceCatalogId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
             base.OnModelCreating(modelBuilder);
 
             // Allows configuration for an entity type for different database types.

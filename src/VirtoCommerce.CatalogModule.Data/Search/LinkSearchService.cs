@@ -128,6 +128,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 query = query.Where(x => criteria.CatalogIds.Contains(x.CatalogId) && x.CategoryId == null);
             }
 
+            if (criteria.IsAutomatic != null)
+            {
+                query = query.Where(x => x.IsAutomatic == criteria.IsAutomatic);
+            }
+
             return query;
         }
 
