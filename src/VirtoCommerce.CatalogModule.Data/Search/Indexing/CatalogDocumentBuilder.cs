@@ -44,7 +44,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 foreach (var property in searchResult.Results)
                 {
                     var propertyName = property.Name.ToLowerInvariant();
-                    var isCollection = property.Multivalue;
+                    var isCollection = property.Multivalue || property.Type == PropertyType.Variation;
 
                     switch (property.ValueType)
                     {
@@ -94,7 +94,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         protected virtual void IndexCustomProperty(IndexDocument document, Property property, ICollection<PropertyType> contentPropertyTypes, bool addField = true)
         {
-            var isCollection = property.Multivalue;
+            var isCollection = property.Multivalue || property.Type == PropertyType.Variation;
 
             // replace empty value for Boolean property with default 'False'
             if (property.ValueType == PropertyValueType.Boolean && property.Values.IsNullOrEmpty())
