@@ -48,7 +48,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                             .AsNoTracking()
                             .ToListAsync();
 
-                        result.Results = productLinks.Select(x => ToCategoryLink(x)).ToList();
+                        result.Results = productLinks.Select(ToCategoryLink).ToList();
                     }
                 }
                 else if (criteria.ObjectType.EqualsIgnoreCase(nameof(Category)))
@@ -65,7 +65,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                             .AsNoTracking()
                             .ToListAsync();
 
-                        result.Results = categoryLinks.Select(x => ToCategoryLink(x)).ToList();
+                        result.Results = categoryLinks.Select(ToCategoryLink).ToList();
                     }
                 }
             }
@@ -74,40 +74,41 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             {
                 if (link.CategoryId != null)
                 {
-                    var category = await _categoryService.GetByIdsAsync(new string[] { link.CategoryId }, CategoryResponseGroup.WithOutlines.ToString(), link.CatalogId);
+                    var category = await _categoryService.GetByIdsAsync([link.CategoryId], nameof(CategoryResponseGroup.WithOutlines), link.CatalogId);
                     link.Category = category.FirstOrDefault();
                 }
                 else
                 {
-                    link.Catalog = await _catalogService.GetByIdAsync(link.CatalogId, CatalogResponseGroup.Info.ToString());
+                    link.Catalog = await _catalogService.GetByIdAsync(link.CatalogId, nameof(CatalogResponseGroup.Info));
                 }
             }
 
             return result;
         }
 
-        protected virtual CategoryLink ToCategoryLink(CategoryRelationEntity productRelation)
+        protected virtual CategoryLink ToCategoryLink(CategoryRelationEntity relation)
         {
-            var enitry = AbstractTypeFactory<CategoryLink>.TryCreateInstance();
+            var link = AbstractTypeFactory<CategoryLink>.TryCreateInstance();
 
-            enitry.ListEntryId = productRelation.SourceCategoryId;
-            enitry.ListEntryType = nameof(Category);
-            enitry.CatalogId = productRelation.TargetCatalogId;
-            enitry.CategoryId = productRelation.TargetCategoryId;
+            link.ListEntryId = relation.SourceCategoryId;
+            link.ListEntryType = nameof(Category);
+            link.CatalogId = relation.TargetCatalogId;
+            link.CategoryId = relation.TargetCategoryId;
 
-            return enitry;
+            return link;
         }
 
-        protected virtual CategoryLink ToCategoryLink(CategoryItemRelationEntity categoryRelation)
+        protected virtual CategoryLink ToCategoryLink(CategoryItemRelationEntity relation)
         {
-            var enitry = AbstractTypeFactory<CategoryLink>.TryCreateInstance();
+            var link = AbstractTypeFactory<CategoryLink>.TryCreateInstance();
 
-            enitry.ListEntryId = categoryRelation.ItemId;
-            enitry.ListEntryType = nameof(CatalogProduct);
-            enitry.CatalogId = categoryRelation.CatalogId;
-            enitry.CategoryId = categoryRelation.CategoryId;
+            link.ListEntryId = relation.ItemId;
+            link.ListEntryType = nameof(CatalogProduct);
+            link.CatalogId = relation.CatalogId;
+            link.CategoryId = relation.CategoryId;
+            link.IsAutomatic = relation.IsAutomatic;
 
-            return enitry;
+            return link;
         }
 
         protected virtual IQueryable<CategoryItemRelationEntity> GetProductLinksQuery(IQueryable<CategoryItemRelationEntity> categoryItemRelations, LinkSearchCriteria criteria)
