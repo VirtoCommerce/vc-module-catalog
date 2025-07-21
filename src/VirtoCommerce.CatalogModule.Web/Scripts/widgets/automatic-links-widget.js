@@ -9,7 +9,7 @@ angular.module('virtoCommerce.catalogModule')
             $scope.$watch('blade.currentEntity', function (category) {
                 if (category) {
                     const criteria = {
-                        categoryId: category.id,
+                        categoryIds: [category.id],
                         objectType: 'CatalogProduct',
                         isAutomatic: true,
                         take: 0,
