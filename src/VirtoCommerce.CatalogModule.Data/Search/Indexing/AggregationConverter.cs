@@ -289,7 +289,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             // Merge All Virtual Price Ranges in rangeAggregations
             var priceFieldName = "price";
 
-            var priceAggregations = aggregationResponses.Where(a => a.Id.StartsWith(priceFieldName));
+            var priceAggregations = aggregationResponses.Where(a => a.Id.StartsWith(priceFieldName)).ToList();
             var priceValues = priceAggregations.SelectMany(x => x.Values).ToArray();
 
             if (priceValues.Length == 0)
