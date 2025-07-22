@@ -11,4 +11,9 @@ public class AutomaticLinksJob(IAutomaticLinkService automaticLinkService)
     {
         return automaticLinkService.UpdateLinks(categoryId, new JobCancellationTokenWrapper(cancellationToken));
     }
+
+    public Task DeleteLinks(string categoryId, IJobCancellationToken cancellationToken)
+    {
+        return automaticLinkService.DeleteLinks(categoryId, new JobCancellationTokenWrapper(cancellationToken));
+    }
 }

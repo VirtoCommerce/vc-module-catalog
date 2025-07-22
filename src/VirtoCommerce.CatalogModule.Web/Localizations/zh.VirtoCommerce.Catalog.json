@@ -847,10 +847,6 @@
       "automatic-links": {
         "title": "自动链接",
         "preview-title": "自动链接预览",
-        "commands": {
-          "preview": "预览",
-          "create-links": "创建链接"
-        },
         "fields": {
           "catalog": {
             "label": "目录",
@@ -1095,6 +1091,10 @@
       "automatic-links-create": {
         "title": "创建自动链接",
         "message": "将会在后台作业中创建 {{number}} 个自动链接。您确定要创建它们吗？"
+      },
+      "automatic-links-delete": {
+        "title": "删除自动链接",
+        "message": "后台作业将删除 {{number}} 个现有自动链接。确定要删除它们吗？"
       }
     },
     "wizards": {

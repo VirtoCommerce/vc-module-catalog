@@ -40,17 +40,13 @@ public class AutomaticLinkService(
             await CreateLinks(category, query, linksToRemove, cancellationToken);
         }
 
-        if (linksToRemove.Count > 0)
-        {
-            var productIds = linksToRemove
-                .Where(x => x.IsAutomatic)
-                .Select(x => x.EntryId);
+        await DeleteAutomaticLinks(linksToRemove, cancellationToken);
+    }
 
-            foreach (var productIdsBatch in productIds.Paginate(BatchSize))
-            {
-                await DeleteLinks(query, productIdsBatch, cancellationToken);
-            }
-        }
+    public async Task DeleteLinks(string categoryId, ICancellationToken cancellationToken)
+    {
+        var linksToRemove = await GetExistingLinks(categoryId, cancellationToken);
+        await DeleteAutomaticLinks(linksToRemove, cancellationToken);
     }
 
 
@@ -138,9 +134,18 @@ public class AutomaticLinkService(
         await itemService.SaveChangesAsync(products);
     }
 
-    protected virtual async Task DeleteLinks(AutomaticLinkQuery query, IList<string> productIds, ICancellationToken cancellationToken)
+    protected virtual async Task DeleteAutomaticLinks(IList<CategoryLink> links, ICancellationToken cancellationToken)
+    {
+        foreach (var linksBatch in links.Where(x => x.IsAutomatic).Paginate(BatchSize))
+        {
+            await DeleteLinksBatch(linksBatch, cancellationToken);
+        }
+    }
+
+    protected virtual async Task DeleteLinksBatch(IList<CategoryLink> links, ICancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
+        var productIds = links.Select(x => x.EntryId).ToList();
         var products = await itemService.GetAsync(productIds);
 
         if (products.Count == 0)
@@ -148,9 +153,11 @@ public class AutomaticLinkService(
             return;
         }
 
+        var categoryId = links.First().CategoryId;
+
         foreach (var product in products)
         {
-            var link = product.Links.FirstOrDefault(x => x.TargetId == query.TargetCategoryId);
+            var link = product.Links.FirstOrDefault(x => x.TargetId == categoryId);
 
             if (link != null)
             {

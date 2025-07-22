@@ -8,6 +8,7 @@ angular.module('virtoCommerce.catalogModule')
             plenty: { method: 'POST', url: 'api/catalog/categories/plenty', isArray: true },
             getByIds: { method: 'GET', url: 'api/catalog/categories', params: { ids: '@ids' }, isArray: true },
             updateAutomaticLinks: { method: 'POST', url: 'api/catalog/categories/:id/automatic-links', params: { id: '@id' } },
+            deleteAutomaticLinks: { method: 'DELETE', url: 'api/catalog/categories/:id/automatic-links', params: { id: '@id' } },
         });
 
     }]);

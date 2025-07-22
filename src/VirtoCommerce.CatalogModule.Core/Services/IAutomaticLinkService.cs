@@ -6,4 +6,5 @@ namespace VirtoCommerce.CatalogModule.Core.Services;
 public interface IAutomaticLinkService
 {
     Task UpdateLinks(string categoryId, ICancellationToken cancellationToken);
+    Task DeleteLinks(string categoryId, ICancellationToken cancellationToken);
 }

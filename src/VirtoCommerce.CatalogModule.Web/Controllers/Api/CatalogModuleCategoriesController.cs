@@ -14,7 +14,6 @@ using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Authorization;
 using VirtoCommerce.CatalogModule.Data.BackgroundJobs;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.ExportImport.PushNotifications;
 using VirtoCommerce.Seo.Core.Models;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
@@ -248,11 +247,19 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         }
 
         [HttpPost("{id}/automatic-links")]
-        public ActionResult<PlatformExportPushNotification> UpdateAutomaticLinks(string id)
+        [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+        public ActionResult UpdateAutomaticLinks(string id)
         {
             BackgroundJob.Enqueue<AutomaticLinksJob>(x => x.UpdateLinks(id, JobCancellationToken.Null));
+            return NoContent();
+        }
 
-            return Ok();
+        [HttpDelete("{id}/automatic-links")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+        public ActionResult DeleteAutomaticLinks(string id)
+        {
+            BackgroundJob.Enqueue<AutomaticLinksJob>(x => x.DeleteLinks(id, JobCancellationToken.Null));
+            return NoContent();
         }
     }
 }

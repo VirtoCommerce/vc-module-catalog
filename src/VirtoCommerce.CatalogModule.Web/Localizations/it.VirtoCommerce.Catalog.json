@@ -847,10 +847,6 @@
       "automatic-links": {
         "title": "Link automatici",
         "preview-title": "Anteprima collegamenti automatici",
-        "commands": {
-          "preview": "Anteprima",
-          "create-links": "Crea collegamenti"
-        },
         "fields": {
           "catalog": {
             "label": "Catalogo",
@@ -1095,6 +1091,10 @@
       "automatic-links-create": {
         "title": "Crea collegamenti automatici",
         "message": "{{number}} collegamenti automatici verranno creati nel processo in background. Sei sicuro di volerli creare?"
+      },
+      "automatic-links-delete": {
+        "title": "Elimina collegamenti automatici",
+        "message": "\"{{number}} collegamenti automatici esistenti verranno eliminati nell'attività in background. Sei sicuro di volerli eliminare?\""
       }
     },
     "wizards": {

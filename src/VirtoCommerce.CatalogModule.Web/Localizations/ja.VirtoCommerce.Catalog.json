@@ -847,10 +847,6 @@
       "automatic-links": {
         "title": "自動リンク",
         "preview-title": "自動リンクプレビュー",
-        "commands": {
-          "preview": "プレビュー",
-          "create-links": "リンクを作成"
-        },
         "fields": {
           "catalog": {
             "label": "カタログ",
@@ -1095,6 +1091,10 @@
       "automatic-links-create": {
         "title": "自動リンクを作成",
         "message": "{{number}}個の自動リンクがバックグラウンドジョブで作成されます。作成しますか？"
+      },
+      "automatic-links-delete": {
+        "title": "自動リンクを削除",
+        "message": "{{number}}件の既存の自動リンクがバックグラウンドジョブで削除されます。削除してもよろしいですか？"
       }
     },
     "wizards": {

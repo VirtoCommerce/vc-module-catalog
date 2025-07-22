@@ -69,16 +69,23 @@ angular.module('virtoCommerce.catalogModule')
                     showSeparator: true,
                 },
                 {
-                    name: "catalog.blades.automatic-links.commands.preview",
+                    name: "platform.commands.preview",
                     icon: 'fas fa-eye',
                     canExecuteMethod: canPreview,
                     executeMethod: preview,
                 },
                 {
-                    name: "catalog.blades.automatic-links.commands.create-links",
+                    name: "platform.commands.create",
                     icon: 'fas fa-link',
                     canExecuteMethod: canCreateLinks,
                     executeMethod: createAutomaticLinks,
+                    permission: blade.updatePermission,
+                },
+                {
+                    name: "platform.commands.delete",
+                    icon: 'fas fa-trash-alt',
+                    canExecuteMethod: canDeleteLinks,
+                    executeMethod: deleteAutomaticLinks,
                     permission: blade.updatePermission,
                 },
             ];
@@ -97,6 +104,10 @@ angular.module('virtoCommerce.catalogModule')
 
             function canCreateLinks() {
                 return !isDirty();
+            }
+
+            function canDeleteLinks() {
+                return true;
             }
 
             function isDirty() {
@@ -140,17 +151,31 @@ angular.module('virtoCommerce.catalogModule')
                     take: 0,
                 };
 
-                listEntries.listitemssearch(criteria, function (data) {
+                const getProductsCountPromise = canPreview()
+                    ? listEntries.listitemssearch(criteria).$promise.then(function (data) {
+                        return data.totalCount;
+                    })
+                    : Promise.resolve(0);
+
+                getProductsCountPromise.then(function (productsCount) {
                     blade.isLoading = false;
 
                     var dialog = {
                         id: "confirmCreateAutomaticLinks",
                         title: "catalog.dialogs.automatic-links-create.title",
                         message: "catalog.dialogs.automatic-links-create.message",
-                        messageValues: { number: data.totalCount },
+                        messageValues: { number: productsCount },
                         callback: function (confirm) {
                             if (confirm) {
-                                updateAutomaticLinks();
+                                blade.isLoading = true;
+
+                                categories.updateAutomaticLinks({ id: blade.currentEntity.targetCategoryId }, {},
+                                    function () {
+                                        blade.isLoading = false;
+                                    },
+                                    function (error) {
+                                        bladeNavigationService.setError('Error ' + error.status, blade);
+                                    });
                             }
                         }
                     }
@@ -159,16 +184,39 @@ angular.module('virtoCommerce.catalogModule')
                 });
             }
 
-            function updateAutomaticLinks() {
-                blade.isLoading = true;
+            function deleteAutomaticLinks() {
+                const criteria = {
+                    categoryIds: [blade.currentEntity.targetCategoryId],
+                    objectType: 'CatalogProduct',
+                    isAutomatic: true,
+                    take: 0,
+                };
 
-                categories.updateAutomaticLinks({ id: blade.currentEntity.targetCategoryId }, {},
-                    function () {
-                        blade.isLoading = false;
-                    },
-                    function (error) {
-                        bladeNavigationService.setError('Error ' + error.status, blade);
-                    });
+                listEntries.searchlinks(criteria, function (data) {
+                    blade.isLoading = false;
+
+                    var dialog = {
+                        id: "confirmDeleteAutomaticLinks",
+                        title: "catalog.dialogs.automatic-links-delete.title",
+                        message: "catalog.dialogs.automatic-links-delete.message",
+                        messageValues: { number: data.totalCount },
+                        callback: function (confirm) {
+                            if (confirm) {
+                                blade.isLoading = true;
+
+                                categories.deleteAutomaticLinks({ id: blade.currentEntity.targetCategoryId }, {},
+                                    function () {
+                                        blade.isLoading = false;
+                                    },
+                                    function (error) {
+                                        bladeNavigationService.setError('Error ' + error.status, blade);
+                                    });
+                            }
+                        }
+                    }
+
+                    dialogService.showConfirmationDialog(dialog);
+                });
             }
 
             blade.refresh();
