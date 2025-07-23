@@ -1,6 +1,5 @@
 using System;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.Domain;
 
 namespace VirtoCommerce.CatalogModule.Core.Model
 {
@@ -10,7 +9,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
     /// <remarks>
     /// Require adding VideoType property
     /// </remarks>
-    public class Video : AuditableEntity, IHasName, IHasLanguage, ICloneable
+    public class Video : AuditableEntity, IHasName, IHasLanguageCode, ICloneable
     {
         public string Name { get; set; }
         public string Description { get; set; }

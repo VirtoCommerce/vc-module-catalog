@@ -1,11 +1,10 @@
 using System;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.Domain;
 
 namespace VirtoCommerce.CatalogModule.Core.Model
 {
-    public class EditorialReview : AuditableEntity, IHasLanguage, ICloneable, IInheritable, ICopyable
+    public class EditorialReview : AuditableEntity, IHasLanguageCode, ICloneable, IInheritable, ICopyable
     {
         public string Content { get; set; }
         public string ReviewType { get; set; }

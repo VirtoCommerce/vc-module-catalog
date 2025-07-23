@@ -1,11 +1,10 @@
 using System;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.Domain;
 
 namespace VirtoCommerce.CatalogModule.Core.Model
 {
-    public class CategoryDescription : AuditableEntity, IHasLanguage, ICloneable, IInheritable, ICopyable
+    public class CategoryDescription : AuditableEntity, IHasLanguageCode, ICloneable, IInheritable, ICopyable
     {
         public string Content { get; set; }
         public string DescriptionType { get; set; }
