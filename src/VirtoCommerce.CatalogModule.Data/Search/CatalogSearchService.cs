@@ -50,6 +50,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search
                 query = query.Where(x => criteria.OuterIds.Contains(x.OuterId));
             }
 
+            if (criteria.IsVirtual != null)
+            {
+                query = query.Where(x => x.Virtual == criteria.IsVirtual);
+            }
+
             return query;
         }
 
