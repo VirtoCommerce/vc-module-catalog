@@ -806,7 +806,7 @@
           "type": "セクションタイプ",
           "allow-custom-text": "カスタムテキストを許可",
           "allow-predefined-options": "既定のオプションを許可",
-          "text": "\"テキスト\""
+          "text": "テキスト"
         },
         "descr": {
           "no-options": "このセクションにはまだオプションがありません"

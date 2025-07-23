@@ -841,7 +841,7 @@
         },
         "placeholders": {
           "catalog": "Markenkatalog auswählen",
-          "property": "Marken-Eigenschaft auswählen"
+          "property": "Markeneigenschaft auswählen"
         }
       },
       "automatic-links": {
@@ -853,7 +853,7 @@
             "placeholder": "Katalog auswählen"
           },
           "query": {
-            "label": "Abfrage",
+            "label": "Anfrage",
             "placeholder": "Produktsuche eingeben"
           }
         }

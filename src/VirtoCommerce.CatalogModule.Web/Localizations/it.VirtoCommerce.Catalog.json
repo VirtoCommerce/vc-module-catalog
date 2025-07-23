@@ -833,7 +833,7 @@
         }
       },
       "brand-setting-details": {
-        "title": "Impostazioni del brand",
+        "title": "Impostazioni del marchio",
         "labels": {
           "enabled": "Abilita marchi",
           "catalog": "Catalogo marchi",
@@ -845,7 +845,7 @@
         }
       },
       "automatic-links": {
-        "title": "Link automatici",
+        "title": "Collegamenti automatici",
         "preview-title": "Anteprima collegamenti automatici",
         "fields": {
           "catalog": {
@@ -937,10 +937,10 @@
         "title": "Configurazione"
       },
       "brand-settings": {
-        "title": "Impostazioni del brand"
+        "title": "Impostazioni del marchio"
       },
       "automatic-links": {
-        "title": "Link automatici"
+        "title": "Collegamenti automatici"
       }
     },
     "dialogs": {
@@ -1094,7 +1094,7 @@
       },
       "automatic-links-delete": {
         "title": "Elimina collegamenti automatici",
-        "message": "\"{{number}} collegamenti automatici esistenti verranno eliminati nell'attività in background. Sei sicuro di volerli eliminare?\""
+        "message": "{{number}} collegamenti automatici esistenti verranno eliminati nell'attività in background. Sei sicuro di volerli eliminare?"
       }
     },
     "wizards": {

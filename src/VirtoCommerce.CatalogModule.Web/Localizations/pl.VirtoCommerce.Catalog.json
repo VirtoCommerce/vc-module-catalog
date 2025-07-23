@@ -846,7 +846,7 @@
       },
       "automatic-links": {
         "title": "Automatyczne linki",
-        "preview-title": "Automatyczne podglądy linków",
+        "preview-title": "Podgląd automatycznych linków",
         "fields": {
           "catalog": {
             "label": "Katalog",
@@ -1094,7 +1094,7 @@
       },
       "automatic-links-delete": {
         "title": "Usuń automatyczne linki",
-        "message": "\"{{number}} istniejących automatycznych linków zostanie usuniętych w zadaniu w tle. Czy na pewno chcesz je usunąć?\""
+        "message": "{{number}} istniejących automatycznych linków zostanie usuniętych w zadaniu w tle. Czy na pewno chcesz je usunąć?"
       }
     },
     "wizards": {
@@ -1226,7 +1226,7 @@
     },
     "link-types": {
       "manual": "Link",
-      "automatic": "Automatyczne łącze"
+      "automatic": "Automatyczny link"
     }
   },
   "permissions": {
