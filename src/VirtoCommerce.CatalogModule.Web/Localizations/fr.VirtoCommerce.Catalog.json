@@ -831,6 +831,32 @@
         "commands": {
           "add": "Ajouter une option"
         }
+      },
+      "brand-setting-details": {
+        "title": "Paramètres de la marque",
+        "labels": {
+          "enabled": "Activer les marques",
+          "catalog": "Catalogue des marques",
+          "property": "Propriété des marques"
+        },
+        "placeholders": {
+          "catalog": "Sélectionner le catalogue de marques",
+          "property": "Sélectionner la propriété des marques"
+        }
+      },
+      "automatic-links": {
+        "title": "Liens automatiques",
+        "preview-title": "Aperçu automatique des liens",
+        "fields": {
+          "catalog": {
+            "label": "Catalogue",
+            "placeholder": "Sélectionner le catalogue"
+          },
+          "query": {
+            "label": "Requête",
+            "placeholder": "Entrez votre recherche de produit"
+          }
+        }
       }
     },
     "exporter-list": {
@@ -909,6 +935,12 @@
       },
       "configuration": {
         "title": "Configuration"
+      },
+      "brand-settings": {
+        "title": "Paramètres de la marque"
+      },
+      "automatic-links": {
+        "title": "Liens automatiques"
       }
     },
     "dialogs": {
@@ -1051,6 +1083,18 @@
       "configuration-save": {
         "title": "Enregistrer les modifications",
         "message": "Cette configuration a été modifiée. Voulez-vous enregistrer les modifications ?"
+      },
+      "automatic-links-save": {
+        "title": "Enregistrer les modifications",
+        "message": "Les paramètres de lien automatique ont été modifiés. Voulez-vous enregistrer les modifications ?"
+      },
+      "automatic-links-create": {
+        "title": "Créer des liens automatiques",
+        "message": "{{number}} liens automatiques seront créés dans le job d'arrière-plan. Êtes-vous sûr de vouloir les créer ?"
+      },
+      "automatic-links-delete": {
+        "title": "Supprimer les liens automatiques",
+        "message": "{{number}} liens automatiques existants seront supprimés en tâche de fond. Êtes-vous sûr de vouloir les supprimer ?"
       }
     },
     "wizards": {
@@ -1179,6 +1223,10 @@
           "select-categories": "Sélectionner les catégories"
         }
       }
+    },
+    "link-types": {
+      "manual": "Lien",
+      "automatic": "Lien automatique"
     }
   },
   "permissions": {
@@ -1247,6 +1295,20 @@
       "ProductConfigurationMaximumFiles": {
         "title": "Nombre maximum de fichiers dans la section de configuration",
         "description": "Limiter le nombre maximum de fichiers dans la section de configuration"
+      },
+      "BrandStoreSetting": {
+        "BrandsEnabled": {
+          "title": "Activer les marques",
+          "description": "Drapeau de fonctionnalité des marques"
+        },
+        "BrandCatalogId": {
+          "title": "ID du catalogue de la marque",
+          "description": "ID catalogue des marques"
+        },
+        "BrandPropertyName": {
+          "title": "Nom de la propriété de la marque",
+          "description": "Nom de la propriété pour la marque"
+        }
       }
     },
     "VirtoCommerce": {

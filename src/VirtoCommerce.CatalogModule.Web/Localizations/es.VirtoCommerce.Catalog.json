@@ -831,6 +831,32 @@
         "commands": {
           "add": "Añadir opción"
         }
+      },
+      "brand-setting-details": {
+        "title": "Configuración de la marca",
+        "labels": {
+          "enabled": "Habilitar marcas",
+          "catalog": "Catálogo de marcas",
+          "property": "Propiedad de marcas"
+        },
+        "placeholders": {
+          "catalog": "Seleccionar catálogo de marcas",
+          "property": "Seleccionar propiedad de marcas"
+        }
+      },
+      "automatic-links": {
+        "title": "Enlaces automáticos",
+        "preview-title": "Vista previa automática de enlaces",
+        "fields": {
+          "catalog": {
+            "label": "Catálogo",
+            "placeholder": "Seleccionar catálogo"
+          },
+          "query": {
+            "label": "Consulta",
+            "placeholder": "Introduce consulta de búsqueda de producto"
+          }
+        }
       }
     },
     "exporter-list": {
@@ -909,6 +935,12 @@
       },
       "configuration": {
         "title": "Configuración"
+      },
+      "brand-settings": {
+        "title": "Configuración de la marca"
+      },
+      "automatic-links": {
+        "title": "Enlaces automáticos"
       }
     },
     "dialogs": {
@@ -1051,6 +1083,18 @@
       "configuration-save": {
         "title": "Guardar cambios",
         "message": "Esta configuración ha sido modificada. ¿Desea guardar los cambios?"
+      },
+      "automatic-links-save": {
+        "title": "Guardar cambios",
+        "message": "Se han modificado los ajustes de enlace automático. ¿Desea guardar los cambios?"
+      },
+      "automatic-links-create": {
+        "title": "Crear enlaces automáticos",
+        "message": "Se crearán {{number}} enlaces automáticos en el trabajo en segundo plano. ¿Está seguro de que desea crearlos?"
+      },
+      "automatic-links-delete": {
+        "title": "Eliminar enlaces automáticos",
+        "message": "{{number}} enlaces automáticos existentes se eliminarán en el trabajo en segundo plano. ¿Está seguro de que desea eliminarlos?"
       }
     },
     "wizards": {
@@ -1179,6 +1223,10 @@
           "select-categories": "Seleccionar categorías"
         }
       }
+    },
+    "link-types": {
+      "manual": "Enlace",
+      "automatic": "Enlace automático"
     }
   },
   "permissions": {
@@ -1247,6 +1295,20 @@
       "ProductConfigurationMaximumFiles": {
         "title": "Número máximo de archivos en la sección de configuración",
         "description": "Limitar el número máximo de archivos en la sección de configuración"
+      },
+      "BrandStoreSetting": {
+        "BrandsEnabled": {
+          "title": "Habilitar marcas",
+          "description": "Indicador de marca"
+        },
+        "BrandCatalogId": {
+          "title": "ID de catálogo de marca",
+          "description": "ID de catálogo de las marcas"
+        },
+        "BrandPropertyName": {
+          "title": "Nombre de la propiedad de la marca",
+          "description": "Nombre de la propiedad para la marca"
+        }
       }
     },
     "VirtoCommerce": {

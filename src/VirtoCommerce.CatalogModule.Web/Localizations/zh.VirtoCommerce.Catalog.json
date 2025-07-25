@@ -831,6 +831,32 @@
         "commands": {
           "add": "添加选项"
         }
+      },
+      "brand-setting-details": {
+        "title": "品牌设置",
+        "labels": {
+          "enabled": "启用品牌",
+          "catalog": "品牌目录",
+          "property": "品牌属性"
+        },
+        "placeholders": {
+          "catalog": "选择品牌目录",
+          "property": "选择品牌属性"
+        }
+      },
+      "automatic-links": {
+        "title": "自动链接",
+        "preview-title": "自动链接预览",
+        "fields": {
+          "catalog": {
+            "label": "目录",
+            "placeholder": "选择目录"
+          },
+          "query": {
+            "label": "查询",
+            "placeholder": "输入产品搜索查询"
+          }
+        }
       }
     },
     "exporter-list": {
@@ -909,6 +935,12 @@
       },
       "configuration": {
         "title": "配置"
+      },
+      "brand-settings": {
+        "title": "品牌设置"
+      },
+      "automatic-links": {
+        "title": "自动链接"
       }
     },
     "dialogs": {
@@ -1051,6 +1083,18 @@
       "configuration-save": {
         "title": "保存更改",
         "message": "此配置已被修改。您要保存更改吗？"
+      },
+      "automatic-links-save": {
+        "title": "保存更改",
+        "message": "自动链接设置已修改。是否要保存更改？"
+      },
+      "automatic-links-create": {
+        "title": "创建自动链接",
+        "message": "将会在后台作业中创建 {{number}} 个自动链接。您确定要创建它们吗？"
+      },
+      "automatic-links-delete": {
+        "title": "删除自动链接",
+        "message": "后台作业将删除 {{number}} 个现有自动链接。确定要删除它们吗？"
       }
     },
     "wizards": {
@@ -1179,6 +1223,10 @@
           "select-categories": "选择类别"
         }
       }
+    },
+    "link-types": {
+      "manual": "链接",
+      "automatic": "自动链接"
     }
   },
   "permissions": {
@@ -1247,6 +1295,20 @@
       "ProductConfigurationMaximumFiles": {
         "title": "配置部分中的最大文件数",
         "description": "限制配置部分中的最大文件数"
+      },
+      "BrandStoreSetting": {
+        "BrandsEnabled": {
+          "title": "启用品牌",
+          "description": "品牌功能开关"
+        },
+        "BrandCatalogId": {
+          "title": "品牌目录 ID",
+          "description": "品牌目录ID"
+        },
+        "BrandPropertyName": {
+          "title": "品牌属性名称",
+          "description": "品牌属性名称"
+        }
       }
     },
     "VirtoCommerce": {

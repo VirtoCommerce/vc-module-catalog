@@ -54,6 +54,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         public IQueryable<ProductConfigurationEntity> ProductConfigurations => DbContext.Set<ProductConfigurationEntity>();
         public IQueryable<ProductConfigurationSectionEntity> ProductConfigurationSections => DbContext.Set<ProductConfigurationSectionEntity>();
         public IQueryable<ProductConfigurationOptionEntity> ProductConfigurationOptions => DbContext.Set<ProductConfigurationOptionEntity>();
+        public IQueryable<AutomaticLinkQueryEntity> AutomaticLinkQueries => DbContext.Set<AutomaticLinkQueryEntity>();
 
         public virtual async Task<IList<ProductConfigurationEntity>> GetConfigurationsByIdsAsync(IList<string> ids, CancellationToken cancellationToken)
         {
@@ -708,6 +709,18 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             }
 
             return measures;
+        }
+
+        public virtual async Task<IList<AutomaticLinkQueryEntity>> GetAutomaticLinkQueriesByIdsAsync(IList<string> ids, string responseGroup)
+        {
+            if (ids.IsNullOrEmpty())
+            {
+                return [];
+            }
+
+            return ids.Count == 1
+                ? await AutomaticLinkQueries.Where(x => x.Id == ids.First()).ToListAsync()
+                : await AutomaticLinkQueries.Where(x => ids.Contains(x.Id)).ToListAsync();
         }
 
         protected override void Dispose(bool disposing)

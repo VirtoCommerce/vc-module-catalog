@@ -90,6 +90,20 @@
     max-width: 100px;
 }
 
+.table-descr .label {
+  margin-right: 5px;
+  padding: 0 5px;
+  text-shadow: none;
+  border-radius: 20px;
+  border: 1px solid #999;
+  color: #999;
+}
+
+.table-descr .label.inverse {
+  color: #fff;
+  background-color: #999;
+}
+
 /* Gallery */
 .vc-catalog .gallery
 {
