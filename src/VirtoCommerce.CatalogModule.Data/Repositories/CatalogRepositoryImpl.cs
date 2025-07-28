@@ -17,6 +17,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
     public class CatalogRepositoryImpl : DbContextRepositoryBase<CatalogDbContext>, ICatalogRepository
     {
         private readonly ICatalogRawDatabaseCommand _rawDatabaseCommand;
+        private const int PageSize = 1000;
 
         public CatalogRepositoryImpl(CatalogDbContext dbContext, ICatalogRawDatabaseCommand rawDatabaseCommand)
             : base(dbContext)
@@ -53,6 +54,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         public IQueryable<ProductConfigurationEntity> ProductConfigurations => DbContext.Set<ProductConfigurationEntity>();
         public IQueryable<ProductConfigurationSectionEntity> ProductConfigurationSections => DbContext.Set<ProductConfigurationSectionEntity>();
         public IQueryable<ProductConfigurationOptionEntity> ProductConfigurationOptions => DbContext.Set<ProductConfigurationOptionEntity>();
+        public IQueryable<AutomaticLinkQueryEntity> AutomaticLinkQueries => DbContext.Set<AutomaticLinkQueryEntity>();
 
         public virtual async Task<IList<ProductConfigurationEntity>> GetConfigurationsByIdsAsync(IList<string> ids, CancellationToken cancellationToken)
         {
@@ -374,22 +376,32 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 return Array.Empty<PropertyEntity>();
             }
 
-            //Used breaking query EF performance concept https://msdn.microsoft.com/en-us/data/hh949853.aspx#8
-            var result = await Properties
-                .Where(x => propIds.Contains(x.Id))
-                .Include(x => x.PropertyAttributes)
-                .Include(x => x.DisplayNames)
-                .Include(x => x.ValidationRules)
-                .AsSplitQuery()
-                .ToListAsync();
-
-            if (result.Any() && loadDictValues)
+            var result = new List<PropertyEntity>();
+            // Used breaking query EF performance concept https://msdn.microsoft.com/en-us/data/hh949853.aspx#8
+            // Split query to avoid excessive memory usage for large number of properties
+            foreach (var idsPage in propIds.Paginate(PageSize))
             {
-                await PropertyDictionaryItems
-                    .Include(x => x.DictionaryItemValues)
-                    .Where(x => propIds.Contains(x.PropertyId))
+                var resultBatch = await Properties
+                    .Where(x => idsPage.Contains(x.Id))
+                    .Include(x => x.PropertyAttributes)
+                    .Include(x => x.DisplayNames)
+                    .Include(x => x.ValidationRules)
                     .AsSplitQuery()
-                    .LoadAsync();
+                    .ToListAsync();
+
+                result.AddRange(resultBatch);
+            }
+
+            if (result.Count != 0 && loadDictValues)
+            {
+                foreach (var idsPage in propIds.Paginate(PageSize))
+                {
+                    await PropertyDictionaryItems
+                        .Include(x => x.DictionaryItemValues)
+                        .Where(x => idsPage.Contains(x.PropertyId))
+                        .AsSplitQuery()
+                        .LoadAsync();
+                }
             }
 
             return result;
@@ -697,6 +709,18 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             }
 
             return measures;
+        }
+
+        public virtual async Task<IList<AutomaticLinkQueryEntity>> GetAutomaticLinkQueriesByIdsAsync(IList<string> ids, string responseGroup)
+        {
+            if (ids.IsNullOrEmpty())
+            {
+                return [];
+            }
+
+            return ids.Count == 1
+                ? await AutomaticLinkQueries.Where(x => x.Id == ids.First()).ToListAsync()
+                : await AutomaticLinkQueries.Where(x => ids.Contains(x.Id)).ToListAsync();
         }
 
         protected override void Dispose(bool disposing)

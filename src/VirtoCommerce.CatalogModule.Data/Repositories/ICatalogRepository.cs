@@ -32,6 +32,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         IQueryable<ProductConfigurationEntity> ProductConfigurations { get; }
         IQueryable<ProductConfigurationSectionEntity> ProductConfigurationSections { get; }
         IQueryable<ProductConfigurationOptionEntity> ProductConfigurationOptions { get; }
+        IQueryable<AutomaticLinkQueryEntity> AutomaticLinkQueries { get; }
 
         Task<IList<string>> GetAllSeoDuplicatesIdsAsync();
 
@@ -68,5 +69,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         Task<IList<MeasureEntity>> GetMeasuresByIdsAsync(IList<string> ids);
 
         Task<IList<ProductConfigurationEntity>> GetConfigurationsByIdsAsync(IList<string> ids, CancellationToken cancellationToken);
+
+        Task<IList<AutomaticLinkQueryEntity>> GetAutomaticLinkQueriesByIdsAsync(IList<string> ids, string responseGroup);
     }
 }

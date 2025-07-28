@@ -8,5 +8,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model.Search
         public IEnumerable<string> CategoryIds { get; set; } = new List<string>();
 
         public IEnumerable<string> CatalogIds { get; set; } = new List<string>();
+
+        public bool? IsAutomatic { get; set; }
     }
 }

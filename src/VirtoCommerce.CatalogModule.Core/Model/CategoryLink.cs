@@ -43,6 +43,8 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         /// </summary>
         public string Name => Category?.Name ?? Catalog?.Name;
 
+        public bool IsAutomatic { get; set; }
+
         protected override IEnumerable<object> GetEqualityComponents()
         {
             yield return EntryId;
