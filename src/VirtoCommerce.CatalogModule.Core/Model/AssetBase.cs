@@ -4,7 +4,6 @@ using System.Linq;
 using Newtonsoft.Json;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.Domain;
 using VirtoCommerce.Seo.Core.Models;
 
 namespace VirtoCommerce.CatalogModule.Core.Model
@@ -12,7 +11,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
     /// <summary>
     /// Base class for assets.
     /// </summary>
-    public abstract class AssetBase : AuditableEntity, IHasLanguage, IInheritable, ICloneable, ISeoSupport, IHasOuterId, ICopyable
+    public abstract class AssetBase : AuditableEntity, IHasLanguageCode, IInheritable, ICloneable, ISeoSupport, IHasOuterId, ICopyable
     {
         protected AssetBase(string typeName)
         {

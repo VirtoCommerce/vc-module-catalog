@@ -1,5 +1,5 @@
 namespace VirtoCommerce.CatalogModule.Data.Model;
 
-public class MeasureUnitLocalizedNameEntity : LocalizedStringEntity<MeasureUnitEntity>
+public class MeasureUnitLocalizedNameEntity : Platform.Data.Model.LocalizedStringEntity<MeasureUnitEntity>
 {
 }
