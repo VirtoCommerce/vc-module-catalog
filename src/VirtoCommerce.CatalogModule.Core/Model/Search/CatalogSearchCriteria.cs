@@ -7,5 +7,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model.Search
         public string[] CatalogIds { get; set; }
 
         public string[] OuterIds { get; set; }
+
+        public bool? IsVirtual { get; set; }
     }
 }

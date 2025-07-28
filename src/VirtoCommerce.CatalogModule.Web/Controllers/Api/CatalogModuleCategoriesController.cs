@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Hangfire;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
@@ -11,6 +12,7 @@ using VirtoCommerce.CatalogModule.Core.Extensions;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Authorization;
+using VirtoCommerce.CatalogModule.Data.BackgroundJobs;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Seo.Core.Models;
 
@@ -242,6 +244,22 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             await categoryService.SaveChangesAsync(categories);
             return Ok(categories);
+        }
+
+        [HttpPost("{id}/automatic-links")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+        public ActionResult UpdateAutomaticLinks(string id)
+        {
+            BackgroundJob.Enqueue<AutomaticLinksJob>(x => x.UpdateLinks(id, JobCancellationToken.Null));
+            return NoContent();
+        }
+
+        [HttpDelete("{id}/automatic-links")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+        public ActionResult DeleteAutomaticLinks(string id)
+        {
+            BackgroundJob.Enqueue<AutomaticLinksJob>(x => x.DeleteLinks(id, JobCancellationToken.Null));
+            return NoContent();
         }
     }
 }

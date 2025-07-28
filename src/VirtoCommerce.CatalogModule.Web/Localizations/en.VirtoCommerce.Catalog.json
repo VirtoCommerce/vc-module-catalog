@@ -843,6 +843,20 @@
           "catalog": "Select brands catalog",
           "property": "Select brands property"
         }
+      },
+      "automatic-links": {
+        "title": "Automatic links",
+        "preview-title": "Automatic links preview",
+        "fields": {
+          "catalog": {
+            "label": "Catalog",
+            "placeholder": "Select catalog"
+          },
+          "query": {
+            "label": "Query",
+            "placeholder": "Enter product search query"
+          }
+        }
       }
     },
     "exporter-list": {
@@ -924,6 +938,9 @@
       },
       "brand-settings": {
         "title": "Brand settings"
+      },
+      "automatic-links": {
+        "title": "Automatic links"
       }
     },
     "dialogs": {
@@ -1066,6 +1083,18 @@
       "property-group-delete": {
         "title": "Confirm delete",
         "message": "Are you sure you want to delete the selected property groups?"
+      },
+      "automatic-links-save": {
+        "title": "Save changes",
+        "message": "Automatic link settings have been modified. Do you want to save the changes?"
+      },
+      "automatic-links-create": {
+        "title": "Create automatic links",
+        "message": "{{number}} automatic links will be created in the background job. Are you sure you want to create them?"
+      },
+      "automatic-links-delete": {
+        "title": "Delete automatic links",
+        "message": "{{number}} existing automatic links will be deleted in the background job. Are you sure you want to delete them?"
       }
     },
     "wizards": {
@@ -1194,6 +1223,10 @@
           "select-categories": "Select categories"
         }
       }
+    },
+    "link-types": {
+      "manual": "Link",
+      "automatic": "Automatic link"
     }
   },
   "permissions": {
