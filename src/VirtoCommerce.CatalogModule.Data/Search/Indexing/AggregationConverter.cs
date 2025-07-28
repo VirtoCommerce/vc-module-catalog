@@ -322,7 +322,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 result.Statistics = new Core.Model.Search.AggregationStatistics
                 {
                     Min = aggregationStatistics.Statistics.Min,
-                    Max = aggregationStatistics.Statistics.Max
+                    Max = aggregationStatistics.Statistics.Max,
                 };
             }
 
