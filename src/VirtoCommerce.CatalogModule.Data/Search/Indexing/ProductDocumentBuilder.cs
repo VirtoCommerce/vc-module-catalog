@@ -17,7 +17,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 {
     public class ProductDocumentBuilder : CatalogDocumentBuilder, IIndexSchemaBuilder, IIndexDocumentBuilder
     {
-        protected sealed class ProductAvailability
+        protected static class ProductAvailability
         {
             public const string SoldOut = "SoldOut";
             public const string OutOfStock = "OutOfStock";
