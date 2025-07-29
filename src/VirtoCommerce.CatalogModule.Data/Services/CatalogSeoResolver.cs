@@ -109,42 +109,7 @@ public class CatalogSeoResolver : ISeoResolver
         return [];
     }
 
-    protected virtual async Task<List<SeoInfo>> SearchSeoInfos(string slug, Store store, string languageCode, bool isActive = true)
-    {
-        using var repository = _repositoryFactory();
 
-        var entities = await repository.SeoInfos
-            .Where(x =>
-                x.IsActive == isActive &&
-                x.Keyword == slug &&
-                (x.Category != null && x.Category.IsActive || x.Item != null && x.Item.IsActive) &&
-                (string.IsNullOrEmpty(x.StoreId) || x.StoreId == store.Id) &&
-                (string.IsNullOrEmpty(x.Language) || x.Language == languageCode || x.Language == store.DefaultLanguage))
-            .ToListAsync();
-
-        return entities
-            .Select(x => x.ToModel(AbstractTypeFactory<SeoInfo>.TryCreateInstance()))
-            .OrderByDescending(GetScore)
-            .ToList();
-
-        int GetScore(SeoInfo seoInfo)
-        {
-            var score = 0;
-            var hasLangCriteria = !string.IsNullOrEmpty(languageCode);
-
-            if (seoInfo.StoreId.EqualsIgnoreCase(store.Id))
-            {
-                score += 2;
-            }
-
-            if (hasLangCriteria && seoInfo.LanguageCode.EqualsIgnoreCase(languageCode))
-            {
-                score += 1;
-            }
-
-            return score;
-        }
-    }
     private async Task<IList<Outline>> GetOutlines(string objectType, string objectId, IList<SeoInfo> infos)
     {
         var outlines = objectType switch
@@ -206,5 +171,42 @@ public class CatalogSeoResolver : ISeoResolver
             .Distinct(StringComparer.OrdinalIgnoreCase);
 
         return immediateParentIds.Any(x => parentIds.Contains(x, StringComparer.OrdinalIgnoreCase));
+    }
+
+    protected virtual async Task<List<SeoInfo>> SearchSeoInfos(string slug, Store store, string languageCode, bool isActive = true)
+    {
+        using var repository = _repositoryFactory();
+
+        var entities = await repository.SeoInfos
+            .Where(x =>
+                x.IsActive == isActive &&
+                x.Keyword == slug &&
+                (x.Category != null && x.Category.IsActive || x.Item != null && x.Item.IsActive) &&
+                (string.IsNullOrEmpty(x.StoreId) || x.StoreId == store.Id) &&
+                (string.IsNullOrEmpty(x.Language) || x.Language == languageCode || x.Language == store.DefaultLanguage))
+            .ToListAsync();
+
+        return entities
+            .Select(x => x.ToModel(AbstractTypeFactory<SeoInfo>.TryCreateInstance()))
+            .OrderByDescending(GetScore)
+            .ToList();
+
+        int GetScore(SeoInfo seoInfo)
+        {
+            var score = 0;
+            var hasLangCriteria = !string.IsNullOrEmpty(languageCode);
+
+            if (seoInfo.StoreId.EqualsIgnoreCase(store.Id))
+            {
+                score += 2;
+            }
+
+            if (hasLangCriteria && seoInfo.LanguageCode.EqualsIgnoreCase(languageCode))
+            {
+                score += 1;
+            }
+
+            return score;
+        }
     }
 }
