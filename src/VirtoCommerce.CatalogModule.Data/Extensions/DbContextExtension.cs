@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
 namespace VirtoCommerce.CatalogModule.Data.Extensions;
+
 public static class DbContextExtension
 {
     public static async Task<T[]> ExecuteEntityArrayAsync<T>(this DbContext context, string rawSql, params object[] parameters) where T : new()

@@ -1,4 +1,5 @@
 namespace VirtoCommerce.CatalogModule.Data.Model;
+
 public class CategoryHierarchyItem
 {
     public string Id { get; set; }
