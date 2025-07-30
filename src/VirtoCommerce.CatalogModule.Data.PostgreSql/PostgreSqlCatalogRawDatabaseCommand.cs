@@ -32,13 +32,13 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql
 
             const string commandTemplate = @"
             WITH RECURSIVE CategoryHierarchy AS (
-                SELECT a.""Id"", a.""ParentCategoryId"", 0 AS Depth FROM ""Category"" a
+                SELECT a.""Id"", a.""ParentCategoryId"", 0 AS ""Depth"" FROM ""Category"" a
                 WHERE a.""Id"" IN ({0})
                 UNION ALL
-                SELECT c.""Id"", c.""ParentCategoryId"", ch.Depth + 1 FROM ""Category"" c
+                SELECT c.""Id"", c.""ParentCategoryId"", (ch.""Depth"" + 1) AS ""Depth"" FROM ""Category"" c
                 INNER JOIN CategoryHierarchy ch ON c.""ParentCategoryId"" = ch.""Id""
             )
-            SELECT ""Id"" FROM CategoryHierarchy WHERE ""Id"" NOT IN ({0});
+            SELECT ""Id"", ""ParentCategoryId"", ""Depth"" FROM CategoryHierarchy WHERE ""Id"" NOT IN ({0});
             ";
 
             foreach (var categoryIdsPage in categoryIds.Paginate(batchSize))
