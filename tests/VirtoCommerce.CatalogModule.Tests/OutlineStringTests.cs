@@ -14,6 +14,7 @@ public class OutlineStringTests
     [InlineData("1___name1", "1")]
     [InlineData("1/2___name2", "2")]
     [InlineData("1/2/3___name3", "3")]
+    [InlineData("1/2/3____name3", "3_")]
     public void GetLastItemId_ReturnsExpectedResult(string outline, string expectedId)
     {
         // Act

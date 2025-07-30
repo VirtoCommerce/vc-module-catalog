@@ -27,14 +27,13 @@ public static class OutlineString
             return null;
         }
 
-        // Find the start of the last item (after the last '/')
         var lastItemDelimiterIndex = outlineString.LastIndexOf(ItemDelimiter);
 
         var lastItemSpan = lastItemDelimiterIndex >= 0
             ? outlineString[(lastItemDelimiterIndex + 1)..]
             : outlineString;
 
-        var nameDelimiterIndex = lastItemSpan.IndexOf(NameDelimiter.AsSpan());
+        var nameDelimiterIndex = lastItemSpan.LastIndexOf(NameDelimiter.AsSpan());
 
         var idSpan = nameDelimiterIndex >= 0
             ? lastItemSpan[..nameDelimiterIndex]
