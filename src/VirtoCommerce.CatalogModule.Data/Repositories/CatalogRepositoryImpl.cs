@@ -581,9 +581,9 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 allCategoryIds.AddRange(await GetChildCategoriesAsync(ids));
 
                 // Remove categories in descending order by depth to avoid foreign key constraint violations
-                foreach (var depthGrop in allCategoryIds.GroupBy(x => x.Depth).OrderByDescending(x => x.Key))
+                foreach (var depthGroup in allCategoryIds.GroupBy(x => x.Depth).OrderByDescending(x => x.Key))
                 {
-                    var categoryIdsToRemove = depthGrop.Select(x => x.Id).ToList();
+                    var categoryIdsToRemove = depthGroup.Select(x => x.Id).ToList();
 
                     // Remove all products that belong to categories to remove
                     var itemIds = await Items
