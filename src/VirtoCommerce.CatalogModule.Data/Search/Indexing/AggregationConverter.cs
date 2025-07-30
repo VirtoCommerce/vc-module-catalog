@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Common;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
+using VirtoCommerce.CatalogModule.Core.Outlines;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
@@ -106,7 +106,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             var result = new TermAggregationRequest
             {
                 Id = $"{fieldName}-{value.Id}",
-                Filter = existingFilters.And(valueFilter)
+                Filter = existingFilters.And(valueFilter),
             };
 
             return result;
@@ -163,7 +163,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         {
             if (aggregationResponses == null || !aggregationResponses.Any())
             {
-                return Array.Empty<Aggregation>();
+                return [];
             }
 
             var result = new List<Aggregation>();
@@ -334,16 +334,16 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             var result = aggregationResponseValues
                 .Select(v =>
                 {
-                    if (v.Id.Contains(ModuleConstants.OutlineDelimiter))
+                    if (v.Id.Contains(OutlineString.NameDelimiter))
                     {
-                        var aggregationIdName = v.Id.Split(ModuleConstants.OutlineDelimiter);
+                        var aggregationIdName = v.Id.Split(OutlineString.NameDelimiter);
                         if (aggregationIdName.Length > 1)
                         {
                             return new AggregationItem
                             {
                                 Value = v.Id,
                                 Count = (int)v.Count,
-                                Labels = new[] { new AggregationLabel { Label = CreateLabel(aggregationIdName[1]) } }
+                                Labels = [new AggregationLabel { Label = CreateLabel(aggregationIdName[1]) }],
                             };
                         }
                     }
@@ -351,7 +351,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                     return new AggregationItem
                     {
                         Value = v.Id,
-                        Count = (int)v.Count
+                        Count = (int)v.Count,
                     };
                 })
                 .ToList();
@@ -405,9 +405,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         /// <summary>
         /// Filter outline aggregation items by requested outline or catalog.
         /// </summary>
-        /// <param name="aggregation"></param>
-        /// <param name="criteria"></param>
-        /// <param name="expandChild"></param>
         protected virtual IList<AggregationResponseValue> FilterOutlineAggregationItems(IList<AggregationResponseValue> values, string parentOutline, bool expandChild)
         {
             if (string.IsNullOrEmpty(parentOutline) || values.IsNullOrEmpty())
@@ -416,15 +413,16 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             }
 
             // Exclude direct outlines: {CatalogId}/{CategoryId}
-            var allDirectCategoryOutlines = values
-                .Select(v => v.Id.Split("/"))
-                .Where(o => o?.Length > 2)
-                .Select(o => o.First() + "/" + o.Last()).Distinct().ToDictionary(x => x);
+            var directOutlines = values
+                .Select(value => value.Id.Split(OutlineString.ItemDelimiter))
+                .Where(items => items.Length > 2)
+                .Select(items => OutlineString.Build([items.First(), items.Last()]))
+                .ToHashSet();
 
             var filteredValues = values
                 .Where(x =>
                     IsChildOutline(x.Id, parentOutline, expandChild) &&
-                    !allDirectCategoryOutlines.ContainsKey(x.Id));
+                    !directOutlines.Contains(x.Id));
 
             return filteredValues.ToArray();
         }
@@ -436,10 +434,10 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 return false;
             }
 
-            return outline.StartsWith(parentOutline + "/") &&
+            return outline.StartsWith(parentOutline + OutlineString.ItemDelimiter) &&
                 (expandChild
-                    ? outline.IndexOf('/', parentOutline.Length + 1) != -1
-                    : outline.IndexOf('/', parentOutline.Length + 1) == -1);
+                    ? outline.IndexOf(OutlineString.ItemDelimiter, parentOutline.Length + 1) != -1
+                    : outline.IndexOf(OutlineString.ItemDelimiter, parentOutline.Length + 1) == -1);
         }
 
         protected virtual IList<AggregationItem> GetRangeAggregationItems(string aggregationId, IList<RangeFilterValue> values, IList<AggregationResponse> aggregationResponses)
@@ -479,7 +477,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         protected virtual async Task AddLabelsAsync(IList<Aggregation> aggregations, string catalogId, IList<IBrowseFilter> browseFilters)
         {
-            var allProperties = await _propertyService.GetAllCatalogPropertiesAsync(catalogId);
+            var allCatalogProperties = await _propertyService.GetAllCatalogPropertiesAsync(catalogId);
+            var allProperties = allCatalogProperties as IList<Property> ?? allCatalogProperties.ToList();
 
             foreach (var aggregation in aggregations)
             {
@@ -491,32 +490,32 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 }
             }
 
-            var outlineNamedAggregations = aggregations.Where(x => x.Field == "__outline_named");
+            var outlineNamedAggregations = aggregations.Where(x => x.Field == "__outline_named").ToList();
             await TryAddLabelsAsyncForOutlinesItems(outlineNamedAggregations);
         }
 
-        private async Task TryAddLabelsAsyncForOutlinesItems(IEnumerable<Aggregation> outlineAggregations)
+        private async Task TryAddLabelsAsyncForOutlinesItems(List<Aggregation> outlineAggregations)
         {
-            var caregoriesDictionary = new Dictionary<string, Category>();
+            var categoriesDictionary = new Dictionary<string, Category>();
 
             // Collect all category ids
             foreach (var outlineAggregation in outlineAggregations)
             {
                 foreach (var aggregationItem in outlineAggregation.Items)
                 {
-                    var categoryId = GetNamedOutlineId(aggregationItem.Value as string);
+                    var categoryId = OutlineString.GetLastItemId(aggregationItem.Value as string);
                     if (categoryId != null)
                     {
-                        caregoriesDictionary.TryAdd(categoryId, null);
+                        categoriesDictionary.TryAdd(categoryId, null);
                     }
                 }
             }
 
             // Load categories
-            var categries = await _categoryService.GetAsync(caregoriesDictionary.Keys.ToArray(), clone: false);
-            foreach (var category in categries)
+            var categories = await _categoryService.GetAsync(categoriesDictionary.Keys.ToArray(), clone: false);
+            foreach (var category in categories)
             {
-                caregoriesDictionary[category.Id] = category;
+                categoriesDictionary[category.Id] = category;
             }
 
             // Add localized category names to labels
@@ -524,44 +523,29 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             {
                 foreach (var aggregationItem in outlineAggregation.Items)
                 {
-                    var categoryId = GetNamedOutlineId(aggregationItem.Value as string);
+                    var categoryId = OutlineString.GetLastItemId(aggregationItem.Value as string);
                     if (categoryId != null &&
-                        caregoriesDictionary.TryGetValue(categoryId, out var category) &&
+                        categoriesDictionary.TryGetValue(categoryId, out var category) &&
                         category != null &&
                         category.LocalizedName.Values.Count > 0)
                     {
-                        var lozalizedLabels = category.LocalizedName.Values
+                        var localizedLabels = category.LocalizedName.Values
                             .Select(x => new AggregationLabel { Language = x.Key, Label = !string.IsNullOrEmpty(x.Value) ? x.Value : category.Name }).ToList();
 
                         var defaultCategoryLabel = aggregationItem.Labels.FirstOrDefault(x => x.Language == null);
                         if (defaultCategoryLabel != null)
                         {
                             defaultCategoryLabel.Label = category.Name;
-                            lozalizedLabels.Add(defaultCategoryLabel);
+                            localizedLabels.Add(defaultCategoryLabel);
                         }
 
-                        aggregationItem.Labels = lozalizedLabels.ToArray();
+                        aggregationItem.Labels = localizedLabels.ToArray();
                     }
                 }
             }
         }
 
-        private static string GetNamedOutlineId(string namedOutlineValue)
-        {
-            if (string.IsNullOrEmpty(namedOutlineValue))
-            {
-                return null;
-            }
-
-            // Outline structure: catalog/category1/.../categoryN/current-category-id___current-category-name
-            var outlineParts = namedOutlineValue.Split("/", StringSplitOptions.RemoveEmptyEntries);
-            var namedOutline = outlineParts[^1];
-
-            var namedOutlineParts = namedOutline.Split(ModuleConstants.OutlineDelimiter, StringSplitOptions.RemoveEmptyEntries);
-            return namedOutlineParts.Length == 2 ? namedOutlineParts[0] : namedOutline;
-        }
-
-        private async Task<bool> TryAddLabelsAsyncForProperty(IEnumerable<Property> allProperties, Aggregation aggregation, IList<IBrowseFilter> browseFilters)
+        private async Task TryAddLabelsAsyncForProperty(IEnumerable<Property> allProperties, Aggregation aggregation, IList<IBrowseFilter> browseFilters)
         {
             IBrowseFilter filter = browseFilters.OfType<AttributeFilter>().FirstOrDefault(f => f.IndexFieldName.EqualsIgnoreCase(aggregation.Field));
             filter ??= browseFilters.OfType<RangeFilter>().FirstOrDefault(f => f.IndexFieldName.EqualsIgnoreCase(aggregation.Field));
@@ -569,9 +553,9 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             // There can be many properties with the same name
             var properties = allProperties.Where(p => p.Name.EqualsIgnoreCase(filter?.Key ?? aggregation.Field)).ToArray();
 
-            if (!properties.Any())
+            if (properties.Length == 0)
             {
-                return false;
+                return;
             }
 
             var allPropertyLabels = properties.SelectMany(p => p.DisplayNames)
@@ -601,8 +585,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 aggregationItem.Value = pair.Key;
                 aggregationItem.Labels = GetFirstLabelForEachLanguage(pair.Value);
             }
-
-            return true;
         }
 
         protected virtual Task<bool> TryAddLabelsAsyncForOutline(Aggregation aggregation)
@@ -610,17 +592,17 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             // Add Label For Outline Named
             if (aggregation.Field.EqualsIgnoreCase("__outline_named"))
             {
-                aggregation.Labels = new AggregationLabel[] { new AggregationLabel { Label = "Categories" } };
+                aggregation.Labels = [new AggregationLabel { Label = "Categories" }];
                 return Task.FromResult(true);
             }
 
             // Add Label For Outline and Path
             if (aggregation.Field.EqualsIgnoreCase("__outline") || aggregation.Field.EqualsIgnoreCase("__path"))
             {
-                aggregation.Labels = new AggregationLabel[] { new AggregationLabel { Label = "Categories" } };
+                aggregation.Labels = [new AggregationLabel { Label = "Categories" }];
                 foreach (var aggregationItem in aggregation.Items)
                 {
-                    aggregationItem.Labels = new AggregationLabel[] { new AggregationLabel { Label = ((string)aggregationItem.Value).Split('/').Last() } };
+                    aggregationItem.Labels = [new AggregationLabel { Label = OutlineString.GetLastItemId((string)aggregationItem.Value) }];
                 }
                 return Task.FromResult(true);
             }

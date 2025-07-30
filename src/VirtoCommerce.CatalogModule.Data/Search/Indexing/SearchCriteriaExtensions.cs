@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Core.Common;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
+using VirtoCommerce.CatalogModule.Core.Outlines;
 
 namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 {
@@ -12,7 +13,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         {
             var allNames = criteria
                 .GetRawOutlines()
-                .Select(outline => StringsHelper.JoinNonEmptyStrings("_", "priority", criteria.CatalogId, outline.Split('/').LastOrDefault()).ToLowerInvariant())
+                .Select(outline => StringsHelper.JoinNonEmptyStrings("_", "priority", criteria.CatalogId, OutlineString.GetLastItemId(outline)).ToLowerInvariant())
                 .ToList();
 
             allNames.Add("priority");
