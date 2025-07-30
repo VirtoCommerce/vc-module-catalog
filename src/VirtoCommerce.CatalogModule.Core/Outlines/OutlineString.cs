@@ -20,25 +20,44 @@ public static class OutlineString
             : string.Join(NameDelimiter, outlineString, lastItemName);
     }
 
-    public static string GetLastItemId(ReadOnlySpan<char> outlineString)
+    public static string GetLastItem(ReadOnlySpan<char> outline)
     {
-        if (outlineString.IsEmpty)
+        if (outline.IsEmpty)
         {
             return null;
         }
 
-        var lastItemDelimiterIndex = outlineString.LastIndexOf(ItemDelimiter);
+        var lastItemSpan = GetLastItemSpan(outline);
 
-        var lastItemSpan = lastItemDelimiterIndex >= 0
-            ? outlineString[(lastItemDelimiterIndex + 1)..]
-            : outlineString;
+        return lastItemSpan.ToString();
+    }
 
-        var nameDelimiterIndex = lastItemSpan.LastIndexOf(NameDelimiter.AsSpan());
+    public static string GetLastItemId(ReadOnlySpan<char> outline)
+    {
+        if (outline.IsEmpty)
+        {
+            return null;
+        }
 
-        var idSpan = nameDelimiterIndex >= 0
-            ? lastItemSpan[..nameDelimiterIndex]
-            : lastItemSpan;
+        var lastItem = GetLastItemSpan(outline);
+        var nameDelimiterIndex = lastItem.LastIndexOf(NameDelimiter.AsSpan());
 
-        return idSpan.ToString();
+        var id = nameDelimiterIndex >= 0
+            ? lastItem[..nameDelimiterIndex]
+            : lastItem;
+
+        return id.ToString();
+    }
+
+
+    private static ReadOnlySpan<char> GetLastItemSpan(ReadOnlySpan<char> outline)
+    {
+        var lastItemDelimiterIndex = outline.LastIndexOf(ItemDelimiter);
+
+        var lastItem = lastItemDelimiterIndex >= 0
+            ? outline[(lastItemDelimiterIndex + 1)..]
+            : outline;
+
+        return lastItem;
     }
 }

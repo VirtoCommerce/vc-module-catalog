@@ -602,7 +602,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 aggregation.Labels = [new AggregationLabel { Label = "Categories" }];
                 foreach (var aggregationItem in aggregation.Items)
                 {
-                    aggregationItem.Labels = [new AggregationLabel { Label = OutlineString.GetLastItemId((string)aggregationItem.Value) }];
+                    aggregationItem.Labels = [new AggregationLabel { Label = OutlineString.GetLastItem((string)aggregationItem.Value) }];
                 }
                 return Task.FromResult(true);
             }
