@@ -22,6 +22,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         public List<CatalogProduct> Products { get; private set; }
         public List<Category> Categories { get; private set; }
         public List<SeoInfo> SeoInfos { get; private set; }
+        public List<Catalog> Catalogs { get; private set; }
 
         public CatalogHierarchyHelper(string catalogId)
         {
@@ -30,6 +31,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             Products = [];
             Categories = [];
             SeoInfos = [];
+            Catalogs = [];
         }
 
         public void AddProduct(string productId, params string[] parentPaths)
@@ -38,6 +40,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             {
                 Id = productId,
                 Outlines = CreateOutlines(SeoProduct, productId, parentPaths),
+                IsActive = true
             };
 
             Products.Add(product);
@@ -49,9 +52,21 @@ namespace VirtoCommerce.CatalogModule.Tests
             {
                 Id = categoryId,
                 Outlines = CreateOutlines(SeoCategory, categoryId, parentPaths),
+                IsActive = true
             };
 
             Categories.Add(category);
+        }
+
+        public void AddCatalog(string catalogId)
+        {
+            var catalog = new Catalog
+            {
+                Id = catalogId,
+
+            };
+
+            Catalogs.Add(catalog);
         }
 
         private static List<Outline> CreateOutlines(string objectType, string objectId, string[] parentPaths)
@@ -89,6 +104,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                 StoreId = storeId,
                 LanguageCode = languageCode
             };
+
             SeoInfos.Add(seoInfo);
         }
 
@@ -145,6 +161,31 @@ namespace VirtoCommerce.CatalogModule.Tests
                 IsActive = x.IsActive
             }).ToList().AsQueryable();
 
+            var productEntities = Products.Select(x => new ItemEntity
+            {
+                Id = x.Id,
+                CatalogId = _catalogId,
+                Code = x.Id,
+                Name = x.Id,
+                IsActive = x.IsActive.Value
+            }).ToList().AsQueryable();
+
+            var categoryEntities = Categories.Select(x => new CategoryEntity
+            {
+                Id = x.Id,
+                CatalogId = _catalogId,
+                Code = x.Id,
+                Name = x.Id,
+                IsActive = x.IsActive.Value
+            }).ToList().AsQueryable();
+
+            var catalogEntities = Catalogs.Select(x => new CatalogEntity
+            {
+                Id = x.Id,
+                Name = x.Id,
+                DefaultLanguage = "en-US",
+            }).ToList().AsQueryable();
+
             var options = new DbContextOptionsBuilder<CatalogDbContext>()
                 .UseInMemoryDatabase(databaseName: $"TestDb{Guid.NewGuid():N}")
                 .Options;
@@ -153,8 +194,20 @@ namespace VirtoCommerce.CatalogModule.Tests
             context.Set<SeoInfoEntity>().AddRange(seoInfoEntities);
             context.SaveChanges();
 
+            context.Set<ItemEntity>().AddRange(productEntities);
+            context.SaveChanges();
+
+            context.Set<CategoryEntity>().AddRange(categoryEntities);
+            context.SaveChanges();
+
+            context.Set<CatalogEntity>().AddRange(catalogEntities);
+            context.SaveChanges();
+
             var repository = new Mock<ICatalogRepository>();
             repository.Setup(r => r.SeoInfos).Returns(context.Set<SeoInfoEntity>());
+            repository.Setup(r => r.Items).Returns(context.Set<ItemEntity>());
+            repository.Setup(r => r.Categories).Returns(context.Set<CategoryEntity>());
+            repository.Setup(r => r.Catalogs).Returns(context.Set<CatalogEntity>());
 
             repositoryFactoryMock.Setup(f => f()).Returns(repository.Object);
             return repositoryFactoryMock;

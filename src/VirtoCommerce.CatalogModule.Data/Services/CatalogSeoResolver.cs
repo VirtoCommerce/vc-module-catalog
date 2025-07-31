@@ -181,7 +181,7 @@ public class CatalogSeoResolver : ISeoResolver
             .Where(x =>
                 x.IsActive == isActive &&
                 x.Keyword == slug &&
-                (x.Category != null && x.Category.IsActive || x.Item != null && x.Item.IsActive) &&
+                (x.Category != null && x.Category.IsActive || x.Item != null && x.Item.IsActive || x.Catalog != null) &&
                 (string.IsNullOrEmpty(x.StoreId) || x.StoreId == store.Id) &&
                 (string.IsNullOrEmpty(x.Language) || x.Language == languageCode || x.Language == store.DefaultLanguage))
             .ToListAsync();
