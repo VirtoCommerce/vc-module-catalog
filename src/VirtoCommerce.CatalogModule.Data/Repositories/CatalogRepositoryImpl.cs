@@ -237,7 +237,6 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             // Use breaking query EF performance concept https://docs.microsoft.com/en-us/ef/ef6/fundamentals/performance/perf-whitepaper#8-loading-related-entities
             var result = await Items
                 .Include(x => x.LocalizedNames)
-                .Include(x => x.Images)
                 .Where(x => itemIds.Contains(x.Id))
                 .AsSplitQuery()
                 .ToListAsync();
@@ -275,6 +274,11 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 if (itemResponseGroup.HasFlag(ItemResponseGroup.Links))
                 {
                     await CategoryItemRelations.Where(x => itemIds.Contains(x.ItemId)).LoadAsync();
+                }
+
+                if (itemResponseGroup.HasFlag(ItemResponseGroup.WithImages))
+                {
+                    await Images.Where(x => itemIds.Contains(x.ItemId)).LoadAsync();
                 }
 
                 if (itemResponseGroup.HasFlag(ItemResponseGroup.ItemAssets))
