@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
+using VirtoCommerce.CatalogModule.Core.Outlines;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Caching;
@@ -258,10 +259,10 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             var outlineStrings = GetOutlineStrings(product.Outlines);
             document.AddFilterableCollection("__outline", outlineStrings);
 
-            document.AddFilterableCollection("__outline_named", GetOutlineStrings(product.Outlines, getNameLatestItem: true));
+            document.AddFilterableCollection("__outline_named", GetOutlineStrings(product.Outlines, withName: true));
 
             // Add all physical and virtual paths
-            document.AddFilterableCollection("__path", product.Outlines.Select(x => string.Join("/", x.Items.Take(x.Items.Count - 1).Select(i => i.Id))).ToList());
+            document.AddFilterableCollection("__path", product.Outlines.Select(x => OutlineString.Build(x.Items.Take(x.Items.Count - 1).Select(i => i.Id))).ToList());
 
             // Types of properties which values should be added to the searchable __content field
             var contentPropertyTypes = new[] { PropertyType.Product, PropertyType.Variation };

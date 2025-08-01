@@ -118,18 +118,17 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             }
 
             // Add outlines to search index
-            var outlineStrings = GetOutlineStrings(category.Outlines);
-            foreach (var outline in outlineStrings)
+            foreach (var outline in GetOutlineStrings(category.Outlines))
             {
                 document.AddFilterableCollection("__outline", outline.ToLowerInvariant());
             }
 
-            foreach (var outlineItem in GetOutlineStrings(category.Outlines, getNameLatestItem: true))
+            foreach (var outline in GetOutlineStrings(category.Outlines, withName: true))
             {
-                document.AddFilterableCollection("__outline_named", outlineItem);
+                document.AddFilterableCollection("__outline_named", outline);
             }
 
-            IndexCustomProperties(document, category.Properties, new[] { PropertyType.Category });
+            IndexCustomProperties(document, category.Properties, [PropertyType.Category]);
 
             // Index product descriptions
             IndexDescriptions(document, category.Descriptions);

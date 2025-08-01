@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Moq;
-using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Outlines;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Data.Search.Indexing;
@@ -13,13 +12,13 @@ namespace VirtoCommerce.CatalogModule.Tests
     public class CatalogDocumentBuilderTests
     {
         [Theory, MemberData(nameof(OutlineData))]
-        public void GetOutlineStrings_GetPath(Outline[] outlines, bool getNameLatestItem, string[] expectedResult)
+        public void GetOutlineStrings_GetPath(Outline[] outlines, bool withName, string[] expectedResult)
         {
             //Arrange
             var builder = GetFakeCatalogDocumentBuilder();
 
             //Act
-            var result = builder.GetOutlineStringsPublic(outlines, getNameLatestItem);
+            var result = builder.GetOutlineStringsPublic(outlines, withName);
 
             //Assert
             Assert.Equal(expectedResult, result);
@@ -32,18 +31,20 @@ namespace VirtoCommerce.CatalogModule.Tests
             var builder = GetFakeCatalogDocumentBuilder();
             var outlines = new[] { new Outline
                         {
-                            Items = new[] {
+                            Items =
+                            [
                                 new OutlineItem { Id = "C", Name = "catalog" },
                                 new OutlineItem { Id = "C1", Name = "category1" },
                                 new OutlineItem { Id = "S1", Name = "subcategory1" },
                                 new OutlineItem { Id = "P1", Name = "product1" },
-                            } } };
+                            ]
+                        } };
 
             //Act
             var result = builder.GetOutlineStringsPublic(outlines, true);
 
             //Assert
-            Assert.DoesNotContain(result, outline => outline.Any(c => char.IsUpper(c)));
+            Assert.DoesNotContain(result, outline => outline.Any(char.IsUpper));
         }
 
         private FakeCatalogDocumentBuilder GetFakeCatalogDocumentBuilder()
@@ -55,103 +56,112 @@ namespace VirtoCommerce.CatalogModule.Tests
         {
             get
             {
-                return new[]
-                {
-                    new object[] {
+                return
+                [
+                    [
                         new[] { new Outline
                         {
-                            Items = new[] {
+                            Items =
+                            [
                                 new OutlineItem { Id = "1", Name = "catalog" },
                                 new OutlineItem { Id = "11", Name = "category1" },
                                 new OutlineItem { Id = "111", Name = "product1" },
-                            } } }, false, new [] { "1/11", "1" } },
-                    new object[] {
+                            ]
+                        } }, false, new [] { "1/11", "1" },
+                    ],
+                    [
                         new[] { new Outline
                         {
-                            Items = new[] {
+                            Items =
+                            [
                                 new OutlineItem { Id = "1", Name = "catalog" },
                                 new OutlineItem { Id = "11", Name = "category1" },
                                 new OutlineItem { Id = "12", Name = "category2" },
                                 new OutlineItem { Id = "111", Name = "product1" },
-                            } } }, false, new [] { "1/11/12", "1/11", "1", "1/12" } },
-                    new object[] {
+                            ]
+                        } }, false, new [] { "1/11/12", "1/11", "1", "1/12" },
+                    ],
+                    [
                         new[] { new Outline
                         {
-                            Items = new[] {
+                            Items =
+                            [
                                 new OutlineItem { Id = "1", Name = "catalog" },
                                 new OutlineItem { Id = "11", Name = "category1" },
                                 new OutlineItem { Id = "12", Name = "category2" },
                                 new OutlineItem { Id = "13", Name = "category3" },
                                 new OutlineItem { Id = "111", Name = "product1" },
-                            } } }, false, new [] { "1/11/12/13", "1/11/12", "1/11", "1", "1/12", "1/13" } },
-                    new object[] {
+                            ]
+                        } }, false, new [] { "1/11/12/13", "1/11/12", "1/11", "1", "1/12", "1/13" },
+                    ],
+                    [
                         new[] { new Outline
                         {
-                            Items = new[] {
+                            Items =
+                            [
                                 new OutlineItem { Id = "1", Name = "Catalog" },
                                 new OutlineItem { Id = "11", Name = "Category1" },
                                 new OutlineItem { Id = "111", Name = "Product1" },
-                            } } }, true,
+                            ]
+                        } }, true,
                         new []
                         {
-                            $"1/11{ModuleConstants.OutlineDelimiter}Category1",
-                            $"1{ModuleConstants.OutlineDelimiter}Catalog"
-                        } },
-                    new object[] {
+                            $"1/11{OutlineString.NameDelimiter}Category1",
+                            $"1{OutlineString.NameDelimiter}Catalog",
+                        },
+                    ],
+                    [
                         new[] { new Outline
                         {
-                            Items = new[] {
+                            Items =
+                            [
                                 new OutlineItem { Id = "1", Name = "Catalog" },
                                 new OutlineItem { Id = "11", Name = "Category1" },
                                 new OutlineItem { Id = "12", Name = "Category2" },
                                 new OutlineItem { Id = "111", Name = "Product1" },
-                            } } }, true,
+                            ]
+                        } }, true,
                         new []
                         {
-                            $"1/11/12{ModuleConstants.OutlineDelimiter}Category2",
-                            $"1/11{ModuleConstants.OutlineDelimiter}Category1",
-                            $"1{ModuleConstants.OutlineDelimiter}Catalog",
-                            $"1/12{ModuleConstants.OutlineDelimiter}Category2"
-                        } },
-                    new object[] {
+                            $"1/11/12{OutlineString.NameDelimiter}Category2",
+                            $"1/11{OutlineString.NameDelimiter}Category1",
+                            $"1{OutlineString.NameDelimiter}Catalog",
+                            $"1/12{OutlineString.NameDelimiter}Category2",
+                        },
+                    ],
+                    [
                         new[] { new Outline
                         {
-                            Items = new[] {
+                            Items =
+                            [
                                 new OutlineItem { Id = "1", Name = "Catalog" },
                                 new OutlineItem { Id = "11", Name = "Category1" },
                                 new OutlineItem { Id = "12", Name = "Category2" },
                                 new OutlineItem { Id = "13", Name = "Category3" },
                                 new OutlineItem { Id = "111", Name = "Product1" },
-                            } } }, true,
+                            ]
+                        } }, true,
                         new []
                         {
-                            $"1/11/12/13{ModuleConstants.OutlineDelimiter}Category3",
-                            $"1/11/12{ModuleConstants.OutlineDelimiter}Category2",
-                            $"1/11{ModuleConstants.OutlineDelimiter}Category1",
-                            $"1{ModuleConstants.OutlineDelimiter}Catalog",
-                            $"1/12{ModuleConstants.OutlineDelimiter}Category2",
-                            $"1/13{ModuleConstants.OutlineDelimiter}Category3"
-                        } },
-                };
+                            $"1/11/12/13{OutlineString.NameDelimiter}Category3",
+                            $"1/11/12{OutlineString.NameDelimiter}Category2",
+                            $"1/11{OutlineString.NameDelimiter}Category1",
+                            $"1{OutlineString.NameDelimiter}Catalog",
+                            $"1/12{OutlineString.NameDelimiter}Category2",
+                            $"1/13{OutlineString.NameDelimiter}Category3",
+                        },
+                    ],
+                ];
             }
         }
     }
 
-    class FakeCatalogDocumentBuilder : CatalogDocumentBuilder
+    internal class FakeCatalogDocumentBuilder(ISettingsManager settingsManager, IPropertySearchService propertySearchService)
+        : CatalogDocumentBuilder(settingsManager, propertySearchService)
     {
-        public FakeCatalogDocumentBuilder(ISettingsManager settingsManager, IPropertySearchService propertySearchService)
-            : base(settingsManager, propertySearchService)
+        public string[] GetOutlineStringsPublic(IEnumerable<Outline> outlines, bool withName = false)
         {
-        }
-
-        public string[] GetOutlineStringsPublic(IEnumerable<Outline> outlines, bool getNameLatestItem = false)
-        {
-            return GetOutlineStrings(outlines, getNameLatestItem);
-        }
-
-        protected override string[] GetOutlineStrings(IEnumerable<Outline> outlines, bool getNameLatestItem = false)
-        {
-            return base.GetOutlineStrings(outlines, getNameLatestItem);
+            return GetOutlineStrings(outlines, withName);
         }
     }
 }

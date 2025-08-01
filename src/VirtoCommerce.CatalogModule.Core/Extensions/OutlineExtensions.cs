@@ -134,7 +134,7 @@ public static class OutlineExtensions
             return null;
         }
 
-        return string.Join('/', ids);
+        return OutlineString.Build(ids);
     }
 
 

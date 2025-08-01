@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using VirtoCommerce.CatalogModule.Core.Common;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
+using VirtoCommerce.CatalogModule.Core.Outlines;
+using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 {
@@ -12,12 +14,15 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         {
             var allNames = criteria
                 .GetRawOutlines()
-                .Select(outline => StringsHelper.JoinNonEmptyStrings("_", "priority", criteria.CatalogId, outline.Split('/').LastOrDefault()).ToLowerInvariant())
+                .Select(outline => StringsHelper.JoinNonEmptyStrings("_", "priority", criteria.CatalogId, OutlineString.GetLastItem(outline)).ToLowerInvariant())
                 .ToList();
 
             allNames.Add("priority");
 
-            var result = allNames.Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
+            var result = allNames
+                .DistinctIgnoreCase()
+                .ToArray();
+
             return result;
         }
 
@@ -26,7 +31,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             var result = criteria
                 .GetRawOutlines()
                 .Select(outline => StringsHelper.JoinNonEmptyStrings("/", criteria.CatalogId, outline).ToLowerInvariant().Replace("//", "/"))
-                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .DistinctIgnoreCase()
                 .ToArray();
 
             return result;
@@ -49,7 +54,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             var result = outlines
                 .Where(o => !string.IsNullOrEmpty(o))
                 .Select(o => o.TrimEnd('*'))
-                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .DistinctIgnoreCase()
                 .ToArray();
 
             return result;
@@ -59,20 +64,22 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         {
             var result = new List<StringKeyValues>();
             const string commaEscapeString = "%x2C";
+
             if (criteria.Terms != null)
             {
-                var nameValueDelimeter = new[] { ':' };
-                var valuesDelimeter = new[] { ',' };
+                var nameValueDelimiter = new[] { ':' };
+                var valuesDelimiter = new[] { ',' };
 
                 result.AddRange(criteria.Terms
-                    .Select(item => item.Split(nameValueDelimeter, 2))
+                    .Select(item => item.Split(nameValueDelimiter, 2))
                     .Where(item => item.Length == 2)
                     .Select(item => new StringKeyValues
                     {
                         Key = item[0],
-                        Values = item[1].Split(valuesDelimeter, StringSplitOptions.RemoveEmptyEntries)
-                            .Select(x => x?.Replace(commaEscapeString, ","))
-                            .ToArray()
+                        Values = item[1]
+                            .Split(valuesDelimiter, StringSplitOptions.RemoveEmptyEntries)
+                            .Select(x => x.Replace(commaEscapeString, ","))
+                            .ToArray(),
                     }));
             }
 
