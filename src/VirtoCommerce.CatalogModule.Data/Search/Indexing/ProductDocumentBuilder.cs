@@ -109,6 +109,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 var doc = await CreateDocumentAsync(product);
                 result.Add(doc);
 
+                doc.AggregationKey = product.Id;
+
                 //Index product variants by separate chunked requests for performance reason
                 if (product.MainProductId == null)
                 {
@@ -123,7 +125,10 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
                         foreach (var variation in productVariations.Results)
                         {
-                            result.Add(await CreateDocumentAsync(variation, product));
+                            var variationDoc = await CreateDocumentAsync(variation, product);
+                            result.Add(variationDoc);
+
+                            variationDoc.AggregationKey = product.Id;
 
                             if (variation.IsActive.HasValue && variation.IsActive.Value)
                             {
