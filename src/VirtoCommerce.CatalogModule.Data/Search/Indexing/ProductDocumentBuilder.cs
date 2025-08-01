@@ -17,6 +17,15 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 {
     public class ProductDocumentBuilder : CatalogDocumentBuilder, IIndexSchemaBuilder, IIndexDocumentBuilder
     {
+        protected static class ProductAvailability
+        {
+            public const string FieldName = "availability";
+
+            public const string SoldOut = "SoldOut";
+            public const string OutOfStock = "OutOfStock";
+            public const string InStock = "InStock";
+        }
+
         private readonly IItemService _itemService;
         private readonly IProductSearchService _productsSearchService;
         private readonly IMeasureService _measureService;
@@ -68,7 +77,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             schema.AddFilterableString("productFamilyId");
             schema.AddFilterableString("gtin");
             schema.AddFilterableString("manufacturerPartNumber");
-            schema.AddFilterableString("availability");
+            schema.AddFilterableString(ProductAvailability.FieldName);
             schema.AddFilterableString("weightUnit");
             schema.AddFilterableDecimal("weight");
             schema.AddFilterableString("measureUnit");
@@ -100,6 +109,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 var doc = await CreateDocumentAsync(product);
                 result.Add(doc);
 
+                doc.AggregationKey = product.Id;
+
                 //Index product variants by separate chunked requests for performance reason
                 if (product.MainProductId == null)
                 {
@@ -114,7 +125,10 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
                         foreach (var variation in productVariations.Results)
                         {
-                            result.Add(await CreateDocumentAsync(variation, product));
+                            var variationDoc = await CreateDocumentAsync(variation, product);
+                            result.Add(variationDoc);
+
+                            variationDoc.AggregationKey = product.Id;
 
                             if (variation.IsActive.HasValue && variation.IsActive.Value)
                             {
@@ -231,11 +245,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             document.AddFilterableDecimal("width", product.Width);
             document.AddFilterableDecimal("length", product.Length);
 
-            var productAvailability = GetProductAvailability(product);
-            if (!string.IsNullOrEmpty(productAvailability))
-            {
-                document.AddFilterableString("availability", productAvailability);
-            }
+            IndexProductAvailability(document, product);
 
             // Add priority in virtual categories to search index
             if (product.Links != null)
@@ -331,6 +341,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             IndexCustomProperties(document, variation.Properties, [PropertyType.Variation]);
             IndexDescriptions(document, variation.Reviews);
             IndexSeoInformation(document, variation.SeoInfos);
+            IndexVariationAvailability(document, variation);
         }
 
         protected virtual void IndexLocalizedName(IndexDocument document, LocalizedString localizedString)
@@ -366,21 +377,47 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             document.AddFilterableCollection("is", value);
         }
 
+        protected virtual void IndexProductAvailability(IndexDocument document, CatalogProduct product)
+        {
+            var productAvailability = GetProductAvailability(product);
+            if (!string.IsNullOrEmpty(productAvailability))
+            {
+                document.AddFilterableString(ProductAvailability.FieldName, productAvailability);
+            }
+        }
+
+        protected virtual void IndexVariationAvailability(IndexDocument document, CatalogProduct variation)
+        {
+            var productAvailabilityField = document.Fields.FirstOrDefault(x => x.Name == ProductAvailability.FieldName);
+            var productAvailability = productAvailabilityField?.Value as string;
+
+            if (productAvailability == ProductAvailability.OutOfStock)
+            {
+                var variationAvailability = GetProductAvailability(variation);
+
+                if (variationAvailability.IsNullOrEmpty() || variationAvailability == ProductAvailability.InStock)
+                {
+                    document.Fields.Remove(productAvailabilityField);
+                    document.AddFilterableString(ProductAvailability.FieldName, ProductAvailability.InStock);
+                }
+            }
+        }
+
         protected virtual string GetProductAvailability(CatalogProduct product)
         {
             if (!product.IsActive.GetValueOrDefault(true))
             {
-                return "SoldOut";
+                return ProductAvailability.SoldOut;
             }
 
             if (!product.IsBuyable.GetValueOrDefault(true))
             {
-                return "OutOfStock";
+                return ProductAvailability.OutOfStock;
             }
 
             if (!product.TrackInventory.GetValueOrDefault(true))
             {
-                return "InStock";
+                return ProductAvailability.InStock;
             }
 
             return null;
