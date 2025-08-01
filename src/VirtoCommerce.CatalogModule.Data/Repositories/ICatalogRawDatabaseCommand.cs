@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
@@ -17,13 +18,24 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         /// <param name="dbContext"></param>
         /// <returns>The array of CatalogSeoInfo Id</returns>
         Task<IList<string>> GetAllSeoDuplicatesIdsAsync(CatalogDbContext dbContext);
+
         /// <summary>
         /// Gets ids of all children categories recursively for specific array of parent category ids.
         /// </summary>
         /// <param name="dbContext"></param>
         /// <param name="categoryIds"></param>
         /// <returns>The array of Category Id</returns>
+        [Obsolete("Use GetChildCategoriesAsync instead.", DiagnosticId = "VC0011", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions")]
+
         Task<IList<string>> GetAllChildrenCategoriesIdsAsync(CatalogDbContext dbContext, IList<string> categoryIds);
+
+        /// <summary>
+        /// Returns child categories for specific array of parent category ids.
+        /// </summary>
+        /// <param name="dbContext"></param>
+        /// <param name="categoryIds"></param>
+        /// <returns></returns>
+        Task<IList<CategoryHierarchyItem>> GetChildCategoriesAsync(CatalogDbContext dbContext, IList<string> categoryIds);
 
         /// <summary>
         /// Searches associations by specific ObjectIds and search criteria.

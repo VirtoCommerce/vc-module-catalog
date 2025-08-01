@@ -1,6 +1,8 @@
+using System.Data;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
+using VirtoCommerce.CatalogModule.Data.Extensions;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Platform.Core.Common;
@@ -12,23 +14,43 @@ namespace VirtoCommerce.CatalogModule.Data.SqlServer
     {
         private const int batchSize = 500;
 
-        public virtual async Task<IList<string>> GetAllChildrenCategoriesIdsAsync(CatalogDbContext dbContext, IList<string> categoryIds)
+        public async Task<IList<string>> GetAllChildrenCategoriesIdsAsync(CatalogDbContext dbContext, IList<string> categoryIds)
         {
-            var result = Array.Empty<string>();
+            var result = await GetChildCategoriesAsync(dbContext, categoryIds);
 
-            if (!categoryIds.IsNullOrEmpty())
+            return result.Select(x => x.Id).ToList();
+        }
+
+        public virtual async Task<IList<CategoryHierarchyItem>> GetChildCategoriesAsync(CatalogDbContext dbContext, IList<string> categoryIds)
+        {
+            if (categoryIds.Count == 0)
             {
-                const string commandTemplate = @"
-                    WITH cte AS (
-                        SELECT a.Id FROM Category a  WHERE Id IN ({0})
+                return Array.Empty<CategoryHierarchyItem>();
+            }
+
+            var result = new List<CategoryHierarchyItem>();
+
+            const string commandTemplate = @"
+                    WITH CategoryHierarchy AS (
+                        SELECT a.Id, a.ParentCategoryId, 0 AS Depth FROM Category a 
+                            WHERE a.Id IN ({0})
                         UNION ALL
-                        SELECT a.Id FROM Category a JOIN cte c ON a.ParentCategoryId = c.Id
+                        SELECT c.Id, c.ParentCategoryId, ch.Depth + 1 FROM Category c
+                            INNER JOIN CategoryHierarchy ch ON c.ParentCategoryId = ch.Id
                     )
-                    SELECT Id FROM cte WHERE Id NOT IN ({0})
+
+                    SELECT Id, ParentCategoryId, Depth FROM CategoryHierarchy WHERE Id NOT IN ({0})
                 ";
 
+            foreach (var categoryIdsPage in categoryIds.Paginate(batchSize))
+            {
                 var getAllChildrenCategoriesCommand = CreateCommand(commandTemplate, categoryIds);
-                result = await dbContext.ExecuteArrayAsync<string>(getAllChildrenCategoriesCommand.Text, getAllChildrenCategoriesCommand.Parameters.ToArray());
+                var batchResult = await dbContext.ExecuteEntityArrayAsync<CategoryHierarchyItem>(getAllChildrenCategoriesCommand.Text, getAllChildrenCategoriesCommand.Parameters.ToArray());
+
+                if (!batchResult.IsNullOrEmpty())
+                {
+                    result.AddRange(batchResult);
+                }
             }
 
             return result;
@@ -36,7 +58,6 @@ namespace VirtoCommerce.CatalogModule.Data.SqlServer
 
         public virtual async Task<IList<string>> GetAllSeoDuplicatesIdsAsync(CatalogDbContext dbContext)
         {
-
             const string commandTemplate = @"
                     WITH cte AS (
                         SELECT
@@ -78,12 +99,12 @@ namespace VirtoCommerce.CatalogModule.Data.SqlServer
 
         public virtual async Task RemoveCatalogsAsync(CatalogDbContext dbContext, IList<string> ids)
         {
-            if (!ids.IsNullOrEmpty())
+            if (ids.IsNullOrEmpty())
             {
-                var skip = 0;
-                do
-                {
-                    const string commandTemplate = @"
+                return;
+            }
+
+            const string commandTemplate = @"
                     DELETE FROM CatalogLanguage WHERE CatalogId IN ({0})
                     DELETE FROM CategoryRelation WHERE TargetCatalogId IN ({0})
                     DELETE FROM CategoryItemRelation WHERE CatalogId IN ({0})
@@ -92,83 +113,80 @@ namespace VirtoCommerce.CatalogModule.Data.SqlServer
                     DELETE FROM Catalog WHERE Id IN ({0})
                     ";
 
-                    await ExecuteStoreQueryAsync(dbContext, commandTemplate, ids.Skip(skip).Take(batchSize));
-                    skip += batchSize;
-                }
-                while (skip < ids.Count);
+
+            foreach (var idsPage in ids.Paginate(batchSize))
+            {
+                await ExecuteStoreQueryAsync(dbContext, commandTemplate, idsPage);
             }
         }
 
         public virtual async Task RemoveCategoriesAsync(CatalogDbContext dbContext, IList<string> ids)
         {
-            if (!ids.IsNullOrEmpty())
+            if (ids.IsNullOrEmpty())
             {
-                var skip = 0;
-                do
-                {
-                    const string commandTemplate = @"
-                    DELETE FROM CatalogSeoInfo WHERE CategoryId IN ({0})
-                    DELETE FROM CatalogImage WHERE CategoryId IN ({0})
-                    DELETE FROM PropertyValue WHERE CategoryId IN ({0})
-                    DELETE CR FROM CategoryRelation CR INNER JOIN Category C ON C.Id = CR.SourceCategoryId OR C.Id = CR.TargetCategoryId WHERE C.Id IN ({0})
-                    DELETE FROM CategoryItemRelation WHERE CategoryId IN ({0})
-                    DELETE FROM Association WHERE AssociatedCategoryId IN ({0})
-                    DELETE FROM Property WHERE CategoryId IN ({0})
-                    DELETE FROM CategoryDescription WHERE CategoryId IN ({0})
-                    DELETE FROM Category WHERE Id IN ({0})
-                    ";
+                return;
+            }
 
-                    await ExecuteStoreQueryAsync(dbContext, commandTemplate, ids.Skip(skip).Take(batchSize));
+            const string commandTemplate = @"
+                DELETE FROM CatalogSeoInfo WHERE CategoryId IN ({0})
+                DELETE FROM CatalogImage WHERE CategoryId IN ({0})
+                DELETE FROM PropertyValue WHERE CategoryId IN ({0})
+                DELETE CR FROM CategoryRelation CR INNER JOIN Category C ON C.Id = CR.SourceCategoryId OR C.Id = CR.TargetCategoryId WHERE C.Id IN ({0})
+                DELETE FROM CategoryItemRelation WHERE CategoryId IN ({0})
+                DELETE FROM Association WHERE AssociatedCategoryId IN ({0})
+                DELETE FROM Property WHERE CategoryId IN ({0})
+                DELETE FROM CategoryDescription WHERE CategoryId IN ({0})
+                DELETE FROM Category WHERE Id IN ({0})
+                ";
 
-                    skip += batchSize;
-                }
-                while (skip < ids.Count);
+            foreach (var idsPage in ids.Paginate(batchSize))
+            {
+                await ExecuteStoreQueryAsync(dbContext, commandTemplate, idsPage);
             }
         }
 
         public async Task RemoveItemsAsync(CatalogDbContext dbContext, IList<string> itemIds)
         {
-            if (!itemIds.IsNullOrEmpty())
+            if (itemIds.IsNullOrEmpty())
             {
-                var skip = 0;
-                do
-                {
-                    const string commandTemplate = @"
-                        DELETE SEO FROM CatalogSeoInfo SEO INNER JOIN Item I ON I.Id = SEO.ItemId
-                        WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
-
-                        DELETE CR FROM CategoryItemRelation  CR INNER JOIN Item I ON I.Id = CR.ItemId
-                        WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
-
-                        DELETE CI FROM CatalogImage CI INNER JOIN Item I ON I.Id = CI.ItemId
-                        WHERE I.Id IN ({0})  OR I.ParentId IN ({0})
-
-                        DELETE CA FROM CatalogAsset CA INNER JOIN Item I ON I.Id = CA.ItemId
-                        WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
-
-                        DELETE PV FROM PropertyValue PV INNER JOIN Item I ON I.Id = PV.ItemId
-                        WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
-
-                        DELETE ER FROM EditorialReview ER INNER JOIN Item I ON I.Id = ER.ItemId
-                        WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
-
-                        DELETE A FROM Association A INNER JOIN Item I ON I.Id = A.ItemId
-                        WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
-
-                        DELETE A FROM Association A INNER JOIN Item I ON I.Id = A.AssociatedItemId
-                        WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
-
-                        DELETE  FROM Item  WHERE ParentId IN ({0})
-
-                        DELETE  FROM Item  WHERE Id IN ({0})
-                    ";
-
-                    await ExecuteStoreQueryAsync(dbContext, commandTemplate, itemIds.Skip(skip).Take(batchSize));
-
-                    skip += batchSize;
-                }
-                while (skip < itemIds.Count);
+                return;
             }
+
+            const string commandTemplate = @"
+                    DELETE SEO FROM CatalogSeoInfo SEO INNER JOIN Item I ON I.Id = SEO.ItemId
+                    WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
+
+                    DELETE CR FROM CategoryItemRelation  CR INNER JOIN Item I ON I.Id = CR.ItemId
+                    WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
+
+                    DELETE CI FROM CatalogImage CI INNER JOIN Item I ON I.Id = CI.ItemId
+                    WHERE I.Id IN ({0})  OR I.ParentId IN ({0})
+
+                    DELETE CA FROM CatalogAsset CA INNER JOIN Item I ON I.Id = CA.ItemId
+                    WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
+
+                    DELETE PV FROM PropertyValue PV INNER JOIN Item I ON I.Id = PV.ItemId
+                    WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
+
+                    DELETE ER FROM EditorialReview ER INNER JOIN Item I ON I.Id = ER.ItemId
+                    WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
+
+                    DELETE A FROM Association A INNER JOIN Item I ON I.Id = A.ItemId
+                    WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
+
+                    DELETE A FROM Association A INNER JOIN Item I ON I.Id = A.AssociatedItemId
+                    WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
+
+                    DELETE  FROM Item  WHERE ParentId IN ({0})
+
+                    DELETE  FROM Item  WHERE Id IN ({0})
+                ";
+
+            foreach (var itemIdsPage in itemIds.Paginate(batchSize))
+            {
+                await ExecuteStoreQueryAsync(dbContext, commandTemplate, itemIdsPage);
+            }
+
         }
 
         public virtual async Task<GenericSearchResult<AssociationEntity>> SearchAssociations(CatalogDbContext dbContext, ProductAssociationSearchCriteria criteria)
