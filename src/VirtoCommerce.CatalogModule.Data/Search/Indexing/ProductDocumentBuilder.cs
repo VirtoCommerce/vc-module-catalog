@@ -15,7 +15,7 @@ using VirtoCommerce.SearchModule.Core.Services;
 
 namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 {
-    public class ProductDocumentBuilder : CatalogDocumentBuilder, IIndexSchemaBuilder, IIndexDocumentBuilder, IIndexDocumentAggregator, IIndexDocumentAggregationKeyProvider
+    public class ProductDocumentBuilder : CatalogDocumentBuilder, IIndexSchemaBuilder, IIndexDocumentAggregator
     {
         private readonly IItemService _itemService;
         private readonly IProductSearchService _productsSearchService;
@@ -402,20 +402,23 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 product.ParentCategoryIsActive;
         }
 
-        public void SetAggregationKeys(IList<IndexDocument> documents)
+        public void AggregateDocuments(IList<IndexDocument> documents)
         {
-            foreach (var document in documents.Where(x => x.AggregationKey.IsNullOrEmpty()))
-            {
-                document.AggregationKey = document.Fields.FirstOrDefault(field => field.Name.EqualsIgnoreCase("productFamilyId"))?.Value as string;
-            }
-        }
+            var documentGroups = documents.GroupBy(doc => doc.Fields.FirstOrDefault(x => x.Name == "productFamilyId")?.Value as string);
 
-        public void AggregateDocuments(IndexDocument aggregationDocument, IList<IndexDocument> documents)
-        {
-            var anyInStock = documents.Any(doc => doc.Fields.FirstOrDefault(field => field.Name.EqualsIgnoreCase("availability"))?.Value as string == "InStock");
-            if (anyInStock)
+            foreach (var documentGroup in documentGroups)
             {
-                aggregationDocument.AddFilterableBoolean("inStock", anyInStock);
+                var aggregationDocument = documentGroup.FirstOrDefault(x => x.Id == documentGroup.Key);
+                if (aggregationDocument == null)
+                {
+                    continue;
+                }
+
+                var anyInStock = documentGroup.Any(doc => doc.Fields.FirstOrDefault(field => field.Name.EqualsIgnoreCase("availability"))?.Value as string == "InStock");
+                if (anyInStock)
+                {
+                    aggregationDocument.AddFilterableBoolean("inStock", anyInStock);
+                }
             }
         }
     }
