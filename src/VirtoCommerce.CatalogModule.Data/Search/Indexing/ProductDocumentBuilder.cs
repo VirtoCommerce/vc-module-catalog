@@ -15,7 +15,7 @@ using VirtoCommerce.SearchModule.Core.Services;
 
 namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 {
-    public class ProductDocumentBuilder : CatalogDocumentBuilder, IIndexSchemaBuilder, IIndexDocumentBuilder, IIndexDocumentAggregator
+    public class ProductDocumentBuilder : CatalogDocumentBuilder, IIndexSchemaBuilder, IIndexDocumentBuilder, IIndexDocumentAggregator, IIndexDocumentAggregationKeyProvider
     {
         private readonly IItemService _itemService;
         private readonly IProductSearchService _productsSearchService;
@@ -100,8 +100,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 var doc = await CreateDocumentAsync(product);
                 result.Add(doc);
 
-                doc.AggregationKey = product.Id;
-
                 //Index product variants by separate chunked requests for performance reason
                 if (product.MainProductId == null)
                 {
@@ -118,8 +116,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                         {
                             var variationDoc = await CreateDocumentAsync(variation, product);
                             result.Add(variationDoc);
-
-                            variationDoc.AggregationKey = product.Id;
 
                             if (variation.IsActive.HasValue && variation.IsActive.Value)
                             {
@@ -391,15 +387,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             return null;
         }
 
-        public void AggregateDocuments(IndexDocument aggregationDocument, IList<IndexDocument> documents)
-        {
-            var anyInStock = documents.Any(doc => doc.Fields.FirstOrDefault(field => field.Name.EqualsIgnoreCase("availability")).Value as string == "InStock");
-            if (anyInStock)
-            {
-                aggregationDocument.AddFilterableBoolean("in_stock", anyInStock);
-            }
-        }
-
         protected virtual string GetProductStatus(CatalogProduct product)
         {
             return IsVisible(product) ? "visible" : "hidden";
@@ -413,6 +400,23 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             return
                 product.IsActive == true &&
                 product.ParentCategoryIsActive;
+        }
+
+        public void SetAggregationKeys(IList<IndexDocument> documents)
+        {
+            foreach (var document in documents.Where(x => x.AggregationKey.IsNullOrEmpty()))
+            {
+                document.AggregationKey = document.Fields.FirstOrDefault(field => field.Name.EqualsIgnoreCase("productFamilyId"))?.Value as string;
+            }
+        }
+
+        public void AggregateDocuments(IndexDocument aggregationDocument, IList<IndexDocument> documents)
+        {
+            var anyInStock = documents.Any(doc => doc.Fields.FirstOrDefault(field => field.Name.EqualsIgnoreCase("availability"))?.Value as string == "InStock");
+            if (anyInStock)
+            {
+                aggregationDocument.AddFilterableBoolean("in_stock", anyInStock);
+            }
         }
     }
 }
