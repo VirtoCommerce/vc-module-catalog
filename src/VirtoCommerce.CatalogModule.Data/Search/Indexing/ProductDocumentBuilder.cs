@@ -236,7 +236,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             document.AddFilterableDecimal("width", product.Width);
             document.AddFilterableDecimal("length", product.Length);
 
-            IndexProductAvailability(document, product);
+            var productAvailability = GetProductAvailability(product);
+            if (!string.IsNullOrEmpty(productAvailability))
+            {
+                document.AddFilterableString("availability", productAvailability);
+            }
 
             // Add priority in virtual categories to search index
             if (product.Links != null)
@@ -332,7 +336,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             IndexCustomProperties(document, variation.Properties, [PropertyType.Variation]);
             IndexDescriptions(document, variation.Reviews);
             IndexSeoInformation(document, variation.SeoInfos);
-            IndexVariationAvailability(document, variation);
         }
 
         protected virtual void IndexLocalizedName(IndexDocument document, LocalizedString localizedString)
@@ -366,32 +369,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         protected virtual void IndexIsProperty(IndexDocument document, string value)
         {
             document.AddFilterableCollection("is", value);
-        }
-
-        protected virtual void IndexProductAvailability(IndexDocument document, CatalogProduct product)
-        {
-            var productAvailability = GetProductAvailability(product);
-            if (!string.IsNullOrEmpty(productAvailability))
-            {
-                document.AddFilterableString("availability", productAvailability);
-            }
-        }
-
-        protected virtual void IndexVariationAvailability(IndexDocument document, CatalogProduct variation)
-        {
-            var productAvailabilityField = document.Fields.FirstOrDefault(x => x.Name == "availability");
-            var productAvailability = productAvailabilityField?.Value as string;
-
-            if (productAvailability == "OutOfStock")
-            {
-                var variationAvailability = GetProductAvailability(variation);
-
-                if (variationAvailability.IsNullOrEmpty() || variationAvailability == "InStock")
-                {
-                    document.Fields.Remove(productAvailabilityField);
-                    document.AddFilterableString("availability", "InStock");
-                }
-            }
         }
 
         protected virtual string GetProductAvailability(CatalogProduct product)
