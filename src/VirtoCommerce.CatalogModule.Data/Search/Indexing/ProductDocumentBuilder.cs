@@ -407,16 +407,24 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
             foreach (var documentGroup in documentGroups)
             {
-                var aggregationDocument = documentGroup.FirstOrDefault(x => x.Id == documentGroup.Key);
-                if (aggregationDocument == null)
+                bool anyInStock = false;
+
+                foreach (var document in documentGroup)
                 {
-                    continue;
+                    var inStock = document.Fields.FirstOrDefault(field => field.Name.EqualsIgnoreCase("availability"))?.Value as string == "InStock";
+                    document.AddFilterableBoolean("inStock", inStock);
+
+                    if (inStock)
+                    {
+                        anyInStock = true;
+                    }
                 }
 
-                var anyInStock = documentGroup.Any(doc => doc.Fields.FirstOrDefault(field => field.Name.EqualsIgnoreCase("availability"))?.Value as string == "InStock");
-                if (anyInStock)
+                var aggregationDocument = documentGroup.FirstOrDefault(x => x.Id == documentGroup.Key);
+
+                if (aggregationDocument != null)
                 {
-                    aggregationDocument.AddFilterableBoolean("inStock", anyInStock);
+                    aggregationDocument.AddFilterableBoolean("inStock_variations", anyInStock);
                 }
             }
         }
