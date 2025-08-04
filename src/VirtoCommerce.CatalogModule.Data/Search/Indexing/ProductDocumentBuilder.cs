@@ -415,7 +415,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             var anyInStock = documents.Any(doc => doc.Fields.FirstOrDefault(field => field.Name.EqualsIgnoreCase("availability"))?.Value as string == "InStock");
             if (anyInStock)
             {
-                aggregationDocument.AddFilterableBoolean("in_stock", anyInStock);
+                aggregationDocument.AddFilterableBoolean("inStock", anyInStock);
             }
         }
     }
