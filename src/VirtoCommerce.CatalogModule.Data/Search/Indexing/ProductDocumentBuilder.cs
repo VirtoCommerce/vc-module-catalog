@@ -114,8 +114,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
                         foreach (var variation in productVariations.Results)
                         {
-                            var variationDoc = await CreateDocumentAsync(variation, product);
-                            result.Add(variationDoc);
+                            result.Add(await CreateDocumentAsync(variation, product));
 
                             if (variation.IsActive.HasValue && variation.IsActive.Value)
                             {
