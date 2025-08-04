@@ -15,7 +15,7 @@ using VirtoCommerce.SearchModule.Core.Services;
 
 namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 {
-    public class ProductDocumentBuilder : CatalogDocumentBuilder, IIndexSchemaBuilder, IIndexDocumentBuilder
+    public class ProductDocumentBuilder : CatalogDocumentBuilder, IIndexSchemaBuilder, IIndexDocumentBuilder, IIndexDocumentAggregator
     {
         protected static class ProductAvailability
         {
@@ -421,6 +421,15 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             }
 
             return null;
+        }
+
+        public void AggregateDocuments(IndexDocument aggregationDocument, IList<IndexDocument> documents)
+        {
+            var anyInStock = documents.Any(doc => doc.Fields.FirstOrDefault(field => field.Name.EqualsIgnoreCase("availability")).Value as string == "InStock");
+            if (anyInStock)
+            {
+                aggregationDocument.AddFilterableBoolean("in_stock", anyInStock);
+            }
         }
 
         protected virtual string GetProductStatus(CatalogProduct product)
