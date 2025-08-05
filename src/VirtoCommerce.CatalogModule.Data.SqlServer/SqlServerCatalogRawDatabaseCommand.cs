@@ -116,7 +116,7 @@ namespace VirtoCommerce.CatalogModule.Data.SqlServer
 
             foreach (var idsPage in ids.Paginate(batchSize))
             {
-                await ExecuteStoreQueryAsync(dbContext, commandTemplate, idsPage);
+                await ExecuteSqlQueryAsync(dbContext, commandTemplate, idsPage);
             }
         }
 
@@ -141,7 +141,7 @@ namespace VirtoCommerce.CatalogModule.Data.SqlServer
 
             foreach (var idsPage in ids.Paginate(batchSize))
             {
-                await ExecuteStoreQueryAsync(dbContext, commandTemplate, idsPage);
+                await ExecuteSqlQueryAsync(dbContext, commandTemplate, idsPage);
             }
         }
 
@@ -184,7 +184,7 @@ namespace VirtoCommerce.CatalogModule.Data.SqlServer
 
             foreach (var itemIdsPage in itemIds.Paginate(batchSize))
             {
-                await ExecuteStoreQueryAsync(dbContext, commandTemplate, itemIdsPage);
+                await ExecuteSqlQueryAsync(dbContext, commandTemplate, itemIdsPage);
             }
 
         }
@@ -434,7 +434,7 @@ namespace VirtoCommerce.CatalogModule.Data.SqlServer
             }
         }
 
-        protected virtual Task<int> ExecuteStoreQueryAsync(CatalogDbContext dbContext, string commandTemplate, IEnumerable<string> parameterValues)
+        protected virtual Task<int> ExecuteSqlQueryAsync(CatalogDbContext dbContext, string commandTemplate, IEnumerable<string> parameterValues)
         {
             var command = CreateCommand(commandTemplate, parameterValues);
             return dbContext.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray());

@@ -17,7 +17,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
     public class CatalogRepositoryImpl : DbContextRepositoryBase<CatalogDbContext>, ICatalogRepository
     {
         private readonly ICatalogRawDatabaseCommand _rawDatabaseCommand;
-        private const int PageSize = 1000;
+        private const int PageSize = 500;
 
         public CatalogRepositoryImpl(CatalogDbContext dbContext, ICatalogRawDatabaseCommand rawDatabaseCommand)
             : base(dbContext)
@@ -553,7 +553,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
         public virtual async Task RemoveItemsAsync(IList<string> itemIds)
         {
-            using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            using (var scope = CreateTransactionScope())
             {
                 await _rawDatabaseCommand.RemoveItemsAsync(DbContext, itemIds);
 
@@ -568,7 +568,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 return;
             }
 
-            using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            using (var scope = CreateTransactionScope())
             {
                 var allCategoryIds = new List<CategoryHierarchyItem>();
                 allCategoryIds.AddRange(ids.Select(id =>
@@ -608,8 +608,16 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 return;
             }
 
-            using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            var options = new TransactionOptions
             {
+                Timeout = TimeSpan.FromMinutes(15),
+                IsolationLevel = IsolationLevel.ReadCommitted
+            };
+
+            using (var scope = CreateTransactionScope())
+            {
+                await Task.Delay(180000); // Give time for the transaction to be created
+
                 // remove products from catalog root
                 var itemIds = await Items
                     .Where(i => i.CategoryId == null && ids.Contains(i.CatalogId))
@@ -632,6 +640,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 scope.Complete();
             }
         }
+
 
         /// <summary>
         /// Delete all existing property values that belong to given property.
@@ -745,6 +754,19 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             return ids.Count == 1
                 ? await AutomaticLinkQueries.Where(x => x.Id == ids.First()).ToListAsync()
                 : await AutomaticLinkQueries.Where(x => ids.Contains(x.Id)).ToListAsync();
+        }
+
+        protected virtual TransactionScope CreateTransactionScope()
+        {
+            var options = new TransactionOptions
+            {
+                Timeout = TimeSpan.FromMinutes(15),
+                IsolationLevel = IsolationLevel.ReadCommitted
+            };
+
+            return new TransactionScope(TransactionScopeOption.Required,
+                options,
+                TransactionScopeAsyncFlowOption.Enabled);
         }
 
         protected override void Dispose(bool disposing)
