@@ -616,8 +616,6 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
             using (var scope = CreateTransactionScope())
             {
-                await Task.Delay(180000); // Give time for the transaction to be created
-
                 // remove products from catalog root
                 var itemIds = await Items
                     .Where(i => i.CategoryId == null && ids.Contains(i.CatalogId))
