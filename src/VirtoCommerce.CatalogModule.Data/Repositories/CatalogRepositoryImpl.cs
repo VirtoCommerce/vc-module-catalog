@@ -756,14 +756,12 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
         protected virtual TransactionScope CreateTransactionScope()
         {
-            var options = new TransactionOptions
-            {
-                Timeout = TimeSpan.FromMinutes(15),
-                IsolationLevel = IsolationLevel.ReadCommitted
-            };
-
             return new TransactionScope(TransactionScopeOption.Required,
-                options,
+                new TransactionOptions
+                {
+                    Timeout = TimeSpan.FromMinutes(15),
+                    IsolationLevel = IsolationLevel.ReadCommitted
+                },
                 TransactionScopeAsyncFlowOption.Enabled);
         }
 
