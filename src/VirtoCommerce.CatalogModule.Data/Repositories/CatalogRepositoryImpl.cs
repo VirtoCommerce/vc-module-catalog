@@ -17,7 +17,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
     public class CatalogRepositoryImpl : DbContextRepositoryBase<CatalogDbContext>, ICatalogRepository
     {
         private readonly ICatalogRawDatabaseCommand _rawDatabaseCommand;
-        private const int PageSize = 1000;
+        private const int PageSize = 500;
 
         public CatalogRepositoryImpl(CatalogDbContext dbContext, ICatalogRawDatabaseCommand rawDatabaseCommand)
             : base(dbContext)
@@ -545,14 +545,19 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             return _rawDatabaseCommand.GetAllSeoDuplicatesIdsAsync(DbContext);
         }
 
-        public virtual Task<IList<string>> GetAllChildrenCategoriesIdsAsync(IList<string> categoryIds)
+        public virtual Task<IList<CategoryHierarchyItem>> GetChildCategoriesAsync(IList<string> categoryIds)
         {
-            return _rawDatabaseCommand.GetAllChildrenCategoriesIdsAsync(DbContext, categoryIds);
+            return _rawDatabaseCommand.GetChildCategoriesAsync(DbContext, categoryIds);
+        }
+
+        public virtual async Task<IList<string>> GetAllChildrenCategoriesIdsAsync(IList<string> categoryIds)
+        {
+            return (await _rawDatabaseCommand.GetChildCategoriesAsync(DbContext, categoryIds)).Select(c => c.Id).ToList();
         }
 
         public virtual async Task RemoveItemsAsync(IList<string> itemIds)
         {
-            using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            using (var scope = CreateTransactionScope())
             {
                 await _rawDatabaseCommand.RemoveItemsAsync(DbContext, itemIds);
 
@@ -567,18 +572,34 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 return;
             }
 
-            using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            using (var scope = CreateTransactionScope())
             {
-                var allCategoryIds = (await GetAllChildrenCategoriesIdsAsync(ids)).Concat(ids).ToList();
+                var allCategoryIds = new List<CategoryHierarchyItem>();
+                allCategoryIds.AddRange(ids.Select(id =>
+                    new CategoryHierarchyItem
+                    {
+                        Id = id,
+                        Depth = 0,
+                        ParentCategoryId = null
+                    }));
+                allCategoryIds.AddRange(await GetChildCategoriesAsync(ids));
 
-                var itemIds = await Items
-                    .Where(i => allCategoryIds.Contains(i.CategoryId))
-                    .Select(i => i.Id)
-                    .ToListAsync();
+                // Remove categories in descending order by depth to avoid foreign key constraint violations
+                foreach (var depthGroup in allCategoryIds.GroupBy(x => x.Depth).OrderByDescending(x => x.Key))
+                {
+                    var categoryIdsToRemove = depthGroup.Select(x => x.Id).ToList();
 
-                await RemoveItemsAsync(itemIds);
+                    // Remove all products that belong to categories to remove
+                    var itemIds = await Items
+                        .Where(i => categoryIdsToRemove.Contains(i.CategoryId))
+                        .Select(i => i.Id)
+                        .ToListAsync();
 
-                await _rawDatabaseCommand.RemoveCategoriesAsync(DbContext, allCategoryIds);
+                    await RemoveItemsAsync(itemIds);
+
+                    // Remove categories
+                    await _rawDatabaseCommand.RemoveCategoriesAsync(DbContext, categoryIdsToRemove);
+                }
 
                 scope.Complete();
             }
@@ -591,27 +612,37 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 return;
             }
 
-            using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            var options = new TransactionOptions
             {
+                Timeout = TimeSpan.FromMinutes(15),
+                IsolationLevel = IsolationLevel.ReadCommitted
+            };
+
+            using (var scope = CreateTransactionScope())
+            {
+                // remove products from catalog root
                 var itemIds = await Items
-                    .Where(i => ids.Contains(i.CatalogId))
+                    .Where(i => i.CategoryId == null && ids.Contains(i.CatalogId))
                     .Select(i => i.Id)
                     .ToListAsync();
 
                 await RemoveItemsAsync(itemIds);
 
+                // Load only root categories of catalogs to remove them recursively
                 var categoryIds = await Categories
-                    .Where(c => ids.Contains(c.CatalogId))
+                    .Where(c => c.ParentCategoryId == null && ids.Contains(c.CatalogId))
                     .Select(c => c.Id)
                     .ToListAsync();
 
                 await RemoveCategoriesAsync(categoryIds);
 
+                // Remove catalogs
                 await _rawDatabaseCommand.RemoveCatalogsAsync(DbContext, ids);
 
                 scope.Complete();
             }
         }
+
 
         /// <summary>
         /// Delete all existing property values that belong to given property.
@@ -725,6 +756,17 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             return ids.Count == 1
                 ? await AutomaticLinkQueries.Where(x => x.Id == ids.First()).ToListAsync()
                 : await AutomaticLinkQueries.Where(x => ids.Contains(x.Id)).ToListAsync();
+        }
+
+        protected virtual TransactionScope CreateTransactionScope()
+        {
+            return new TransactionScope(TransactionScopeOption.Required,
+                new TransactionOptions
+                {
+                    Timeout = TimeSpan.FromMinutes(15),
+                    IsolationLevel = IsolationLevel.ReadCommitted
+                },
+                TransactionScopeAsyncFlowOption.Enabled);
         }
 
         protected override void Dispose(bool disposing)

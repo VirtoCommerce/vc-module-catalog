@@ -14,12 +14,19 @@ namespace VirtoCommerce.CatalogModule.Data.MySql
 
         public async Task<IList<string>> GetAllChildrenCategoriesIdsAsync(CatalogDbContext dbContext, IList<string> categoryIds)
         {
-            if (categoryIds.Count == 0)
+            var result = await GetChildCategoriesAsync(dbContext, categoryIds);
+
+            return result.Select(x => x.Id).ToList();
+        }
+
+        public async Task<IList<CategoryHierarchyItem>> GetChildCategoriesAsync(CatalogDbContext dbContext, IList<string> categoryIds)
+        {
+            if (categoryIds.IsNullOrEmpty())
             {
-                return Array.Empty<string>();
+                return Array.Empty<CategoryHierarchyItem>();
             }
 
-            var result = new HashSet<string>();
+            var result = new List<CategoryHierarchyItem>();
 
             var nextLevelCategories = new HashSet<string>(categoryIds);
 
@@ -30,27 +37,30 @@ namespace VirtoCommerce.CatalogModule.Data.MySql
 
             var parentLookup = allChildCategories.ToLookup(item => item.ParentCategoryId, item => item.Id);
 
-            IEnumerable<string> GetNextLevelResult(ISet<string> ids)
+            IEnumerable<CategoryHierarchyItem> GetNextLevelResult(ISet<string> parentCategoryIds, int depth)
             {
-                foreach (var id in ids)
+                foreach (var id in parentCategoryIds)
                 {
                     foreach (var childId in parentLookup[id])
                     {
-                        yield return childId;
+                        yield return new CategoryHierarchyItem { Id = childId, ParentCategoryId = id, Depth = depth };
                     }
                 }
             }
 
+            var depth = 0;
+
             while (nextLevelCategories.Count > 0)
             {
-                var nextLevelResult = new HashSet<string>(GetNextLevelResult(nextLevelCategories));
+                var nextLevelResult = new List<CategoryHierarchyItem>(GetNextLevelResult(nextLevelCategories, depth + 1));
 
-                result.UnionWith(nextLevelResult);
+                result.AddRange(nextLevelResult);
+
                 nextLevelCategories.Clear();
-                nextLevelCategories.UnionWith(nextLevelResult);
+                nextLevelCategories.UnionWith(nextLevelResult.Select(x => x.Id));
             }
 
-            return result.ToArray();
+            return result;
         }
 
         public async Task<IList<string>> GetAllSeoDuplicatesIdsAsync(CatalogDbContext dbContext)
@@ -254,102 +264,100 @@ namespace VirtoCommerce.CatalogModule.Data.MySql
 
         public async Task RemoveCatalogsAsync(CatalogDbContext dbContext, IList<string> ids)
         {
-            if (!ids.IsNullOrEmpty())
+            if (ids.IsNullOrEmpty())
             {
-                var skip = 0;
-                do
-                {
-                    const string commandTemplate = @"
-                    DELETE FROM CatalogLanguage WHERE CatalogId IN ({0});
-                    DELETE FROM CategoryRelation WHERE TargetCatalogId IN ({0});
-                    DELETE FROM CategoryItemRelation WHERE CatalogId IN ({0});
-                    DELETE FROM PropertyValue WHERE CatalogId IN ({0});
-                    DELETE FROM Property WHERE CatalogId IN ({0});
-                    DELETE FROM Catalog WHERE Id IN ({0});
-                    ";
+                return;
+            }
 
-                    await ExecuteStoreQueryAsync(dbContext, commandTemplate, ids.Skip(skip).Take(BatchSize));
-                    skip += BatchSize;
-                }
-                while (skip < ids.Count);
+            const string commandTemplate = @"
+                DELETE FROM CatalogLanguage WHERE CatalogId IN ({0});
+                DELETE FROM CategoryRelation WHERE TargetCatalogId IN ({0});
+                DELETE FROM CategoryItemRelation WHERE CatalogId IN ({0});
+                DELETE FROM PropertyValue WHERE CatalogId IN ({0});
+                DELETE FROM Property WHERE CatalogId IN ({0});
+                DELETE FROM Catalog WHERE Id IN ({0});
+                ";
+
+            foreach (var idsPage in ids.Paginate(BatchSize))
+            {
+                await ExecuteSqlQueryAsync(dbContext, commandTemplate, idsPage);
             }
         }
 
         public async Task RemoveCategoriesAsync(CatalogDbContext dbContext, IList<string> ids)
         {
-            if (!ids.IsNullOrEmpty())
+            if (ids.IsNullOrEmpty())
             {
-                var skip = 0;
-                do
-                {
-                    const string commandTemplate = @"
-                    DELETE FROM CatalogSeoInfo WHERE CategoryId IN ({0});
-                    DELETE FROM CatalogImage WHERE CategoryId IN ({0});
-                    DELETE FROM PropertyValue WHERE CategoryId IN ({0});
-                    DELETE CR FROM CategoryRelation CR INNER JOIN Category C ON C.Id = CR.SourceCategoryId OR C.Id = CR.TargetCategoryId WHERE C.Id IN ({0});
-                    DELETE FROM CategoryItemRelation WHERE CategoryId IN ({0});
-                    DELETE FROM Association WHERE AssociatedCategoryId IN ({0});
-                    DELETE FROM Property WHERE CategoryId IN ({0});
-                    DELETE FROM CategoryDescription WHERE CategoryId IN ({0});
-                    DELETE FROM Category WHERE Id IN ({0});
-                    ";
+                return;
+            }
 
-                    await ExecuteStoreQueryAsync(dbContext, commandTemplate, ids.Skip(skip).Take(BatchSize));
+            const string commandTemplate = @"
+                DELETE FROM CatalogSeoInfo WHERE CategoryId IN ({0});
+                DELETE FROM CatalogImage WHERE CategoryId IN ({0});
+                DELETE FROM PropertyValue WHERE CategoryId IN ({0});
+                DELETE CR FROM CategoryRelation CR INNER JOIN Category C ON C.Id = CR.SourceCategoryId OR C.Id = CR.TargetCategoryId WHERE C.Id IN ({0});
+                DELETE FROM CategoryItemRelation WHERE CategoryId IN ({0});
+                DELETE FROM Association WHERE AssociatedCategoryId IN ({0});
+                DELETE FROM Property WHERE CategoryId IN ({0});
+                DELETE FROM CategoryDescription WHERE CategoryId IN ({0});
+                DELETE FROM Category WHERE Id IN ({0});
+                ";
 
-                    skip += BatchSize;
-                }
-                while (skip < ids.Count);
+            foreach (var idsPage in ids.Paginate(BatchSize))
+            {
+                await ExecuteSqlQueryAsync(dbContext, commandTemplate, idsPage);
             }
         }
 
         public async Task RemoveItemsAsync(CatalogDbContext dbContext, IList<string> itemIds)
         {
-            if (!itemIds.IsNullOrEmpty())
+            if (itemIds.IsNullOrEmpty())
             {
-                var skip = 0;
-                do
-                {
-                    const string commandTemplate = @"
-                        DELETE SEO FROM CatalogSeoInfo SEO INNER JOIN Item I ON I.Id = SEO.ItemId
-                        WHERE I.Id IN ({0}) OR I.ParentId IN ({0});
+                return;
+            }
 
-                        DELETE CR FROM CategoryItemRelation  CR INNER JOIN Item I ON I.Id = CR.ItemId
-                        WHERE I.Id IN ({0}) OR I.ParentId IN ({0});
+            const string commandTemplate = @"
+                DELETE SEO FROM CatalogSeoInfo SEO INNER JOIN Item I ON I.Id = SEO.ItemId
+                WHERE I.Id IN ({0}) OR I.ParentId IN ({0});
 
-                        DELETE CI FROM CatalogImage CI INNER JOIN Item I ON I.Id = CI.ItemId
-                        WHERE I.Id IN ({0})  OR I.ParentId IN ({0});
+                DELETE CR FROM CategoryItemRelation  CR INNER JOIN Item I ON I.Id = CR.ItemId
+                WHERE I.Id IN ({0}) OR I.ParentId IN ({0});
 
-                        DELETE CA FROM CatalogAsset CA INNER JOIN Item I ON I.Id = CA.ItemId
-                        WHERE I.Id IN ({0}) OR I.ParentId IN ({0});
+                DELETE CI FROM CatalogImage CI INNER JOIN Item I ON I.Id = CI.ItemId
+                WHERE I.Id IN ({0})  OR I.ParentId IN ({0});
 
-                        DELETE PV FROM PropertyValue PV INNER JOIN Item I ON I.Id = PV.ItemId
-                        WHERE I.Id IN ({0}) OR I.ParentId IN ({0});
+                DELETE CA FROM CatalogAsset CA INNER JOIN Item I ON I.Id = CA.ItemId
+                WHERE I.Id IN ({0}) OR I.ParentId IN ({0});
 
-                        DELETE ER FROM EditorialReview ER INNER JOIN Item I ON I.Id = ER.ItemId
-                        WHERE I.Id IN ({0}) OR I.ParentId IN ({0});
+                DELETE PV FROM PropertyValue PV INNER JOIN Item I ON I.Id = PV.ItemId
+                WHERE I.Id IN ({0}) OR I.ParentId IN ({0});
 
-                        DELETE A FROM Association A INNER JOIN Item I ON I.Id = A.ItemId
-                        WHERE I.Id IN ({0}) OR I.ParentId IN ({0});
+                DELETE ER FROM EditorialReview ER INNER JOIN Item I ON I.Id = ER.ItemId
+                WHERE I.Id IN ({0}) OR I.ParentId IN ({0});
 
-                        DELETE A FROM Association A INNER JOIN Item I ON I.Id = A.AssociatedItemId
-                        WHERE I.Id IN ({0}) OR I.ParentId IN ({0});
+                DELETE A FROM Association A INNER JOIN Item I ON I.Id = A.ItemId
+                WHERE I.Id IN ({0}) OR I.ParentId IN ({0});
 
-                        DELETE  FROM Item  WHERE ParentId IN ({0});
+                DELETE A FROM Association A INNER JOIN Item I ON I.Id = A.AssociatedItemId
+                WHERE I.Id IN ({0}) OR I.ParentId IN ({0});
 
-                        DELETE  FROM Item  WHERE Id IN ({0});
-                    ";
+                DELETE  FROM Item  WHERE ParentId IN ({0});
 
-                    await ExecuteStoreQueryAsync(dbContext, commandTemplate, itemIds.Skip(skip).Take(BatchSize));
+                DELETE  FROM Item  WHERE Id IN ({0});
+                ";
 
-                    skip += BatchSize;
-                } while (skip < itemIds.Count);
+            foreach (var itemIdsPage in itemIds.Paginate(BatchSize))
+            {
+                // Process items in batches to avoid command length limits
+                await ExecuteSqlQueryAsync(dbContext, commandTemplate, itemIdsPage);
+
             }
         }
 
-        protected virtual async Task<int> ExecuteStoreQueryAsync(CatalogDbContext dbContext, string commandTemplate, IEnumerable<string> parameterValues)
+        protected virtual Task<int> ExecuteSqlQueryAsync(CatalogDbContext dbContext, string commandTemplate, IEnumerable<string> parameterValues)
         {
             var command = CreateCommand(commandTemplate, parameterValues);
-            return await dbContext.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray());
+            return dbContext.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray());
         }
 
         protected virtual Command CreateCommand(string commandTemplate, IEnumerable<string> parameterValues)
