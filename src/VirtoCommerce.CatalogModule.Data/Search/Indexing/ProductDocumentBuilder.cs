@@ -15,7 +15,7 @@ using VirtoCommerce.SearchModule.Core.Services;
 
 namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 {
-    public class ProductDocumentBuilder : CatalogDocumentBuilder, IIndexSchemaBuilder, IIndexDocumentAggregator
+    public class ProductDocumentBuilder : CatalogDocumentBuilder, IIndexSchemaBuilder, IIndexDocumentBuilder, IIndexDocumentAggregationGroupProvider, IIndexDocumentAggregator
     {
         private readonly IItemService _itemService;
         private readonly IProductSearchService _productsSearchService;
@@ -84,6 +84,9 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
             schema.AddFilterableCollection("type");
             schema.AddSearchableCollection("__variations");
+
+            schema.AddFilterableBoolean("inStock");
+            schema.AddFilterableBoolean("inStock_variations");
 
             AddObjectField(schema, AbstractTypeFactory<CatalogProduct>.TryCreateInstance());
 
@@ -401,31 +404,38 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 product.ParentCategoryIsActive;
         }
 
-        public void AggregateDocuments(IList<IndexDocument> documents)
+        public IList<IndexDocumentAggregationGroup> GetGroups(IList<IndexDocument> documents)
         {
-            var documentGroups = documents.GroupBy(doc => doc.Fields.FirstOrDefault(x => x.Name == "productFamilyId")?.Value as string);
+            var result = documents
+                .GroupBy(doc => doc.Fields.FirstOrDefault(x => x.Name == "productFamilyId")?.Value as string)
+                .Select(group => new IndexDocumentAggregationGroup
+                {
+                    AggregationTarget = group.FirstOrDefault(x => x.Id == group.Key),
+                    Documents = group.ToList()
+                })
+                .ToList();
 
-            foreach (var documentGroup in documentGroups)
+            return result;
+        }
+
+        public void Aggregate(IndexDocumentAggregationGroup aggregationGroup)
+        {
+            bool anyInStock = false;
+
+            foreach (var document in aggregationGroup.Documents)
             {
-                bool anyInStock = false;
+                var inStock = document.Fields.FirstOrDefault(field => field.Name.EqualsIgnoreCase("availability"))?.Value as string == "InStock";
+                document.AddFilterableBoolean("inStock", inStock);
 
-                foreach (var document in documentGroup)
+                if (inStock)
                 {
-                    var inStock = document.Fields.FirstOrDefault(field => field.Name.EqualsIgnoreCase("availability"))?.Value as string == "InStock";
-                    document.AddFilterableBoolean("inStock", inStock);
-
-                    if (inStock)
-                    {
-                        anyInStock = true;
-                    }
+                    anyInStock = true;
                 }
+            }
 
-                var aggregationDocument = documentGroup.FirstOrDefault(x => x.Id == documentGroup.Key);
-
-                if (aggregationDocument != null)
-                {
-                    aggregationDocument.AddFilterableBoolean("inStock_variations", anyInStock);
-                }
+            if (aggregationGroup.AggregationTarget != null)
+            {
+                aggregationGroup.AggregationTarget.AddFilterableBoolean("inStock_variations", anyInStock);
             }
         }
     }
