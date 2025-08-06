@@ -1167,6 +1167,10 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
                         .HasMaxLength(512)
                         .HasColumnType("character varying(512)");
 
+                    b.Property<string>("ColorCode")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
                     b.Property<string>("PropertyId")
                         .IsRequired()
                         .HasColumnType("character varying(128)");
@@ -1475,6 +1479,10 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
 
                     b.Property<string>("CategoryId")
                         .HasColumnType("character varying(128)");
+
+                    b.Property<string>("ColorCode")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
 
                     b.Property<string>("CreatedBy")
                         .HasMaxLength(64)

@@ -8,6 +8,12 @@
       "product": "製品のプロパティ",
       "variation": "バリエーションのプロパティ",
       "category": "カテゴリのプロパティ",
+      "color": {
+        "title": "色",
+        "name": "カラー名",
+        "code": "カラーコード",
+        "dictionary": "色を選択"
+      },
       "geoPoint": {
         "title": "ジオポイント",
         "placeholder": "緯度と経度を入力",
@@ -331,6 +337,11 @@
       "property-dictionary": {
         "title": "{{name}} 辞書",
         "subtitle": "辞書を管理",
+        "color-code": {
+          "label": "カラーコード",
+          "placeholder": "カラーコードを入力",
+          "description": "CSS形式のカラーコード（#RRGGBB、#RGB、または色名）を入力してください"
+        },
         "labels": {
           "new-value": "新しい値",
           "current-values": "現在の値",

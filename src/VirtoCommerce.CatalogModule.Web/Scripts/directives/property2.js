@@ -49,20 +49,25 @@ angular.module('virtoCommerce.catalogModule').directive('vaProperty2', ['$compil
                             id: x.id,
                             alias: x.alias,
                             valueId: x.valueId,
-                            value: x.alias
+                            value: x.alias,
+                            colorCode: x.colorCode,
                         };
                     }), function (x) { return x.valueId; });
                 }
 
                 if (newValues) {
-                    newValues = newValues.filter(x=>x);
+                    newValues = newValues.filter(x => x);
                 }
 
                 if (isValuesDifferent(newValues, currentValues)) {
                     scope.currentEntity.values = angular.copy(newValues);
 
                     //reset inherited status to force property value override
-                    _.each(scope.currentEntity.values, function (x) { if (x) { x.isInherited = false;}; });
+                    _.each(scope.currentEntity.values, function (x) {
+                        if (x) {
+                            x.isInherited = false;
+                        }
+                    });
 
                     ngModelController.$setViewValue(scope.currentEntity);
                 }
@@ -81,6 +86,7 @@ angular.module('virtoCommerce.catalogModule').directive('vaProperty2', ['$compil
                             alias: x.alias,
                             valueId: x.valueId,
                             value: x.alias,
+                            colorCode: x.colorCode,
                             selected: true
                         };
                     }), function (x) { return x.valueId; });
@@ -98,18 +104,19 @@ angular.module('virtoCommerce.catalogModule').directive('vaProperty2', ['$compil
             function isValuesDifferent(newValues, currentValues) {
                 var nonNullNewValues = newValues.filter(x => x.value);
                 var nonNullCurrentValues = currentValues.filter(x => x.value);
-                
+
                 var elementCountIsDifferent = nonNullNewValues.length !== nonNullCurrentValues.length;
 
                 var elementsNotEqual = _.any(nonNullNewValues, function (newValue) {
                     return _.all(nonNullCurrentValues, function (currentValue) {
                         return !(newValue &&
-                                 currentValue.value === newValue.value &&
-                                 currentValue.languageCode === newValue.languageCode &&
-                                 currentValue.unitOfMeasureId === newValue.unitOfMeasureId);
+                            currentValue.value === newValue.value &&
+                            currentValue.colorCode === newValue.colorCode &&
+                            currentValue.languageCode === newValue.languageCode &&
+                            currentValue.unitOfMeasureId === newValue.unitOfMeasureId);
                     });
                 });
-                
+
                 return (elementCountIsDifferent || elementsNotEqual) &&
                     (_.any(nonNullCurrentValues) || _.any(nonNullNewValues));
             };
@@ -182,7 +189,9 @@ angular.module('virtoCommerce.catalogModule').directive('vaProperty2', ['$compil
                 var countToTake = scope.pageSize;
 
                 return scope.getPropValues()(scope.currentEntity.id, $select.search, countToSkip, countToTake).then(function (result) {
-                    if (!$select.page) scope.context.allDictionaryValues = []; 
+                    if (!$select.page) {
+                        scope.context.allDictionaryValues = []
+                    };
                     populateDictionaryValues(result.results);
                     $select.page++;
 
@@ -205,7 +214,8 @@ angular.module('virtoCommerce.catalogModule').directive('vaProperty2', ['$compil
                         dictValue = {
                             alias: dictItem.alias,
                             valueId: dictItem.id,
-                            value: dictItem.alias
+                            value: dictItem.alias,
+                            colorCode: dictItem.colorCode,
                         };
                     }
                     scope.context.allDictionaryValues.push(dictValue);
