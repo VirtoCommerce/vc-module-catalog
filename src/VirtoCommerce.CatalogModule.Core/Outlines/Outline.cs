@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Core.Outlines;
 
@@ -17,13 +18,13 @@ public class Outline : ICloneable
 
     public override string ToString()
     {
-        return Items == null ? null : string.Join("/", Items);
+        return Items == null ? null : string.Join(OutlineString.ItemDelimiter, Items);
     }
 
     public object Clone()
     {
-        var result = MemberwiseClone() as Outline;
-        result.Items = Items?.Select(x => x.Clone() as OutlineItem).ToList();
+        var result = (Outline)MemberwiseClone();
+        result.Items = Items?.Select(x => x.CloneTyped()).ToList();
         return result;
     }
 }

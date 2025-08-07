@@ -24,5 +24,10 @@ namespace VirtoCommerce.CatalogModule.Core.Model.Search
         /// Gets or sets the collection of the aggregation items
         /// </summary>
         public AggregationItem[] Items { get; set; }
+
+        /// <summary>
+        /// Statistics for range aggregations, such as "PriceRange" or "Range".
+        /// </summary>
+        public AggregationStatistics Statistics { get; set; }
     }
 }
