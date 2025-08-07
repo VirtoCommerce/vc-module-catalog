@@ -175,19 +175,19 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             }
         }
 
-        protected virtual string[] GetOutlineStrings(IEnumerable<Outline> outlines, bool getNameLatestItem = false)
+        protected virtual string[] GetOutlineStrings(IEnumerable<Outline> outlines, bool withName = false)
         {
             return outlines
-                .SelectMany(x => ExpandOutline(x, getNameLatestItem))
+                .SelectMany(x => ExpandOutline(x, withName))
                 .Distinct()
                 .ToArray();
         }
 
-        protected virtual IEnumerable<string> ExpandOutline(Outline outline, bool getNameLatestItem)
+        protected virtual IEnumerable<string> ExpandOutline(Outline outline, bool withName)
         {
             // Outline structure: catalog/category1/.../categoryN/current-item
 
-            var items = outline.Items
+            var itemIds = outline.Items
                 .Take(outline.Items.Count - 1) // Exclude last item, which is current item ID
                                                // VP-6151 Need to save outlines in index in lower case as we are converting search criteria outlines to lower case
                 .Select(i => i.Id.ToLowerInvariant())
@@ -203,30 +203,30 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             // catalog/category1/category2
             // catalog/category1
             // catalog
-            if (items.Count > 0)
+            if (itemIds.Count > 0)
             {
-                for (var i = items.Count; i > 0; i--)
+                for (var i = itemIds.Count; i > 0; i--)
                 {
-                    var path = !getNameLatestItem ? string.Join("/", items.Take(i)) :
-                        string.Join(ModuleConstants.OutlineDelimiter,
-                            string.Join("/", items.Take(i)), itemNames.Values.ElementAt(i - 1));
-
-                    result.Add(path);
+                    var name = withName ? itemNames.Values.ElementAt(i - 1) : null;
+                    var outlineString = OutlineString.Build(itemIds.Take(i), name);
+                    result.Add(outlineString);
                 }
             }
 
             // For each parent category create a separate outline: catalog/parent_category
-            if (items.Count > 2)
+            if (itemIds.Count > 2)
             {
-                var catalogId = items.First();
+                var catalogId = itemIds.First();
 
                 result.AddRange(
-                    items.Skip(1)
-                        .Select(i => !getNameLatestItem ?
-                                string.Join("/", catalogId, i) :
-                                string.Join(ModuleConstants.OutlineDelimiter,
-                                    string.Join("/", catalogId, i), itemNames[i])
-                        ));
+                    itemIds.Skip(1)
+                        .Select(id =>
+                        {
+                            var name = withName ? itemNames[id] : null;
+                            var outlineString = OutlineString.Build([catalogId, id], name);
+
+                            return outlineString;
+                        }));
             }
 
             return result;
