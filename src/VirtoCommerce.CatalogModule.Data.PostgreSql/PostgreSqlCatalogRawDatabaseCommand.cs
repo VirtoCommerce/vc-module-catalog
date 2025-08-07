@@ -2,6 +2,7 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
+using VirtoCommerce.CatalogModule.Data.Extensions;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Platform.Core.Common;
@@ -13,25 +14,41 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql
     {
         private const int batchSize = 500;
 
-        public virtual async Task<IList<string>> GetAllChildrenCategoriesIdsAsync(CatalogDbContext dbContext, IList<string> categoryIds)
+        public async Task<IList<string>> GetAllChildrenCategoriesIdsAsync(CatalogDbContext dbContext, IList<string> categoryIds)
         {
-            var result = Array.Empty<string>();
+            var result = await GetChildCategoriesAsync(dbContext, categoryIds);
 
-            if (!categoryIds.IsNullOrEmpty())
+            return result.Select(x => x.Id).ToList();
+        }
+
+        public virtual async Task<IList<CategoryHierarchyItem>> GetChildCategoriesAsync(CatalogDbContext dbContext, IList<string> categoryIds)
+        {
+            if (categoryIds.IsNullOrEmpty())
             {
-                const string commandTemplate = @"
-                WITH RECURSIVE cte AS (
-                    SELECT a.""Id"" FROM ""Category"" a WHERE ""Id"" IN ({0})
-                UNION ALL
-                    SELECT a.""Id"" FROM ""Category"" a
-                        JOIN cte c
-                            ON a.""ParentCategoryId"" = c.""Id""
-                )
-                SELECT ""Id"" FROM cte WHERE ""Id"" NOT IN ({0})
-                ";
+                return Array.Empty<CategoryHierarchyItem>();
+            }
 
-                var getAllChildrenCategoriesCommand = CreateCommand(commandTemplate, categoryIds);
-                result = await dbContext.ExecuteArrayAsync<string>(getAllChildrenCategoriesCommand.Text, getAllChildrenCategoriesCommand.Parameters.ToArray());
+            var result = new List<CategoryHierarchyItem>();
+
+            const string commandTemplate = @"
+            WITH RECURSIVE CategoryHierarchy AS (
+                SELECT a.""Id"", a.""ParentCategoryId"", 0 AS ""Depth"" FROM ""Category"" a
+                WHERE a.""Id"" IN ({0})
+                UNION ALL
+                SELECT c.""Id"", c.""ParentCategoryId"", (ch.""Depth"" + 1) AS ""Depth"" FROM ""Category"" c
+                INNER JOIN CategoryHierarchy ch ON c.""ParentCategoryId"" = ch.""Id""
+            )
+            SELECT ""Id"", ""ParentCategoryId"", ""Depth"" FROM CategoryHierarchy WHERE ""Id"" NOT IN ({0});
+            ";
+
+            foreach (var categoryIdsPage in categoryIds.Paginate(batchSize))
+            {
+                var getAllChildrenCategoriesCommand = CreateCommand(commandTemplate, categoryIdsPage);
+                var batchResult = await dbContext.ExecuteEntityArrayAsync<CategoryHierarchyItem>(getAllChildrenCategoriesCommand.Text, getAllChildrenCategoriesCommand.Parameters.ToArray());
+                if (!batchResult.IsNullOrEmpty())
+                {
+                    result.AddRange(batchResult);
+                }
             }
 
             return result;
@@ -81,12 +98,12 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql
 
         public virtual async Task RemoveCatalogsAsync(CatalogDbContext dbContext, IList<string> ids)
         {
-            if (!ids.IsNullOrEmpty())
+            if (ids.IsNullOrEmpty())
             {
-                var skip = 0;
-                do
-                {
-                    const string commandTemplate = @"
+                return;
+            }
+
+            const string commandTemplate = @"
                         DELETE FROM ""CatalogLanguage"" WHERE ""CatalogId"" IN ({0});
                         DELETE FROM ""CategoryRelation""WHERE ""TargetCatalogId"" IN ({0});
                         DELETE FROM ""CategoryItemRelation"" WHERE ""CatalogId"" IN ({0});
@@ -95,48 +112,45 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql
                         DELETE FROM ""Catalog"" WHERE ""Id"" IN ({0});
                         ";
 
-                    await ExecuteStoreQueryAsync(dbContext, commandTemplate, ids.Skip(skip).Take(batchSize));
-                    skip += batchSize;
-                }
-                while (skip < ids.Count);
+            foreach (var idsPage in ids.Paginate(batchSize))
+            {
+                await ExecuteSqlQueryAsync(dbContext, commandTemplate, idsPage);
             }
         }
 
         public virtual async Task RemoveCategoriesAsync(CatalogDbContext dbContext, IList<string> ids)
         {
-            if (!ids.IsNullOrEmpty())
+            if (ids.IsNullOrEmpty())
             {
-                var skip = 0;
-                do
-                {
-                    const string commandTemplate = @"
-                        DELETE FROM ""CatalogSeoInfo"" WHERE ""CategoryId"" IN ({0});
-                        DELETE FROM ""CatalogImage"" WHERE ""CategoryId"" IN ({0});
-                        DELETE FROM ""PropertyValue"" WHERE ""CategoryId"" IN ({0});
-                        DELETE FROM ""CategoryRelation"" CR USING ""Category"" C WHERE (C.""Id"" = CR.""SourceCategoryId"" OR C.""Id"" = CR.""TargetCategoryId"") AND C.""Id"" IN ({0});
-                        DELETE FROM ""CategoryItemRelation"" WHERE ""CategoryId"" IN ({0});
-                        DELETE FROM ""Association"" WHERE ""AssociatedCategoryId"" IN ({0});
-                        DELETE FROM ""Property"" WHERE ""CategoryId"" IN ({0});
-                        DELETE FROM ""CategoryDescription"" WHERE ""CategoryId"" IN ({0});
-                        DELETE FROM ""Category"" WHERE ""Id"" IN ({0});
+                return;
+            }
+
+            const string commandTemplate = @"
+                DELETE FROM ""CatalogSeoInfo"" WHERE ""CategoryId"" IN ({0});
+                DELETE FROM ""CatalogImage"" WHERE ""CategoryId"" IN ({0});
+                DELETE FROM ""PropertyValue"" WHERE ""CategoryId"" IN ({0});
+                DELETE FROM ""CategoryRelation"" CR USING ""Category"" C WHERE (C.""Id"" = CR.""SourceCategoryId"" OR C.""Id"" = CR.""TargetCategoryId"") AND C.""Id"" IN ({0});
+                DELETE FROM ""CategoryItemRelation"" WHERE ""CategoryId"" IN ({0});
+                DELETE FROM ""Association"" WHERE ""AssociatedCategoryId"" IN ({0});
+                DELETE FROM ""Property"" WHERE ""CategoryId"" IN ({0});
+                DELETE FROM ""CategoryDescription"" WHERE ""CategoryId"" IN ({0});
+                DELETE FROM ""Category"" WHERE ""Id"" IN ({0});
                         ";
 
-                    await ExecuteStoreQueryAsync(dbContext, commandTemplate, ids.Skip(skip).Take(batchSize));
-
-                    skip += batchSize;
-                }
-                while (skip < ids.Count);
+            foreach (var idsPage in ids.Paginate(batchSize))
+            {
+                await ExecuteSqlQueryAsync(dbContext, commandTemplate, idsPage);
             }
         }
 
         public async Task RemoveItemsAsync(CatalogDbContext dbContext, IList<string> itemIds)
         {
-            if (!itemIds.IsNullOrEmpty())
+            if (itemIds.IsNullOrEmpty())
             {
-                var skip = 0;
-                do
-                {
-                    const string commandTemplate = @"
+                return;
+            }
+            {
+                const string commandTemplate = @"
                         DELETE FROM ""CatalogSeoInfo"" SEO USING ""Item"" I WHERE I.""Id"" = SEO.""ItemId""
                         AND I.""Id"" IN ({0}) OR I.""ParentId"" IN ({0});
 
@@ -166,11 +180,10 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql
                         DELETE FROM ""Item"" WHERE ""Id"" IN ({0});
                     ";
 
-                    await ExecuteStoreQueryAsync(dbContext, commandTemplate, itemIds.Skip(skip).Take(batchSize));
-
-                    skip += batchSize;
+                foreach (var itemIdsPage in itemIds.Paginate(batchSize))
+                {
+                    await ExecuteSqlQueryAsync(dbContext, commandTemplate, itemIdsPage);
                 }
-                while (skip < itemIds.Count);
             }
         }
 
@@ -417,7 +430,7 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql
             }
         }
 
-        protected virtual Task<int> ExecuteStoreQueryAsync(CatalogDbContext dbContext, string commandTemplate, IEnumerable<string> parameterValues)
+        protected virtual Task<int> ExecuteSqlQueryAsync(CatalogDbContext dbContext, string commandTemplate, IEnumerable<string> parameterValues)
         {
             var command = CreateCommand(commandTemplate, parameterValues);
             return dbContext.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray());
