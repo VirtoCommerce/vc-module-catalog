@@ -191,7 +191,7 @@ angular.module('virtoCommerce.catalogModule').directive('vaProperty2', ['$compil
                 return scope.getPropValues()(scope.currentEntity.id, $select.search, countToSkip, countToTake).then(function (result) {
                     if (!$select.page) {
                         scope.context.allDictionaryValues = []
-                    };
+                    }
                     populateDictionaryValues(result.results);
                     $select.page++;
 
