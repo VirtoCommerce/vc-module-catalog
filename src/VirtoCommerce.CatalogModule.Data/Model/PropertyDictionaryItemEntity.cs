@@ -14,6 +14,9 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         [Required]
         public string Alias { get; set; }
 
+        [StringLength(32)]
+        public string ColorCode { get; set; }
+
         public int SortOrder { get; set; }
 
         #region Navigation Properties
@@ -34,6 +37,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             }
             propDictItem.Id = Id;
             propDictItem.Alias = Alias;
+            propDictItem.ColorCode = ColorCode;
             propDictItem.SortOrder = SortOrder;
             propDictItem.PropertyId = PropertyId;
             propDictItem.LocalizedValues = DictionaryItemValues.Select(x => x.ToModel(AbstractTypeFactory<PropertyDictionaryItemLocalizedValue>.TryCreateInstance())).ToList();
@@ -51,6 +55,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
             Id = propDictItem.Id;
             Alias = propDictItem.Alias;
+            ColorCode = propDictItem.ColorCode;
             SortOrder = propDictItem.SortOrder;
             PropertyId = propDictItem.PropertyId;
             if (propDictItem.LocalizedValues != null)
@@ -64,6 +69,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         public virtual void Patch(PropertyDictionaryItemEntity target)
         {
             target.Alias = Alias;
+            target.ColorCode = ColorCode;
             target.SortOrder = SortOrder;
             if (!DictionaryItemValues.IsNullCollection())
             {

@@ -8,6 +8,12 @@
       "product": "Właściwości produktu",
       "variation": "Właściwości wariacji",
       "category": "Właściwości kategorii",
+      "color": {
+        "title": "Kolor",
+        "name": "Nazwa koloru",
+        "code": "Kod koloru",
+        "dictionary": "Wybierz kolor"
+      },
       "geoPoint": {
         "title": "Punkt geograficzny",
         "placeholder": "Wprowadź szerokość i długość geograficzną",
@@ -331,6 +337,11 @@
       "property-dictionary": {
         "title": "Słownik {{name}}",
         "subtitle": "Zarządzaj słownikiem",
+        "color-code": {
+          "label": "Kod koloru",
+          "placeholder": "Wprowadź kod koloru",
+          "description": "Wprowadź kod koloru w formacie CSS: #RRGGBB lub #RGB lub nazwę koloru"
+        },
         "labels": {
           "new-value": "Nowa wartość",
           "current-values": "Obecne wartości",
