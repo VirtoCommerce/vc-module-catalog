@@ -53,7 +53,7 @@ public class CatalogSeoResolver : ISeoResolver
             return [];
         }
 
-        var currentEntitySeoInfos = await SearchSeoInfos(segments.Last(), store, criteria.LanguageCode);
+        var currentEntitySeoInfos = await SearchSeoInfos(permalink, store, criteria.LanguageCode);
 
         if (currentEntitySeoInfos.Count == 0)
         {
@@ -173,9 +173,19 @@ public class CatalogSeoResolver : ISeoResolver
         return immediateParentIds.Any(x => parentIds.Contains(x, StringComparer.OrdinalIgnoreCase));
     }
 
-    protected virtual async Task<List<SeoInfo>> SearchSeoInfos(string slug, Store store, string languageCode, bool isActive = true)
+    protected virtual async Task<List<SeoInfo>> SearchSeoInfos(string permalink, Store store, string languageCode, bool isActive = true)
     {
+        var segments = permalink.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+        if (segments.Length == 0)
+        {
+            return [];
+        }
+
+        var slug = segments.Last();
+
         using var repository = _repositoryFactory();
+
 
         var entities = await repository.SeoInfos
             .Where(x =>
@@ -186,10 +196,30 @@ public class CatalogSeoResolver : ISeoResolver
                 (string.IsNullOrEmpty(x.Language) || x.Language == languageCode || x.Language == store.DefaultLanguage))
             .ToListAsync();
 
-        return entities
+        var categoryIds = entities.Select(x => x.CategoryId).Where(x => x != null).Distinct().ToArray();
+        var categories = (await _categoryService.GetByIdsAsync(categoryIds, $"{CategoryResponseGroup.WithOutlines},{CategoryResponseGroup.WithSeo}", store.Catalog)).Where(x => (x.IsActive ?? true) && x.Outlines != null).ToArray();
+        categoryIds = FilterByPermalink(categories);
+
+        var itemIds = entities.Select(x => x.ItemId).Where(x => x != null).Distinct().ToArray();
+        var items = (await _itemService.GetByIdsAsync(itemIds, $"{ItemResponseGroup.WithOutlines},{ItemResponseGroup.WithSeo}", store.Catalog)).Where(x => (x.IsActive ?? true) && x.Outlines != null).ToArray();
+        itemIds = FilterByPermalink(items);
+
+        var result = entities.Where(x => categoryIds.Contains(x.CategoryId) || itemIds.Contains(x.ItemId)).ToArray();
+
+        return result
             .Select(x => x.ToModel(AbstractTypeFactory<SeoInfo>.TryCreateInstance()))
             .OrderByDescending(GetScore)
             .ToList();
+
+        string[] FilterByPermalink<T>(IEnumerable<T> elements) where T : IHasOutlines, ISeoSupport
+        {
+            return elements
+                .SelectMany(x => x.Outlines.GetSeoPaths(store, store.DefaultLanguage).Select(p => new { Path = p, x.Id }))
+                .Where(x => x.Path == permalink)
+                .Select(x => x.Id)
+                .Distinct()
+                .ToArray();
+        }
 
         int GetScore(SeoInfo seoInfo)
         {
