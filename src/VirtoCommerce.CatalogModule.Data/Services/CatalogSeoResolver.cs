@@ -186,7 +186,6 @@ public class CatalogSeoResolver : ISeoResolver
 
         using var repository = _repositoryFactory();
 
-
         var entities = await repository.SeoInfos
             .Where(x =>
                 x.IsActive == isActive &&
