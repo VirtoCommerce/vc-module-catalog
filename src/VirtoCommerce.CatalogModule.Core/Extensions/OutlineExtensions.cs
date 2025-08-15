@@ -37,6 +37,22 @@ public static class OutlineExtensions
     }
 
     /// <summary>
+    /// Returns SEO path if all outline items of the first outline for the store catalog have SEO keywords, otherwise returns default value.
+    /// Path: GrandParentCategory/ParentCategory/ProductCategory/Product
+    /// </summary>
+    public static string[] GetSeoPaths(this IEnumerable<Outline> outlines, Store store, string language, string defaultValue = null, string seoLinksType = null)
+    {
+        if (outlines is null || store is null)
+        {
+            return [];
+        }
+
+        var catalogOutlines = outlines.GetOutlinesForCatalog(store.Catalog);
+
+        return catalogOutlines.Select(x => x.Items.GetSeoPath(store, language, defaultValue, seoLinksType)).ToArray();
+    }
+
+    /// <summary>
     /// Returns SEO path if all outline items have SEO keywords, otherwise returns default value.
     /// Path: GrandParentCategory/ParentCategory/ProductCategory/Product
     /// </summary>
@@ -141,9 +157,14 @@ public static class OutlineExtensions
     public static bool TryGetOutlineForCatalog(this IEnumerable<Outline> outlines, string catalogId, out Outline outline)
     {
         // Find any outline for the given catalog
-        outline = outlines?.FirstOrDefault(x => x.Items.ContainsCatalog(catalogId));
+        outline = outlines.GetOutlinesForCatalog(catalogId).FirstOrDefault();
 
         return outline != null;
+    }
+
+    public static IEnumerable<Outline> GetOutlinesForCatalog(this IEnumerable<Outline> outlines, string catalogId)
+    {
+        return outlines?.Where(x => x.Items.ContainsCatalog(catalogId)) ?? [];
     }
 
     public static bool IsLinkedCategory(this OutlineItem item)

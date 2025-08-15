@@ -13,6 +13,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         private const string CatalogType = "Catalog";
 
         private const string StoreId = "B2B-store";
+        private const string LanguageCode = "en-US";
 
         public CatalogSeoResolverTests()
         {
@@ -25,6 +26,8 @@ namespace VirtoCommerce.CatalogModule.Tests
             var helper = new CatalogHierarchyHelper(CatalogId);
 
             helper.AddSeoInfo("product1", ProductType, "product", true, StoreId, "en-US");
+            helper.AddSeoInfo("level1", CategoryType, "level1", true, StoreId, "en-US");
+            helper.AddSeoInfo("level2", CategoryType, "level2", true, StoreId, "en-US");
             helper.AddSeoInfo("level3", CategoryType, "level3", true, StoreId, "en-US");
 
             helper.AddCategory("level1", $"{CatalogId}");
@@ -95,6 +98,8 @@ namespace VirtoCommerce.CatalogModule.Tests
 
             var helper = new CatalogHierarchyHelper(CatalogId);
 
+            helper.AddSeoInfo("level1", CategoryType, "level1", true, StoreId, "en-US");
+            helper.AddSeoInfo("level2", CategoryType, "level2", true, StoreId, "en-US");
             helper.AddSeoInfo("level3", CategoryType, "level3", true, StoreId, "en-US");
             helper.AddSeoInfo("level3-wrong", ProductType, "level3-wrong", true, StoreId, "en-US");
             helper.AddSeoInfo("category", CategoryType, "category", true, StoreId, "en-US");
@@ -157,6 +162,8 @@ namespace VirtoCommerce.CatalogModule.Tests
 
             helper.AddSeoInfo("product1", ProductType, "product", true, StoreId, "en-US");
             helper.AddSeoInfo("product1-wrong", ProductType, "product", true, StoreId, "en-US");
+            helper.AddSeoInfo("level1", CategoryType, "level1", true, StoreId, "en-US");
+            helper.AddSeoInfo("level2", CategoryType, "level2", true, StoreId, "en-US");
             helper.AddSeoInfo("level3", CategoryType, "level3", true, StoreId, "en-US");
 
             helper.AddCategory("level1", $"{CatalogId}");
@@ -183,6 +190,8 @@ namespace VirtoCommerce.CatalogModule.Tests
             // Arrange
             var helper = new CatalogHierarchyHelper(CatalogId);
 
+            helper.AddSeoInfo("level1", CategoryType, "level1", true, StoreId, "en-US");
+            helper.AddSeoInfo("level2", CategoryType, "level2", true, StoreId, "en-US");
             helper.AddSeoInfo("level3", CategoryType, "level3", true, StoreId, "en-US");
             helper.AddSeoInfo("level3-wrong", CategoryType, "level3-wrong", true, StoreId, "en-US");
             helper.AddSeoInfo("category", CategoryType, "category", true, StoreId, "en-US");
@@ -217,6 +226,10 @@ namespace VirtoCommerce.CatalogModule.Tests
             helper.AddSeoInfo("product1", ProductType, "product", true, null, "en-US");
             helper.AddSeoInfo("product1-wrong", ProductType, "product", true, "Other-store", "en-US");
 
+            helper.AddSeoInfo("level1", CategoryType, "level1", true, StoreId, "en-US");
+            helper.AddSeoInfo("level2", CategoryType, "level2", true, StoreId, "en-US");
+            helper.AddSeoInfo("level3", CategoryType, "level3", true, StoreId, "en-US");
+
             helper.AddCategory("level1", $"{CatalogId}");
             helper.AddCategory("level2", $"{CatalogId}/level1");
             helper.AddCategory("level3", $"{CatalogId}/level1/level2");
@@ -246,6 +259,10 @@ namespace VirtoCommerce.CatalogModule.Tests
             helper.AddSeoInfo("product1", ProductType, "product", true, StoreId, "en-US");
             helper.AddSeoInfo("product1", ProductType, "product", true, null, "en-US");
             helper.AddSeoInfo("product1-wrong", ProductType, "product", true, "Other-store", "en-US");
+
+            helper.AddSeoInfo("level1", CategoryType, "level1", true, StoreId, "en-US");
+            helper.AddSeoInfo("level2", CategoryType, "level2", true, StoreId, "en-US");
+            helper.AddSeoInfo("level3", CategoryType, "level3", true, StoreId, "en-US");
 
             helper.AddCategory("level1", $"{CatalogId}");
             helper.AddCategory("level2", $"{CatalogId}/level1");
@@ -379,6 +396,10 @@ namespace VirtoCommerce.CatalogModule.Tests
             // Arrange
             var helper = new CatalogHierarchyHelper(CatalogId);
 
+            helper.AddSeoInfo("EducationCategoryId", CategoryType, "education", true, null, null);
+            helper.AddSeoInfo("FurnitureCategoryId", CategoryType, "furniture-furnishings", true, string.Empty, string.Empty);
+            helper.AddSeoInfo("EducationInFurnitureCategoryId", CategoryType, "education", true, StoreId, string.Empty);
+
             // Education
             helper.AddCategory("EducationCategoryId", CatalogId);
 
@@ -387,12 +408,6 @@ namespace VirtoCommerce.CatalogModule.Tests
 
             // Furniture & Furnishings > Education
             helper.AddCategory("EducationInFurnitureCategoryId", CatalogId, $"{CatalogId}/FurnitureCategoryId");
-
-
-            helper.AddSeoInfo("EducationCategoryId", CategoryType, "education", true, null, null);
-            helper.AddSeoInfo("FurnitureCategoryId", CategoryType, "furniture-furnishings", true, string.Empty, string.Empty);
-            helper.AddSeoInfo("EducationInFurnitureCategoryId", CategoryType, "education", true, StoreId, string.Empty);
-
 
             var seoResolver = helper.CreateCatalogSeoResolver();
 
@@ -472,6 +487,58 @@ namespace VirtoCommerce.CatalogModule.Tests
             // Assert
             Assert.Single(result);
             Assert.Equal(StoreId, result.First().StoreId);
+        }
+
+        [Fact]
+        public async Task FindSeoAsync_FullUrlCorrect()
+        {
+            var helper = new CatalogHierarchyHelper(CatalogId);
+
+            helper.AddSeoInfo("CategoryId", CategoryType, "category", isActive: true, StoreId, LanguageCode);
+            helper.AddSeoInfo("SubCategoryId", CategoryType, "subcategory", isActive: true, StoreId, LanguageCode);
+            helper.AddSeoInfo("ProductId", ProductType, "product", isActive: true, StoreId, LanguageCode);
+
+            helper.AddCategory("CategoryId", CatalogId);
+            helper.AddCategory("SubCategoryId", CatalogId, $"{CatalogId}/CategoryId");
+            helper.AddProduct("ProductId", CatalogId, "CategoryId", $"{CatalogId}/CategoryId/SubCategoryId");
+
+            helper.AddCatalog(CatalogId);
+
+            var seoResolver = helper.CreateCatalogSeoResolver();
+
+            // Act
+            var criteria = new SeoSearchCriteria { Permalink = "category/subcategory/product", StoreId = StoreId, LanguageCode = LanguageCode };
+            var result = await seoResolver.FindSeoAsync(criteria);
+
+            // Assert
+            Assert.Single(result);
+            Assert.Equal(StoreId, result.First().StoreId);
+            Assert.Equal("product", result.First().SemanticUrl);
+        }
+
+        [Fact]
+        public async Task FindSeoAsync_FullUrlIncorrect()
+        {
+            var helper = new CatalogHierarchyHelper(CatalogId);
+
+            helper.AddSeoInfo("CategoryId", CategoryType, "category", isActive: true, StoreId, LanguageCode);
+            helper.AddSeoInfo("SubCategoryId", CategoryType, "subcategory", isActive: true, StoreId, LanguageCode);
+            helper.AddSeoInfo("ProductId", ProductType, "product", isActive: true, StoreId, LanguageCode);
+
+            helper.AddCategory("CategoryId", CatalogId);
+            helper.AddCategory("SubCategoryId", CatalogId, "CategoryId");
+            helper.AddProduct("ProductId", CatalogId, "CategoryId", "CategoryId/SubCategoryId");
+
+            helper.AddCatalog(CatalogId);
+
+            var seoResolver = helper.CreateCatalogSeoResolver();
+
+            // Act
+            var criteria = new SeoSearchCriteria { Permalink = "category/subcategory1/product", StoreId = StoreId, LanguageCode = LanguageCode };
+            var result = await seoResolver.FindSeoAsync(criteria);
+
+            // Assert
+            Assert.Empty(result);
         }
     }
 }
