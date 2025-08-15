@@ -85,7 +85,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                                 Id = id,
                                 SeoObjectType = SeoCategory,
                                 SeoInfos = seoInfos
-                                    .Where(s => s.ObjectId == objectId && s.ObjectType == objectType)
+                                    .Where(s => s.ObjectId == id)
                                     .ToList()
                             })
                             .ToList(),
@@ -155,18 +155,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             productServiceMock.Setup(x =>
                x.GetByIdsAsync(It.IsAny<IList<string>>(), It.IsAny<string>(), It.IsAny<string>()))
                    .ReturnsAsync((IList<string> ids, string responseGroup, string categoryId) =>
-                   {
-                       return Products
-                           .Where(x => ids.Contains(x.Id))
-                           .Select(x =>
-                           {
-                               x.SeoInfos = SeoInfos
-                                   .Where(s => s.ObjectId == x.Id && s.ObjectType == "Product")
-                                   .ToList();
-                               return x;
-                           })
-                           .ToList();
-                   });
+                   { return Products.Where(x => ids.Contains(x.Id)).ToList(); });
 
             return productServiceMock;
         }
