@@ -196,14 +196,21 @@ public class CatalogSeoResolver : ISeoResolver
             .ToListAsync();
 
         var categoryIds = entities.Select(x => x.CategoryId).Where(x => x != null).Distinct().ToArray();
-        var categories = (await _categoryService.GetByIdsAsync(categoryIds, $"{CategoryResponseGroup.WithOutlines},{CategoryResponseGroup.WithSeo}", store.Catalog)).Where(x => (x.IsActive ?? true) && x.Outlines != null).ToArray();
-        categoryIds = FilterByPermalink(categories);
+        if (categoryIds.Length > 0)
+        {
+            var categories = (await _categoryService.GetByIdsAsync(categoryIds, $"{CategoryResponseGroup.WithOutlines},{CategoryResponseGroup.WithSeo}", store.Catalog))?.Where(x => (x.IsActive ?? true) && x.Outlines != null).ToArray();
+            categoryIds = FilterByPermalink(categories);
+        }
 
         var itemIds = entities.Select(x => x.ItemId).Where(x => x != null).Distinct().ToArray();
-        var items = (await _itemService.GetByIdsAsync(itemIds, $"{ItemResponseGroup.WithOutlines},{ItemResponseGroup.WithSeo}", store.Catalog)).Where(x => (x.IsActive ?? true) && x.Outlines != null).ToArray();
-        itemIds = FilterByPermalink(items);
 
-        var result = entities.Where(x => categoryIds.Contains(x.CategoryId) || itemIds.Contains(x.ItemId)).ToArray();
+        if (itemIds.Length > 0)
+        {
+            var items = (await _itemService.GetByIdsAsync(itemIds, $"{ItemResponseGroup.WithOutlines},{ItemResponseGroup.WithSeo}", store.Catalog))?.Where(x => (x.IsActive ?? true) && x.Outlines != null).ToArray();
+            itemIds = FilterByPermalink(items);
+        }
+
+        var result = entities.Where(x => x.CatalogId != null || categoryIds.Contains(x.CategoryId) || itemIds.Contains(x.ItemId)).ToArray();
 
         return result
             .Select(x => x.ToModel(AbstractTypeFactory<SeoInfo>.TryCreateInstance()))
@@ -217,7 +224,7 @@ public class CatalogSeoResolver : ISeoResolver
                 .Where(x => x.Path == permalink)
                 .Select(x => x.Id)
                 .Distinct()
-                .ToArray();
+                .ToArray() ?? [];
         }
 
         int GetScore(SeoInfo seoInfo)

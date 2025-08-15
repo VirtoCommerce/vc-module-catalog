@@ -9,6 +9,7 @@ using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Data.Services;
+using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.Seo.Core.Models;
 using VirtoCommerce.StoreModule.Core.Model;
 using VirtoCommerce.StoreModule.Core.Services;
@@ -39,7 +40,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             var product = new CatalogProduct
             {
                 Id = productId,
-                Outlines = CreateOutlines(SeoProduct, productId, parentPaths),
+                Outlines = CreateOutlines(SeoProduct, productId, parentPaths, SeoInfos),
                 IsActive = true
             };
 
@@ -51,7 +52,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             var category = new Category
             {
                 Id = categoryId,
-                Outlines = CreateOutlines(SeoCategory, categoryId, parentPaths),
+                Outlines = CreateOutlines(SeoCategory, categoryId, parentPaths, SeoInfos),
                 IsActive = true
             };
 
@@ -69,7 +70,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             Catalogs.Add(catalog);
         }
 
-        private static List<Outline> CreateOutlines(string objectType, string objectId, string[] parentPaths)
+        private static List<Outline> CreateOutlines(string objectType, string objectId, string[] parentPaths, IEnumerable<SeoInfo> seoInfos)
         {
             return parentPaths
                 .Select(parentPath =>
@@ -83,6 +84,9 @@ namespace VirtoCommerce.CatalogModule.Tests
                             {
                                 Id = id,
                                 SeoObjectType = SeoCategory,
+                                SeoInfos = seoInfos
+                                    .Where(s => s.ObjectId == objectId && s.ObjectType == objectType)
+                                    .ToList()
                             })
                             .ToList(),
                     };
@@ -131,6 +135,11 @@ namespace VirtoCommerce.CatalogModule.Tests
                    .ReturnsAsync((IList<string> ids, string responseGroup, bool clone) =>
                    { return Categories.Where(x => ids.Contains(x.Id)).ToList(); });
 
+            categoryServiceMock.Setup(x =>
+               x.GetByIdsAsync(It.IsAny<IList<string>>(), It.IsAny<string>(), It.IsAny<string>()))
+                   .ReturnsAsync((IList<string> ids, string responseGroup, string catalogId) =>
+                   { return Categories.Where(x => ids.Contains(x.Id)).ToList(); });
+
             return categoryServiceMock;
         }
 
@@ -142,6 +151,22 @@ namespace VirtoCommerce.CatalogModule.Tests
                x.GetAsync(It.IsAny<IList<string>>(), It.IsAny<string>(), It.IsAny<bool>()))
                    .ReturnsAsync((IList<string> ids, string responseGroup, bool clone) =>
                    { return Products.Where(x => ids.Contains(x.Id)).ToList(); });
+
+            productServiceMock.Setup(x =>
+               x.GetByIdsAsync(It.IsAny<IList<string>>(), It.IsAny<string>(), It.IsAny<string>()))
+                   .ReturnsAsync((IList<string> ids, string responseGroup, string categoryId) =>
+                   {
+                       return Products
+                           .Where(x => ids.Contains(x.Id))
+                           .Select(x =>
+                           {
+                               x.SeoInfos = SeoInfos
+                                   .Where(s => s.ObjectId == x.Id && s.ObjectType == "Product")
+                                   .ToList();
+                               return x;
+                           })
+                           .ToList();
+                   });
 
             return productServiceMock;
         }
@@ -221,7 +246,21 @@ namespace VirtoCommerce.CatalogModule.Tests
                x.GetAsync(It.IsAny<IList<string>>(), It.IsAny<string>(), It.IsAny<bool>()))
                    .ReturnsAsync((IList<string> ids, string responseGroup, bool clone) =>
                    {
-                       return [new Store { Id = "B2B-store", Catalog = _catalogId }];
+                       return [
+                           new Store
+                           {
+                               Id = "B2B-store",
+                               Catalog = _catalogId,
+                               DefaultLanguage = "en-US",
+                               Settings =
+                               [
+                                   new ObjectSettingEntry(StoreModule.Core.ModuleConstants.Settings.SEO.SeoLinksType)
+                                   {
+                                       Value = StoreModule.Core.ModuleConstants.Settings.SEO.SeoLong,
+                                   }
+                               ]
+                           }
+                       ];
                    });
 
             return storeService;
