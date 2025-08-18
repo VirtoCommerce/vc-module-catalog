@@ -220,7 +220,7 @@ public class CatalogSeoResolver : ISeoResolver
         string[] FilterByPermalink<T>(IEnumerable<T> elements) where T : IHasOutlines, ISeoSupport
         {
             return elements
-                .SelectMany(x => x.Outlines.GetSeoPaths(store, store.DefaultLanguage).Select(p => new { Path = p, x.Id }))
+                ?.SelectMany(x => x.Outlines.GetSeoPaths(store, store.DefaultLanguage).Select(p => new { Path = p, x.Id }))
                 .Where(x => x.Path == permalink)
                 .Select(x => x.Id)
                 .Distinct()
