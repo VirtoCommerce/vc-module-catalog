@@ -37,22 +37,6 @@ public static class OutlineExtensions
     }
 
     /// <summary>
-    /// Returns SEO path if all outline items of the first outline for the store catalog have SEO keywords, otherwise returns default value.
-    /// Path: GrandParentCategory/ParentCategory/ProductCategory/Product
-    /// </summary>
-    public static string[] GetSeoPaths(this IEnumerable<Outline> outlines, Store store, string language, string defaultValue = null, string seoLinksType = null)
-    {
-        if (outlines is null || store is null)
-        {
-            return [];
-        }
-
-        var catalogOutlines = outlines.GetOutlinesForCatalog(store.Catalog);
-
-        return catalogOutlines.Select(x => x.Items.GetSeoPath(store, language, defaultValue, seoLinksType)).ToArray();
-    }
-
-    /// <summary>
     /// Returns SEO path if all outline items have SEO keywords, otherwise returns default value.
     /// Path: GrandParentCategory/ParentCategory/ProductCategory/Product
     /// </summary>
@@ -123,6 +107,21 @@ public static class OutlineExtensions
         {
             return seoSupport.GetBestMatchingSeoInfo(storeId, storeDefaultLanguage, language)?.SemanticUrl;
         }
+    }
+
+    /// <summary>
+    /// Returns all SEO paths for all outlines
+    /// </summary>
+    public static string[] GetSeoPaths(this IEnumerable<Outline> outlines, Store store, string language, string defaultValue = null, string seoLinksType = null)
+    {
+        if (outlines is null || store is null)
+        {
+            return [];
+        }
+
+        var catalogOutlines = outlines.GetOutlinesForCatalog(store.Catalog);
+
+        return catalogOutlines.Select(x => x.Items.GetSeoPath(store, language, defaultValue, seoLinksType)).ToArray();
     }
 
     /// <summary>
