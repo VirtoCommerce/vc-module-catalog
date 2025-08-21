@@ -7,6 +7,7 @@ using VirtoCommerce.CatalogModule.Core.Extensions;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Outlines;
 using VirtoCommerce.CatalogModule.Core.Services;
+using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Seo.Core.Models;
@@ -53,7 +54,7 @@ public class CatalogSeoResolver : ISeoResolver
             return [];
         }
 
-        var currentEntitySeoInfos = await SearchSeoInfos(segments.Last(), store, criteria.LanguageCode);
+        var currentEntitySeoInfos = await SearchSeoInfos(segments.Last(), store, criteria);
 
         if (currentEntitySeoInfos.Count == 0)
         {
@@ -99,9 +100,7 @@ public class CatalogSeoResolver : ISeoResolver
             if (LongestOutlineContainsAnyParentId(outlines, store.Catalog, parentIds))
             {
                 return currentEntitySeoInfos
-                    .Where(x =>
-                        x.ObjectId.EqualsIgnoreCase(objectId) &&
-                        x.ObjectType.EqualsIgnoreCase(objectType))
+                    .Where(x => x.ObjectId.EqualsIgnoreCase(objectId) && x.ObjectType.EqualsIgnoreCase(objectType))
                     .ToList();
             }
         }
@@ -115,17 +114,12 @@ public class CatalogSeoResolver : ISeoResolver
         var outlines = objectType switch
         {
             SeoExtensions.SeoCatalog => CreateCatalogOutline(objectId, infos),
-            SeoExtensions.SeoCategory => (await _categoryService.GetByIdAsync(objectId, CategoryResponseGroup.WithOutlines.ToString(), clone: false))?.Outlines,
-            SeoExtensions.SeoProduct => (await _itemService.GetByIdAsync(objectId, ItemResponseGroup.WithOutlines.ToString(), clone: false))?.Outlines,
+            SeoExtensions.SeoCategory => (await _categoryService.GetByIdAsync(objectId, nameof(CategoryResponseGroup.WithOutlines), clone: false))?.Outlines,
+            SeoExtensions.SeoProduct => (await _itemService.GetByIdAsync(objectId, nameof(ItemResponseGroup.WithOutlines), clone: false))?.Outlines,
             _ => [],
         };
 
-        if (outlines is null)
-        {
-            throw new InvalidOperationException($"{objectType} with ID '{objectId}' was not found.");
-        }
-
-        return outlines;
+        return outlines ?? throw new InvalidOperationException($"{objectType} with ID '{objectId}' was not found.");
     }
 
     private static IList<Outline> CreateCatalogOutline(string catalogId, IList<SeoInfo> infos)
@@ -173,40 +167,44 @@ public class CatalogSeoResolver : ISeoResolver
         return immediateParentIds.Any(x => parentIds.Contains(x, StringComparer.OrdinalIgnoreCase));
     }
 
-    protected virtual async Task<List<SeoInfo>> SearchSeoInfos(string slug, Store store, string languageCode, bool isActive = true)
+    protected virtual async Task<List<SeoInfo>> SearchSeoInfos(string slug, Store store, SeoSearchCriteria criteria, bool isActive = true)
     {
         using var repository = _repositoryFactory();
 
-        var entities = await repository.SeoInfos
-            .Where(x =>
-                x.IsActive == isActive &&
-                x.Keyword == slug &&
-                (x.Category != null && x.Category.IsActive || x.Item != null && x.Item.IsActive || x.Catalog != null) &&
-                (string.IsNullOrEmpty(x.StoreId) || x.StoreId == store.Id) &&
-                (string.IsNullOrEmpty(x.Language) || x.Language == languageCode || x.Language == store.DefaultLanguage))
+        var entities = await GetSeoInfoQuery(repository, slug, store, criteria, isActive)
             .ToListAsync();
 
         return entities
             .Select(x => x.ToModel(AbstractTypeFactory<SeoInfo>.TryCreateInstance()))
-            .OrderByDescending(GetScore)
+            .OrderByDescending(x => GetSeoScore(x, store, criteria))
             .ToList();
+    }
 
-        int GetScore(SeoInfo seoInfo)
+    protected virtual IQueryable<SeoInfoEntity> GetSeoInfoQuery(ICatalogRepository repository, string slug, Store store, SeoSearchCriteria criteria, bool isActive)
+    {
+        return repository.SeoInfos.Where(x =>
+            x.IsActive == isActive &&
+            x.Keyword == slug &&
+            (x.Category != null && x.Category.IsActive || x.Item != null && x.Item.IsActive || x.Catalog != null) &&
+            (string.IsNullOrEmpty(x.StoreId) || x.StoreId == store.Id) &&
+            (string.IsNullOrEmpty(x.Language) || x.Language == criteria.LanguageCode || x.Language == store.DefaultLanguage));
+    }
+
+    protected static int GetSeoScore(SeoInfo seoInfo, Store store, SeoSearchCriteria criteria)
+    {
+        var score = 0;
+        var hasLangCriteria = !string.IsNullOrEmpty(criteria.LanguageCode);
+
+        if (seoInfo.StoreId.EqualsIgnoreCase(store.Id))
         {
-            var score = 0;
-            var hasLangCriteria = !string.IsNullOrEmpty(languageCode);
-
-            if (seoInfo.StoreId.EqualsIgnoreCase(store.Id))
-            {
-                score += 2;
-            }
-
-            if (hasLangCriteria && seoInfo.LanguageCode.EqualsIgnoreCase(languageCode))
-            {
-                score += 1;
-            }
-
-            return score;
+            score += 2;
         }
+
+        if (hasLangCriteria && seoInfo.LanguageCode.EqualsIgnoreCase(criteria.LanguageCode))
+        {
+            score += 1;
+        }
+
+        return score;
     }
 }
