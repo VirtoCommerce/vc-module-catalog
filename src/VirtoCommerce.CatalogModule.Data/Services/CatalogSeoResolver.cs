@@ -196,7 +196,6 @@ public class CatalogSeoResolver : ISeoResolver
             .ToListAsync();
 
         var categoryIds = entities.Select(x => x.CategoryId).Where(x => x != null).Distinct().ToArray();
-
         var seoList = new List<(string SeoPath, string OutlinePath, string Id)>();
 
         if (categoryIds.Length > 0)
