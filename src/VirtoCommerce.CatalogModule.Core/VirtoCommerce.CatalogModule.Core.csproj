@@ -20,7 +20,7 @@
     <PackageReference Include="VirtoCommerce.ExportModule.Core" Version="3.803.0" />
     <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.895.0" />
     <PackageReference Include="VirtoCommerce.SearchModule.Core" Version="3.817.0" />
-    <PackageReference Include="VirtoCommerce.Seo.Core" Version="3.801.0" />
+    <PackageReference Include="VirtoCommerce.Seo.Core" Version="3.806.0" />
     <PackageReference Include="VirtoCommerce.StoreModule.Core" Version="3.818.0" />
   </ItemGroup>
 </Project>
