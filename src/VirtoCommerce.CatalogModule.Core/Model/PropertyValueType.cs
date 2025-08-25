@@ -12,5 +12,6 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         GeoPoint,
         Html,
         Measure,
+        Color,
     }
 }

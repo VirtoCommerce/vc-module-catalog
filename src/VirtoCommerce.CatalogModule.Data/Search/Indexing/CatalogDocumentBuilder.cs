@@ -63,6 +63,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                             schema.Add(new IndexDocumentField(propertyName, doubleValue, IndexDocumentFieldValueType.Double) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection });
                             break;
                         case PropertyValueType.ShortText:
+                        case PropertyValueType.Color:
                             schema.Add(new IndexDocumentField(propertyName, stringValue, IndexDocumentFieldValueType.String) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection });
                             break;
                         case PropertyValueType.LongText:
@@ -134,6 +135,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                             document.Add(new IndexDocumentField(propertyName, propValue.Value.ToString().ToLowerInvariant(), IndexDocumentFieldValueType.String) { IsRetrievable = true, IsSearchable = true, IsCollection = isCollection });
                             break;
                         case PropertyValueType.ShortText:
+                        case PropertyValueType.Color:
                             // Index alias when it is available instead of display value.
                             // Do not tokenize small values as they will be used for lookups and filters.
                             var shortTextValue = propValue.Alias ?? propValue.Value.ToString();
@@ -156,6 +158,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                     {
                         case PropertyValueType.LongText:
                         case PropertyValueType.ShortText:
+                        case PropertyValueType.Color:
                             var stringValue = propValue.Value.ToString();
                             document.AddContentString(stringValue,
                                 property.Multilanguage ? propValue.LanguageCode : string.Empty);

@@ -16,6 +16,7 @@ namespace VirtoCommerce.CatalogModule.Core.Extensions
                 case PropertyValueType.ShortText:
                 case PropertyValueType.GeoPoint:
                 case PropertyValueType.Html:
+                case PropertyValueType.Color:
                     result = Convert.ToString(value);
                     break;
                 case PropertyValueType.Number:
