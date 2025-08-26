@@ -196,10 +196,14 @@ public class CatalogSeoResolver : ISeoResolver
             .ToListAsync();
 
         var categoryIds = entities.Select(x => x.CategoryId).Where(x => x != null).Distinct().ToArray();
+        var seoList = new List<(string SeoPath, string OutlinePath, string Id)>();
+
         if (categoryIds.Length > 0)
         {
             var categories = (await _categoryService.GetByIdsAsync(categoryIds, $"{CategoryResponseGroup.WithOutlines},{CategoryResponseGroup.WithSeo}", store.Catalog))?.Where(x => (x.IsActive ?? true) && x.Outlines != null).ToArray();
-            categoryIds = FilterByPermalink(categories);
+            var seo = FilterByPermalink(categories);
+            categoryIds = seo.Select(x => x.Id).Distinct().ToArray();
+            seoList.AddRange(seo);
         }
 
         var itemIds = entities.Select(x => x.ItemId).Where(x => x != null).Distinct().ToArray();
@@ -207,23 +211,37 @@ public class CatalogSeoResolver : ISeoResolver
         if (itemIds.Length > 0)
         {
             var items = (await _itemService.GetByIdsAsync(itemIds, $"{ItemResponseGroup.WithOutlines},{ItemResponseGroup.WithSeo}", store.Catalog))?.Where(x => (x.IsActive ?? true) && x.Outlines != null).ToArray();
-            itemIds = FilterByPermalink(items);
+            var seo = FilterByPermalink(items);
+            itemIds = seo.Select(x => x.Id).Distinct().ToArray();
+            seoList.AddRange(seo);
         }
 
         var result = entities.Where(x => x.CatalogId != null || categoryIds.Contains(x.CategoryId) || itemIds.Contains(x.ItemId)).ToArray();
 
         return result
-            .Select(x => x.ToModel(AbstractTypeFactory<SeoInfo>.TryCreateInstance()))
+            .Select(x =>
+            {
+                var item = x.ToModel(AbstractTypeFactory<SeoInfo>.TryCreateInstance());
+                var outline = seoList.Where(s => s.Id == x.CategoryId || s.Id == x.ItemId).Select(s => s.OutlinePath).FirstOrDefault();
+                item.Outline = outline;
+                return item;
+            })
             .OrderByDescending(GetScore)
             .ToList();
 
-        string[] FilterByPermalink<T>(IEnumerable<T> elements) where T : IHasOutlines, ISeoSupport
+        // returns seo info from the given categories or products that match the permalink
+        (string SeoPath, string OutlinePath, string Id)[] FilterByPermalink<T>(IEnumerable<T> elements) where T : IHasOutlines, ISeoSupport
         {
             return elements
-                ?.SelectMany(x => x.Outlines.GetSeoPaths(store, store.DefaultLanguage).Select(p => new { Path = p, x.Id }))
-                .Where(x => x.Path == permalink)
-                .Select(x => x.Id)
+                ?.SelectMany(x => x.Outlines.Select(o => new
+                {
+                    SeoPath = o.Items.GetSeoPath(store, store.DefaultLanguage),
+                    OutlinePath = o.Items.GetOutlinePath(),
+                    x.Id
+                }))
+                .Where(x => x.SeoPath == permalink)
                 .Distinct()
+                .Select(x => (x.SeoPath, x.OutlinePath, x.Id))
                 .ToArray() ?? [];
         }
 
