@@ -8,6 +8,12 @@
       "product": "Product properties",
       "variation": "Variation properties",
       "category": "Category properties",
+      "color": {
+        "title": "Color",
+        "name": "Color name",
+        "code": "Color code",
+        "dictionary": "Select color"
+      },
       "geoPoint": {
         "title": "Geo point",
         "placeholder": "Enter latitude and longitude",
@@ -331,6 +337,11 @@
       "property-dictionary": {
         "title": "{{name}} dictionary",
         "subtitle": "Manage dictionary",
+        "color-code": {
+          "label": "Color code",
+          "placeholder": "Enter color code",
+          "description": "Enter a color code in the CSS format: #RRGGBB or #RGB or color name"
+        },
         "labels": {
           "new-value": "New value",
           "current-values": "Current values",

@@ -8,6 +8,12 @@
       "product": "Produkteigenschaften",
       "variation": "Variationseigenschaften",
       "category": "Kategorieeigenschaften",
+      "color": {
+        "title": "Farbe",
+        "name": "Farbname",
+        "code": "Farbcode",
+        "dictionary": "Farbe wählen"
+      },
       "geoPoint": {
         "title": "Geo-Punkt",
         "placeholder": "Breitengrad und Längengrad eingeben",
@@ -331,6 +337,11 @@
       "property-dictionary": {
         "title": "{{name}} Wörterbuch",
         "subtitle": "Wörterbuch verwalten",
+        "color-code": {
+          "label": "Farbcode",
+          "placeholder": "Farbe Code eingeben",
+          "description": "Gib einen Farbcode im CSS-Format ein: #RRGGBB oder #RGB oder Farbname"
+        },
         "labels": {
           "new-value": "Neuer Wert",
           "current-values": "Aktuelle Werte",

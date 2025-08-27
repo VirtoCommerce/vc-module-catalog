@@ -382,3 +382,9 @@ vc-item-search {
     display: flex;
     align-items: center;
 }
+
+.hidden-color-picker {
+  visibility: hidden;
+  height: 0;
+  position: absolute;
+}
