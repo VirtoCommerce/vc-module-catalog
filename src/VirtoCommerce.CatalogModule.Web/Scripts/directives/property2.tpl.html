@@ -484,6 +484,10 @@
     </div>
     <div class="column" style="width: 40%; height: 50px; margin-left: 5%; ">
       <div class="form-input">
+        <input type="color"
+               id="color_input_{{::$id}}"
+               class="hidden-color-picker"
+               ng-model="context.currentPropValues[0].colorCode" />
         <input type="text"
                ng-disabled="currentEntity.isReadOnly"
                ng-required="currentEntity.required && !currentEntity.isReadOnly"
@@ -493,7 +497,7 @@
                ng-minlength="currentEntity.validationRule.charCountMin"
                ng-pattern="currentEntity.validationRule.regExp"
                placeholder="{{ 'catalog.properties.color.code' | translate }}" />
-        <button class="btn" type="button">
+        <button class="btn" type="button" data-color-input-id="color_input_{{::$id}}" ng-click="openColorPicker($event)">
           <span class="btn-ico fa fa-square" ng-style="{ 'color': context.currentPropValues[0].colorCode }"></span>
         </button>
       </div>
@@ -519,6 +523,10 @@
       </div>
       <div class="column" style="width: 40%; height: 50px; margin-left: 5%; ">
         <div class="form-input">
+          <input type="color"
+                 id="color_input_{{::$id}}"
+                 class="hidden-color-picker"
+                 ng-model="langValuesGroup.currentPropValues[0].colorCode" />
           <input type="text"
                  ng-disabled="currentEntity.isReadOnly"
                  ng-required="currentEntity.required && !currentEntity.isReadOnly"
@@ -529,7 +537,7 @@
                  ng-pattern="currentEntity.validationRule.regExp"
                  placeholder="{{ 'catalog.properties.color.code' | translate }}"
                  class="vc-catalog" />
-          <button class="btn" type="button">
+          <button class="btn" type="button" data-color-input-id="color_input_{{::$id}}" ng-click="openColorPicker($event)">
             <span class="btn-ico fa fa-square" ng-style="{ 'color': langValuesGroup.currentPropValues[0].colorCode }"></span>
           </button>
         </div>

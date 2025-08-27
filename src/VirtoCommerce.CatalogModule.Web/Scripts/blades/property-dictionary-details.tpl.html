@@ -9,8 +9,12 @@
         <div class="form-group" ng-if="blade.property.valueType==='Color'">
           <label class="form-label">{{ 'catalog.blades.property-dictionary.color-code.label' | translate }}</label>
           <div class="form-input">
+            <input type="color"
+                   id="color_input_{{::$id}}"
+                   class="hidden-color-picker"
+                   ng-model="blade.currentEntity.colorCode" />
             <input type="text" ng-model="blade.currentEntity.colorCode" placeholder="{{ 'catalog.blades.property-dictionary.color-code.placeholder' | translate }}" />
-            <button class="btn" type="button">
+            <button class="btn" type="button" data-color-input-id="color_input_{{::$id}}" ng-click="openColorPicker($event)">
               <span class="btn-ico fa fa-square" ng-style="{ 'color': blade.currentEntity.colorCode }"></span>
             </button>
             <div class="table-descr">{{'catalog.blades.property-dictionary.color-code.description' | translate}}</div>

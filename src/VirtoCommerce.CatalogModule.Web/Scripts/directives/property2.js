@@ -276,6 +276,12 @@ angular.module('virtoCommerce.catalogModule').directive('vaProperty2', ['$compil
                 datepickerMode: 'day'
             };
 
+            /* Color picker */
+            scope.openColorPicker = function ($event) {
+                const id = $event.currentTarget.dataset.colorInputId;
+                document.getElementById(id).click();
+            };
+
             /* Codemirror */
             scope.editorOptions = {
                 lineWrapping: true,

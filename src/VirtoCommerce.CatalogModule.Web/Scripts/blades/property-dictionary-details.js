@@ -9,20 +9,38 @@ angular.module('virtoCommerce.catalogModule')
             $scope.blade.isLoading = false;
             $scope.validationRules = blade.property.validationRule;
 
-            $scope.setForm = function (form) { blade.formScope = form; }
+            $scope.setForm = function (form) {
+                blade.formScope = form;
+            }
+
+            /* Color picker */
+            $scope.openColorPicker = function ($event) {
+                const id = $event.currentTarget.dataset.colorInputId;
+                document.getElementById(id).click();
+            };
 
             blade.toolbarCommands = [
                 {
-                    name: "platform.commands.save", icon: 'fas fa-save',
+                    name: "platform.commands.save",
+                    icon: 'fas fa-save',
                     executeMethod: saveChanges,
                     canExecuteMethod: canSave
-                }
+                },
+                {
+                    name: "platform.commands.reset",
+                    icon: 'fa fa-undo',
+                    executeMethod: function () {
+                        angular.copy(blade.origEntity, blade.currentEntity);
+                    },
+                    canExecuteMethod: isDirty,
+                },
             ];
+
             function initializeBlade() {
                 blade.currentEntity = angular.copy(blade.dictionaryItem);
                 blade.origEntity = blade.dictionaryItem;
                 blade.isLoading = false;
-            };
+            }
 
             function isDirty() {
                 return !angular.equals(blade.currentEntity, blade.origEntity) && blade.hasUpdatePermission();
@@ -31,12 +49,13 @@ angular.module('virtoCommerce.catalogModule')
             function canSave() {
                 return isDirty() && blade.formScope && blade.formScope.$valid;
             }
-                     
+
             blade.onClose = function (closeCallback) {
-                bladeNavigationService.showConfirmationIfNeeded(isDirty(), $scope.isValid, blade, $scope.saveChanges, closeCallback, "catalog.dialogs.property-save.title", "catalog.dialogs.property-save.message");
+                bladeNavigationService.showConfirmationIfNeeded(isDirty(), $scope.isValid, blade, $scope.saveChanges, closeCallback,
+                    "catalog.dialogs.property-save.title", "catalog.dialogs.property-save.message");
             };
 
-            function saveChanges () {
+            function saveChanges() {
                 blade.currentEntity.localizedValues = [];
                 blade.languages.forEach(function (lang) {
                     let dictValue = {};
@@ -49,6 +68,7 @@ angular.module('virtoCommerce.catalogModule')
                     blade.onSaveChanges();
                     angular.copy(blade.currentEntity, blade.origEntity);
                 });
-            };
+            }
+
             initializeBlade();
         }]);
