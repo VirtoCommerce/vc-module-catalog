@@ -1,5 +1,5 @@
-# v3.800.13
-# https://virtocommerce.atlassian.net/browse/VCST-2789
+# v3.800.15
+# https://virtocommerce.atlassian.net/browse/VCST-3725
 name: Module CI
 
 on:
@@ -55,6 +55,7 @@ jobs:
       matrix: ${{ steps.deployment-matrix.outputs.matrix }}
       run-e2e: ${{ steps.run-e2e.outputs.result }}
       run-ui-tests: ${{ steps.run-ui-tests.outputs.result }}
+      deployment-folder-exists: ${{ steps.check_deployment_folder.outputs.exists }}
 
     steps:
 
@@ -91,6 +92,17 @@ jobs:
       - name: Get Artifact Version
         uses: VirtoCommerce/vc-github-actions/get-image-version@master
         id: artifact_ver
+
+      - name: Check if .deployment folder exists
+        id: check_deployment_folder
+        run: |
+          if [ -d ".deployment" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "Diagnostic: .deployment folder exists."
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "Diagnostic: .deployment folder does NOT exist."
+          fi
 
       - name: Set VERSION_SUFFIX variable
         run: |
@@ -264,7 +276,7 @@ jobs:
     if: ${{ ((github.ref == 'refs/heads/dev') && (github.event_name == 'push')) ||
         (github.event_name == 'workflow_dispatch') || ((github.base_ref == 'dev') && (github.event_name == 'pull_request')) }}
     needs: 'ci'
-    uses: VirtoCommerce/.github/.github/workflows/ui-autotests.yml@v3.800.13
+    uses: VirtoCommerce/.github/.github/workflows/ui-autotests.yml@v3.800.15
     with:
       installModules: 'false'
       installCustomModule: 'true'
@@ -278,7 +290,7 @@ jobs:
     if: ${{ ((github.ref == 'refs/heads/dev') && (github.event_name == 'push') && (needs.ci.outputs.run-e2e == 'true')) ||
         (github.event_name == 'workflow_dispatch') || (github.base_ref == 'dev') && (github.event_name == 'pull_request') }}
     needs: 'ci'
-    uses: VirtoCommerce/.github/.github/workflows/e2e.yml@v3.800.13
+    uses: VirtoCommerce/.github/.github/workflows/e2e.yml@v3.800.15
     with:
       katalonRepo: 'VirtoCommerce/vc-quality-gate-katalon'
       katalonRepoBranch: 'dev'
@@ -294,9 +306,11 @@ jobs:
       katalonApiKey: ${{ secrets.KATALON_API_KEY }}
 
   deploy-cloud:
-    if: ${{ (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev') && github.event_name == 'push' }}
+    if: ${{ (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev')
+      && github.event_name == 'push'
+      && needs.ci.outputs.deployment-folder-exists == 'true'}}
     needs: ci
-    uses: VirtoCommerce/.github/.github/workflows/deploy-cloud.yml@v3.800.13
+    uses: VirtoCommerce/.github/.github/workflows/deploy-cloud.yml@v3.800.15
     with:
       releaseSource: module
       moduleId: ${{ needs.ci.outputs.moduleId }}
