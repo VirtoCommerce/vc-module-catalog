@@ -81,6 +81,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             propValue.ValueType = (PropertyValueType)ValueType;
             propValue.Value = DictionaryItem != null ? DictionaryItem.Alias : GetValue(propValue.ValueType);
             propValue.Alias = DictionaryItem?.Alias;
+            propValue.DisplayOrder = DictionaryItem?.SortOrder;
             propValue.UnitOfMeasureId = UnitOfMeasureId;
             propValue.ColorCode = ColorCode;
 

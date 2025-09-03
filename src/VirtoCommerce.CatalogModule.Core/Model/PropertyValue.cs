@@ -15,6 +15,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         [JsonIgnore]
         public Property Property { get; set; }
         public string Alias { get; set; }
+        public int? DisplayOrder { get; set; }
         public PropertyValueType ValueType { get; set; }
         public string ValueId { get; set; }
         public object Value { get; set; }
