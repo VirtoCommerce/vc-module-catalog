@@ -8,6 +8,12 @@
       "product": "Свойства продукта",
       "variation": "Свойства вариации",
       "category": "Свойства категории",
+      "color": {
+        "title": "Цвет",
+        "name": "Название цвета",
+        "code": "Код цвета",
+        "dictionary": "Выберите цвет"
+      },
       "geoPoint": {
         "title": "Геоточка",
         "placeholder": "Введите широту и долготу",
@@ -331,6 +337,11 @@
       "property-dictionary": {
         "title": "Словарь {{name}}",
         "subtitle": "Управление словарем",
+        "color-code": {
+          "label": "Код цвета",
+          "placeholder": "Введите код цвета",
+          "description": "Введите код цвета в формате CSS: #RRGGBB, #RGB или название цвета"
+        },
         "labels": {
           "new-value": "Новое значение",
           "current-values": "Текущие значения",

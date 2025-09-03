@@ -42,6 +42,9 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         [StringLength(128)]
         public string UnitOfMeasureId { get; set; }
 
+        [StringLength(32)]
+        public string ColorCode { get; set; }
+
         #region Navigation Properties
 
         public string ItemId { get; set; }
@@ -80,12 +83,14 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             propValue.Alias = DictionaryItem?.Alias;
             propValue.DisplayOrder = DictionaryItem?.SortOrder;
             propValue.UnitOfMeasureId = UnitOfMeasureId;
+            propValue.ColorCode = ColorCode;
+
             //Need to expand all dictionary values
             if (DictionaryItem != null && !DictionaryItem.DictionaryItemValues.IsNullOrEmpty())
             {
                 foreach (var dictItemValue in DictionaryItem.DictionaryItemValues)
                 {
-                    var dictPropValue = propValue.Clone() as PropertyValue;
+                    var dictPropValue = propValue.CloneTyped();
                     dictPropValue.Alias = DictionaryItem.Alias;
                     dictPropValue.ValueId = DictionaryItem.Id;
                     dictPropValue.LanguageCode = dictItemValue.Locale;
@@ -129,8 +134,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
 
         public virtual PropertyValueEntity FromModel(PropertyValue propValue, PrimaryKeyResolvingMap pkMap)
         {
-            if (propValue == null)
-                throw new ArgumentNullException(nameof(propValue));
+            ArgumentNullException.ThrowIfNull(propValue);
 
             pkMap.AddPair(propValue, this);
 
@@ -150,6 +154,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             SetValue(propValue.ValueType, !string.IsNullOrEmpty(DictionaryItemId) ? propValue.Alias : propValue.Value);
             Locale = !string.IsNullOrEmpty(DictionaryItemId) ? null : propValue.LanguageCode;
             UnitOfMeasureId = propValue.UnitOfMeasureId;
+            ColorCode = propValue.ColorCode;
 
             return this;
         }
@@ -167,6 +172,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             target.ShortTextValue = ShortTextValue;
             target.ValueType = ValueType;
             target.UnitOfMeasureId = UnitOfMeasureId;
+            target.ColorCode = ColorCode;
         }
 
         protected virtual object GetValue(PropertyValueType valueType)
@@ -199,6 +205,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                     LongTextValue = Convert.ToString(value);
                     break;
                 case PropertyValueType.ShortText:
+                case PropertyValueType.Color:
                     ShortTextValue = Convert.ToString(value);
                     break;
                 case PropertyValueType.Number:

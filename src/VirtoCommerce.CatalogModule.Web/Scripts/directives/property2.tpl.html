@@ -468,4 +468,168 @@
     <va-property-messages></va-property-messages>
   </script>
 
+  <script type="text/ng-template" id="Color.html">
+    <div class="column" style="width: 55%; height: 50px">
+      <div class="form-input">
+        <input type="text"
+               ng-disabled="currentEntity.isReadOnly"
+               ng-required="currentEntity.required && !currentEntity.isReadOnly"
+               ng-model="context.currentPropValues[0].value"
+               name="{{currentEntity.name}}_value"
+               ng-maxlength="currentEntity.validationRule.charCountMax"
+               ng-minlength="currentEntity.validationRule.charCountMin"
+               ng-pattern="currentEntity.validationRule.regExp"
+               placeholder="{{ 'catalog.properties.color.name' | translate }}" />
+      </div>
+    </div>
+    <div class="column" style="width: 40%; height: 50px; margin-left: 5%; ">
+      <div class="form-input">
+        <input type="color"
+               id="color_input_{{::$id}}"
+               class="hidden-color-picker"
+               ng-model="context.currentPropValues[0].colorCode" />
+        <input type="text"
+               ng-disabled="currentEntity.isReadOnly"
+               ng-required="currentEntity.required && !currentEntity.isReadOnly"
+               ng-model="context.currentPropValues[0].colorCode"
+               name="{{currentEntity.name}}_colorCode"
+               ng-maxlength="currentEntity.validationRule.charCountMax"
+               ng-minlength="currentEntity.validationRule.charCountMin"
+               ng-pattern="currentEntity.validationRule.regExp"
+               placeholder="{{ 'catalog.properties.color.code' | translate }}" />
+        <button class="btn" type="button" data-color-input-id="color_input_{{::$id}}" ng-click="openColorPicker($event)">
+          <span class="btn-ico fa fa-square" ng-style="{ 'color': context.currentPropValues[0].colorCode }"></span>
+        </button>
+      </div>
+    </div>
+    <va-property-messages></va-property-messages>
+  </script>
+
+  <script type="text/ng-template" id="Color-multilang.html">
+    <div ng-repeat="(language, langValuesGroup) in context.langValuesMap" ng-if="isLanguageVisible(language)">
+      <div class="column" style="width: 55%; height: 50px">
+        <div class="vc-catalog form-input __langs">
+          <input type="text"
+                 ng-disabled="currentEntity.isReadOnly"
+                 ng-required="currentEntity.required && !currentEntity.isReadOnly"
+                 ng-model="langValuesGroup.currentPropValues[0].value"
+                 name="{{currentEntity.name}}_{{language}}_value"
+                 ng-maxlength="currentEntity.validationRule.charCountMax"
+                 ng-minlength="currentEntity.validationRule.charCountMin"
+                 ng-pattern="currentEntity.validationRule.regExp"
+                 placeholder="{{ 'catalog.properties.color.name' | translate }}" />
+          <label class="lang-code">{{language}}</label>
+        </div>
+      </div>
+      <div class="column" style="width: 40%; height: 50px; margin-left: 5%; ">
+        <div class="form-input">
+          <input type="color"
+                 id="color_input_{{::$id}}"
+                 class="hidden-color-picker"
+                 ng-model="langValuesGroup.currentPropValues[0].colorCode" />
+          <input type="text"
+                 ng-disabled="currentEntity.isReadOnly"
+                 ng-required="currentEntity.required && !currentEntity.isReadOnly"
+                 ng-model="langValuesGroup.currentPropValues[0].colorCode"
+                 name="{{currentEntity.name}}_{{language}}_colorCode"
+                 ng-maxlength="currentEntity.validationRule.charCountMax"
+                 ng-minlength="currentEntity.validationRule.charCountMin"
+                 ng-pattern="currentEntity.validationRule.regExp"
+                 placeholder="{{ 'catalog.properties.color.code' | translate }}"
+                 class="vc-catalog" />
+          <button class="btn" type="button" data-color-input-id="color_input_{{::$id}}" ng-click="openColorPicker($event)">
+            <span class="btn-ico fa fa-square" ng-style="{ 'color': langValuesGroup.currentPropValues[0].colorCode }"></span>
+          </button>
+        </div>
+      </div>
+      <va-property-messages></va-property-messages>
+    </div>
+  </script>
+
+  <script type="text/ng-template" id="Color-dictionary.html">
+    <div class="form-input">
+      <ui-select ng-model="context.currentPropValues[0]"
+                 ng-disabled="currentEntity.isReadOnly"
+                 ng-required="currentEntity.required"
+                 name="{{currentEntity.name}}">
+        <ui-select-match allow-clear="true" placeholder="{{ 'catalog.properties.color.dictionary' | translate }}">
+          <span class="fa fa-square" ng-style="{ 'color': $select.selected.colorCode }"></span>
+          {{$select.selected.value}}
+        </ui-select-match>
+        <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search} | orderBy: 'value'" refresh="loadDictionaryValues($select)" refresh-delay="200" when-scrolled="loadNextDictionaryValues($select)">
+          <span class="fa fa-square" ng-style="{ 'color': propValue.colorCode }"></span>
+          <span ng-bind-html="propValue.value | highlight: $select.search"></span>
+        </ui-select-choices>
+      </ui-select>
+    </div>
+    <va-property-messages></va-property-messages>
+  </script>
+
+  <script type="text/ng-template" id="Color-dictionary-multilang.html">
+    <div class="form-input">
+      <ui-select ng-model="context.currentPropValues[0]"
+                 ng-disabled="currentEntity.isReadOnly"
+                 ng-required="currentEntity.required"
+                 name="{{currentEntity.name}}">
+        <ui-select-match allow-clear="true" placeholder="{{ 'catalog.properties.color.dictionary' | translate }}">
+          <span class="fa fa-square" ng-style="{ 'color': $select.selected.colorCode }"></span>
+          {{$select.selected.value}}
+        </ui-select-match>
+        <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search} | orderBy: 'value'" refresh="loadDictionaryValues($select)" refresh-delay="200" when-scrolled="loadNextDictionaryValues($select)">
+          <span class="fa fa-square" ng-style="{ 'color': propValue.colorCode }"></span>
+          <span ng-bind-html="propValue.value | highlight: $select.search"></span>
+        </ui-select-choices>
+      </ui-select>
+    </div>
+    <va-property-messages></va-property-messages>
+  </script>
+
+  <script type="text/ng-template" id="Color-dictionary-multivalue.html">
+    <div class="form-input">
+      <ui-select multiple
+                 ng-model="context.currentPropValues"
+                 ng-disabled="currentEntity.isReadOnly"
+                 ng-required="currentEntity.required"
+                 name="{{currentEntity.name}}">
+        <ui-select-match allow-clear="true" placeholder="{{ 'catalog.properties.color.dictionary' | translate }}">
+          <span class="fa fa-square" ng-style="{ 'color': $item.colorCode }"></span>
+          {{$item.value}}
+        </ui-select-match>
+        <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search} | orderBy: 'value'" refresh="loadDictionaryValues($select)" refresh-delay="200" when-scrolled="loadNextDictionaryValues($select)">
+          <span class="fa fa-square" ng-style="{ 'color': propValue.colorCode }"></span>
+          <span ng-bind-html="propValue.value | highlight: $select.search"></span>
+        </ui-select-choices>
+      </ui-select>
+    </div>
+    <va-property-messages></va-property-messages>
+  </script>
+
+  <script type="text/ng-template" id="Color-dictionary-multivalue-multilang.html">
+    <div class="form-input">
+      <ui-select multiple
+                 ng-model="context.currentPropValues"
+                 ng-disabled="currentEntity.isReadOnly"
+                 ng-required="currentEntity.required"
+                 name="{{currentEntity.name}}">
+        <ui-select-match allow-clear="true" placeholder="{{ 'catalog.properties.color.dictionary' | translate }}">
+          <span class="fa fa-square" ng-style="{ 'color': $item.colorCode }"></span>
+          {{$item.value}}
+        </ui-select-match>
+        <ui-select-choices repeat="propValue in context.allDictionaryValues | filter: {value: $select.search} | orderBy: 'value'" refresh="loadDictionaryValues($select)" refresh-delay="200" when-scrolled="loadNextDictionaryValues($select)">
+          <span class="fa fa-square" ng-style="{ 'color': propValue.colorCode }"></span>
+          <span ng-bind-html="propValue.value | highlight: $select.search"></span>
+        </ui-select-choices>
+      </ui-select>
+    </div>
+    <va-property-messages></va-property-messages>
+  </script>
+
+  <!--
+  <script type="text/ng-template" id="Color-multivalue.html">
+  </script>
+
+  <script type="text/ng-template" id="Color-multivalue-multilang.html">
+  </script>
+  -->
+
 </div>

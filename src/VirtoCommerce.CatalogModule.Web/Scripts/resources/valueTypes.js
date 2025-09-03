@@ -1,12 +1,16 @@
 angular.module('virtoCommerce.catalogModule')
     .factory('virtoCommerce.catalogModule.valueTypes', function () {
         return {
-            get: function() {
+            get: function () {
                 return [
                     {
                         valueType: "ShortText",
                         title: "platform.properties.short-text.title",
                         description: "platform.properties.short-text.description"
+                    },
+                    {
+                        valueType: "Color",
+                        title: "catalog.properties.color.title",
                     },
                     {
                         valueType: "LongText",
