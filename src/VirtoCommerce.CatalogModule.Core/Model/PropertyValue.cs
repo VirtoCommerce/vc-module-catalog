@@ -15,6 +15,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         [JsonIgnore]
         public Property Property { get; set; }
         public string Alias { get; set; }
+        public int? DisplayOrder { get; set; }
         public PropertyValueType ValueType { get; set; }
         public string ValueId { get; set; }
         public object Value { get; set; }
@@ -23,12 +24,12 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         public virtual bool IsEmpty => string.IsNullOrEmpty(ValueId) && string.IsNullOrEmpty(Value?.ToString());
         public string OuterId { get; set; }
         public string UnitOfMeasureId { get; set; }
+        public string ColorCode { get; set; }
 
         public override string ToString()
         {
             return (PropertyName ?? "unknown") + ":" + (Value ?? "undefined");
         }
-
 
         #region IInheritable Members
         public bool IsInherited { get; set; }
@@ -54,7 +55,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         #region ICopyable
         public virtual object GetCopy()
         {
-            var result = Clone() as PropertyValue;
+            var result = (PropertyValue)Clone();
             result.Id = null;
             return result;
         }
@@ -63,13 +64,12 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         #region ICloneable members
         public object Clone()
         {
-            return base.MemberwiseClone();
+            return MemberwiseClone();
         }
         #endregion
 
         #region Conditional JSON serialization for properties declared in base type
         public override bool ShouldSerializeAuditableProperties => false;
         #endregion
-
     }
 }

@@ -8,6 +8,12 @@
       "product": "产品属性",
       "variation": "变体属性",
       "category": "类别属性",
+      "color": {
+        "title": "颜色",
+        "name": "颜色名称",
+        "code": "颜色代码",
+        "dictionary": "选择颜色"
+      },
       "geoPoint": {
         "title": "地理点",
         "placeholder": "输入纬度和经度",
@@ -331,6 +337,11 @@
       "property-dictionary": {
         "title": "{{name}} 字典",
         "subtitle": "管理字典",
+        "color-code": {
+          "label": "颜色代码",
+          "placeholder": "输入颜色代码",
+          "description": "输入 CSS 格式的颜色代码：#RRGGBB 或 #RGB 或颜色名称"
+        },
         "labels": {
           "new-value": "新值",
           "current-values": "当前值",

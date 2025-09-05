@@ -1169,6 +1169,10 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasMaxLength(512)
                         .HasColumnType("nvarchar(512)");
 
+                    b.Property<string>("ColorCode")
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
                     b.Property<string>("PropertyId")
                         .IsRequired()
                         .HasColumnType("nvarchar(128)");
@@ -1477,6 +1481,10 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
 
                     b.Property<string>("CategoryId")
                         .HasColumnType("nvarchar(128)");
+
+                    b.Property<string>("ColorCode")
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
 
                     b.Property<string>("CreatedBy")
                         .HasMaxLength(64)

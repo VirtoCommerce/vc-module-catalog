@@ -8,6 +8,12 @@
       "product": "Proprietà del prodotto",
       "variation": "Proprietà della variazione",
       "category": "Proprietà della categoria",
+      "color": {
+        "title": "Colore",
+        "name": "Nome colore",
+        "code": "Codice colore",
+        "dictionary": "Seleziona colore"
+      },
       "geoPoint": {
         "title": "Punto geografico",
         "placeholder": "Inserisci latitudine e longitudine",
@@ -331,6 +337,11 @@
       "property-dictionary": {
         "title": "Dizionario di {{name}}",
         "subtitle": "Gestisci dizionario",
+        "color-code": {
+          "label": "Codice colore",
+          "placeholder": "Inserisci codice colore",
+          "description": "Inserisci un codice colore in formato CSS: #RRGGBB o #RGB o nome colore"
+        },
         "labels": {
           "new-value": "Nuovo valore",
           "current-values": "Valori attuali",

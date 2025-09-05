@@ -10,6 +10,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
     {
         public string PropertyId { get; set; }
         public string Alias { get; set; }
+        public string ColorCode { get; set; }
         public int SortOrder { get; set; }
         public ICollection<PropertyDictionaryItemLocalizedValue> LocalizedValues { get; set; }
 
