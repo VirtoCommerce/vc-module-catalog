@@ -1193,6 +1193,7 @@
     },
     "commands": {
       "copy-id": "复制 ID",
+      "copy-sku": "复制SKU",
       "clear-all": "清除所有",
       "add-property": "添加属性",
       "add-product-property": "添加自定义属性",

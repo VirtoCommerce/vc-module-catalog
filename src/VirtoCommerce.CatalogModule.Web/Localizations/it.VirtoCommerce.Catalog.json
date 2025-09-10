@@ -1193,6 +1193,7 @@
     },
     "commands": {
       "copy-id": "Copia ID",
+      "copy-sku": "Copia SKU",
       "clear-all": "Cancella tutto",
       "add-property": "Aggiungi proprietà",
       "add-product-property": "Aggiungi una proprietà personalizzata",
