@@ -59,7 +59,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
                 if (criteria.ObjectTypes.IsNullOrEmpty() || criteria.ObjectTypes.Contains(nameof(CatalogProduct)))
                 {
-                    const ItemResponseGroup itemResponseGroup = ItemResponseGroup.ItemInfo | ItemResponseGroup.Outlines;
+                    const ItemResponseGroup itemResponseGroup = ItemResponseGroup.ItemInfo | ItemResponseGroup.Outlines | ItemResponseGroup.WithImages;
 
                     var productIndexedSearchCriteria = AbstractTypeFactory<ProductIndexedSearchCriteria>.TryCreateInstance().FromListEntryCriteria(criteria) as ProductIndexedSearchCriteria;
                     productIndexedSearchCriteria.ResponseGroup = itemResponseGroup.ToString();
