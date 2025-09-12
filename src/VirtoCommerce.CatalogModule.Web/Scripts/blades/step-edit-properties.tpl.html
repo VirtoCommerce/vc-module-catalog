@@ -76,7 +76,7 @@
                             </a>-->
                         </label>
 
-                        <va-property2 ng-show="prop.UseDefaultUIForEdit" ng-model="prop" get-prop-values="getPropValues" ng-if="!prop.isReadOnly" languages="blade.languages" default-language="blade.defaultLanguage"></va-property2>
+                        <va-property2 ng-show="prop.UseDefaultUIForEdit" ng-model="prop" get-prop-values="getPropValues" get-units="getUnitsOfMeasure" ng-if="!prop.isReadOnly" languages="blade.languages" default-language="blade.defaultLanguage"></va-property2>
                     </div>
                     <div class="note" ng-if="properties.length == 0">{{ 'catalog.blades.property-list.labels.empty-list' | translate }}</div>
                 </fieldset>
