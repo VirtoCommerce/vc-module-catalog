@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core.Common;
+using VirtoCommerce.CatalogModule.Core.Extensions;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Outlines;
@@ -14,6 +15,9 @@ using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.SearchModule.Core.Extensions;
 using VirtoCommerce.SearchModule.Core.Model;
+using VirtoCommerce.StoreModule.Core.Extensions;
+using VirtoCommerce.StoreModule.Core.Services;
+using static VirtoCommerce.StoreModule.Core.ModuleConstants.Settings.SEO;
 using RangeFilter = VirtoCommerce.CatalogModule.Data.Search.BrowseFilters.RangeFilter;
 using RangeFilterValue = VirtoCommerce.CatalogModule.Data.Search.BrowseFilters.RangeFilterValue;
 
@@ -25,17 +29,23 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         private readonly IPropertyService _propertyService;
         private readonly IPropertyDictionaryItemSearchService _propDictItemsSearchService;
         private readonly ICategoryService _categoryService;
+        private readonly IStoreService _storeService;
+        private readonly ICatalogService _catalogService;
 
         public AggregationConverter(
             IBrowseFilterService browseFilterService,
             IPropertyService propertyService,
             IPropertyDictionaryItemSearchService propDictItemsSearchService,
-            ICategoryService categoryService)
+            ICategoryService categoryService,
+            IStoreService storeService,
+            ICatalogService catalogService)
         {
             _browseFilterService = browseFilterService;
             _propertyService = propertyService;
             _propDictItemsSearchService = propDictItemsSearchService;
             _categoryService = categoryService;
+            _storeService = storeService;
+            _catalogService = catalogService;
         }
 
         #region Request converter
@@ -395,11 +405,40 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 case "__outline":
                 case "__outline_named":
                     aggregationResponse.Values = FilterOutlineAggregationItems(aggregationResponse.Values, parentOutline, expandChild: false);
+                    aggregationResponse.Values = FilterLinkedCategories(criteria.StoreId, aggregationResponse.Values);
                     break;
                 case "__path":
                     aggregationResponse.Values = FilterOutlineAggregationItems(aggregationResponse.Values, parentOutline, expandChild: true);
                     break;
             }
+        }
+
+        protected virtual IList<AggregationResponseValue> FilterLinkedCategories(string storeId,
+            IList<AggregationResponseValue> values)
+        {
+            if (values.IsNullOrEmpty())
+            {
+                return values;
+            }
+
+            var store = _storeService.GetByIdAsync(storeId).GetAwaiter().GetResult();
+            if (store == null || store.GetSeoLinksType() != SeoCollapsed)
+            {
+                return values;
+            }
+
+            var storeCatalog = _catalogService.GetByIdAsync(store.Catalog).GetAwaiter().GetResult();
+            if (storeCatalog == null || !storeCatalog.IsVirtual)
+            {
+                return values;
+            }
+
+            var outlines = values.ToDictionary(x => OutlineString.GetLastItemId(x.Id));
+            var categories = _categoryService.GetAsync(outlines.Keys.ToArray(), clone: false).GetAwaiter().GetResult();
+
+            var result = categories.FilterLinked(store, storeCatalog).Select(x => outlines[x.Id]);
+
+            return result.ToArray();
         }
 
         /// <summary>
