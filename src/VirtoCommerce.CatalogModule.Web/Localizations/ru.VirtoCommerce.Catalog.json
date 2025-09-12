@@ -1193,6 +1193,7 @@
     },
     "commands": {
       "copy-id": "Копировать ID",
+      "copy-sku": "Копировать SKU",
       "clear-all": "Очистить все",
       "add-property": "Добавить свойство",
       "add-product-property": "Добавить пользовательское свойство",
