@@ -1193,6 +1193,7 @@
     },
     "commands": {
       "copy-id": "IDをコピー",
+      "copy-sku": "SKUをコピー",
       "clear-all": "すべてクリア",
       "add-property": "プロパティを追加",
       "add-product-property": "カスタムプロパティを追加",
