@@ -6,6 +6,7 @@ using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
 using VirtoCommerce.CatalogModule.Data.Search.Indexing;
 using VirtoCommerce.SearchModule.Core.Model;
+using VirtoCommerce.StoreModule.Core.Services;
 using RangeFilter = VirtoCommerce.CatalogModule.Data.Search.BrowseFilters.RangeFilter;
 using RangeFilterValue = VirtoCommerce.CatalogModule.Data.Search.BrowseFilters.RangeFilterValue;
 
@@ -18,8 +19,10 @@ namespace VirtoCommerce.CatalogModule2.Data.Search.Indexing
             IPropertyService propertyService,
             IPropertyDictionaryItemSearchService propDictItemsSearchService,
             ICategoryService categoryService,
-            IMeasureService measureService)
-            : base(browseFilterService, propertyService, propDictItemsSearchService, categoryService)
+            IMeasureService measureService,
+            IStoreService storeService,
+            ICatalogService catalogService)
+            : base(browseFilterService, propertyService, propDictItemsSearchService, categoryService, storeService, catalogService)
         {
         }
         protected override Task AddLabelsAsync(IList<Aggregation> aggregations, string catalogId, IList<IBrowseFilter> browseFilters)
