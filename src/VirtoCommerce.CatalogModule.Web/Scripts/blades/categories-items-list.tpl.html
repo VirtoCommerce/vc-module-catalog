@@ -42,6 +42,9 @@
           <li class="menu-item" ng-click='copyItemID(contextMenuEntity)' va-permission="catalog:read">
             <i class="menu-ico far fa-copy"></i> {{ 'catalog.commands.copy-id' | translate }}
           </li>
+          <li class="menu-item" ng-click='copyItemSku(contextMenuEntity)' va-permission="catalog:read" ng-if="contextMenuEntity.type != 'category'">
+            <i class="menu-ico far fa-copy"></i> {{ 'catalog.commands.copy-sku' | translate }}
+          </li>
         </ul>
       </div>
       <div class="note" ng-if="!items.length">{{ 'platform.list.no-data' | translate }}</div>
