@@ -235,7 +235,7 @@ public class CatalogSeoResolver : ISeoResolver
             return elements
                 ?.SelectMany(x => x.Outlines.Select(o => new
                 {
-                    SeoPath = o.Items.GetSeoPath(store, store.DefaultLanguage),
+                    SeoPath = o.Items.GetSeoPath(store, languageCode),
                     OutlinePath = o.Items.GetOutlinePath(),
                     x.Id
                 }))
