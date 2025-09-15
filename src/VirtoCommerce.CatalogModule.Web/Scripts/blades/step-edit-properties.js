@@ -1,5 +1,10 @@
 angular.module('virtoCommerce.catalogModule')
-    .controller('virtoCommerce.catalogModule.editPropertiesActionStepController', ['$scope', 'virtoCommerce.catalogModule.properties', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.propDictItems', 'virtoCommerce.customerModule.members', 'platformWebApp.settings', 'virtoCommerce.coreModule.packageType.packageTypeUtils', function ($scope, properties, bladeNavigationService, propDictItems, members, settings, packageTypeUtils) {
+    .controller('virtoCommerce.catalogModule.editPropertiesActionStepController',
+        ['$scope', 'virtoCommerce.catalogModule.properties', 'platformWebApp.bladeNavigationService',
+            'virtoCommerce.catalogModule.propDictItems', 'virtoCommerce.customerModule.members',
+            'platformWebApp.settings', 'virtoCommerce.coreModule.packageType.packageTypeUtils',
+            'virtoCommerce.catalogModule.measures',
+            function ($scope, properties, bladeNavigationService, propDictItems, members, settings, packageTypeUtils, measures) {
         var blade = $scope.blade;
         $scope.isValid = true;
         blade.refresh = function () {
@@ -34,6 +39,16 @@ angular.module('virtoCommerce.catalogModule')
 
         $scope.getPropertyDisplayName = function (prop) {
             return _.first(_.map(_.filter(prop.displayNames, function (x) { return x && x.languageCode.startsWith(blade.defaultLanguage); }), function (x) { return x.name; }));
+        };
+
+        $scope.getUnitsOfMeasure = function (measureId) {
+            // You may need to inject 'virtoCommerce.catalogModule.measures' as in property-list.js
+            if (!measureId) {
+                return Promise.resolve([]);
+            }
+            return measures.getMeasure({ id: measureId }).$promise.then(function (result) {
+                return result.units;
+            });
         };
 
         $scope.getPropValues = function (propId, keyword, countToSkip, countToTake) {

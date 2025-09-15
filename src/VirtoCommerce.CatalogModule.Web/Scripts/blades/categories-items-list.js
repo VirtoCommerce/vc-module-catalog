@@ -147,6 +147,12 @@ angular.module('virtoCommerce.catalogModule')
                 navigator.clipboard.writeText(data.id).then().catch(e => console.error(e));
             };
 
+            $scope.copyItemSku = function (data) {
+                if (data.code) {
+                    navigator.clipboard.writeText(data.code).then().catch(e => console.error(e));
+                }
+            };
+
             $scope.edit = function (listItem) {
                 if (listItem.type === 'category') {
                     blade.setSelectedItem(listItem, true);
