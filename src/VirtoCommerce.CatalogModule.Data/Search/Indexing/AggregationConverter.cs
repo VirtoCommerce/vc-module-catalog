@@ -25,6 +25,10 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 {
     public class AggregationConverter : IAggregationConverter
     {
+        private const string OutlineAggregationFieldName = "__outline";
+        private const string OutlineNamedAggregationFieldName = "__outline_named";
+        private const string PathAggregationFieldName = "__path";
+
         private readonly IBrowseFilterService _browseFilterService;
         private readonly IPropertyService _propertyService;
         private readonly IPropertyDictionaryItemSearchService _propDictItemsSearchService;
@@ -191,6 +195,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                     {
                         case AttributeFilter attributeFilter:
                             PreFilterOutlineAggregation(attributeFilter, aggregationResponses, criteria);
+                            await FilterLinkedCategories(attributeFilter, aggregationResponses, criteria);
                             aggregation = GetAttributeAggregation(attributeFilter, aggregationResponses);
                             termNames.Remove(attributeFilter.GetIndexFieldName());
                             break;
@@ -402,43 +407,54 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
             switch (fieldName)
             {
-                case "__outline":
-                case "__outline_named":
+                case OutlineAggregationFieldName:
+                case OutlineNamedAggregationFieldName:
                     aggregationResponse.Values = FilterOutlineAggregationItems(aggregationResponse.Values, parentOutline, expandChild: false);
-                    aggregationResponse.Values = FilterLinkedCategories(criteria.StoreId, aggregationResponse.Values);
                     break;
-                case "__path":
+                case PathAggregationFieldName:
                     aggregationResponse.Values = FilterOutlineAggregationItems(aggregationResponse.Values, parentOutline, expandChild: true);
                     break;
             }
         }
 
-        protected virtual IList<AggregationResponseValue> FilterLinkedCategories(string storeId,
-            IList<AggregationResponseValue> values)
+        protected virtual async Task FilterLinkedCategories(AttributeFilter attributeFilter, IList<AggregationResponse> aggregationResponses, ProductIndexedSearchCriteria criteria)
         {
+            if (attributeFilter.Key != OutlineNamedAggregationFieldName)
+            {
+                return;
+            }
+
+            var aggregationResponse = aggregationResponses.FirstOrDefault(a => a.Id.EqualsIgnoreCase(OutlineNamedAggregationFieldName));
+            if (aggregationResponse == null || string.IsNullOrEmpty(criteria.StoreId))
+            {
+                return;
+            }
+
+            var values = aggregationResponse.Values;
+
             if (values.IsNullOrEmpty())
             {
-                return values;
+                return;
             }
 
-            var store = _storeService.GetByIdAsync(storeId).GetAwaiter().GetResult();
+            var store = await _storeService.GetByIdAsync(criteria.StoreId);
             if (store == null || store.GetSeoLinksType() != SeoCollapsed)
             {
-                return values;
+                return;
             }
 
-            var storeCatalog = _catalogService.GetByIdAsync(store.Catalog).GetAwaiter().GetResult();
+            var storeCatalog = await _catalogService.GetByIdAsync(store.Catalog);
             if (storeCatalog == null || !storeCatalog.IsVirtual)
             {
-                return values;
+                return;
             }
 
             var outlines = values.ToDictionary(x => OutlineString.GetLastItemId(x.Id));
-            var categories = _categoryService.GetAsync(outlines.Keys.ToArray(), clone: false).GetAwaiter().GetResult();
+            var categories = await _categoryService.GetAsync(outlines.Keys.ToArray(), clone: false);
 
             var result = categories.FilterLinked(store, storeCatalog).Select(x => outlines[x.Id]);
 
-            return result.ToArray();
+            aggregationResponse.Values = result.ToArray();
         }
 
         /// <summary>
