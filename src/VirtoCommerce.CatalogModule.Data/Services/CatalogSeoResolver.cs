@@ -12,8 +12,11 @@ using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Seo.Core.Models;
 using VirtoCommerce.Seo.Core.Services;
+using VirtoCommerce.StoreModule.Core.Extensions;
 using VirtoCommerce.StoreModule.Core.Model;
 using VirtoCommerce.StoreModule.Core.Services;
+using static VirtoCommerce.StoreModule.Core.ModuleConstants.Settings.SEO;
+using SeoExtensions = VirtoCommerce.CatalogModule.Core.Extensions.SeoExtensions;
 
 namespace VirtoCommerce.CatalogModule.Data.Services;
 
@@ -54,11 +57,19 @@ public class CatalogSeoResolver : ISeoResolver
             return [];
         }
 
+        //var result = await SearchSeoInfos(permalink, store, criteria);
+        //return result;
+
         var currentEntitySeoInfos = await SearchSeoInfos(permalink, store, criteria);
 
         if (currentEntitySeoInfos.Count == 0)
         {
             return [];
+        }
+
+        if (store.GetSeoLinksType() == SeoShort)
+        {
+            return currentEntitySeoInfos;
         }
 
         var groups = currentEntitySeoInfos.GroupBy(x => new { x.ObjectType, x.ObjectId }).ToList();
@@ -68,27 +79,17 @@ public class CatalogSeoResolver : ISeoResolver
             return [currentEntitySeoInfos.First()];
         }
 
-        var parentIds = new List<string>();
-
-        // It's not possible to resolve because we don't have parent segment
-        if (segments.Length == 1)
+        var parentIds = new List<string>
         {
-            parentIds.Add(store.Catalog);
-        }
-        else
-        {
-            // We found multiple SEO records, need to choose the correct one by checking the parents recursively.
-            var parentSearchCriteria = criteria.CloneTyped();
-            parentSearchCriteria.Permalink = string.Join('/', segments.Take(segments.Length - 1));
-            var parentSeoInfos = await FindSeoAsync(parentSearchCriteria);
+            store.Catalog
+        };
 
-            if (parentSeoInfos.Count == 0)
-            {
-                return [];
-            }
+        // We found multiple SEO records, need to choose the correct one by checking the parents recursively.
+        var parentSearchCriteria = criteria.CloneTyped();
+        parentSearchCriteria.Permalink = string.Join('/', segments.Take(segments.Length - 1));
+        var parentSeoInfos = await FindSeoAsync(parentSearchCriteria);
 
-            parentIds.AddRange(parentSeoInfos.Select(x => x.ObjectId).Distinct());
-        }
+        parentIds.AddRange(parentSeoInfos.Select(x => x.ObjectId).Distinct());
 
         foreach (var group in groups)
         {
@@ -161,6 +162,7 @@ public class CatalogSeoResolver : ISeoResolver
         // Get the second last element of each longest path.
         var immediateParentIds = outlines
             .Where(x => x.Items.Count == maxLength)
+            .OrderByDescending(x => x.Items.Count)
             .SelectMany(o => o.Items.Skip(o.Items.Count - 2).Take(1).Select(i => i.Id))
             .Distinct(StringComparer.OrdinalIgnoreCase);
 
@@ -204,7 +206,9 @@ public class CatalogSeoResolver : ISeoResolver
             seoList.AddRange(seo);
         }
 
-        var result = entities.Where(x => x.CatalogId != null || categoryIds.Contains(x.CategoryId) || itemIds.Contains(x.ItemId)).ToArray();
+        var result = entities
+            .Where(x => x.CatalogId != null || categoryIds.Contains(x.CategoryId) || itemIds.Contains(x.ItemId))
+            .ToArray();
 
         return result
             .Select(x =>
@@ -223,7 +227,7 @@ public class CatalogSeoResolver : ISeoResolver
             return elements
                 ?.SelectMany(x => x.Outlines.Select(o => new
                 {
-                    SeoPath = o.Items.GetSeoPath(store, languageCode),
+                    SeoPath = o.Items.GetSeoPath(store, criteria.LanguageCode),
                     OutlinePath = o.Items.GetOutlinePath(),
                     x.Id
                 }))

@@ -20,14 +20,16 @@ namespace VirtoCommerce.CatalogModule.Tests
     public class CatalogHierarchyHelper
     {
         private readonly string _catalogId;
+        private readonly string _seoLinksType;
         public List<CatalogProduct> Products { get; private set; }
         public List<Category> Categories { get; private set; }
         public List<SeoInfo> SeoInfos { get; private set; }
         public List<Catalog> Catalogs { get; private set; }
 
-        public CatalogHierarchyHelper(string catalogId)
+        public CatalogHierarchyHelper(string catalogId, string seoLinksType = StoreModule.Core.ModuleConstants.Settings.SEO.SeoLong)
         {
             _catalogId = catalogId;
+            _seoLinksType = seoLinksType;
 
             Products = [];
             Categories = [];
@@ -245,7 +247,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                                [
                                    new ObjectSettingEntry(StoreModule.Core.ModuleConstants.Settings.SEO.SeoLinksType)
                                    {
-                                       Value = StoreModule.Core.ModuleConstants.Settings.SEO.SeoLong,
+                                       Value = _seoLinksType,
                                    }
                                ]
                            }
