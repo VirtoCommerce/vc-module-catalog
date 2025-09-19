@@ -14,6 +14,7 @@ namespace VirtoCommerce.CatalogModule.Tests
 
         private const string StoreId = "B2B-store";
         private const string LanguageCode = "en-US";
+        private const string AlternativeLanguageCode = "de-DE";
 
         public CatalogSeoResolverTests()
         {
@@ -391,7 +392,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         }
 
         [Fact]
-        public async Task FindSeoAsync_Education()
+        public async Task FindSeoAsync_Education_LongLinks()
         {
             // Arrange
             var helper = new CatalogHierarchyHelper(CatalogId);
@@ -412,12 +413,12 @@ namespace VirtoCommerce.CatalogModule.Tests
             var seoResolver = helper.CreateCatalogSeoResolver();
 
             // Act
-            var criteria = new SeoSearchCriteria { Permalink = "education", StoreId = StoreId, LanguageCode = "en-US" };
-            var result = await seoResolver.FindSeoAsync(criteria);
+            var criteria1 = new SeoSearchCriteria { Permalink = "education", StoreId = StoreId, LanguageCode = "en-US" };
+            var result1 = await seoResolver.FindSeoAsync(criteria1);
 
             // Assert
-            Assert.Single(result);
-            Assert.Equal("EducationCategoryId", result.First().ObjectId);
+            Assert.Single(result1);
+            Assert.Equal("EducationCategoryId", result1.First().ObjectId);
 
             // Act
             var criteria2 = new SeoSearchCriteria { Permalink = "furniture-furnishings/education", StoreId = StoreId, LanguageCode = "en-US" };
@@ -426,6 +427,44 @@ namespace VirtoCommerce.CatalogModule.Tests
             // Assert
             Assert.Single(result2);
             Assert.Equal("EducationInFurnitureCategoryId", result2.First().ObjectId);
+        }
+
+        [Fact]
+        public async Task FindSeoAsync_Education_ShortLinks()
+        {
+            // Arrange
+            var helper = new CatalogHierarchyHelper(CatalogId, StoreModule.Core.ModuleConstants.Settings.SEO.SeoShort);
+
+            helper.AddSeoInfo("EducationCategoryId", CategoryType, "education", isActive: true, storeId: null, languageCode: null);
+            helper.AddSeoInfo("FurnitureCategoryId", CategoryType, "furniture-furnishings", isActive: true, storeId: string.Empty, languageCode: string.Empty);
+            helper.AddSeoInfo("EducationInFurnitureCategoryId", CategoryType, "education", isActive: true, StoreId, languageCode: string.Empty);
+
+            // Education
+            helper.AddCategory("EducationCategoryId", CatalogId);
+
+            // Furniture & Furnishings
+            helper.AddCategory("FurnitureCategoryId", CatalogId);
+
+            // Furniture & Furnishings > Education
+            helper.AddCategory("EducationInFurnitureCategoryId", CatalogId, $"{CatalogId}/FurnitureCategoryId");
+
+            var seoResolver = helper.CreateCatalogSeoResolver();
+
+            // Act
+            var criteria = new SeoSearchCriteria { Permalink = "education", StoreId = StoreId, LanguageCode = LanguageCode };
+            var result = await seoResolver.FindSeoAsync(criteria);
+
+            // Assert
+            Assert.Equal(2, result.Count);
+            Assert.Contains("EducationCategoryId", result.Select(x => x.ObjectId));
+            Assert.Contains("EducationInFurnitureCategoryId", result.Select(x => x.ObjectId));
+
+            // Act
+            var criteria2 = new SeoSearchCriteria { Permalink = "furniture-furnishings/education", StoreId = StoreId, LanguageCode = LanguageCode };
+            var result2 = await seoResolver.FindSeoAsync(criteria2);
+
+            // Assert
+            Assert.Empty(result2);
         }
 
         [Fact]
@@ -526,8 +565,8 @@ namespace VirtoCommerce.CatalogModule.Tests
             helper.AddSeoInfo("ProductId", ProductType, "product", isActive: true, StoreId, LanguageCode);
 
             helper.AddCategory("CategoryId", CatalogId);
-            helper.AddCategory("SubCategoryId", CatalogId, "CategoryId");
-            helper.AddProduct("ProductId", CatalogId, "CategoryId", "CategoryId/SubCategoryId");
+            helper.AddCategory("SubCategoryId", CatalogId, $"{CatalogId}/CategoryId");
+            helper.AddProduct("ProductId", CatalogId, "CategoryId", $"{CatalogId}CategoryId/SubCategoryId");
 
             helper.AddCatalog(CatalogId);
 
@@ -539,6 +578,83 @@ namespace VirtoCommerce.CatalogModule.Tests
 
             // Assert
             Assert.Empty(result);
+        }
+
+        [Fact]
+        public async Task FindSeoAsync_SameUrlDifferentLanguage()
+        {
+            var helper = new CatalogHierarchyHelper(CatalogId);
+
+            helper.AddSeoInfo("CategoryId", CategoryType, "category", isActive: true, StoreId, LanguageCode);
+            helper.AddSeoInfo("SubCategoryId1", CategoryType, "subcategory", isActive: true, StoreId, LanguageCode);
+            helper.AddSeoInfo("SubCategoryId2", CategoryType, "subcategory", isActive: true, StoreId, AlternativeLanguageCode);
+            helper.AddSeoInfo("SubCategoryId3", CategoryType, "subcategory3", isActive: true, StoreId, LanguageCode);
+
+            helper.AddCategory("CategoryId", CatalogId);
+            helper.AddCategory("SubCategoryId1", CatalogId, $"{CatalogId}/CategoryId");
+            helper.AddCategory("SubCategoryId2", CatalogId, $"{CatalogId}/CategoryId");
+            helper.AddCategory("SubCategoryId3", CatalogId, $"{CatalogId}/CategoryId");
+
+            helper.AddCatalog(CatalogId);
+
+            var seoResolver = helper.CreateCatalogSeoResolver();
+
+            // Act
+            var criteria1 = new SeoSearchCriteria { Permalink = "category/subcategory", StoreId = StoreId, LanguageCode = LanguageCode };
+            var result1 = await seoResolver.FindSeoAsync(criteria1);
+
+            // Assert
+            Assert.Single(result1);
+            Assert.Equal(LanguageCode, result1.First().LanguageCode);
+
+            // Act
+            var criteria2 = new SeoSearchCriteria { Permalink = "category/subcategory", StoreId = StoreId, LanguageCode = AlternativeLanguageCode };
+            var result2 = await seoResolver.FindSeoAsync(criteria2);
+
+            // Assert
+            Assert.Single(result2);
+            Assert.Equal(AlternativeLanguageCode, result2.First().LanguageCode);
+        }
+
+        [Fact]
+        public async Task FindSeoAsync_SameUrlDifferentLanguage_ShortLinks()
+        {
+            var helper = new CatalogHierarchyHelper(CatalogId, StoreModule.Core.ModuleConstants.Settings.SEO.SeoShort);
+
+            helper.AddSeoInfo("CategoryId", CategoryType, "category", isActive: true, StoreId, LanguageCode);
+            helper.AddSeoInfo("SubCategoryId1", CategoryType, "subcategory", isActive: true, StoreId, LanguageCode);
+            helper.AddSeoInfo("SubCategoryId2", CategoryType, "subcategory", isActive: true, StoreId, AlternativeLanguageCode);
+            helper.AddSeoInfo("SubCategoryId3", CategoryType, "subcategory", isActive: true, StoreId, languageCode: "other-lang");
+            helper.AddSeoInfo("SubCategoryId4", CategoryType, "subcategory3", isActive: true, StoreId, LanguageCode);
+
+            helper.AddCategory("CategoryId", CatalogId);
+            helper.AddCategory("SubCategoryId1", CatalogId, $"{CatalogId}/CategoryId");
+            helper.AddCategory("SubCategoryId2", CatalogId, $"{CatalogId}/CategoryId");
+            helper.AddCategory("SubCategoryId3", CatalogId, $"{CatalogId}/CategoryId");
+            helper.AddCategory("SubCategoryId4", CatalogId, $"{CatalogId}/CategoryId");
+
+            helper.AddCatalog(CatalogId);
+
+            var seoResolver = helper.CreateCatalogSeoResolver();
+
+            // Act
+            var criteria1 = new SeoSearchCriteria { Permalink = "subcategory", StoreId = StoreId, LanguageCode = LanguageCode };
+            var result1 = await seoResolver.FindSeoAsync(criteria1);
+
+            // Assert
+            Assert.Single(result1);
+            Assert.Equal(LanguageCode, result1.First().LanguageCode);
+
+            // Act
+            var criteria2 = new SeoSearchCriteria { Permalink = "subcategory", StoreId = StoreId, LanguageCode = AlternativeLanguageCode };
+            var result2 = await seoResolver.FindSeoAsync(criteria2);
+
+            // have to find the both records
+
+            // Assert
+            Assert.Equal(2, result2.Count);
+            Assert.Contains(AlternativeLanguageCode, result2.Select(x => x.LanguageCode));
+            Assert.Contains(LanguageCode, result2.Select(x => x.LanguageCode));
         }
     }
 }
