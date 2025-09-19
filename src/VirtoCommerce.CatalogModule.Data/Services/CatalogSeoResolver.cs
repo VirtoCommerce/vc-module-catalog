@@ -57,9 +57,6 @@ public class CatalogSeoResolver : ISeoResolver
             return [];
         }
 
-        //var result = await SearchSeoInfos(permalink, store, criteria);
-        //return result;
-
         var currentEntitySeoInfos = await SearchSeoInfos(permalink, store, criteria);
 
         if (currentEntitySeoInfos.Count == 0)
