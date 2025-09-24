@@ -1,13 +1,13 @@
 using System.Linq;
 using FluentValidation;
 using VirtoCommerce.CatalogModule.Core.Model;
-using System;
 
 namespace VirtoCommerce.CatalogModule.Data.Validation;
 
 public class ProductValidator : AbstractValidator<CatalogProduct>
 {
-    private static readonly System.Buffers.SearchValues<char> IllegalCodeChars = System.Buffers.SearchValues.Create("$+;=%{}[]|@~!^*&()<>\r\n");
+    private static readonly char[] IllegalCodeChars = ['$', '+', ';', '=', '%', '{', '}', '[', ']', '|', '@', '~', '!', '^', '*', '&', '(', ')', '<', '>'];
+    private static readonly char[] IllegalNameChars = ['\r', '\n', '\t'];
 
     public ProductValidator(AbstractValidator<Property> propertyValidator)
     {
@@ -25,14 +25,14 @@ public class ProductValidator : AbstractValidator<CatalogProduct>
             .MaximumLength(1024)
             .DependentRules(() => RuleFor(product => product.Name)
                 .Must(name => name == name.Trim() && !name.Any(char.IsControl)).WithMessage("Name must not contain leading/trailing spaces or control characters.")
-                .Must(name => name.AsSpan().IndexOfAny(IllegalCodeChars) < 0).WithMessage("Product name contains illegal chars."));
+                .Must(name => name.IndexOfAny(IllegalNameChars) < 0).WithMessage("Product name contains illegal chars."));
 
         RuleFor(product => product.Code)
             .NotNull()
             .NotEmpty()
             .MaximumLength(64)
             .DependentRules(() => RuleFor(product => product.Code)
-                .Must(code => code.AsSpan().IndexOfAny(IllegalCodeChars) < 0).WithMessage("Product code contains illegal chars."));
+                .Must(x => x.IndexOfAny(IllegalCodeChars) < 0).WithMessage("Product code contains illegal chars."));
 
         // Validate custom product properties
         RuleForEach(product => product.Properties)

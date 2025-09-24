@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -429,6 +430,9 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                         product.SeoInfos = [seoInfo];
                     }
                 }
+
+                if (product.Name.IsNullOrEmpty())
+                    product.Name = Regex.Replace(product.Name, @"\s+", " ").Trim();;
 
                 toSaveList.Add(product);
             }
