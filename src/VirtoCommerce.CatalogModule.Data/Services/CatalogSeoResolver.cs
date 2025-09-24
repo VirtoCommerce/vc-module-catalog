@@ -76,17 +76,21 @@ public class CatalogSeoResolver : ISeoResolver
             return [currentEntitySeoInfos.First()];
         }
 
-        var parentIds = new List<string>
+        var parentIds = new List<string>();
+
+        if (segments.Length == 1)
         {
-            store.Catalog,
-        };
+            parentIds.Add(store.Catalog);
+        }
+        else
+        {
+            // We found multiple SEO records, need to choose the correct one by checking the parents recursively.
+            var parentSearchCriteria = criteria.CloneTyped();
+            parentSearchCriteria.Permalink = string.Join('/', segments.Take(segments.Length - 1));
+            var parentSeoInfos = await FindSeoAsync(parentSearchCriteria);
 
-        // We found multiple SEO records, need to choose the correct one by checking the parents recursively.
-        var parentSearchCriteria = criteria.CloneTyped();
-        parentSearchCriteria.Permalink = string.Join('/', segments.Take(segments.Length - 1));
-        var parentSeoInfos = await FindSeoAsync(parentSearchCriteria);
-
-        parentIds.AddRange(parentSeoInfos.Select(x => x.ObjectId).Distinct());
+            parentIds.AddRange(parentSeoInfos.Select(x => x.ObjectId).Distinct());
+        }
 
         foreach (var group in groups)
         {
