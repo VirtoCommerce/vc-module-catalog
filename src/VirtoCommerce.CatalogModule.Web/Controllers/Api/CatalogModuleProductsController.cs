@@ -419,7 +419,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             {
                 if (product.IsTransient() && product.SeoInfos.IsNullOrEmpty())
                 {
-                    var slugUrl = string.Join(" ", product.Name).GenerateSlug();
+                    var productNames = new List<string> {product.Name};
+                    var slugUrl = string.Join(" ", productNames).GenerateSlug();
                     if (!string.IsNullOrEmpty(slugUrl))
                     {
                         var catalog = catalogs.FirstOrDefault(c => c.Id.EqualsIgnoreCase(product.CatalogId));
@@ -431,7 +432,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                     }
                 }
 
-                if (product.Name.IsNullOrEmpty())
+                if (!product.Name.IsNullOrEmpty())
                     product.Name = Regex.Replace(product.Name, @"\s+", " ").Trim();;
 
                 toSaveList.Add(product);
