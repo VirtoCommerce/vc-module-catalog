@@ -9,6 +9,9 @@ public class ProductValidator : AbstractValidator<CatalogProduct>
     private static readonly char[] IllegalCodeChars = ['$', '+', ';', '=', '%', '{', '}', '[', ']', '|', '@', '~', '!', '^', '*', '&', '(', ')', '<', '>'];
     private static readonly char[] IllegalNameChars = ['\r', '\n', '\t'];
 
+    private const int _maximumLength64 = 64;
+    private const int _maximumLength1024 = 1024;
+
     public ProductValidator(AbstractValidator<Property> propertyValidator)
     {
         RuleFor(product => product.CatalogId)
@@ -22,7 +25,7 @@ public class ProductValidator : AbstractValidator<CatalogProduct>
         RuleFor(product => product.Name)
             .NotNull().WithMessage(x => $"Name is null. Code: {x.Code}.")
             .NotEmpty().WithMessage(x => $"Name is empty. Code: {x.Code}.")
-            .MaximumLength(1024)
+            .MaximumLength(_maximumLength1024)
             .DependentRules(() => RuleFor(product => product.Name)
                 .Must(name => name == name.Trim() && !name.Any(char.IsControl)).WithMessage("Name must not contain leading/trailing spaces or control characters.")
                 .Must(name => name.IndexOfAny(IllegalNameChars) < 0).WithMessage("Product name contains illegal chars."));
@@ -30,7 +33,7 @@ public class ProductValidator : AbstractValidator<CatalogProduct>
         RuleFor(product => product.Code)
             .NotNull()
             .NotEmpty()
-            .MaximumLength(64)
+            .MaximumLength(_maximumLength64)
             .DependentRules(() => RuleFor(product => product.Code)
                 .Must(x => x.IndexOfAny(IllegalCodeChars) < 0).WithMessage("Product code contains illegal chars."));
 
