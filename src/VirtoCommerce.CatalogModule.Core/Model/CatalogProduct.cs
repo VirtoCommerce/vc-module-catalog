@@ -43,7 +43,6 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
         public LocalizedString LocalizedName { get; set; }
 
-
         /// <summary>
         /// The ID of the catalog to which this product belongs.
         /// </summary>

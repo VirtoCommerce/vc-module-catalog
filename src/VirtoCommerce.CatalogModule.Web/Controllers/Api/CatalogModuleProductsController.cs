@@ -106,7 +106,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             {
                 return Forbid();
             }
-            //It is a important to return serialized data by such way. Instead you have a slow response time for large outputs 
+            //It is a important to return serialized data by such way. Instead you have a slow response time for large outputs
             //https://github.com/dotnet/aspnetcore/issues/19646
             var result = JsonConvert.SerializeObject(items, jsonOptions.Value.SerializerSettings);
 
@@ -114,7 +114,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         }
 
         /// <summary>
-        /// Gets products by plenty ids 
+        /// Gets products by plenty ids
         /// </summary>
         /// <param name="ids">Item ids</param>
         /// <param name="respGroup">Response group.</param>
@@ -231,7 +231,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             var copyProduct = (CatalogProduct)product.GetCopy();
 
-            // Reset 
+            // Reset
             copyProduct.Id = null;
             copyProduct.CreatedDate = DateTime.UtcNow;
             copyProduct.CreatedBy = null;
@@ -418,7 +418,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             {
                 if (product.IsTransient() && product.SeoInfos.IsNullOrEmpty())
                 {
-                    var slugUrl = GenerateProductDefaultSlugUrl(product);
+                    var slugUrl = string.Join(" ", product.Name).GenerateSlug();
                     if (!string.IsNullOrEmpty(slugUrl))
                     {
                         var catalog = catalogs.FirstOrDefault(c => c.Id.EqualsIgnoreCase(product.CatalogId));
@@ -439,22 +439,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             }
 
             return [.. toSaveList];
-        }
-
-        private string GenerateProductDefaultSlugUrl(CatalogProduct product)
-        {
-            var retVal = new List<string>
-            {
-                product.Name
-            };
-            if (product.Properties != null)
-            {
-                //foreach (var property in product.Properties.Where(x => x.Type == PropertyType.Variation && x.Values != null))
-                //{
-                //    retVal.AddRange(property.Values.Select(x => x.PropertyName + "-" + x.Value));
-                //}
-            }
-            return string.Join(" ", retVal).GenerateSlug();
         }
     }
 }
