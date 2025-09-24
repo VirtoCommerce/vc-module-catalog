@@ -78,6 +78,7 @@ public class CatalogSeoResolver : ISeoResolver
 
         var parentIds = new List<string>();
 
+        // It's not possible to resolve because we don't have parent segment
         if (segments.Length == 1)
         {
             parentIds.Add(store.Catalog);
@@ -88,6 +89,11 @@ public class CatalogSeoResolver : ISeoResolver
             var parentSearchCriteria = criteria.CloneTyped();
             parentSearchCriteria.Permalink = string.Join('/', segments.Take(segments.Length - 1));
             var parentSeoInfos = await FindSeoAsync(parentSearchCriteria);
+
+            if (parentSeoInfos.Count == 0)
+            {
+                return [];
+            }
 
             parentIds.AddRange(parentSeoInfos.Select(x => x.ObjectId).Distinct());
         }
