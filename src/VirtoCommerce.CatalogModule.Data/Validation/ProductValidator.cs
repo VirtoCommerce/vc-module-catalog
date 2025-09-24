@@ -7,7 +7,6 @@ namespace VirtoCommerce.CatalogModule.Data.Validation;
 public class ProductValidator : AbstractValidator<CatalogProduct>
 {
     private static readonly char[] IllegalCodeChars = ['$', '+', ';', '=', '%', '{', '}', '[', ']', '|', '@', '~', '!', '^', '*', '&', '(', ')', '<', '>'];
-    private static readonly char[] IllegalNameChars = ['\r', '\n', '\t'];
 
     private const int _maximumLength64 = 64;
     private const int _maximumLength1024 = 1024;
@@ -25,10 +24,7 @@ public class ProductValidator : AbstractValidator<CatalogProduct>
         RuleFor(product => product.Name)
             .NotNull().WithMessage(x => $"Name is null. Code: {x.Code}.")
             .NotEmpty().WithMessage(x => $"Name is empty. Code: {x.Code}.")
-            .MaximumLength(_maximumLength1024)
-            .DependentRules(() => RuleFor(product => product.Name)
-                .Must(name => name == name.Trim() && !name.Any(char.IsControl)).WithMessage("Name must not contain leading/trailing spaces or control characters.")
-                .Must(name => name.IndexOfAny(IllegalNameChars) < 0).WithMessage("Product name contains illegal chars."));
+            .MaximumLength(_maximumLength1024);
 
         RuleFor(product => product.Code)
             .NotNull()
