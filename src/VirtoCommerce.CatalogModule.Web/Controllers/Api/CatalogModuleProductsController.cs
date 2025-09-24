@@ -433,7 +433,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
                 if (!product.Name.IsNullOrEmpty())
                 {
-                    product.Name = Regex.Replace(product.Name, @"\s+", " ").Trim();
+                    product.Name = Regex.Replace(product.Name, @"^[\t\r\n]+|[\t\r\n]+$", "");
                 }
 
                 toSaveList.Add(product);
