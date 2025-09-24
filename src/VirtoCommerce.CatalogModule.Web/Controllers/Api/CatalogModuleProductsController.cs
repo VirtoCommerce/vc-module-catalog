@@ -417,6 +417,11 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var catalogs = await catalogService.GetNoCloneAsync(products.Select(pr => pr.CatalogId).Distinct().ToList());
             foreach (var product in products)
             {
+                if (!product.Name.IsNullOrEmpty())
+                {
+                    product.Name = product.Name.Trim();
+                }
+
                 if (product.IsTransient() && product.SeoInfos.IsNullOrEmpty())
                 {
                     var slugUrl = GenerateProductDefaultSlugUrl(product);
@@ -429,11 +434,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                         seoInfo.SemanticUrl = slugUrl;
                         product.SeoInfos = [seoInfo];
                     }
-                }
-
-                if (!product.Name.IsNullOrEmpty())
-                {
-                    product.Name = Regex.Replace(product.Name, @"^[\t\r\n]+|[\t\r\n]+$", "");
                 }
 
                 toSaveList.Add(product);
