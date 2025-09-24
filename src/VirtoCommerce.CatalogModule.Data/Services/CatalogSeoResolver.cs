@@ -78,7 +78,7 @@ public class CatalogSeoResolver : ISeoResolver
 
         var parentIds = new List<string>
         {
-            store.Catalog
+            store.Catalog,
         };
 
         // We found multiple SEO records, need to choose the correct one by checking the parents recursively.
@@ -159,7 +159,6 @@ public class CatalogSeoResolver : ISeoResolver
         // Get the second last element of each longest path.
         var immediateParentIds = outlines
             .Where(x => x.Items.Count == maxLength)
-            .OrderByDescending(x => x.Items.Count)
             .SelectMany(o => o.Items.Skip(o.Items.Count - 2).Take(1).Select(i => i.Id))
             .Distinct(StringComparer.OrdinalIgnoreCase);
 

@@ -566,7 +566,7 @@ namespace VirtoCommerce.CatalogModule.Tests
 
             helper.AddCategory("CategoryId", CatalogId);
             helper.AddCategory("SubCategoryId", CatalogId, $"{CatalogId}/CategoryId");
-            helper.AddProduct("ProductId", CatalogId, "CategoryId", $"{CatalogId}CategoryId/SubCategoryId");
+            helper.AddProduct("ProductId", CatalogId, "CategoryId", $"{CatalogId}/CategoryId/SubCategoryId");
 
             helper.AddCatalog(CatalogId);
 
