@@ -419,8 +419,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             {
                 if (product.IsTransient() && product.SeoInfos.IsNullOrEmpty())
                 {
-                    var productNames = new List<string> {product.Name};
-                    var slugUrl = string.Join(" ", productNames).GenerateSlug();
+                    var slugUrl = GenerateProductDefaultSlugUrl(product);
                     if (!string.IsNullOrEmpty(slugUrl))
                     {
                         var catalog = catalogs.FirstOrDefault(c => c.Id.EqualsIgnoreCase(product.CatalogId));
@@ -446,6 +445,22 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             }
 
             return [.. toSaveList];
+        }
+
+        private string GenerateProductDefaultSlugUrl(CatalogProduct product)
+        {
+            var retVal = new List<string>
+            {
+                product.Name
+            };
+            if (product.Properties != null)
+            {
+                //foreach (var property in product.Properties.Where(x => x.Type == PropertyType.Variation && x.Values != null))
+                //{
+                //    retVal.AddRange(property.Values.Select(x => x.PropertyName + "-" + x.Value));
+                //}
+            }
+            return string.Join(" ", retVal).GenerateSlug();
         }
     }
 }
