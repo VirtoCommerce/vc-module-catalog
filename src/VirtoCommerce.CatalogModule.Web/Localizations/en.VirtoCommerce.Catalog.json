@@ -161,7 +161,7 @@
           }
         },
         "catalog-item-name": "Catalog",
-        "catalog-item-description": "This is a central point for managing your store merchandise and creating catalogs for brans, product lines, or particular suppliers",
+        "catalog-item-description": "This is a central point for managing your store merchandise and creating catalogs for brands, product lines, or particular suppliers",
         "virtual-catalog-item-name": "Virtual catalog",
         "virtual-catalog-item-description": "A virtual catalog is built from one or more physical catalogs. They are used to display products by pulling together items from different physical catalogs"
       },
@@ -278,7 +278,7 @@
         "validations": {
           "required": "This field is required",
           "maxLength": "This field must not contain more than {{max}} characters",
-          "minLenght": "This field must contain at least {{min}} characters",
+          "minLength": "This field must contain at least {{min}} characters",
           "pattern": "This field does not match the selected pattern"
         }
       },
@@ -331,8 +331,7 @@
         }
       },
       "property-type": {
-        "title": "{{name}} applies to",
-        "subtitle": "Соответствующие изменения"
+        "title": "{{name}} applies to"
       },
       "property-dictionary": {
         "title": "{{name}} dictionary",
@@ -534,7 +533,7 @@
         "create": "Create",
         "labels": {
           "content-url": "Content URL",
-          "no-apikey": "You have not provided any Google API key in the platform configuration file. The video information will be incomplete"
+          "no-apikey": "You have not provided any Google API key in the Platform configuration file. The video information will be incomplete"
         },
         "placeholders": {
           "content-url": "Enter video URL"
@@ -925,7 +924,7 @@
         "title": "Variations"
       },
       "itemDimensions": {
-        "title": "Weight and Size",
+        "title": "Weight and size",
         "weight": "Weight",
         "length": "Length",
         "width": "Width",
@@ -1001,7 +1000,7 @@
         "message": "This item has been modified. Do you want to save the changes?"
       },
       "variation-delete": {
-        "title": "Confirm Delete",
+        "title": "Confirm delete",
         "message": "Are you sure you want to delete the selected variations?"
       },
       "property-save": {
@@ -1036,7 +1035,7 @@
         "message": "Are you sure you want to delete the selected attributes?"
       },
       "image-save": {
-        "title": "Confirm Delete",
+        "title": "Confirm delete",
         "message": "These images have been modified. Do you want to save the changes?"
       },
       "video-save": {
@@ -1076,11 +1075,11 @@
         "message": "This unit of measure has been modified. Do you want to save the changes?"
       },
       "measure-unit-delete": {
-        "title": "Confirm Delete",
+        "title": "Confirm delete",
         "message": "Are you sure you want to delete the selected unit of measure?"
       },
       "measure-units-delete": {
-        "title": "Confirm Delete",
+        "title": "Confirm delete",
         "message": "Are you sure you want to delete the selected unit of measure?"
       },
       "measure-save": {
@@ -1377,11 +1376,11 @@
     "actions": {
       "types": {
         "CategoryChangeBulkAction": {
-          "title": "Change Category",
+          "title": "Change category",
           "subtitle": "Move products to another category"
         },
         "PropertiesUpdateBulkAction": {
-          "title": "Edit Properties",
+          "title": "Edit properties",
           "subtitle": "Update one or more properties"
         }
       }
