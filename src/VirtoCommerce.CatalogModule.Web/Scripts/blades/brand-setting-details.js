@@ -131,7 +131,7 @@ angular.module('virtoCommerce.catalogModule')
                 blade.onRemoveCatalog = function () {
                     closeChildrenBlades();
 
-                    blade.selectedCatalog = blade.originalEntity = undefined;
+                    blade.selectedCatalog = blade.originalCatalog = undefined;
                 }
 
                 function resetBrandSettings() {
