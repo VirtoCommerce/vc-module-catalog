@@ -84,6 +84,12 @@ angular.module('virtoCommerce.catalogModule')
                     $q.all(saveTasks).then(function () {
                         closeChildrenBlades();
                         blade.refresh();
+                    }, function (error) {
+                        blade.isLoading = false;
+                        var errorText = (error && (error.message || error.statusText || error.status))
+                            ? ('Error ' + (error.message || error.statusText || error.status))
+                            : 'An error occurred while saving';
+                        bladeNavigationService.setError(errorText, blade);
                     });
                 };
 
