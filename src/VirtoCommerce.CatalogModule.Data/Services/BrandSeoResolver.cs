@@ -40,7 +40,7 @@ public class BrandSeoResolver : ISeoResolver
     public async Task<IList<SeoInfo>> FindSeoAsync(SeoSearchCriteria criteria)
     {
         var brandStoreSettings = await _brandSettingService.GetByStoreIdAsync(criteria.StoreId);
-        if (brandStoreSettings == null || !brandStoreSettings.BrandsEnabled || brandStoreSettings.BrandCatalogId == null)
+        if (!BrandsCatalogEnabled(brandStoreSettings))
         {
             return [];
         }
@@ -87,6 +87,11 @@ public class BrandSeoResolver : ISeoResolver
         }
 
         return [];
+    }
+
+    private static bool BrandsCatalogEnabled(BrandStoreSetting brandStoreSettings)
+    {
+        return brandStoreSettings != null && brandStoreSettings.BrandsEnabled && brandStoreSettings.BrandCatalogId != null;
     }
 
     private async Task<SeoInfo> FindBrandsCatalogSeoInfo(BrandStoreSetting brandStoreSettings, SeoSearchCriteria criteria)

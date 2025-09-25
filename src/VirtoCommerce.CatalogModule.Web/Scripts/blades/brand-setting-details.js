@@ -1,6 +1,8 @@
 angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.brandSettingDetailsController',
-        ['$scope', '$q', '$timeout', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.brandSettings', 'virtoCommerce.catalogModule.catalogs', 'virtoCommerce.catalogModule.aggregationProperties',
+        ['$scope', '$q', '$timeout',
+            'platformWebApp.bladeNavigationService',
+            'virtoCommerce.catalogModule.brandSettings', 'virtoCommerce.catalogModule.catalogs', 'virtoCommerce.catalogModule.aggregationProperties',
             function ($scope, $q, $timeout, bladeNavigationService, brandSettings, catalogs, aggregationProperties) {
                 const blade = $scope.blade;
                 blade.title = 'catalog.blades.brand-setting-details.title';
@@ -27,10 +29,14 @@ angular.module('virtoCommerce.catalogModule')
                                 var data = results[0];
                                 var properties = results[1];
                                 if (data.brandCatalogId) {
-                                    blade.catalog = catalogs.get({ id: data.brandCatalogId }, function (catalog) {
-                                        //data.selectedCatalog = catalog;
-                                        initialize(data, properties, catalog);
-                                    });
+                                    blade.catalog = catalogs.get({ id: data.brandCatalogId },
+                                        function (catalog) {
+                                            initialize(data, properties, catalog);
+                                        },
+                                        function (error) {
+                                            bladeNavigationService.setError('Error ' + error.status, blade);
+                                            blade.isLoading = false;
+                                        });
                                 }
                                 else {
                                     initialize(data, properties);
@@ -58,7 +64,7 @@ angular.module('virtoCommerce.catalogModule')
                 blade.saveChanges = function () {
                     blade.isLoading = true;
 
-                    let saveTasks = [];
+                    const saveTasks = [];
 
                     if (selectedCatalogSeoIsDirty()) {
                         var updateCatalogPromise = catalogs.update(blade.selectedCatalog).$promise.then(function (data) {
