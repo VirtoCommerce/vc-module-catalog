@@ -1,0 +1,1389 @@
+{
+  "catalog": {
+    "main-menu-title": "Katalog",
+    "main-blade-title": "Katalog",
+    "measure-menu-title": "Måttenheter",
+    "properties": {
+      "catalog": "Katalogegenskaper",
+      "product": "Produktegenskaper",
+      "variation": "Variantsegenskaper",
+      "category": "Kategorieegenskaper",
+      "color": {
+        "title": "Färg",
+        "name": "Färgnamn",
+        "code": "Färgkod",
+        "dictionary": "Välj färg"
+      },
+      "geoPoint": {
+        "title": "Geografisk punkt",
+        "placeholder": "Ange latitud och longitud",
+        "description": "Ange latitud och longitud separerade med ett komma utan mellanslag, t.ex. 41.40338,2.17403"
+      },
+      "measure": {
+        "title": "Mått",
+        "placeholder": "Ange mått",
+        "description": "Ange mått i formatet: 1.23",
+        "select-placeholder": "Välj mått"
+      }
+    },
+    "product-types": {
+      "Physical": "Fysisk",
+      "Digital": "Digital",
+      "BillOfMaterials": "Produkt med materialförteckning"
+    },
+    "blades": {
+      "catalogs-list": {
+        "title": "Katalog",
+        "subtitle": "Hantera kataloger",
+        "labels": {
+          "name": "Namn",
+          "virtual": "Virtuell"
+        }
+      },
+      "catalog-add": {
+        "title": "Ny katalog",
+        "subtitle": "Välj typ av ny katalog",
+        "menu": {
+          "catalog": {
+            "title": "Fysisk katalog",
+            "description": "En fysisk katalog är en online-lista över produkter eller tjänster som ett företag erbjuder. Produkter kan grupperas i kategorier eller ingå i katalogen utan att tillhöra någon kategori"
+          },
+          "virtual-catalog": {
+            "title": "Virtuell katalog",
+            "description": "En virtuell katalog byggs från en eller flera fysiska kataloger. De används för att visa produkter genom att sammanföra objekt från olika fysiska kataloger"
+          }
+        }
+      },
+      "catalog-detail": {
+        "subtitle": "Katalogdetaljer",
+        "title-new": "Ny katalog",
+        "subtitle-new": "Katalogdetaljer",
+        "title-new-virtual": "Ny virtuell katalog",
+        "subtitle-virtual": "Virtuella katalogdetaljer",
+        "labels": {
+          "catalog-name": "Katalognamn"
+        },
+        "placeholders": {
+          "enter-name": "Ange namn"
+        }
+      },
+      "catalog-languages": {
+        "subtitle": "Hantera språk",
+        "labels": {
+          "note": "Dra och släpp för att styra ordningen. Första aktiva element blir standardspråket",
+          "language-dictionary": "Språkordbok",
+          "active": "Aktiv",
+          "language": "Språk",
+          "default-language": "Standardspråk",
+          "additional-languages": "Ytterligare språk"
+        },
+        "placeholders": {
+          "select": "Välj..."
+        }
+      },
+      "categories-items-list": {
+        "title": "Kategorier och objekt",
+        "subtitle": "Bläddrar i {{name}}",
+        "subtitle-search": "Sökresultat för \"{{keyword}}\"",
+        "title-mapping": "Välj kategorier och objekt för mappning",
+        "subtitle-mapping": "Skapar en länk inom din virtuella katalog",
+        "labels": {
+          "filter-new": "Lägg till nytt filter",
+          "filter-priceless": "Inget pris",
+          "filter-withPrice": "Definierat pris",
+          "filter-priceRange": "Prisintervall",
+          "filter-lowStock": "Lågt i lager",
+          "filter-notActive": "Inaktiv",
+          "filter-display-variations": "Visa varianter",
+          "unnamed-filter": "Filtrera efter",
+          "result-grouping": "Gruppera resultat efter:",
+          "result-grouping-none": "Ingen",
+          "result-grouping-$path": "Kategori",
+          "inactive": "Inaktiv",
+          "hidden": "Dold",
+          "picture": "Bild",
+          "name": "Namn",
+          "sku": "SKU"
+        },
+        "placeholders": {
+          "select-filter": "Välj filter"
+        },
+        "descr": {
+          "title-mapping": "Den är mappad till denna virtuella plats"
+        }
+      },
+      "category-detail": {
+        "subtitle": "Kategoridetaljer",
+        "parent-disabled-alert": "Överordnad kategori är dold",
+        "labels": {
+          "is-active": "Synlig",
+          "name": "Namn",
+          "localizedName": "Lokaliserat namn",
+          "code": "Kod",
+          "tax-type": "Skattetyp",
+          "priority": "Prioritet",
+          "show-more-languages": "Visa fler språk",
+          "show-less-languages": "Visa färre språk"
+        },
+        "validations": {
+          "code": "Koden får inte innehålla följande tecken: $+;=%{}[]|@~!^*&()?'<>"
+        },
+        "placeholders": {
+          "name": "Ange kategorinamn",
+          "code": "Ange kategorikod",
+          "select": "Välj...",
+          "priority": "Ange nummer"
+        }
+      },
+      "categories-items-add": {
+        "title": "Nytt kategorobjekt",
+        "subtitle": "Välj typ av nytt objekt",
+        "menu": {
+          "category": {
+            "title": "Kategori",
+            "description": "Detta är en behållare för andra kategorier, produkter eller varianter"
+          },
+          "link": {
+            "title": "Länk",
+            "description": "Länk till en fysisk kategori eller produkt"
+          },
+          "physical-product": {
+            "title": "Fysisk produkt",
+            "description": "Detta är ett påtagligt objekt som kan köpas. Det kräver fysisk frakt och kan användas för riktade kampanjer"
+          },
+          "digital-product": {
+            "title": "Digital produkt",
+            "description": "Detta är ett immateriellt objekt som är tillgängligt för köp. Det kan laddas ner direkt efter köpet, vilket innebär att det inte kräver fysisk frakt. Digitala produkter är också lämpliga för riktade kampanjer"
+          },
+          "bill-of-materials-product": {
+            "title": "Produkt med materialförteckning",
+            "description": "Detta är en fysisk produkt som levereras med en materialförteckning (en lista över ytterligare objekt). Den kan användas för specifika kampanjer och kräver fysisk frakt"
+          }
+        },
+        "catalog-item-name": "Katalog",
+        "catalog-item-description": "Detta är en central punkt för att hantera din butiks varor och skapa kataloger för varumärken, produktlinjer eller specifika leverantörer",
+        "virtual-catalog-item-name": "Virtuell katalog",
+        "virtual-catalog-item-description": "En virtuell katalog byggs från en eller flera fysiska kataloger. De används för att visa produkter genom att sammanföra objekt från olika fysiska kataloger"
+      },
+      "catalog-property-list": {
+        "subtitle": "Katalogegenskaper",
+        "labels": {
+          "empty-list": "Ingen"
+        }
+      },
+      "filter-detail": {
+        "subtitle": "Redigera filter",
+        "new-title": "Nytt filter",
+        "new-subtitle": "Skapa nytt filter",
+        "labels": {
+          "criteria": "Sökfras",
+          "name": "Filternamn",
+          "searchInVariations": "Visa produktvarianter"
+        },
+        "placeholders": {
+          "criteria": "Ange sökfras",
+          "name": "Namnge detta filter"
+        }
+      },
+      "property-detail": {
+        "title": "Hantera egenskap",
+        "subtitle": "Redigera egenskapsinformation",
+        "labels": {
+          "property-name": "Egenskapsnamn",
+          "display-name": "Visningsnamn",
+          "display-order": "Visningsordning",
+          "required": "Obligatorisk",
+          "dictionary": "Ordbok",
+          "multivalue": "Flera värden",
+          "multi-language": "Flera språk",
+          "applies-to": "Gäller för",
+          "value-type": "Värdetyp",
+          "manage-dictionary": "Hantera ordbok",
+          "new-dictionary-property-caution": "Du kan hantera ordboksposter först efter att du har sparat egenskapen",
+          "attributes": "Attribut",
+          "manage-attributes": "Hantera egenskapsattribut",
+          "hidden": "Dold",
+          "measure": "Mått",
+          "property-group": "Grupp"
+        },
+        "placeholders": {
+          "display-name": "Ange visningsnamn",
+          "display-order": "Visningsordning",
+          "property-group": "Välj egenskapsgrupp"
+        }
+      },
+      "property-validationRule": {
+        "title": "Valideringsregler",
+        "subtitle": "Hantera valideringsregler",
+        "match-validation-pattern": "Matcha ett specifikt mönster",
+        "character-count": "Begränsa antalet tecken",
+        "character-limit": {
+          "between": "mellan",
+          "at-least": "minst",
+          "not-more-than": "inte mer än"
+        },
+        "patterns": {
+          "custom": "anpassad",
+          "email": "e-post",
+          "url": "URL",
+          "date": "datum"
+        },
+        "descriptions": {
+          "require": "Denna egenskap är obligatorisk",
+          "character-limit": "Ange ett minsta och/eller högsta tillåtna antal tecken",
+          "pattern": "Gör så att detta fält matchar ett mönster, såsom e-postadress, URL eller ett anpassat reguljärt uttryck. Till exempel: ^[a-z]{6,15}$"
+        }
+      },
+      "property-group-list": {
+        "title": "Egenskapsgrupper",
+        "labels": {
+          "empty-list": "Ingen",
+          "name": "Namn",
+          "display-order": "Visningsordning"
+        }
+      },
+      "property-group-details": {
+        "title": "Hantera egenskapsgrupp",
+        "labels": {
+          "name": "Namn",
+          "priority": "Prioritet",
+          "localized-name": "Lokaliserade namn",
+          "localized-description": "Lokaliserade beskrivningar",
+          "display-name": "Visningsnamn",
+          "display-order": "Visningsordning",
+          "properties": "Egenskaper",
+          "manage-properties": "Hantera egenskaper",
+          "show-more-languages": "Visa fler språk",
+          "show-less-languages": "Visa färre språk"
+        },
+        "placeholders": {
+          "display-name": "Ange gruppnamn",
+          "display-description": "Ange beskrivning"
+        }
+      },
+      "property-list": {
+        "subtitle": "Egenskapslista",
+        "labels": {
+          "empty-list": "Ingen",
+          "modified": "(ändrad)",
+          "add-filter": "Filter",
+          "reset-filter": "Återställ filter",
+          "excluded": "Egenskaper exkluderade från arv",
+          "hide-empty-values": "Dölj tomma fält",
+          "show-empty-values": "Visa tomma fält"
+        },
+        "placeholders": {
+          "excluded": "Välj egenskaper"
+        },
+        "validations": {
+          "required": "Detta fält är obligatoriskt",
+          "maxLength": "Detta fält får inte innehålla fler än {{max}} tecken",
+          "minLength": "Detta fält måste innehålla minst {{min}} tecken",
+          "pattern": "Detta fält matchar inte det valda mönstret"
+        }
+      },
+      "property-selector": {
+        "title": "Välj egenskaper att redigera",
+        "labels": {
+          "applied-filter": "Tillämpat filter",
+          "new-filter": "Nytt filter"
+        }
+      },
+      "item-property-detail": {
+        "title": "Redigera objektsegenskap",
+        "title-new": "Ny objektsegenskap",
+        "subtitle": "Ange egenskapsinformation",
+        "labels": {
+          "property-name": "Egenskapsnamn",
+          "duplicate-property-in-product": "Egenskapen med namnet {{propertyName}} finns redan i {{categoryName}}. Namnet måste vara unikt",
+          "duplicate-property-in-catalog": "Egenskapen med namnet {{propertyName}} finns redan i rotkatalogen. Namnet måste vara unikt",
+          "duplicate-property-in-variation1": "Egenskapen med namnet {{propertyName}} finns redan för denna variant",
+          "duplicate-property-in-variation2": ". Namnet måste vara unikt",
+          "property-naming-error": "Egenskapsnamnet måste börja med en alfanumerisk karaktär och innehålla endast latinska tecken, siffror och understreck (_). Om ett understreck (_) används, se till att det finns en alfanumerisk karaktär före och efter det",
+          "value-type": "Värdetyp"
+        }
+      },
+      "catalogs-select": {
+        "title": "Välj katalog",
+        "subtitle": "Skapar en länk inom din virtuella katalog"
+      },
+      "property-valueType": {
+        "title": "{{name}} värdetyp",
+        "subtitle": "Ändra värdetyp"
+      },
+      "property-attributes": {
+        "title": "{{name}} attribut",
+        "subtitle": "Hantera attribut",
+        "labels": {
+          "new-attribute": "Nytt attribut",
+          "current-attributes": "Aktuella attribut",
+          "name": "Namn",
+          "value": "Värde"
+        },
+        "validations": {
+          "name-required": "Obligatorisk",
+          "value-required": "Obligatorisk",
+          "name-duplicate": "Duplikatnamn hittades"
+        },
+        "placeholders": {
+          "name": "Ange namn",
+          "value": "Ange värde"
+        }
+      },
+      "property-type": {
+        "title": "{{name}} gäller för"
+      },
+      "property-dictionary": {
+        "title": "{{name}} ordbok",
+        "subtitle": "Hantera ordbok",
+        "color-code": {
+          "label": "Färgkod",
+          "placeholder": "Ange färgkod",
+          "description": "Ange en färgkod i CSS-format: #RRGGBB eller #RGB eller färgnamn"
+        },
+        "labels": {
+          "new-value": "Nytt värde",
+          "current-values": "Aktuella värden",
+          "value": "Värde",
+          "alias": "Alias",
+          "sort-order": "Sorteringsordning",
+          "language-edit": "Redigera värden",
+          "language-add": "Nya värden",
+          "dictionary-edit": "Redigera ordboksvärde",
+          "priority": "Prioritet",
+          "priority-description": "Det lägsta värdet används först"
+        },
+        "validations": {
+          "required": "Obligatoriskt",
+          "duplicate": "Duplicerat namn hittades"
+        },
+        "placeholders": {
+          "value": "Ange värde",
+          "alias": "Ange ett alias",
+          "priority": "Ange prioritet"
+        }
+      },
+      "item-detail": {
+        "subtitle": "{{ productTypeName }} objektdetaljer",
+        "subtitle-variation": "Variantdetaljer",
+        "hide-description": "Dölj",
+        "labels": {
+          "id": "ID",
+          "outer-id": "Yttre ID",
+          "sku": "SKU",
+          "priority": "Prioritet",
+          "name": "Produktnamn",
+          "localizedName": "Lokaliserat produktnamn",
+          "can-be-purchased": "Kan köpas",
+          "store-visible": "Synlig",
+          "track-inventory": "Spåra lager",
+          "has-user-agreement": "Har användaravtal",
+          "min-quantity": "Minsta kvantitet",
+          "max-quantity": "Högsta kvantitet",
+          "pack-size": "Förpackningsstorlek",
+          "vendor": "Leverantör",
+          "vendor-denied": "Åtkomst nekad",
+          "tax-type": "Skattetyp",
+          "package-type": "Förpackningstyp",
+          "weight-unit": "Massenheter",
+          "weight": "Vikt",
+          "dimensions": "Mått",
+          "use-package-type": "Samma som förpackning",
+          "measure-unit": "Måttenhet",
+          "max-downloads": "Maximalt antal nedladdningar",
+          "expiration-date": "Utgångsdatum för nedladdning",
+          "download-type": "Nedladdningstyp",
+          "gtin": "GTIN",
+          "mpn": "MPN",
+          "start-date": "Första listning",
+          "end-date": "Listning upphör",
+          "is-configurable": "Konfigurerbar",
+          "show-more-languages": "Visa fler språk",
+          "show-less-languages": "Visa färre språk"
+        },
+        "validations": {
+          "sku": "SKU får inte innehålla följande tecken: $+;=%{}[]|@~!^*&()?'<>"
+        },
+        "placeholders": {
+          "sku": "Ange objektets SKU",
+          "priority": "Ange nummer",
+          "name": "Ange objektets namn",
+          "vendor": "Välj...",
+          "tax-type": "Välj...",
+          "weight-unit": "Välj...",
+          "weight": "Ange vikt",
+          "expiration-date": "Välj ett datum",
+          "download-type": "Välj...",
+          "gtin": "Ange GTIN",
+          "mpn": "Ange MPN",
+          "start-date": "Ange ett datum",
+          "end-date": "Ange ett datum"
+        },
+        "descr": {
+          "start-date": "Om du inte anger ett startdatum blir produkten aktiv omedelbart så snart du sparar den",
+          "end-date": "Om du inte anger ett slutdatum förblir produkten aktiv tills du inaktiverar den"
+        }
+      },
+      "catalog-items-select": {
+        "title": "Välj kategorier",
+        "title-association": "Välj objekt att associera",
+        "subtitle-association": "Lägger till associationer till produkten",
+        "bread-crumb-top": "Alla kataloger",
+        "labels": {
+          "picture": "Bild",
+          "name": "Namn",
+          "sku": "SKU",
+          "virtual": "Virtuell"
+        }
+      },
+      "item-variation-list": {
+        "subtitle": "Objektvarianter",
+        "labels": {
+          "no-items": "Inga varianter ännu",
+          "picture": "Bild",
+          "name": "Namn",
+          "sku": "SKU",
+          "manufacturer-part-number": "Tillverkarens artikelnummer"
+        }
+      },
+      "editorialReviews-list": {
+        "subtitle": "Objektbeskrivningar",
+        "labels": {
+          "no-reviews": "Inga objektbeskrivningar ännu"
+        }
+      },
+      "editorialReview-detail": {
+        "title": "Beskrivning",
+        "subtitle": "Objektbeskrivning",
+        "labels": {
+          "language": "Språk",
+          "type": "Typ",
+          "content": "Beskrivningsinnehåll",
+          "select-language": "Välj språk"
+        },
+        "placeholders": {
+          "type": "Välj typ",
+          "language": "Välj språk"
+        }
+      },
+      "categoryDescriptions-list": {
+        "subtitle": "Kategoribeskrivningar",
+        "labels": {
+          "no-descriptions": "Inga kategoribeskrivningar ännu"
+        }
+      },
+      "categoryDescription-detail": {
+        "title": "Beskrivning",
+        "subtitle": "Kategoribeskrivning",
+        "labels": {
+          "language": "Språk",
+          "type": "Typ",
+          "content": "Beskrivningsinnehåll",
+          "select-language": "Välj språk"
+        },
+        "placeholders": {
+          "type": "Välj typ",
+          "language": "Välj språk"
+        }
+      },
+      "images": {
+        "subtitle": "Hantera bilder",
+        "labels": {
+          "no-images": "Inga bilder",
+          "copy-url-prompt": "Kopiera till urklipp: Ctrl+C, Enter",
+          "select-images": "Välj bilder",
+          "select-image-category": "Välj bildkategori",
+          "name": "Namn",
+          "image-category": "Bildkategori",
+          "drag-drop-comment": "Dra och släpp dina bilder här",
+          "progress": "Förlopp",
+          "make-default-image": "Dra och släpp en bild till det övre vänstra hörnet av bildområdet för att ställa in den som standard",
+          "language": "Språk",
+          "preview": "Förhandsgranska",
+          "external-link": "Extern länk",
+          "altText": "Alternativ text för bild",
+          "description": "Metabeskrivning"
+        },
+        "placeholders": {
+          "image-url": "Klistra in bild-URL här",
+          "name": "Ange namn",
+          "image-category": "Välj",
+          "language": "Välj språk",
+          "altText": "Ange text",
+          "description": "Ange beskrivning"
+        },
+        "descr": {
+          "external-link": "Använd en extern bild-URL istället för att ladda upp den till tillgångar",
+          "external-link-warning": "Obs: Av säkerhetsskäl är endast https-länkar tillåtna"
+        }
+      },
+      "video-list": {
+        "title": "Videor",
+        "subtitle": "Alla videor",
+        "labels": {
+          "preview": "Förhandsgranska",
+          "name": "Namn",
+          "language": "Språk",
+          "priority": "Prioritet"
+        }
+      },
+      "video-add": {
+        "title": "YouTube-video",
+        "subtitle": "Ny video",
+        "create": "Skapa",
+        "labels": {
+          "content-url": "Innehållets URL",
+          "no-apikey": "Du har inte angett någon Google API-nyckel i plattformens konfigurationsfil. Videoinformationen kommer att vara ofullständig"
+        },
+        "placeholders": {
+          "content-url": "Ange video-URL"
+        }
+      },
+      "video-detail": {
+        "title": "YouTube-video",
+        "subtitle": "Redigera videoinformation",
+        "labels": {
+          "name": "Videonamn",
+          "upload-date": "Uppladdningsdatum",
+          "description": "Beskrivning",
+          "duration": "Speltid",
+          "language": "Språk",
+          "video": "Video",
+          "content-url": "Innehållets URL",
+          "embed-url": "Inbäddad URL",
+          "video-preview": "Videoförhandsgranskning",
+          "thumbnail": "Miniatyrbild",
+          "thumbnail-url": "Miniatyrbilds-URL",
+          "thumbnail-preview": "Förhandsgranskning av miniatyrbild"
+        },
+        "placeholders": {
+          "name": "Ange namn",
+          "upload-date": "Ange ett datum",
+          "description": "Ange beskrivning",
+          "language": "Välj språk",
+          "content-url": "Ange video-URL"
+        }
+      },
+      "item-asset-detail": {
+        "labels": {
+          "category": "Kategori",
+          "language": "Språk",
+          "description": "Metabeskrivning"
+        },
+        "placeholders": {
+          "category": "Välj...",
+          "language": "Välj språk",
+          "description": "Ange beskrivning"
+        }
+      },
+      "item-asset-list": {
+        "subtitle": "Objektstillgångar",
+        "labels": {
+          "copy-url-prompt": "Kopiera till urklipp: Ctrl+C, Enter",
+          "select-files": "Välj filer",
+          "drag-drop-comment": "Dra och släpp dina filer här",
+          "name": "Namn",
+          "progress": "Förlopp",
+          "type": "Typ",
+          "actions": "Åtgärder",
+          "remove": "Ta bort",
+          "copy-link": "Kopiera länk"
+        }
+      },
+      "item-associations-list": {
+        "subtitle": "Associationer",
+        "labels": {
+          "sorting-prompt": "Ställ in hur associerade objekt visas i webbutiken. Dra och släpp produkterna för att ändra deras ordning",
+          "picture": "Bild",
+          "name": "Namn",
+          "priority": "Prioritet",
+          "group": "Grupp",
+          "quantity": "Kvantitet",
+          "tags": "Taggar"
+        },
+        "descr": {
+          "no-associations": "Inga associationer än",
+          "quantity": "Associationskvantitet"
+        }
+      },
+      "item-association-detail": {
+        "subtitle": "Associationsdetaljer",
+        "labels": {
+          "group": "Grupp",
+          "quantity": "Kvantitet",
+          "tags": "Taggar"
+        },
+        "placeholders": {
+          "group": "Välj...",
+          "quantity": "Ange kvantitet",
+          "tags": "Ange taggar"
+        }
+      },
+      "advanced-search-results": {
+        "title": "Sökresultat"
+      },
+      "item-dimensions": {
+        "title": "Objektmätning",
+        "subtitle": "Ändra produktmätningsegenskaper"
+      },
+      "asset-select": {
+        "title": "Länka bilder"
+      },
+      "images-select": {
+        "title": "Länka tillgångar"
+      },
+      "asset-upload": {
+        "title": "Lägg till tillgångar"
+      },
+      "image-upload": {
+        "title": "Ladda upp bilder"
+      },
+      "image-add-external-link": {
+        "title": "Lägg till extern länk"
+      },
+      "aggregation-properties-details": {
+        "name": {
+          "label": "Egenskapsnamn"
+        },
+        "type": {
+          "label": "Aggregationstyp"
+        },
+        "measure": {
+          "label": "Mått"
+        },
+        "unit": {
+          "label": "Måttenhet"
+        },
+        "size": {
+          "label": "Aggregationsstorlek",
+          "placeholder": "Ange aggregationsstorlek",
+          "description": "Maximalt antal aggregationsvärden i sökresultat. 0 = obegränsat"
+        },
+        "values-Attribute": {
+          "label": "Tillåtna värden",
+          "placeholder": "Ange tillåtna värden",
+          "description": "Ange aggregationsvärden som tillåts i sökresultat. Lämna tomt för att tillåta alla värden"
+        },
+        "values-Range": {
+          "label": "Intervallgränser",
+          "placeholder": "Lägg till nummer",
+          "description": "Gränser sorteras automatiskt innan de sparas. Intervall konstrueras enligt följande: Under [gräns 1], [gräns 1] till [gräns 2], ..., Över [gräns N]"
+        },
+        "values-PriceRange": {
+          "label": "Prisintervallgränser",
+          "placeholder": "Lägg till nummer",
+          "description": "Gränser sorteras automatiskt innan de sparas. Prisintervall konstrueras enligt följande: Under [gräns 1], [gräns 1] till [gräns 2], ..., Över [gräns N]"
+        }
+      },
+      "importers-list": {
+        "title": "Importtyper",
+        "subtitle": "Välj någon av de tillgängliga importtyperna nedan"
+      },
+      "exporter-list": {
+        "title": "Exporttyper",
+        "subtitle": "Välj någon av de tillgängliga exporttyperna nedan"
+      },
+      "exporter": {
+        "productTitle": "Exportera katalogprodukter",
+        "productSubtitle": "Exportera katalogprodukter till JSON eller CSV"
+      },
+      "bill-of-materials-list": {
+        "title": "Materialförteckning (BOM) produkter",
+        "subtitle": "Lägg till eller ta bort BOM-produkter",
+        "no-data": "Det finns inga produkter än",
+        "labels": {
+          "picture": "Bild",
+          "name": "Namn",
+          "category": "Kategori",
+          "quantity": "Kvantitet"
+        }
+      },
+      "property-type-list": {
+        "title": "Ny egenskap",
+        "subtitle": "Välj egenskapstyp",
+        "lables": {
+          "Product": {
+            "title": "Produktegenskap",
+            "description": "Visas endast för relaterade produkter"
+          },
+          "Category": {
+            "title": "Kategorieegenskap",
+            "description": "Visas endast för relaterad katalog"
+          },
+          "Catalog": {
+            "title": "Katalogegenskap",
+            "description": "Visas endast för denna katalog"
+          },
+          "Variation": {
+            "title": "Variantsegenskap",
+            "description": "Visas endast för relaterade varianter"
+          }
+        }
+      },
+      "links-list": {
+        "title": "Länkar",
+        "labels": {
+          "no-data": "Det finns inga länkar än",
+          "add-links": "Lägg till ny länk",
+          "marked": "Markerad"
+        }
+      },
+      "measures-list": {
+        "title": "Måttenheter",
+        "subtitle": "Lista över tillgängliga måttenheter",
+        "labels": {
+          "name": "Namn",
+          "create-default": "Skapa standard"
+        }
+      },
+      "create-measures": {
+        "title": "Skapa standardmått"
+      },
+      "measure-details": {
+        "title": "{{name}} mått",
+        "title-new": "Lägg till nytt mått",
+        "subtitle": "Måttdetaljer",
+        "labels": {
+          "name": "Namn",
+          "code": "Kod",
+          "description": "Beskrivning"
+        },
+        "placeholders": {
+          "name": "Ange namn",
+          "code": "Ange kod",
+          "description": "Ange beskrivning"
+        }
+      },
+      "measure-units-list": {
+        "title": "{{name}} måttenheter",
+        "subtitle": "Lista över måttenheter",
+        "labels": {
+          "name": "Namn",
+          "code": "Kod",
+          "is-default": "Standard"
+        }
+      },
+      "measure-unit-details": {
+        "title": "{{name}} måttenhet",
+        "title-new": "Ny måttenhet",
+        "subtitle": "Måttenhetsdetaljer",
+        "labels": {
+          "name": "Namn",
+          "localized-name": "Lokaliserat namn",
+          "code": "Kod",
+          "conversion-factor": "Konverteringsfaktor",
+          "symbol": "Symbol",
+          "localized-symbol": "Lokaliserad symbol",
+          "code-naming-error": "Koden måste börja med en alfanumerisk karaktär och innehålla endast latinska tecken och siffror."
+        },
+        "placeholders": {
+          "name": "Ange namn",
+          "localized-name": "Ange lokaliserat namn",
+          "code": "Ange kod",
+          "conversion-factor": "Ange konvertering",
+          "symbol": "Ange symbol",
+          "localized-symbol": "Ange lokaliserad symbol"
+        }
+      },
+      "configuration-details": {
+        "title": "Produktkonfiguration",
+        "hide-description": "Dölj",
+        "labels": {
+          "enable": "Aktivera konfiguration",
+          "name": "Sektionsnamn",
+          "quantity": "Alternativ",
+          "sections": "Sektioner"
+        },
+        "descr": {
+          "enable": "För aktivering måste konfigurationen innehålla minst en sektion, och varje sektion av typen 'Produkt' måste innehålla minst ett alternativ",
+          "no-sections": "Inga sektioner i denna konfiguration än",
+          "sorting-prompt": "Ställ in ordningen för hur sektioner visas i webbutiken. Dra och släpp sektionerna för att ändra deras ordning"
+        },
+        "commands": {
+          "add": "Lägg till sektion"
+        }
+      },
+      "section-details": {
+        "title": "Ny sektion",
+        "labels": {
+          "name": "Sektionsnamn",
+          "description": "Beskrivning",
+          "required": "Sektionen är obligatorisk",
+          "picture": "Bild",
+          "quantity": "Kvantitet",
+          "product-name": "Produktnamn",
+          "options": "Alternativ",
+          "type": "Sektionstyp",
+          "allow-custom-text": "Tillåt anpassad text",
+          "allow-predefined-options": "Tillåt fördefinierade alternativ",
+          "text": "Text"
+        },
+        "descr": {
+          "no-options": "Inga alternativ i denna sektion än"
+        },
+        "commands": {
+          "add": "Lägg till alternativ"
+        },
+        "placeholders": {
+          "type": "Välj..."
+        }
+      },
+      "option-details": {
+        "title": "Välj objekt som alternativ",
+        "labels": {
+          "quantity": "Kvantitet",
+          "text": "Text för alternativ"
+        },
+        "commands": {
+          "add": "Lägg till alternativ"
+        },
+        "placeholders": {
+          "quantity": "Ange kvantitet",
+          "text": "Ange texten"
+        }
+      },
+      "brand-setting-details": {
+        "title": "Varumärkesinställningar",
+        "labels": {
+          "enabled": "Aktivera varumärken",
+          "catalog": "Varumärkeskatalog",
+          "property": "Varumärkesegenskap"
+        },
+        "placeholders": {
+          "catalog": "Välj varumärkeskatalog",
+          "property": "Välj varumärkesegenskap"
+        }
+      },
+      "automatic-links": {
+        "title": "Automatiska länkar",
+        "preview-title": "Förhandsgranskning av automatiska länkar",
+        "fields": {
+          "catalog": {
+            "label": "Katalog",
+            "placeholder": "Välj katalog"
+          },
+          "query": {
+            "label": "Fråga",
+            "placeholder": "Ange produktssökfråga"
+          }
+        }
+      }
+    },
+    "exporter-list": {
+      "title": "Exporttyper",
+      "subtitle": "Välj någon av de tillgängliga exporttyperna nedan"
+    },
+    "exporter": {
+      "productTitle": "Exportera katalogprodukter",
+      "productSubtitle": "Exportera katalogprodukter till JSON eller CSV"
+    },
+    "widgets": {
+      "catalogLanguages": {
+        "blade-subtitle": "Hantera språk",
+        "title": "Språk",
+        "default-language": "Standardspråk"
+      },
+      "catalogPropertyGroup": {
+        "blade-subtitle": "Egenskapsgrupper",
+        "title": "Egenskapsgrupper"
+      },
+      "catalogProperty": {
+        "blade-subtitle": "Katalogegenskaper",
+        "title": "Egenskaper"
+      },
+      "categoryProperty": {
+        "blade-subtitle": "Kategorieegenskaper",
+        "title": "Egenskaper"
+      },
+      "editorialReview": {
+        "blade-subtitle": "Objektbeskrivningar",
+        "title": "Beskrivningar"
+      },
+      "categoryDescription": {
+        "blade-subtitle": "Kategoribeskrivningar",
+        "title": "Beskrivning"
+      },
+      "itemAsset": {
+        "blade-subtitle": "Objektstillgångar",
+        "title": "Tillgångar"
+      },
+      "itemAssociations": {
+        "blade-subtitle": "Associationer",
+        "title": "Associationer"
+      },
+      "itemImage": {
+        "blade-subtitle": "Hantera bilder",
+        "no-images": "Inga bilder"
+      },
+      "itemProperty": {
+        "blade-subtitle": "Objektsegenskaper",
+        "title": "Egenskaper"
+      },
+      "itemVariation": {
+        "blade-subtitle": "Objektsvarianter",
+        "title": "Varianter"
+      },
+      "itemDimensions": {
+        "title": "Vikt och storlek",
+        "weight": "Vikt",
+        "length": "Längd",
+        "width": "Bredd",
+        "height": "Höjd"
+      },
+      "billOfMaterials": {
+        "title": "Materialförteckning"
+      },
+      "videos": {
+        "blade-subtitle": "Videor",
+        "title": "Videor"
+      },
+      "links": {
+        "title": "Länkar"
+      },
+      "measure-units": {
+        "title": "Enheter"
+      },
+      "configuration": {
+        "title": "Konfiguration"
+      },
+      "brand-settings": {
+        "title": "Varumärkesinställningar"
+      },
+      "automatic-links": {
+        "title": "Automatiska länkar"
+      }
+    },
+    "dialogs": {
+      "catalog-save": {
+        "title": "Spara ändringar",
+        "message": "Denna katalog har ändrats. Vill du spara ändringarna?"
+      },
+      "catalog-delete": {
+        "title": "Bekräfta borttagning",
+        "warning": "VARNING: Denna ändring är permanent och kan inte ångras. Att tillämpa denna ändring kan leda till dataförlust",
+        "message": "Är du säker på att du vill ta bort denna katalog?",
+        "instruction": "Skriv 'yes' för att ta bort:"
+      },
+      "catalog-items-delete": {
+        "title": "Bekräfta borttagning",
+        "warning": "VARNING: Denna ändring är permanent och kan inte ångras. Att tillämpa denna ändring kan leda till dataförlust",
+        "message": "Följande data kommer att tas bort:",
+        "instruction": "Skriv 'yes' för att ta bort:",
+        "item": "{{count}} Objekt",
+        "category": "{{count}} Kategori(er) och allt innehåll inom dem",
+        "linked-item": "{{count}} Länkade objekt",
+        "linked-category": "{{count}} Länkade kategorier"
+      },
+      "property-delete": {
+        "message": "Är du säker på att du vill ta bort egenskapen {{name}}?",
+        "warning": "VARNING: Denna ändring är permanent och kan inte ångras. Att tillämpa denna ändring kan leda till dataförlust",
+        "msg1": "Välj lämpligt borttagningsalternativ. Alternativ:",
+        "msg2": "Ta endast bort egenskapens metadata och behåll värdena i relaterade objekt",
+        "msg3": "Ta bort helt med alla relaterade värden",
+        "shallow": "Ta bort metadata",
+        "full": "Ta bort helt"
+      },
+      "property-dictionary-item-delete": {
+        "message": "Är du säker på att du vill ta bort de valda ordboksposterna?",
+        "warning": "VARNING: Denna ändring är permanent och kan inte ångras. Att tillämpa denna ändring kan leda till dataförlust"
+      },
+      "virtual-catalog-save": {
+        "title": "Spara ändringar",
+        "message": "Denna virtuella katalog har ändrats. Vill du spara ändringarna?"
+      },
+      "category-save": {
+        "title": "Spara ändringar",
+        "message": "Denna kategori har ändrats. Vill du spara ändringarna?"
+      },
+      "item-save": {
+        "title": "Spara ändringar",
+        "message": "Detta objekt har ändrats. Vill du spara ändringarna?"
+      },
+      "variation-delete": {
+        "title": "Bekräfta borttagning",
+        "message": "Är du säker på att du vill ta bort de valda varianterna?"
+      },
+      "property-save": {
+        "title": "Spara ändringar",
+        "message": "Denna egenskap har ändrats. Vill du spara ändringarna?"
+      },
+      "property-group-save": {
+        "title": "Spara ändringar",
+        "message": "Denna egenskapsgrupp har ändrats. Vill du spara ändringarna?"
+      },
+      "item-property-delete": {
+        "message": "Är du säker på att du vill ta bort egenskapen {{name}}?"
+      },
+      "dictionary-values-delete": {
+        "title": "Bekräfta borttagning",
+        "message": "Är du säker på att du vill ta bort de valda ordboksvärdena?"
+      },
+      "review-save": {
+        "title": "Spara ändringar",
+        "message": "Denna beskrivning har ändrats. Vill du spara ändringarna?"
+      },
+      "review-delete": {
+        "title": "Bekräfta borttagning",
+        "message": "Är du säker på att du vill ta bort denna beskrivning?"
+      },
+      "association-delete": {
+        "title": "Bekräfta borttagning",
+        "message": "Är du säker på att du vill ta bort de valda associationerna?"
+      },
+      "attribut-delete": {
+        "title": "Bekräfta borttagning",
+        "message": "Är du säker på att du vill ta bort de valda attributen?"
+      },
+      "image-save": {
+        "title": "Bekräfta borttagning",
+        "message": "Dessa bilder har ändrats. Vill du spara ändringarna?"
+      },
+      "video-save": {
+        "title": "Spara ändringar",
+        "message": "Denna video har ändrats. Vill du spara ändringarna?"
+      },
+      "video-delete": {
+        "title": "Bekräfta borttagning",
+        "message": "Är du säker på att du vill ta bort denna video?"
+      },
+      "video-list-delete": {
+        "title": "Bekräfta borttagning",
+        "message": "Är du säker på att du vill ta bort de valda videorna?"
+      },
+      "asset-save": {
+        "title": "Spara ändringar",
+        "message": "Dessa tillgångar har ändrats. Vill du spara ändringarna?"
+      },
+      "language-save": {
+        "title": "Spara ändringar",
+        "message": "Språken har ändrats. Vill du spara ändringarna?"
+      },
+      "bill-or-materials-associations-delete": {
+        "title": "Bekräfta borttagning",
+        "message": "Är du säker på att du vill ta bort de valda produkterna?"
+      },
+      "links-delete": {
+        "title": "Bekräfta borttagning",
+        "message": "Är du säker på att du vill ta bort de valda länkarna?"
+      },
+      "measures-delete": {
+        "title": "Bekräfta borttagning",
+        "message": "Är du säker på att du vill ta bort de valda måtten?"
+      },
+      "measure-unit-save": {
+        "title": "Spara ändringar",
+        "message": "Denna måttenhet har ändrats. Vill du spara ändringarna?"
+      },
+      "measure-unit-delete": {
+        "title": "Bekräfta borttagning",
+        "message": "Är du säker på att du vill ta bort den valda måttenheten?"
+      },
+      "measure-units-delete": {
+        "title": "Bekräfta borttagning",
+        "message": "Är du säker på att du vill ta bort den valda måttenheten?"
+      },
+      "measure-save": {
+        "title": "Spara ändringar",
+        "message": "Detta mått har ändrats. Vill du spara ändringarna?"
+      },
+      "configuration-save": {
+        "title": "Spara ändringar",
+        "message": "Denna konfiguration har ändrats. Vill du spara ändringarna?"
+      },
+      "property-group-delete": {
+        "title": "Bekräfta borttagning",
+        "message": "Är du säker på att du vill ta bort de valda egenskapsgrupperna?"
+      },
+      "automatic-links-save": {
+        "title": "Spara ändringar",
+        "message": "Inställningarna för automatiska länkar har ändrats. Vill du spara ändringarna?"
+      },
+      "automatic-links-create": {
+        "title": "Skapa automatiska länkar",
+        "message": "{{number}} automatiska länkar kommer att skapas i bakgrundsjobbet. Är du säker på att du vill skapa dem?"
+      },
+      "automatic-links-delete": {
+        "title": "Ta bort automatiska länkar",
+        "message": "{{number}} befintliga automatiska länkar kommer att tas bort i bakgrundsjobbet. Är du säker på att du vill ta bort dem?"
+      }
+    },
+    "wizards": {
+      "category": {
+        "title": "Ny kategori",
+        "subtitle": "Ange kategoriinformation",
+        "labels": {
+          "name": "Namn",
+          "code": "Kod"
+        },
+        "validations": {
+          "code": "Koden får inte innehålla följande tecken: $+;=%{}[]|@~!^*&()?'<>"
+        },
+        "placeholders": {
+          "name": "Ange kategorinamn",
+          "code": "Ange kategorikod"
+        }
+      },
+      "new-product": {
+        "title": "Ny produkt",
+        "subtitle": "Ange all information om produkten",
+        "labels": {
+          "sku": "SKU",
+          "name": "Namn",
+          "fill-properties": "Ange egenskaper",
+          "fill-properties-summary": "{{ count }} av {{total}} egenskaper angivna",
+          "upload-images": "Ladda upp bilder",
+          "upload-images-summary": "{{ count }} bild(er) uppladdade",
+          "add-review": "Lägg till beskrivning",
+          "add-review-summary": "{{ count }} beskrivning(ar) tillagda",
+          "seo-information": "Ange SEO-information",
+          "seo-information-summary-defined": "SEO-information angiven",
+          "seo-information-summary-undefined": "SEO-information ej angiven"
+        },
+        "validations": {
+          "sku": "SKU får inte innehålla följande tecken: $+;=%{}[]|@~!^*&()?'<>",
+          "sku-required": "Obligatorisk",
+          "name-required": "Obligatorisk"
+        },
+        "placeholders": {
+          "name": "Ange objektets namn",
+          "sku": "Ange objektets SKU"
+        }
+      },
+      "new-variation": {
+        "title": "Ny variant",
+        "subtitle": "Ange variantinformation",
+        "labels": {
+          "sku": "SKU",
+          "name": "Namn",
+          "fill-properties": "Ange egenskaper",
+          "fill-properties-summary": "{{ count }} av {{total}} egenskaper angivna",
+          "upload-images": "Ladda upp bilder",
+          "upload-images-summary": "{{ count }} bild(er) uppladdade"
+        },
+        "validations": {
+          "sku": "SKU får inte innehålla följande tecken: $+;=%{}[]|@~!^*&()?'<>",
+          "sku-required": "Obligatorisk",
+          "name-required": "Obligatorisk"
+        },
+        "placeholders": {
+          "name": "Ange objektets namn",
+          "sku": "Ange objektets SKU"
+        }
+      },
+      "item-images": {
+        "subtitle": "Objektbilder"
+      },
+      "association": {
+        "title": "Ny association",
+        "labels": {
+          "group-name": "Gruppnamn",
+          "tags": "Taggar",
+          "tags-placeholder": "Ange taggar",
+          "quantity": "Kvantitet",
+          "items": "Objekt",
+          "products-selected": "Produkter valda",
+          "categories-selected": "Kategorier valda"
+        },
+        "placeholders": {
+          "group-name": "Välj...",
+          "quantity": "Ange kvantitet"
+        }
+      }
+    },
+    "commands": {
+      "copy-id": "Kopiera ID",
+      "copy-sku": "Kopiera SKU",
+      "clear-all": "Rensa allt",
+      "add-property": "Lägg till egenskap",
+      "add-product-property": "Lägg till anpassad egenskap",
+      "add-variation-property": "Lägg till anpassad egenskap",
+      "gallery": "Galleri",
+      "map": "Karta",
+      "open-item": "Öppna objekt",
+      "default": "Ange som standard",
+      "link": "Länk",
+      "external-link": "Extern länk"
+    },
+    "permissions": {
+      "catalog-scope": {
+        "title": "Endast för de valda katalogerna",
+        "blade": {
+          "subtitle": "Välj kataloger"
+        }
+      },
+      "category-scope": {
+        "title": "Endast för de valda kategorierna"
+      }
+    },
+    "selectors": {
+      "titles": {
+        "catalogs": "Kataloger",
+        "categories": "Kategorier",
+        "search-in-variations": "Sök i produktvarianter",
+        "search-in-children": "Sök i underkategorier"
+      },
+      "labels": {
+        "select": "Välj",
+        "selected": "Valda: "
+      },
+      "placeholders": {
+        "catalog-lists": "Välj katalog"
+      },
+      "blades": {
+        "titles": {
+          "select-categories": "Välj kategorier"
+        }
+      }
+    },
+    "link-types": {
+      "manual": "Länk",
+      "automatic": "Automatisk länk"
+    }
+  },
+  "permissions": {
+    "catalog:access": "Öppna katalogmenyn",
+    "catalog:create": "Skapa katalogrelaterade data",
+    "catalog:read": "Visa katalogrelaterade data",
+    "catalog:update": "Uppdatera katalogrelaterade data",
+    "catalog:delete": "Ta bort katalogrelaterade data",
+    "catalog:export": "Exportera katalogdata",
+    "catalog:import": "Importera katalogdata",
+    "measures:access": "Öppna måttenhetsmenyn",
+    "measures:create": "Skapa måttenhetsrelaterade data",
+    "measures:read": "Visa måttenhetsrelaterade data",
+    "measures:update": "Uppdatera måttenhetsrelaterade data",
+    "measures:delete": "Ta bort måttenhetsrelaterade data",
+    "catalog:metadata-property:edit": "Redigera metadata för egenskaper",
+    "catalog:custom-property:edit": "Redigera anpassade produktegenskaper",
+    "catalog:dictionary-property:edit": "Redigera ordboksvärden för egenskap"
+  },
+  "settings": {
+    "Catalog": {
+      "ImageCategories": {
+        "description": "Ordbok över möjliga kategorier av bilder för detta objekt",
+        "title": "Bildkategorier"
+      },
+      "AssociationGroups": {
+        "description": "Katalogproduktassociationsgrupper",
+        "title": "Namn på associationsgrupper"
+      },
+      "EditorialReviewTypes": {
+        "description": "Ordbok över möjliga typer av beskrivningar för detta objekt",
+        "title": "Objektbeskrivningstyper"
+      },
+      "UseSeoDeduplication": {
+        "description": "Aktivera eller inaktivera detektering av SEO-dubbletter",
+        "title": "Detektera SEO-dubbletter"
+      },
+      "CategoryDescriptionTypes": {
+        "description": "Ordbok över möjliga typer av beskrivningar för denna kategori",
+        "title": "Kategoribeskrivningstyper"
+      },
+      "AllowToCopyID": {
+        "title": "Tillåt kopiering av objektets ID",
+        "description": "Aktivera för att visa kontextmenyalternativet Kopiera ID"
+      },
+      "BrandStoreSetting": {
+        "BrandsEnabled": {
+          "title": "Aktivera varumärken",
+          "description": "Varumärkesfunktionsflagga"
+        },
+        "BrandCatalogId": {
+          "title": "Varumärkeskatalog-ID",
+          "description": "Katalog-ID för varumärkena"
+        },
+        "BrandPropertyName": {
+          "title": "Varumärkesegenskapsnamn",
+          "description": "Egenskapsnamn för varumärket"
+        }
+      },
+      "Search": {
+        "UseCatalogIndexedSearchInManager": {
+          "description": "Aktivera eller inaktivera indexerad sökning för katalogmodulen med avancerad syntax",
+          "title": "Använd indexerad sökning för katalog"
+        },
+        "UseFullObjectIndexStoring": {
+          "description": "Lagra serialiserade katalogobjekt i indexet och returnera dem i sökresultat",
+          "title": "Lagra serialiserade katalogobjekt i indexet"
+        },
+        "DefaultAggregationSize": {
+          "description": "Ange storlek för aggregationer när det inte definieras i butikens aggregationsinställningar. Sätt till 0 för obegränsad storlek",
+          "title": "Standardvärde för aggregationsstorlek"
+        },
+        "EventBasedIndexation": {
+          "Enable": {
+            "title": "Aktivera händelsebaserad indexering för katalogobjekt",
+            "description": "Alla ändringar som görs i ett katalogobjekt utlöser en bakgrundsuppgift som tillämpar dessa ändringar i sökindexet"
+          }
+        }
+      },
+      "ProductConfigurationMaximumFiles": {
+        "title": "Maximalt antal filer i konfigurationssektionen",
+        "description": "Begränsa det maximala antalet filer i konfigurationssektionen"
+      }
+    },
+    "VirtoCommerce": {
+      "Search": {
+        "IndexingJobs": {
+          "IndexationDate": {
+            "Product": {
+              "title": "Produktindexeringsdatum och tid",
+              "description": "Datum och tid då produktindexeringsuppgiften startar"
+            },
+            "Category": {
+              "title": "Kategoriindexeringsdatum och tid",
+              "description": "Datum och tid då kategoriindexeringen startar"
+            }
+          }
+        }
+      }
+    }
+  },
+  "module": {
+    "VirtoCommerce.Catalog": {
+      "description": "Exportera eller importera kataloger, kategorier, produkter och egenskaper med bildbinärer om du markerar kryssrutan för binärer"
+    }
+  },
+  "export": {
+    "types": {
+      "VirtoCommerce.CatalogModule.Core.Model.Export.ExportableProduct": {
+        "name": "Produkter",
+        "description": "Katalogproduktdata med relaterade objekt. Stöder JSON och CSV"
+      },
+      "VirtoCommerce.CatalogModule.Core.Model.Export.ExportableCatalogFull": {
+        "name": "Katalog",
+        "description": "Katalogdata med relaterade objekt. Stöder JSON"
+      }
+    },
+    "groups": {
+      "VirtoCommerce.CatalogModule.Core.Model.Export": {
+        "name": "Katalog",
+        "description": "Kataloger, kategorier och produkter"
+      }
+    }
+  },
+  "CategoryChangeBulkAction": "Massändring av kategori",
+  "PropertiesUpdateBulkAction": "Massuppdatering av egenskaper",
+  "virtoCommerce.catalogBulkActionsModule": {
+    "blades": {
+      "hello-world": {
+        "title": "Hej världen-panel"
+      },
+      "action-progress": {
+        "title": "Uppgiftsförlopp"
+      }
+    },
+    "actions": {
+      "types": {
+        "CategoryChangeBulkAction": {
+          "title": "Ändra kategori",
+          "subtitle": "Flytta produkter till en annan kategori"
+        },
+        "PropertiesUpdateBulkAction": {
+          "title": "Redigera egenskaper",
+          "subtitle": "Uppdatera en eller flera egenskaper"
+        }
+      }
+    }
+  }
+}

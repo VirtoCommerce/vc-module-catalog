@@ -331,8 +331,7 @@
         }
       },
       "property-type": {
-        "title": "{{name}} применяется к",
-        "subtitle": "Соответствующие изменения"
+        "title": "{{name}} применяется к"
       },
       "property-dictionary": {
         "title": "Словарь {{name}}",
