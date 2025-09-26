@@ -334,6 +334,21 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                 };
                 widgetService.registerWidget(brandSettingsWidget, 'storeDetail');
 
+                var brandsSettingsCatalogSeoWidget = {
+                    controller: 'virtoCommerce.coreModule.seo.seoWidgetController',
+                    template: 'Modules/$(VirtoCommerce.Core)/Scripts/SEO/widgets/seoWidget.tpl.html',
+                    objectType: 'Catalog',
+
+                    getDefaultContainerId: function (blade) {
+                        return undefined;
+                    },
+                    getLanguages: function (blade) {
+                        return _.pluck(blade.selectedCatalog.languages, 'languageCode');
+                    }
+                };
+
+                widgetService.registerWidget(brandsSettingsCatalogSeoWidget, 'brandsSettingsCatalogDetail');
+
                 //Security scopes
                 //Register permission scopes templates used for scope bounded definition in role management ui
 
