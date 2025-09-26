@@ -12,8 +12,11 @@ using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Seo.Core.Models;
 using VirtoCommerce.Seo.Core.Services;
+using VirtoCommerce.StoreModule.Core.Extensions;
 using VirtoCommerce.StoreModule.Core.Model;
 using VirtoCommerce.StoreModule.Core.Services;
+using static VirtoCommerce.StoreModule.Core.ModuleConstants.Settings.SEO;
+using SeoExtensions = VirtoCommerce.CatalogModule.Core.Extensions.SeoExtensions;
 
 namespace VirtoCommerce.CatalogModule.Data.Services;
 
@@ -59,6 +62,11 @@ public class CatalogSeoResolver : ISeoResolver
         if (currentEntitySeoInfos.Count == 0)
         {
             return [];
+        }
+
+        if (store.GetSeoLinksType() == SeoShort)
+        {
+            return currentEntitySeoInfos;
         }
 
         var groups = currentEntitySeoInfos.GroupBy(x => new { x.ObjectType, x.ObjectId }).ToList();
@@ -204,7 +212,9 @@ public class CatalogSeoResolver : ISeoResolver
             seoList.AddRange(seo);
         }
 
-        var result = entities.Where(x => x.CatalogId != null || categoryIds.Contains(x.CategoryId) || itemIds.Contains(x.ItemId)).ToArray();
+        var result = entities
+            .Where(x => x.CatalogId != null || categoryIds.Contains(x.CategoryId) || itemIds.Contains(x.ItemId))
+            .ToArray();
 
         return result
             .Select(x =>
@@ -223,7 +233,7 @@ public class CatalogSeoResolver : ISeoResolver
             return elements
                 ?.SelectMany(x => x.Outlines.Select(o => new
                 {
-                    SeoPath = o.Items.GetSeoPath(store, store.DefaultLanguage),
+                    SeoPath = o.Items.GetSeoPath(store, criteria.LanguageCode),
                     OutlinePath = o.Items.GetOutlinePath(),
                     x.Id
                 }))
