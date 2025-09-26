@@ -1,5 +1,5 @@
-# v3.800.15
-# https://virtocommerce.atlassian.net/browse/VCST-3725
+# v3.800.16
+# https://virtocommerce.atlassian.net/browse/VCST-3881
 name: Module CI
 
 on:
@@ -197,8 +197,10 @@ jobs:
 
       - name: Check commit message for version number
         id: run-e2e
+        env:
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
-          if [[ "${{ github.event.head_commit.message }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; 
+          if [[ "$COMMIT_MESSAGE" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; 
           then
             echo "result=false" >> $GITHUB_OUTPUT
           else
@@ -276,7 +278,7 @@ jobs:
     if: ${{ ((github.ref == 'refs/heads/dev') && (github.event_name == 'push')) ||
         (github.event_name == 'workflow_dispatch') || ((github.base_ref == 'dev') && (github.event_name == 'pull_request')) }}
     needs: 'ci'
-    uses: VirtoCommerce/.github/.github/workflows/ui-autotests.yml@v3.800.15
+    uses: VirtoCommerce/.github/.github/workflows/ui-autotests.yml@v3.800.16
     with:
       installModules: 'false'
       installCustomModule: 'true'
@@ -290,7 +292,7 @@ jobs:
     if: ${{ ((github.ref == 'refs/heads/dev') && (github.event_name == 'push') && (needs.ci.outputs.run-e2e == 'true')) ||
         (github.event_name == 'workflow_dispatch') || (github.base_ref == 'dev') && (github.event_name == 'pull_request') }}
     needs: 'ci'
-    uses: VirtoCommerce/.github/.github/workflows/e2e.yml@v3.800.15
+    uses: VirtoCommerce/.github/.github/workflows/e2e.yml@v3.800.16
     with:
       katalonRepo: 'VirtoCommerce/vc-quality-gate-katalon'
       katalonRepoBranch: 'dev'
@@ -310,7 +312,7 @@ jobs:
       && github.event_name == 'push'
       && needs.ci.outputs.deployment-folder-exists == 'true'}}
     needs: ci
-    uses: VirtoCommerce/.github/.github/workflows/deploy-cloud.yml@v3.800.15
+    uses: VirtoCommerce/.github/.github/workflows/deploy-cloud.yml@v3.800.16
     with:
       releaseSource: module
       moduleId: ${{ needs.ci.outputs.moduleId }}
