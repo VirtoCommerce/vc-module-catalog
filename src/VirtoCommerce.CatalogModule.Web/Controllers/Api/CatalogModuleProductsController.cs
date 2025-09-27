@@ -106,7 +106,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             {
                 return Forbid();
             }
-            //It is a important to return serialized data by such way. Instead you have a slow response time for large outputs 
+            //It is a important to return serialized data by such way. Instead you have a slow response time for large outputs
             //https://github.com/dotnet/aspnetcore/issues/19646
             var result = JsonConvert.SerializeObject(items, jsonOptions.Value.SerializerSettings);
 
@@ -114,7 +114,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         }
 
         /// <summary>
-        /// Gets products by plenty ids 
+        /// Gets products by plenty ids
         /// </summary>
         /// <param name="ids">Item ids</param>
         /// <param name="respGroup">Response group.</param>
@@ -231,7 +231,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             var copyProduct = (CatalogProduct)product.GetCopy();
 
-            // Reset 
+            // Reset
             copyProduct.Id = null;
             copyProduct.CreatedDate = DateTime.UtcNow;
             copyProduct.CreatedBy = null;
@@ -416,6 +416,11 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var catalogs = await catalogService.GetNoCloneAsync(products.Select(pr => pr.CatalogId).Distinct().ToList());
             foreach (var product in products)
             {
+                if (!product.Name.IsNullOrEmpty())
+                {
+                    product.Name = product.Name.Trim();
+                }
+
                 if (product.IsTransient() && product.SeoInfos.IsNullOrEmpty())
                 {
                     var slugUrl = GenerateProductDefaultSlugUrl(product);
