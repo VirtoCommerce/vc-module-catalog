@@ -127,7 +127,7 @@ namespace VirtoCommerce.CatalogModule.Core
                     Name = "Catalog.Search.EventBasedIndexation.Enable",
                     GroupName = "Catalog|General",
                     ValueType = SettingValueType.Boolean,
-                    DefaultValue = false
+                    DefaultValue = true
                 };
 
                 public static SettingDescriptor ProductConfigurationMaximumFiles { get; } = new SettingDescriptor
