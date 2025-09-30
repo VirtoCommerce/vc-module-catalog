@@ -98,7 +98,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             document.AddFilterableInteger("priority", category.Priority);
 
             // Add priority in virtual categories to search index
-            if (category.Links != null)
+            if (category.Links != null && IndexLinkPriorityFields)
             {
                 foreach (var link in category.Links)
                 {
