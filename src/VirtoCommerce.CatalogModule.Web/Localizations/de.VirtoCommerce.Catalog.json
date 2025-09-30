@@ -331,15 +331,14 @@
         }
       },
       "property-type": {
-        "title": "{{name}} gilt für",
-        "subtitle": "Соответствующие изменения"
+        "title": "{{name}} gilt für"
       },
       "property-dictionary": {
         "title": "{{name}} Wörterbuch",
         "subtitle": "Wörterbuch verwalten",
         "color-code": {
           "label": "Farbcode",
-          "placeholder": "Farbe Code eingeben",
+          "placeholder": "Farbсode eingeben",
           "description": "Gib einen Farbcode im CSS-Format ein: #RRGGBB oder #RGB oder Farbname"
         },
         "labels": {
