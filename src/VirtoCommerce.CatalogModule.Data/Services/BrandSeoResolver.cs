@@ -132,6 +132,12 @@ public class BrandSeoResolver : ISeoResolver
     private async Task<Category> GetCategorySeo(SeoSearchCriteria criteria, string[] segments, Catalog catalog)
     {
         var categorySeos = await SearchSeoInfos(segments.Last(), criteria.StoreId, criteria.LanguageCode);
+
+        if (categorySeos.Count == 0)
+        {
+            categorySeos = await SearchSeoInfos(segments.Last(), criteria.StoreId, catalog.DefaultLanguage.LanguageCode);
+        }
+
         var categories = await _categoryService.GetNoCloneAsync(categorySeos.Select(x => x.ObjectId).ToArray());
         var brandCategory = categories.FirstOrDefault(x => x.CatalogId == catalog.Id);
         return brandCategory;
