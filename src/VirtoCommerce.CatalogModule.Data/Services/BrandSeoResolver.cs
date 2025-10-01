@@ -10,6 +10,7 @@ using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Seo.Core.Extensions;
 using VirtoCommerce.Seo.Core.Models;
 using VirtoCommerce.Seo.Core.Services;
+using VirtoCommerce.StoreModule.Core.Extensions;
 
 namespace VirtoCommerce.CatalogModule.Data.Services;
 
@@ -79,7 +80,7 @@ public class BrandSeoResolver : ISeoResolver
             var brandCategory = await GetCategorySeo(criteria, segments, brandsCatalog);
             if (brandCategory != null)
             {
-                var seo = brandCategory.SeoInfos.GetBestMatchingSeoInfo(criteria.StoreId, criteria.LanguageCode, criteria.LanguageCode);
+                var seo = brandCategory.GetBestMatchingSeoInfo(brandStoreSettings.Store, criteria.LanguageCode);
                 var brandSeoInfo = CreateSeoInfo(BrandSeoType, criteria.Slug, criteria, seo);
                 brandSeoInfo.Id = brandCategory.Id;
                 brandSeoInfo.ObjectId = brandCategory.Id;
