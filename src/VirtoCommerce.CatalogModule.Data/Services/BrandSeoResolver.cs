@@ -11,6 +11,7 @@ using VirtoCommerce.Seo.Core.Extensions;
 using VirtoCommerce.Seo.Core.Models;
 using VirtoCommerce.Seo.Core.Services;
 using VirtoCommerce.StoreModule.Core.Extensions;
+using VirtoCommerce.StoreModule.Core.Model;
 
 namespace VirtoCommerce.CatalogModule.Data.Services;
 
@@ -77,7 +78,7 @@ public class BrandSeoResolver : ISeoResolver
 
             // brands catalog seo found meaning this is seo request for brands page, find second level (actual brand)
             var brandsCatalog = await _catalogService.GetNoCloneAsync(brandStoreSettings.BrandCatalogId);
-            var brandCategory = await GetCategorySeo(criteria, segments, brandsCatalog);
+            var brandCategory = await GetCategorySeo(criteria, segments, brandsCatalog, brandStoreSettings.Store);
             if (brandCategory != null)
             {
                 var seo = brandCategory.GetBestMatchingSeoInfo(brandStoreSettings.Store, criteria.LanguageCode);
@@ -129,13 +130,13 @@ public class BrandSeoResolver : ISeoResolver
         return seoInfo;
     }
 
-    private async Task<Category> GetCategorySeo(SeoSearchCriteria criteria, string[] segments, Catalog catalog)
+    private async Task<Category> GetCategorySeo(SeoSearchCriteria criteria, string[] segments, Catalog catalog, Store store)
     {
         var categorySeos = await SearchSeoInfos(segments.Last(), criteria.StoreId, criteria.LanguageCode);
 
         if (categorySeos.Count == 0)
         {
-            categorySeos = await SearchSeoInfos(segments.Last(), criteria.StoreId, catalog.DefaultLanguage.LanguageCode);
+            categorySeos = await SearchSeoInfos(segments.Last(), criteria.StoreId, store.DefaultLanguage);
         }
 
         var categories = await _categoryService.GetNoCloneAsync(categorySeos.Select(x => x.ObjectId).ToArray());
