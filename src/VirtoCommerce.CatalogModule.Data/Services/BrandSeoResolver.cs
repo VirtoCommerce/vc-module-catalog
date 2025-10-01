@@ -7,6 +7,7 @@ using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Seo.Core.Extensions;
 using VirtoCommerce.Seo.Core.Models;
 using VirtoCommerce.Seo.Core.Services;
 
@@ -76,16 +77,15 @@ public class BrandSeoResolver : ISeoResolver
             // brands catalog seo found meaning this is seo request for brands page, find second level (actual brand)
             var brandsCatalog = await _catalogService.GetNoCloneAsync(brandStoreSettings.BrandCatalogId);
             var brandCategory = await GetCategorySeo(criteria, segments, brandsCatalog);
-
             if (brandCategory != null)
             {
-                var brandSeoInfo = CreateSeoInfo(BrandSeoType, criteria.Slug, criteria);
+                var seo = brandCategory.SeoInfos.GetBestMatchingSeoInfo(criteria.StoreId, criteria.LanguageCode, criteria.LanguageCode);
+                var brandSeoInfo = CreateSeoInfo(BrandSeoType, criteria.Slug, criteria, seo);
                 brandSeoInfo.Id = brandCategory.Id;
                 brandSeoInfo.ObjectId = brandCategory.Id;
                 return [brandSeoInfo];
             }
         }
-
         return [];
     }
 
