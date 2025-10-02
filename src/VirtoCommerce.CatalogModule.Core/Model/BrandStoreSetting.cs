@@ -1,8 +1,11 @@
+using VirtoCommerce.StoreModule.Core.Model;
+
 namespace VirtoCommerce.CatalogModule.Core.Model;
 
 public class BrandStoreSetting
 {
     public string StoreId { get; set; }
+    public Store Store { get; set; }
 
     public bool BrandsEnabled { get; set; }
 

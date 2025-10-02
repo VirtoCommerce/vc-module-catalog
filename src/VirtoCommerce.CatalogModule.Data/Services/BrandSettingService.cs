@@ -30,6 +30,7 @@ public class BrandSettingService : IBrandSettingService
         var brandStoreSetting = AbstractTypeFactory<BrandStoreSetting>.TryCreateInstance();
 
         brandStoreSetting.StoreId = store.Id;
+        brandStoreSetting.Store = store;
 
         brandStoreSetting.BrandsEnabled = store.Settings.GetValue<bool>(BrandsEnabled);
         brandStoreSetting.BrandCatalogId = store.Settings.GetValue<string>(BrandCatalogId);

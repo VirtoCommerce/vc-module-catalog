@@ -7,8 +7,11 @@ using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Seo.Core.Extensions;
 using VirtoCommerce.Seo.Core.Models;
 using VirtoCommerce.Seo.Core.Services;
+using VirtoCommerce.StoreModule.Core.Extensions;
+using VirtoCommerce.StoreModule.Core.Model;
 
 namespace VirtoCommerce.CatalogModule.Data.Services;
 
@@ -18,6 +21,7 @@ public class BrandSeoResolver : ISeoResolver
     private readonly ICategoryService _categoryService;
     private readonly ICatalogService _catalogService;
     private readonly Func<ICatalogRepository> _repositoryFactory;
+    private readonly CatalogSeoResolver _catalogSeoResolver;
 
     private const string BrandSeoType = "Brand";
     private const string BrandsSeoType = "Brands";
@@ -26,18 +30,20 @@ public class BrandSeoResolver : ISeoResolver
         IBrandSettingService brandSettingService,
         ICategoryService categoryService,
         ICatalogService catalogService,
-        Func<ICatalogRepository> repositoryFactory)
+        Func<ICatalogRepository> repositoryFactory,
+        CatalogSeoResolver catalogSeoResolver)
     {
         _brandSettingService = brandSettingService;
         _categoryService = categoryService;
         _catalogService = catalogService;
         _repositoryFactory = repositoryFactory;
+        _catalogSeoResolver = catalogSeoResolver;
     }
 
     public async Task<IList<SeoInfo>> FindSeoAsync(SeoSearchCriteria criteria)
     {
         var brandStoreSettings = await _brandSettingService.GetByStoreIdAsync(criteria.StoreId);
-        if (brandStoreSettings == null || !brandStoreSettings.BrandsEnabled)
+        if (!BrandsCatalogEnabled(brandStoreSettings))
         {
             return [];
         }
@@ -49,51 +55,90 @@ public class BrandSeoResolver : ISeoResolver
             return [];
         }
 
-        if (permalink.EqualsIgnoreCase(BrandsSeoType))
+        if (segments.Length == 1)
         {
-            var seoInfo = CreateSeoInfo(BrandsSeoType, BrandsSeoType, criteria);
-            return [seoInfo];
+            // possible brands root page seo
+            var brandsSeoInfo = await FindBrandsCatalogSeoInfo(brandStoreSettings, criteria);
+            if (brandsSeoInfo != null)
+            {
+                return [brandsSeoInfo];
+            }
         }
 
-        if (brandStoreSettings.BrandCatalogId != null)
+        if (segments.Length == 2)
         {
-            var catalog = await _catalogService.GetNoCloneAsync(brandStoreSettings.BrandCatalogId);
-            if (!IsBrandCatalogQuery(catalog, segments))
+            // possible brands second level page seo
+            var criteriaCopy = criteria.Clone() as SeoSearchCriteria;
+            criteriaCopy.Permalink = segments.First();
+            var brandsSeoInfo = await FindBrandsCatalogSeoInfo(brandStoreSettings, criteriaCopy);
+            if (brandsSeoInfo == null)
             {
                 return [];
             }
 
-            var seoInfo = CreateSeoInfo(BrandSeoType, criteria.Slug, criteria);
-
-            var brandCategory = await GetCategorySeo(criteria, segments, catalog);
+            // brands catalog seo found meaning this is seo request for brands page, find second level (actual brand)
+            var brandsCatalog = await _catalogService.GetNoCloneAsync(brandStoreSettings.BrandCatalogId);
+            var brandCategory = await GetCategorySeo(criteria, segments, brandsCatalog, brandStoreSettings.Store);
             if (brandCategory != null)
             {
-                seoInfo.Id = brandCategory.Id;
-                seoInfo.ObjectId = brandCategory.Id;
+                var seo = brandCategory.GetBestMatchingSeoInfo(brandStoreSettings.Store, criteria.LanguageCode);
+                var brandSeoInfo = CreateSeoInfo(BrandSeoType, criteria.Slug, criteria, seo);
+                brandSeoInfo.Id = brandCategory.Id;
+                brandSeoInfo.ObjectId = brandCategory.Id;
+                return [brandSeoInfo];
             }
-
-            return [seoInfo];
         }
-
         return [];
     }
 
-    private static SeoInfo CreateSeoInfo(string seoType, string id, SeoSearchCriteria criteria)
+    private static bool BrandsCatalogEnabled(BrandStoreSetting brandStoreSettings)
+    {
+        return brandStoreSettings != null && brandStoreSettings.BrandsEnabled && brandStoreSettings.BrandCatalogId != null;
+    }
+
+    private async Task<SeoInfo> FindBrandsCatalogSeoInfo(BrandStoreSetting brandStoreSettings, SeoSearchCriteria criteria)
+    {
+        var catalogSeoInfos = await _catalogSeoResolver.FindSeoAsync(criteria);
+        var brandsCatalogSeoInfo = catalogSeoInfos.FirstOrDefault(x => x.ObjectType == "Catalog" && x.ObjectId == brandStoreSettings.BrandCatalogId);
+        if (brandsCatalogSeoInfo != null)
+        {
+            var brandsSeoInfo = CreateSeoInfo(BrandsSeoType, BrandsSeoType, criteria, brandsCatalogSeoInfo);
+            return brandsSeoInfo;
+        }
+
+        return null;
+    }
+
+    private static SeoInfo CreateSeoInfo(string seoType, string id, SeoSearchCriteria criteria, SeoInfo sourceSeoInfo = null)
     {
         var seoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
         seoInfo.ObjectType = seoType;
         seoInfo.Id = id;
         seoInfo.ObjectId = id;
         seoInfo.StoreId = criteria.StoreId;
-        seoInfo.SemanticUrl = criteria.Permalink;
         seoInfo.LanguageCode = criteria.LanguageCode;
+        seoInfo.SemanticUrl = criteria.Permalink;
+
+        if (sourceSeoInfo != null)
+        {
+            seoInfo.PageTitle = sourceSeoInfo.PageTitle;
+            seoInfo.MetaDescription = sourceSeoInfo.MetaDescription;
+            seoInfo.MetaKeywords = sourceSeoInfo.MetaKeywords;
+            seoInfo.ImageAltDescription = sourceSeoInfo.ImageAltDescription;
+        }
 
         return seoInfo;
     }
 
-    private async Task<Category> GetCategorySeo(SeoSearchCriteria criteria, string[] segments, Catalog catalog)
+    private async Task<Category> GetCategorySeo(SeoSearchCriteria criteria, string[] segments, Catalog catalog, Store store)
     {
         var categorySeos = await SearchSeoInfos(segments.Last(), criteria.StoreId, criteria.LanguageCode);
+
+        if (categorySeos.Count == 0)
+        {
+            categorySeos = await SearchSeoInfos(segments.Last(), criteria.StoreId, store.DefaultLanguage);
+        }
+
         var categories = await _categoryService.GetNoCloneAsync(categorySeos.Select(x => x.ObjectId).ToArray());
         var brandCategory = categories.FirstOrDefault(x => x.CatalogId == catalog.Id);
         return brandCategory;
@@ -115,10 +160,5 @@ public class BrandSeoResolver : ISeoResolver
         return entities
             .Select(x => x.ToModel(AbstractTypeFactory<SeoInfo>.TryCreateInstance()))
             .ToList();
-    }
-
-    private static bool IsBrandCatalogQuery(Catalog catalog, string[] segments)
-    {
-        return catalog != null && segments.First().EqualsIgnoreCase(catalog.Name);
     }
 }
