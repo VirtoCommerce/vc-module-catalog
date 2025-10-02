@@ -1293,6 +1293,10 @@
           "description": "在索引中存储序列化的目录对象并在搜索结果中返回它们",
           "title": "在索引中存储序列化的目录对象"
         },
+        "IndexLinkPriorityFields": {
+          "description": "启用或禁用用于计算搜索结果中链接对象优先级的字段索引",
+          "title": "启用链接优先级字段的索引"
+        },
         "DefaultAggregationSize": {
           "description": "在商店的聚合属性中未定义时指定聚合的大小。设置为 0 表示无限大小",
           "title": "聚合大小的默认值"

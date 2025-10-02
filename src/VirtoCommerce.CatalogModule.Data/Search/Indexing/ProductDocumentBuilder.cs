@@ -242,7 +242,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             }
 
             // Add priority in virtual categories to search index
-            if (product.Links != null)
+            if (product.Links != null && IndexLinkPriorityFields)
             {
                 foreach (var link in product.Links)
                 {
