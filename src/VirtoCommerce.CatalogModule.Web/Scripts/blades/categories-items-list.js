@@ -257,9 +257,11 @@ angular.module('virtoCommerce.catalogModule')
                 blade.isLoading = true;
 
                 if ($scope.gridApi && $scope.gridApi.selection.getSelectAllState()) {
+                    var bulkCreateLinksCriteria = getSearchCriteria();
+                    bulkCreateLinksCriteria.skip = 0;
                     listEntries.bulkcreatelinks(
                         {
-                            SearchCriteria: getSearchCriteria(),
+                            SearchCriteria: bulkCreateLinksCriteria,
                             CatalogId: blade.parentBlade.catalogId,
                             CategoryId: blade.parentBlade.categoryId
                         },
