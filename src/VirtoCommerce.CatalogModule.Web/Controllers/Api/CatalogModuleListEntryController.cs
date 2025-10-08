@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -22,7 +23,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
     [Authorize]
     public class CatalogModuleListEntryController(
         IInternalListEntrySearchService internalListEntrySearchService,
-        IListEntrySearchService listEntrySearchService,
         ILinkSearchService linkSearchService,
         ICategoryService categoryService,
         IItemService itemService,
@@ -87,50 +87,48 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return Ok();
         }
 
+
         /// <summary>
-        /// Bulk create links to categories and items
+        /// Creates category links in bulk for catalog entries based on the specified search criteria.
         /// </summary>
-        /// <param name="creationRequest"></param>
-        /// <returns></returns>
+        /// <param name="creationRequest">The request containing the target catalog, category, and search criteria for the entries to link.</param>
+        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+        /// <returns>An <see cref="ActionResult"/> indicating the result of the operation. Returns <see cref="BadRequestResult"/>
+        /// if the catalog identifier is not specified, <see cref="ForbidResult"/> if the user lacks the required
+        /// permissions, or <see cref="OkResult"/> upon successful completion.</returns>
         [HttpPost]
         [Route("~/api/catalog/listentrylinks/bulkcreate")]
-        public async Task<ActionResult> BulkCreateLinks([FromBody] BulkLinkCreationRequest creationRequest)
+        public async Task<ActionResult> BulkCreateLinks([FromBody] BulkLinkCreationRequest creationRequest, CancellationToken cancellationToken)
         {
             if (creationRequest.CatalogId.IsNullOrEmpty())
             {
                 return BadRequest("Target catalog identifier should be specified.");
             }
 
-            var searchCriteria = creationRequest.SearchCriteria;
-            bool haveProducts;
+            var searchResult = await internalListEntrySearchService.SearchAllAsync(creationRequest.SearchCriteria, new CancellationTokenWrapper(cancellationToken));
+            var hasLinkEntries = await LoadCatalogEntriesAsync<IHasLinks>(searchResult.Select(x => x.Id).ToArray());
 
-            do
+            if (hasLinkEntries.Count == 0)
             {
-                var searchResult = await listEntrySearchService.SearchAsync(searchCriteria);
-                var hasLinkEntries = await LoadCatalogEntriesAsync<IHasLinks>(searchResult.ListEntries.Select(x => x.Id).ToArray());
-                haveProducts = hasLinkEntries.Any();
+                return Ok();
+            }
 
-                searchCriteria.Skip += searchCriteria.Take;
+            var authorizationResult = await authorizationService.AuthorizeAsync(User, hasLinkEntries,
+                new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
+            if (!authorizationResult.Succeeded)
+            {
+                return Forbid();
+            }
 
-                var authorizationResult = await authorizationService.AuthorizeAsync(User, hasLinkEntries, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
-                if (!authorizationResult.Succeeded)
-                {
-                    return Forbid();
-                }
+            foreach (var hasLinkEntry in hasLinkEntries)
+            {
+                var link = AbstractTypeFactory<CategoryLink>.TryCreateInstance();
+                link.CategoryId = creationRequest.CategoryId;
+                link.CatalogId = creationRequest.CatalogId;
+                hasLinkEntry.Links.Add(link);
+            }
 
-                foreach (var hasLinkEntry in hasLinkEntries)
-                {
-                    var link = AbstractTypeFactory<CategoryLink>.TryCreateInstance();
-                    link.CategoryId = creationRequest.CategoryId;
-                    link.CatalogId = creationRequest.CatalogId;
-                    hasLinkEntry.Links.Add(link);
-                }
-
-                if (haveProducts)
-                {
-                    await SaveListCatalogEntitiesAsync(hasLinkEntries.ToArray());
-                }
-            } while (haveProducts);
+            await SaveListCatalogEntitiesAsync(hasLinkEntries.ToArray());
 
             return Ok();
         }
