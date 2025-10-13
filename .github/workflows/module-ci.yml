@@ -1,5 +1,5 @@
-# v3.800.16
-# https://virtocommerce.atlassian.net/browse/VCST-3881
+# v3.800.17
+# https://virtocommerce.atlassian.net/browse/VCST-2789
 name: Module CI
 
 on:
@@ -278,21 +278,24 @@ jobs:
     if: ${{ ((github.ref == 'refs/heads/dev') && (github.event_name == 'push')) ||
         (github.event_name == 'workflow_dispatch') || ((github.base_ref == 'dev') && (github.event_name == 'pull_request')) }}
     needs: 'ci'
-    uses: VirtoCommerce/.github/.github/workflows/ui-autotests.yml@v3.800.16
+    uses: VirtoCommerce/.github/.github/workflows/ui-autotests.yml@v3.800.17
     with:
       installModules: 'false'
       installCustomModule: 'true'
       customModuleId:  ${{ needs.ci.outputs.moduleId }}
       customModuleUrl:  ${{ needs.ci.outputs.artifactUrl }}
       runTests: ${{ needs.ci.outputs.run-ui-tests }}
+      vctestingRepoBranch: 'dev'
+      frontendZipUrl: 'latest'
     secrets:
       envPAT: ${{ secrets.REPO_TOKEN }}
+      testSecretEnvFile: ${{ secrets.VC_TESTING_MODULE_ENV_FILE }}
   
   module-katalon-tests:
     if: ${{ ((github.ref == 'refs/heads/dev') && (github.event_name == 'push') && (needs.ci.outputs.run-e2e == 'true')) ||
         (github.event_name == 'workflow_dispatch') || (github.base_ref == 'dev') && (github.event_name == 'pull_request') }}
     needs: 'ci'
-    uses: VirtoCommerce/.github/.github/workflows/e2e.yml@v3.800.16
+    uses: VirtoCommerce/.github/.github/workflows/e2e.yml@v3.800.17
     with:
       katalonRepo: 'VirtoCommerce/vc-quality-gate-katalon'
       katalonRepoBranch: 'dev'
@@ -312,7 +315,7 @@ jobs:
       && github.event_name == 'push'
       && needs.ci.outputs.deployment-folder-exists == 'true'}}
     needs: ci
-    uses: VirtoCommerce/.github/.github/workflows/deploy-cloud.yml@v3.800.16
+    uses: VirtoCommerce/.github/.github/workflows/deploy-cloud.yml@v3.800.17
     with:
       releaseSource: module
       moduleId: ${{ needs.ci.outputs.moduleId }}
