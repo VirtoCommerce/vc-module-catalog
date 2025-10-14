@@ -28,6 +28,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         }
 
         protected virtual bool StoreObjectsInIndex => _settingsManager.GetValue<bool>(ModuleConstants.Settings.Search.UseFullObjectIndexStoring);
+        protected virtual bool IndexLinkPriorityFields => _settingsManager.GetValue<bool>(ModuleConstants.Settings.Search.IndexLinkPriorityFields);
 
         protected virtual async Task AddCustomPropertiesAsync(IndexDocument schema, params PropertyType[] propertyTypes)
         {

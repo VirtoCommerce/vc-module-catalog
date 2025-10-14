@@ -1292,6 +1292,10 @@
           "description": "Memorizza oggetti del catalogo serializzati nell'indice e restituiscili nei risultati di ricerca",
           "title": "Memorizza oggetti del catalogo serializzati nell'indice"
         },
+        "IndexLinkPriorityFields": {
+          "description": "Abilita o disabilita l’indicizzazione dei campi che verranno utilizzati per calcolare la priorità degli oggetti collegati nei risultati di ricerca",
+          "title": "Abilita l’indicizzazione dei campi di priorità per i collegamenti"
+        },
         "DefaultAggregationSize": {
           "description": "Specifica la dimensione per le aggregazioni quando non definita nelle proprietà di aggregazione del negozio. Imposta a 0 per dimensione illimitata",
           "title": "Valore predefinito per la dimensione dell'aggregazione"

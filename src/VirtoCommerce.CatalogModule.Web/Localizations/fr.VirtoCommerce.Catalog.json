@@ -1292,6 +1292,10 @@
           "description": "Stocker les objets de catalogue sérialisés dans l'index et les retourner dans les résultats de recherche",
           "title": "Stocker les objets de catalogue sérialisés dans l'index"
         },
+        "IndexLinkPriorityFields": {
+          "description": "Activer ou désactiver l’indexation des champs utilisés pour calculer la priorité des objets liés dans les résultats de recherche",
+          "title": "Activer l’indexation des champs de priorité pour les liens"
+        },
         "DefaultAggregationSize": {
           "description": "Spécifiez la taille des agrégations lorsqu'elle n'est pas définie dans les propriétés d'agrégation du magasin. Réglez sur 0 pour une taille illimitée",
           "title": "Valeur par défaut pour la taille de l'agrégation"

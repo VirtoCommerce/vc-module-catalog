@@ -177,9 +177,11 @@ namespace VirtoCommerce.CatalogModule.Data.SqlServer
                     DELETE A FROM Association A INNER JOIN Item I ON I.Id = A.AssociatedItemId
                     WHERE I.Id IN ({0}) OR I.ParentId IN ({0})
 
-                    DELETE  FROM Item  WHERE ParentId IN ({0})
+                    DELETE FROM ProductConfigurationOption WHERE ProductId IN ({0})
 
-                    DELETE  FROM Item  WHERE Id IN ({0})
+                    DELETE FROM Item WHERE ParentId IN ({0})
+
+                    DELETE FROM Item WHERE Id IN ({0})
                 ";
 
             foreach (var itemIdsPage in itemIds.Paginate(batchSize))

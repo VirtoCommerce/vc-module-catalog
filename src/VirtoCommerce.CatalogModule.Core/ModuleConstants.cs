@@ -127,7 +127,7 @@ namespace VirtoCommerce.CatalogModule.Core
                     Name = "Catalog.Search.EventBasedIndexation.Enable",
                     GroupName = "Catalog|General",
                     ValueType = SettingValueType.Boolean,
-                    DefaultValue = false
+                    DefaultValue = true
                 };
 
                 public static SettingDescriptor ProductConfigurationMaximumFiles { get; } = new SettingDescriptor
@@ -199,6 +199,14 @@ namespace VirtoCommerce.CatalogModule.Core
                     DefaultValue = false
                 };
 
+                public static SettingDescriptor IndexLinkPriorityFields { get; } = new SettingDescriptor
+                {
+                    Name = "Catalog.Search.IndexLinkPriorityFields",
+                    GroupName = "Catalog|Search",
+                    ValueType = SettingValueType.Boolean,
+                    DefaultValue = true
+                };
+
                 public static SettingDescriptor IndexationDateProduct { get; } = new SettingDescriptor
                 {
                     Name = "VirtoCommerce.Search.IndexingJobs.IndexationDate.Product",
@@ -229,6 +237,7 @@ namespace VirtoCommerce.CatalogModule.Core
                     {
                         yield return UseCatalogIndexedSearchInManager;
                         yield return UseFullObjectIndexStoring;
+                        yield return IndexLinkPriorityFields;
                         yield return IndexationDateProduct;
                         yield return IndexationDateCategory;
                         yield return DefaultAggregationSize;

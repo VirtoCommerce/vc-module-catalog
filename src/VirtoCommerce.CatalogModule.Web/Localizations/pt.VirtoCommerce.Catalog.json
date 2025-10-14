@@ -1292,6 +1292,10 @@
           "description": "Armazenar objetos de catálogo serializados no índice e retorná-los nos resultados de pesquisa",
           "title": "Armazenar objetos de catálogo serializados no índice"
         },
+        "IndexLinkPriorityFields": {
+          "description": "Ativar ou desativar a indexação de campos que serão usados para calcular a prioridade de objetos vinculados nos resultados de pesquisa",
+          "title": "Ativar indexação de campos de prioridade para links"
+        },
         "DefaultAggregationSize": {
           "description": "Especificar o tamanho para agregações quando não definido nas propriedades de agregação da loja. Defina como 0 para tamanho ilimitado",
           "title": "Valor padrão para tamanho de agregação"

@@ -1292,6 +1292,10 @@
           "description": "Serialisierte Katalogobjekte im Index speichern und in den Suchergebnissen zurückgeben",
           "title": "Serialisierte Katalogobjekte im Index speichern"
         },
+        "IndexLinkPriorityFields": {
+          "description": "Aktivieren oder deaktivieren Sie die Indizierung von Feldern, die zur Berechnung der Priorität verknüpfter Objekte in den Suchergebnissen verwendet werden",
+          "title": "Indizierung von Prioritätsfeldern für Links aktivieren"
+        },
         "DefaultAggregationSize": {
           "description": "Größe für Aggregationen angeben, wenn nicht in den Aggregationseigenschaften des Shops definiert. Auf 0 setzen für unbegrenzte Größe",
           "title": "Standardwert für Aggregationsgröße"

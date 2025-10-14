@@ -1292,6 +1292,10 @@
           "description": "Przechowuj zserializowane obiekty katalogu w indeksie i zwracaj je w wynikach wyszukiwania",
           "title": "Przechowuj zserializowane obiekty katalogu w indeksie"
         },
+        "IndexLinkPriorityFields": {
+          "description": "Włącz lub wyłącz indeksowanie pól, które będą używane do obliczania priorytetu obiektów powiązanych w wynikach wyszukiwania",
+          "title": "Włącz indeksowanie pól priorytetowych dla linków"
+        },
         "DefaultAggregationSize": {
           "description": "Określ rozmiar dla agregacji, gdy nie jest zdefiniowany w właściwościach agregacji sklepu. Ustaw na 0 dla nieograniczonego rozmiaru",
           "title": "Domyślna wartość dla rozmiaru agregacji"

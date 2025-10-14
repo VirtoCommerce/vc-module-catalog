@@ -20,6 +20,8 @@
                                  ng-if="brandSettingsLoaded"
                                  ng-model="blade.currentEntity.brandCatalogId"
                                  data="blade.fetchCatalogs(criteria)"
+                                 on-select="blade.onSelectCatalog(item)"
+                                 on-remove="blade.onRemoveCatalog()"
                                  placeholder="'catalog.blades.brand-setting-details.placeholders.catalog'">
             </ui-scroll-drop-down>
           </div>
@@ -36,6 +38,8 @@
 
         </fieldset>
       </form>
+
+      <va-widget-container ng-if="blade.selectedCatalog" group="brandsSettingsCatalogDetail" blade="blade" gridster-opts="gridsterOpts" data="blade.selectedCatalog" class="form-group"></va-widget-container>
     </div>
   </div>
 </div>
