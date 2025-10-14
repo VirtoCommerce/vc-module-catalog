@@ -92,6 +92,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             document.AddFilterableString("outerid", category.OuterId);
             document.AddFilterableStringAndContentString("code", category.Code);
             document.AddFilterableStringAndContentString("name", category.Name);
+            IndexLocalizedName(document, category.LocalizedName, category.Catalog?.Languages, category.Name);
             document.AddFilterableDateTime("createddate", category.CreatedDate);
             document.AddFilterableDateTime("lastmodifieddate", category.ModifiedDate ?? DateTime.MaxValue);
             document.AddFilterableDateTime("modifieddate", category.ModifiedDate ?? DateTime.MaxValue);
