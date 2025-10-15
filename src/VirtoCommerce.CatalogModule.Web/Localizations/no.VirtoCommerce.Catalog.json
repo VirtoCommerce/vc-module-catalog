@@ -7,7 +7,7 @@
       "catalog": "Katalogegenskaper",
       "product": "Produktegenskaper",
       "variation": "Variantsegenskaper",
-      "category": "Kategorieegenskaper",
+      "category": "Kategoriegenskaper",
       "color": {
         "title": "Farge",
         "name": "Fargenavn",
@@ -152,7 +152,7 @@
             "description": "Dette er et håndgripelig element som kan kjøpes. Det krever fysisk frakt og kan brukes til målrettede kampanjer"
           },
           "digital-product": {
-            "title": "Digital produkt",
+            "title": "Digitalt produkt",
             "description": "Dette er et immaterielt element som er tilgjengelig for kjøp. Det kan lastes ned direkte etter kjøp, noe som betyr at det ikke krever fysisk frakt. Digitale produkter er også egnet for målrettede kampanjer"
           },
           "bill-of-materials-product": {
@@ -199,7 +199,7 @@
           "applies-to": "Gjelder for",
           "value-type": "Verditype",
           "manage-dictionary": "Administrer ordbok",
-          "new-dictionary-property-caution": "Du kan administrere ordbokselementer bare etter at du har lagret egenskapen",
+          "new-dictionary-property-caution": "Du kan administrere ordbokelementer bare etter at du har lagret egenskapen",
           "attributes": "Attributter",
           "manage-attributes": "Administrer egenskapsattributter",
           "hidden": "Skjult",
@@ -218,20 +218,20 @@
         "match-validation-pattern": "Match et spesifikt mønster",
         "character-count": "Begrens antall tegn",
         "character-limit": {
-          "between": "mellan",
+          "between": "mellom",
           "at-least": "minst",
-          "not-more-than": "inte mer än"
+          "not-more-than": "ikke mer enn"
         },
         "patterns": {
-          "custom": "anpassad",
+          "custom": "tilpasset",
           "email": "e-post",
           "url": "URL",
-          "date": "datum"
+          "date": "dato"
         },
         "descriptions": {
-          "require": "Denna egenskap är obligatorisk",
-          "character-limit": "Ange ett minsta och/eller högsta tillåtna antal tecken",
-          "pattern": "Gör så att detta fält matchar ett mönster, såsom e-postadress, URL eller ett anpassat reguljärt uttryck. Till exempel: ^[a-z]{6,15}$"
+          "require": "Denne egenskapen er obligatorisk",
+          "character-limit": "Angi et minimum og/eller maksimum antall tillatte tegn",
+          "pattern": "Gjør at dette feltet matcher et mønster, som e-postadresse, URL eller et tilpasset regulært uttrykk. For eksempel: ^[a-z]{6,15}$"
         }
       },
       "property-group-list": {
@@ -269,89 +269,89 @@
           "add-filter": "Filter",
           "reset-filter": "Tilbakestill filter",
           "excluded": "Egenskaper ekskludert fra arv",
-          "hide-empty-values": "Skjul tomme fält",
-          "show-empty-values": "Vis tomme fält"
+          "hide-empty-values": "Skjul tomme felt",
+          "show-empty-values": "Vis tomme felt"
         },
         "placeholders": {
           "excluded": "Velg egenskaper"
         },
         "validations": {
-          "required": "Detta fält är obligatoriskt",
-          "maxLength": "Detta fält får inte innehålla fler än {{max}} tecken",
-          "minLength": "Detta fält måste innehålla minst {{min}} tecken",
-          "pattern": "Detta fält matchar inte det valda mönstret"
+          "required": "Dette feltet er obligatorisk",
+          "maxLength": "Dette feltet kan ikke inneholde mer enn {{max}} tegn",
+          "minLength": "Dette feltet må inneholde minst {{min}} tegn",
+          "pattern": "Dette feltet matcher ikke det valgte mønsteret"
         }
       },
       "property-selector": {
-        "title": "Välj egenskaper att redigera",
+        "title": "Velg egenskaper å redigere",
         "labels": {
-          "applied-filter": "Tillämpat filter",
+          "applied-filter": "Tillempet filter",
           "new-filter": "Nytt filter"
         }
       },
       "item-property-detail": {
-        "title": "Redigera objektsegenskap",
+        "title": "Rediger objektsegenskap",
         "title-new": "Ny objektsegenskap",
-        "subtitle": "Ange egenskapsinformation",
+        "subtitle": "Angi egenskapsinformasjon",
         "labels": {
-          "property-name": "Egenskapsnamn",
-          "duplicate-property-in-product": "Egenskapen med namnet {{propertyName}} finns redan i {{categoryName}}. Namnet måste vara unikt",
-          "duplicate-property-in-catalog": "Egenskapen med namnet {{propertyName}} finns redan i rotkatalogen. Namnet måste vara unikt",
-          "duplicate-property-in-variation1": "Egenskapen med namnet {{propertyName}} finns redan för denna variant",
-          "duplicate-property-in-variation2": ". Namnet måste vara unikt",
-          "property-naming-error": "Egenskapsnamnet måste börja med en alfanumerisk karaktär och innehålla endast latinska tecken, siffror och understreck (_). Om ett understreck (_) används, se till att det finns en alfanumerisk karaktär före och efter det",
-          "value-type": "Värdetyp"
+          "property-name": "Egenskapsnavn",
+          "duplicate-property-in-product": "Egenskapen med navnet {{propertyName}} finnes allerede i {{categoryName}}. Navnet må være unikt",
+          "duplicate-property-in-catalog": "Egenskapen med navnet {{propertyName}} finnes allerede i rotkatalogen. Navnet må være unikt",
+          "duplicate-property-in-variation1": "Egenskapen med navnet {{propertyName}} finnes allerede for denne varianten",
+          "duplicate-property-in-variation2": ". Navnet må være unikt",
+          "property-naming-error": "Egenskapsnavnet må starte med en alfanumerisk karakter og inneholde kun latinske tegn, tall og understrek (_). Hvis et understrek (_) brukes, må det være en alfanumerisk karakter før og etter",
+          "value-type": "Verditype"
         }
       },
       "catalogs-select": {
-        "title": "Välj katalog",
-        "subtitle": "Skapar en länk inom din virtuella katalog"
+        "title": "Velg katalog",
+        "subtitle": "Skaper en lenke innenfor din virtuelle katalog"
       },
       "property-valueType": {
-        "title": "{{name}} värdetyp",
-        "subtitle": "Ändra värdetyp"
+        "title": "{{name}} verditype",
+        "subtitle": "Endre verditype"
       },
       "property-attributes": {
-        "title": "{{name}} attribut",
-        "subtitle": "Hantera attribut",
+        "title": "{{name}} attributt",
+        "subtitle": "Håndter attributter",
         "labels": {
-          "new-attribute": "Nytt attribut",
-          "current-attributes": "Aktuella attribut",
-          "name": "Namn",
-          "value": "Värde"
+          "new-attribute": "Nytt attributt",
+          "current-attributes": "Aktuelle attributter",
+          "name": "Navn",
+          "value": "Verdi"
         },
         "validations": {
           "name-required": "Obligatorisk",
           "value-required": "Obligatorisk",
-          "name-duplicate": "Duplikatnamn hittades"
+          "name-duplicate": "Duplikatnavn funnet"
         },
         "placeholders": {
-          "name": "Ange namn",
-          "value": "Ange värde"
+          "name": "Angi navn",
+          "value": "Angi verdi"
         }
       },
       "property-type": {
-        "title": "{{name}} gäller för"
+        "title": "{{name}} gjelder for"
       },
       "property-dictionary": {
         "title": "{{name}} ordbok",
-        "subtitle": "Hantera ordbok",
+        "subtitle": "Håndter ordbok",
         "color-code": {
-          "label": "Färgkod",
-          "placeholder": "Ange färgkod",
-          "description": "Ange en färgkod i CSS-format: #RRGGBB eller #RGB eller färgnamn"
+          "label": "Fargekode",
+          "placeholder": "Angi fargekode",
+          "description": "Angi en fargekode i CSS-format: #RRGGBB eller #RGB eller fargenavn"
         },
         "labels": {
-          "new-value": "Nytt värde",
-          "current-values": "Aktuella värden",
-          "value": "Värde",
+          "new-value": "Ny verdi",
+          "current-values": "Aktuelle verdier",
+          "value": "Verdi",
           "alias": "Alias",
-          "sort-order": "Sorteringsordning",
-          "language-edit": "Redigera värden",
-          "language-add": "Nya värden",
-          "dictionary-edit": "Redigera ordboksvärde",
+          "sort-order": "Sorteringsrekkefølge",
+          "language-edit": "Rediger verdier",
+          "language-add": "Nye verdier",
+          "dictionary-edit": "Rediger ordbokverdi",
           "priority": "Prioritet",
-          "priority-description": "Det lägsta värdet används först"
+          "priority-description": "Den laveste verdien brukes først"
         },
         "validations": {
           "required": "Obligatorisk",
@@ -487,42 +487,42 @@
         }
       },
       "images": {
-        "subtitle": "Hantera bilder",
+        "subtitle": "Håndter bilder",
         "labels": {
-          "no-images": "Inga bilder",
-          "copy-url-prompt": "Kopiera till urklipp: Ctrl+C, Enter",
-          "select-images": "Välj bilder",
-          "select-image-category": "Välj bildkategori",
-          "name": "Namn",
+          "no-images": "Ingen bilder",
+          "copy-url-prompt": "Kopier til utklippstavle: Ctrl+C, Enter",
+          "select-images": "Velg bilder",
+          "select-image-category": "Velg bildkategori",
+          "name": "Navn",
           "image-category": "Bildkategori",
-          "drag-drop-comment": "Dra och släpp dina bilder här",
-          "progress": "Förlopp",
-          "make-default-image": "Dra och släpp en bild till det övre vänstra hörnet av bildområdet för att ställa in den som standard",
+          "drag-drop-comment": "Dra og slipp bildene dine her",
+          "progress": "Fremdrift",
+          "make-default-image": "Dra og slipp et bilde til det øvre venstre hjørnet av bildområdet for å sette det som standard",
           "language": "Språk",
-          "preview": "Förhandsgranska",
-          "external-link": "Extern länk",
-          "altText": "Alternativ text för bild",
-          "description": "Metabeskrivning"
+          "preview": "Forhåndsvis",
+          "external-link": "Ekstern lenke",
+          "altText": "Alternativ tekst for bilde",
+          "description": "Metabeskrivelse"
         },
         "placeholders": {
-          "image-url": "Klistra in bild-URL här",
-          "name": "Ange namn",
-          "image-category": "Välj",
-          "language": "Välj språk",
-          "altText": "Ange text",
-          "description": "Ange beskrivning"
+          "image-url": "Lim inn bilde-URL her",
+          "name": "Angi navn",
+          "image-category": "Velg",
+          "language": "Velg språk",
+          "altText": "Angi tekst",
+          "description": "Angi beskrivelse"
         },
         "descr": {
-          "external-link": "Använd en extern bild-URL istället för att ladda upp den till tillgångar",
-          "external-link-warning": "Obs: Av säkerhetsskäl är endast https-länkar tillåtna"
+          "external-link": "Bruk en ekstern bilde-URL i stedet for å laste den opp til eiendeler",
+          "external-link-warning": "Merk: Av sikkerhetshensyn er kun https-lenker tillatt"
         }
       },
       "video-list": {
-        "title": "Videor",
-        "subtitle": "Alla videor",
+        "title": "Videoer",
+        "subtitle": "Alle videoer",
         "labels": {
-          "preview": "Förhandsgranska",
-          "name": "Namn",
+          "preview": "Forhåndsvis",
+          "name": "Navn",
           "language": "Språk",
           "priority": "Prioritet"
         }
@@ -530,352 +530,352 @@
       "video-add": {
         "title": "YouTube-video",
         "subtitle": "Ny video",
-        "create": "Skapa",
+        "create": "Opprett",
         "labels": {
-          "content-url": "Innehållets URL",
-          "no-apikey": "Du har inte angett någon Google API-nyckel i plattformens konfigurationsfil. Videoinformationen kommer att vara ofullständig"
+          "content-url": "Innholds-URL",
+          "no-apikey": "Du har ikke angitt en Google API-nøkkel i plattformens konfigurasjonsfil. Videoinformasjonen vil være ufullstendig"
         },
         "placeholders": {
-          "content-url": "Ange video-URL"
+          "content-url": "Angi video-URL"
         }
       },
       "video-detail": {
         "title": "YouTube-video",
-        "subtitle": "Redigera videoinformation",
+        "subtitle": "Rediger videoinformasjon",
         "labels": {
-          "name": "Videonamn",
-          "upload-date": "Uppladdningsdatum",
-          "description": "Beskrivning",
-          "duration": "Speltid",
+          "name": "Videonavn",
+          "upload-date": "Opplastingsdato",
+          "description": "Beskrivelse",
+          "duration": "Spilletid",
           "language": "Språk",
           "video": "Video",
-          "content-url": "Innehållets URL",
-          "embed-url": "Inbäddad URL",
-          "video-preview": "Videoförhandsgranskning",
-          "thumbnail": "Miniatyrbild",
-          "thumbnail-url": "Miniatyrbilds-URL",
-          "thumbnail-preview": "Förhandsgranskning av miniatyrbild"
+          "content-url": "Innholds-URL",
+          "embed-url": "Innebygd URL",
+          "video-preview": "Videoforhåndsvisning",
+          "thumbnail": "Miniatyrbilde",
+          "thumbnail-url": "Miniatyrbilde-URL",
+          "thumbnail-preview": "Forhåndsvisning av miniatyrbilde"
         },
         "placeholders": {
-          "name": "Ange namn",
-          "upload-date": "Ange ett datum",
-          "description": "Ange beskrivning",
-          "language": "Välj språk",
-          "content-url": "Ange video-URL"
+          "name": "Angi navn",
+          "upload-date": "Angi en dato",
+          "description": "Angi beskrivelse",
+          "language": "Velg språk",
+          "content-url": "Angi video-URL"
         }
       },
       "item-asset-detail": {
         "labels": {
           "category": "Kategori",
           "language": "Språk",
-          "description": "Metabeskrivning"
+          "description": "Metabeskrivelse"
         },
         "placeholders": {
-          "category": "Välj...",
-          "language": "Välj språk",
-          "description": "Ange beskrivning"
+          "category": "Velg...",
+          "language": "Velg språk",
+          "description": "Angi beskrivelse"
         }
       },
       "item-asset-list": {
-        "subtitle": "Objektstillgångar",
+        "subtitle": "Objekteiendeler",
         "labels": {
-          "copy-url-prompt": "Kopiera till urklipp: Ctrl+C, Enter",
-          "select-files": "Välj filer",
-          "drag-drop-comment": "Dra och släpp dina filer här",
-          "name": "Namn",
-          "progress": "Förlopp",
-          "type": "Typ",
-          "actions": "Åtgärder",
-          "remove": "Ta bort",
-          "copy-link": "Kopiera länk"
+          "copy-url-prompt": "Kopier til utklippstavle: Ctrl+C, Enter",
+          "select-files": "Velg filer",
+          "drag-drop-comment": "Dra og slipp filene dine her",
+          "name": "Navn",
+          "progress": "Fremdrift",
+          "type": "Type",
+          "actions": "Handlinger",
+          "remove": "Fjern",
+          "copy-link": "Kopier lenke"
         }
       },
       "item-associations-list": {
-        "subtitle": "Associationer",
+        "subtitle": "Assosiasjoner",
         "labels": {
-          "sorting-prompt": "Ställ in hur associerade objekt visas i webbutiken. Dra och släpp produkterna för att ändra deras ordning",
-          "picture": "Bild",
-          "name": "Namn",
+          "sorting-prompt": "Still inn hvordan assosierte objekter vises i nettbutikken. Dra og slipp produktene for å endre rekkefølgen deres",
+          "picture": "Bilde",
+          "name": "Navn",
           "priority": "Prioritet",
-          "group": "Grupp",
+          "group": "Gruppe",
           "quantity": "Kvantitet",
-          "tags": "Taggar"
+          "tags": "Tagger"
         },
         "descr": {
-          "no-associations": "Inga associationer än",
-          "quantity": "Associationskvantitet"
+          "no-associations": "Ingen assosiasjoner ennå",
+          "quantity": "Assosiasjonskvantitet"
         }
       },
       "item-association-detail": {
-        "subtitle": "Associationsdetaljer",
+        "subtitle": "Assosiasjonsdetaljer",
         "labels": {
-          "group": "Grupp",
+          "group": "Gruppe",
           "quantity": "Kvantitet",
           "tags": "Taggar"
         },
         "placeholders": {
-          "group": "Välj...",
-          "quantity": "Ange kvantitet",
-          "tags": "Ange taggar"
+          "group": "Velg...",
+          "quantity": "Angi kvantitet",
+          "tags": "Angi tagger"
         }
       },
       "advanced-search-results": {
-        "title": "Sökresultat"
+        "title": "Søkeresultater"
       },
       "item-dimensions": {
-        "title": "Objektmätning",
-        "subtitle": "Ändra produktmätningsegenskaper"
+        "title": "Objektmåling",
+        "subtitle": "Endre produktmålingsegenskaper"
       },
       "asset-select": {
-        "title": "Länka bilder"
+        "title": "Lenke til eiendeler"
       },
       "images-select": {
-        "title": "Länka tillgångar"
+        "title": "Lenke til eiendeler"
       },
       "asset-upload": {
-        "title": "Lägg till tillgångar"
+        "title": "Legg til eiendeler"
       },
       "image-upload": {
-        "title": "Ladda upp bilder"
+        "title": "Last opp bilder"
       },
       "image-add-external-link": {
-        "title": "Lägg till extern länk"
+        "title": "Legg til ekstern lenke"
       },
       "aggregation-properties-details": {
         "name": {
-          "label": "Egenskapsnamn"
+          "label": "Egenskapsnavn"
         },
         "type": {
-          "label": "Aggregationstyp"
+          "label": "Aggregeringstype"
         },
         "measure": {
-          "label": "Mått"
+          "label": "Mål"
         },
         "unit": {
-          "label": "Måttenhet"
+          "label": "Måleenhet"
         },
         "size": {
-          "label": "Aggregationsstorlek",
-          "placeholder": "Ange aggregationsstorlek",
-          "description": "Maximalt antal aggregationsvärden i sökresultat. 0 = obegränsat"
+          "label": "Aggregeringsstørrelse",
+          "placeholder": "Angi aggregeringsstørrelse",
+          "description": "Maksimalt antall aggregeringsverdier i søkeresultater. 0 = ubegrenset"
         },
         "values-Attribute": {
-          "label": "Tillåtna värden",
-          "placeholder": "Ange tillåtna värden",
-          "description": "Ange aggregationsvärden som tillåts i sökresultat. Lämna tomt för att tillåta alla värden"
+          "label": "Tillatte verdier",
+          "placeholder": "Angi tillatte verdier",
+          "description": "Angi aggregeringsverdier som tillates i søkeresultater. La være tom for å tillate alle verdier"
         },
         "values-Range": {
-          "label": "Intervallgränser",
-          "placeholder": "Lägg till nummer",
-          "description": "Gränser sorteras automatiskt innan de sparas. Intervall konstrueras enligt följande: Under [gräns 1], [gräns 1] till [gräns 2], ..., Över [gräns N]"
+          "label": "Intervallgrenser",
+          "placeholder": "Legg til nummer",
+          "description": "Grenser sorteres automatisk før lagring. Intervall konstrueres som følgende: Under [grense 1], [grense 1] til [grense 2], ..., Over [grense N]"
         },
         "values-PriceRange": {
-          "label": "Prisintervallgränser",
-          "placeholder": "Lägg till nummer",
-          "description": "Gränser sorteras automatiskt innan de sparas. Prisintervall konstrueras enligt följande: Under [gräns 1], [gräns 1] till [gräns 2], ..., Över [gräns N]"
+          "label": "Prisintervallgrenser",
+          "placeholder": "Legg til nummer",
+          "description": "Grenser sorteres automatisk før lagring. Prisintervall konstrueres som følgende: Under [grense 1], [grense 1] til [grense 2], ..., Over [grense N]"
         }
       },
       "importers-list": {
         "title": "Importtyper",
-        "subtitle": "Välj någon av de tillgängliga importtyperna nedan"
+        "subtitle": "Velg en av de tilgjengelige importtypene nedenfor"
       },
       "exporter-list": {
         "title": "Exporttyper",
-        "subtitle": "Välj någon av de tillgängliga exporttyperna nedan"
+        "subtitle": "Velg en av de tilgjengelige exporttypene nedenfor"
       },
       "exporter": {
-        "productTitle": "Exportera katalogprodukter",
-        "productSubtitle": "Exportera katalogprodukter till JSON eller CSV"
+        "productTitle": "Eksporter katalogprodukter",
+        "productSubtitle": "Eksporter katalogprodukter til JSON eller CSV"
       },
       "bill-of-materials-list": {
-        "title": "Materialförteckning (BOM) produkter",
-        "subtitle": "Lägg till eller ta bort BOM-produkter",
-        "no-data": "Det finns inga produkter än",
+        "title": "Produkter med materialliste (BOM)",
+        "subtitle": "Legg til eller fjern BOM-produkter",
+        "no-data": "Det finnes ingen produkter ennå",
         "labels": {
-          "picture": "Bild",
-          "name": "Namn",
+          "picture": "Bilde",
+          "name": "Navn",
           "category": "Kategori",
           "quantity": "Kvantitet"
         }
       },
       "property-type-list": {
         "title": "Ny egenskap",
-        "subtitle": "Välj egenskapstyp",
+        "subtitle": "Velg egenskapstype",
         "lables": {
           "Product": {
             "title": "Produktegenskap",
-            "description": "Visas endast för relaterade produkter"
+            "description": "Vises kun for relaterte produkter"
           },
           "Category": {
-            "title": "Kategorieegenskap",
-            "description": "Visas endast för relaterad katalog"
+            "title": "Kategoriegenskap",
+            "description": "Vises kun for relatert katalog"
           },
           "Catalog": {
             "title": "Katalogegenskap",
-            "description": "Visas endast för denna katalog"
+            "description": "Vises kun for denne katalogen"
           },
           "Variation": {
             "title": "Variantsegenskap",
-            "description": "Visas endast för relaterade varianter"
+            "description": "Vises kun for relaterte varianter"
           }
         }
       },
       "links-list": {
-        "title": "Länkar",
+        "title": "Lenker",
         "labels": {
-          "no-data": "Det finns inga länkar än",
-          "add-links": "Lägg till ny länk",
-          "marked": "Markerad"
+          "no-data": "Det finnes ingen lenker ennå",
+          "add-links": "Legg til ny lenke",
+          "marked": "Merket"
         }
       },
       "measures-list": {
-        "title": "Måttenheter",
-        "subtitle": "Lista över tillgängliga måttenheter",
+        "title": "Måleenheter",
+        "subtitle": "Liste over tilgjengelige måleenheter",
         "labels": {
-          "name": "Namn",
-          "create-default": "Skapa standard"
+          "name": "Navn",
+          "create-default": "Opprett standard"
         }
       },
       "create-measures": {
-        "title": "Skapa standardmått"
+        "title": "Opprett standardmål"
       },
       "measure-details": {
-        "title": "{{name}} mått",
-        "title-new": "Lägg till nytt mått",
-        "subtitle": "Måttdetaljer",
+        "title": "{{name}} mål",
+        "title-new": "Legg til nytt mål",
+        "subtitle": "Måldetaljer",
         "labels": {
-          "name": "Namn",
-          "code": "Kod",
-          "description": "Beskrivning"
+          "name": "Navn",
+          "code": "Kode",
+          "description": "Beskrivelse"
         },
         "placeholders": {
-          "name": "Ange namn",
-          "code": "Ange kod",
-          "description": "Ange beskrivning"
+          "name": "Angi navn",
+          "code": "Angi kode",
+          "description": "Angi beskrivelse"
         }
       },
       "measure-units-list": {
-        "title": "{{name}} måttenheter",
-        "subtitle": "Lista över måttenheter",
+        "title": "{{name}} måleenheter",
+        "subtitle": "Liste over måleenheter",
         "labels": {
-          "name": "Namn",
-          "code": "Kod",
+          "name": "Navn",
+          "code": "Kode",
           "is-default": "Standard"
         }
       },
       "measure-unit-details": {
-        "title": "{{name}} måttenhet",
-        "title-new": "Ny måttenhet",
-        "subtitle": "Måttenhetsdetaljer",
+        "title": "{{name}} måleenhet",
+        "title-new": "Ny måleenhet",
+        "subtitle": "Måleenhetsdetaljer",
         "labels": {
-          "name": "Namn",
-          "localized-name": "Lokaliserat namn",
-          "code": "Kod",
+          "name": "Navn",
+          "localized-name": "Lokalisert navn",
+          "code": "Kode",
           "conversion-factor": "Konverteringsfaktor",
           "symbol": "Symbol",
-          "localized-symbol": "Lokaliserad symbol",
-          "code-naming-error": "Koden måste börja med en alfanumerisk karaktär och innehålla endast latinska tecken och siffror."
+          "localized-symbol": "Lokalisert symbol",
+          "code-naming-error": "Koden må starte med en alfanumerisk karakter og inneholde kun latinske tegn og tall."
         },
         "placeholders": {
-          "name": "Ange namn",
-          "localized-name": "Ange lokaliserat namn",
-          "code": "Ange kod",
-          "conversion-factor": "Ange konvertering",
-          "symbol": "Ange symbol",
-          "localized-symbol": "Ange lokaliserad symbol"
+          "name": "Angi navn",
+          "localized-name": "Angi lokalisert navn",
+          "code": "Angi kode",
+          "conversion-factor": "Angi konvertering",
+          "symbol": "Angi symbol",
+          "localized-symbol": "Angi lokalisert symbol"
         }
       },
       "configuration-details": {
-        "title": "Produktkonfiguration",
-        "hide-description": "Dölj",
+        "title": "Produktkonfigurasjon",
+        "hide-description": "Skjul",
         "labels": {
-          "enable": "Aktivera konfiguration",
-          "name": "Sektionsnamn",
-          "quantity": "Alternativ",
-          "sections": "Sektioner"
+          "enable": "Aktiver konfigurasjon",
+          "name": "Seksjonsnavn",
+          "quantity": "Alternativer",
+          "sections": "Seksjoner"
         },
         "descr": {
-          "enable": "För aktivering måste konfigurationen innehålla minst en sektion, och varje sektion av typen 'Produkt' måste innehålla minst ett alternativ",
-          "no-sections": "Inga sektioner i denna konfiguration än",
-          "sorting-prompt": "Ställ in ordningen för hur sektioner visas i webbutiken. Dra och släpp sektionerna för att ändra deras ordning"
+          "enable": "For aktivering må konfigurasjonen inneholde minst en seksjon, og hver seksjon av typen 'Produkt' må inneholde minst ett alternativ",
+          "no-sections": "Ingen seksjoner i denne konfigurasjonen ennå",
+          "sorting-prompt": "Still inn rekkefølgen for hvordan seksjoner vises i nettbutikken. Dra og slipp seksjonene for å endre rekkefølgen deres"
         },
         "commands": {
-          "add": "Lägg till sektion"
+          "add": "Legg til seksjon"
         }
       },
       "section-details": {
-        "title": "Ny sektion",
+        "title": "Ny seksjon",
         "labels": {
-          "name": "Sektionsnamn",
-          "description": "Beskrivning",
-          "required": "Sektionen är obligatorisk",
-          "picture": "Bild",
+          "name": "Seksjonsnavn",
+          "description": "Beskrivelse",
+          "required": "Seksjonen er obligatorisk",
+          "picture": "Bilde",
           "quantity": "Kvantitet",
-          "product-name": "Produktnamn",
-          "options": "Alternativ",
-          "type": "Sektionstyp",
-          "allow-custom-text": "Tillåt anpassad text",
-          "allow-predefined-options": "Tillåt fördefinierade alternativ",
-          "text": "Text"
+          "product-name": "Produktnavn",
+          "options": "Alternativer",
+          "type": "Seksjonstype",
+          "allow-custom-text": "Tillat tilpasset tekst",
+          "allow-predefined-options": "Tillat forhåndsdefinerte alternativer",
+          "text": "Tekst"
         },
         "descr": {
-          "no-options": "Inga alternativ i denna sektion än"
+          "no-options": "Ingen alternativer i denne seksjonen ennå"
         },
         "commands": {
-          "add": "Lägg till alternativ"
+          "add": "Legg til alternativ"
         },
         "placeholders": {
-          "type": "Välj..."
+          "type": "Velg..."
         }
       },
       "option-details": {
-        "title": "Välj objekt som alternativ",
+        "title": "Velg objekt som alternativ",
         "labels": {
           "quantity": "Kvantitet",
-          "text": "Text för alternativ"
+          "text": "Tekst for alternativ"
         },
         "commands": {
-          "add": "Lägg till alternativ"
+          "add": "Legg til alternativ"
         },
         "placeholders": {
-          "quantity": "Ange kvantitet",
-          "text": "Ange texten"
+          "quantity": "Angi kvantitet",
+          "text": "Angi tekst"
         }
       },
       "brand-setting-details": {
-        "title": "Varumärkesinställningar",
+        "title": "Merkeinnstillinger",
         "labels": {
-          "enabled": "Aktivera varumärken",
-          "catalog": "Varumärkeskatalog",
-          "property": "Varumärkesegenskap"
+          "enabled": "Aktiver merker",
+          "catalog": "Merke-katalog",
+          "property": "Merkeegenskap"
         },
         "placeholders": {
-          "catalog": "Välj varumärkeskatalog",
-          "property": "Välj varumärkesegenskap"
+          "catalog": "Velg merke-katalog",
+          "property": "Velg merkeegenskap"
         }
       },
       "automatic-links": {
-        "title": "Automatiska länkar",
-        "preview-title": "Förhandsgranskning av automatiska länkar",
+        "title": "Automatiske lenker",
+        "preview-title": "Forhåndsvisning av automatiske lenker",
         "fields": {
           "catalog": {
             "label": "Katalog",
-            "placeholder": "Välj katalog"
+            "placeholder": "Velg katalog"
           },
           "query": {
-            "label": "Fråga",
-            "placeholder": "Ange produktssökfråga"
+            "label": "Søk",
+            "placeholder": "Angi produktsøk"
           }
         }
       }
     },  
     "exporter-list": {
       "title": "Exporttyper",
-      "subtitle": "Välj någon av de tillgängliga exporttyperna nedan"
+      "subtitle": "Velg en av de tilgjengelige exporttypene nedenfor"
     },
     "exporter": {
-      "productTitle": "Exportera katalogprodukter",
-      "productSubtitle": "Exportera katalogprodukter till JSON eller CSV"
+      "productTitle": "Eksporter katalogprodukter",
+      "productSubtitle": "Eksporter katalogprodukter til JSON eller CSV"
     },
     "widgets": {
       "catalogLanguages": {
@@ -1035,7 +1035,7 @@
         "message": "Er du sikker på at du vil slette de valgte attributtene?"
       },
       "image-save": {
-        "title": "Bekreft sletting",
+        "title": "Lagre endringer",
         "message": "Disse bildene har blitt endret. Ønsker du å lagre endringene?"
       },
       "video-save": {
@@ -1080,7 +1080,7 @@
       },
       "measure-units-delete": {
         "title": "Bekreft sletting",
-        "message": "Er du sikker på at du vil slette den valgte måleenheten?"
+        "message": "Er du sikker på at du vil slette de valgte måleenhetene?"
       },
       "measure-save": {
         "title": "Lagre endringer",
