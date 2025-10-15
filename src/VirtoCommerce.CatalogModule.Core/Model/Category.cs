@@ -71,6 +71,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                 _path ??= _parent != null ? $"{_parent.Path}/{Name}" : Name;
                 return _path;
             }
+            [Obsolete("Computed property value should not be set", DiagnosticId = "VC0011", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions")]
             set
             {
                 _path = value;
