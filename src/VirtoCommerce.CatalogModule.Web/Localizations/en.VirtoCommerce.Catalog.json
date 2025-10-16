@@ -845,7 +845,7 @@
       "brand-setting-details": {
         "title": "Brand settings",
         "labels": {
-          "enabled": "Enable brands",
+          "enabled": "Brands page enabled",
           "catalog": "Brands catalog",
           "property": "Brands property"
         },
@@ -1260,64 +1260,60 @@
   "settings": {
     "Catalog": {
       "ImageCategories": {
-        "description": "Dictionary of possible categories of images for this item",
+        "description": "Dictionary of possible image category options for catalog items",
         "title": "Image categories"
       },
       "AssociationGroups": {
-        "description": "Catalog product association groups",
+        "description": "Product association group names",
         "title": "Association group names"
       },
       "EditorialReviewTypes": {
-        "description": "Dictionary of possible types of descriptions for this item",
+        "description": "Dictionary of possible descriptions types for this item",
         "title": "Item description types"
       },
       "UseSeoDeduplication": {
-        "description": "Enable or disable detecting SEO duplicates",
-        "title": "Detect SEO duplicates"
+        "description": "Enable/ disable detecting SEO duplicates",
+        "title": "SEO duplicates detection"
       },
       "CategoryDescriptionTypes": {
-        "description": "Dictionary of possible types of descriptions for this category",
+        "description": "Dictionary of possible descriptions types for this category",
         "title": "Category description types"
       },
       "AllowToCopyID": {
-        "title": "Allow to copy item's ID",
-        "description": "Enable it to see the Copy ID context menu item"
+        "title": "Copy item's ID",
+        "description": "Enable to show the 'Copy ID' option in the context menu"
       },
       "BrandStoreSetting": {
         "BrandsEnabled": {
-          "title": "Enable brands",
-          "description": "Brands feature flag"
+          "title": "Brands page display",
+          "description": "Enable/ disable the Brands page on the Frontend"
         },
         "BrandCatalogId": {
           "title": "Brand catalog ID",
-          "description": "Catalog ID for the brands"
+          "description": "Specify the catalog ID used for brands"
         },
         "BrandPropertyName": {
           "title": "Brand property name",
-          "description": "Property name for the brand"
+          "description": "Define the property name for the brand"
         }
       },
       "Search": {
         "UseCatalogIndexedSearchInManager": {
-          "description": "Enable or disable indexed search for the Catalog module with advanced syntax",
-          "title": "Use indexed search for Catalog"
+          "description": "Enable/ disable indexed search for the Catalog module with advanced syntax",
+          "title": "Indexed search for Catalog"
         },
         "UseFullObjectIndexStoring": {
-          "description": "Store serialized catalog objects in the index and return them in search results",
-          "title": "Store serialized catalog objects in the index"
-        },
-        "IndexLinkPriorityFields": {
-          "description": "Enable or disable indexing of fields that will be used to calculate the priority of linked objects in search results",
-          "title": "Enable indexing of priority fields for links"
+          "description": "Enable/ disable storing serialized catalog objects in the index and returning them in search results",
+          "title": "Storage of serialized catalog objects in the index"
         },
         "DefaultAggregationSize": {
           "description": "Specify the size for aggregations when not defined in the store's aggregation properties. Set to 0 for unlimited size",
-          "title": "Default value for aggregation size"
+          "title": "Default aggregation size"
         },
         "EventBasedIndexation": {
           "Enable": {
-            "title": "Enable event-based indexing for catalog entities",
-            "description": "Any changes made to a catalog entity trigger a background task that applies those changes to the search index"
+            "title": "Event-based indexing for catalog entities",
+            "description": "Enable/disable automatic background indexing of catalog entities whenever they are changed"
           }
         }
       },
