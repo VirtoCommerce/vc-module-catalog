@@ -1,0 +1,1389 @@
+{
+  "catalog": {
+    "main-menu-title": "Katalogi",
+    "main-blade-title": "Katalogi",
+    "measure-menu-title": "Mittayksiköt",
+    "properties": {
+      "catalog": "Katalogin ominaisuudet",
+      "product": "Tuotteen ominaisuudet",
+      "variation": "Vaihtoehdon ominaisuudet",
+      "category": "Kategorian ominaisuudet",
+      "color": {
+        "title": "Väri",
+        "name": "Värin nimi",
+        "code": "Värikoodi",
+        "dictionary": "Valitse väri"
+      },
+      "geoPoint": {
+        "title": "Maantieteellinen piste",
+        "placeholder": "Syötä leveys- ja pituusaste",
+        "description": "Syötä leveys- ja pituusaste pilkulla erotettuna ilman välilyöntejä, esim. 41.40338,2.17403"
+      },
+      "measure": {
+        "title": "Mitta",
+        "placeholder": "Syötä mitta",
+        "description": "Syötä mitta muodossa: 1.23",
+        "select-placeholder": "Valitse mittayksikkö"
+      }
+    },
+    "product-types": {
+      "Physical": "Fyysinen",
+      "Digital": "Digitaalinen",
+      "BillOfMaterials": "Tuote materiaaliluettelolla"
+    },
+    "blades": {
+      "catalogs-list": {
+        "title": "Katalogi",
+        "subtitle": "Hallinnoi katalogeja",
+        "labels": {
+          "name": "Nimi",
+          "virtual": "Virtuaalinen"
+        }
+      },
+      "catalog-add": {
+        "title": "Uusi katalogi",
+        "subtitle": "Valitse uuden katalogin tyyppi",
+        "menu": {
+          "catalog": {
+            "title": "Fyysinen katalogi",
+            "description": "Fyysinen katalogi on verkkoluettelo tuotteista tai palveluista, joita yritys tarjoaa. Tuotteet voidaan ryhmitellä kategorioihin tai kuulua katalogiin ilman kategoriaa"
+          },
+          "virtual-catalog": {
+            "title": "Virtuaalinen katalogi",
+            "description": "Virtuaalinen katalogi rakennetaan yhdestä tai useammasta fyysisestä katalogista. Niitä käytetään tuotteiden näyttämiseen yhdistämällä kohteita eri fyysisistä katalogeista"
+          }
+        }
+      },
+      "catalog-detail": {
+        "subtitle": "Katalogin tiedot",
+        "title-new": "Uusi katalogi",
+        "subtitle-new": "Katalogin tiedot",
+        "title-new-virtual": "Uusi virtuaalinen katalogi",
+        "subtitle-virtual": "Virtuaalisen katalogin tiedot",
+        "labels": {
+          "catalog-name": "Katalogin nimi"
+        },
+        "placeholders": {
+          "enter-name": "Syötä nimi"
+        }
+      },
+      "catalog-languages": {
+        "subtitle": "Hallinnoi kieliä",
+        "labels": {
+          "note": "Vedä ja pudota hallitaksesi järjestystä. Ensimmäinen aktiivinen elementti tulee oletuskieleksi",
+          "language-dictionary": "Kielisanakirja",
+          "active": "Aktiivinen",
+          "language": "Kieli",
+          "default-language": "Oletuskieli",
+          "additional-languages": "Lisäkielet"
+        },
+        "placeholders": {
+          "select": "Valitse..."
+        }
+      },
+      "categories-items-list": {
+        "title": "Kategoriat ja kohteet",
+        "subtitle": "Selaa {{name}}",
+        "subtitle-search": "Hakutulokset haulle \"{{keyword}}\"",
+        "title-mapping": "Valitse kategoriat ja kohteet kartoitukseen",
+        "subtitle-mapping": "Luodaan linkki virtuaaliseen katalogiisi",
+        "labels": {
+          "filter-new": "Lisää uusi suodatin",
+          "filter-priceless": "Ei hintaa",
+          "filter-withPrice": "Määritelty hinta",
+          "filter-priceRange": "Hintaväli",
+          "filter-lowStock": "Vähäinen varasto",
+          "filter-notActive": "Epäaktiivinen",
+          "filter-display-variations": "Näytä tuotevaihtoehdot",
+          "unnamed-filter": "Suodata",
+          "result-grouping": "Ryhmitä tulokset:",
+          "result-grouping-none": "Ei mitään",
+          "result-grouping-$path": "Kategoria",
+          "inactive": "Epäaktiivinen",
+          "hidden": "Piilotettu",
+          "picture": "Kuva",
+          "name": "Nimi",
+          "sku": "SKU"
+        },
+        "placeholders": {
+          "select-filter": "Valitse suodatin"
+        },
+        "descr": {
+          "title-mapping": "Se on kartoitettu tähän virtuaaliseen paikkaan"
+        }
+      },
+      "category-detail": {
+        "subtitle": "Kategorian tiedot",
+        "parent-disabled-alert": "Ylemmän tason kategoria on piilotettu",
+        "labels": {
+          "is-active": "Näkyvissä",
+          "name": "Nimi",
+          "localizedName": "Lokalisoitu nimi",
+          "code": "Koodi",
+          "tax-type": "Verotyyppi",
+          "priority": "Prioriteetti",
+          "show-more-languages": "Näytä lisää kieliä",
+          "show-less-languages": "Näytä vähemmän kieliä"
+        },
+        "validations": {
+          "code": "Koodi ei saa sisältää seuraavia merkkejä: $+;=%{}[]|@~!^*&()?'<>"
+        },
+        "placeholders": {
+          "name": "Syötä kategorian nimi",
+          "code": "Syötä kategorian koodi",
+          "select": "Valitse...",
+          "priority": "Syötä numero"
+        }
+      },
+      "categories-items-add": {
+        "title": "Uusi kategorian kohde",
+        "subtitle": "Valitse uuden kohteen tyyppi",
+        "menu": {
+          "category": {
+            "title": "Kategoria",
+            "description": "Tämä on säiliö muille kategorioille, tuotteille tai vaihtoehdoille"
+          },
+          "link": {
+            "title": "Linkki",
+            "description": "Linkki fyysiseen kategoriaan tai tuotteeseen"
+          },
+          "physical-product": {
+            "title": "Fyysinen tuote",
+            "description": "Tämä on konkreettinen kohde, joka voidaan ostaa. Se vaatii fyysistä toimitusta ja voidaan käyttää kohdennetuissa kampanjoissa"
+          },
+          "digital-product": {
+            "title": "Digitaalinen tuote",
+            "description": "Tämä on aineeton kohde, joka on ostettavissa. Se voidaan ladata suoraan ostoksen jälkeen, mikä tarkoittaa, että se ei vaadi fyysistä toimitusta. Digitaaliset tuotteet soveltuvat myös kohdennettuihin kampanjoihin"
+          },
+          "bill-of-materials-product": {
+            "title": "Tuote materiaaliluettelolla",
+            "description": "Tämä on fyysinen tuote, joka sisältää materiaaliluettelon (luettelo lisätuotteista). Sitä voidaan käyttää tiettyihin kampanjoihin ja se vaatii fyysistä toimitusta"
+          }
+        },
+        "catalog-item-name": "Katalogi",
+        "catalog-item-description": "Tämä on keskeinen piste kaupan tavaroiden hallintaan ja katalogien luomiseen brändeille, tuotelinjoille tai tietyille toimittajille",
+        "virtual-catalog-item-name": "Virtuaalinen katalogi",
+        "virtual-catalog-item-description": "Virtuaalinen katalogi rakennetaan yhdestä tai useammasta fyysisestä katalogista. Niitä käytetään tuotteiden näyttämiseen yhdistämällä kohteita eri fyysisistä katalogeista"
+      },
+      "catalog-property-list": {
+        "subtitle": "Katalogin ominaisuudet",
+        "labels": {
+          "empty-list": "Ei mitään"
+        }
+      },
+      "filter-detail": {
+        "subtitle": "Muokkaa suodatinta",
+        "new-title": "Uusi suodatin",
+        "new-subtitle": "Luo uusi suodatin",
+        "labels": {
+          "criteria": "Hakulauseke",
+          "name": "Suodattimen nimi",
+          "searchInVariations": "Näytä tuotevaihtoehdot"
+        },
+        "placeholders": {
+          "criteria": "Syötä hakulauseke",
+          "name": "Nimeä tämä suodatin"
+        }
+      },
+      "property-detail": {
+        "title": "Hallinnoi ominaisuutta",
+        "subtitle": "Muokkaa ominaisuuden tietoja",
+        "labels": {
+          "property-name": "Ominaisuuden nimi",
+          "display-name": "Näytettävä nimi",
+          "display-order": "Näytön järjestys",
+          "required": "Pakollinen",
+          "dictionary": "Sanakirja",
+          "multivalue": "Moniarvoinen",
+          "multi-language": "Monikielinen",
+          "applies-to": "Koskee",
+          "value-type": "Arvon tyyppi",
+          "manage-dictionary": "Hallinnoi sanakirjaa",
+          "new-dictionary-property-caution": "Voit hallinnoida sanakirjan kohteita vasta ominaisuuden tallentamisen jälkeen",
+          "attributes": "Attribuutit",
+          "manage-attributes": "Hallinnoi ominaisuuden attribuutteja",
+          "hidden": "Piilotettu",
+          "measure": "Mitta",
+          "property-group": "Ryhmä"
+        },
+        "placeholders": {
+          "display-name": "Syötä näytettävä nimi",
+          "display-order": "Näytön järjestys",
+          "property-group": "Valitse ominaisuusryhmä"
+        }
+      },
+      "property-validationRule": {
+        "title": "Validoinnin säännöt",
+        "subtitle": "Hallinnoi validoinnin sääntöjä",
+        "match-validation-pattern": "Vastaa tiettyä mallia",
+        "character-count": "Rajoita merkkien määrä",
+        "character-limit": {
+          "between": "välillä",
+          "at-least": "vähintään",
+          "not-more-than": "enintään"
+        },
+        "patterns": {
+          "custom": "mukautettu",
+          "email": "sähköposti",
+          "url": "URL",
+          "date": "päivämäärä"
+        },
+        "descriptions": {
+          "require": "Tämä ominaisuus on pakollinen",
+          "character-limit": "Määritä vähimmäis- ja/tai enimmäismerkkimäärä",
+          "pattern": "Tee tästä kentästä tietyn mallin mukainen, kuten sähköpostiosoite, URL tai mukautettu säännöllinen lauseke. Esimerkiksi: ^[a-z]{6,15}$"
+        }
+      },
+      "property-group-list": {
+        "title": "Ominaisuusryhmät",
+        "labels": {
+          "empty-list": "Ei mitään",
+          "name": "Nimi",
+          "display-order": "Näytön järjestys"
+        }
+      },
+      "property-group-details": {
+        "title": "Hallinnoi ominaisuusryhmää",
+        "labels": {
+          "name": "Nimi",
+          "priority": "Prioriteetti",
+          "localized-name": "Lokalisoitu nimi",
+          "localized-description": "Lokalisoitu kuvaus",
+          "display-name": "Näytettävä nimi",
+          "display-order": "Näytön järjestys",
+          "properties": "Ominaisuudet",
+          "manage-properties": "Hallinnoi ominaisuuksia",
+          "show-more-languages": "Näytä lisää kieliä",
+          "show-less-languages": "Näytä vähemmän kieliä"
+        },
+        "placeholders": {
+          "display-name": "Syötä ryhmän nimi",
+          "display-description": "Syötä kuvaus"
+        }
+      },
+      "property-list": {
+        "subtitle": "Ominaisuuslista",
+        "labels": {
+          "empty-list": "Ei mitään",
+          "modified": "(muokattu)",
+          "add-filter": "Suodatin",
+          "reset-filter": "Nollaa suodatin",
+          "excluded": "Ominaisuudet, jotka on suljettu pois perinnöstä",
+          "hide-empty-values": "Piilota tyhjät kentät",
+          "show-empty-values": "Näytä tyhjät kentät"
+        },
+        "placeholders": {
+          "excluded": "Valitse ominaisuudet"
+        },
+        "validations": {
+          "required": "Tämä kenttä on pakollinen",
+          "maxLength": "Tämä kenttä ei saa sisältää enempää kuin {{max}} merkkiä",
+          "minLength": "Tämän kentän tulee sisältää vähintään {{min}} merkkiä",
+          "pattern": "Tämä kenttä ei vastaa valittua mallia"
+        }
+      },
+      "property-selector": {
+        "title": "Valitse muokattavat ominaisuudet",
+        "labels": {
+          "applied-filter": "Käytetty suodatin",
+          "new-filter": "Uusi suodatin"
+        }
+      },
+      "item-property-detail": {
+        "title": "Muokkaa kohteen ominaisuutta",
+        "title-new": "Uusi kohteen ominaisuus",
+        "subtitle": "Syötä ominaisuuden tiedot",
+        "labels": {
+          "property-name": "Ominaisuuden nimi",
+          "duplicate-property-in-product": "Ominaisuus nimeltä {{propertyName}} on jo olemassa kohteessa {{categoryName}}. Nimen tulee olla yksilöllinen",
+          "duplicate-property-in-catalog": "Ominaisuus nimeltä {{propertyName}} on jo olemassa pääkatalogissa. Nimen tulee olla yksilöllinen",
+          "duplicate-property-in-variation1": "Ominaisuus nimeltä {{propertyName}} on jo olemassa tässä vaihtoehdossa",
+          "duplicate-property-in-variation2": ". Nimen tulee olla yksilöllinen",
+          "property-naming-error": "Ominaisuuden nimen tulee alkaa aakkosnumeerisella merkillä ja sisältää vain latinalaisia merkkejä, numeroita ja alaviivoja (_). Jos alaviiva (_) käytetään, varmista, että sen edessä ja jälkeen on aakkosnumeerinen merkki",
+          "value-type": "Arvon tyyppi"
+        }
+      },
+      "catalogs-select": {
+        "title": "Valitse katalogi",
+        "subtitle": "Luodaan linkki virtuaaliseen katalogiisi"
+      },
+      "property-valueType": {
+        "title": "{{name}} arvon tyyppi",
+        "subtitle": "Vaihda arvon tyyppi"
+      },
+      "property-attributes": {
+        "title": "{{name}} attribuutit",
+        "subtitle": "Hallinnoi attribuutteja",
+        "labels": {
+          "new-attribute": "Uusi attribuutti",
+          "current-attributes": "Nykyiset attribuutit",
+          "name": "Nimi",
+          "value": "Arvo"
+        },
+        "validations": {
+          "name-required": "Pakollinen",
+          "value-required": "Pakollinen",
+          "name-duplicate": "Löytyi päällekkäinen nimi"
+        },
+        "placeholders": {
+          "name": "Syötä nimi",
+          "value": "Syötä arvo"
+        }
+      },
+      "property-type": {
+        "title": "{{name}} koskee"
+      },
+      "property-dictionary": {
+        "title": "{{name}} sanakirja",
+        "subtitle": "Hallinnoi sanakirjaa",
+        "color-code": {
+          "label": "Värikoodi",
+          "placeholder": "Syötä värikoodi",
+          "description": "Syötä värikoodi CSS-muodossa: #RRGGBB tai #RGB tai värin nimi"
+        },
+        "labels": {
+          "new-value": "Uusi arvo",
+          "current-values": "Nykyiset arvot",
+          "value": "Arvo",
+          "alias": "Alias",
+          "sort-order": "Lajittelujärjestys",
+          "language-edit": "Muokkaa arvoja",
+          "language-add": "Uusia arvoja",
+          "dictionary-edit": "Muokkaa sanakirjan arvoa",
+          "priority": "Prioriteetti",
+          "priority-description": "Pienin arvo käytetään ensin"
+        },
+        "validations": {
+          "required": "Pakollinen",
+          "duplicate": "Löytyi päällekkäinen nimi"
+        },
+        "placeholders": {
+          "value": "Syötä arvo",
+          "alias": "Syötä alias",
+          "priority": "Syötä prioriteetti"
+        }
+      },
+      "item-detail": {
+        "subtitle": "{{ productTypeName }} kohteen tiedot",
+        "subtitle-variation": "Vaihtoehdon tiedot",
+        "hide-description": "Piilota",
+        "labels": {
+          "id": "ID",
+          "outer-id": "Ulkoinen ID",
+          "sku": "SKU",
+          "priority": "Prioriteetti",
+          "name": "Tuotteen nimi",
+          "localizedName": "Lokalisoitu tuotteen nimi",
+          "can-be-purchased": "Voidaan ostaa",
+          "store-visible": "Näkyvissä",
+          "track-inventory": "Seuraa varastoa",
+          "has-user-agreement": "Käyttäjäsopimus",
+          "min-quantity": "Vähimmäismäärä",
+          "max-quantity": "Enimmäismäärä",
+          "pack-size": "Pakkauskoko",
+          "vendor": "Toimittaja",
+          "vendor-denied": "Pääsy evätty",
+          "tax-type": "Verotyyppi",
+          "package-type": "Pakkaustyyppi",
+          "weight-unit": "Massayksiköt",
+          "weight": "Paino",
+          "dimensions": "Mitat",
+          "use-package-type": "Sama kuin pakkaus",
+          "measure-unit": "Mittayksikkö",
+          "max-downloads": "Enimmäislataukset",
+          "expiration-date": "Latauksen viimeinen käyttöpäivä",
+          "download-type": "Lataustyyppi",
+          "gtin": "GTIN",
+          "mpn": "MPN",
+          "start-date": "Ensimmäinen listaus",
+          "end-date": "Listauksen päättyminen",
+          "is-configurable": "Muokattavissa",
+          "show-more-languages": "Näytä lisää kieliä",
+          "show-less-languages": "Näytä vähemmän kieliä"
+        },
+        "validations": {
+          "sku": "SKU ei saa sisältää seuraavia merkkejä: $+;=%{}[]|@~!^*&()?'<>"
+        },
+        "placeholders": {
+          "sku": "Syötä kohteen SKU",
+          "priority": "Syötä numero",
+          "name": "Syötä kohteen nimi",
+          "vendor": "Valitse...",
+          "tax-type": "Valitse...",
+          "weight-unit": "Valitse...",
+          "weight": "Syötä paino",
+          "expiration-date": "Valitse päivämäärä",
+          "download-type": "Valitse...",
+          "gtin": "Syötä GTIN",
+          "mpn": "Syötä MPN",
+          "start-date": "Määritä päivämäärä",
+          "end-date": "Määritä päivämäärä"
+        },
+        "descr": {
+          "start-date": "Jos et määritä aloituspäivää, tuote aktivoituu välittömästi tallennuksen jälkeen",
+          "end-date": "Jos et määritä päättymispäivää, tuote pysyy aktiivisena, kunnes poistat sen käytöstä"
+        }
+      },
+      "catalog-items-select": {
+        "title": "Valitse kategoriat",
+        "title-association": "Valitse liitettävät kohteet",
+        "subtitle-association": "Lisätään liitoksia tuotteeseen",
+        "bread-crumb-top": "Kaikki katalogit",
+        "labels": {
+          "picture": "Kuva",
+          "name": "Nimi",
+          "sku": "SKU",
+          "virtual": "Virtuaalinen"
+        }
+      },
+      "item-variation-list": {
+        "subtitle": "Kohteen vaihtoehdot",
+        "labels": {
+          "no-items": "Ei vaihtoehtoja vielä",
+          "picture": "Kuva",
+          "name": "Nimi",
+          "sku": "SKU",
+          "manufacturer-part-number": "Valmistajan osanumero"
+        }
+      },
+      "editorialReviews-list": {
+        "subtitle": "Kohteen kuvaukset",
+        "labels": {
+          "no-reviews": "Ei kohteen kuvauksia vielä"
+        }
+      },
+      "editorialReview-detail": {
+        "title": "Kuvaus",
+        "subtitle": "Kohteen kuvaus",
+        "labels": {
+          "language": "Kieli",
+          "type": "Tyyppi",
+          "content": "Kuvauksen sisältö",
+          "select-language": "Valitse kieli"
+        },
+        "placeholders": {
+          "type": "Valitse tyyppi",
+          "language": "Valitse kieli"
+        }
+      },
+      "categoryDescriptions-list": {
+        "subtitle": "Kategorian kuvaukset",
+        "labels": {
+          "no-descriptions": "Ei kuvauksia vielä"
+        }
+      },
+      "categoryDescription-detail": {
+        "title": "Kuvaus",
+        "subtitle": "Kategorian kuvaus",
+        "labels": {
+          "language": "Kieli",
+          "type": "Tyyppi",
+          "content": "Kuvauksen sisältö",
+          "select-language": "Valitse kieli"
+        },
+        "placeholders": {
+          "type": "Valitse tyyppi",
+          "language": "Valitse kieli"
+        }
+      },
+      "images": {
+        "subtitle": "Hallinnoi kuvia",
+        "labels": {
+          "no-images": "Ei kuvia",
+          "copy-url-prompt": "Kopioi leikepöydälle: Ctrl+C, Enter",
+          "select-images": "Valitse kuvia",
+          "select-image-category": "Valitse kuvakategoria",
+          "name": "Nimi",
+          "image-category": "Kuvakategoria",
+          "drag-drop-comment": "Vedä ja pudota kuvasi tähän",
+          "progress": "Edistyminen",
+          "make-default-image": "Vedä ja pudota kuva kuvan alueen vasempaan yläkulmaan asettaaksesi sen oletuskuvaksi",
+          "language": "Kieli",
+          "preview": "Esikatselu",
+          "external-link": "Ulkoinen linkki",
+          "altText": "Kuvan vaihtoehtoinen teksti",
+          "description": "Metakuvaus"
+        },
+        "placeholders": {
+          "image-url": "Liitä kuvan URL tähän",
+          "name": "Syötä nimi",
+          "image-category": "Valitse",
+          "language": "Valitse kieli",
+          "altText": "Syötä teksti",
+          "description": "Syötä kuvaus"
+        },
+        "descr": {
+          "external-link": "Käytä ulkoista kuvan URL-osoitetta sen lataamisen sijaan resursseihin",
+          "external-link-warning": "Huomio: Turvallisuussyistä vain https-linkit ovat sallittuja"
+        }
+      },
+      "video-list": {
+        "title": "Videot",
+        "subtitle": "Kaikki videot",
+        "labels": {
+          "preview": "Esikatselu",
+          "name": "Nimi",
+          "language": "Kieli",
+          "priority": "Prioriteetti"
+        }
+      },
+      "video-add": {
+        "title": "YouTube-video",
+        "subtitle": "Uusi video",
+        "create": "Luo",
+        "labels": {
+          "content-url": "Sisällön URL",
+          "no-apikey": "Et ole antanut Google API-avainta alustan konfiguraatiotiedostossa. Videon tiedot ovat puutteelliset"
+        },
+        "placeholders": {
+          "content-url": "Syötä videon URL"
+        }
+      },
+      "video-detail": {
+        "title": "YouTube-video",
+        "subtitle": "Muokkaa videon tietoja",
+        "labels": {
+          "name": "Videon nimi",
+          "upload-date": "Latauspäivämäärä",
+          "description": "Kuvaus",
+          "duration": "Kesto",
+          "language": "Kieli",
+          "video": "Video",
+          "content-url": "Sisällön URL",
+          "embed-url": "Upotettu URL",
+          "video-preview": "Videon esikatselu",
+          "thumbnail": "Pikkukuva",
+          "thumbnail-url": "Pikkukuvan URL",
+          "thumbnail-preview": "Pikkukuvan esikatselu"
+        },
+        "placeholders": {
+          "name": "Syötä nimi",
+          "upload-date": "Määritä päivämäärä",
+          "description": "Syötä kuvaus",
+          "language": "Valitse kieli",
+          "content-url": "Syötä videon URL"
+        }
+      },
+      "item-asset-detail": {
+        "labels": {
+          "category": "Kategoria",
+          "language": "Kieli",
+          "description": "Metakuvaus"
+        },
+        "placeholders": {
+          "category": "Valitse...",
+          "language": "Valitse kieli",
+          "description": "Syötä kuvaus"
+        }
+      },
+      "item-asset-list": {
+        "subtitle": "Kohteen resurssit",
+        "labels": {
+          "copy-url-prompt": "Kopioi leikepöydälle: Ctrl+C, Enter",
+          "select-files": "Valitse tiedostoja",
+          "drag-drop-comment": "Vedä ja pudota tiedostosi tähän",
+          "name": "Nimi",
+          "progress": "Edistyminen",
+          "type": "Tyyppi",
+          "actions": "Toiminnot",
+          "remove": "Poista",
+          "copy-link": "Kopioi linkki"
+        }
+      },
+      "item-associations-list": {
+        "subtitle": "Liitokset",
+        "labels": {
+          "sorting-prompt": "Aseta, miten liitetyt kohteet näkyvät verkkokaupassa. Vedä ja pudota tuotteita muuttaaksesi niiden järjestystä",
+          "picture": "Kuva",
+          "name": "Nimi",
+          "priority": "Prioriteetti",
+          "group": "Ryhmä",
+          "quantity": "Määrä",
+          "tags": "Tunnisteet"
+        },
+        "descr": {
+          "no-associations": "Ei liitoksia vielä.",
+          "quantity": "Liitoksen määrä"
+        }
+      },
+      "item-association-detail": {
+        "subtitle": "Liitoksen tiedot",
+        "labels": {
+          "group": "Ryhmä",
+          "quantity": "Määrä",
+          "tags": "Tunnisteet"
+        },
+        "placeholders": {
+          "group": "Valitse...",
+          "quantity": "Määritä määrä",
+          "tags": "Määritä tunnisteet"
+        }
+      },
+      "advanced-search-results": {
+        "title": "Hakutulokset"
+      },
+      "item-dimensions": {
+        "title": "Kohteen mittaukset",
+        "subtitle": "Muuta tuotteen mittausominaisuuksia"
+      },
+      "asset-select": {
+        "title": "Linkitä kuvia"
+      },
+      "images-select": {
+        "title": "Linkitä resursseja"
+      },
+      "asset-upload": {
+        "title": "Lisää resursseja"
+      },
+      "image-upload": {
+        "title": "Lataa kuvia"
+      },
+      "image-add-external-link": {
+        "title": "Lisää ulkoinen linkki"
+      },
+      "aggregation-properties-details": {
+        "name": {
+          "label": "Ominaisuuden nimi"
+        },
+        "type": {
+          "label": "Aggregaation tyyppi"
+        },
+        "measure": {
+          "label": "Mitta"
+        },
+        "unit": {
+          "label": "Mittayksikkö"
+        },
+        "size": {
+          "label": "Aggregaation koko",
+          "placeholder": "Syötä aggregaation koko",
+          "description": "Enimmäismäärä aggregaation arvoja hakutuloksissa. 0 = rajoittamaton"
+        },
+        "values-Attribute": {
+          "label": "Sallitut arvot",
+          "placeholder": "Syötä sallitut arvot",
+          "description": "Syötä hakutuloksissa sallitut aggregaation arvot. Jätä tyhjäksi salliaksesi kaikki arvot"
+        },
+        "values-Range": {
+          "label": "Välien rajat",
+          "placeholder": "Lisää numero",
+          "description": "Rajat lajitellaan automaattisesti ennen tallennusta. Välejä muodostetaan seuraavasti: Alle [raja 1], [raja 1] - [raja 2], ... , Yli [raja N]"
+        },
+        "values-PriceRange": {
+          "label": "Hintavälien rajat",
+          "placeholder": "Lisää numero",
+          "description": "Rajat lajitellaan automaattisesti ennen tallennusta. Hintavälit muodostetaan seuraavasti: Alle [raja 1], [raja 1] - [raja 2], ... , Yli [raja N]"
+        }
+      },
+      "importers-list": {
+        "title": "Tuontityypit",
+        "subtitle": "Valitse jokin alla olevista tuontityypeistä"
+      },
+      "exporter-list": {
+        "title": "Vientityypit",
+        "subtitle": "Valitse jokin alla olevista vientityypeistä"
+      },
+      "exporter": {
+        "productTitle": "Vie katalogituotteet",
+        "productSubtitle": "Vie katalogituotteet JSON- tai CSV-muodossa"
+      },
+      "bill-of-materials-list": {
+        "title": "Materiaaliluettelon (BOM) tuotteet",
+        "subtitle": "Lisää tai poista BOM-tuotteita",
+        "no-data": "Tuotteita ei ole vielä",
+        "labels": {
+          "picture": "Kuva",
+          "name": "Nimi",
+          "category": "Kategoria",
+          "quantity": "Määrä"
+        }
+      },
+      "property-type-list": {
+        "title": "Uusi ominaisuus",
+        "subtitle": "Valitse ominaisuuden tyyppi",
+        "lables": {
+          "Product": {
+            "title": "Tuotteen ominaisuus",
+            "description": "Näytetään vain liittyville tuotteille"
+          },
+          "Category": {
+            "title": "Kategorian ominaisuus",
+            "description": "Näytetään vain liittyvälle katalogille"
+          },
+          "Catalog": {
+            "title": "Katalogin ominaisuus",
+            "description": "Näytetään vain tälle katalogille"
+          },
+          "Variation": {
+            "title": "Vaihtoehdon ominaisuus",
+            "description": "Näytetään vain liittyville vaihtoehdoille"
+          }
+        }
+      },
+      "links-list": {
+        "title": "Linkit",
+        "labels": {
+          "no-data": "Linkkejä ei ole vielä",
+          "add-links": "Lisää uusi linkki",
+          "marked": "Merkitty"
+        }
+      },
+      "measures-list": {
+        "title": "Mittayksiköt",
+        "subtitle": "Luettelo käytettävissä olevista mittayksiköistä",
+        "labels": {
+          "name": "Nimi",
+          "create-default": "Luo oletus"
+        }
+      },
+      "create-measures": {
+        "title": "Luo oletusmitat"
+      },
+      "measure-details": {
+        "title": "{{name}} mitta",
+        "title-new": "Lisää uusi mitta",
+        "subtitle": "Mitan tiedot",
+        "labels": {
+          "name": "Nimi",
+          "code": "Koodi",
+          "description": "Kuvaus"
+        },
+        "placeholders": {
+          "name": "Syötä nimi",
+          "code": "Syötä koodi",
+          "description": "Syötä kuvaus"
+        }
+      },
+      "measure-units-list": {
+        "title": "{{name}} mittayksiköt",
+        "subtitle": "Luettelo mittayksiköistä",
+        "labels": {
+          "name": "Nimi",
+          "code": "Koodi",
+          "is-default": "Oletus"
+        }
+      },
+      "measure-unit-details": {
+        "title": "{{name}} mittayksikkö",
+        "title-new": "Uusi mittayksikkö",
+        "subtitle": "Mittayksikön tiedot",
+        "labels": {
+          "name": "Nimi",
+          "localized-name": "Lokalisoitu nimi",
+          "code": "Koodi",
+          "conversion-factor": "Muunnoskerroin",
+          "symbol": "Symboli",
+          "localized-symbol": "Lokalisoitu symboli",
+          "code-naming-error": "Koodin tulee alkaa aakkosnumeerisella merkillä ja sisältää vain latinalaisia merkkejä ja numeroita."
+        },
+        "placeholders": {
+          "name": "Syötä nimi",
+          "localized-name": "Syötä lokalisoitu nimi",
+          "code": "Syötä koodi",
+          "conversion-factor": "Syötä muunnoskerroin",
+          "symbol": "Syötä symboli",
+          "localized-symbol": "Syötä lokalisoitu symboli"
+        }
+      },
+      "configuration-details": {
+        "title": "Tuotteen konfiguraatio",
+        "hide-description": "Piilota",
+        "labels": {
+          "enable": "Ota konfiguraatio käyttöön",
+          "name": "Osion nimi",
+          "quantity": "Vaihtoehdot",
+          "sections": "Osiot"
+        },
+        "descr": {
+          "enable": "Aktivointia varten konfiguraation tulee sisältää vähintään yksi osio, ja jokaisen 'Tuote'-tyypin osion tulee sisältää vähintään yksi vaihtoehto",
+          "no-sections": "Tässä konfiguraatiossa ei ole vielä osioita",
+          "sorting-prompt": "Aseta osioiden järjestys verkkokaupassa. Vedä ja pudota osioita muuttaaksesi niiden järjestystä"
+        },
+        "commands": {
+          "add": "Lisää osio"
+        }
+      },
+      "section-details": {
+        "title": "Uusi osio",
+        "labels": {
+          "name": "Osion nimi",
+          "description": "Kuvaus",
+          "required": "Osio on pakollinen",
+          "picture": "Kuva",
+          "quantity": "Määrä",
+          "product-name": "Tuotteen nimi",
+          "options": "Vaihtoehdot",
+          "type": "Osion tyyppi",
+          "allow-custom-text": "Salli mukautettu teksti",
+          "allow-predefined-options": "Salli ennalta määritetyt vaihtoehdot",
+          "text": "Teksti"
+        },
+        "descr": {
+          "no-options": "Tässä osiossa ei ole vielä vaihtoehtoja"
+        },
+        "commands": {
+          "add": "Lisää vaihtoehtoja"
+        },
+        "placeholders": {
+          "type": "Valitse..."
+        }
+      },
+      "option-details": {
+        "title": "Valitse kohteet vaihtoehdoiksi",
+        "labels": {
+          "quantity": "Määrä",
+          "text": "Vaihtoehdon teksti"
+        },
+        "commands": {
+          "add": "Lisää vaihtoehto"
+        },
+        "placeholders": {
+          "quantity": "Määritä määrä",
+          "text": "Syötä teksti"
+        }
+      },
+      "brand-setting-details": {
+        "title": "Brändiasetukset",
+        "labels": {
+          "enabled": "Ota brändit käyttöön",
+          "catalog": "Brändikatalogi",
+          "property": "Brändin ominaisuus"
+        },
+        "placeholders": {
+          "catalog": "Valitse brändikatalogi",
+          "property": "Valitse brändin ominaisuus"
+        }
+      },
+      "automatic-links": {
+        "title": "Automaattiset linkit",
+        "preview-title": "Automaattisten linkkien esikatselu",
+        "fields": {
+          "catalog": {
+            "label": "Katalogi",
+            "placeholder": "Valitse katalogi"
+          },
+          "query": {
+            "label": "Hakulauseke",
+            "placeholder": "Syötä tuotteen hakulauseke"
+          }
+        }
+      }
+    },
+    "exporter-list": {
+      "title": "Vientityypit",
+      "subtitle": "Valitse jokin alla olevista vientityypeistä"
+    },
+    "exporter": {
+      "productTitle": "Vie katalogituotteet",
+      "productSubtitle": "Vie katalogituotteet JSON- tai CSV-muodossa"
+    },
+    "widgets": {
+      "catalogLanguages": {
+        "blade-subtitle": "Hallinnoi kieliä",
+        "title": "Kielet",
+        "default-language": "Oletuskieli"
+      },
+      "catalogPropertyGroup": {
+        "blade-subtitle": "Ominaisuusryhmät",
+        "title": "Ominaisuusryhmät"
+      },
+      "catalogProperty": {
+        "blade-subtitle": "Katalogin ominaisuudet",
+        "title": "Ominaisuudet"
+      },
+      "categoryProperty": {
+        "blade-subtitle": "Kategorian ominaisuudet",
+        "title": "Ominaisuudet"
+      },
+      "editorialReview": {
+        "blade-subtitle": "Kohteen kuvaukset",
+        "title": "Kuvaukset"
+      },
+      "categoryDescription": {
+        "blade-subtitle": "Kategorian kuvaukset",
+        "title": "Kuvaus"
+      },
+      "itemAsset": {
+        "blade-subtitle": "Kohteen resurssit",
+        "title": "Resurssit"
+      },
+      "itemAssociations": {
+        "blade-subtitle": "Liitokset",
+        "title": "Liitokset"
+      },
+      "itemImage": {
+        "blade-subtitle": "Hallinnoi kuvia",
+        "no-images": "Ei kuvia"
+      },
+      "itemProperty": {
+        "blade-subtitle": "Kohteen ominaisuudet",
+        "title": "Ominaisuudet"
+      },
+      "itemVariation": {
+        "blade-subtitle": "Kohteen vaihtoehdot",
+        "title": "Vaihtoehdot"
+      },
+      "itemDimensions": {
+        "title": "Paino ja koko",
+        "weight": "Paino",
+        "length": "Pituus",
+        "width": "Leveys",
+        "height": "Korkeus"
+      },
+      "billOfMaterials": {
+        "title": "Materiaaliluettelo"
+      },
+      "videos": {
+        "blade-subtitle": "Videot",
+        "title": "Videot"
+      },
+      "links": {
+        "title": "Linkit"
+      },
+      "measure-units": {
+        "title": "Yksiköt"
+      },
+      "configuration": {
+        "title": "Konfiguraatio"
+      },
+      "brand-settings": {
+        "title": "Brändiasetukset"
+      },
+      "automatic-links": {
+        "title": "Automaattiset linkit"
+      }
+    },
+    "dialogs": {
+      "catalog-save": {
+        "title": "Tallenna muutokset",
+        "message": "Tämä katalogi on muokattu. Haluatko tallentaa muutokset?"
+      },
+      "catalog-delete": {
+        "title": "Vahvista poisto",
+        "warning": "VAROITUS: Tämä muutos on pysyvä eikä sitä voi kumota. Tämän muutoksen soveltaminen voi johtaa tietojen menetykseen",
+        "message": "Oletko varma, että haluat poistaa tämän katalogin?",
+        "instruction": "Kirjoita 'yes' poistaaksesi:"
+      },
+      "catalog-items-delete": {
+        "title": "Vahvista poisto",
+        "warning": "VAROITUS: Tämä muutos on pysyvä eikä sitä voi kumota. Tämän muutoksen soveltaminen voi johtaa tietojen menetykseen",
+        "message": "Seuraavat tiedot poistetaan:",
+        "instruction": "Kirjoita 'yes' poistaaksesi:",
+        "item": "{{count}} Kohde(tta)",
+        "category": "{{count}} Kategoria(a) ja niiden sisältö",
+        "linked-item": "{{count}} Linkitetty(ä) kohde(tta)",
+        "linked-category": "{{count}} Linkitetty(ä) kategoria(a)"
+      },
+      "property-delete": {
+        "message": "Oletko varma, että haluat poistaa ominaisuuden {{name}}?",
+        "warning": "VAROITUS: Tämä muutos on pysyvä eikä sitä voi kumota. Tämän muutoksen soveltaminen voi johtaa tietojen menetykseen",
+        "msg1": "Valitse sopiva poistovaihtoehto. Vaihtoehdot:",
+        "msg2": "Poista vain ominaisuuden metatiedot ja säilytä arvot liittyvissä objekteissa",
+        "msg3": "Poista kokonaan kaikkien liittyvien arvojen kanssa",
+        "shallow": "Poista metatiedot",
+        "full": "Poista kokonaan"
+      },
+      "property-dictionary-item-delete": {
+        "message": "Oletko varma, että haluat poistaa valitut sanakirjan kohteet?",
+        "warning": "VAROITUS: Tämä muutos on pysyvä eikä sitä voi kumota. Tämän muutoksen soveltaminen voi johtaa tietojen menetykseen"
+      },
+      "virtual-catalog-save": {
+        "title": "Tallenna muutokset",
+        "message": "Tämä virtuaalinen katalogi on muokattu. Haluatko tallentaa muutokset?"
+      },
+      "category-save": {
+        "title": "Tallenna muutokset",
+        "message": "Tämä kategoria on muokattu. Haluatko tallentaa muutokset?"
+      },
+      "item-save": {
+        "title": "Tallenna muutokset",
+        "message": "Tämä kohde on muokattu. Haluatko tallentaa muutokset?"
+      },
+      "variation-delete": {
+        "title": "Vahvista poisto",
+        "message": "Oletko varma, että haluat poistaa valitut vaihtoehdot?"
+      },
+      "property-save": {
+        "title": "Tallenna muutokset",
+        "message": "Tämä ominaisuus on muokattu. Haluatko tallentaa muutokset?"
+      },
+      "property-group-save": {
+        "title": "Tallenna muutokset",
+        "message": "Tämä ominaisuusryhmä on muokattu. Haluatko tallentaa muutokset?"
+      },
+      "item-property-delete": {
+        "message": "Oletko varma, että haluat poistaa ominaisuuden {{name}}?"
+      },
+      "dictionary-values-delete": {
+        "title": "Vahvista poisto",
+        "message": "Oletko varma, että haluat poistaa valitut sanakirjan arvot?"
+      },
+      "review-save": {
+        "title": "Tallenna muutokset",
+        "message": "Tämä kuvaus on muokattu. Haluatko tallentaa muutokset?"
+      },
+      "review-delete": {
+        "title": "Vahvista poisto",
+        "message": "Oletko varma, että haluat poistaa tämän kuvauksen?"
+      },
+      "association-delete": {
+        "title": "Vahvista poisto",
+        "message": "Oletko varma, että haluat poistaa valitut liitokset?"
+      },
+      "attribut-delete": {
+        "title": "Vahvista poisto",
+        "message": "Oletko varma, että haluat poistaa valitut attribuutit?"
+      },
+      "image-save": {
+        "title": "Vahvista poisto",
+        "message": "Nämä kuvat on muokattu. Haluatko tallentaa muutokset?"
+      },
+      "video-save": {
+        "title": "Tallenna muutokset",
+        "message": "Tämä video on muokattu. Haluatko tallentaa muutokset?"
+      },
+      "video-delete": {
+        "title": "Vahvista poisto",
+        "message": "Oletko varma, että haluat poistaa tämän videon?"
+      },
+      "video-list-delete": {
+        "title": "Vahvista poisto",
+        "message": "Oletko varma, että haluat poistaa valitut videot?"
+      },
+      "asset-save": {
+        "title": "Tallenna muutokset",
+        "message": "Nämä resurssit on muokattu. Haluatko tallentaa muutokset?"
+      },
+      "language-save": {
+        "title": "Tallenna muutokset",
+        "message": "Kielet on muokattu. Haluatko tallentaa muutokset?"
+      },
+      "bill-or-materials-associations-delete": {
+        "title": "Vahvista poisto",
+        "message": "Oletko varma, että haluat poistaa valitut tuotteet?"
+      },
+      "links-delete": {
+        "title": "Vahvista poisto",
+        "message": "Oletko varma, että haluat poistaa valitut linkit?"
+      },
+      "measures-delete": {
+        "title": "Vahvista poisto",
+        "message": "Oletko varma, että haluat poistaa valitut mitat?"
+      },
+      "measure-unit-save": {
+        "title": "Tallenna muutokset",
+        "message": "Tämä mittayksikkö on muokattu. Haluatko tallentaa muutokset?"
+      },
+      "measure-unit-delete": {
+        "title": "Vahvista poisto",
+        "message": "Oletko varma, että haluat poistaa valitun mittayksikön?"
+      },
+      "measure-units-delete": {
+        "title": "Vahvista poisto",
+        "message": "Oletko varma, että haluat poistaa valitun mittayksikön?"
+      },
+      "measure-save": {
+        "title": "Tallenna muutokset",
+        "message": "Tämä mitta on muokattu. Haluatko tallentaa muutokset?"
+      },
+      "configuration-save": {
+        "title": "Tallenna muutokset",
+        "message": "Tämä konfiguraatio on muokattu. Haluatko tallentaa muutokset?"
+      },
+      "property-group-delete": {
+        "title": "Vahvista poisto",
+        "message": "Oletko varma, että haluat poistaa valitut ominaisuusryhmät?"
+      },
+      "automatic-links-save": {
+        "title": "Tallenna muutokset",
+        "message": "Automaattisten linkkien asetuksia on muokattu. Haluatko tallentaa muutokset?"
+      },
+      "automatic-links-create": {
+        "title": "Luo automaattisia linkkejä",
+        "message": "{{number}} automaattista linkkiä luodaan taustatyönä. Oletko varma, että haluat luoda ne?"
+      },
+      "automatic-links-delete": {
+        "title": "Poista automaattisia linkkejä",
+        "message": "{{number}} olemassa olevaa automaattista linkkiä poistetaan taustatyönä. Oletko varma, että haluat poistaa ne?"
+      }
+    },
+    "wizards": {
+      "category": {
+        "title": "Uusi kategoria",
+        "subtitle": "Anna kategorian tiedot",
+        "labels": {
+          "name": "Nimi",
+          "code": "Koodi"
+        },
+        "validations": {
+          "code": "Koodi ei saa sisältää seuraavia merkkejä: $+;=%{}[]|@~!^*&()?'<>"
+        },
+        "placeholders": {
+          "name": "Syötä kategorian nimi",
+          "code": "Syötä kategorian koodi"
+        }
+      },
+      "new-product": {
+        "title": "Uusi tuote",
+        "subtitle": "Anna kaikki tuotteen tiedot",
+        "labels": {
+          "sku": "SKU",
+          "name": "Nimi",
+          "fill-properties": "Anna ominaisuudet",
+          "fill-properties-summary": "{{ count }} / {{total}} ominaisuutta annettu",
+          "upload-images": "Lataa kuvia",
+          "upload-images-summary": "{{ count }} kuva(a) ladattu",
+          "add-review": "Lisää kuvaus",
+          "add-review-summary": "{{ count }} kuvaus(ta) lisätty",
+          "seo-information": "Anna SEO-tiedot",
+          "seo-information-summary-defined": "SEO-tiedot annettu",
+          "seo-information-summary-undefined": "SEO-tietoja ei annettu"
+        },
+        "validations": {
+          "sku": "SKU ei saa sisältää seuraavia merkkejä: $+;=%{}[]|@~!^*&()?'<>",
+          "sku-required": "Pakollinen",
+          "name-required": "Pakollinen"
+        },
+        "placeholders": {
+          "name": "Syötä kohteen nimi",
+          "sku": "Syötä kohteen SKU"
+        }
+      },
+      "new-variation": {
+        "title": "Uusi vaihtoehto",
+        "subtitle": "Anna vaihtoehdon tiedot",
+        "labels": {
+          "sku": "SKU",
+          "name": "Nimi",
+          "fill-properties": "Anna ominaisuudet",
+          "fill-properties-summary": "{{ count }} / {{total}} ominaisuutta annettu",
+          "upload-images": "Lataa kuvia",
+          "upload-images-summary": "{{ count }} kuva(a) ladattu"
+        },
+        "validations": {
+          "sku": "SKU ei saa sisältää seuraavia merkkejä: $+;=%{}[]|@~!^*&()?'<>",
+          "sku-required": "Pakollinen",
+          "name-required": "Pakollinen"
+        },
+        "placeholders": {
+          "name": "Syötä kohteen nimi",
+          "sku": "Syötä kohteen SKU"
+        }
+      },
+      "item-images": {
+        "subtitle": "Kohteen kuvat"
+      },
+      "association": {
+        "title": "Uusi liitos",
+        "labels": {
+          "group-name": "Ryhmän nimi",
+          "tags": "Tunnisteet",
+          "tags-placeholder": "Syötä tunnisteet",
+          "quantity": "Määrä",
+          "items": "Kohteet",
+          "products-selected": "Tuotteita valittu",
+          "categories-selected": "Kategorioita valittu"
+        },
+        "placeholders": {
+          "group-name": "Valitse...",
+          "quantity": "Syötä määrä"
+        }
+      }
+    },
+    "commands": {
+      "copy-id": "Kopioi ID",
+      "copy-sku": "Kopioi SKU",
+      "clear-all": "Tyhjennä kaikki",
+      "add-property": "Lisää ominaisuus",
+      "add-product-property": "Lisää mukautettu ominaisuus",
+      "add-variation-property": "Lisää mukautettu ominaisuus",
+      "gallery": "Galleria",
+      "map": "Kartta",
+      "open-item": "Avaa kohde",
+      "default": "Aseta oletukseksi",
+      "link": "Linkki",
+      "external-link": "Ulkoinen linkki"
+    },
+    "permissions": {
+      "catalog-scope": {
+        "title": "Vain valituille katalogeille",
+        "blade": {
+          "subtitle": "Valitse katalogit"
+        }
+      },
+      "category-scope": {
+        "title": "Vain valituille kategorioille"
+      }
+    },
+    "selectors": {
+      "titles": {
+        "catalogs": "Katalogit",
+        "categories": "Kategoriat",
+        "search-in-variations": "Hae tuotevaihtoehdoista",
+        "search-in-children": "Hae alakategorioista"
+      },
+      "labels": {
+        "select": "Valitse",
+        "selected": "Valittu: "
+      },
+      "placeholders": {
+        "catalog-lists": "Valitse katalogi"
+      },
+      "blades": {
+        "titles": {
+          "select-categories": "Valitse kategoriat"
+        }
+      }
+    },
+    "link-types": {
+      "manual": "Linkki",
+      "automatic": "Automaattinen linkki"
+    }
+  },
+  "permissions": {
+    "catalog:access": "Avaa katalogivalikko",
+    "catalog:create": "Luo katalogiin liittyviä tietoja",
+    "catalog:read": "Näytä katalogiin liittyviä tietoja",
+    "catalog:update": "Päivitä katalogiin liittyviä tietoja",
+    "catalog:delete": "Poista katalogiin liittyviä tietoja",
+    "catalog:export": "Vie katalogitietoja",
+    "catalog:import": "Tuo katalogitietoja",
+    "measures:access": "Avaa mittayksikkövalikko",
+    "measures:create": "Luo mittayksikköön liittyviä tietoja",
+    "measures:read": "Näytä mittayksikköön liittyviä tietoja",
+    "measures:update": "Päivitä mittayksikköön liittyviä tietoja",
+    "measures:delete": "Poista mittayksikköön liittyviä tietoja",
+    "catalog:metadata-property:edit": "Muokkaa ominaisuuksien metatietoja",
+    "catalog:custom-property:edit": "Muokkaa mukautettuja tuoteominaisuuksia",
+    "catalog:dictionary-property:edit": "Muokkaa ominaisuuden sanakirja-arvoja"
+  },
+  "settings": {
+    "Catalog": {
+      "ImageCategories": {
+        "description": "Sanakirja tämän kohteen mahdollisista kuvakategorioista",
+        "title": "Kuvakategoriat"
+      },
+      "AssociationGroups": {
+        "description": "Katalogituotteiden liitosryhmät",
+        "title": "Liitosryhmien nimet"
+      },
+      "EditorialReviewTypes": {
+        "description": "Sanakirja tämän kohteen mahdollisista kuvaustyypeistä",
+        "title": "Kohteen kuvaustyypit"
+      },
+      "UseSeoDeduplication": {
+        "description": "Ota käyttöön tai poista käytöstä SEO-kaksoiskappaleiden havaitseminen",
+        "title": "Havaitse SEO-kaksoiskappaleet"
+      },
+      "CategoryDescriptionTypes": {
+        "description": "Sanakirja tämän kategorian mahdollisista kuvaustyypeistä",
+        "title": "Kategorian kuvaustyypit"
+      },
+      "AllowToCopyID": {
+        "title": "Salli kohteen ID:n kopioiminen",
+        "description": "Ota käyttöön nähdäksesi Kopioi ID -kontekstivalikkokohdan"
+      },
+      "BrandStoreSetting": {
+        "BrandsEnabled": {
+          "title": "Ota brändit käyttöön",
+          "description": "Brändiominaisuuden lippu"
+        },
+        "BrandCatalogId": {
+          "title": "Brändikatalogin ID",
+          "description": "Katalogin ID brändeille"
+        },
+        "BrandPropertyName": {
+          "title": "Brändin ominaisuuden nimi",
+          "description": "Ominaisuuden nimi brändille"
+        }
+      },
+      "Search": {
+        "UseCatalogIndexedSearchInManager": {
+          "description": "Ota käyttöön tai poista käytöstä indeksoitu haku katalogimoduulille edistyneellä syntaksilla",
+          "title": "Käytä indeksoitua hakua katalogille"
+        },
+        "UseFullObjectIndexStoring": {
+          "description": "Tallenna serialisoidut katalogikohteet indeksiin ja palauta ne hakutuloksissa",
+          "title": "Tallenna serialisoidut katalogikohteet indeksiin"
+        },
+        "DefaultAggregationSize": {
+          "description": "Määritä koko aggregaatioille, kun sitä ei ole määritelty kaupan aggregaatio-ominaisuuksissa. Aseta 0 rajoittamattomalle koolle",
+          "title": "Oletusarvo aggregaation koolle"
+        },
+        "EventBasedIndexation": {
+          "Enable": {
+            "title": "Ota käyttöön tapahtumapohjainen indeksointi katalogikohteille",
+            "description": "Kaikki muutokset katalogikohteeseen laukaisevat taustatehtävän, joka soveltaa nämä muutokset hakuindeksiin"
+          }
+        }
+      },
+      "ProductConfigurationMaximumFiles": {
+        "title": "Enimmäistiedostomäärä konfiguraatio-osiossa",
+        "description": "Rajoita enimmäistiedostomäärää konfiguraatio-osiossa"
+      }
+    },
+    "VirtoCommerce": {
+      "Search": {
+        "IndexingJobs": {
+          "IndexationDate": {
+            "Product": {
+              "title": "Tuotteen indeksoinnin päivämäärä ja aika",
+              "description": "Päivämäärä ja aika, jolloin tuotteen indeksointitehtävä alkaa"
+            },
+            "Category": {
+              "title": "Kategorian indeksoinnin päivämäärä ja aika",
+              "description": "Päivämäärä ja aika, jolloin kategorian indeksointi alkaa"
+            }
+          }
+        }
+      }
+    }
+  },
+  "module": {
+    "VirtoCommerce.Catalog": {
+      "description": "Vie tai tuo katalogeja, kategorioita, tuotteita ja ominaisuuksia kuvien binaaritiedostoilla, jos valitset binaariruudun"
+    }
+  },
+  "export": {
+    "types": {
+      "VirtoCommerce.CatalogModule.Core.Model.Export.ExportableProduct": {
+        "name": "Tuotteet",
+        "description": "Katalogituotetiedot liittyvine objekteineen. Tukee JSON ja CSV"
+      },
+      "VirtoCommerce.CatalogModule.Core.Model.Export.ExportableCatalogFull": {
+        "name": "Katalogi",
+        "description": "Katalogitiedot liittyvine objekteineen. Tukee JSON"
+      }
+    },
+    "groups": {
+      "VirtoCommerce.CatalogModule.Core.Model.Export": {
+        "name": "Katalogi",
+        "description": "Katalogit, kategoriat ja tuotteet"
+      }
+    }
+  },
+  "CategoryChangeBulkAction": "Massakategorian muutos",
+  "PropertiesUpdateBulkAction": "Massaominaisuuksien päivitys",
+  "virtoCommerce.catalogBulkActionsModule": {
+    "blades": {
+      "hello-world": {
+        "title": "Hei maailma -paneeli"
+      },
+      "action-progress": {
+        "title": "Tehtävän edistyminen"
+      }
+    },
+    "actions": {
+      "types": {
+        "CategoryChangeBulkAction": {
+          "title": "Vaihda kategoria",
+          "subtitle": "Siirrä tuotteet toiseen kategoriaan"
+        },
+        "PropertiesUpdateBulkAction": {
+          "title": "Muokkaa ominaisuuksia",
+          "subtitle": "Päivitä yksi tai useampi ominaisuus"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,1389 @@
+{
+  "catalog": {
+    "main-menu-title": "Katalog",
+    "main-blade-title": "Katalog",
+    "measure-menu-title": "Måleenheter",
+    "properties": {
+      "catalog": "Katalogegenskaper",
+      "product": "Produktegenskaper",
+      "variation": "Variantsegenskaper",
+      "category": "Kategoriegenskaper",
+      "color": {
+        "title": "Farge",
+        "name": "Fargenavn",
+        "code": "Fargekode",
+        "dictionary": "Velg farge"
+      },
+      "geoPoint": {
+        "title": "Geopunkt",
+        "placeholder": "Angi breddegrad og lengdegrad",
+        "description": "Angi breddegrad og lengdegrad separert med komma uten mellomrom, f.eks. 41.40338,2.17403"
+      },
+      "measure": {
+        "title": "Mål",
+        "placeholder": "Angi mål",
+        "description": "Angi mål i formatet: 1.23",
+        "select-placeholder": "Velg mål"
+      }
+    },
+    "product-types": {
+      "Physical": "Fysisk",
+      "Digital": "Digital",
+      "BillOfMaterials": "Produkt med materialliste"
+    },
+    "blades": {
+      "catalogs-list": {
+        "title": "Katalog",
+        "subtitle": "Administrer kataloger",
+        "labels": {
+          "name": "Navn",
+          "virtual": "Virtuell"
+        }
+      },
+      "catalog-add": {
+        "title": "Ny katalog",
+        "subtitle": "Velg ny katalogtype",
+        "menu": {
+          "catalog": {
+            "title": "Fysisk katalog",
+            "description": "En fysisk katalog er en online-liste over produkter eller tjenester som et selskap tilbyr. Produkter kan grupperes i kategorier eller være en del av katalogen uten å tilhøre noen kategori"
+          },
+          "virtual-catalog": {
+            "title": "Virtuell katalog",
+            "description": "En virtuell katalog bygges fra en eller flere fysiske kataloger. De brukes til å vise produkter ved å trekke sammen elementer fra forskjellige fysiske kataloger"
+          }
+        }
+      },
+      "catalog-detail": {
+        "subtitle": "Katalogdetaljer",
+        "title-new": "Ny katalog",
+        "subtitle-new": "Katalogdetaljer",
+        "title-new-virtual": "Ny virtuell katalog",
+        "subtitle-virtual": "Virtuelle katalogdetaljer",
+        "labels": {
+          "catalog-name": "Katalognavn"
+        },
+        "placeholders": {
+          "enter-name": "Angi navn"
+        }
+      },
+      "catalog-languages": {
+        "subtitle": "Administrer språk",
+        "labels": {
+          "note": "Dra og slipp for å kontrollere rekkefølgen. Første aktive element blir standardspråket",
+          "language-dictionary": "Språkordbok",
+          "active": "Aktiv",
+          "language": "Språk",
+          "default-language": "Standardspråk",
+          "additional-languages": "Ytterligere språk"
+        },
+        "placeholders": {
+          "select": "Velg..."
+        }
+      },
+      "categories-items-list": {
+        "title": "Kategorier og elementer",
+        "subtitle": "Bla gjennom {{name}}",
+        "subtitle-search": "Søkeresultater for \"{{keyword}}\"",
+        "title-mapping": "Velg kategorier og elementer for kartlegging",
+        "subtitle-mapping": "Oppretter en lenke i din virtuelle katalog",
+        "labels": {
+          "filter-new": "Legg til nytt filter",
+          "filter-priceless": "Ingen pris",
+          "filter-withPrice": "Definert pris",
+          "filter-priceRange": "Prisområde",
+          "filter-lowStock": "Lavt på lager",
+          "filter-notActive": "Inaktiv",
+          "filter-display-variations": "Vis varianter",
+          "unnamed-filter": "Filtrer etter",
+          "result-grouping": "Grupper resultater etter:",
+          "result-grouping-none": "Ingen",
+          "result-grouping-$path": "Kategori",
+          "inactive": "Inaktiv",
+          "hidden": "Skjult",
+          "picture": "Bilde",
+          "name": "Navn",
+          "sku": "SKU"
+        },
+        "placeholders": {
+          "select-filter": "Velg filter"
+        },
+        "descr": {
+          "title-mapping": "Den er kartlagt til denne virtuelle plasseringen"
+        }
+      },
+      "category-detail": {
+        "subtitle": "Kategoridetaljer",
+        "parent-disabled-alert": "Overordnet kategori er skjult",
+        "labels": {
+          "is-active": "Synlig",
+          "name": "Navn",
+          "localizedName": "Lokalisert navn",
+          "code": "Kode",
+          "tax-type": "Skattetype",
+          "priority": "Prioritet",
+          "show-more-languages": "Vis flere språk",
+          "show-less-languages": "Vis færre språk"
+        },
+        "validations": {
+          "code": "Koden kan ikke inneholde følgende tegn: $+;=%{}[]|@~!^*&()?'<>"
+        },
+        "placeholders": {
+          "name": "Angi kategorinavn",
+          "code": "Angi kategorikode",
+          "select": "Velg...",
+          "priority": "Angi nummer"
+        }
+      },
+      "categories-items-add": {
+        "title": "Nytt kategorielemen",
+        "subtitle": "Velg ny elementtype",
+        "menu": {
+          "category": {
+            "title": "Kategori",
+            "description": "Dette er en beholder for andre kategorier, produkter eller varianter"
+          },
+          "link": {
+            "title": "Lenke",
+            "description": "Lenke til en fysisk kategori eller produkt"
+          },
+          "physical-product": {
+            "title": "Fysisk produkt",
+            "description": "Dette er et håndgripelig element som kan kjøpes. Det krever fysisk frakt og kan brukes til målrettede kampanjer"
+          },
+          "digital-product": {
+            "title": "Digitalt produkt",
+            "description": "Dette er et immaterielt element som er tilgjengelig for kjøp. Det kan lastes ned direkte etter kjøp, noe som betyr at det ikke krever fysisk frakt. Digitale produkter er også egnet for målrettede kampanjer"
+          },
+          "bill-of-materials-product": {
+            "title": "Produkt med materialliste",
+            "description": "Dette er et fysisk produkt som kommer med en materialliste (en liste over ekstra elementer). Det kan brukes til spesifikke kampanjer og krever fysisk frakt"
+          }
+        },
+        "catalog-item-name": "Katalog",
+        "catalog-item-description": "Dette er et sentralt punkt for å administrere butikkens varer og opprette kataloger for merker, produktlinjer eller spesifikke leverandører",
+        "virtual-catalog-item-name": "Virtuell katalog",
+        "virtual-catalog-item-description": "En virtuell katalog bygges fra en eller flere fysiske kataloger. De brukes til å vise produkter ved å trekke sammen elementer fra forskjellige fysiske kataloger"
+      },
+      "catalog-property-list": {
+        "subtitle": "Katalogegenskaper",
+        "labels": {
+          "empty-list": "Ingen"
+        }
+      },
+      "filter-detail": {
+        "subtitle": "Rediger filter",
+        "new-title": "Nytt filter",
+        "new-subtitle": "Opprett nytt filter",
+        "labels": {
+          "criteria": "Søkefrase",
+          "name": "Filternavn",
+          "searchInVariations": "Vis produktvarianter"
+        },
+        "placeholders": {
+          "criteria": "Angi søkefrase",
+          "name": "Navngi dette filteret"
+        }
+      },
+      "property-detail": {
+        "title": "Administrer egenskap",
+        "subtitle": "Rediger egenskapsinformasjon",
+        "labels": {
+          "property-name": "Egenskapsnavn",
+          "display-name": "Visningsnavn",
+          "display-order": "Visningsrekkefølge",
+          "required": "Påkrevd",
+          "dictionary": "Ordbok",
+          "multivalue": "Flere verdier",
+          "multi-language": "Flere språk",
+          "applies-to": "Gjelder for",
+          "value-type": "Verditype",
+          "manage-dictionary": "Administrer ordbok",
+          "new-dictionary-property-caution": "Du kan administrere ordbokelementer bare etter at du har lagret egenskapen",
+          "attributes": "Attributter",
+          "manage-attributes": "Administrer egenskapsattributter",
+          "hidden": "Skjult",
+          "measure": "Mål",
+          "property-group": "Gruppe"
+        },
+        "placeholders": {
+          "display-name": "Angi visningsnavn",
+          "display-order": "Visningsrekkefølge",
+          "property-group": "Velg egenskapsgruppe"
+        }
+      },
+      "property-validationRule": {
+        "title": "Valideringsregler",
+        "subtitle": "Administrer valideringsregler",
+        "match-validation-pattern": "Match et spesifikt mønster",
+        "character-count": "Begrens antall tegn",
+        "character-limit": {
+          "between": "mellom",
+          "at-least": "minst",
+          "not-more-than": "ikke mer enn"
+        },
+        "patterns": {
+          "custom": "tilpasset",
+          "email": "e-post",
+          "url": "URL",
+          "date": "dato"
+        },
+        "descriptions": {
+          "require": "Denne egenskapen er obligatorisk",
+          "character-limit": "Angi et minimum og/eller maksimum antall tillatte tegn",
+          "pattern": "Gjør at dette feltet matcher et mønster, som e-postadresse, URL eller et tilpasset regulært uttrykk. For eksempel: ^[a-z]{6,15}$"
+        }
+      },
+      "property-group-list": {
+        "title": "Egenskapsgrupper",
+        "labels": {
+          "empty-list": "Ingen",
+          "name": "Navn",
+          "display-order": "Visningsrekkefølge"
+        }
+      },
+      "property-group-details": {
+        "title": "Administrer egenskapsgruppe",
+        "labels": {
+          "name": "Navn",
+          "priority": "Prioritet",
+          "localized-name": "Lokalisert navn",
+          "localized-description": "Lokalisert beskrivelse",
+          "display-name": "Visningsnavn",
+          "display-order": "Visningsrekkefølge",
+          "properties": "Egenskaper",
+          "manage-properties": "Administrer egenskaper",
+          "show-more-languages": "Vis flere språk",
+          "show-less-languages": "Vis færre språk"
+        },
+        "placeholders": {
+          "display-name": "Angi gruppenavn",
+          "display-description": "Angi beskrivelse"
+        }
+      },
+      "property-list": {
+        "subtitle": "Egenskapsliste",
+        "labels": {
+          "empty-list": "Ingen",
+          "modified": "(endret)",
+          "add-filter": "Filter",
+          "reset-filter": "Tilbakestill filter",
+          "excluded": "Egenskaper ekskludert fra arv",
+          "hide-empty-values": "Skjul tomme felt",
+          "show-empty-values": "Vis tomme felt"
+        },
+        "placeholders": {
+          "excluded": "Velg egenskaper"
+        },
+        "validations": {
+          "required": "Dette feltet er obligatorisk",
+          "maxLength": "Dette feltet kan ikke inneholde mer enn {{max}} tegn",
+          "minLength": "Dette feltet må inneholde minst {{min}} tegn",
+          "pattern": "Dette feltet matcher ikke det valgte mønsteret"
+        }
+      },
+      "property-selector": {
+        "title": "Velg egenskaper å redigere",
+        "labels": {
+          "applied-filter": "Tillempet filter",
+          "new-filter": "Nytt filter"
+        }
+      },
+      "item-property-detail": {
+        "title": "Rediger objektsegenskap",
+        "title-new": "Ny objektsegenskap",
+        "subtitle": "Angi egenskapsinformasjon",
+        "labels": {
+          "property-name": "Egenskapsnavn",
+          "duplicate-property-in-product": "Egenskapen med navnet {{propertyName}} finnes allerede i {{categoryName}}. Navnet må være unikt",
+          "duplicate-property-in-catalog": "Egenskapen med navnet {{propertyName}} finnes allerede i rotkatalogen. Navnet må være unikt",
+          "duplicate-property-in-variation1": "Egenskapen med navnet {{propertyName}} finnes allerede for denne varianten",
+          "duplicate-property-in-variation2": ". Navnet må være unikt",
+          "property-naming-error": "Egenskapsnavnet må starte med en alfanumerisk karakter og inneholde kun latinske tegn, tall og understrek (_). Hvis et understrek (_) brukes, må det være en alfanumerisk karakter før og etter",
+          "value-type": "Verditype"
+        }
+      },
+      "catalogs-select": {
+        "title": "Velg katalog",
+        "subtitle": "Skaper en lenke innenfor din virtuelle katalog"
+      },
+      "property-valueType": {
+        "title": "{{name}} verditype",
+        "subtitle": "Endre verditype"
+      },
+      "property-attributes": {
+        "title": "{{name}} attributt",
+        "subtitle": "Håndter attributter",
+        "labels": {
+          "new-attribute": "Nytt attributt",
+          "current-attributes": "Aktuelle attributter",
+          "name": "Navn",
+          "value": "Verdi"
+        },
+        "validations": {
+          "name-required": "Obligatorisk",
+          "value-required": "Obligatorisk",
+          "name-duplicate": "Duplikatnavn funnet"
+        },
+        "placeholders": {
+          "name": "Angi navn",
+          "value": "Angi verdi"
+        }
+      },
+      "property-type": {
+        "title": "{{name}} gjelder for"
+      },
+      "property-dictionary": {
+        "title": "{{name}} ordbok",
+        "subtitle": "Håndter ordbok",
+        "color-code": {
+          "label": "Fargekode",
+          "placeholder": "Angi fargekode",
+          "description": "Angi en fargekode i CSS-format: #RRGGBB eller #RGB eller fargenavn"
+        },
+        "labels": {
+          "new-value": "Ny verdi",
+          "current-values": "Aktuelle verdier",
+          "value": "Verdi",
+          "alias": "Alias",
+          "sort-order": "Sorteringsrekkefølge",
+          "language-edit": "Rediger verdier",
+          "language-add": "Nye verdier",
+          "dictionary-edit": "Rediger ordbokverdi",
+          "priority": "Prioritet",
+          "priority-description": "Den laveste verdien brukes først"
+        },
+        "validations": {
+          "required": "Obligatorisk",
+          "duplicate": "Duplikatnavn funnet"
+        },
+        "placeholders": {
+          "value": "Skriv inn verdi",
+          "alias": "Skriv inn et alias",
+          "priority": "Skriv inn prioritet"
+        }
+      },
+      "item-detail": {
+        "subtitle": "{{ productTypeName }} elementdetaljer",
+        "subtitle-variation": "Variantdetaljer",
+        "hide-description": "Skjul",
+        "labels": {
+          "id": "ID",
+          "outer-id": "Ekstern ID",
+          "sku": "SKU",
+          "priority": "Prioritet",
+          "name": "Produktnavn",
+          "localizedName": "Lokalisert produktnavn",
+          "can-be-purchased": "Kan kjøpes",
+          "store-visible": "Synlig",
+          "track-inventory": "Spor lager",
+          "has-user-agreement": "Har brukeravtale",
+          "min-quantity": "Minimumskvantitet",
+          "max-quantity": "Maksimumskvantitet",
+          "pack-size": "Pakkestørrelse",
+          "vendor": "Leverandør",
+          "vendor-denied": "Tilgang nektet",
+          "tax-type": "Skattetype",
+          "package-type": "Emballasjetype",
+          "weight-unit": "Masseenheter",
+          "weight": "Vekt",
+          "dimensions": "Dimensjoner",
+          "use-package-type": "Samme som emballasje",
+          "measure-unit": "Måleenhet",
+          "max-downloads": "Maksimum nedlastinger",
+          "expiration-date": "Utløpsdato for nedlasting",
+          "download-type": "Nedlastingstype",
+          "gtin": "GTIN",
+          "mpn": "Produsentens varenummer",
+          "start-date": "Først oppført",
+          "end-date": "Oppføring utløper",
+          "is-configurable": "Konfigurerbar",
+          "show-more-languages": "Vis flere språk",
+          "show-less-languages": "Vis færre språk"
+        },
+        "validations": {
+          "sku": "SKU kan ikke inneholde følgende tegn: $+;=%{}[]|@~!^*&()?'<>"
+        },
+        "placeholders": {
+          "sku": "Angi elementets SKU",
+          "priority": "Angi nummer",
+          "name": "Angi elementnavn",
+          "vendor": "Velg...",
+          "tax-type": "Velg...",
+          "weight-unit": "Velg...",
+          "weight": "Angi vekt",
+          "expiration-date": "Velg en dato",
+          "download-type": "Velg...",
+          "gtin": "Angi GTIN",
+          "mpn": "Angi MPN",
+          "start-date": "Angi en dato",
+          "end-date": "Angi en dato"
+        },
+        "descr": {
+          "start-date": "Hvis du ikke angir en startdato, vil produktet bli aktivt umiddelbart så snart du lagrer det",
+          "end-date": "Hvis du ikke angir en sluttdato, vil produktet forbli aktivt til du deaktiverer det"
+        }
+      },
+      "catalog-items-select": {
+        "title": "Velg kategorier",
+        "title-association": "Velg elementer å assosiere",
+        "subtitle-association": "Legger til assosiasjoner til produktet",
+        "bread-crumb-top": "Alle kataloger",
+        "labels": {
+          "picture": "Bilde",
+          "name": "Navn",
+          "sku": "SKU",
+          "virtual": "Virtuell"
+        }
+      },
+      "item-variation-list": {
+        "subtitle": "Elementvarianter",
+        "labels": {
+          "no-items": "Ingen varianter ennå",
+          "picture": "Bilde",
+          "name": "Navn",
+          "sku": "SKU",
+          "manufacturer-part-number": "Produsentens varenummer"
+        }
+      },
+      "editorialReviews-list": {
+        "subtitle": "Elementbeskrivelser",
+        "labels": {
+          "no-reviews": "Ingen elementbeskrivelser ennå"
+        }
+      },
+      "editorialReview-detail": {
+        "title": "Beskrivelse",
+        "subtitle": "Elementbeskrivelse",
+        "labels": {
+          "language": "Språk",
+          "type": "Type",
+          "content": "Beskrivelsesinnhold",
+          "select-language": "Velg språk"
+        },
+        "placeholders": {
+          "type": "Velg type",
+          "language": "Velg språk"
+        }
+      },
+      "categoryDescriptions-list": {
+        "subtitle": "Kategoribeskrivelser",
+        "labels": {
+          "no-descriptions": "Ingen kategoribeskrivelser ennå"
+        }
+      },
+      "categoryDescription-detail": {
+        "title": "Beskrivelse",
+        "subtitle": "Kategoribeskrivelse",
+        "labels": {
+          "language": "Språk",
+          "type": "Type",
+          "content": "Beskrivelsesinnhold",
+          "select-language": "Velg språk"
+        },
+        "placeholders": {
+          "type": "Velg type",
+          "language": "Velg språk"
+        }
+      },
+      "images": {
+        "subtitle": "Håndter bilder",
+        "labels": {
+          "no-images": "Ingen bilder",
+          "copy-url-prompt": "Kopier til utklippstavle: Ctrl+C, Enter",
+          "select-images": "Velg bilder",
+          "select-image-category": "Velg bildkategori",
+          "name": "Navn",
+          "image-category": "Bildkategori",
+          "drag-drop-comment": "Dra og slipp bildene dine her",
+          "progress": "Fremdrift",
+          "make-default-image": "Dra og slipp et bilde til det øvre venstre hjørnet av bildområdet for å sette det som standard",
+          "language": "Språk",
+          "preview": "Forhåndsvis",
+          "external-link": "Ekstern lenke",
+          "altText": "Alternativ tekst for bilde",
+          "description": "Metabeskrivelse"
+        },
+        "placeholders": {
+          "image-url": "Lim inn bilde-URL her",
+          "name": "Angi navn",
+          "image-category": "Velg",
+          "language": "Velg språk",
+          "altText": "Angi tekst",
+          "description": "Angi beskrivelse"
+        },
+        "descr": {
+          "external-link": "Bruk en ekstern bilde-URL i stedet for å laste den opp til eiendeler",
+          "external-link-warning": "Merk: Av sikkerhetshensyn er kun https-lenker tillatt"
+        }
+      },
+      "video-list": {
+        "title": "Videoer",
+        "subtitle": "Alle videoer",
+        "labels": {
+          "preview": "Forhåndsvis",
+          "name": "Navn",
+          "language": "Språk",
+          "priority": "Prioritet"
+        }
+      },
+      "video-add": {
+        "title": "YouTube-video",
+        "subtitle": "Ny video",
+        "create": "Opprett",
+        "labels": {
+          "content-url": "Innholds-URL",
+          "no-apikey": "Du har ikke angitt en Google API-nøkkel i plattformens konfigurasjonsfil. Videoinformasjonen vil være ufullstendig"
+        },
+        "placeholders": {
+          "content-url": "Angi video-URL"
+        }
+      },
+      "video-detail": {
+        "title": "YouTube-video",
+        "subtitle": "Rediger videoinformasjon",
+        "labels": {
+          "name": "Videonavn",
+          "upload-date": "Opplastingsdato",
+          "description": "Beskrivelse",
+          "duration": "Spilletid",
+          "language": "Språk",
+          "video": "Video",
+          "content-url": "Innholds-URL",
+          "embed-url": "Innebygd URL",
+          "video-preview": "Videoforhåndsvisning",
+          "thumbnail": "Miniatyrbilde",
+          "thumbnail-url": "Miniatyrbilde-URL",
+          "thumbnail-preview": "Forhåndsvisning av miniatyrbilde"
+        },
+        "placeholders": {
+          "name": "Angi navn",
+          "upload-date": "Angi en dato",
+          "description": "Angi beskrivelse",
+          "language": "Velg språk",
+          "content-url": "Angi video-URL"
+        }
+      },
+      "item-asset-detail": {
+        "labels": {
+          "category": "Kategori",
+          "language": "Språk",
+          "description": "Metabeskrivelse"
+        },
+        "placeholders": {
+          "category": "Velg...",
+          "language": "Velg språk",
+          "description": "Angi beskrivelse"
+        }
+      },
+      "item-asset-list": {
+        "subtitle": "Objekteiendeler",
+        "labels": {
+          "copy-url-prompt": "Kopier til utklippstavle: Ctrl+C, Enter",
+          "select-files": "Velg filer",
+          "drag-drop-comment": "Dra og slipp filene dine her",
+          "name": "Navn",
+          "progress": "Fremdrift",
+          "type": "Type",
+          "actions": "Handlinger",
+          "remove": "Fjern",
+          "copy-link": "Kopier lenke"
+        }
+      },
+      "item-associations-list": {
+        "subtitle": "Assosiasjoner",
+        "labels": {
+          "sorting-prompt": "Still inn hvordan assosierte objekter vises i nettbutikken. Dra og slipp produktene for å endre rekkefølgen deres",
+          "picture": "Bilde",
+          "name": "Navn",
+          "priority": "Prioritet",
+          "group": "Gruppe",
+          "quantity": "Kvantitet",
+          "tags": "Tagger"
+        },
+        "descr": {
+          "no-associations": "Ingen assosiasjoner ennå",
+          "quantity": "Assosiasjonskvantitet"
+        }
+      },
+      "item-association-detail": {
+        "subtitle": "Assosiasjonsdetaljer",
+        "labels": {
+          "group": "Gruppe",
+          "quantity": "Kvantitet",
+          "tags": "Taggar"
+        },
+        "placeholders": {
+          "group": "Velg...",
+          "quantity": "Angi kvantitet",
+          "tags": "Angi tagger"
+        }
+      },
+      "advanced-search-results": {
+        "title": "Søkeresultater"
+      },
+      "item-dimensions": {
+        "title": "Objektmåling",
+        "subtitle": "Endre produktmålingsegenskaper"
+      },
+      "asset-select": {
+        "title": "Lenke til eiendeler"
+      },
+      "images-select": {
+        "title": "Lenke til eiendeler"
+      },
+      "asset-upload": {
+        "title": "Legg til eiendeler"
+      },
+      "image-upload": {
+        "title": "Last opp bilder"
+      },
+      "image-add-external-link": {
+        "title": "Legg til ekstern lenke"
+      },
+      "aggregation-properties-details": {
+        "name": {
+          "label": "Egenskapsnavn"
+        },
+        "type": {
+          "label": "Aggregeringstype"
+        },
+        "measure": {
+          "label": "Mål"
+        },
+        "unit": {
+          "label": "Måleenhet"
+        },
+        "size": {
+          "label": "Aggregeringsstørrelse",
+          "placeholder": "Angi aggregeringsstørrelse",
+          "description": "Maksimalt antall aggregeringsverdier i søkeresultater. 0 = ubegrenset"
+        },
+        "values-Attribute": {
+          "label": "Tillatte verdier",
+          "placeholder": "Angi tillatte verdier",
+          "description": "Angi aggregeringsverdier som tillates i søkeresultater. La være tom for å tillate alle verdier"
+        },
+        "values-Range": {
+          "label": "Intervallgrenser",
+          "placeholder": "Legg til nummer",
+          "description": "Grenser sorteres automatisk før lagring. Intervall konstrueres som følgende: Under [grense 1], [grense 1] til [grense 2], ..., Over [grense N]"
+        },
+        "values-PriceRange": {
+          "label": "Prisintervallgrenser",
+          "placeholder": "Legg til nummer",
+          "description": "Grenser sorteres automatisk før lagring. Prisintervall konstrueres som følgende: Under [grense 1], [grense 1] til [grense 2], ..., Over [grense N]"
+        }
+      },
+      "importers-list": {
+        "title": "Importtyper",
+        "subtitle": "Velg en av de tilgjengelige importtypene nedenfor"
+      },
+      "exporter-list": {
+        "title": "Exporttyper",
+        "subtitle": "Velg en av de tilgjengelige exporttypene nedenfor"
+      },
+      "exporter": {
+        "productTitle": "Eksporter katalogprodukter",
+        "productSubtitle": "Eksporter katalogprodukter til JSON eller CSV"
+      },
+      "bill-of-materials-list": {
+        "title": "Produkter med materialliste (BOM)",
+        "subtitle": "Legg til eller fjern BOM-produkter",
+        "no-data": "Det finnes ingen produkter ennå",
+        "labels": {
+          "picture": "Bilde",
+          "name": "Navn",
+          "category": "Kategori",
+          "quantity": "Kvantitet"
+        }
+      },
+      "property-type-list": {
+        "title": "Ny egenskap",
+        "subtitle": "Velg egenskapstype",
+        "lables": {
+          "Product": {
+            "title": "Produktegenskap",
+            "description": "Vises kun for relaterte produkter"
+          },
+          "Category": {
+            "title": "Kategoriegenskap",
+            "description": "Vises kun for relatert katalog"
+          },
+          "Catalog": {
+            "title": "Katalogegenskap",
+            "description": "Vises kun for denne katalogen"
+          },
+          "Variation": {
+            "title": "Variantsegenskap",
+            "description": "Vises kun for relaterte varianter"
+          }
+        }
+      },
+      "links-list": {
+        "title": "Lenker",
+        "labels": {
+          "no-data": "Det finnes ingen lenker ennå",
+          "add-links": "Legg til ny lenke",
+          "marked": "Merket"
+        }
+      },
+      "measures-list": {
+        "title": "Måleenheter",
+        "subtitle": "Liste over tilgjengelige måleenheter",
+        "labels": {
+          "name": "Navn",
+          "create-default": "Opprett standard"
+        }
+      },
+      "create-measures": {
+        "title": "Opprett standardmål"
+      },
+      "measure-details": {
+        "title": "{{name}} mål",
+        "title-new": "Legg til nytt mål",
+        "subtitle": "Måldetaljer",
+        "labels": {
+          "name": "Navn",
+          "code": "Kode",
+          "description": "Beskrivelse"
+        },
+        "placeholders": {
+          "name": "Angi navn",
+          "code": "Angi kode",
+          "description": "Angi beskrivelse"
+        }
+      },
+      "measure-units-list": {
+        "title": "{{name}} måleenheter",
+        "subtitle": "Liste over måleenheter",
+        "labels": {
+          "name": "Navn",
+          "code": "Kode",
+          "is-default": "Standard"
+        }
+      },
+      "measure-unit-details": {
+        "title": "{{name}} måleenhet",
+        "title-new": "Ny måleenhet",
+        "subtitle": "Måleenhetsdetaljer",
+        "labels": {
+          "name": "Navn",
+          "localized-name": "Lokalisert navn",
+          "code": "Kode",
+          "conversion-factor": "Konverteringsfaktor",
+          "symbol": "Symbol",
+          "localized-symbol": "Lokalisert symbol",
+          "code-naming-error": "Koden må starte med en alfanumerisk karakter og inneholde kun latinske tegn og tall."
+        },
+        "placeholders": {
+          "name": "Angi navn",
+          "localized-name": "Angi lokalisert navn",
+          "code": "Angi kode",
+          "conversion-factor": "Angi konvertering",
+          "symbol": "Angi symbol",
+          "localized-symbol": "Angi lokalisert symbol"
+        }
+      },
+      "configuration-details": {
+        "title": "Produktkonfigurasjon",
+        "hide-description": "Skjul",
+        "labels": {
+          "enable": "Aktiver konfigurasjon",
+          "name": "Seksjonsnavn",
+          "quantity": "Alternativer",
+          "sections": "Seksjoner"
+        },
+        "descr": {
+          "enable": "For aktivering må konfigurasjonen inneholde minst en seksjon, og hver seksjon av typen 'Produkt' må inneholde minst ett alternativ",
+          "no-sections": "Ingen seksjoner i denne konfigurasjonen ennå",
+          "sorting-prompt": "Still inn rekkefølgen for hvordan seksjoner vises i nettbutikken. Dra og slipp seksjonene for å endre rekkefølgen deres"
+        },
+        "commands": {
+          "add": "Legg til seksjon"
+        }
+      },
+      "section-details": {
+        "title": "Ny seksjon",
+        "labels": {
+          "name": "Seksjonsnavn",
+          "description": "Beskrivelse",
+          "required": "Seksjonen er obligatorisk",
+          "picture": "Bilde",
+          "quantity": "Kvantitet",
+          "product-name": "Produktnavn",
+          "options": "Alternativer",
+          "type": "Seksjonstype",
+          "allow-custom-text": "Tillat tilpasset tekst",
+          "allow-predefined-options": "Tillat forhåndsdefinerte alternativer",
+          "text": "Tekst"
+        },
+        "descr": {
+          "no-options": "Ingen alternativer i denne seksjonen ennå"
+        },
+        "commands": {
+          "add": "Legg til alternativ"
+        },
+        "placeholders": {
+          "type": "Velg..."
+        }
+      },
+      "option-details": {
+        "title": "Velg objekt som alternativ",
+        "labels": {
+          "quantity": "Kvantitet",
+          "text": "Tekst for alternativ"
+        },
+        "commands": {
+          "add": "Legg til alternativ"
+        },
+        "placeholders": {
+          "quantity": "Angi kvantitet",
+          "text": "Angi tekst"
+        }
+      },
+      "brand-setting-details": {
+        "title": "Merkeinnstillinger",
+        "labels": {
+          "enabled": "Aktiver merker",
+          "catalog": "Merke-katalog",
+          "property": "Merkeegenskap"
+        },
+        "placeholders": {
+          "catalog": "Velg merke-katalog",
+          "property": "Velg merkeegenskap"
+        }
+      },
+      "automatic-links": {
+        "title": "Automatiske lenker",
+        "preview-title": "Forhåndsvisning av automatiske lenker",
+        "fields": {
+          "catalog": {
+            "label": "Katalog",
+            "placeholder": "Velg katalog"
+          },
+          "query": {
+            "label": "Søk",
+            "placeholder": "Angi produktsøk"
+          }
+        }
+      }
+    },  
+    "exporter-list": {
+      "title": "Exporttyper",
+      "subtitle": "Velg en av de tilgjengelige exporttypene nedenfor"
+    },
+    "exporter": {
+      "productTitle": "Eksporter katalogprodukter",
+      "productSubtitle": "Eksporter katalogprodukter til JSON eller CSV"
+    },
+    "widgets": {
+      "catalogLanguages": {
+        "blade-subtitle": "Administrer språk",
+        "title": "Språk",
+        "default-language": "Standardspråk"
+      },
+      "catalogPropertyGroup": {
+        "blade-subtitle": "Egenskapsgrupper",
+        "title": "Egenskapsgrupper"
+      },
+      "catalogProperty": {
+        "blade-subtitle": "Katalogegenskaper",
+        "title": "Egenskaper"
+      },
+      "categoryProperty": {
+        "blade-subtitle": "Kategoriegenskaper",
+        "title": "Egenskaper"
+      },
+      "editorialReview": {
+        "blade-subtitle": "Varebeskrivelser",
+        "title": "Beskrivelser"
+      },
+      "categoryDescription": {
+        "blade-subtitle": "Kategoribeskrivelser",
+        "title": "Beskrivelse"
+      },
+      "itemAsset": {
+        "blade-subtitle": "Vareeiendeler",
+        "title": "Eiendeler"
+      },
+      "itemAssociations": {
+        "blade-subtitle": "Assosiasjoner",
+        "title": "Assosiasjoner"
+      },
+      "itemImage": {
+        "blade-subtitle": "Administrer bilder",
+        "no-images": "Ingen bilder"
+      },
+      "itemProperty": {
+        "blade-subtitle": "Vareegenskaper",
+        "title": "Egenskaper"
+      },
+      "itemVariation": {
+        "blade-subtitle": "Varevarianter",
+        "title": "Varianter"
+      },
+      "itemDimensions": {
+        "title": "Vekt og størrelse",
+        "weight": "Vekt",
+        "length": "Lengde",
+        "width": "Bredde",
+        "height": "Høyde"
+      },
+      "billOfMaterials": {
+        "title": "Materialliste"
+      },
+      "videos": {
+        "blade-subtitle": "Videoer",
+        "title": "Videoer"
+      },
+      "links": {
+        "title": "Lenker"
+      },
+      "measure-units": {
+        "title": "Enheter"
+      },
+      "configuration": {
+        "title": "Konfigurasjon"
+      },
+      "brand-settings": {
+        "title": "Merkeinnstillinger"
+      },
+      "automatic-links": {
+        "title": "Automatiske lenker"
+      }
+    },
+    "dialogs": {
+      "catalog-save": {
+        "title": "Lagre endringer",
+        "message": "Denne katalogen har blitt endret. Ønsker du å lagre endringene?"
+      },
+      "catalog-delete": {
+        "title": "Bekreft sletting",
+        "warning": "ADVARSEL: Denne endringen er permanent og kan ikke angres. Å bruke denne endringen kan føre til tap av data",
+        "message": "Er du sikker på at du vil slette denne katalogen?",
+        "instruction": "Skriv 'ja' for å slette:"
+      },
+      "catalog-items-delete": {
+        "title": "Bekreft sletting",
+        "warning": "ADVARSEL: Denne endringen er permanent og kan ikke angres. Å bruke denne endringen kan føre til tap av data",
+        "message": "Følgende data vil bli slettet:",
+        "instruction": "Skriv 'ja' for å slette:",
+        "item": "{{count}} Vare(r)",
+        "category": "{{count}} Kategori(er) og alt innhold i dem",
+        "linked-item": "{{count}} Lenket(e) vare(r)",
+        "linked-category": "{{count}} Lenket(e) kategori(er)"
+      },
+      "property-delete": {
+        "message": "Er du sikker på at du vil slette egenskapen {{name}}?",
+        "warning": "ADVARSEL: Denne endringen er permanent og kan ikke angres. Å bruke denne endringen kan føre til tap av data",
+        "msg1": "Velg passende slettingsalternativ. Alternativer:",
+        "msg2": "Fjern kun egenskapsmetadata og behold verdiene i de relaterte objektene",
+        "msg3": "Slett fullstendig med alle relaterte verdier",
+        "shallow": "Fjern metadata",
+        "full": "Slett fullstendig"
+      },
+      "property-dictionary-item-delete": {
+        "message": "Er du sikker på at du vil slette de valgte ordbokelementene?",
+        "warning": "ADVARSEL: Denne endringen er permanent og kan ikke angres. Å bruke denne endringen kan føre til tap av data"
+      },
+      "virtual-catalog-save": {
+        "title": "Lagre endringer",
+        "message": "Denne virtuelle katalogen har blitt endret. Ønsker du å lagre endringene?"
+      },
+      "category-save": {
+        "title": "Lagre endringer",
+        "message": "Denne kategorien har blitt endret. Ønsker du å lagre endringene?"
+      },
+      "item-save": {
+        "title": "Lagre endringer",
+        "message": "Denne varen har blitt endret. Ønsker du å lagre endringene?"
+      },
+      "variation-delete": {
+        "title": "Bekreft sletting",
+        "message": "Er du sikker på at du vil slette de valgte variantene?"
+      },
+      "property-save": {
+        "title": "Lagre endringer",
+        "message": "Denne egenskapen har blitt endret. Ønsker du å lagre endringene?"
+      },
+      "property-group-save": {
+        "title": "Lagre endringer",
+        "message": "Denne egenskapsgruppen har blitt endret. Ønsker du å lagre endringene?"
+      },
+      "item-property-delete": {
+        "message": "Er du sikker på at du vil slette egenskapen {{name}}?"
+      },
+      "dictionary-values-delete": {
+        "title": "Bekreft sletting",
+        "message": "Er du sikker på at du vil slette de valgte ordbokverdiene?"
+      },
+      "review-save": {
+        "title": "Lagre endringer",
+        "message": "Denne beskrivelsen har blitt endret. Ønsker du å lagre endringene?"
+      },
+      "review-delete": {
+        "title": "Bekreft sletting",
+        "message": "Er du sikker på at du vil slette denne beskrivelsen?"
+      },
+      "association-delete": {
+        "title": "Bekreft sletting",
+        "message": "Er du sikker på at du vil slette de valgte assosiasjonene?"
+      },
+      "attribut-delete": {
+        "title": "Bekreft sletting",
+        "message": "Er du sikker på at du vil slette de valgte attributtene?"
+      },
+      "image-save": {
+        "title": "Lagre endringer",
+        "message": "Disse bildene har blitt endret. Ønsker du å lagre endringene?"
+      },
+      "video-save": {
+        "title": "Lagre endringer",
+        "message": "Denne videoen har blitt endret. Ønsker du å lagre endringene?"
+      },
+      "video-delete": {
+        "title": "Bekreft sletting",
+        "message": "Er du sikker på at du vil slette denne videoen?"
+      },
+      "video-list-delete": {
+        "title": "Bekreft sletting",
+        "message": "Er du sikker på at du vil slette de valgte videoene?"
+      },
+      "asset-save": {
+        "title": "Lagre endringer",
+        "message": "Disse eiendelene har blitt endret. Ønsker du å lagre endringene?"
+      },
+      "language-save": {
+        "title": "Lagre endringer",
+        "message": "Språkene har blitt endret. Ønsker du å lagre endringene?"
+      },
+      "bill-or-materials-associations-delete": {
+        "title": "Bekreft sletting",
+        "message": "Er du sikker på at du vil slette de valgte produktene?"
+      },
+      "links-delete": {
+        "title": "Bekreft sletting",
+        "message": "Er du sikker på at du vil slette de valgte lenkene?"
+      },
+      "measures-delete": {
+        "title": "Bekreft sletting",
+        "message": "Er du sikker på at du vil slette de valgte målene?"
+      },
+      "measure-unit-save": {
+        "title": "Lagre endringer",
+        "message": "Denne måleenheten har blitt endret. Ønsker du å lagre endringene?"
+      },
+      "measure-unit-delete": {
+        "title": "Bekreft sletting",
+        "message": "Er du sikker på at du vil slette den valgte måleenheten?"
+      },
+      "measure-units-delete": {
+        "title": "Bekreft sletting",
+        "message": "Er du sikker på at du vil slette de valgte måleenhetene?"
+      },
+      "measure-save": {
+        "title": "Lagre endringer",
+        "message": "Dette målet har blitt endret. Ønsker du å lagre endringene?"
+      },
+      "configuration-save": {
+        "title": "Lagre endringer",
+        "message": "Denne konfigurasjonen har blitt endret. Ønsker du å lagre endringene?"
+      },
+      "property-group-delete": {
+        "title": "Bekreft sletting",
+        "message": "Er du sikker på at du vil slette de valgte egenskapsgruppene?"
+      },
+      "automatic-links-save": {
+        "title": "Lagre endringer",
+        "message": "Automatiske lenkeinnstillinger har blitt endret. Ønsker du å lagre endringene?"
+      },
+      "automatic-links-create": {
+        "title": "Opprett automatiske lenker",
+        "message": "{{number}} automatiske lenker vil bli opprettet i bakgrunnsjobben. Er du sikker på at du vil opprette dem?"
+      },
+      "automatic-links-delete": {
+        "title": "Slett automatiske lenker",
+        "message": "{{number}} eksisterende automatiske lenker vil bli slettet i bakgrunnsjobben. Er du sikker på at du vil slette dem?"
+      }
+    },
+    "wizards": {
+      "category": {
+        "title": "Ny kategori",
+        "subtitle": "Oppgi kategorinformasjon",
+        "labels": {
+          "name": "Navn",
+          "code": "Kode"
+        },
+        "validations": {
+          "code": "Koden kan ikke inneholde følgende tegn: $+;=%{}[]|@~!^*&()?'<>"
+        },
+        "placeholders": {
+          "name": "Angi kategorinavn",
+          "code": "Angi kategorikode"
+        }
+      },
+      "new-product": {
+        "title": "Nytt produkt",
+        "subtitle": "Oppgi all informasjon om produktet",
+        "labels": {
+          "sku": "SKU",
+          "name": "Navn",
+          "fill-properties": "Oppgi egenskaper",
+          "fill-properties-summary": "{{ count }} av {{total}} egenskaper oppgitt",
+          "upload-images": "Last opp bilder",
+          "upload-images-summary": "{{ count }} bilde(r) lastet opp",
+          "add-review": "Legg til beskrivelse",
+          "add-review-summary": "{{ count }} beskrivelse(r) lagt til",
+          "seo-information": "Oppgi SEO-informasjon",
+          "seo-information-summary-defined": "SEO-informasjon oppgitt",
+          "seo-information-summary-undefined": "SEO-informasjon ikke oppgitt"
+        },
+        "validations": {
+          "sku": "SKU-en kan ikke inneholde følgende tegn: $+;=%{}[]|@~!^*&()?'<>",
+          "sku-required": "Påkrevd",
+          "name-required": "Påkrevd"
+        },
+        "placeholders": {
+          "name": "Angi varenavn",
+          "sku": "Angi vare-SKU"
+        }
+      },
+      "new-variation": {
+        "title": "Ny variant",
+        "subtitle": "Oppgi variantinformasjon",
+        "labels": {
+          "sku": "SKU",
+          "name": "Navn",
+          "fill-properties": "Oppgi egenskaper",
+          "fill-properties-summary": "{{ count }} av {{total}} egenskaper oppgitt",
+          "upload-images": "Last opp bilder",
+          "upload-images-summary": "{{ count }} bilde(r) lastet opp"
+        },
+        "validations": {
+          "sku": "SKU-en kan ikke inneholde følgende tegn: $+;=%{}[]|@~!^*&()?'<>",
+          "sku-required": "Påkrevd",
+          "name-required": "Påkrevd"
+        },
+        "placeholders": {
+          "name": "Angi varenavn",
+          "sku": "Angi vare-SKU"
+        }
+      },
+      "item-images": {
+        "subtitle": "Varebilder"
+      },
+      "association": {
+        "title": "Ny assosiasjon",
+        "labels": {
+          "group-name": "Gruppenavn",
+          "tags": "Tagger",
+          "tags-placeholder": "Angi tagger",
+          "quantity": "Antall",
+          "items": "Varer",
+          "products-selected": "Produkter valgt",
+          "categories-selected": "Kategorier valgt"
+        },
+        "placeholders": {
+          "group-name": "Velg...",
+          "quantity": "Angi antall"
+        }
+      }
+    },
+    "commands": {
+      "copy-id": "Kopier ID",
+      "copy-sku": "Kopier SKU",
+      "clear-all": "Tøm alt",
+      "add-property": "Legg til egenskap",
+      "add-product-property": "Legg til tilpasset egenskap",
+      "add-variation-property": "Legg til tilpasset egenskap",
+      "gallery": "Galleri",
+      "map": "Kart",
+      "open-item": "Åpne vare",
+      "default": "Sett som standard",
+      "link": "Lenke",
+      "external-link": "Ekstern lenke"
+    },
+    "permissions": {
+      "catalog-scope": {
+        "title": "Kun for de valgte katalogene",
+        "blade": {
+          "subtitle": "Velg kataloger"
+        }
+      },
+      "category-scope": {
+        "title": "Kun for de valgte kategoriene"
+      }
+    },
+    "selectors": {
+      "titles": {
+        "catalogs": "Kataloger",
+        "categories": "Kategorier",
+        "search-in-variations": "Søk i produktvarianter",
+        "search-in-children": "Søk i underkategorier"
+      },
+      "labels": {
+        "select": "Velg",
+        "selected": "Valgt: "
+      },
+      "placeholders": {
+        "catalog-lists": "Velg katalog"
+      },
+      "blades": {
+        "titles": {
+          "select-categories": "Velg kategorier"
+        }
+      }
+    },
+    "link-types": {
+      "manual": "Lenke",
+      "automatic": "Automatisk lenke"
+    }
+  },
+  "permissions": {
+    "catalog:access": "Åpne katalogmeny",
+    "catalog:create": "Opprett katalogrelaterte data",
+    "catalog:read": "Vis katalogrelaterte data",
+    "catalog:update": "Oppdater katalogrelaterte data",
+    "catalog:delete": "Slett katalogrelaterte data",
+    "catalog:export": "Eksporter katalogdata",
+    "catalog:import": "Importer katalogdata",
+    "measures:access": "Åpne måleenhetsmeny",
+    "measures:create": "Opprett måleenhetsrelaterte data",
+    "measures:read": "Vis måleenhetsrelaterte data",
+    "measures:update": "Oppdater måleenhetsrelaterte data",
+    "measures:delete": "Slett måleenhetsrelaterte data",
+    "catalog:metadata-property:edit": "Rediger metadata for egenskaper",
+    "catalog:custom-property:edit": "Rediger tilpassede produktegenskaper",
+    "catalog:dictionary-property:edit": "Rediger ordbokverdier for egenskap"
+  },
+  "settings": {
+    "Catalog": {
+      "ImageCategories": {
+        "description": "Ordbok over mulige kategorier av bilder for denne varen",
+        "title": "Bildekategorier"
+      },
+      "AssociationGroups": {
+        "description": "Katalogproduktassosiasjonsgrupper",
+        "title": "Assosiasjonsgruppenavn"
+      },
+      "EditorialReviewTypes": {
+        "description": "Ordbok over mulige typer beskrivelser for denne varen",
+        "title": "Varebeskrivelsestyper"
+      },
+      "UseSeoDeduplication": {
+        "description": "Aktiver eller deaktiver oppdagelse av SEO-duplikater",
+        "title": "Oppdag SEO-duplikater"
+      },
+      "CategoryDescriptionTypes": {
+        "description": "Ordbok over mulige typer beskrivelser for denne kategorien",
+        "title": "Kategoribeskrivelsestyper"
+      },
+      "AllowToCopyID": {
+        "title": "Tillat å kopiere vare-ID",
+        "description": "Aktiver for å se Kopier ID i kontekstmenyen"
+      },
+      "BrandStoreSetting": {
+        "BrandsEnabled": {
+          "title": "Aktiver merker",
+          "description": "Merke-funksjonsflagg"
+        },
+        "BrandCatalogId": {
+          "title": "Merke-katalog-ID",
+          "description": "Katalog-ID for merkene"
+        },
+        "BrandPropertyName": {
+          "title": "Merkeegenskapsnavn",
+          "description": "Egenskapsnavn for merket"
+        }
+      },
+      "Search": {
+        "UseCatalogIndexedSearchInManager": {
+          "description": "Aktiver eller deaktiver indeksert søk for katalogmodulen med avansert syntaks",
+          "title": "Bruk indeksert søk for katalog"
+        },
+        "UseFullObjectIndexStoring": {
+          "description": "Lagre serialiserte katalogobjekter i indeksen og returner dem i søkeresultatene",
+          "title": "Lagre serialiserte katalogobjekter i indeksen"
+        },
+        "DefaultAggregationSize": {
+          "description": "Angi størrelsen for aggregeringer når den ikke er definert i butikkens aggregeringsegenskaper. Sett til 0 for ubegrenset størrelse",
+          "title": "Standardverdi for aggregeringsstørrelse"
+        },
+        "EventBasedIndexation": {
+          "Enable": {
+            "title": "Aktiver hendelsesbasert indeksering for katalogentiteter",
+            "description": "Alle endringer gjort i en katalogentitet utløser en bakgrunnsoppgave som bruker disse endringene i søkeindeksen"
+          }
+        }
+      },
+      "ProductConfigurationMaximumFiles": {
+        "title": "Maksimalt antall filer i konfigurasjonsseksjonen",
+        "description": "Begrens det maksimale antallet filer i konfigurasjonsseksjonen"
+      }
+    },
+    "VirtoCommerce": {
+      "Search": {
+        "IndexingJobs": {
+          "IndexationDate": {
+            "Product": {
+              "title": "Produktindekseringsdato og -tid",
+              "description": "Dato og tidspunkt produktindekseringsoppgaven starter"
+            },
+            "Category": {
+              "title": "Kategoriindekseringsdato og -tid",
+              "description": "Dato og tidspunkt kategoriindeksering starter"
+            }
+          }
+        }
+      }
+    }
+  },
+  "module": {
+    "VirtoCommerce.Catalog": {
+      "description": "Eksporter eller importer kataloger, kategorier, produkter og egenskaper med bildebinærfiler hvis du krysser av for binær-boksen"
+    }
+  },
+  "export": {
+    "types": {
+      "VirtoCommerce.CatalogModule.Core.Model.Export.ExportableProduct": {
+        "name": "Produkter",
+        "description": "Katalogproduktdata med relaterte objekter. Støtter JSON og CSV"
+      },
+      "VirtoCommerce.CatalogModule.Core.Model.Export.ExportableCatalogFull": {
+        "name": "Katalog",
+        "description": "Katalogdata med relaterte objekter. Støtter JSON"
+      }
+    },
+    "groups": {
+      "VirtoCommerce.CatalogModule.Core.Model.Export": {
+        "name": "Katalog",
+        "description": "Kataloger, kategorier og produkter"
+      }
+    }
+  },
+  "CategoryChangeBulkAction": "Massekategoriendring",
+  "PropertiesUpdateBulkAction": "Masseegenskapsoppdatering",
+  "virtoCommerce.catalogBulkActionsModule": {
+    "blades": {
+      "hello-world": {
+        "title": "Hallo verden-blad"
+      },
+      "action-progress": {
+        "title": "Oppgavefremdrift"
+      }
+    },
+    "actions": {
+      "types": {
+        "CategoryChangeBulkAction": {
+          "title": "Endre kategori",
+          "subtitle": "Flytt produkter til en annen kategori"
+        },
+        "PropertiesUpdateBulkAction": {
+          "title": "Rediger egenskaper",
+          "subtitle": "Oppdater en eller flere egenskaper"
+        }
+      }
+    }
+  }
+}
