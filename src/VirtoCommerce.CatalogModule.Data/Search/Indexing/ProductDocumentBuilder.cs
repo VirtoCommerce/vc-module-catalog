@@ -215,7 +215,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             document.AddFilterableStringAndContentString("sku", product.Code);
             document.AddFilterableStringAndContentString("code", product.Code);
             document.AddSuggestableStringAndContentString("name", product.Name);
-            IndexLocalizedName(document, product.LocalizedName);
+            IndexLocalizedName(document, product.LocalizedName, product.Catalog?.Languages, product.Name);
             document.AddFilterableDateTime("startdate", product.StartDate);
             document.AddFilterableDateTime("enddate", product.EndDate ?? DateTime.MaxValue);
             document.AddFilterableDateTime("createddate", product.CreatedDate);
@@ -337,12 +337,14 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             IndexSeoInformation(document, variation.SeoInfos);
         }
 
+        [Obsolete("Use IndexLocalizedName(IndexDocument document, LocalizedString localizedString, LocalizedString localizedString, string fallbackValue)", DiagnosticId = "VC0011", UrlFormat = "https://docs.virtocommerce.org/platform/user-guide/versions/virto3-products-versions/")]
         protected virtual void IndexLocalizedName(IndexDocument document, LocalizedString localizedString)
         {
             if (localizedString != null)
             {
                 foreach (var languageCode in localizedString.Values.Keys)
                 {
+                    document.AddSuggestableString($"name_{languageCode}", localizedString.GetValue(languageCode));
                     document.AddContentString(localizedString.GetValue(languageCode), languageCode);
                 }
             }
