@@ -161,7 +161,7 @@
           }
         },
         "catalog-item-name": "Catalog",
-        "catalog-item-description": "This is a central point for managing your store merchandise and creating catalogs for brans, product lines, or particular suppliers",
+        "catalog-item-description": "This is a central point for managing your store merchandise and creating catalogs for brands, product lines, or particular suppliers",
         "virtual-catalog-item-name": "Virtual catalog",
         "virtual-catalog-item-description": "A virtual catalog is built from one or more physical catalogs. They are used to display products by pulling together items from different physical catalogs"
       },
@@ -278,7 +278,7 @@
         "validations": {
           "required": "This field is required",
           "maxLength": "This field must not contain more than {{max}} characters",
-          "minLenght": "This field must contain at least {{min}} characters",
+          "minLength": "This field must contain at least {{min}} characters",
           "pattern": "This field does not match the selected pattern"
         }
       },
@@ -331,8 +331,7 @@
         }
       },
       "property-type": {
-        "title": "{{name}} applies to",
-        "subtitle": "Соответствующие изменения"
+        "title": "{{name}} applies to"
       },
       "property-dictionary": {
         "title": "{{name}} dictionary",
@@ -534,7 +533,7 @@
         "create": "Create",
         "labels": {
           "content-url": "Content URL",
-          "no-apikey": "You have not provided any Google API key in the platform configuration file. The video information will be incomplete"
+          "no-apikey": "You have not provided any Google API key in the Platform configuration file. The video information will be incomplete"
         },
         "placeholders": {
           "content-url": "Enter video URL"
@@ -846,7 +845,7 @@
       "brand-setting-details": {
         "title": "Brand settings",
         "labels": {
-          "enabled": "Enable brands",
+          "enabled": "Brands page enabled",
           "catalog": "Brands catalog",
           "property": "Brands property"
         },
@@ -925,7 +924,7 @@
         "title": "Variations"
       },
       "itemDimensions": {
-        "title": "Weight and Size",
+        "title": "Weight and size",
         "weight": "Weight",
         "length": "Length",
         "width": "Width",
@@ -1001,7 +1000,7 @@
         "message": "This item has been modified. Do you want to save the changes?"
       },
       "variation-delete": {
-        "title": "Confirm Delete",
+        "title": "Confirm delete",
         "message": "Are you sure you want to delete the selected variations?"
       },
       "property-save": {
@@ -1036,7 +1035,7 @@
         "message": "Are you sure you want to delete the selected attributes?"
       },
       "image-save": {
-        "title": "Confirm Delete",
+        "title": "Confirm delete",
         "message": "These images have been modified. Do you want to save the changes?"
       },
       "video-save": {
@@ -1076,11 +1075,11 @@
         "message": "This unit of measure has been modified. Do you want to save the changes?"
       },
       "measure-unit-delete": {
-        "title": "Confirm Delete",
+        "title": "Confirm delete",
         "message": "Are you sure you want to delete the selected unit of measure?"
       },
       "measure-units-delete": {
-        "title": "Confirm Delete",
+        "title": "Confirm delete",
         "message": "Are you sure you want to delete the selected unit of measure?"
       },
       "measure-save": {
@@ -1261,64 +1260,60 @@
   "settings": {
     "Catalog": {
       "ImageCategories": {
-        "description": "Dictionary of possible categories of images for this item",
+        "description": "Dictionary of possible image category options for catalog items",
         "title": "Image categories"
       },
       "AssociationGroups": {
-        "description": "Catalog product association groups",
+        "description": "Product association group names",
         "title": "Association group names"
       },
       "EditorialReviewTypes": {
-        "description": "Dictionary of possible types of descriptions for this item",
+        "description": "Dictionary of possible descriptions types for this item",
         "title": "Item description types"
       },
       "UseSeoDeduplication": {
-        "description": "Enable or disable detecting SEO duplicates",
-        "title": "Detect SEO duplicates"
+        "description": "Enable/ disable detecting SEO duplicates",
+        "title": "SEO duplicates detection"
       },
       "CategoryDescriptionTypes": {
-        "description": "Dictionary of possible types of descriptions for this category",
+        "description": "Dictionary of possible descriptions types for this category",
         "title": "Category description types"
       },
       "AllowToCopyID": {
-        "title": "Allow to copy item's ID",
-        "description": "Enable it to see the Copy ID context menu item"
+        "title": "Copy item's ID",
+        "description": "Enable to show the 'Copy ID' option in the context menu"
       },
       "BrandStoreSetting": {
         "BrandsEnabled": {
-          "title": "Enable brands",
-          "description": "Brands feature flag"
+          "title": "Brands page display",
+          "description": "Enable/ disable the Brands page on the Frontend"
         },
         "BrandCatalogId": {
           "title": "Brand catalog ID",
-          "description": "Catalog ID for the brands"
+          "description": "Specify the catalog ID used for brands"
         },
         "BrandPropertyName": {
           "title": "Brand property name",
-          "description": "Property name for the brand"
+          "description": "Define the property name for the brand"
         }
       },
       "Search": {
         "UseCatalogIndexedSearchInManager": {
-          "description": "Enable or disable indexed search for the Catalog module with advanced syntax",
-          "title": "Use indexed search for Catalog"
+          "description": "Enable/ disable indexed search for the Catalog module with advanced syntax",
+          "title": "Indexed search for Catalog"
         },
         "UseFullObjectIndexStoring": {
-          "description": "Store serialized catalog objects in the index and return them in search results",
-          "title": "Store serialized catalog objects in the index"
-        },
-        "IndexLinkPriorityFields": {
-          "description": "Enable or disable indexing of fields that will be used to calculate the priority of linked objects in search results",
-          "title": "Enable indexing of priority fields for links"
+          "description": "Enable/ disable storing serialized catalog objects in the index and returning them in search results",
+          "title": "Storage of serialized catalog objects in the index"
         },
         "DefaultAggregationSize": {
           "description": "Specify the size for aggregations when not defined in the store's aggregation properties. Set to 0 for unlimited size",
-          "title": "Default value for aggregation size"
+          "title": "Default aggregation size"
         },
         "EventBasedIndexation": {
           "Enable": {
-            "title": "Enable event-based indexing for catalog entities",
-            "description": "Any changes made to a catalog entity trigger a background task that applies those changes to the search index"
+            "title": "Event-based indexing for catalog entities",
+            "description": "Enable/disable automatic background indexing of catalog entities whenever they are changed"
           }
         }
       },
@@ -1381,11 +1376,11 @@
     "actions": {
       "types": {
         "CategoryChangeBulkAction": {
-          "title": "Change Category",
+          "title": "Change category",
           "subtitle": "Move products to another category"
         },
         "PropertiesUpdateBulkAction": {
-          "title": "Edit Properties",
+          "title": "Edit properties",
           "subtitle": "Update one or more properties"
         }
       }
