@@ -13,6 +13,10 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 {
     public class Category : AuditableEntity, IHasLinks, ISeoSupport, IHasOutlines, IHasImages, IHasProperties, IHasTaxType, IHasName, IHasOuterId, IExportable, IHasExcludedProperties, IHasRelevanceScore
     {
+        private Category _parent;
+        private string _outline;
+        private string _path;
+
         public Category()
         {
             IsActive = true;
@@ -22,8 +26,23 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         public Catalog Catalog { get; set; }
 
         public string ParentId { get; set; }
+
         [JsonIgnore]
-        public Category Parent { get; set; }
+        public Category Parent
+        {
+            get
+            {
+                return _parent;
+            }
+            set
+            {
+                _parent = value;
+
+                _outline = null;
+                _path = null;
+            }
+        }
+
         public string Code { get; set; }
 
         public string Name { get; set; }
@@ -33,7 +52,15 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         /// <summary>
         /// Category outline in physical catalog (all parent categories ids concatenated. E.g. (1/21/344))
         /// </summary>
-        public string Outline => Parent != null ? $"{Parent.Outline}/{Id}" : Id;
+        public string Outline
+        {
+            get
+            {
+                _outline ??= _parent != null ? $"{_parent.Outline}/{Id}" : Id;
+                return _outline;
+            }
+        }
+
         /// <summary>
         /// Category path in physical catalog (all parent categories names concatenated. E.g. (parent1/parent2))
         /// </summary>
@@ -41,15 +68,15 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         {
             get
             {
-                return _path ?? (Parent != null ? $"{Parent.Path}/{Name}" : Name);
+                _path ??= _parent != null ? $"{_parent.Path}/{Name}" : Name;
+                return _path;
             }
+            [Obsolete("Computed property value should not be set", DiagnosticId = "VC0011", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions")]
             set
             {
                 _path = value;
             }
         }
-
-        private string _path;
 
         public bool IsVirtual { get; set; }
         public int Level { get; set; }
