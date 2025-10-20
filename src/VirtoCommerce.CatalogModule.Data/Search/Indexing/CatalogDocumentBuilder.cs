@@ -179,6 +179,30 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             }
         }
 
+        protected virtual void IndexLocalizedName(IndexDocument document, LocalizedString localizedString, IList<CatalogLanguage> catalogLanguages, string fallbackValue)
+        {
+            if (localizedString == null)
+            {
+                return;
+            }
+
+            var allLangauges = new List<string>(localizedString.Values.Keys).Union(catalogLanguages?.Select(x => x.LanguageCode) ?? []).Distinct();
+            foreach (var languageCode in allLangauges)
+            {
+                var localizedValue = localizedString.GetValue(languageCode);
+                if (localizedValue.IsNullOrEmpty())
+                {
+                    localizedValue = fallbackValue;
+                }
+                else
+                {
+                    document.AddContentString(localizedValue, languageCode);
+                }
+
+                document.AddSuggestableString($"name_{languageCode}", localizedValue);
+            }
+        }
+
         protected virtual string[] GetOutlineStrings(IEnumerable<Outline> outlines, bool withName = false)
         {
             return outlines
