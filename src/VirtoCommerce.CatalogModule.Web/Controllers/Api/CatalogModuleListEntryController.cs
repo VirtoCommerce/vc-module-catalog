@@ -137,7 +137,10 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("~/api/catalog/listentrylinks/search")]
         public async Task<ActionResult> SearchLinks([FromBody] LinkSearchCriteria criteria)
         {
-            var entryIds = criteria.ObjectIds?.ToArray() ?? Array.Empty<string>();
+            var objectIds = criteria.ObjectIds?.ToArray() ?? Array.Empty<string>();
+            var categoryIds = criteria.CategoryIds?.ToArray() ?? Array.Empty<string>();
+            var entryIds = objectIds.Concat(categoryIds).Distinct().ToArray();
+
             var hasLinkEntries = await LoadCatalogEntriesAsync<IHasLinks>(entryIds);
 
             var authorizationResult = await authorizationService.AuthorizeAsync(User, hasLinkEntries, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
