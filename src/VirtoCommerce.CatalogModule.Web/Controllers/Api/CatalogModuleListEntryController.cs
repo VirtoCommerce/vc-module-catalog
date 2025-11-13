@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -137,8 +136,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("~/api/catalog/listentrylinks/search")]
         public async Task<ActionResult> SearchLinks([FromBody] LinkSearchCriteria criteria)
         {
-            var objectIds = criteria.ObjectIds?.ToArray() ?? Array.Empty<string>();
-            var categoryIds = criteria.CategoryIds?.ToArray() ?? Array.Empty<string>();
+            var objectIds = criteria.ObjectIds ?? Enumerable.Empty<string>();
+            var categoryIds = criteria.CategoryIds ?? Enumerable.Empty<string>();
             var entryIds = objectIds.Concat(categoryIds).Distinct().ToArray();
 
             var hasLinkEntries = await LoadCatalogEntriesAsync<IHasLinks>(entryIds);
