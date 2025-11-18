@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <noWarn>1591</noWarn>
@@ -17,11 +17,11 @@
     <PackageReference Include="Google.Apis.YouTube.v3" Version="1.64.0.3205" />
     <PackageReference Include="HtmlSanitizer" Version="8.1.870" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
-    <PackageReference Include="VirtoCommerce.AssetsModule.Core" Version="3.808.0" />
-    <PackageReference Include="VirtoCommerce.ExportModule.Data" Version="3.803.0" />
-    <PackageReference Include="VirtoCommerce.Platform.Data" Version="3.895.0" />
-    <PackageReference Include="VirtoCommerce.Platform.Hangfire" Version="3.895.0" />
-    <PackageReference Include="VirtoCommerce.Platform.Security" Version="3.895.0" />
+    <PackageReference Include="VirtoCommerce.AssetsModule.Core" Version="3.814.0-alpha.161-vcst-4203-cleanup" />
+    <PackageReference Include="VirtoCommerce.ExportModule.Data" Version="3.808.0-alpha.258-vcst-4203-cleanup" />
+    <PackageReference Include="VirtoCommerce.Platform.Data" Version="3.916.0-alpha.13164-vcst-4203-cleanup" />
+    <PackageReference Include="VirtoCommerce.Platform.Hangfire" Version="3.916.0-alpha.13164-vcst-4203-cleanup" />
+    <PackageReference Include="VirtoCommerce.Platform.Security" Version="3.916.0-alpha.13164-vcst-4203-cleanup" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\VirtoCommerce.CatalogModule.Core\VirtoCommerce.CatalogModule.Core.csproj" />
