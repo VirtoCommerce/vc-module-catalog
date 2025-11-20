@@ -56,6 +56,7 @@ jobs:
       run-e2e: ${{ steps.run-e2e.outputs.result }}
       run-ui-tests: ${{ steps.run-ui-tests.outputs.result }}
       deployment-folder-exists: ${{ steps.check_deployment_folder.outputs.exists }}
+      requiredModuleListUrl: ${{ steps.extract_pr_url.outputs.url }}
 
     steps:
 
@@ -207,6 +208,36 @@ jobs:
             echo "result=true" >> $GITHUB_OUTPUT
           fi
 
+      - name: Extract URL from PR message
+        if: ${{ github.event_name == 'pull_request' }}
+        id: extract_pr_url
+        shell: pwsh
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          $text = $env:PR_BODY
+          $marker = 'Required modules list URL'
+          
+          $url = ''
+          if ($null -ne $text -and $text.Contains($marker)) {
+            $startIndex = $text.IndexOf($marker)
+            if ($startIndex -ge 0) {
+              $slice = $text.Substring($startIndex)
+              $match = [regex]::Match($slice, 'https?://[^ )\r\n]+')
+              if ($match.Success) {
+                $url = $match.Value
+              }
+            }
+          }
+          
+          if ([string]::IsNullOrWhiteSpace($url) -eq $false) {
+            Write-Host "url found: $url"
+            Add-Content -Path $env:GITHUB_OUTPUT -Value "url=$url"
+          } else {
+            Write-Host "url NOT found"
+            Add-Content -Path $env:GITHUB_OUTPUT -Value "url="
+          }
+
       - name: Look for xapi module in dependencies
         id: run-ui-tests
         shell: pwsh
@@ -304,6 +335,7 @@ jobs:
       installCustomModule: 'true'
       customModuleId:  ${{ needs.ci.outputs.moduleId }}
       customModuleUrl:  ${{ needs.ci.outputs.artifactUrl }}
+      customModuleListUrl: ${{ needs.ci.outputs.requiredModuleListUrl }}
       platformDockerTag: 'dev-linux-latest'
       storefrontDockerTag: 'dev-linux-latest'
     secrets:
