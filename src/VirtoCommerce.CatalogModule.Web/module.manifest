@@ -12,7 +12,7 @@
     <dependency id="VirtoCommerce.Export" version="3.808.0-alpha.258-vcst-4203-cleanup" optional="true" />
     <dependency id="VirtoCommerce.Search" version="3.820.0-alpha.795-vcst-4203-cleanup" />
     <dependency id="VirtoCommerce.Seo" version="3.811.0-alpha.56-vcst-4203-cleanup" />
-    <dependency id="VirtoCommerce.Store" version="3.823.0-alpha.751-vcst-4203-cleanup" />
+    <dependency id="VirtoCommerce.Store" version="3.823.0-alpha.763-vcst-4203-cleanup" />
   </dependencies>
 
   <title>Catalog</title>

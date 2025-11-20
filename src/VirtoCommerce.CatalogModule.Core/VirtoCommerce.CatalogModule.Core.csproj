@@ -21,6 +21,6 @@
     <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.916.0-alpha.13164-vcst-4203-cleanup" />
     <PackageReference Include="VirtoCommerce.SearchModule.Core" Version="3.820.0-alpha.795-vcst-4203-cleanup" />
     <PackageReference Include="VirtoCommerce.Seo.Core" Version="3.811.0-alpha.56-vcst-4203-cleanup" />
-    <PackageReference Include="VirtoCommerce.StoreModule.Core" Version="3.823.0-alpha.751-vcst-4203-cleanup" />
+    <PackageReference Include="VirtoCommerce.StoreModule.Core" Version="3.823.0-alpha.763-vcst-4203-cleanup" />
   </ItemGroup>
 </Project>
