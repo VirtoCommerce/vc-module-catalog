@@ -18,6 +18,9 @@ using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.StoreModule.Core.Extensions;
 using VirtoCommerce.StoreModule.Core.Services;
 using static VirtoCommerce.StoreModule.Core.ModuleConstants.Settings.SEO;
+using Aggregation = VirtoCommerce.CatalogModule.Core.Model.Search.Aggregation;
+using AggregationItem = VirtoCommerce.CatalogModule.Core.Model.Search.AggregationItem;
+using AggregationLabel = VirtoCommerce.CatalogModule.Core.Model.Search.AggregationLabel;
 using RangeFilter = VirtoCommerce.CatalogModule.Data.Search.BrowseFilters.RangeFilter;
 using RangeFilterValue = VirtoCommerce.CatalogModule.Data.Search.BrowseFilters.RangeFilterValue;
 

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
@@ -24,18 +23,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search
             IOptions<CrudOptions> crudOptions)
             : base(repositoryFactory, platformMemoryCache, crudService, crudOptions)
         {
-        }
-
-        [Obsolete("Use SearchAsync(PropertyDictionaryItemSearchCriteria searchCriteria, bool clone)", DiagnosticId = "VC0005", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions/")]
-        public async Task<PropertyDictionaryItemSearchResult> SearchAsync(PropertyDictionaryItemSearchCriteria criteria)
-        {
-            return await base.SearchAsync(criteria);
-        }
-
-        [Obsolete("Use BuildQuery(IRepository repository, PropertyDictionaryItemSearchCriteria criteria)", DiagnosticId = "VC0005", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions/")]
-        protected virtual IQueryable<PropertyDictionaryItemEntity> BuildQuery(ICatalogRepository repository, PropertyDictionaryItemSearchCriteria criteria)
-        {
-            return BuildQuery(repository as IRepository, criteria);
         }
 
         protected override IQueryable<PropertyDictionaryItemEntity> BuildQuery(IRepository repository, PropertyDictionaryItemSearchCriteria criteria)

@@ -7,6 +7,7 @@ using VirtoCommerce.CatalogModule.Data.Search.Indexing;
 using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
+using Aggregation = VirtoCommerce.CatalogModule.Core.Model.Search.Aggregation;
 
 namespace VirtoCommerce.CatalogModule2.Data.Search.Indexing
 {

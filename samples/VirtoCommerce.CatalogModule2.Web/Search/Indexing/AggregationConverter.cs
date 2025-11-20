@@ -7,6 +7,8 @@ using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
 using VirtoCommerce.CatalogModule.Data.Search.Indexing;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.StoreModule.Core.Services;
+using Aggregation = VirtoCommerce.CatalogModule.Core.Model.Search.Aggregation;
+using AggregationItem = VirtoCommerce.CatalogModule.Core.Model.Search.AggregationItem;
 using RangeFilter = VirtoCommerce.CatalogModule.Data.Search.BrowseFilters.RangeFilter;
 using RangeFilterValue = VirtoCommerce.CatalogModule.Data.Search.BrowseFilters.RangeFilterValue;
 
