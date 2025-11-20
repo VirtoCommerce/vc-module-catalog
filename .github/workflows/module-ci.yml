@@ -1,5 +1,5 @@
-# v3.800.17
-# https://virtocommerce.atlassian.net/browse/VCST-2789
+# v3.800.22
+# https://virtocommerce.atlassian.net/browse/VCST-4203
 name: Module CI
 
 on:
@@ -27,11 +27,11 @@ on:
       - '**/argoDeploy.json'
       - '**/cloudDeploy.json'
       - samples/**
-    
+
 jobs:
   ci:
-    if: ${{ github.actor != 'dependabot[bot]' && 
-        (github.event.pull_request.head.repo.full_name == github.repository || 
+    if: ${{ github.actor != 'dependabot[bot]' &&
+        (github.event.pull_request.head.repo.full_name == github.repository ||
         github.event.pull_request.head.repo.full_name == '') }}  # Check that PR not from forked repo and not from Dependabot
     runs-on: ubuntu-24.04
     env:
@@ -56,6 +56,7 @@ jobs:
       run-e2e: ${{ steps.run-e2e.outputs.result }}
       run-ui-tests: ${{ steps.run-ui-tests.outputs.result }}
       deployment-folder-exists: ${{ steps.check_deployment_folder.outputs.exists }}
+      requiredModulesListUrl: ${{ steps.extract_required_modules_list_url_from_pr.outputs.url }}
 
     steps:
 
@@ -140,7 +141,7 @@ jobs:
 
       - name: Packaging
         run: vc-build Compress -skip Clean+Restore+Compile+Test
-      
+
       - name: Publish Nuget
         if: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' }}
         uses: VirtoCommerce/vc-github-actions/publish-nuget@master
@@ -152,7 +153,7 @@ jobs:
         with:
           blobSAS: ${{ secrets.BLOB_TOKEN }}
           blobUrl: ${{ vars.BLOB_URL }}
-          
+
       - name: Add Jira link
         if: ${{ github.event_name == 'pull_request' }}
         uses: VirtoCommerce/vc-github-actions/publish-jira-link@master
@@ -177,7 +178,7 @@ jobs:
           changelog: ${{ steps.changelog.outputs.changelog }}
           organization: ${{ github.repository_owner }}
         uses: VirtoCommerce/vc-github-actions/publish-github-release@master
-        
+
       - name: Set artifactUrl value
         id: artifactUrl
         run: |
@@ -200,12 +201,42 @@ jobs:
         env:
           COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
-          if [[ "$COMMIT_MESSAGE" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; 
+          if [[ "$COMMIT_MESSAGE" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]];
           then
             echo "result=false" >> $GITHUB_OUTPUT
           else
             echo "result=true" >> $GITHUB_OUTPUT
           fi
+
+      - name: Extract required modules list URL from the pull request description
+        if: ${{ github.event_name == 'pull_request' }}
+        id: extract_required_modules_list_url_from_pr
+        shell: pwsh
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          $text = $env:PR_BODY
+          $marker = 'Required modules list URL'
+
+          $url = ''
+          if ($null -ne $text -and $text.Contains($marker)) {
+            $startIndex = $text.IndexOf($marker)
+            if ($startIndex -ge 0) {
+              $slice = $text.Substring($startIndex)
+              $match = [regex]::Match($slice, 'https?://[^ )\r\n]+')
+              if ($match.Success) {
+                $url = $match.Value
+              }
+            }
+          }
+
+          if ([string]::IsNullOrWhiteSpace($url) -eq $false) {
+            Write-Host "url found: $url"
+            Add-Content -Path $env:GITHUB_OUTPUT -Value "url=$url"
+          } else {
+            Write-Host "url NOT found"
+            Add-Content -Path $env:GITHUB_OUTPUT -Value "url="
+          }
 
       - name: Look for xapi module in dependencies
         id: run-ui-tests
@@ -231,9 +262,9 @@ jobs:
       - name: Setup Git Credentials
         if: ${{ (github.ref == 'refs/heads/dev' && github.event_name != 'workflow_dispatch') || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' }}
         uses: VirtoCommerce/vc-github-actions/setup-git-credentials-github@master
-        with: 
+        with:
           githubToken: ${{ secrets.REPO_TOKEN }}
-        
+
       - name: Publish Manifest
         if: ${{ (github.ref == 'refs/heads/dev' && github.event_name != 'workflow_dispatch') || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' }}
         uses: VirtoCommerce/vc-github-actions/publish-manifest@master
@@ -278,7 +309,7 @@ jobs:
     if: ${{ ((github.ref == 'refs/heads/dev') && (github.event_name == 'push')) ||
         (github.event_name == 'workflow_dispatch') || ((github.base_ref == 'dev') && (github.event_name == 'pull_request')) }}
     needs: 'ci'
-    uses: VirtoCommerce/.github/.github/workflows/ui-autotests.yml@v3.800.17
+    uses: VirtoCommerce/.github/.github/workflows/ui-autotests.yml@v3.800.22
     with:
       installModules: 'false'
       installCustomModule: 'true'
@@ -290,12 +321,12 @@ jobs:
     secrets:
       envPAT: ${{ secrets.REPO_TOKEN }}
       testSecretEnvFile: ${{ secrets.VC_TESTING_MODULE_ENV_FILE }}
-  
+
   module-katalon-tests:
     if: ${{ ((github.ref == 'refs/heads/dev') && (github.event_name == 'push') && (needs.ci.outputs.run-e2e == 'true')) ||
         (github.event_name == 'workflow_dispatch') || (github.base_ref == 'dev') && (github.event_name == 'pull_request') }}
     needs: 'ci'
-    uses: VirtoCommerce/.github/.github/workflows/e2e.yml@v3.800.17
+    uses: VirtoCommerce/.github/.github/workflows/e2e.yml@v3.800.22
     with:
       katalonRepo: 'VirtoCommerce/vc-quality-gate-katalon'
       katalonRepoBranch: 'dev'
@@ -304,6 +335,7 @@ jobs:
       installCustomModule: 'true'
       customModuleId:  ${{ needs.ci.outputs.moduleId }}
       customModuleUrl:  ${{ needs.ci.outputs.artifactUrl }}
+      requiredModulesListUrl: ${{ needs.ci.outputs.requiredModulesListUrl }}
       platformDockerTag: 'dev-linux-latest'
       storefrontDockerTag: 'dev-linux-latest'
     secrets:
@@ -315,7 +347,7 @@ jobs:
       && github.event_name == 'push'
       && needs.ci.outputs.deployment-folder-exists == 'true'}}
     needs: ci
-    uses: VirtoCommerce/.github/.github/workflows/deploy-cloud.yml@v3.800.17
+    uses: VirtoCommerce/.github/.github/workflows/deploy-cloud.yml@v3.800.22
     with:
       releaseSource: module
       moduleId: ${{ needs.ci.outputs.moduleId }}
