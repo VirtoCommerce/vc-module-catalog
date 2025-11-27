@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,30 +24,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         IAuthorizationService authorizationService)
         : Controller
     {
-        /// <summary>
-        /// Get Catalogs list
-        /// </summary>
-        /// <remarks>Get common and virtual Catalogs list with minimal information included. Returns array of Catalog</remarks>
-        [HttpGet]
-        [Route("")]
-        [Obsolete("use POST api/catalog/catalogs/search instead")]
-        public async Task<ActionResult<Catalog[]>> GetCatalogs(string sort = null, int skip = 0, int take = 20)
-        {
-            var criteria = AbstractTypeFactory<CatalogSearchCriteria>.TryCreateInstance();
-            criteria.Sort = sort;
-            criteria.Skip = skip;
-            criteria.Take = take;
-
-            var authorizationResult = await authorizationService.AuthorizeAsync(User, criteria, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
-            if (!authorizationResult.Succeeded)
-            {
-                return Forbid();
-            }
-
-            var result = await catalogSearchService.SearchNoCloneAsync(criteria);
-            return Ok(result.Results);
-        }
-
         [HttpPost]
         [Route("search")]
         public async Task<ActionResult<CatalogSearchResult>> SearchCatalogs([FromBody] CatalogSearchCriteria criteria)

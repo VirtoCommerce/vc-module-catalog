@@ -10,8 +10,6 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Model;
-using VirtoCommerce.CatalogModule.Core.Model.Search;
-using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Authorization;
 using VirtoCommerce.Platform.Core.Common;
@@ -24,28 +22,11 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         IPropertyService propertyService,
         ICategoryService categoryService,
         ICatalogService catalogService,
-        IPropertyDictionaryItemSearchService propertyDictionarySearchService,
         IAuthorizationService authorizationService,
         AbstractValidator<PropertyValidationRequest> propertyValidationRequestValidator,
         AbstractValidator<CategoryPropertyValidationRequest> categoryPropertyNameValidator
         ) : Controller
     {
-        /// <summary>
-        /// Gets all dictionary values that specified property can have.
-        /// </summary>
-        /// <param name="propertyId">The property id.</param>
-        /// <param name="keyword">The keyword. (Optional)</param>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("{propertyId}/values")]
-        [Obsolete("Use POST api/catalog/properties/dictionaryitems/search instead")]
-        public async Task<ActionResult<PropertyDictionaryItem[]>> GetPropertyValues(string propertyId, [FromQuery] string keyword = null)
-        {
-            var dictValues = await propertyDictionarySearchService.SearchAsync(new PropertyDictionaryItemSearchCriteria { Keyword = keyword, PropertyIds = new[] { propertyId }, Take = int.MaxValue }, clone: true);
-
-            return Ok(dictValues.Results);
-        }
-
         /// <summary>
         /// Gets property metainformation by id.
         /// </summary>

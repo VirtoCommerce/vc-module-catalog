@@ -2,7 +2,6 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <noWarn>1591</noWarn>
-    <LangVersion>latest</LangVersion>
     <IsPackable>False</IsPackable>
   </PropertyGroup>
   <PropertyGroup>

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.SearchModule.Core.Model;
+using Aggregation = VirtoCommerce.CatalogModule.Core.Model.Search.Aggregation;
 
 namespace VirtoCommerce.CatalogModule.Core.Search
 {

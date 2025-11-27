@@ -4,7 +4,6 @@ using System.Linq;
 using Newtonsoft.Json;
 using VirtoCommerce.CatalogModule.Core.Extensions;
 using VirtoCommerce.CatalogModule.Core.Outlines;
-using VirtoCommerce.CatalogModule.Core.Serialization;
 using VirtoCommerce.CoreModule.Core.Common;
 using VirtoCommerce.ExportModule.Core.Model;
 using VirtoCommerce.Platform.Core.Common;
@@ -223,10 +222,6 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         #region IHasExcludedProperties members
         public IList<ExcludedProperty> ExcludedProperties { get; set; }
         #endregion
-
-        [JsonIgnoreSerialization]
-        [Obsolete("it's for importing data from v.2, need to use values in Properties")]
-        public ICollection<PropertyValue> PropertyValues { get; set; }
 
         #region IHasImages members
         /// <summary>
