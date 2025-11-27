@@ -4,7 +4,6 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IsPackable>True</IsPackable>
     <noWarn>1591</noWarn>
-    <LangVersion>latest</LangVersion>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSymbols>true</IncludeSymbols>
@@ -16,11 +15,11 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
-    <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.823.0-alpha.1666-vcst-4203-cleanup" />
-    <PackageReference Include="VirtoCommerce.ExportModule.Core" Version="3.808.0-alpha.258-vcst-4203-cleanup" />
-    <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.916.0-alpha.13164-vcst-4203-cleanup" />
-    <PackageReference Include="VirtoCommerce.SearchModule.Core" Version="3.820.0-alpha.795-vcst-4203-cleanup" />
-    <PackageReference Include="VirtoCommerce.Seo.Core" Version="3.811.0-alpha.56-vcst-4203-cleanup" />
-    <PackageReference Include="VirtoCommerce.StoreModule.Core" Version="3.823.0-alpha.763-vcst-4203-cleanup" />
+    <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.824.0" />
+    <PackageReference Include="VirtoCommerce.ExportModule.Core" Version="3.808.0" />
+    <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.917.0" />
+    <PackageReference Include="VirtoCommerce.SearchModule.Core" Version="3.821.0" />
+    <PackageReference Include="VirtoCommerce.Seo.Core" Version="3.811.0" />
+    <PackageReference Include="VirtoCommerce.StoreModule.Core" Version="3.823.0" />
   </ItemGroup>
 </Project>
