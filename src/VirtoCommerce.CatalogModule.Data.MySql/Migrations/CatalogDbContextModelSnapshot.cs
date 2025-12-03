@@ -1501,6 +1501,9 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
                     b.Property<string>("DictionaryItemId")
                         .HasColumnType("varchar(128)");
 
+                    b.Property<int?>("DisplayOrder")
+                        .HasColumnType("int");
+
                     b.Property<int>("IntegerValue")
                         .HasColumnType("int");
 

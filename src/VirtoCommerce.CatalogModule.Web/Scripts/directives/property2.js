@@ -62,9 +62,13 @@ angular.module('virtoCommerce.catalogModule').directive('vaProperty2', ['$compil
                 if (isValuesDifferent(newValues, currentValues)) {
                     scope.currentEntity.values = angular.copy(newValues);
 
-                    //reset inherited status to force property value override
+                    var displayOrder = 0;
+
                     _.each(scope.currentEntity.values, function (x) {
                         if (x) {
+                            x.displayOrder = displayOrder++;
+
+                            //reset inherited status to force property value override
                             x.isInherited = false;
                         }
                     });
@@ -105,21 +109,26 @@ angular.module('virtoCommerce.catalogModule').directive('vaProperty2', ['$compil
                 var nonNullNewValues = newValues.filter(x => x.value);
                 var nonNullCurrentValues = currentValues.filter(x => x.value);
 
-                var elementCountIsDifferent = nonNullNewValues.length !== nonNullCurrentValues.length;
+                if (nonNullNewValues.length !== nonNullCurrentValues.length) {
+                    return true;
+                }
 
-                var elementsNotEqual = _.any(nonNullNewValues, function (newValue) {
-                    return _.all(nonNullCurrentValues, function (currentValue) {
-                        return !(newValue &&
-                            currentValue.value === newValue.value &&
-                            currentValue.colorCode === newValue.colorCode &&
-                            currentValue.languageCode === newValue.languageCode &&
-                            currentValue.unitOfMeasureId === newValue.unitOfMeasureId);
-                    });
-                });
+                if (nonNullNewValues.length > 0) {
+                    for (var i = 0; i < nonNullNewValues.length; i++) {
+                        var newValue = nonNullNewValues[i];
+                        var currentValue = nonNullCurrentValues[i];
 
-                return (elementCountIsDifferent || elementsNotEqual) &&
-                    (_.any(nonNullCurrentValues) || _.any(nonNullNewValues));
-            };
+                        if (currentValue.value !== newValue.value ||
+                            currentValue.colorCode !== newValue.colorCode ||
+                            currentValue.languageCode !== newValue.languageCode ||
+                            currentValue.unitOfMeasureId !== newValue.unitOfMeasureId) {
+                            return true;
+                        }
+                    }
+                }
+
+                return false;
+            }
 
             function needAddEmptyValue(property, values) {
                 return !property.multivalue && !property.dictionary && values.length == 0;
