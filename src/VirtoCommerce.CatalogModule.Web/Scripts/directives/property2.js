@@ -66,7 +66,8 @@ angular.module('virtoCommerce.catalogModule').directive('vaProperty2', ['$compil
 
                     _.each(scope.currentEntity.values, function (x) {
                         if (x) {
-                            x.displayOrder = displayOrder++;
+                            x.displayOrder = displayOrder;
+                            displayOrder++;
 
                             //reset inherited status to force property value override
                             x.isInherited = false;
