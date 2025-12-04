@@ -1501,6 +1501,9 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
                     b.Property<string>("DictionaryItemId")
                         .HasColumnType("character varying(128)");
 
+                    b.Property<int?>("DisplayOrder")
+                        .HasColumnType("integer");
+
                     b.Property<int>("IntegerValue")
                         .HasColumnType("integer");
 

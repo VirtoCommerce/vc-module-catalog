@@ -183,7 +183,6 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 }
             }
 
-            product.Properties = new List<Property>();
             if (convertAssociations)
             {
                 // Associations
@@ -191,24 +190,36 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 product.ReferencedAssociations = ReferencedAssociations.Select(x => x.ToReferencedAssociationModel(AbstractTypeFactory<ProductAssociation>.TryCreateInstance())).OrderBy(x => x.Priority).ToList();
             }
 
-            if (!ItemPropertyValues.IsNullOrEmpty())
+            if (ItemPropertyValues.IsNullOrEmpty())
             {
-                var propertyValues = ItemPropertyValues.OrderBy(x => x.DictionaryItem?.SortOrder)
-                                                       .ThenBy(x => x.Name)
-                                                       .SelectMany(pv => pv.ToModel(AbstractTypeFactory<PropertyValue>.TryCreateInstance()).ToList());
-
-                product.Properties = propertyValues.GroupBy(pv => pv.PropertyName).Select(values =>
-                {
-                    var property = AbstractTypeFactory<Property>.TryCreateInstance();
-                    property.Name = values.Key;
-                    property.ValueType = values.First().ValueType;
-                    property.Values = values.ToList();
-                    foreach (var propValue in property.Values)
+                product.Properties = new List<Property>();
+            }
+            else
+            {
+                product.Properties = ItemPropertyValues
+                    .GroupBy(x => x.Name)
+                    .Select(group =>
                     {
-                        propValue.Property = property;
-                    }
-                    return property;
-                }).OrderBy(x => x.Name).ToList();
+                        var values = group
+                            .OrderBy(x => x.DisplayOrder)
+                            .ThenBy(x => x.DictionaryItem?.SortOrder)
+                            .SelectMany(x => x.ToModel(AbstractTypeFactory<PropertyValue>.TryCreateInstance()))
+                            .ToList();
+
+                        var property = AbstractTypeFactory<Property>.TryCreateInstance();
+                        property.Name = group.Key;
+                        property.Values = values;
+                        property.ValueType = values.First().ValueType;
+
+                        foreach (var value in values)
+                        {
+                            value.Property = property;
+                        }
+
+                        return property;
+                    })
+                    .OrderBy(x => x.Name)
+                    .ToList();
             }
 
             if (Parent != null)
