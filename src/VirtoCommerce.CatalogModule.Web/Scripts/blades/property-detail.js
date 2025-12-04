@@ -153,35 +153,26 @@ angular.module('virtoCommerce.catalogModule')
             };
 
             function initializeBlade(data) {
-                properties.values({ propertyId: data.id }, function (response) {
-                    data.dictionaryValues = response;
-                    if (data.valueType === 'Number' && data.dictionaryValues) {
-                        _.forEach(data.dictionaryValues, function (entry) {
-                            entry.value = parseFloat(entry.value);
-                        });
-                    }
+                if (blade.propertyType) {
+                    data.type = blade.propertyType;
+                }
 
-                    if (blade.propertyType) {
-                        data.type = blade.propertyType;
-                    }
+                // sort display names by languages array
+                if (data.displayNames) {
+                    data.displayNames = _.sortBy(data.displayNames, function (x) {
+                        return _.indexOf(blade.languages, x.languageCode);
+                    });
+                }
 
-                    // sort display names by languages array
-                    if (data.displayNames) {
-                        data.displayNames = _.sortBy(data.displayNames, function (x) {
-                            return _.indexOf(blade.languages, x.languageCode);
-                        });
-                    }
+                blade.currentEntity = angular.copy(data);
 
-                    blade.currentEntity = angular.copy(data);
+                if (blade.currentEntity.type !== 'Product' && blade.currentEntity.type !== 'Variation') {
+                    blade.availableValueTypes = blade.availableValueTypes.filter(item => item.valueType !== 'Measure');
+                }
 
-                    if (blade.currentEntity.type !== 'Product' && blade.currentEntity.type !== 'Variation') {
-                        blade.availableValueTypes = blade.availableValueTypes.filter(item => item.valueType !== 'Measure');
-                    }
-
-                    blade.origEntity = data;
-                    $timeout(resetPropertyGroupSelector, 0);
-                    blade.isLoading = false;
-                });
+                blade.origEntity = data;
+                $timeout(resetPropertyGroupSelector, 0);
+                blade.isLoading = false;
             }
 
             function lockSave() {
@@ -201,7 +192,7 @@ angular.module('virtoCommerce.catalogModule')
             function canSave() {
                 return (blade.origEntity.isNew || isDirty()) && formScope && formScope.$valid && !isSaveLocked();
             }
-        
+
             function saveChanges() {
                 blade.isLoading = true;
 
@@ -292,4 +283,4 @@ angular.module('virtoCommerce.catalogModule')
 
             // actions on load    
             blade.refresh();
-    }]);
+        }]);
