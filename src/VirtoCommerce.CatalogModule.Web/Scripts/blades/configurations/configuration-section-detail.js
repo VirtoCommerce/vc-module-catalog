@@ -247,7 +247,7 @@ angular.module('virtoCommerce.catalogModule')
 
                 blade.currentEntity = angular.copy(item);
                 blade.isLoading = false;
-                $scope.sectionTypes = ['Product', 'Text', 'File'];
+                $scope.sectionTypes = ['Product', 'Variation', 'Text', 'File'];
             }
 
             initialize(blade.origEntity);

@@ -66,16 +66,20 @@ public class CatalogModuleConfigurationsController(
         // Clean up the options for sections that are not allowed to have predefined options
         foreach (var section in configuration.Sections)
         {
-            if (section.Type == ModuleConstants.ConfigurationSectionTypeText && !section.AllowPredefinedOptions)
+            switch (section.Type)
             {
-                section.Options = [];
+                // Variation type uses product variations as options, not predefined options
+                case ModuleConstants.ConfigurationSectionTypeVariation:
+                case ModuleConstants.ConfigurationSectionTypeText when !section.AllowPredefinedOptions:
+                    section.Options = [];
+                    break;
             }
         }
 
         // Only the full configuration can be active
-        // Sections with Type as ProductConfigurationSectionType.Text and ProductConfigurationSectionType.File can be whithout options
-        if (
-            configuration.Sections.IsNullOrEmpty() ||
+        // Sections with Type as Text, File, and Variation can be without predefined options.
+        // Note: Variation type is not validated here because it uses product variations from the catalog as options, not predefined options.
+        if (configuration.Sections.IsNullOrEmpty() ||
             configuration.Sections
                 .Where(x => x.Type == ModuleConstants.ConfigurationSectionTypeProduct)
                 .Any(x => x.Options.IsNullOrEmpty()) ||
