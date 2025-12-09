@@ -41,7 +41,7 @@ namespace VirtoCommerce.CatalogModule.Data.MySql
 
             while (nextLevelCategories.Count > 0)
             {
-                var nextLevelResult = new List<CategoryHierarchyItem>(GetNextLevelResult(nextLevelCategories, depth));
+                var nextLevelResult = new List<CategoryHierarchyItem>(GetNextLevelResult(nextLevelCategories, depth + 1));
 
                 result.AddRange(nextLevelResult);
 
