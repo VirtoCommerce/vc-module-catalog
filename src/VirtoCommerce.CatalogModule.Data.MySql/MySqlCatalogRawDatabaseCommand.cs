@@ -10,7 +10,7 @@ namespace VirtoCommerce.CatalogModule.Data.MySql
 {
     public class MySqlCatalogRawDatabaseCommand : ICatalogRawDatabaseCommand
     {
-        private const int BatchSize = 500;
+        private const int _batchSize = 500;
 
         public async Task<IList<string>> GetAllChildrenCategoriesIdsAsync(CatalogDbContext dbContext, IList<string> categoryIds)
         {
@@ -37,17 +37,6 @@ namespace VirtoCommerce.CatalogModule.Data.MySql
 
             var parentLookup = allChildCategories.ToLookup(item => item.ParentCategoryId, item => item.Id);
 
-            IEnumerable<CategoryHierarchyItem> GetNextLevelResult(ISet<string> parentCategoryIds, int depth)
-            {
-                foreach (var id in parentCategoryIds)
-                {
-                    foreach (var childId in parentLookup[id])
-                    {
-                        yield return new CategoryHierarchyItem { Id = childId, ParentCategoryId = id, Depth = depth };
-                    }
-                }
-            }
-
             var depth = 0;
 
             while (nextLevelCategories.Count > 0)
@@ -58,9 +47,21 @@ namespace VirtoCommerce.CatalogModule.Data.MySql
 
                 nextLevelCategories.Clear();
                 nextLevelCategories.UnionWith(nextLevelResult.Select(x => x.Id));
+                depth++;
             }
 
             return result;
+
+            IEnumerable<CategoryHierarchyItem> GetNextLevelResult(ISet<string> parentCategoryIds, int depthParam)
+            {
+                foreach (var id in parentCategoryIds)
+                {
+                    foreach (var childId in parentLookup[id])
+                    {
+                        yield return new CategoryHierarchyItem { Id = childId, ParentCategoryId = id, Depth = depthParam };
+                    }
+                }
+            }
         }
 
         public async Task<IList<string>> GetAllSeoDuplicatesIdsAsync(CatalogDbContext dbContext)
@@ -70,23 +71,22 @@ namespace VirtoCommerce.CatalogModule.Data.MySql
                         SELECT b.Id from (SELECT MIN(c.Id)  as Id FROM CatalogSeoInfo as c GROUP BY c.Keyword, c.StoreId) b)
                 ";
 
-            var command = CreateCommand(commandTemplate, Array.Empty<string>());
+            var command = CreateCommand(commandTemplate, []);
             var result = await dbContext.ExecuteArrayAsync<string>(command.Text, command.Parameters.ToArray());
 
-            return result ?? Array.Empty<string>();
+            return result ?? [];
         }
 
         protected virtual async Task<List<AssociationEntity>> GetCategoriesAssociationsAsync(CatalogDbContext dbContext, IReadOnlyDictionary<string, string> associationsToCategories)
         {
             if (associationsToCategories.IsNullOrEmpty())
             {
-                return new List<AssociationEntity>();
+                return [];
             }
 
             var result = new List<AssociationEntity>();
 
-            var commandTemplate =
-                @"SELECT CONVERT( UUID(), char(128) ) AS Id,
+            const string commandTemplate = @"SELECT CONVERT( UUID(), char(128) ) AS Id,
                          AssociationType, Priority, Quantity, Tags, OuterId, a.ItemId AS ItemId,
                          itemIds.ItemId AS AssociatedItemId,
                          AssociatedCategoryId,
@@ -152,7 +152,7 @@ namespace VirtoCommerce.CatalogModule.Data.MySql
             }
         }
 
-        private static readonly AssociationEntityComparer AssociationComparer = new();
+        private static readonly AssociationEntityComparer _associationComparer = new();
 
         public async Task<GenericSearchResult<AssociationEntity>> SearchAssociations(CatalogDbContext dbContext, ProductAssociationSearchCriteria criteria)
         {
@@ -208,33 +208,33 @@ namespace VirtoCommerce.CatalogModule.Data.MySql
             resultList.RemoveAll(item => item.AssociatedItemId == null);
 
             // Remove duplicate associations if any
-            var finalResultList = resultList.Distinct(AssociationComparer).ToList();
+            var finalResultList = resultList.Distinct(_associationComparer).ToList();
 
             // The ordering is required to get the same result list in case of multiple requests with the same search criteria
             result.TotalCount = finalResultList.Count;
             result.Results = criteria.Take > 0
                 ? finalResultList.OrderBy(item => item.Priority)
-                            .ThenBy(item => item.ItemId)
-                            .ThenBy(item => item.AssociatedItemId)
-                            .Skip(criteria.Skip)
-                            .Take(criteria.Take)
-                            .ToList()
-                : new List<AssociationEntity>();
+                    .ThenBy(item => item.ItemId)
+                    .ThenBy(item => item.AssociatedItemId)
+                    .Skip(criteria.Skip)
+                    .Take(criteria.Take)
+                    .ToList()
+                : [];
 
             return result;
         }
 
         public async Task<IList<CategoryEntity>> SearchCategoriesHierarchyAsync(CatalogDbContext dbContext, string categoryId)
         {
-            var commandTemplate = @"
-                     SELECT t2.* FROM (
-                     SELECT @r AS _id,
-                          (SELECT @r := ParentCategoryId FROM Category WHERE Id = _id) AS _parent_id,
-                          @l := @l + 1 AS level
-                     FROM (SELECT @r := @categoryId, @l := 0) val, Category
-                     WHERE @r IS NOT NULL ) t1
-                     JOIN Category t2
-                     ON t1._id = t2.Id";
+            const string commandTemplate = @"
+                 SELECT t2.* FROM (
+                 SELECT @r AS _id,
+                      (SELECT @r := ParentCategoryId FROM Category WHERE Id = _id) AS _parent_id,
+                      @l := @l + 1 AS level
+                 FROM (SELECT @r := @categoryId, @l := 0) val, Category
+                 WHERE @r IS NOT NULL ) t1
+                 JOIN Category t2
+                 ON t1._id = t2.Id";
 
             var categoryIdParam = new MySqlParameter("@categoryId", categoryId);
             var result = await dbContext.Set<CategoryEntity>().FromSqlRaw(commandTemplate, categoryIdParam).ToListAsync();
@@ -244,21 +244,20 @@ namespace VirtoCommerce.CatalogModule.Data.MySql
 
         public async Task RemoveAllPropertyValuesAsync(CatalogDbContext dbContext, PropertyEntity catalogProperty, PropertyEntity categoryProperty, PropertyEntity itemProperty)
         {
-            FormattableString commandText;
             if (catalogProperty != null)
             {
-                commandText = $"DELETE PV FROM PropertyValue PV INNER JOIN Catalog C ON C.Id = PV.CatalogId AND C.Id = '{catalogProperty.CatalogId}' WHERE PV.Name = '{catalogProperty.Name}'";
-                await dbContext.Database.ExecuteSqlInterpolatedAsync(commandText);
+                await dbContext.Database.ExecuteSqlInterpolatedAsync(
+                    $"DELETE PV FROM PropertyValue PV INNER JOIN Catalog C ON C.Id = PV.CatalogId AND C.Id = {catalogProperty.CatalogId} WHERE PV.Name = {catalogProperty.Name}");
             }
             if (categoryProperty != null)
             {
-                commandText = $"DELETE PV FROM PropertyValue PV INNER JOIN Category C ON C.Id = PV.CategoryId AND C.CatalogId = '{categoryProperty.CatalogId}' WHERE PV.Name = '{categoryProperty.Name}'";
-                await dbContext.Database.ExecuteSqlInterpolatedAsync(commandText);
+                await dbContext.Database.ExecuteSqlInterpolatedAsync(
+                    $"DELETE PV FROM PropertyValue PV INNER JOIN Category C ON C.Id = PV.CategoryId AND C.CatalogId = {categoryProperty.CatalogId} WHERE PV.Name = {categoryProperty.Name}");
             }
             if (itemProperty != null)
             {
-                commandText = $"DELETE PV FROM PropertyValue PV INNER JOIN Item I ON I.Id = PV.ItemId AND I.CatalogId = '{itemProperty.CatalogId}' WHERE PV.Name = '{itemProperty.Name}'";
-                await dbContext.Database.ExecuteSqlInterpolatedAsync(commandText);
+                await dbContext.Database.ExecuteSqlInterpolatedAsync(
+                    $"DELETE PV FROM PropertyValue PV INNER JOIN Item I ON I.Id = PV.ItemId AND I.CatalogId = {itemProperty.CatalogId} WHERE PV.Name = {itemProperty.Name}");
             }
         }
 
@@ -269,16 +268,17 @@ namespace VirtoCommerce.CatalogModule.Data.MySql
                 return;
             }
 
-            const string commandTemplate = @"
+            const string commandTemplate =
+                """
                 DELETE FROM CatalogLanguage WHERE CatalogId IN ({0});
                 DELETE FROM CategoryRelation WHERE TargetCatalogId IN ({0});
                 DELETE FROM CategoryItemRelation WHERE CatalogId IN ({0});
                 DELETE FROM PropertyValue WHERE CatalogId IN ({0});
                 DELETE FROM Property WHERE CatalogId IN ({0});
                 DELETE FROM Catalog WHERE Id IN ({0});
-                ";
+                """;
 
-            foreach (var idsPage in ids.Paginate(BatchSize))
+            foreach (var idsPage in ids.Paginate(_batchSize))
             {
                 await ExecuteSqlQueryAsync(dbContext, commandTemplate, idsPage);
             }
@@ -291,7 +291,8 @@ namespace VirtoCommerce.CatalogModule.Data.MySql
                 return;
             }
 
-            const string commandTemplate = @"
+            const string commandTemplate =
+                """
                 DELETE FROM CatalogSeoInfo WHERE CategoryId IN ({0});
                 DELETE FROM CatalogImage WHERE CategoryId IN ({0});
                 DELETE FROM PropertyValue WHERE CategoryId IN ({0});
@@ -301,9 +302,9 @@ namespace VirtoCommerce.CatalogModule.Data.MySql
                 DELETE FROM Property WHERE CategoryId IN ({0});
                 DELETE FROM CategoryDescription WHERE CategoryId IN ({0});
                 DELETE FROM Category WHERE Id IN ({0});
-                ";
+                """;
 
-            foreach (var idsPage in ids.Paginate(BatchSize))
+            foreach (var idsPage in ids.Paginate(_batchSize))
             {
                 await ExecuteSqlQueryAsync(dbContext, commandTemplate, idsPage);
             }
@@ -316,7 +317,8 @@ namespace VirtoCommerce.CatalogModule.Data.MySql
                 return;
             }
 
-            const string commandTemplate = @"
+            const string commandTemplate =
+                """
                 DELETE SEO FROM CatalogSeoInfo SEO INNER JOIN Item I ON I.Id = SEO.ItemId
                 WHERE I.Id IN ({0}) OR I.ParentId IN ({0});
 
@@ -346,13 +348,12 @@ namespace VirtoCommerce.CatalogModule.Data.MySql
                 DELETE FROM Item WHERE ParentId IN ({0});
 
                 DELETE FROM Item WHERE Id IN ({0});
-                ";
+                """;
 
-            foreach (var itemIdsPage in itemIds.Paginate(BatchSize))
+            foreach (var idsPage in itemIds.Paginate(_batchSize))
             {
                 // Process items in batches to avoid command length limits
-                await ExecuteSqlQueryAsync(dbContext, commandTemplate, itemIdsPage);
-
+                await ExecuteSqlQueryAsync(dbContext, commandTemplate, idsPage);
             }
         }
 
@@ -375,18 +376,17 @@ namespace VirtoCommerce.CatalogModule.Data.MySql
                     Parameters = parameters.OfType<object>().ToList(),
                 };
             }
-            else
+
+            return new Command
             {
-                return new Command
-                {
-                    Text = commandTemplate
-                };
-            }
+                Text = commandTemplate,
+            };
         }
 
         protected class Command
         {
             public string Text { get; set; } = string.Empty;
+
             public IList<object> Parameters { get; set; } = new List<object>();
         }
     }
