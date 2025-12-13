@@ -556,6 +556,34 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         }
 
         /// <summary>
+        /// Executes the specified operation in a transaction with extended timeout (15 minutes).
+        /// Uses ExecutionStrategy for compatibility with retry logic.
+        /// </summary>
+        /// <param name="operation">The operation to execute within the transaction.</param>
+        protected virtual async Task ExecuteInTransactionWithTimeoutAsync(Func<Task> operation)
+        {
+            var strategy = DbContext.Database.CreateExecutionStrategy();
+            await strategy.ExecuteAsync(async () =>
+            {
+                // Increase timeout for heavy delete operations (15 minutes)
+                var previousTimeout = DbContext.Database.GetCommandTimeout();
+                DbContext.Database.SetCommandTimeout(900);
+
+                try
+                {
+                    await using var transaction = await DbContext.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
+
+                    await operation();
+                    await transaction.CommitAsync();
+                }
+                finally
+                {
+                    DbContext.Database.SetCommandTimeout(previousTimeout);
+                }
+            });
+        }
+
+        /// <summary>
         /// Internal method to remove items without transaction management.
         /// Used for composition within other transactional methods.
         /// </summary>
@@ -575,14 +603,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 return;
             }
 
-            var strategy = DbContext.Database.CreateExecutionStrategy();
-            await strategy.ExecuteAsync(async () =>
-            {
-                await using var transaction = await DbContext.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
-
-                await RemoveItemsInternalAsync(itemIds);
-                await transaction.CommitAsync();
-            });
+            await ExecuteInTransactionWithTimeoutAsync(() => RemoveItemsInternalAsync(itemIds));
         }
 
         /// <summary>
@@ -630,25 +651,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 return;
             }
 
-            var strategy = DbContext.Database.CreateExecutionStrategy();
-            await strategy.ExecuteAsync(async () =>
-            {
-                // Increase timeout for heavy delete operations (15 minutes)
-                var previousTimeout = DbContext.Database.GetCommandTimeout();
-                DbContext.Database.SetCommandTimeout(900);
-
-                try
-                {
-                    await using var transaction = await DbContext.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
-
-                    await RemoveCategoriesInternalAsync(ids);
-                    await transaction.CommitAsync();
-                }
-                finally
-                {
-                    DbContext.Database.SetCommandTimeout(previousTimeout);
-                }
-            });
+            await ExecuteInTransactionWithTimeoutAsync(() => RemoveCategoriesInternalAsync(ids));
         }
 
         /// <summary>
@@ -662,42 +665,26 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 return;
             }
 
-            var strategy = DbContext.Database.CreateExecutionStrategy();
-            await strategy.ExecuteAsync(async () =>
+            await ExecuteInTransactionWithTimeoutAsync(async () =>
             {
-                // Increase timeout for heavy delete operations (15 minutes)
-                var previousTimeout = DbContext.Database.GetCommandTimeout();
-                DbContext.Database.SetCommandTimeout(900);
+                // remove products from catalog root
+                var itemIds = await Items
+                    .Where(i => i.CategoryId == null && ids.Contains(i.CatalogId))
+                    .Select(i => i.Id)
+                    .ToListAsync();
 
-                try
-                {
-                    await using var transaction = await DbContext.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
+                await RemoveItemsInternalAsync(itemIds);
 
-                    // remove products from catalog root
-                    var itemIds = await Items
-                        .Where(i => i.CategoryId == null && ids.Contains(i.CatalogId))
-                        .Select(i => i.Id)
-                        .ToListAsync();
+                // Load only root categories of catalogs to remove them recursively
+                var categoryIds = await Categories
+                    .Where(c => c.ParentCategoryId == null && ids.Contains(c.CatalogId))
+                    .Select(c => c.Id)
+                    .ToListAsync();
 
-                    await RemoveItemsInternalAsync(itemIds);
+                await RemoveCategoriesInternalAsync(categoryIds);
 
-                    // Load only root categories of catalogs to remove them recursively
-                    var categoryIds = await Categories
-                        .Where(c => c.ParentCategoryId == null && ids.Contains(c.CatalogId))
-                        .Select(c => c.Id)
-                        .ToListAsync();
-
-                    await RemoveCategoriesInternalAsync(categoryIds);
-
-                    // Remove catalogs
-                    await _rawDatabaseCommand.RemoveCatalogsAsync(DbContext, ids);
-
-                    await transaction.CommitAsync();
-                }
-                finally
-                {
-                    DbContext.Database.SetCommandTimeout(previousTimeout);
-                }
+                // Remove catalogs
+                await _rawDatabaseCommand.RemoveCatalogsAsync(DbContext, ids);
             });
         }
 
@@ -713,8 +700,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             var strategy = DbContext.Database.CreateExecutionStrategy();
             await strategy.ExecuteAsync(async () =>
             {
-                await using var transaction = await DbContext.Database.BeginTransactionAsync(
-                    IsolationLevel.ReadCommitted);
+                await using var transaction = await DbContext.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
 
                 var properties = await GetPropertiesByIdsAsync([propertyId]);
 
