@@ -18,6 +18,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
     {
         private readonly ICatalogRawDatabaseCommand _rawDatabaseCommand;
         private const int _pageSize = 500;
+        private const int _commandTimeoutInSeconds = 900; // 15 minutes for heavy operations
 
         public CatalogRepositoryImpl(CatalogDbContext dbContext, ICatalogRawDatabaseCommand rawDatabaseCommand)
             : base(dbContext)
@@ -559,15 +560,14 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         /// Executes the specified operation in a transaction with extended timeout (15 minutes).
         /// Uses ExecutionStrategy for compatibility with retry logic.
         /// </summary>
-        /// <param name="operation">The operation to execute within the transaction.</param>
-        protected virtual async Task ExecuteInTransactionWithTimeoutAsync(Func<Task> operation)
+        protected virtual async Task ExecuteInTransactionWithTimeoutAsync(Func<Task> operation, int? timeoutInSeconds = null)
         {
             var strategy = DbContext.Database.CreateExecutionStrategy();
             await strategy.ExecuteAsync(async () =>
             {
                 // Increase timeout for heavy delete operations (15 minutes)
                 var previousTimeout = DbContext.Database.GetCommandTimeout();
-                DbContext.Database.SetCommandTimeout(900);
+                DbContext.Database.SetCommandTimeout(timeoutInSeconds ?? _commandTimeoutInSeconds);
 
                 try
                 {
@@ -834,13 +834,14 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         {
             return entry.Entity switch
             {
-                AssociationEntity { ItemId: null, AssociatedItemId: null, AssociatedCategoryId: null }
-                    or CategoryItemRelationEntity { ItemId: null, CategoryId: null, CatalogId: null }
-                    or CategoryRelationEntity { SourceCategoryId: null, TargetCatalogId: null, TargetCategoryId: null }
-                    or ImageEntity { ItemId: null, CategoryId: null } or Property { CatalogId: null, CategoryId: null }
-                    or ProductConfigurationOptionEntity { SectionId: null, ProductId: null }
-                    or PropertyValueEntity { ItemId: null, CategoryId: null, CatalogId: null, DictionaryItemId: null }
-                    or SeoInfoEntity { ItemId: null, CategoryId: null, CatalogId: null } => true,
+                AssociationEntity { ItemId: null, AssociatedItemId: null, AssociatedCategoryId: null } => true,
+                CategoryItemRelationEntity { ItemId: null, CategoryId: null, CatalogId: null } => true,
+                CategoryRelationEntity { SourceCategoryId: null, TargetCatalogId: null, TargetCategoryId: null } => true,
+                ImageEntity { ItemId: null, CategoryId: null } => true,
+                Property { CatalogId: null, CategoryId: null } => true,
+                PropertyValueEntity { ItemId: null, CategoryId: null, CatalogId: null, DictionaryItemId: null } => true,
+                SeoInfoEntity { ItemId: null, CategoryId: null, CatalogId: null } => true,
+                ProductConfigurationOptionEntity { SectionId: null, ProductId: null } => true,
                 _ => false,
             };
         }
