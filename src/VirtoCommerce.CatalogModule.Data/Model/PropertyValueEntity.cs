@@ -45,6 +45,8 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         [StringLength(32)]
         public string ColorCode { get; set; }
 
+        public int? DisplayOrder { get; set; }
+
         #region Navigation Properties
 
         public string ItemId { get; set; }
@@ -81,7 +83,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             propValue.ValueType = (PropertyValueType)ValueType;
             propValue.Value = DictionaryItem != null ? DictionaryItem.Alias : GetValue(propValue.ValueType);
             propValue.Alias = DictionaryItem?.Alias;
-            propValue.DisplayOrder = DictionaryItem?.SortOrder;
+            propValue.DisplayOrder = DisplayOrder;
             propValue.UnitOfMeasureId = UnitOfMeasureId;
             propValue.ColorCode = ColorCode;
 
@@ -155,6 +157,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             Locale = !string.IsNullOrEmpty(DictionaryItemId) ? null : propValue.LanguageCode;
             UnitOfMeasureId = propValue.UnitOfMeasureId;
             ColorCode = propValue.ColorCode;
+            DisplayOrder = propValue.DisplayOrder;
 
             return this;
         }
@@ -173,6 +176,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             target.ValueType = ValueType;
             target.UnitOfMeasureId = UnitOfMeasureId;
             target.ColorCode = ColorCode;
+            target.DisplayOrder = DisplayOrder;
         }
 
         protected virtual object GetValue(PropertyValueType valueType)
