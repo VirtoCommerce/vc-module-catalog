@@ -119,6 +119,23 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             }
 
             var commonFieldName = rangeFilter.GetIndexFieldName();
+            return BaseGetPriceRangeFilterAggregationRequests(commonFieldName, rangeFilter, existingFilters, randeFilters);
+        }
+
+        protected virtual IList<AggregationRequest> GetPriceRangeFilterAggregationRequests(PriceRangeFilter priceRangeFilter, ProductIndexedSearchCriteria criteria, IList<IFilter> existingFilters)
+        {
+            var priceRangeFilters = priceRangeFilter.Values?.Select(v => GetPriceRangeFilterValueAggregationRequest(priceRangeFilter, v, existingFilters, criteria.Pricelists)).ToList();
+            if (priceRangeFilters == null)
+            {
+                return new List<AggregationRequest>();
+            }
+
+            var commonFieldName = StringsHelper.JoinNonEmptyStrings("_", "price", priceRangeFilter.Currency).ToLowerInvariant();
+            return BaseGetPriceRangeFilterAggregationRequests(commonFieldName, priceRangeFilter, existingFilters, priceRangeFilters);
+        }
+
+        private static IList<AggregationRequest> BaseGetPriceRangeFilterAggregationRequests(string commonFieldName, IBrowseFilter rangeFilter, IList<IFilter> existingFilters, List<AggregationRequest> randeFilters)
+        {
             var ranges = randeFilters.OfType<RangeAggregationRequest>().SelectMany(x => x.Values).ToList();
             var ids = string.Join('-', ranges.Select(x => x.Id));
 
@@ -153,47 +170,9 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             return result;
         }
 
-        protected virtual IList<AggregationRequest> GetPriceRangeFilterAggregationRequests(PriceRangeFilter priceRangeFilter, ProductIndexedSearchCriteria criteria, IList<IFilter> existingFilters)
-        {
-            var priceRangeFilters = priceRangeFilter.Values?.Select(v => GetPriceRangeFilterValueAggregationRequest(priceRangeFilter, v, existingFilters, criteria.Pricelists)).ToList();
-            if (priceRangeFilters == null)
-            {
-                return new List<AggregationRequest>();
-            }
-
-            var commonFieldName = StringsHelper.JoinNonEmptyStrings("_", "price", priceRangeFilter.Currency).ToLowerInvariant();
-            var ranges = priceRangeFilters.OfType<RangeAggregationRequest>().SelectMany(x => x.Values).ToList();
-            var ids = string.Join('-', ranges.Select(x => x.Id));
-
-            var result = new RangeAggregationRequest
-            {
-                Id = $"{priceRangeFilter.Key}-{ids}",
-                Filter = existingFilters.And(),
-                FieldName = commonFieldName,
-                Values = ranges,
-            };
-
-            return new List<AggregationRequest> { result };
-        }
-
         protected virtual AggregationRequest GetPriceRangeFilterValueAggregationRequest(PriceRangeFilter priceRangeFilter, RangeFilterValue value, IEnumerable<IFilter> existingFilters, IList<string> pricelists)
         {
-            var result = new RangeAggregationRequest
-            {
-                Values = new List<RangeAggregationRequestValue>
-                {
-                    new RangeAggregationRequestValue
-                    {
-                        Id = value.Id,
-                        IncludeLower = value.IncludeLower,
-                        IncludeUpper = value.IncludeUpper,
-                        Lower = value.Lower,
-                        Upper = value.Upper,
-                    },
-                },
-            };
-
-            return result;
+            return GetRangeFilterValueAggregationRequest("price", value, existingFilters);
         }
 
         #endregion
