@@ -13,8 +13,8 @@ public static class DbContextExtension
 {
     public static async Task<T[]> ExecuteEntityArrayAsync<T>(this DbContext context, string rawSql, params object[] parameters) where T : new()
     {
-        var conn = context.Database.GetDbConnection();
-        await using var command = conn.CreateCommand();
+        var connection = context.Database.GetDbConnection();
+        await using var command = connection.CreateCommand();
 
         command.CommandText = rawSql;
         if (parameters != null)
@@ -31,9 +31,9 @@ public static class DbContextExtension
             command.Transaction = context.Database.CurrentTransaction.GetDbTransaction();
         }
 
-        if (conn.State != ConnectionState.Open)
+        if (connection.State != ConnectionState.Open)
         {
-            await conn.OpenAsync();
+            await connection.OpenAsync();
         }
 
         var result = new List<T>();

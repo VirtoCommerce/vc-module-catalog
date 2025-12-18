@@ -627,7 +627,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             {
                 var categoryIdsToRemove = depthGroup.Select(x => x.Id).ToList();
 
-                // Remove all products that belong to categories to remove
+                // Remove all products that belong to the categories being removed
                 var itemIds = await Items
                     .Where(i => categoryIdsToRemove.Contains(i.CategoryId))
                     .Select(i => i.Id)
