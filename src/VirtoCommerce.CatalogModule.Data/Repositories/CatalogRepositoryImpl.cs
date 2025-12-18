@@ -557,30 +557,17 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         }
 
         /// <summary>
-        /// Executes the specified operation in a transaction with extended timeout (15 minutes).
+        /// Public method to remove items with transaction management.
         /// Uses ExecutionStrategy for compatibility with retry logic.
         /// </summary>
-        protected virtual async Task ExecuteInTransactionWithTimeoutAsync(Func<Task> operation, int? timeoutInSeconds = null)
+        public virtual async Task RemoveItemsAsync(IList<string> itemIds)
         {
-            var strategy = DbContext.Database.CreateExecutionStrategy();
-            await strategy.ExecuteAsync(async () =>
+            if (itemIds.IsNullOrEmpty())
             {
-                // Increase timeout for heavy delete operations (15 minutes)
-                var previousTimeout = DbContext.Database.GetCommandTimeout();
-                DbContext.Database.SetCommandTimeout(timeoutInSeconds ?? _commandTimeoutInSeconds);
+                return;
+            }
 
-                try
-                {
-                    await using var transaction = await DbContext.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
-
-                    await operation();
-                    await transaction.CommitAsync();
-                }
-                finally
-                {
-                    DbContext.Database.SetCommandTimeout(previousTimeout);
-                }
-            });
+            await ExecuteInTransactionWithTimeoutAsync(() => RemoveItemsInternalAsync(itemIds));
         }
 
         /// <summary>
@@ -593,17 +580,17 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         }
 
         /// <summary>
-        /// Public method to remove items with transaction management.
+        /// Public method to remove categories with transaction management.
         /// Uses ExecutionStrategy for compatibility with retry logic.
         /// </summary>
-        public virtual async Task RemoveItemsAsync(IList<string> itemIds)
+        public virtual async Task RemoveCategoriesAsync(IList<string> ids)
         {
-            if (itemIds.IsNullOrEmpty())
+            if (ids.IsNullOrEmpty())
             {
                 return;
             }
 
-            await ExecuteInTransactionWithTimeoutAsync(() => RemoveItemsInternalAsync(itemIds));
+            await ExecuteInTransactionWithTimeoutAsync(() => RemoveCategoriesInternalAsync(ids));
         }
 
         /// <summary>
@@ -641,20 +628,6 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         }
 
         /// <summary>
-        /// Public method to remove categories with transaction management.
-        /// Uses ExecutionStrategy for compatibility with retry logic.
-        /// </summary>
-        public virtual async Task RemoveCategoriesAsync(IList<string> ids)
-        {
-            if (ids.IsNullOrEmpty())
-            {
-                return;
-            }
-
-            await ExecuteInTransactionWithTimeoutAsync(() => RemoveCategoriesInternalAsync(ids));
-        }
-
-        /// <summary>
         /// Public method to remove catalogs with transaction management.
         /// Uses ExecutionStrategy for compatibility with retry logic.
         /// </summary>
@@ -688,7 +661,6 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             });
         }
 
-
         /// <summary>
         /// Delete all existing property values that belong to given property.
         /// Because PropertyValue table doesn't have a foreign key to Property table by design,
@@ -714,6 +686,33 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 await _rawDatabaseCommand.RemoveAllPropertyValuesAsync(DbContext, catalogProperty, categoryProperty, itemProperty);
 
                 await transaction.CommitAsync();
+            });
+        }
+
+        /// <summary>
+        /// Executes the specified operation in a transaction with extended timeout (15 minutes).
+        /// Uses ExecutionStrategy for compatibility with retry logic.
+        /// </summary>
+        protected virtual async Task ExecuteInTransactionWithTimeoutAsync(Func<Task> operation, int? timeoutInSeconds = null)
+        {
+            var strategy = DbContext.Database.CreateExecutionStrategy();
+            await strategy.ExecuteAsync(async () =>
+            {
+                // Increase timeout for heavy delete operations (15 minutes)
+                var previousTimeout = DbContext.Database.GetCommandTimeout();
+                DbContext.Database.SetCommandTimeout(timeoutInSeconds ?? _commandTimeoutInSeconds);
+
+                try
+                {
+                    await using var transaction = await DbContext.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
+
+                    await operation();
+                    await transaction.CommitAsync();
+                }
+                finally
+                {
+                    DbContext.Database.SetCommandTimeout(previousTimeout);
+                }
             });
         }
 
