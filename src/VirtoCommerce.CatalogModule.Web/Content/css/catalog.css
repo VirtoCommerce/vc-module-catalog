@@ -390,6 +390,6 @@ vc-item-search {
 }
 
 /* Show move cursor for sortable ui-select values */
-.ui-select-multiple[sortable="true"] .ui-select-match-item {
+.ui-select-multiple[sortable="true"] .ui-select-match-item:not(.btn-default) {
   cursor: move;
 }
