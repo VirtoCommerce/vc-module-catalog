@@ -388,3 +388,8 @@ vc-item-search {
   height: 0;
   position: absolute;
 }
+
+/* Show move cursor for sortable ui-select values */
+.ui-select-multiple[sortable="true"] .ui-select-match-item:not(.btn-default) {
+  cursor: move;
+}
