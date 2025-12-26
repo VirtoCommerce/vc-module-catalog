@@ -87,8 +87,9 @@ namespace VirtoCommerce.CatalogModule.Tests
             var catalogService = new Mock<ICatalogService>();
             var dictService = new Mock<IPropertyDictionaryItemSearchService>();
             var singleProductUpdateManager = new PropertyUpdateManager(dictService.Object);
+            var propertyService = new Mock<IPropertyService>();
 
-            var manager = new BulkPropertyUpdateManager(dataSourceFactory.Object, itemService.Object, categoryService.Object, catalogService.Object, singleProductUpdateManager);
+            var manager = new BulkPropertyUpdateManager(dataSourceFactory.Object, itemService.Object, categoryService.Object, catalogService.Object, singleProductUpdateManager, propertyService.Object);
             return manager;
         }
 
@@ -99,8 +100,9 @@ namespace VirtoCommerce.CatalogModule.Tests
             var catalogService = new Mock<ICatalogService>();
             var dictService = new Mock<IPropertyDictionaryItemSearchService>();
             var singleProductUpdateManager = new PropertyUpdateManager(dictService.Object);
+            var propertyService = new Mock<IPropertyService>();
 
-            var manager = new BulkPropertyUpdateManager(dataSourceFactory.Object, itemService.Object, categoryService.Object, catalogService.Object, singleProductUpdateManager);
+            var manager = new BulkPropertyUpdateManager(dataSourceFactory.Object, itemService.Object, categoryService.Object, catalogService.Object, singleProductUpdateManager, propertyService.Object);
             return manager;
         }
 
@@ -109,9 +111,10 @@ namespace VirtoCommerce.CatalogModule.Tests
             var categoryService = new Mock<ICategoryService>();
             var catalogService = new Mock<ICatalogService>();
             var dictService = new Mock<IPropertyDictionaryItemSearchService>();
+            var propertyService = new Mock<IPropertyService>();
             var singleProductUpdateManager = new PropertyUpdateManager(dictService.Object);
 
-            var manager = new BulkPropertyUpdateManager(dataSourceFactory.Object, itemService.Object, categoryService.Object, catalogService.Object, singleProductUpdateManager);
+            var manager = new BulkPropertyUpdateManager(dataSourceFactory.Object, itemService.Object, categoryService.Object, catalogService.Object, singleProductUpdateManager, propertyService.Object);
             return manager;
         }
     }
