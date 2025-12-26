@@ -55,7 +55,12 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
                 return result.ToArray();
             }
 
-            var entries = baseContext.DataQuery.ListEntries;
+            var entries = baseContext.DataQuery?.ListEntries.ToList() ?? [];
+
+            if (entries.Count == 0)
+            {
+                return result.ToArray();
+            }
 
             var categories = entries
                 .Where(entry => entry.Type.EqualsIgnoreCase(CategoryListEntry.TypeName))
