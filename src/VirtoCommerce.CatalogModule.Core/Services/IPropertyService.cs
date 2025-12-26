@@ -8,6 +8,7 @@ namespace VirtoCommerce.CatalogModule.Core.Services
     {
         Task<IEnumerable<Property>> GetByIdsAsync(IEnumerable<string> ids);
         Task<IEnumerable<Property>> GetAllCatalogPropertiesAsync(string catalogId);
+        Task<IEnumerable<Property>> GetCategoriesPropertiesAsync(string catalogId, IEnumerable<string> categoryIds);
         Task SaveChangesAsync(IEnumerable<Property> properties);
         Task DeleteAsync(IEnumerable<string> ids, bool doDeleteValues = false);
     }
