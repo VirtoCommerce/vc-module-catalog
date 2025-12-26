@@ -137,13 +137,14 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                             break;
                         case PropertyValueType.ShortText:
                         case PropertyValueType.Color:
-                            // Index alias when it is available instead of display value.
-                            // Do not tokenize small values as they will be used for lookups and filters.
+                            // Index alias for the base field (language-independent, used for filtering).
+                            // For language-specific fields, index the actual value (which varies per language), falling back to alias.
                             var shortTextValue = propValue.Alias ?? propValue.Value.ToString();
                             document.Add(new IndexDocumentField(propertyName, shortTextValue, IndexDocumentFieldValueType.String) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection });
                             if (property.Multilanguage && !string.IsNullOrEmpty(propValue.LanguageCode))
                             {
-                                document.Add(new IndexDocumentField($"{propertyName}_{propValue.LanguageCode.ToLowerInvariant()}", shortTextValue, IndexDocumentFieldValueType.String) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection });
+                                var localizedValue = propValue.Value.ToString() ?? propValue.Alias;
+                                document.Add(new IndexDocumentField($"{propertyName}_{propValue.LanguageCode.ToLowerInvariant()}", localizedValue, IndexDocumentFieldValueType.String) { IsRetrievable = true, IsFilterable = true, IsCollection = isCollection });
                             }
                             break;
                         case PropertyValueType.GeoPoint:
