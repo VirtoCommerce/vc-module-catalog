@@ -49,17 +49,52 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
             var result = new List<Property>();
 
             result.AddRange(_propertyUpdateManager.GetStandardProperties());
+            result.AddRange(await GetProductPropertiesAsync(context));
+
+            foreach (var property in result)
+            {
+                await FillOwnerName(property);
+            }
+
+            return result.ToArray();
+        }
+
+        public async Task<BulkActionResult> UpdatePropertiesAsync(CatalogProduct[] products, Property[] properties)
+        {
+            var result = new BulkActionResult { Succeeded = true };
+            var hasChanges = false;
+
+            if (products.IsNullOrEmpty())
+            {
+                // idle
+            }
+            else
+            {
+                hasChanges = TryChangeProductPropertyValues(properties, products, result);
+            }
+
+            if (hasChanges)
+            {
+                await _itemService.SaveChangesAsync(products);
+            }
+
+            return result;
+        }
+
+        private async Task<List<Property>> GetProductPropertiesAsync(BulkActionContext context)
+        {
+            var result = new List<Property>();
 
             if (context is not BaseBulkActionContext baseContext)
             {
-                return result.ToArray();
+                return result;
             }
 
             var entries = baseContext.DataQuery?.ListEntries?.ToList() ?? [];
 
             if (entries.Count == 0)
             {
-                return result.ToArray();
+                return result;
             }
 
             var categories = entries
@@ -98,33 +133,6 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
                     .Where(property => !propertyIds.Contains(property.Id)).ToArray();
 
                 result.AddRange(newProperties);
-            }
-
-            foreach (var property in result)
-            {
-                await FillOwnerName(property);
-            }
-
-            return result.ToArray();
-        }
-
-        public async Task<BulkActionResult> UpdatePropertiesAsync(CatalogProduct[] products, Property[] properties)
-        {
-            var result = new BulkActionResult { Succeeded = true };
-            var hasChanges = false;
-
-            if (products.IsNullOrEmpty())
-            {
-                // idle
-            }
-            else
-            {
-                hasChanges = TryChangeProductPropertyValues(properties, products, result);
-            }
-
-            if (hasChanges)
-            {
-                await _itemService.SaveChangesAsync(products);
             }
 
             return result;
