@@ -55,7 +55,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
                 return result.ToArray();
             }
 
-            var entries = baseContext.DataQuery?.ListEntries.ToList() ?? [];
+            var entries = baseContext.DataQuery?.ListEntries?.ToList() ?? [];
 
             if (entries.Count == 0)
             {
@@ -74,9 +74,9 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
                 {
                     var catalogCategories = categories.Where(c => c.CatalogId == catalogId).ToList();
 
-                    var catalogProperties = await _propertyService.GetCategoriesPropertiesAsync(catalogId, catalogCategories.Select(x => x.Id).ToArray());
-                    catalogProperties = catalogProperties.Where(x => x.Type == PropertyType.Product).ToList();
-                    result.AddRange(catalogProperties);
+                    var properties = await _propertyService.GetCategoriesPropertiesAsync(catalogId, catalogCategories.Select(x => x.Id).ToArray());
+                    properties = properties.Where(x => x.Type != PropertyType.Category).ToArray();
+                    result.AddRange(properties);
                 }
             }
 
