@@ -13,6 +13,23 @@ namespace VirtoCommerce.CatalogModule.Tests
 {
     public class BulkPropertyUpdateManagerTests
     {
+        [Fact]
+        public async Task GetProperties_DataSource_InvokeFetch()
+        {
+            // arrange
+            var context = new PropertiesUpdateBulkActionContext();
+            var dataSource = new Mock<IDataSource>();
+            var dataSourceFactory = new Mock<IDataSourceFactory>();
+            var manager = BuildManager(dataSourceFactory);
+            dataSourceFactory.Setup(t => t.Create(context)).Returns(dataSource.Object);
+
+            // act
+            await manager.GetPropertiesAsync(context);
+
+            // assert
+            dataSource.Verify(t => t.FetchAsync());
+        }
+
         [Theory]
         [InlineData(1)]
         public async Task GetProperties_Should_HaveCountGreaterThan(int count)
@@ -31,16 +48,39 @@ namespace VirtoCommerce.CatalogModule.Tests
             result.Should().HaveCountGreaterThan(count);
         }
 
+        private IBulkPropertyUpdateManager BuildManager()
+        {
+            var dataSourceFactory = new Mock<IDataSourceFactory>();
+            var itemService = new Mock<IItemService>();
+            var categoryService = new Mock<ICategoryService>();
+            var catalogService = new Mock<ICatalogService>();
+            var dictService = new Mock<IPropertyDictionaryItemSearchService>();
+            var singleProductUpdateManager = new PropertyUpdateManager(dictService.Object);
+
+            var manager = new BulkPropertyUpdateManager(dataSourceFactory.Object, itemService.Object, categoryService.Object, catalogService.Object, singleProductUpdateManager);
+            return manager;
+        }
+
         private IBulkPropertyUpdateManager BuildManager(IMock<IDataSourceFactory> dataSourceFactory)
         {
             var itemService = new Mock<IItemService>();
             var categoryService = new Mock<ICategoryService>();
             var catalogService = new Mock<ICatalogService>();
             var dictService = new Mock<IPropertyDictionaryItemSearchService>();
-            var propertyService = new Mock<IPropertyService>();
             var singleProductUpdateManager = new PropertyUpdateManager(dictService.Object);
 
-            var manager = new BulkPropertyUpdateManager(dataSourceFactory.Object, itemService.Object, categoryService.Object, catalogService.Object, singleProductUpdateManager, propertyService.Object);
+            var manager = new BulkPropertyUpdateManager(dataSourceFactory.Object, itemService.Object, categoryService.Object, catalogService.Object, singleProductUpdateManager);
+            return manager;
+        }
+
+        private IBulkPropertyUpdateManager BuildManager(IMock<IDataSourceFactory> dataSourceFactory, IMock<IItemService> itemService)
+        {
+            var categoryService = new Mock<ICategoryService>();
+            var catalogService = new Mock<ICatalogService>();
+            var dictService = new Mock<IPropertyDictionaryItemSearchService>();
+            var singleProductUpdateManager = new PropertyUpdateManager(dictService.Object);
+
+            var manager = new BulkPropertyUpdateManager(dataSourceFactory.Object, itemService.Object, categoryService.Object, catalogService.Object, singleProductUpdateManager);
             return manager;
         }
     }

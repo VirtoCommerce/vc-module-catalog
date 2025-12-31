@@ -4,7 +4,10 @@ using Moq;
 using VirtoCommerce.BulkActionsModule.Core.Services;
 using VirtoCommerce.CatalogModule.BulkActions.DataSources;
 using VirtoCommerce.CatalogModule.BulkActions.Models;
+using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Search;
+using VirtoCommerce.CatalogModule.Core.Services;
+using VirtoCommerce.CatalogModule.Data.Repositories;
 using Xunit;
 
 namespace VirtoCommerce.CatalogModule.Tests
@@ -50,7 +53,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             // arrange
             var dataSourceFactory = BuildDataSourceFactory();
             var dataQuery = new Mock<DataQuery> { DefaultValueProvider = DefaultValueProvider.Mock };
-            var context = new PropertiesUpdateBulkActionContext { DataQuery = dataQuery.Object };
+            var context = new PropertiesUpdateBulkActionContext { DataQuery = dataQuery.Object, Properties = [new Property()] };
 
             // act
             var result = dataSourceFactory.Create(context);
@@ -59,10 +62,30 @@ namespace VirtoCommerce.CatalogModule.Tests
             result.Should().BeOfType<ProductDataSource>();
         }
 
+        [Fact]
+        public void Create_Result_PropertyDataSource()
+        {
+            // arrange
+            var dataSourceFactory = BuildDataSourceFactory();
+            var dataQuery = new Mock<DataQuery> { DefaultValueProvider = DefaultValueProvider.Mock };
+            var context = new PropertiesUpdateBulkActionContext { DataQuery = dataQuery.Object };
+
+            // act
+            var result = dataSourceFactory.Create(context);
+
+            // assert
+            result.Should().BeOfType<PropertyDataSource>();
+        }
+
         private IDataSourceFactory BuildDataSourceFactory()
         {
             var searchService = new Mock<IInternalListEntrySearchService>();
-            return new DataSourceFactory(searchService.Object);
+            var repositoryFactory = new Mock<Func<ICatalogRepository>>();
+            var categoryServiceMock = new Mock<ICategoryService>();
+            var propertyServiceMock = new Mock<IPropertyService>();
+            var itemServiceMock = new Mock<IItemService>();
+
+            return new DataSourceFactory(searchService.Object, repositoryFactory.Object, categoryServiceMock.Object, propertyServiceMock.Object, itemServiceMock.Object);
         }
     }
 }

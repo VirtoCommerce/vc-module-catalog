@@ -67,22 +67,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return result;
         }
 
-        public async Task<IEnumerable<Property>> GetCategoriesPropertiesAsync(string catalogId, IEnumerable<string> categoryIds)
-        {
-            var preloadedProperties = await PreloadAllCatalogPropertiesAsync(catalogId);
-
-            using var repository = _repositoryFactory();
-            var childrenCategoryIds = await repository.GetAllChildrenCategoriesIdsAsync(categoryIds.ToArray());
-            var allCategoryIds = categoryIds.Union(childrenCategoryIds).Distinct();
-
-            var result = preloadedProperties
-                .Where(p => p.CategoryId == null || allCategoryIds.Contains(p.CategoryId))
-                .Select(x => x.Clone()).OfType<Property>()
-                .ToArray();
-
-            return result;
-        }
-
         public async Task SaveChangesAsync(IEnumerable<Property> properties)
         {
             var pkMap = new PrimaryKeyResolvingMap();

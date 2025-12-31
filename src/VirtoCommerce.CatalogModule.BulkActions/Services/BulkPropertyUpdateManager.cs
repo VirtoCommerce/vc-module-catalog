@@ -4,9 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using VirtoCommerce.BulkActionsModule.Core.Models.BulkActions;
 using VirtoCommerce.BulkActionsModule.Core.Services;
-using VirtoCommerce.CatalogModule.BulkActions.Models;
 using VirtoCommerce.CatalogModule.Core.Model;
-using VirtoCommerce.CatalogModule.Core.Model.ListEntry;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
 
@@ -14,8 +12,8 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
 {
     public class BulkPropertyUpdateManager : IBulkPropertyUpdateManager
     {
+        private readonly IDataSourceFactory _dataSourceFactory;
         private readonly IPropertyUpdateManager _propertyUpdateManager;
-        private readonly IPropertyService _propertyService;
 
         private readonly IItemService _itemService;
         private readonly ICategoryService _categoryService;
@@ -35,21 +33,26 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
         /// <param name="categoryService"></param>
         /// <param name="catalogService"></param>
         /// <param name="propertyUpdateManager"></param>
-        public BulkPropertyUpdateManager(IDataSourceFactory dataSourceFactory, IItemService itemService, ICategoryService categoryService, ICatalogService catalogService, IPropertyUpdateManager propertyUpdateManager, IPropertyService propertyService)
+        public BulkPropertyUpdateManager(IDataSourceFactory dataSourceFactory, IItemService itemService, ICategoryService categoryService, ICatalogService catalogService, IPropertyUpdateManager propertyUpdateManager)
         {
+            _dataSourceFactory = dataSourceFactory;
             _itemService = itemService;
             _categoryService = categoryService;
             _catalogService = catalogService;
             _propertyUpdateManager = propertyUpdateManager;
-            _propertyService = propertyService;
         }
 
         public async Task<Property[]> GetPropertiesAsync(BulkActionContext context)
         {
             var result = new List<Property>();
-
+            var dataSource = _dataSourceFactory.Create(context);
             result.AddRange(_propertyUpdateManager.GetStandardProperties());
-            result.AddRange(await GetProductPropertiesAsync(context));
+
+            while (await dataSource.FetchAsync())
+            {
+                var properties = dataSource.Items.OfType<Property>().ToList();
+                result.AddRange(properties);
+            }
 
             foreach (var property in result)
             {
@@ -76,63 +79,6 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
             if (hasChanges)
             {
                 await _itemService.SaveChangesAsync(products);
-            }
-
-            return result;
-        }
-
-        private async Task<List<Property>> GetProductPropertiesAsync(BulkActionContext context)
-        {
-            var result = new List<Property>();
-
-            if (context is not BaseBulkActionContext baseContext)
-            {
-                return result;
-            }
-
-            var entries = baseContext.DataQuery?.ListEntries?.ToList() ?? [];
-
-            if (entries.Count == 0)
-            {
-                return result;
-            }
-
-            var categories = entries
-                .Where(entry => entry.Type.EqualsIgnoreCase(CategoryListEntry.TypeName))
-                .ToArray();
-
-            if (!categories.IsNullOrEmpty())
-            {
-                var catalogIds = categories.Select(entry => entry.CatalogId).Distinct().ToList();
-
-                foreach (var catalogId in catalogIds)
-                {
-                    var catalogCategories = categories.Where(c => c.CatalogId == catalogId).ToList();
-
-                    var properties = await _propertyService.GetCategoriesPropertiesAsync(catalogId, catalogCategories.Select(x => x.Id).ToArray());
-                    properties = properties.Where(x => x.Type != PropertyType.Category).ToArray();
-                    result.AddRange(properties);
-                }
-            }
-
-            var productIds = entries
-                .Where(entry => entry.Type.EqualsIgnoreCase(ProductListEntry.TypeName))
-                .Select(entry => entry.Id)
-                .ToArray();
-
-            if (!productIds.IsNullOrEmpty())
-            {
-                var propertyIds = result.Select(p => p.Id).ToHashSet();
-
-                var products = await _itemService.GetAsync(productIds, (ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemProperties).ToString());
-
-                // using only product inherited properties from categories,
-                // own product props (only from PropertyValues) are not set via bulk update action
-                var newProperties = products.SelectMany(CollectionSelector())
-                    .Distinct(AnonymousComparer.Create<Property, string>(property => property.Id))
-                    .Where(property => !propertyIds.Contains(property.Id)).ToArray();
-
-                result.AddRange(newProperties);
             }
 
             return result;
@@ -166,12 +112,6 @@ namespace VirtoCommerce.CatalogModule.BulkActions.Services
             }
 
             property.OwnerName = ownerName;
-        }
-
-        private static Func<CatalogProduct, IEnumerable<Property>> CollectionSelector()
-        {
-            return product =>
-                product.Properties.Where(property => property.Id != null && property.IsInherited && property.Type != PropertyType.Category);
         }
 
         private bool TryChangeProductPropertyValues(
