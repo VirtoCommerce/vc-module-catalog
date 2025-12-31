@@ -56,10 +56,10 @@ namespace VirtoCommerce.CatalogModule.BulkActions.DataSources
                 }
                 else
                 {
-                    var catalogIds = _dataQuery.SearchCriteria.CatalogIds?.ToList() ?? [];
                     var categoryIds = _dataQuery.SearchCriteria.CategoryIds?.ToList() ?? [];
-
                     var categories = await _categoryService.GetNoCloneAsync(categoryIds, CategoryResponseGroup.WithProperties.ToString());
+
+                    var catalogIds = _dataQuery.SearchCriteria.CatalogIds?.ToList() ?? categories.Select(x => x.CatalogId).Distinct().ToList();
 
                     var result = new List<Property>();
 
@@ -69,7 +69,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.DataSources
                             .Where(c => c.CatalogId == catalogId)
                             .ToArray();
 
-                        var properties = await GetCategoriesPropertiesAsync(catalogId, catalogCategories);
+                        var properties = await GetProperties(catalogId, catalogCategories);
                         result.AddRange(properties);
                     }
 
@@ -117,7 +117,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.DataSources
                         .Where(c => c.CatalogId == catalogId)
                         .ToArray();
 
-                    var properties = await GetCategoriesPropertiesAsync(catalogId, catalogCategories);
+                    var properties = await GetProperties(catalogId, catalogCategories);
                     result.AddRange(properties);
                 }
             }
@@ -145,8 +145,13 @@ namespace VirtoCommerce.CatalogModule.BulkActions.DataSources
             return result;
         }
 
-        private async Task<List<Property>> GetCategoriesPropertiesAsync(string catalogId, IList<Category> catalogCategories)
+        private async Task<List<Property>> GetProperties(string catalogId, IList<Category> catalogCategories)
         {
+            if (catalogCategories.IsNullOrEmpty())
+            {
+                return await GetCatalogProperties(catalogId);
+            }
+
             var properties = catalogCategories
                  .SelectMany(PropertiesSelector())
                  .ToList();
@@ -170,6 +175,16 @@ namespace VirtoCommerce.CatalogModule.BulkActions.DataSources
             properties = properties.Distinct(_propertyComparer).ToList();
 
             return properties;
+        }
+
+        private async Task<List<Property>> GetCatalogProperties(string catalogId)
+        {
+            using var repository = _repositoryFactory();
+
+            var catalogProperties = await _propertyService.GetAllCatalogPropertiesAsync(catalogId);
+            var result = catalogProperties.Where(x => x.Type != PropertyType.Category).ToList();
+
+            return result;
         }
 
         private static Func<IHasProperties, IEnumerable<Property>> PropertiesSelector(bool? isInherited = null)
