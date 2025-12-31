@@ -78,7 +78,7 @@ namespace VirtoCommerce.CatalogModule.BulkActions.DataSources
             }
             else
             {
-                Items = await GetProductPropertiesAsync(_dataQuery?.ListEntries);
+                Items = await GetProductPropertiesAsync(_dataQuery.ListEntries);
             }
 
             _fetchExecuted = true;
@@ -179,8 +179,6 @@ namespace VirtoCommerce.CatalogModule.BulkActions.DataSources
 
         private async Task<List<Property>> GetCatalogProperties(string catalogId)
         {
-            using var repository = _repositoryFactory();
-
             var catalogProperties = await _propertyService.GetAllCatalogPropertiesAsync(catalogId);
             var result = catalogProperties.Where(x => x.Type != PropertyType.Category).ToList();
 
