@@ -20,10 +20,8 @@ namespace VirtoCommerce.CatalogModule.BulkActions.DataSources
         /// <summary>
         /// Initializes a new instance of the <see cref="DataSourceFactory"/> class.
         /// </summary>
-        /// <param name="listEntrySearchService">
-        /// The search service.
-        /// </param>
-        public DataSourceFactory(IInternalListEntrySearchService internalListEntrySearchService,
+        public DataSourceFactory(
+            IInternalListEntrySearchService internalListEntrySearchService,
             Func<ICatalogRepository> repositoryFactory,
             ICategoryService categoryService,
             IPropertyService propertyService,
