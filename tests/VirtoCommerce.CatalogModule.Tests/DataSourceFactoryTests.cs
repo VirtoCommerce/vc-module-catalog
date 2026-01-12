@@ -1,7 +1,6 @@
 using System;
 using FluentAssertions;
 using Moq;
-using VirtoCommerce.BulkActionsModule.Core.Services;
 using VirtoCommerce.CatalogModule.BulkActions.DataSources;
 using VirtoCommerce.CatalogModule.BulkActions.Models;
 using VirtoCommerce.CatalogModule.Core.Model;
@@ -77,7 +76,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             result.Should().BeOfType<PropertyDataSource>();
         }
 
-        private static IDataSourceFactory BuildDataSourceFactory()
+        private static DataSourceFactory BuildDataSourceFactory()
         {
             var searchService = new Mock<IInternalListEntrySearchService>();
             var repositoryFactory = new Mock<Func<ICatalogRepository>>();
