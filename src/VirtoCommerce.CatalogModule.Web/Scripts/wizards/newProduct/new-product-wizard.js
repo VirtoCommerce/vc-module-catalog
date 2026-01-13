@@ -63,7 +63,7 @@ angular.module('virtoCommerce.catalogModule')
                     break;
                 case 'seo':
                     initializeSEO(blade.item, function (seoInfo) {
-                        newBlade = {
+                        var newSeoBlade = {
                             id: 'seoDetails',
                             data: seoInfo,
                             isNew: !_.any(blade.item.seoInfos),
@@ -74,7 +74,7 @@ angular.module('virtoCommerce.catalogModule')
                             controller: 'virtoCommerce.coreModule.seo.seoDetailController',
                             template: 'Modules/$(VirtoCommerce.Core)/Scripts/SEO/blades/seo-detail.tpl.html'
                         };
-                        bladeNavigationService.showBlade(newBlade, blade);
+                        bladeNavigationService.showBlade(newSeoBlade, blade);
                     });
                     break;
                 case 'review':
