@@ -112,47 +112,45 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         protected virtual IList<AggregationRequest> GetRangeFilterAggregationRequests(RangeFilter rangeFilter, IList<IFilter> existingFilters)
         {
-            var result = rangeFilter.Values?.Select(v => GetRangeFilterValueAggregationRequest(rangeFilter.GetIndexFieldName(), v, existingFilters)).ToList();
-            return result;
-        }
-
-        protected virtual AggregationRequest GetRangeFilterValueAggregationRequest(string fieldName, RangeFilterValue value, IEnumerable<IFilter> existingFilters)
-        {
-            var valueFilter = FiltersHelper.CreateRangeFilter(fieldName, value.Lower, value.Upper, value.IncludeLower, value.IncludeUpper);
-
-            var result = new TermAggregationRequest
+            var rangeRequests = rangeFilter.Values?.Select(v => GetRangeFilterValueAggregationRequest(rangeFilter.GetIndexFieldName(), v, existingFilters)).ToList();
+            if (rangeRequests.IsNullOrEmpty())
             {
-                Id = $"{fieldName}-{value.Id}",
-                Filter = existingFilters.And(valueFilter),
-            };
+                return [];
+            }
 
-            return result;
+            var fieldName = rangeFilter.GetIndexFieldName();
+            return BaseGetRangeFilterAggregationRequests(fieldName, rangeFilter, existingFilters, rangeRequests);
         }
 
         protected virtual IList<AggregationRequest> GetPriceRangeFilterAggregationRequests(PriceRangeFilter priceRangeFilter, ProductIndexedSearchCriteria criteria, IList<IFilter> existingFilters)
         {
-            var priceRangeFilters = priceRangeFilter.Values?.Select(v => GetPriceRangeFilterValueAggregationRequest(priceRangeFilter, v, existingFilters, criteria.Pricelists)).ToList();
-            if (priceRangeFilters == null)
+            var priceRangeRequests = priceRangeFilter.Values?.Select(v => GetPriceRangeFilterValueAggregationRequest(priceRangeFilter, v, existingFilters, criteria.Pricelists)).ToList();
+            if (priceRangeRequests.IsNullOrEmpty())
             {
-                return new List<AggregationRequest>();
+                return [];
             }
 
-            var commonFieldName = StringsHelper.JoinNonEmptyStrings("_", "price", priceRangeFilter.Currency).ToLowerInvariant();
-            var ranges = priceRangeFilters.OfType<RangeAggregationRequest>().SelectMany(x => x.Values).ToList();
-            var ids = string.Join('-', ranges.Select(x => x.Id));
+            var fieldName = StringsHelper.JoinNonEmptyStrings("_", "price", priceRangeFilter.Currency).ToLowerInvariant();
+            return BaseGetRangeFilterAggregationRequests(fieldName, priceRangeFilter, existingFilters, priceRangeRequests);
+        }
+
+        private static IList<AggregationRequest> BaseGetRangeFilterAggregationRequests(string fieldName, IBrowseFilter rangeFilter, IList<IFilter> existingFilters, List<AggregationRequest> rangeRequests)
+        {
+            var rangeValues = rangeRequests.OfType<RangeAggregationRequest>().SelectMany(x => x.Values).ToList();
+            var ids = string.Join('-', rangeValues.Select(x => x.Id));
 
             var result = new RangeAggregationRequest
             {
-                Id = $"{priceRangeFilter.Key}-{ids}",
+                Id = $"{rangeFilter.Key}-{ids}",
                 Filter = existingFilters.And(),
-                FieldName = commonFieldName,
-                Values = ranges,
+                FieldName = fieldName,
+                Values = rangeValues,
             };
 
             return new List<AggregationRequest> { result };
         }
 
-        protected virtual AggregationRequest GetPriceRangeFilterValueAggregationRequest(PriceRangeFilter priceRangeFilter, RangeFilterValue value, IEnumerable<IFilter> existingFilters, IList<string> pricelists)
+        protected virtual AggregationRequest GetRangeFilterValueAggregationRequest(string fieldName, RangeFilterValue value, IEnumerable<IFilter> existingFilters)
         {
             var result = new RangeAggregationRequest
             {
@@ -170,6 +168,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             };
 
             return result;
+        }
+
+        protected virtual AggregationRequest GetPriceRangeFilterValueAggregationRequest(PriceRangeFilter priceRangeFilter, RangeFilterValue value, IEnumerable<IFilter> existingFilters, IList<string> pricelists)
+        {
+            return GetRangeFilterValueAggregationRequest("price", value, existingFilters);
         }
 
         #endregion
@@ -290,51 +293,47 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         protected virtual Aggregation GetRangeAggregation(RangeFilter rangeFilter, IList<AggregationResponse> aggregationResponses)
         {
-            var result = new Aggregation
-            {
-                AggregationType = "range",
-                Field = rangeFilter.GetIndexFieldName(),
-                Items = GetRangeAggregationItems(rangeFilter.GetIndexFieldName(), rangeFilter.Values, aggregationResponses).ToArray(),
-            };
-
-            return result;
+            return BaseGetRangeAggregation("range", rangeFilter.GetIndexFieldName(), rangeFilter.Values, aggregationResponses);
         }
 
         protected virtual Aggregation GetPriceRangeAggregation(PriceRangeFilter priceRangeFilter, IList<AggregationResponse> aggregationResponses)
         {
+            return BaseGetRangeAggregation("pricerange", "price", priceRangeFilter.Values, aggregationResponses);
+        }
+
+        private Aggregation BaseGetRangeAggregation(string aggregationType, string fieldName, RangeFilterValue[] values, IList<AggregationResponse> aggregationResponses)
+        {
             var rangeAggregations = new List<AggregationResponse>();
 
-            // Merge All Virtual Price Ranges in rangeAggregations
-            var priceFieldName = "price";
+            // Merge All Virtual Ranges in rangeAggregations
+            var rangeAggregationsResponses = aggregationResponses.Where(a => a.Id.StartsWith(fieldName)).ToList();
+            var rangeValues = rangeAggregationsResponses.SelectMany(x => x.Values).ToArray();
 
-            var priceAggregations = aggregationResponses.Where(a => a.Id.StartsWith(priceFieldName)).ToList();
-            var priceValues = priceAggregations.SelectMany(x => x.Values).ToArray();
-
-            if (priceValues.Length == 0)
+            if (rangeValues.Length == 0)
             {
                 return null;
             }
 
-            var matchIdRegEx = new Regex(@"^(?<left>[0-9*]+)-(?<right>[0-9*]+)$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+            var matchIdRegEx = new Regex("^(?<left>[0-9*]+)-(?<right>[0-9*]+)$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
-            rangeAggregations.AddRange(priceValues.Select(x =>
+            rangeAggregations.AddRange(rangeValues.Select(x =>
             {
                 var matchId = matchIdRegEx.Match(x.Id);
                 var left = matchId.Groups["left"].Value;
                 var right = matchId.Groups["right"].Value;
-                x.Id = left == "*" ? $@"under-{right}" : x.Id;
-                x.Id = right == "*" ? $@"over-{left}" : x.Id;
-                return new AggregationResponse { Id = $@"{priceFieldName}-{x.Id}", Values = new List<AggregationResponseValue> { x } };
+                x.Id = left == "*" ? $"under-{right}" : x.Id;
+                x.Id = right == "*" ? $"over-{left}" : x.Id;
+                return new AggregationResponse { Id = $"{fieldName}-{x.Id}", Values = new List<AggregationResponseValue> { x } };
             }));
 
             var result = new Aggregation
             {
-                AggregationType = "pricerange",
-                Field = priceRangeFilter.Key,
-                Items = GetRangeAggregationItems(priceRangeFilter.Key, priceRangeFilter.Values, rangeAggregations).ToArray(),
+                AggregationType = aggregationType,
+                Field = fieldName,
+                Items = GetRangeAggregationItems(fieldName, values, rangeAggregations).ToArray(),
             };
 
-            var aggregationStatistics = priceAggregations.FirstOrDefault(x => x.Statistics != null);
+            var aggregationStatistics = rangeAggregationsResponses.FirstOrDefault(x => x.Statistics != null);
             if (aggregationStatistics != null)
             {
                 result.Statistics = new Core.Model.Search.AggregationStatistics
