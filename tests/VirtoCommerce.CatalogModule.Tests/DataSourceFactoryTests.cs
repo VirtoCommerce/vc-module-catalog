@@ -1,10 +1,12 @@
 using System;
 using FluentAssertions;
 using Moq;
-using VirtoCommerce.BulkActionsModule.Core.Services;
 using VirtoCommerce.CatalogModule.BulkActions.DataSources;
 using VirtoCommerce.CatalogModule.BulkActions.Models;
+using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Search;
+using VirtoCommerce.CatalogModule.Core.Services;
+using VirtoCommerce.CatalogModule.Data.Repositories;
 using Xunit;
 
 namespace VirtoCommerce.CatalogModule.Tests
@@ -14,55 +16,75 @@ namespace VirtoCommerce.CatalogModule.Tests
         [Fact]
         public void Create_EmptyContext_ThrowArgumentException()
         {
-            // arrange
+            // Arrange
             var dataSourceFactory = BuildDataSourceFactory();
             var context = new BaseBulkActionContext();
 
-            // act
+            // Act
             var action = new Action(
                 () =>
                 {
                     dataSourceFactory.Create(context);
                 });
 
-            // assert
+            // Assert
             action.Should().Throw<ArgumentException>();
         }
 
         [Fact]
         public void Create_Result_BaseDataSource()
         {
-            // arrange
+            // Arrange
             var dataSourceFactory = BuildDataSourceFactory();
             var dataQuery = new Mock<DataQuery> { DefaultValueProvider = DefaultValueProvider.Mock };
             var context = new CategoryChangeBulkActionContext { DataQuery = dataQuery.Object };
 
-            // act
+            // Act
             var result = dataSourceFactory.Create(context);
 
-            // assert
+            // Assert
             result.Should().BeOfType<BaseDataSource>();
         }
 
         [Fact]
         public void Create_Result_ProductDataSource()
         {
-            // arrange
+            // Arrange
+            var dataSourceFactory = BuildDataSourceFactory();
+            var dataQuery = new Mock<DataQuery> { DefaultValueProvider = DefaultValueProvider.Mock };
+            var context = new PropertiesUpdateBulkActionContext { DataQuery = dataQuery.Object, Properties = [new Property()] };
+
+            // Act
+            var result = dataSourceFactory.Create(context);
+
+            // Assert
+            result.Should().BeOfType<ProductDataSource>();
+        }
+
+        [Fact]
+        public void Create_Result_PropertyDataSource()
+        {
+            // Arrange
             var dataSourceFactory = BuildDataSourceFactory();
             var dataQuery = new Mock<DataQuery> { DefaultValueProvider = DefaultValueProvider.Mock };
             var context = new PropertiesUpdateBulkActionContext { DataQuery = dataQuery.Object };
 
-            // act
+            // Act
             var result = dataSourceFactory.Create(context);
 
-            // assert
-            result.Should().BeOfType<ProductDataSource>();
+            // Assert
+            result.Should().BeOfType<PropertyDataSource>();
         }
 
-        private IDataSourceFactory BuildDataSourceFactory()
+        private static DataSourceFactory BuildDataSourceFactory()
         {
             var searchService = new Mock<IInternalListEntrySearchService>();
-            return new DataSourceFactory(searchService.Object);
+            var repositoryFactory = new Mock<Func<ICatalogRepository>>();
+            var categoryServiceMock = new Mock<ICategoryService>();
+            var propertyServiceMock = new Mock<IPropertyService>();
+            var itemServiceMock = new Mock<IItemService>();
+
+            return new DataSourceFactory(searchService.Object, repositoryFactory.Object, categoryServiceMock.Object, propertyServiceMock.Object, itemServiceMock.Object);
         }
     }
 }

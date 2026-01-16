@@ -1,11 +1,9 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using VirtoCommerce.BulkActionsModule.Core.Services;
 using VirtoCommerce.CatalogModule.BulkActions.Models;
 using VirtoCommerce.CatalogModule.BulkActions.Services;
-using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Services;
@@ -30,35 +28,6 @@ namespace VirtoCommerce.CatalogModule.Tests
 
             // assert
             dataSource.Verify(t => t.FetchAsync());
-        }
-
-        [Fact]
-        public async Task GetProperties_ItemService_InvokeGetAsync()
-        {
-            // arrange
-            var context = new PropertiesUpdateBulkActionContext();
-            var dataSourceFactory = new Mock<IDataSourceFactory>();
-            var itemService = new Mock<IItemService>();
-            var manager = BuildManager(dataSourceFactory, itemService);
-            var dataSource = new Mock<IDataSource>();
-            var productId = "fakeProductId";
-            var group = ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemProperties;
-            var productIds = new List<string> { productId };
-            var properties = new List<Property>();
-            var product = Mock.Of<CatalogProduct>(
-                t => t.Id == productId && t.Properties == properties,
-                MockBehavior.Loose);
-            var products = new List<CatalogProduct> { product };
-            dataSourceFactory.Setup(t => t.Create(context)).Returns(dataSource.Object);
-            dataSource.SetupSequence(t => t.FetchAsync()).ReturnsAsync(true).ReturnsAsync(false);
-            dataSource.Setup(t => t.Items).Returns(products);
-            itemService.Setup(t => t.GetAsync(productIds, group.ToString(), It.IsAny<bool>())).ReturnsAsync(products.ToArray());
-
-            // act
-            await manager.GetPropertiesAsync(context);
-
-            // assert
-            itemService.Verify(t => t.GetAsync(productIds, group.ToString(), It.IsAny<bool>()));
         }
 
         [Theory]
