@@ -1086,6 +1086,9 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
                     b.Property<bool>("IsRequired")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<int?>("MaxLength")
+                        .HasColumnType("int");
+
                     b.Property<string>("ModifiedBy")
                         .HasMaxLength(64)
                         .HasColumnType("varchar(64)");

@@ -16,6 +16,7 @@ public class ProductConfigurationSection : AuditableEntity, ICloneable, IHasName
     public string Type { get; set; }
     public bool AllowCustomText { get; set; }
     public bool AllowPredefinedOptions { get; set; }
+    public int? MaxLength { get; set; }
 
     [JsonIgnore]
     public ProductConfiguration Configuration { get; set; }

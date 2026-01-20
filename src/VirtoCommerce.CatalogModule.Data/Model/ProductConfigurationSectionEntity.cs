@@ -27,6 +27,7 @@ public class ProductConfigurationSectionEntity : AuditableEntity, IDataEntity<Pr
     public bool AllowCustomText { get; set; }
     public bool AllowPredefinedOptions { get; set; }
     public int DisplayOrder { get; set; }
+    public int? MaxLength { get; set; }
 
     public virtual ProductConfigurationEntity Configuration { get; set; }
     public virtual ObservableCollection<ProductConfigurationOptionEntity> Options { get; set; } = new NullCollection<ProductConfigurationOptionEntity>();
@@ -48,6 +49,7 @@ public class ProductConfigurationSectionEntity : AuditableEntity, IDataEntity<Pr
         model.AllowCustomText = AllowCustomText;
         model.AllowPredefinedOptions = AllowPredefinedOptions;
         model.DisplayOrder = DisplayOrder;
+        model.MaxLength = MaxLength;
         model.Type = Type;
 
         model.Options = Options.Select(x => x.ToModel(AbstractTypeFactory<ProductConfigurationOption>.TryCreateInstance())).ToList();
@@ -74,6 +76,7 @@ public class ProductConfigurationSectionEntity : AuditableEntity, IDataEntity<Pr
         AllowCustomText = model.AllowCustomText;
         AllowPredefinedOptions = model.AllowPredefinedOptions;
         DisplayOrder = model.DisplayOrder;
+        MaxLength = model.MaxLength;
         Type = model.Type;
 
         if (model.Options != null)
@@ -92,6 +95,7 @@ public class ProductConfigurationSectionEntity : AuditableEntity, IDataEntity<Pr
         target.AllowCustomText = AllowCustomText;
         target.AllowPredefinedOptions = AllowPredefinedOptions;
         target.DisplayOrder = DisplayOrder;
+        target.MaxLength = MaxLength;
         target.Type = Type;
 
         if (!Options.IsNullCollection())
