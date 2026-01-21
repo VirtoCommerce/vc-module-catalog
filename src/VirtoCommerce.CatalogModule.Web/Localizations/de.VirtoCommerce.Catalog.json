@@ -816,6 +816,7 @@
           "type": "Abschnitt-Typ",
           "allow-custom-text": "Benutzerdefinierter Text erlaubt",
           "allow-predefined-options": "Vordefinierte Optionen zulassen",
+          "max-length": "Maximale Länge",
           "text": "Text"
         },
         "descr": {

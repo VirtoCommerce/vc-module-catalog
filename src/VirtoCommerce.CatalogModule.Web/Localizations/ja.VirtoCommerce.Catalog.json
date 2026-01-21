@@ -816,6 +816,7 @@
           "type": "セクションタイプ",
           "allow-custom-text": "カスタムテキストを許可",
           "allow-predefined-options": "既定のオプションを許可",
+          "max-length": "最大長",
           "text": "テキスト"
         },
         "descr": {

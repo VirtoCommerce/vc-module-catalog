@@ -816,6 +816,7 @@
           "type": "Seksjonstype",
           "allow-custom-text": "Tillat tilpasset tekst",
           "allow-predefined-options": "Tillat forhåndsdefinerte alternativer",
+          "max-length": "Maksimal lengde",
           "text": "Tekst"
         },
         "descr": {

@@ -816,6 +816,7 @@
           "type": "部分类型",
           "allow-custom-text": "允许自定义文本",
           "allow-predefined-options": "允许预定义选项",
+          "max-length": "最大长度",
           "text": "文本"
         },
         "descr": {

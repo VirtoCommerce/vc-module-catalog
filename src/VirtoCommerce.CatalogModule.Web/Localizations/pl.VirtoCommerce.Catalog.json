@@ -816,6 +816,7 @@
           "type": "Typ sekcji",
           "allow-custom-text": "Zezwól na własny tekst",
           "allow-predefined-options": "Zezwól na predefiniowane opcje",
+          "max-length": "Maksymalna długość",
           "text": "Tekst"
         },
         "descr": {

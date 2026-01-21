@@ -816,6 +816,7 @@
           "type": "Osion tyyppi",
           "allow-custom-text": "Salli mukautettu teksti",
           "allow-predefined-options": "Salli ennalta määritetyt vaihtoehdot",
+          "max-length": "Maksimipituus",
           "text": "Teksti"
         },
         "descr": {

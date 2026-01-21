@@ -816,6 +816,7 @@
           "type": "Tipo di sezione",
           "allow-custom-text": "Consenti testo personalizzato",
           "allow-predefined-options": "Consenti opzioni predefinite",
+          "max-length": "Lunghezza massima",
           "text": "Testo"
         },
         "descr": {

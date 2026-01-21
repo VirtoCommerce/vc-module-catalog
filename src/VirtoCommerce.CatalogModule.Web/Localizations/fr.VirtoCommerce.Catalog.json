@@ -816,6 +816,7 @@
           "type": "Type de section",
           "allow-custom-text": "Autoriser le texte personnalisé",
           "allow-predefined-options": "Autoriser les options prédéfinies",
+          "max-length": "Longueur maximale",
           "text": "Texte"
         },
         "descr": {
