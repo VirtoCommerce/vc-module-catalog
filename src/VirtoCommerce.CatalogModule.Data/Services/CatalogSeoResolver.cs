@@ -2,20 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using VirtoCommerce.CatalogModule.Core.Extensions;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Outlines;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
-using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Seo.Core.Models;
-using VirtoCommerce.Seo.Core.Services;
-using VirtoCommerce.StoreModule.Core.Extensions;
-using VirtoCommerce.StoreModule.Core.Model;
-using VirtoCommerce.StoreModule.Core.Services;
-using static VirtoCommerce.StoreModule.Core.ModuleConstants.Settings.SEO;
 using SeoExtensions = VirtoCommerce.CatalogModule.Core.Extensions.SeoExtensions;
 
 namespace VirtoCommerce.CatalogModule.Data.Services;
@@ -241,10 +233,10 @@ public class CatalogSeoResolver : ISeoResolver
         }
     }
 
-    protected virtual Task<SeoInfoEntity[]> SearchSeoInfoEntities(string slug, Store store, SeoSearchCriteria criteria, bool isActive)
+    protected virtual async Task<SeoInfoEntity[]> SearchSeoInfoEntities(string slug, Store store, SeoSearchCriteria criteria, bool isActive)
     {
         using var repository = _repositoryFactory();
-        return repository.SeoInfos.Where(x =>
+        return await repository.SeoInfos.Where(x =>
             x.IsActive == isActive &&
             x.Keyword == slug &&
             (x.Category != null && x.Category.IsActive || x.Item != null && x.Item.IsActive || x.Catalog != null) &&
