@@ -185,8 +185,7 @@ public class CatalogSeoResolver : ISeoResolver
         }
 
         var slug = segments.Last();
-
-        var entities = await SearchSeoInfoEntities(slug, store, criteria, isActive);
+        var entities = await GetSeoInfoEntities(slug, store, criteria, isActive);
 
         var categoryIds = entities.Select(x => x.CategoryId).Where(x => x != null).Distinct().ToArray();
         var seoList = new List<(string SeoPath, string OutlinePath, string Id)>();
@@ -241,16 +240,20 @@ public class CatalogSeoResolver : ISeoResolver
         }
     }
 
-    protected virtual async Task<SeoInfoEntity[]> SearchSeoInfoEntities(string slug, Store store, SeoSearchCriteria criteria, bool isActive)
+    protected virtual async Task<IList<SeoInfoEntity>> GetSeoInfoEntities(string slug, Store store, SeoSearchCriteria criteria, bool isActive)
     {
         using var repository = _repositoryFactory();
-        return await repository.SeoInfos.Where(x =>
+        return await GetSeoInfoQuery(repository, slug, store, criteria, isActive).ToListAsync();
+    }
+
+    protected virtual IQueryable<SeoInfoEntity> GetSeoInfoQuery(ICatalogRepository repository, string slug, Store store, SeoSearchCriteria criteria, bool isActive)
+    {
+        return repository.SeoInfos.Where(x =>
             x.IsActive == isActive &&
             x.Keyword == slug &&
             (x.Category != null && x.Category.IsActive || x.Item != null && x.Item.IsActive || x.Catalog != null) &&
             (string.IsNullOrEmpty(x.StoreId) || x.StoreId == store.Id) &&
-            (string.IsNullOrEmpty(x.Language) || x.Language == criteria.LanguageCode || x.Language == store.DefaultLanguage))
-            .ToArrayAsync();
+            (string.IsNullOrEmpty(x.Language) || x.Language == criteria.LanguageCode || x.Language == store.DefaultLanguage));
     }
 
     protected static int GetSeoScore(SeoInfo seoInfo, Store store, SeoSearchCriteria criteria)
