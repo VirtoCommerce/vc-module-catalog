@@ -1,5 +1,7 @@
 using System;
+using System.Globalization;
 using System.IO;
+using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using VirtoCommerce.Platform.Core.Common;
@@ -19,34 +21,24 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         public static T GetObjectFieldValue<T>(this SearchDocument document)
             where T : class
         {
-            T result = null;
-
-            if (document.ContainsKey(ObjectFieldName))
+            if (!document.TryGetValue(ObjectFieldName, out var obj))
             {
-                var obj = document[ObjectFieldName];
-                var objType = AbstractTypeFactory<T>.TryCreateInstance().GetType();
-                result = obj as T;
-                if (result == null)
-                {
-                    if (obj is JObject jobj)
-                    {
-                        result = jobj.ToObject(objType) as T;
-                    }
-                    else
-                    {
-                        var productString = obj as string;
-                        if (!string.IsNullOrEmpty(productString))
-                        {
-                            result = DeserializeObject(productString, objType) as T;
-                        }
-                    }
-                }
+                return null;
             }
+
+            var objType = AbstractTypeFactory<T>.TryCreateInstance().GetType();
+            var result = obj switch
+            {
+                T tObj => tObj,
+                JObject jObj => jObj.ToObject(objType) as T,
+                string sObj when !string.IsNullOrEmpty(sObj) => DeserializeObject(sObj, objType) as T,
+                _ => null,
+            };
 
             return result;
         }
 
-        public static JsonSerializer ObjectSerializer { get; } = new JsonSerializer
+        public static JsonSerializer ObjectSerializer { get; } = new()
         {
             DefaultValueHandling = DefaultValueHandling.Include,
             NullValueHandling = NullValueHandling.Ignore,
@@ -55,17 +47,14 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             TypeNameHandling = TypeNameHandling.None,
         };
 
-
         public static string SerializeObject(object obj)
         {
-            using (var memStream = new MemoryStream())
-            {
-                obj.SerializeJson(memStream, ObjectSerializer);
-                memStream.Seek(0, SeekOrigin.Begin);
+            using var stringWriter = new StringWriter(new StringBuilder(256 /*default value from JsonConvert.SerializeObject*/), CultureInfo.InvariantCulture);
+            using var jsonTextWriter = new JsonTextWriter(stringWriter);
+            jsonTextWriter.Formatting = ObjectSerializer.Formatting;
+            ObjectSerializer.Serialize(jsonTextWriter, obj, objectType: null);
 
-                var result = memStream.ReadToString();
-                return result;
-            }
+            return stringWriter.ToString();
         }
 
         public static T DeserializeObject<T>(string str)
@@ -75,12 +64,11 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         public static object DeserializeObject(string str, Type type)
         {
-            using (var stringReader = new StringReader(str))
-            using (var jsonTextReader = new JsonTextReader(stringReader))
-            {
-                var result = ObjectSerializer.Deserialize(jsonTextReader, type);
-                return result;
-            }
+            using var stringReader = new StringReader(str);
+            using var jsonTextReader = new JsonTextReader(stringReader);
+            var result = ObjectSerializer.Deserialize(jsonTextReader, type);
+
+            return result;
         }
     }
 }
