@@ -1,11 +1,17 @@
 angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.configurationSectionDetailController',
-        ['$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.uiGridHelper',
-        function ($scope, bladeNavigationService, uiGridHelper) {
+        ['$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.uiGridHelper', 'platformWebApp.metaFormsService',
+        function ($scope, bladeNavigationService, uiGridHelper, metaFormsService) {
             var blade = $scope.blade;
             blade.headIcon = 'fas fa-puzzle-piece';
             blade.title = blade.origEntity.name ? blade.origEntity.name : 'catalog.blades.section-details.title';
             blade.formScope = null;
+
+            // Get metafields for the form
+            blade.metaFields = metaFormsService.getMetaFields("configurationSectionDetail");
+
+            // Section types for the dropdown
+            blade.sectionTypes = ['Product', 'Variation', 'Text', 'File'];
 
             blade.toolbarCommands = [
                 {
@@ -33,22 +39,42 @@ angular.module('virtoCommerce.catalogModule')
 
             $scope.isValid = false;
 
-            $scope.$watch("blade.currentEntity", function (entity) {
+            // Single $watch for currentEntity that handles all validation and mutual exclusivity logic
+            var previousAllowCustomText = null;
+            var previousAllowPredefinedOptions = null;
+
+            $scope.$watch("blade.currentEntity", function (entity, oldEntity) {
+                if (!entity) {
+                    return;
+                }
+
+                // Form validation
                 $scope.isValid = blade.formScope && blade.formScope.$valid && entity.name;
                 if ($scope.isValid && blade.origEntity.name) {
                     // Update case (form is valid when changes exist)
                     $scope.isValid = !angular.equals(blade.origEntity, entity);
                 }
-            }, true);
-            $scope.$watch("blade.currentEntity.allowCustomText", function (value) {
-                if (!value && !blade.currentEntity.allowPredefinedOptions) {
-                    blade.currentEntity.allowPredefinedOptions = true;
+
+                // Mutual exclusivity logic for allowCustomText and allowPredefinedOptions
+                // At least one must be true when type is 'Text'
+                if (entity.type === 'Text') {
+                    // Check if allowCustomText changed from true to false
+                    if (previousAllowCustomText === true && entity.allowCustomText === false) {
+                        if (!entity.allowPredefinedOptions) {
+                            entity.allowPredefinedOptions = true;
+                        }
+                    }
+                    // Check if allowPredefinedOptions changed from true to false
+                    else if (previousAllowPredefinedOptions === true && entity.allowPredefinedOptions === false) {
+                        if (!entity.allowCustomText) {
+                            entity.allowCustomText = true;
+                        }
+                    }
                 }
-            }, true);
-            $scope.$watch("blade.currentEntity.allowPredefinedOptions", function (value) {
-                if (!value && !blade.currentEntity.allowCustomText) {
-                    blade.currentEntity.allowCustomText = true;
-                }
+
+                // Store current values for next comparison
+                previousAllowCustomText = entity.allowCustomText;
+                previousAllowPredefinedOptions = entity.allowPredefinedOptions;
             }, true);
 
             $scope.setForm = function (form) { blade.formScope = form; };
@@ -117,7 +143,8 @@ angular.module('virtoCommerce.catalogModule')
                 deleteList([data]);
             };
 
-            $scope.isTypeChangeDisabled = function() {
+            // Function exposed on blade for template access
+            blade.isTypeChangeDisabled = function() {
                 if (blade.currentEntity == null || blade.currentEntity.type == null) {
                     return false;
                 }
@@ -131,7 +158,7 @@ angular.module('virtoCommerce.catalogModule')
                 }
 
                 return true;
-            }
+            };
 
             function deleteList(list) {
                 bladeNavigationService.closeChildrenBlades(blade,
@@ -246,8 +273,12 @@ angular.module('virtoCommerce.catalogModule')
                 }
 
                 blade.currentEntity = angular.copy(item);
+                
+                // Initialize previous values for mutual exclusivity tracking
+                previousAllowCustomText = blade.currentEntity.allowCustomText;
+                previousAllowPredefinedOptions = blade.currentEntity.allowPredefinedOptions;
+                
                 blade.isLoading = false;
-                $scope.sectionTypes = ['Product', 'Variation', 'Text', 'File'];
             }
 
             initialize(blade.origEntity);

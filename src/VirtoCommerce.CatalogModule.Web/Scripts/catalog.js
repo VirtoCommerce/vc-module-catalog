@@ -817,4 +817,42 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                     }
 
                 ]);
+
+                // Configuration Section Detail meta-fields
+                metaFormsService.registerMetaFields("configurationSectionDetail", [
+                    {
+                        name: 'name',
+                        title: "catalog.blades.section-details.labels.name",
+                        colSpan: 6,
+                        isRequired: true,
+                        valueType: "ShortText"
+                    },
+                    {
+                        name: 'description',
+                        title: "catalog.blades.section-details.labels.description",
+                        colSpan: 6,
+                        valueType: "LongText"
+                    },
+                    {
+                        title: "catalog.blades.section-details.labels.type",
+                        colSpan: 2,
+                        templateUrl: "section-type.html"
+                    },
+                    {
+                        colSpan: 2,
+                        templateUrl: "section-allow-custom-text.html"
+                    },
+                    {
+                        colSpan: 2,
+                        templateUrl: "section-allow-predefined.html"
+                    },
+                    {
+                        colSpan: 2,
+                        templateUrl: "section-is-required.html"
+                    },
+                    {
+                        colSpan: 2,
+                        templateUrl: "section-max-length.html"
+                    }
+                ]);
             }]);

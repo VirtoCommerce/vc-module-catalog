@@ -1,80 +1,10 @@
-<div class="blade-static" style="height: 350px; width: 550px; white-space: normal;">
-  <form class="form" name="sectionForm" style="margin:0; padding: 0;">
-    <div class="form-group clearfix" ng-init="setForm(sectionForm)">
-      <label class="form-label">{{'catalog.blades.section-details.labels.name' | translate}}</label>
-      <div class="form-input">
-        <input ng-model="blade.currentEntity.name" focus-on="" required rows="1" />
-      </div>
-    </div>
-    <div class="form-group clearfix" style="padding-top: 0;">
-      <label class="form-label">{{'catalog.blades.section-details.labels.description' | translate}}</label>
-      <div class="form-input">
-        <textarea ng-model="blade.currentEntity.description" rows="2" style="resize: none; height: 50px; min-height: 50px;"></textarea>
-      </div>
-    </div>
-    <div class="form-group clearfix" style="padding-top: 0;">
-      <div class="column">
-        <div class="form-group" style="padding-top: 0; padding-right: 10px;">
-          <label class="form-label">{{ 'catalog.blades.section-details.labels.type' | translate }}</label>
-          <div class="form-input">
-            <ui-select ng-model="blade.currentEntity.type" ng-disabled="isTypeChangeDisabled()" required>
-              <ui-select-match placeholder="{{ 'catalog.blades.section-details.placeholders.type' | translate }}">{{$select.selected}}</ui-select-match>
-              <ui-select-choices repeat="x in sectionTypes | filter: $select.search">
-                <span ng-bind-html="x | highlight: $select.search"></span>
-              </ui-select-choices>
-            </ui-select>
-          </div>
-        </div>
-      </div>
-      <div class="column">
-        <div class="form-group" style="padding-top: 0;" ng-if="blade.currentEntity.type === 'Text'">
-          <label class="form-label">{{ 'catalog.blades.section-details.labels.allow-custom-text' | translate }}</label>
-          <div class="form-input" style="padding-top: 6px;">
-            <label class="form-label __switch">
-              <input type="checkbox" ng-model="blade.currentEntity.allowCustomText" />
-              <span class="switch"></span>
-            </label>
-          </div>
-        </div>
-      </div>
-      <div class="column">
-        <div class="form-group" style="padding-top: 0;" ng-if="blade.currentEntity.type === 'Text'">
-          <label class="form-label">{{ 'catalog.blades.section-details.labels.allow-predefined-options' | translate }}</label>
-          <div class="form-input" style="padding-top: 6px;">
-            <label class="form-label __switch">
-              <input type="checkbox" ng-model="blade.currentEntity.allowPredefinedOptions" />
-              <span class="switch"></span>
-            </label>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="form-group clearfix" style="padding-top: 0;">
-      <div class="column">
-        <div class="form-group" style="padding-top: 0; padding-right: 10px;">
-          <label class="form-label">{{ 'catalog.blades.section-details.labels.required' | translate }}</label>
-          <div class="form-input" style="padding-top: 6px;">
-            <label class="form-label __switch">
-              <input type="checkbox" ng-model="blade.currentEntity.isRequired" />
-              <span class="switch"></span>
-            </label>
-          </div>
-        </div>
-      </div>
-      <div class="column" ng-if="blade.currentEntity.type === 'Text'">
-        <div class="form-group" style="padding-top: 0; padding-right: 10px;">
-          <label class="form-label">{{ 'catalog.blades.section-details.labels.max-length' | translate }}</label>
-          <div class="form-input">
-            <input type="number" min="0" ng-model="blade.currentEntity.maxLength" />
-          </div>
-        </div>
-      </div>
-      <div class="column"></div>
-    </div>
+<div class="blade-static config-section-detail" style="height: 350px; white-space: normal;">
+  <form class="form" name="formScope">
+    <va-metaform registered-inputs="blade.metaFields" blade="blade" column-count="6" ng-if="blade.currentEntity" ng-init="setForm(formScope)"></va-metaform>
   </form>
 </div>
 <div class="blade-static __bottom" ng-include="'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/common/templates/ok-cancel.tpl.html'"></div>
-<div class="blade-content __medium-wide" style="height: calc(100% - 422px) !important;">
+<div class="blade-content __large-wide" style="height: calc(100% - 422px) !important;">
   <div class="blade-inner" ng-if="blade.currentEntity.type === 'Product'">
     <div class="inner-block" ng-init="setGridOptions({
                     rowTemplate: 'option-list.row.html',
@@ -133,6 +63,58 @@
   </div>
 </div>
 
+<script type="text/ng-template" id="section-type.html">
+  <div class="form-input">
+    <ui-select ng-model="blade.currentEntity.type" ng-disabled="blade.isTypeChangeDisabled()" required>
+      <ui-select-match placeholder="{{ 'catalog.blades.section-details.placeholders.type' | translate }}">{{$select.selected}}</ui-select-match>
+      <ui-select-choices repeat="x in blade.sectionTypes | filter: $select.search">
+        <span ng-bind-html="x | highlight: $select.search"></span>
+      </ui-select-choices>
+    </ui-select>
+  </div>
+</script>
+<script type="text/ng-template" id="section-allow-custom-text.html">
+  <div class="form-group" ng-if="blade.currentEntity.type === 'Text'">
+    <label class="form-label">{{ 'catalog.blades.section-details.labels.allow-custom-text' | translate }}</label>
+    <div class="form-input">
+      <label class="form-label __switch">
+        <input type="checkbox" ng-model="blade.currentEntity.allowCustomText" />
+        <span class="switch"></span>
+      </label>
+    </div>
+  </div>
+</script>
+<script type="text/ng-template" id="section-allow-predefined.html">
+  <div class="form-group" ng-if="blade.currentEntity.type === 'Text'">
+    <label class="form-label">{{ 'catalog.blades.section-details.labels.allow-predefined-options' | translate }}</label>
+    <div class="form-input">
+      <label class="form-label __switch">
+        <input type="checkbox" ng-model="blade.currentEntity.allowPredefinedOptions" />
+        <span class="switch"></span>
+      </label>
+    </div>
+  </div>
+</script>
+<script type="text/ng-template" id="section-is-required.html">
+  <div class="form-group">
+    <label class="form-label">{{ 'catalog.blades.section-details.labels.required' | translate }}</label>
+    <div class="form-input">
+      <label class="form-label __switch">
+        <input type="checkbox" ng-model="blade.currentEntity.isRequired" />
+        <span class="switch"></span>
+      </label>
+    </div>
+  </div>
+</script>
+<script type="text/ng-template" id="section-max-length.html">
+  <div class="form-group" ng-if="blade.currentEntity.type === 'Text'">
+    <label class="form-label">{{ 'catalog.blades.section-details.labels.max-length' | translate }}</label>
+    <div class="form-input">
+      <input type="number" min="0" ng-model="blade.currentEntity.maxLength" />
+    </div>
+  </div>
+</script>
+
 <script type="text/ng-template" id="option-list.row.html">
   <div ng-click='grid.appScope.edit(row.entity)' ng-repeat="(colRenderIndex, col) in colContainer.renderedColumns track by col.uid" ui-grid-one-bind-id-grid="rowRenderIndex + '-' + col.uid + '-cell'" class="ui-grid-cell" ng-class="{'ui-grid-row-header-cell': col.isRowHeader, '__hovered': grid.appScope.contextMenuEntity === row.entity, '__selected': row.entity.productId ===grid.appScope.selectedNodeId}" role="{{col.isRowHeader ? 'rowheader' : 'gridcell' }}" ui-grid-cell context-menu="grid.appScope.contextMenuEntity = row.entity" data-target="sol_menu"></div>
 </script>
@@ -149,3 +131,21 @@
     </div>
   </div>
 </script>
+
+<style lang="scss">
+  .blade .blade-container .blade-static.config-section-detail .form-group {
+    margin: 0;
+    padding-top: 0px;
+  }
+
+  .blade .blade-container .blade-static.config-section-detail .column .form-group {
+    margin: 5px 10px 0 0;
+    padding-top: 0px;
+  }
+
+  .config-section-detail .form-input textarea {
+    min-height: 60px;
+    max-height: 60px;
+    resize: none;
+  }
+</style>
