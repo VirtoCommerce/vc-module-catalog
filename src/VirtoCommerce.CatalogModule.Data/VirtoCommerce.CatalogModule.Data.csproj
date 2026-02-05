@@ -14,7 +14,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Google.Apis.YouTube.v3" Version="1.64.0.3205" />
-    <PackageReference Include="HtmlSanitizer" Version="8.1.870" />
+    <PackageReference Include="HtmlSanitizer" Version="9.0.892" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
     <PackageReference Include="VirtoCommerce.AssetsModule.Core" Version="3.814.0" />
     <PackageReference Include="VirtoCommerce.ExportModule.Data" Version="3.808.0" />
