@@ -122,7 +122,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             var retVal = new GenericTreeNode<Entity>(category);
             if (!category.Parents.IsNullOrEmpty())
             {
-                var parentNode = GetRelationshipsTree(category.Parents.Last());
+                var parentNode = GetRelationshipsTree(category.Parents.Reverse().First());
                 retVal.AddChild(parentNode);
             }
             else
