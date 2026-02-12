@@ -308,8 +308,6 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
                 InheritReviews(parentProduct);
 
-                InheritPropertyValues(parentProduct);
-
                 // TODO: prevent saving the inherited simple values
                 Width = parentProduct.Width ?? Width;
                 Height = parentProduct.Height ?? Height;
@@ -318,39 +316,6 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                 Weight = parentProduct.Weight ?? Weight;
                 WeightUnit = parentProduct.WeightUnit ?? WeightUnit;
                 PackageType = parentProduct.PackageType ?? PackageType;
-            }
-        }
-
-        protected virtual void InheritPropertyValues(CatalogProduct parentProduct)
-        {
-            // Inherit not overridden property values from main product
-            foreach (var parentProductProperty in parentProduct.Properties ?? Array.Empty<Property>())
-            {
-                Properties ??= new List<Property>();
-                var existProperty = Properties.FirstOrDefault(x =>
-                    x.IsSame(parentProductProperty, PropertyType.Product, PropertyType.Variation));
-                if (existProperty == null)
-                {
-                    existProperty = AbstractTypeFactory<Property>.TryCreateInstance();
-                    Properties.Add(existProperty);
-                }
-
-                existProperty.TryInheritFrom(parentProductProperty);
-                existProperty.IsReadOnly = existProperty.Type != PropertyType.Variation &&
-                                           existProperty.Type != PropertyType.Product;
-
-                // Inherit only parent Product properties  values if own values aren't set
-                if (parentProductProperty.Type == PropertyType.Product && existProperty.Values.IsNullOrEmpty() &&
-                    !parentProductProperty.Values.IsNullOrEmpty())
-                {
-                    existProperty.Values = new List<PropertyValue>();
-                    foreach (var parentPropValue in parentProductProperty.Values)
-                    {
-                        var propValue = AbstractTypeFactory<PropertyValue>.TryCreateInstance();
-                        propValue.TryInheritFrom(parentPropValue);
-                        existProperty.Values.Add(propValue);
-                    }
-                }
             }
         }
 
@@ -413,6 +378,12 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         {
             if (parent is IHasProperties hasProperties)
             {
+                var parentIsProduct = parent is CatalogProduct;
+
+                Properties ??= new List<Property>();
+                // Add inheritedProperties to Properties after for-loop to reduce search area during loop
+                var inheritedProperties = new List<Property>();
+
                 // Properties inheritance
                 foreach (var parentProperty in hasProperties.Properties ?? Array.Empty<Property>())
                 {
@@ -421,20 +392,39 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                         continue;
                     }
 
-                    Properties ??= new List<Property>();
                     var existProperty = Properties.FirstOrDefault(x =>
                         x.IsSame(parentProperty, PropertyType.Product, PropertyType.Variation));
                     if (existProperty == null)
                     {
                         existProperty = AbstractTypeFactory<Property>.TryCreateInstance();
-                        Properties.Add(existProperty);
+                        inheritedProperties.Add(existProperty);
                     }
 
                     existProperty.TryInheritFrom(parentProperty);
 
                     existProperty.IsReadOnly = existProperty.Type != PropertyType.Variation &&
                                                existProperty.Type != PropertyType.Product;
+
+                    // Only add values if parent is CatalogProduct
+                    // Moved from InheritPropertyValues to reduce search overhead
+                    if (parentIsProduct)
+                    {
+                        // Inherit only parent Product properties  values if own values aren't set
+                        if (parentProperty.Type == PropertyType.Product && existProperty.Values.IsNullOrEmpty() &&
+                            !parentProperty.Values.IsNullOrEmpty())
+                        {
+                            existProperty.Values = new List<PropertyValue>();
+                            foreach (var parentPropValue in parentProperty.Values)
+                            {
+                                var propValue = AbstractTypeFactory<PropertyValue>.TryCreateInstance();
+                                propValue.TryInheritFrom(parentPropValue);
+                                existProperty.Values.Add(propValue);
+                            }
+                        }
+                    }
                 }
+
+                Properties.AddRange(inheritedProperties);
 
                 // Restore sorting order after changes
                 Properties = Properties?.OrderBy(x => x.Name).ToList();
