@@ -323,22 +323,22 @@ namespace VirtoCommerce.CatalogModule.Tests
             Assert.False(result);
         }
 
-        private AssociationService CreateProductAssociationServiceMock(IEnumerable<dataModel.AssociationEntity> entities)
+        private AssociationService CreateProductAssociationServiceMock(IList<dataModel.AssociationEntity> entities)
         {
             var catalogRepositoryFactory = CreateRepositoryMock(entities);
             var productAssociationsService = new AssociationService(catalogRepositoryFactory);
             return productAssociationsService;
         }
 
-        private Func<ICatalogRepository> CreateRepositoryMock(IEnumerable<dataModel.AssociationEntity> entities)
+        private Func<ICatalogRepository> CreateRepositoryMock(IList<dataModel.AssociationEntity> entities)
         {
-            var entitiesMock = entities.AsQueryable().BuildMock();
+            var entitiesMock = entities;
 
             _catalogRepositoryMock.SetupGet(x => x.UnitOfWork).Returns(new Mock<IUnitOfWork>().Object);
 
             _catalogRepositoryMock
                 .Setup(x => x.Associations)
-                .Returns(entitiesMock);
+                .Returns(entitiesMock.BuildMock().AsQueryable());
 
             _catalogRepositoryMock
                 .Setup(x => x.GetAssociationsByIdsAsync(It.IsAny<IList<string>>()))
