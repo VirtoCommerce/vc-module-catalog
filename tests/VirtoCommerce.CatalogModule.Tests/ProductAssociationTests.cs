@@ -332,13 +332,11 @@ namespace VirtoCommerce.CatalogModule.Tests
 
         private Func<ICatalogRepository> CreateRepositoryMock(IList<dataModel.AssociationEntity> entities)
         {
-            var entitiesMock = entities;
-
             _catalogRepositoryMock.SetupGet(x => x.UnitOfWork).Returns(new Mock<IUnitOfWork>().Object);
 
             _catalogRepositoryMock
                 .Setup(x => x.Associations)
-                .Returns(entitiesMock.BuildMock().AsQueryable());
+                .Returns(entities.BuildMock().AsQueryable());
 
             _catalogRepositoryMock
                 .Setup(x => x.GetAssociationsByIdsAsync(It.IsAny<IList<string>>()))
