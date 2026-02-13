@@ -410,8 +410,9 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                         continue;
                     }
 
-                    var existProperty = Properties.FirstOrDefault(x =>
-                        x.IsSame(parentProperty, PropertyType.Product, PropertyType.Variation));
+                    var existProperty = Properties.FirstOrDefault(x => x.IsSame(parentProperty, PropertyType.Product, PropertyType.Variation)) ??
+                                        inheritedProperties.FirstOrDefault(x => x.IsSame(parentProperty, PropertyType.Product, PropertyType.Variation));
+
                     if (existProperty == null)
                     {
                         existProperty = AbstractTypeFactory<Property>.TryCreateInstance();

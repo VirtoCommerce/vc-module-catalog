@@ -124,6 +124,40 @@ public class ProductPropertyValueInheritanceTests
         property.Values.Should().BeNullOrEmpty();
     }
 
+    [Fact]
+    public void TryInheritFrom_CategoryParent_ProductAndVariationProperties_ShouldNotDuplicate()
+    {
+        // Arrange: Category has both Product-type and Variation-type property with the same name
+        var product = new CatalogProduct();
+
+        var parent = new Category
+        {
+            Properties =
+            [
+                new Property
+                {
+                    Name = "Color",
+                    Type = PropertyType.Product,
+                    ValueType = PropertyValueType.ShortText,
+                    IsInherited = true,
+                },
+                new Property
+                {
+                    Name = "Color",
+                    Type = PropertyType.Variation,
+                    ValueType = PropertyValueType.ShortText,
+                    IsInherited = false,
+                },
+            ],
+        };
+
+        // Act
+        product.TryInheritFrom(parent);
+
+        // Assert
+        product.Properties.Should().HaveCount(1);
+    }
+
 
     private static T CreateObjectWithPropertyValues<T>(IList<string> values = null, PropertyType propertyType = PropertyType.Product)
         where T : IHasProperties, new()
