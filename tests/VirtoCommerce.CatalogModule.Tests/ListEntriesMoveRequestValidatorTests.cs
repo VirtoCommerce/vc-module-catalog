@@ -41,7 +41,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             };
 
             // Act
-            var validationResult = await _validator.ValidateAsync(moveRequest);
+            var validationResult = await _validator.ValidateAsync(moveRequest, TestContext.Current.CancellationToken);
 
             // Assert
             validationResult.IsValid.Should().BeFalse();
@@ -76,7 +76,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             };
 
             // Act
-            var validationResult = await _validator.ValidateAsync(moveRequest);
+            var validationResult = await _validator.ValidateAsync(moveRequest, TestContext.Current.CancellationToken);
 
             // Assert
             validationResult.IsValid.Should().BeFalse();
@@ -111,7 +111,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             };
 
             // Act
-            var validationResult = await _validator.ValidateAsync(moveRequest);
+            var validationResult = await _validator.ValidateAsync(moveRequest, TestContext.Current.CancellationToken);
 
             // Assert
             validationResult.IsValid.Should().BeTrue();
