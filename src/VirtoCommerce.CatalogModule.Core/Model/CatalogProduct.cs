@@ -319,6 +319,23 @@ namespace VirtoCommerce.CatalogModule.Core.Model
             }
         }
 
+        protected virtual void InheritPropertyValues(Property property, Property parentProperty)
+        {
+            // Inherit only parent Product property values if own values aren't set
+            if (parentProperty.Type == PropertyType.Product &&
+                property.Values.IsNullOrEmpty() &&
+                !parentProperty.Values.IsNullOrEmpty())
+            {
+                property.Values ??= new List<PropertyValue>();
+                foreach (var parentPropValue in parentProperty.Values)
+                {
+                    var propValue = AbstractTypeFactory<PropertyValue>.TryCreateInstance();
+                    propValue.TryInheritFrom(parentPropValue);
+                    property.Values.Add(propValue);
+                }
+            }
+        }
+
         protected virtual void InheritReviews(CatalogProduct parentProduct)
         {
             // Inherit editorial reviews from main product
@@ -376,16 +393,17 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
         protected virtual void InheritProperties(IEntity parent)
         {
-            if (parent is IHasProperties hasProperties)
+            if (parent is IHasProperties hasProperties && hasProperties.Properties?.Count > 0)
             {
                 var parentIsProduct = parent is CatalogProduct;
 
                 Properties ??= new List<Property>();
-                // Add inheritedProperties to Properties after for-loop to reduce search area during loop
+
+                // Add inherited properties to Properties after for-loop to reduce search area during loop
                 var inheritedProperties = new List<Property>();
 
                 // Properties inheritance
-                foreach (var parentProperty in hasProperties.Properties ?? Array.Empty<Property>())
+                foreach (var parentProperty in hasProperties.Properties)
                 {
                     if (this.HasPropertyExcluded(parentProperty.Name))
                     {
@@ -405,29 +423,18 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                     existProperty.IsReadOnly = existProperty.Type != PropertyType.Variation &&
                                                existProperty.Type != PropertyType.Product;
 
-                    // Only add values if parent is CatalogProduct
-                    // Moved from InheritPropertyValues to reduce search overhead
+                    // Only inherit values if parent is CatalogProduct
+                    // Moved here from the InheritFromCatalogProduct(IEntity parent) to reduce search overhead
                     if (parentIsProduct)
                     {
-                        // Inherit only parent Product properties  values if own values aren't set
-                        if (parentProperty.Type == PropertyType.Product && existProperty.Values.IsNullOrEmpty() &&
-                            !parentProperty.Values.IsNullOrEmpty())
-                        {
-                            existProperty.Values = new List<PropertyValue>();
-                            foreach (var parentPropValue in parentProperty.Values)
-                            {
-                                var propValue = AbstractTypeFactory<PropertyValue>.TryCreateInstance();
-                                propValue.TryInheritFrom(parentPropValue);
-                                existProperty.Values.Add(propValue);
-                            }
-                        }
+                        InheritPropertyValues(existProperty, parentProperty);
                     }
                 }
 
-                Properties.AddRange(inheritedProperties);
-
                 // Restore sorting order after changes
-                Properties = Properties?.OrderBy(x => x.Name).ToList();
+                Properties = Properties.Concat(inheritedProperties)
+                    .OrderBy(x => x.Name)
+                    .ToList();
             }
         }
 
