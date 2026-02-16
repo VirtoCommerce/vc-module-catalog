@@ -410,6 +410,9 @@ namespace VirtoCommerce.CatalogModule.Core.Model
                         continue;
                     }
 
+                    // Although it is incorrect, it is possible to have multiple properties with the same name but different types.
+                    // For compatibility with the previous implementation, only the last of these properties is taken.
+                    // This is why we check both 'Properties' and 'inheritedProperties'.
                     var existProperty = Properties.FirstOrDefault(x => x.IsSame(parentProperty, PropertyType.Product, PropertyType.Variation)) ??
                                         inheritedProperties.FirstOrDefault(x => x.IsSame(parentProperty, PropertyType.Product, PropertyType.Variation));
 

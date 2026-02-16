@@ -130,61 +130,54 @@ public class ProductPropertyValueInheritanceTests
         // Arrange: Category has both Product-type and Variation-type property with the same name
         var product = new CatalogProduct();
 
-        var parent = new Category
-        {
-            Properties =
-            [
-                new Property
-                {
-                    Name = "Color",
-                    Type = PropertyType.Product,
-                    ValueType = PropertyValueType.ShortText,
-                    IsInherited = true,
-                },
-                new Property
-                {
-                    Name = "Color",
-                    Type = PropertyType.Variation,
-                    ValueType = PropertyValueType.ShortText,
-                    IsInherited = false,
-                },
-            ],
-        };
+        var parent = new Category();
+        AddProperty(parent, "Color", PropertyType.Variation);
+        AddProperty(parent, "Color", PropertyType.Product);
 
         // Act
         product.TryInheritFrom(parent);
 
         // Assert
+
+        // There should be no duplicates
         product.Properties.Should().HaveCount(1);
+
+        var property = product.Properties.First();
+
+        // The last property wins if there are multiple properties with the same name
+        property.Type.Should().Be(PropertyType.Product);
     }
 
 
     private static T CreateObjectWithPropertyValues<T>(IList<string> values = null, PropertyType propertyType = PropertyType.Product)
         where T : IHasProperties, new()
     {
-        const string propertyName = "Color";
+        var result = new T();
+        var property = AddProperty(result, "Color", propertyType);
 
-        var parent = new T
+        property.Values = values
+            ?.Select(x => new PropertyValue
+            {
+                PropertyName = property.Name,
+                Value = x,
+            })
+            .ToList();
+
+        return result;
+    }
+
+    private static Property AddProperty<T>(T owner, string propertyName, PropertyType propertyType)
+        where T : IHasProperties
+    {
+        var property = new Property
         {
-            Properties =
-            [
-                new Property
-                {
-                    Name = propertyName,
-                    Type = propertyType,
-                    ValueType = PropertyValueType.ShortText,
-                    Values = values
-                        ?.Select(x => new PropertyValue
-                        {
-                            PropertyName = propertyName,
-                            Value = x,
-                            ValueType = PropertyValueType.ShortText,
-                        })
-                        .ToList(),
-                },
-            ],
+            Name = propertyName,
+            Type = propertyType,
         };
 
-        return parent;
+        owner.Properties ??= [];
+        owner.Properties.Add(property);
+
+        return property;
     }
 }
