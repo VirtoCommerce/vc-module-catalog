@@ -406,8 +406,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
             Properties ??= new List<Property>();
 
             // Add inherited properties to Properties after for-loop to reduce search area during loop
-            var inheritedProperties = new List<Property>();
-            var inheritedPropertyKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var inheritedProperties = new Dictionary<string, Property>(StringComparer.OrdinalIgnoreCase);
 
             // Properties inheritance
             for (var i = hasProperties.Properties.Count - 1; i >= 0; i--)
@@ -431,11 +430,10 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
                     var propertyKey = $"{parentProperty.Name}_{parentProperty.ValueType}_{propertyType}";
 
-                    if (!inheritedPropertyKeys.Contains(propertyKey))
+                    if (!inheritedProperties.ContainsKey(propertyKey))
                     {
                         existProperty = AbstractTypeFactory<Property>.TryCreateInstance();
-                        inheritedProperties.Add(existProperty);
-                        inheritedPropertyKeys.Add(propertyKey);
+                        inheritedProperties.Add(propertyKey, existProperty);
                     }
                 }
 
@@ -458,7 +456,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
             }
 
             // Restore sorting order after changes
-            Properties = Properties.Concat(inheritedProperties)
+            Properties = Properties.Concat(inheritedProperties.Values)
                 .OrderBy(x => x.Name)
                 .ToList();
         }
