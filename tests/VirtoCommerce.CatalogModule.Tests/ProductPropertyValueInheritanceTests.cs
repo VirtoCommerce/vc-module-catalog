@@ -127,25 +127,25 @@ public class ProductPropertyValueInheritanceTests
     [Fact]
     public void TryInheritFrom_CategoryParent_ProductAndVariationProperties_ShouldNotDuplicate()
     {
-        // Arrange: Category has both Product-type and Variation-type property with the same name
+        // Arrange
         var product = new CatalogProduct();
 
+        // Category has multiple properties with the same name but with different types
         var parent = new Category();
         AddProperty(parent, "Color", PropertyType.Variation);
         AddProperty(parent, "Color", PropertyType.Product);
+        AddProperty(parent, "Color", PropertyType.Category);
+        AddProperty(parent, "Color", PropertyType.Catalog);
 
         // Act
         product.TryInheritFrom(parent);
 
         // Assert
+        product.Properties.Should().HaveCount(3);
+        var propertyTypes = product.Properties.Select(x => x.Type).ToArray();
 
-        // There should be no duplicates
-        product.Properties.Should().HaveCount(1);
-
-        var property = product.Properties.First();
-
-        // The last property wins if there are multiple properties with the same name
-        property.Type.Should().Be(PropertyType.Product);
+        // Variation and Product properties should not duplicate, the last of them should be inherited
+        propertyTypes.Should().BeEquivalentTo([PropertyType.Catalog, PropertyType.Category, PropertyType.Product]);
     }
 
 

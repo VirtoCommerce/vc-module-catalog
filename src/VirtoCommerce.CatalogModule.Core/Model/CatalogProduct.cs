@@ -391,55 +391,76 @@ namespace VirtoCommerce.CatalogModule.Core.Model
             }
         }
 
+
+        private static readonly PropertyType[] _equivalentPropertyTypes = [PropertyType.Product, PropertyType.Variation];
+
         protected virtual void InheritProperties(IEntity parent)
         {
-            if (parent is IHasProperties hasProperties && hasProperties.Properties?.Count > 0)
+            if (parent is not IHasProperties hasProperties || hasProperties.Properties.IsNullOrEmpty())
             {
-                var parentIsProduct = parent is CatalogProduct;
+                return;
+            }
 
-                Properties ??= new List<Property>();
+            var parentIsProduct = parent is CatalogProduct;
 
-                // Add inherited properties to Properties after for-loop to reduce search area during loop
-                var inheritedProperties = new List<Property>();
+            Properties ??= new List<Property>();
 
-                // Properties inheritance
-                foreach (var parentProperty in hasProperties.Properties)
+            // Add inherited properties to Properties after for-loop to reduce search area during loop
+            var inheritedProperties = new List<Property>();
+            var inheritedPropertyKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            // Properties inheritance
+            for (var i = hasProperties.Properties.Count - 1; i >= 0; i--)
+            {
+                var parentProperty = hasProperties.Properties[i];
+                if (this.HasPropertyExcluded(parentProperty.Name))
                 {
-                    if (this.HasPropertyExcluded(parentProperty.Name))
-                    {
-                        continue;
-                    }
+                    continue;
+                }
 
-                    // Although it is incorrect, it is possible to have multiple properties with the same name but different types.
-                    // For compatibility with the previous implementation, only the last of these properties is taken.
-                    // This is why we check both 'Properties' and 'inheritedProperties'.
-                    var existProperty = Properties.FirstOrDefault(x => x.IsSame(parentProperty, PropertyType.Product, PropertyType.Variation)) ??
-                                        inheritedProperties.FirstOrDefault(x => x.IsSame(parentProperty, PropertyType.Product, PropertyType.Variation));
+                var existProperty = Properties.FirstOrDefault(x => x.IsSame(parentProperty, _equivalentPropertyTypes));
 
-                    if (existProperty == null)
+                // Although it is incorrect, it is possible to have multiple properties with the same name but different types.
+                // For compatibility with the previous implementation, inherit all properties with the Catalog or Category type,
+                // but take only the last one with the Product or Variation type.
+                if (existProperty == null)
+                {
+                    var propertyType = _equivalentPropertyTypes.Contains(parentProperty.Type)
+                        ? _equivalentPropertyTypes[0]
+                        : parentProperty.Type;
+
+                    var propertyKey = $"{parentProperty.Name}_{parentProperty.ValueType}_{propertyType}";
+
+                    if (!inheritedPropertyKeys.Contains(propertyKey))
                     {
                         existProperty = AbstractTypeFactory<Property>.TryCreateInstance();
                         inheritedProperties.Add(existProperty);
-                    }
-
-                    existProperty.TryInheritFrom(parentProperty);
-
-                    existProperty.IsReadOnly = existProperty.Type != PropertyType.Variation &&
-                                               existProperty.Type != PropertyType.Product;
-
-                    // Only inherit values if parent is CatalogProduct
-                    // Moved here from the InheritFromCatalogProduct(IEntity parent) to reduce search overhead
-                    if (parentIsProduct)
-                    {
-                        InheritPropertyValues(existProperty, parentProperty);
+                        inheritedPropertyKeys.Add(propertyKey);
                     }
                 }
 
-                // Restore sorting order after changes
-                Properties = Properties.Concat(inheritedProperties)
-                    .OrderBy(x => x.Name)
-                    .ToList();
+                if (existProperty == null)
+                {
+                    continue;
+                }
+
+                existProperty.TryInheritFrom(parentProperty);
+
+                existProperty.IsReadOnly = existProperty.Type != PropertyType.Variation &&
+                                           existProperty.Type != PropertyType.Product;
+
+                // Only inherit values if parent is CatalogProduct
+                // Moved here from the InheritFromCatalogProduct(IEntity parent) to reduce search overhead
+                if (parentIsProduct)
+                {
+                    InheritPropertyValues(existProperty, parentProperty);
+                }
             }
+
+            // Restore sorting order after changes
+            Properties = Properties.Concat(inheritedProperties)
+                .OrderBy(x => x.Name)
+                .ToList();
         }
 
         #endregion
