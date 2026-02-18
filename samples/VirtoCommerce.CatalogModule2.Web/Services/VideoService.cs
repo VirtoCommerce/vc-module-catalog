@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using VirtoCommerce.CatalogModule.Core.Model;
-using VirtoCommerce.CatalogModule.Core.Options;
+using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Data.Services;
@@ -17,11 +16,11 @@ namespace VirtoCommerce.CatalogModule2.Web.Services
     public class VideoService2 : VideoService
     {
         public VideoService2(
-            IOptions<VideoOptions> videoOptions,
             Func<ICatalogRepository> repositoryFactory,
             IPlatformMemoryCache platformMemoryCache,
-            IEventPublisher eventPublisher)
-            : base(repositoryFactory, platformMemoryCache, eventPublisher, videoOptions)
+            IEventPublisher eventPublisher,
+            IVideoProvider videoProvider)
+            : base(repositoryFactory, platformMemoryCache, eventPublisher, videoProvider)
         {
         }
 
