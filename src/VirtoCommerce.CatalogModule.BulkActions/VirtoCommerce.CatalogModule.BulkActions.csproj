@@ -13,7 +13,6 @@
     <SonarQubeTestProject>false</SonarQubeTestProject>
   </PropertyGroup>
   <ItemGroup>
-    
     <PackageReference Include="VirtoCommerce.BulkActionsModule.Core" Version="3.1000.0" />
   </ItemGroup>
   <ItemGroup>
