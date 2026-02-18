@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <noWarn>1591</noWarn>
     <IsPackable>True</IsPackable>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -13,14 +13,14 @@
     <SonarQubeTestProject>false</SonarQubeTestProject>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Apis.YouTube.v3" Version="1.64.0.3205" />
+    <PackageReference Include="Google.Apis.YouTube.v3" Version="1.73.0.4053" />
     <PackageReference Include="HtmlSanitizer" Version="9.0.892" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
-    <PackageReference Include="VirtoCommerce.AssetsModule.Core" Version="3.814.0" />
-    <PackageReference Include="VirtoCommerce.ExportModule.Data" Version="3.808.0" />
-    <PackageReference Include="VirtoCommerce.Platform.Data" Version="3.917.0" />
-    <PackageReference Include="VirtoCommerce.Platform.Hangfire" Version="3.917.0" />
-    <PackageReference Include="VirtoCommerce.Platform.Security" Version="3.917.0" />
+
+    <PackageReference Include="VirtoCommerce.AssetsModule.Core" Version="3.1000.0" />
+    <PackageReference Include="VirtoCommerce.ExportModule.Data" Version="3.1000.0" />
+    <PackageReference Include="VirtoCommerce.Platform.Data" Version="3.1002.0" />
+    <PackageReference Include="VirtoCommerce.Platform.Hangfire" Version="3.1002.0" />
+    <PackageReference Include="VirtoCommerce.Platform.Security" Version="3.1002.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\VirtoCommerce.CatalogModule.Core\VirtoCommerce.CatalogModule.Core.csproj" />
