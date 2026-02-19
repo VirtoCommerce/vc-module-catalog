@@ -77,16 +77,24 @@ public class BrandSeoResolver : ISeoResolver
             }
 
             // brands catalog seo found meaning this is seo request for brands page, find second level (actual brand)
+            SeoInfo brandSeoInfo = null;
             var brandsCatalog = await _catalogService.GetNoCloneAsync(brandStoreSettings.BrandCatalogId);
             var brandCategory = await GetCategorySeo(criteria, segments, brandsCatalog, brandStoreSettings.Store);
+
             if (brandCategory != null)
             {
                 var seo = brandCategory.GetBestMatchingSeoInfo(brandStoreSettings.Store, criteria.LanguageCode);
-                var brandSeoInfo = CreateSeoInfo(BrandSeoType, criteria.Slug, criteria, seo);
+                brandSeoInfo = CreateSeoInfo(BrandSeoType, criteria.Slug, criteria, seo);
                 brandSeoInfo.Id = brandCategory.Id;
                 brandSeoInfo.ObjectId = brandCategory.Id;
-                return [brandSeoInfo];
             }
+            else
+            {
+                // if a brand category doesn't exist create the seo info based on the request
+                brandSeoInfo = CreateSeoInfo(BrandSeoType, criteria.Slug, criteria);
+            }
+
+            return [brandSeoInfo];
         }
         return [];
     }
