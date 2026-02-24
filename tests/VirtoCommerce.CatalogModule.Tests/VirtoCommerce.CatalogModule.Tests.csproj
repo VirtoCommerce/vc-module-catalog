@@ -3,6 +3,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <noWarn>1591;NU1608</noWarn>
     <IsPackable>False</IsPackable>
+    <UserSecretsId>vc-module-catalog-tests</UserSecretsId>
   </PropertyGroup>
   <PropertyGroup>
     <!-- Project is a test project -->
@@ -10,7 +11,9 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AutoFixture" Version="4.18.1" />
-    <PackageReference Include="coverlet.collector" Version="6.0.4">
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="10.0.0" />
+    <PackageReference Include="coverlet.collector" Version="8.0.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -33,5 +36,6 @@
     <ProjectReference Include="..\..\src\VirtoCommerce.CatalogModule.BulkActions\VirtoCommerce.CatalogModule.BulkActions.csproj" />
     <ProjectReference Include="..\..\src\VirtoCommerce.CatalogModule.Core\VirtoCommerce.CatalogModule.Core.csproj" />
     <ProjectReference Include="..\..\src\VirtoCommerce.CatalogModule.Data\VirtoCommerce.CatalogModule.Data.csproj" />
+    <ProjectReference Include="..\..\src\VirtoCommerce.CatalogModule.Data.YouTube\VirtoCommerce.CatalogModule.Data.YouTube.csproj" />
   </ItemGroup>
 </Project>

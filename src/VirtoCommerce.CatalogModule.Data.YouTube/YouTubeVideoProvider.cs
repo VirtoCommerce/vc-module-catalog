@@ -10,8 +10,20 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.YouTube
 {
-    public class YouTubeVideoProvider : IVideoProvider
+    public partial class YouTubeVideoProvider : IVideoProvider
     {
+        [GeneratedRegex(@"(vi\/|v%3D|v=|\/v\/|youtu\.be\/|\/embed\/)")]
+        private static partial Regex VideoIdSeparatorRegex();
+
+        [GeneratedRegex(@"[^0-9a-z_\-]", RegexOptions.IgnoreCase)]
+        private static partial Regex VideoIdCleanerRegex();
+
+        [GeneratedRegex("src=\"(.*?)\"")]
+        private static partial Regex EmbedSrcRegex();
+
+        [GeneratedRegex(@"PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$")]
+        private static partial Regex DurationRegex();
+
         private readonly VideoOptions _videoOptions;
 
         public YouTubeVideoProvider(IOptions<VideoOptions> videoOptions)
@@ -47,13 +59,13 @@ namespace VirtoCommerce.CatalogModule.Data.YouTube
                 video.Name = snippet.Title;
                 video.Description = snippet.Description;
                 video.UploadDate = snippet.PublishedAtDateTimeOffset?.UtcDateTime;
-                video.ThumbnailUrl = snippet.Thumbnails.High.Url;
+                video.ThumbnailUrl = snippet.Thumbnails?.High?.Url;
                 video.EmbedUrl = GetEmbedUrl(resource.Player.EmbedHtml);
                 video.Duration = FormatDuration(resource.ContentDetails.Duration);
             }
             else
             {
-                using var httpRequest = new HttpRequestMessage(HttpMethod.Get, $"https://www.youtube.com/oembed?url={request.ContentUrl}&format=json");
+                using var httpRequest = new HttpRequestMessage(HttpMethod.Get, $"https://www.youtube.com/oembed?url={Uri.EscapeDataString(request.ContentUrl)}&format=json");
                 using var response = await service.HttpClient.SendAsync(httpRequest);
                 response.EnsureSuccessStatusCode();
                 var content = await response.Content.ReadAsStringAsync();
@@ -62,7 +74,7 @@ namespace VirtoCommerce.CatalogModule.Data.YouTube
                 video.Name = video.Description = resource.Value<string>("title");
                 video.ThumbnailUrl = resource.Value<string>("thumbnail_url");
                 video.EmbedUrl = GetEmbedUrl(resource.Value<string>("html"));
-                video.Duration = "00:00:00";
+                video.Duration = null;
             }
 
             return video;
@@ -75,11 +87,11 @@ namespace VirtoCommerce.CatalogModule.Data.YouTube
                 return null;
             }
 
-            var parts = Regex.Split(contentUrl, @"(vi\/|v%3D|v=|\/v\/|youtu\.be\/|\/embed\/)");
+            var parts = VideoIdSeparatorRegex().Split(contentUrl);
 
             return parts.Length > 2 && !string.IsNullOrEmpty(parts[2])
-                ? Regex.Split(parts[2], @"[^0-9a-z_\-]", RegexOptions.IgnoreCase)[0]
-                : parts[0];
+                ? VideoIdCleanerRegex().Split(parts[2])[0]
+                : null;
         }
 
         private static string GetEmbedUrl(string html)
@@ -89,7 +101,7 @@ namespace VirtoCommerce.CatalogModule.Data.YouTube
                 return null;
             }
 
-            var match = Regex.Match(html, "src=\"(.*?)\"", RegexOptions.Multiline);
+            var match = EmbedSrcRegex().Match(html);
 
             return match.Success ? match.Groups[1].Value : null;
         }
@@ -101,7 +113,7 @@ namespace VirtoCommerce.CatalogModule.Data.YouTube
                 return null;
             }
 
-            var match = Regex.Match(duration, @"PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$");
+            var match = DurationRegex().Match(duration);
 
             if (!match.Success)
             {
