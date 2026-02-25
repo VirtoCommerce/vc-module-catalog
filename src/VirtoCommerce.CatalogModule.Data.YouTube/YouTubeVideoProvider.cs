@@ -74,7 +74,7 @@ namespace VirtoCommerce.CatalogModule.Data.YouTube
                 video.Name = video.Description = resource.Value<string>("title");
                 video.ThumbnailUrl = resource.Value<string>("thumbnail_url");
                 video.EmbedUrl = GetEmbedUrl(resource.Value<string>("html"));
-                video.Duration = null;
+                video.Duration = "00:00:00";
             }
 
             return video;
@@ -91,7 +91,7 @@ namespace VirtoCommerce.CatalogModule.Data.YouTube
 
             return parts.Length > 2 && !string.IsNullOrEmpty(parts[2])
                 ? VideoIdCleanerRegex().Split(parts[2])[0]
-                : null;
+                : parts[0];
         }
 
         private static string GetEmbedUrl(string html)
