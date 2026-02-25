@@ -185,11 +185,7 @@ public class CatalogSeoResolver : ISeoResolver
         }
 
         var slug = segments.Last();
-
-        using var repository = _repositoryFactory();
-
-        var entities = await GetSeoInfoQuery(repository, slug, store, criteria, isActive)
-            .ToListAsync();
+        var entities = await GetSeoInfoEntities(slug, store, criteria, isActive);
 
         var categoryIds = entities.Select(x => x.CategoryId).Where(x => x != null).Distinct().ToArray();
         var seoList = new List<(string SeoPath, string OutlinePath, string Id)>();
@@ -242,6 +238,12 @@ public class CatalogSeoResolver : ISeoResolver
                 .Select(x => (x.SeoPath, x.OutlinePath, x.Id))
                 .ToArray() ?? [];
         }
+    }
+
+    protected virtual async Task<IList<SeoInfoEntity>> GetSeoInfoEntities(string slug, Store store, SeoSearchCriteria criteria, bool isActive)
+    {
+        using var repository = _repositoryFactory();
+        return await GetSeoInfoQuery(repository, slug, store, criteria, isActive).ToListAsync();
     }
 
     protected virtual IQueryable<SeoInfoEntity> GetSeoInfoQuery(ICatalogRepository repository, string slug, Store store, SeoSearchCriteria criteria, bool isActive)

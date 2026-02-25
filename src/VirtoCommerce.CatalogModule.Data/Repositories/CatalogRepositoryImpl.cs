@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Transactions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using VirtoCommerce.CatalogModule.Core.Model;
@@ -17,7 +17,8 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
     public class CatalogRepositoryImpl : DbContextRepositoryBase<CatalogDbContext>, ICatalogRepository
     {
         private readonly ICatalogRawDatabaseCommand _rawDatabaseCommand;
-        private const int PageSize = 500;
+        private const int _pageSize = 500;
+        private const int _commandTimeoutInSeconds = 900; // 15 minutes for heavy operations
 
         public CatalogRepositoryImpl(CatalogDbContext dbContext, ICatalogRawDatabaseCommand rawDatabaseCommand)
             : base(dbContext)
@@ -84,7 +85,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     {
                         cancellationToken.ThrowIfCancellationRequested();
                         var productIds = options.Where(x => !string.IsNullOrEmpty(x.ProductId)).Select(x => x.ProductId).ToList();
-                        await GetItemByIdsAsync(productIds, ItemResponseGroup.ItemInfo.ToString());
+                        await GetItemByIdsAsync(productIds, nameof(ItemResponseGroup.ItemInfo));
                     }
                 }
             }
@@ -358,7 +359,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                         .Distinct()
                         .ToList();
 
-                    await GetItemByIdsAsync(referencedProductIds, ItemResponseGroup.ItemInfo.ToString());
+                    await GetItemByIdsAsync(referencedProductIds, nameof(ItemResponseGroup.ItemInfo));
                 }
 
                 // Load parents
@@ -383,7 +384,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             var result = new List<PropertyEntity>();
             // Used breaking query EF performance concept https://msdn.microsoft.com/en-us/data/hh949853.aspx#8
             // Split query to avoid excessive memory usage for large number of properties
-            foreach (var idsPage in propIds.Paginate(PageSize))
+            foreach (var idsPage in propIds.Paginate(_pageSize))
             {
                 var resultBatch = await Properties
                     .Where(x => idsPage.Contains(x.Id))
@@ -398,7 +399,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
             if (result.Count != 0 && loadDictValues)
             {
-                foreach (var idsPage in propIds.Paginate(PageSize))
+                foreach (var idsPage in propIds.Paginate(_pageSize))
                 {
                     await PropertyDictionaryItems
                         .Include(x => x.DictionaryItemValues)
@@ -555,16 +556,33 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             return (await _rawDatabaseCommand.GetChildCategoriesAsync(DbContext, categoryIds)).Select(c => c.Id).ToList();
         }
 
+        /// <summary>
+        /// Public method to remove items with transaction management.
+        /// Uses ExecutionStrategy for compatibility with retry logic.
+        /// </summary>
         public virtual async Task RemoveItemsAsync(IList<string> itemIds)
         {
-            using (var scope = CreateTransactionScope())
+            if (itemIds.IsNullOrEmpty())
             {
-                await _rawDatabaseCommand.RemoveItemsAsync(DbContext, itemIds);
-
-                scope.Complete();
+                return;
             }
+
+            await ExecuteInTransactionWithTimeoutAsync(() => RemoveItemsInternalAsync(itemIds));
         }
 
+        /// <summary>
+        /// Internal method to remove items without transaction management.
+        /// Used for composition within other transactional methods.
+        /// </summary>
+        protected virtual async Task RemoveItemsInternalAsync(IList<string> itemIds)
+        {
+            await _rawDatabaseCommand.RemoveItemsAsync(DbContext, itemIds);
+        }
+
+        /// <summary>
+        /// Public method to remove categories with transaction management.
+        /// Uses ExecutionStrategy for compatibility with retry logic.
+        /// </summary>
         public virtual async Task RemoveCategoriesAsync(IList<string> ids)
         {
             if (ids.IsNullOrEmpty())
@@ -572,39 +590,47 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 return;
             }
 
-            using (var scope = CreateTransactionScope())
-            {
-                var allCategoryIds = new List<CategoryHierarchyItem>();
-                allCategoryIds.AddRange(ids.Select(id =>
-                    new CategoryHierarchyItem
-                    {
-                        Id = id,
-                        Depth = 0,
-                        ParentCategoryId = null
-                    }));
-                allCategoryIds.AddRange(await GetChildCategoriesAsync(ids));
+            await ExecuteInTransactionWithTimeoutAsync(() => RemoveCategoriesInternalAsync(ids));
+        }
 
-                // Remove categories in descending order by depth to avoid foreign key constraint violations
-                foreach (var depthGroup in allCategoryIds.GroupBy(x => x.Depth).OrderByDescending(x => x.Key))
+        /// <summary>
+        /// Internal method to remove categories without transaction management.
+        /// Used for composition within other transactional methods.
+        /// </summary>
+        protected virtual async Task RemoveCategoriesInternalAsync(IList<string> ids)
+        {
+            var allCategoryIds = new List<CategoryHierarchyItem>();
+            allCategoryIds.AddRange(ids.Select(id =>
+                new CategoryHierarchyItem
                 {
-                    var categoryIdsToRemove = depthGroup.Select(x => x.Id).ToList();
+                    Id = id,
+                    Depth = 0,
+                    ParentCategoryId = null,
+                }));
+            allCategoryIds.AddRange(await GetChildCategoriesAsync(ids));
 
-                    // Remove all products that belong to categories to remove
-                    var itemIds = await Items
-                        .Where(i => categoryIdsToRemove.Contains(i.CategoryId))
-                        .Select(i => i.Id)
-                        .ToListAsync();
+            // Remove categories in descending order by depth to avoid foreign key constraint violations
+            foreach (var depthGroup in allCategoryIds.GroupBy(x => x.Depth).OrderByDescending(x => x.Key))
+            {
+                var categoryIdsToRemove = depthGroup.Select(x => x.Id).ToList();
 
-                    await RemoveItemsAsync(itemIds);
+                // Remove all products that belong to the categories being removed
+                var itemIds = await Items
+                    .Where(i => categoryIdsToRemove.Contains(i.CategoryId))
+                    .Select(i => i.Id)
+                    .ToListAsync();
 
-                    // Remove categories
-                    await _rawDatabaseCommand.RemoveCategoriesAsync(DbContext, categoryIdsToRemove);
-                }
+                await RemoveItemsInternalAsync(itemIds);
 
-                scope.Complete();
+                // Remove categories
+                await _rawDatabaseCommand.RemoveCategoriesAsync(DbContext, categoryIdsToRemove);
             }
         }
 
+        /// <summary>
+        /// Public method to remove catalogs with transaction management.
+        /// Uses ExecutionStrategy for compatibility with retry logic.
+        /// </summary>
         public virtual async Task RemoveCatalogsAsync(IList<string> ids)
         {
             if (ids.IsNullOrEmpty())
@@ -612,13 +638,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 return;
             }
 
-            var options = new TransactionOptions
-            {
-                Timeout = TimeSpan.FromMinutes(15),
-                IsolationLevel = IsolationLevel.ReadCommitted
-            };
-
-            using (var scope = CreateTransactionScope())
+            await ExecuteInTransactionWithTimeoutAsync(async () =>
             {
                 // remove products from catalog root
                 var itemIds = await Items
@@ -626,7 +646,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     .Select(i => i.Id)
                     .ToListAsync();
 
-                await RemoveItemsAsync(itemIds);
+                await RemoveItemsInternalAsync(itemIds);
 
                 // Load only root categories of catalogs to remove them recursively
                 var categoryIds = await Categories
@@ -634,15 +654,12 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     .Select(c => c.Id)
                     .ToListAsync();
 
-                await RemoveCategoriesAsync(categoryIds);
+                await RemoveCategoriesInternalAsync(categoryIds);
 
                 // Remove catalogs
                 await _rawDatabaseCommand.RemoveCatalogsAsync(DbContext, ids);
-
-                scope.Complete();
-            }
+            });
         }
-
 
         /// <summary>
         /// Delete all existing property values that belong to given property.
@@ -652,25 +669,55 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         /// <param name="propertyId"></param>
         public virtual async Task RemoveAllPropertyValuesAsync(string propertyId)
         {
-            using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            var strategy = DbContext.Database.CreateExecutionStrategy();
+            await strategy.ExecuteAsync(async () =>
             {
+                await using var transaction = await DbContext.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
+
                 var properties = await GetPropertiesByIdsAsync([propertyId]);
 
-                var catalogProperty = properties.FirstOrDefault(x => x.TargetType.EqualsIgnoreCase(PropertyType.Catalog.ToString()));
-                var categoryProperty = properties.FirstOrDefault(x => x.TargetType.EqualsIgnoreCase(PropertyType.Category.ToString()));
+                var catalogProperty = properties.FirstOrDefault(x => x.TargetType.EqualsIgnoreCase(nameof(PropertyType.Catalog)));
+                var categoryProperty = properties.FirstOrDefault(x => x.TargetType.EqualsIgnoreCase(nameof(PropertyType.Category)));
 
                 var itemProperty = properties.FirstOrDefault(x =>
-                    x.TargetType.EqualsIgnoreCase(PropertyType.Product.ToString()) ||
-                    x.TargetType.EqualsIgnoreCase(PropertyType.Variation.ToString()));
+                    x.TargetType.EqualsIgnoreCase(nameof(PropertyType.Product)) ||
+                    x.TargetType.EqualsIgnoreCase(nameof(PropertyType.Variation)));
 
                 await _rawDatabaseCommand.RemoveAllPropertyValuesAsync(DbContext, catalogProperty, categoryProperty, itemProperty);
 
-                scope.Complete();
-            }
+                await transaction.CommitAsync();
+            });
         }
 
         /// <summary>
-        /// Searches associations by specific search criteria. 
+        /// Executes the specified operation in a transaction with extended timeout (15 minutes).
+        /// Uses ExecutionStrategy for compatibility with retry logic.
+        /// </summary>
+        protected virtual async Task ExecuteInTransactionWithTimeoutAsync(Func<Task> operation, int? timeoutInSeconds = null)
+        {
+            var strategy = DbContext.Database.CreateExecutionStrategy();
+            await strategy.ExecuteAsync(async () =>
+            {
+                // Increase timeout for heavy delete operations (15 minutes)
+                var previousTimeout = DbContext.Database.GetCommandTimeout();
+                DbContext.Database.SetCommandTimeout(timeoutInSeconds ?? _commandTimeoutInSeconds);
+
+                try
+                {
+                    await using var transaction = await DbContext.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
+
+                    await operation();
+                    await transaction.CommitAsync();
+                }
+                finally
+                {
+                    DbContext.Database.SetCommandTimeout(previousTimeout);
+                }
+            });
+        }
+
+        /// <summary>
+        /// Searches associations by specific search criteria.
         /// </summary>
         /// <param name="criteria"></param>
         /// <returns>Returns SearchResult total count and items.</returns>
@@ -758,17 +805,6 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 : await AutomaticLinkQueries.Where(x => ids.Contains(x.Id)).ToListAsync();
         }
 
-        protected virtual TransactionScope CreateTransactionScope()
-        {
-            return new TransactionScope(TransactionScopeOption.Required,
-                new TransactionOptions
-                {
-                    Timeout = TimeSpan.FromMinutes(15),
-                    IsolationLevel = IsolationLevel.ReadCommitted
-                },
-                TransactionScopeAsyncFlowOption.Enabled);
-        }
-
         protected override void Dispose(bool disposing)
         {
             if (disposing && DbContext != null)
@@ -795,22 +831,18 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
         protected virtual bool IsOrphanedEntity(EntityEntry entry)
         {
-            switch (entry.Entity)
+            return entry.Entity switch
             {
-                case AssociationEntity association when association.ItemId == null && association.AssociatedItemId == null && association.AssociatedCategoryId == null:
-                case CategoryItemRelationEntity cir when cir.ItemId == null && cir.CategoryId == null && cir.CatalogId == null:
-                case CategoryRelationEntity cr when cr.SourceCategoryId == null && cr.TargetCatalogId == null && cr.TargetCategoryId == null:
-                case ImageEntity image when image.ItemId == null && image.CategoryId == null:
-                case Property property when property.CatalogId == null && property.CategoryId == null:
-                case ProductConfigurationOptionEntity productConfigurationOption when productConfigurationOption.SectionId == null && productConfigurationOption.ProductId == null:
-                case PropertyValueEntity pv when pv.ItemId == null && pv.CategoryId == null && pv.CatalogId == null && pv.DictionaryItemId == null:
-                case SeoInfoEntity seo when seo.ItemId == null && seo.CategoryId == null && seo.CatalogId == null:
-                    return true;
-            }
-
-            return false;
+                AssociationEntity { ItemId: null, AssociatedItemId: null, AssociatedCategoryId: null } => true,
+                CategoryItemRelationEntity { ItemId: null, CategoryId: null, CatalogId: null } => true,
+                CategoryRelationEntity { SourceCategoryId: null, TargetCatalogId: null, TargetCategoryId: null } => true,
+                ImageEntity { ItemId: null, CategoryId: null } => true,
+                Property { CatalogId: null, CategoryId: null } => true,
+                PropertyValueEntity { ItemId: null, CategoryId: null, CatalogId: null, DictionaryItemId: null } => true,
+                SeoInfoEntity { ItemId: null, CategoryId: null, CatalogId: null } => true,
+                ProductConfigurationOptionEntity { SectionId: null, ProductId: null } => true,
+                _ => false,
+            };
         }
-
-
     }
 }

@@ -47,8 +47,8 @@ namespace VirtoCommerce.CatalogModule.Tests
         {
             // Arrange
 
-            var items = _fixture.CreateMany<ItemEntity>(100);
-            var quribleItems = items.AsQueryable().BuildMock();
+            var items = _fixture.CreateMany<ItemEntity>(100).ToList();
+            var quribleItems = items.BuildMock().AsQueryable();
             var countItemsWithoutParent = items.Count(x => x.ParentId == null);
 
             var catalogRepositoryMock = new Mock<ICatalogRepository>();
@@ -80,9 +80,9 @@ namespace VirtoCommerce.CatalogModule.Tests
         {
             // Arrange
 
-            var items = _fixture.CreateMany<ItemEntity>(150);
+            var items = _fixture.CreateMany<ItemEntity>(150).ToList();
 
-            var quribleItems = items.AsQueryable().BuildMock();
+            var quribleItems = items.BuildMock().AsQueryable();
             var modifiedItemsCount = items.Count(i => i.ParentId == null
                 && (startDate == null || i.ModifiedDate >= startDate)
                 && (endDate == null || i.ModifiedDate <= endDate));
@@ -135,9 +135,9 @@ namespace VirtoCommerce.CatalogModule.Tests
             // Arrange
             var itemsCountForGenerate = TAKE * 5;
 
-            var items = _fixture.CreateMany<ItemEntity>(itemsCountForGenerate);
+            var items = _fixture.CreateMany<ItemEntity>(itemsCountForGenerate).ToList();
 
-            var quribleItems = items.AsQueryable().BuildMock();
+            var quribleItems = items.BuildMock().AsQueryable();
             var countItemsWithoutParent = items.Count(x => x.ParentId == null);
 
             var expectedCount = Math.Min(take, Math.Max(0, countItemsWithoutParent - skip));
@@ -181,9 +181,9 @@ namespace VirtoCommerce.CatalogModule.Tests
             // Arrange
             var itemsCountForGenerate = TAKE * 10;
 
-            var items = _fixture.CreateMany<ItemEntity>(itemsCountForGenerate);
+            var items = _fixture.CreateMany<ItemEntity>(itemsCountForGenerate).ToList();
 
-            var quribleItems = items.AsQueryable().BuildMock();
+            var quribleItems = items.BuildMock().AsQueryable();
             var modifiedItemsCount = items.Count(i => i.ParentId == null
                 && (startDate == null || i.ModifiedDate >= startDate)
                 && (endDate == null || i.ModifiedDate <= endDate));
