@@ -114,7 +114,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <param name="catalogId">Catalog id</param>
         /// <param name="codes">Category codes</param>
         /// <param name="responseGroup">Response group</param>
-        [HttpPost("~/api/catalog/{catalogId}/categories/category-by-codes")]
+        [HttpPost("~/api/catalog/{catalogId}/categories-by-codes")]
         public async Task<ActionResult<Category[]>> GetCategoriesByCodes([FromRoute] string catalogId, [FromBody] List<string> codes, [FromQuery] string responseGroup)
         {
             var idsByCodes = await categoryService.GetIdsByCodes(catalogId, codes);

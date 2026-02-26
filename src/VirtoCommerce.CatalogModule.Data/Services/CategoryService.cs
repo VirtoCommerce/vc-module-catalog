@@ -74,7 +74,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
             var models = await _platformMemoryCache.GetOrLoadByIdsAsync(cacheKeyPrefix, codes,
                 missingCodes => GetIdsByCodesNoCache(catalogId, missingCodes),
-                ConfigureCategoryCodeCacheOptions);
+                ConfigureCacheOptions);
 
             return models.ToDictionary(x => x.Id, x => x.CategoryId, StringComparer.OrdinalIgnoreCase);
         }
@@ -297,7 +297,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
             ArgumentNullException.ThrowIfNull(categories);
 
-            // Validate categories 
+            // Validate categories
             var validator = new CategoryValidator();
 
             foreach (var category in categories)
@@ -356,11 +356,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return await query
                 .Select(x => new CategoryCodeCacheItem { Id = x.Code, CategoryId = x.Id })
                 .ToListAsync();
-        }
-
-        protected virtual void ConfigureCategoryCodeCacheOptions(MemoryCacheEntryOptions cacheOptions, string id, CategoryCodeCacheItem model)
-        {
-            cacheOptions.AddExpirationToken(CatalogTreeCacheRegion.CreateChangeTokenForKey(id));
         }
 
         protected virtual async Task<IList<Category>> GetByIdsNoCache(IList<string> ids)
@@ -433,6 +428,11 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             {
                 cacheOptions.AddExpirationToken(CatalogTreeCacheRegion.CreateChangeTokenForKey(hasCatalogId.CatalogId));
             }
+        }
+
+        protected virtual void ConfigureCacheOptions(MemoryCacheEntryOptions cacheOptions, string id, CategoryCodeCacheItem model)
+        {
+            cacheOptions.AddExpirationToken(CatalogTreeCacheRegion.CreateChangeTokenForKey(id));
         }
 
         protected override void ClearCache(IList<Category> models)
