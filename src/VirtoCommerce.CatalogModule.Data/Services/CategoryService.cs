@@ -433,6 +433,11 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         protected virtual void ConfigureCacheOptions(MemoryCacheEntryOptions cacheOptions, string id, CategoryCodeCacheItem model)
         {
             cacheOptions.AddExpirationToken(CatalogTreeCacheRegion.CreateChangeTokenForKey(id));
+
+            if (model is not null)
+            {
+                cacheOptions.AddExpirationToken(CatalogTreeCacheRegion.CreateChangeTokenForKey(model.CategoryId));
+            }
         }
 
         protected override void ClearCache(IList<Category> models)
