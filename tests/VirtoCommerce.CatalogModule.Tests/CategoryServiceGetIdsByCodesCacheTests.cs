@@ -31,7 +31,7 @@ public class CategoryServiceGetIdsByCodesCacheTests
     public async Task GetIdsByCodes_CalledTwiceWithSameCode_LoadsFromRepositoryOnce()
     {
         // Arrange
-        var service = CreateCategoryService("category-id", "CODE", "catalog-id");
+        var service = GetCategoryService("category-id", "CODE", "catalog-id");
 
         // Act
         var result1 = await service.GetIdsByCodes("catalog-id", ["CODE"]);
@@ -47,7 +47,7 @@ public class CategoryServiceGetIdsByCodesCacheTests
     public async Task GetIdsByCodes_AfterCodeChange_DoesNotReturnCachedValue()
     {
         // Arrange
-        var service = CreateCategoryService("category-id", "CODE", "catalog-id");
+        var service = GetCategoryService("category-id", "CODE", "catalog-id");
 
         // Act
         var result1 = await service.GetIdsByCodes("catalog-id", ["CODE"]);
@@ -64,7 +64,7 @@ public class CategoryServiceGetIdsByCodesCacheTests
     public async Task GetIdsByCodes_AfterDelete_DoesNotReturnCachedValue()
     {
         // Arrange
-        var service = CreateCategoryService("category-id", "CODE", "catalog-id");
+        var service = GetCategoryService("category-id", "CODE", "catalog-id");
 
         // Act
         var result1 = await service.GetIdsByCodes("catalog-id", ["CODE"]);
@@ -78,7 +78,7 @@ public class CategoryServiceGetIdsByCodesCacheTests
     }
 
 
-    private static TestableCategoryService CreateCategoryService(string categoryId, string categoryCode, string catalogId)
+    private static TestableCategoryService GetCategoryService(string categoryId, string categoryCode, string catalogId)
     {
         var categoryEntity = CreateCategoryEntity(categoryId, categoryCode, catalogId);
         var repository = GetCatalogRepository([categoryEntity]);
