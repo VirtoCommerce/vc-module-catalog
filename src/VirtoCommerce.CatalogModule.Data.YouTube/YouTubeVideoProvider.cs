@@ -3,6 +3,7 @@ using Google.Apis.Services;
 using Google.Apis.YouTube.v3;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
+using VirtoCommerce.CatalogModule.Core.Extensions;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Options;
 using VirtoCommerce.CatalogModule.Core.Services;
@@ -59,7 +60,7 @@ namespace VirtoCommerce.CatalogModule.Data.YouTube
                 var snippet = resource.Snippet;
 
                 video.Name = snippet.Title;
-                video.Description = Truncate(snippet.Description, MaxDescriptionLength);
+                video.Description = snippet.Description.SoftTruncate(MaxDescriptionLength);
                 video.UploadDate = snippet.PublishedAtDateTimeOffset?.UtcDateTime;
                 video.ThumbnailUrl = snippet.Thumbnails?.High?.Url;
                 video.EmbedUrl = GetEmbedUrl(resource.Player.EmbedHtml);
@@ -106,16 +107,6 @@ namespace VirtoCommerce.CatalogModule.Data.YouTube
             var match = EmbedSrcRegex().Match(html);
 
             return match.Success ? match.Groups[1].Value : null;
-        }
-
-        private static string Truncate(string value, int maxLength)
-        {
-            if (string.IsNullOrEmpty(value))
-            {
-                return value;
-            }
-
-            return value.Length <= maxLength ? value : value[..maxLength];
         }
 
         private static string FormatDuration(string duration)
