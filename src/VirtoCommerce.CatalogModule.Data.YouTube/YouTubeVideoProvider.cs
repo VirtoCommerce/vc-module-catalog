@@ -24,6 +24,8 @@ namespace VirtoCommerce.CatalogModule.Data.YouTube
         [GeneratedRegex(@"PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$")]
         private static partial Regex DurationRegex();
 
+        private const int MaxDescriptionLength = 1024;
+
         private readonly VideoOptions _videoOptions;
 
         public YouTubeVideoProvider(IOptions<VideoOptions> videoOptions)
@@ -57,7 +59,7 @@ namespace VirtoCommerce.CatalogModule.Data.YouTube
                 var snippet = resource.Snippet;
 
                 video.Name = snippet.Title;
-                video.Description = snippet.Description;
+                video.Description = Truncate(snippet.Description, MaxDescriptionLength);
                 video.UploadDate = snippet.PublishedAtDateTimeOffset?.UtcDateTime;
                 video.ThumbnailUrl = snippet.Thumbnails?.High?.Url;
                 video.EmbedUrl = GetEmbedUrl(resource.Player.EmbedHtml);
@@ -104,6 +106,16 @@ namespace VirtoCommerce.CatalogModule.Data.YouTube
             var match = EmbedSrcRegex().Match(html);
 
             return match.Success ? match.Groups[1].Value : null;
+        }
+
+        private static string Truncate(string value, int maxLength)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return value;
+            }
+
+            return value.Length <= maxLength ? value : value[..maxLength];
         }
 
         private static string FormatDuration(string duration)
