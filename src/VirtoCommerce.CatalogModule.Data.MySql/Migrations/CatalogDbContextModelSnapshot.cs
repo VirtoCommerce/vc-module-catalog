@@ -44,8 +44,11 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("varchar(64)");
 
+                    b.Property<string>("CategoryId")
+                        .HasMaxLength(128)
+                        .HasColumnType("varchar(128)");
+
                     b.Property<string>("ItemId")
-                        .IsRequired()
                         .HasColumnType("varchar(128)");
 
                     b.Property<string>("LanguageCode")
@@ -83,6 +86,8 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
                         .HasColumnType("varchar(2083)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
 
                     b.HasIndex("ItemId");
 
@@ -1708,11 +1713,17 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.AssetEntity", b =>
                 {
+                    b.HasOne("VirtoCommerce.CatalogModule.Data.Model.CategoryEntity", "Category")
+                        .WithMany("Assets")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("VirtoCommerce.CatalogModule.Data.Model.ItemEntity", "CatalogItem")
                         .WithMany("Assets")
                         .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Category");
 
                     b.Navigation("CatalogItem");
                 });
@@ -2181,6 +2192,8 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.CategoryEntity", b =>
                 {
+                    b.Navigation("Assets");
+
                     b.Navigation("CategoryDescriptions");
 
                     b.Navigation("CategoryPropertyValues");

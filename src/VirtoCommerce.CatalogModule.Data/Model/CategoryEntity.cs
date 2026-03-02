@@ -72,6 +72,9 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         public virtual ObservableCollection<ImageEntity> Images { get; set; }
             = new NullCollection<ImageEntity>();
 
+        public virtual ObservableCollection<AssetEntity> Assets { get; set; }
+            = new NullCollection<AssetEntity>();
+
         public virtual ObservableCollection<PropertyValueEntity> CategoryPropertyValues { get; set; }
             = new NullCollection<PropertyValueEntity>();
 
@@ -118,6 +121,7 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             category.ExcludedProperties = ExcludedProperties?.Select(x => new ExcludedProperty(x)).ToList();
             category.Links = OutgoingLinks.Select(x => x.ToModel(new CategoryLink())).ToList();
             category.Images = Images.OrderBy(x => x.SortOrder).Select(x => x.ToModel(AbstractTypeFactory<Image>.TryCreateInstance())).ToList();
+            category.Assets = Assets.OrderBy(x => x.SortOrder).Select(x => x.ToModel(AbstractTypeFactory<Asset>.TryCreateInstance())).ToList();
             category.Descriptions = CategoryDescriptions.Select(x => x.ToModel(AbstractTypeFactory<CategoryDescription>.TryCreateInstance())).ToList();
             category.SeoInfos = SeoInfos.Select(x => x.ToModel(AbstractTypeFactory<SeoInfo>.TryCreateInstance())).ToList();
 
@@ -252,6 +256,11 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                 Images = new ObservableCollection<ImageEntity>(category.Images.Select(x => AbstractTypeFactory<ImageEntity>.TryCreateInstance().FromModel(x, pkMap)));
             }
 
+            if (category.Assets != null)
+            {
+                Assets = new ObservableCollection<AssetEntity>(category.Assets.Select(x => AbstractTypeFactory<AssetEntity>.TryCreateInstance().FromModel(x, pkMap)));
+            }
+
             if (category.SeoInfos != null)
             {
                 SeoInfos = new ObservableCollection<SeoInfoEntity>(category.SeoInfos.Select(x => AbstractTypeFactory<SeoInfoEntity>.TryCreateInstance().FromModel(x, pkMap)));
@@ -306,6 +315,11 @@ namespace VirtoCommerce.CatalogModule.Data.Model
             if (!Images.IsNullCollection())
             {
                 Images.Patch(target.Images, (sourceImage, targetImage) => sourceImage.Patch(targetImage));
+            }
+
+            if (!Assets.IsNullCollection())
+            {
+                Assets.Patch(target.Assets, (sourceAsset, targetAsset) => sourceAsset.Patch(targetAsset));
             }
 
             if (!SeoInfos.IsNullCollection())
