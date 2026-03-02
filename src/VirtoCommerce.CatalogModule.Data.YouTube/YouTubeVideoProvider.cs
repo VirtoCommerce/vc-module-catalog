@@ -3,6 +3,7 @@ using Google.Apis.Services;
 using Google.Apis.YouTube.v3;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
+using VirtoCommerce.CatalogModule.Core.Extensions;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Options;
 using VirtoCommerce.CatalogModule.Core.Services;
@@ -23,6 +24,8 @@ namespace VirtoCommerce.CatalogModule.Data.YouTube
 
         [GeneratedRegex(@"PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$")]
         private static partial Regex DurationRegex();
+
+        private const int MaxDescriptionLength = 1024;
 
         private readonly VideoOptions _videoOptions;
 
@@ -57,7 +60,7 @@ namespace VirtoCommerce.CatalogModule.Data.YouTube
                 var snippet = resource.Snippet;
 
                 video.Name = snippet.Title;
-                video.Description = snippet.Description;
+                video.Description = snippet.Description.SoftTruncate(MaxDescriptionLength);
                 video.UploadDate = snippet.PublishedAtDateTimeOffset?.UtcDateTime;
                 video.ThumbnailUrl = snippet.Thumbnails?.High?.Url;
                 video.EmbedUrl = GetEmbedUrl(resource.Player.EmbedHtml);
