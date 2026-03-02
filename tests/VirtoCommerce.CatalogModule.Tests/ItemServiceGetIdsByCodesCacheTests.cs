@@ -28,147 +28,170 @@ namespace VirtoCommerce.CatalogModule.Tests;
 
 public class ItemServiceGetIdsByCodesCacheTests
 {
-    private const string CatalogId = "catalog-1";
-    private const string ProductId = "product-1";
-    private const string ProductCode = "SKU-1";
-
-    private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
-    private readonly Mock<ICatalogRepository> _repositoryMock = new();
-    private readonly Mock<IEventPublisher> _eventPublisherMock = new();
-    private readonly Mock<AbstractValidator<IHasProperties>> _hasPropertyValidatorMock = new();
-    private readonly Mock<ICatalogService> _catalogServiceMock = new();
-    private readonly Mock<ICategoryService> _categoryServiceMock = new();
-    private readonly Mock<IOutlineService> _outlineServiceMock = new();
-    private readonly Mock<IBlobUrlResolver> _blobUrlResolverMock = new();
-    private readonly Mock<ISkuGenerator> _skuGeneratorMock = new();
-    private readonly Mock<IPropertyValueSanitizer> _propertyValueSanitizerMock = new();
-
-    public ItemServiceGetIdsByCodesCacheTests()
-    {
-        _repositoryMock.Setup(x => x.UnitOfWork).Returns(_unitOfWorkMock.Object);
-
-        _catalogServiceMock
-            .Setup(x => x.GetAsync(It.IsAny<IList<string>>(), It.IsAny<string>(), false))
-            .ReturnsAsync([new Catalog { Id = CatalogId }]);
-
-        _categoryServiceMock
-            .Setup(x => x.GetAsync(It.IsAny<IList<string>>(), It.IsAny<string>(), false))
-            .ReturnsAsync([]);
-
-        _hasPropertyValidatorMock
-            .Setup(x => x.ValidateAsync(It.IsAny<ValidationContext<IHasProperties>>(), CancellationToken.None))
-            .ReturnsAsync(new ValidationResult());
-    }
-
     [Fact]
     public async Task GetIdsByCodes_CalledTwiceWithSameCode_LoadsFromRepositoryOnce()
     {
         // Arrange
-        var service = CreateService();
-        SetupItemsQuery([CreateItemEntity(ProductCode)]);
+        var service = BuildItemServiceWithProduct("product-id", "SKU-1", "catalog-id");
 
         // Act
-        var firstResult = await service.GetIdsByCodes(CatalogId, [ProductCode]);
-        var secondResult = await service.GetIdsByCodes(CatalogId, [ProductCode]);
+        var result1 = await service.GetIdsByCodes("catalog-id", ["SKU-1"]);
+        var result2 = await service.GetIdsByCodes("catalog-id", ["SKU-1"]);
 
         // Assert
-        firstResult[ProductCode].Should().Be(ProductId);
-        secondResult.Should().BeEquivalentTo(firstResult);
-        _repositoryMock.Verify(x => x.Items, Times.Once());
+        result1["SKU-1"].Should().Be("product-id");
+        result2.Should().BeEquivalentTo(result1);
+        service.GetIdsByCodesNoCacheCallsCount.Should().Be(1);
     }
 
     [Fact]
-    public async Task GetIdsByCodes_AfterSave_DoesNotReturnCachedValue()
+    public async Task GetIdsByCodes_AfterCodeChange_DoesNotReturnCachedValue()
     {
         // Arrange
-        var service = CreateService();
-        SetupItemsQuery([CreateItemEntity(ProductCode)]);
-        SetupForSave();
-
-        await service.GetIdsByCodes(CatalogId, [ProductCode]);
-        SetupItemsQuery([]);
+        var service = BuildItemServiceWithProduct("product-id", "SKU-1", "catalog-id");
 
         // Act
-        await service.SaveChangesAsync([new CatalogProduct { Id = ProductId, CatalogId = CatalogId, Code = "SKU-NEW", Name = "Test" }]);
-        var result = await service.GetIdsByCodes(CatalogId, [ProductCode]);
+        var result1 = await service.GetIdsByCodes("catalog-id", ["SKU-1"]);
+        await service.SaveChangesAsync([CreateProduct("product-id", "SKU-NEW", "catalog-id")]);
+        var result2 = await service.GetIdsByCodes("catalog-id", ["SKU-1"]);
 
         // Assert
-        result.Should().BeEmpty();
-        _repositoryMock.Verify(x => x.Items, Times.Exactly(2));
+        result1["SKU-1"].Should().Be("product-id");
+        result2.Should().BeEmpty();
+        service.GetIdsByCodesNoCacheCallsCount.Should().Be(2);
     }
 
     [Fact]
     public async Task GetIdsByCodes_AfterDelete_DoesNotReturnCachedValue()
     {
         // Arrange
-        var service = CreateService();
-        SetupForLoad([CreateItemEntity(ProductCode)]);
-
-        await service.GetIdsByCodes(CatalogId, [ProductCode]);
-        SetupItemsQuery([]);
+        var service = BuildItemServiceWithProduct("product-id", "SKU-1", "catalog-id");
 
         // Act
-        await service.DeleteAsync([ProductId]);
-        var result = await service.GetIdsByCodes(CatalogId, [ProductCode]);
+        var result1 = await service.GetIdsByCodes("catalog-id", ["SKU-1"]);
+        await service.DeleteAsync(["product-id"]);
+        var result2 = await service.GetIdsByCodes("catalog-id", ["SKU-1"]);
 
         // Assert
-        result.Should().BeEmpty();
-        _repositoryMock.Verify(x => x.Items, Times.Exactly(2));
+        result1["SKU-1"].Should().Be("product-id");
+        result2.Should().BeEmpty();
+        service.GetIdsByCodesNoCacheCallsCount.Should().Be(2);
     }
 
-    private TestableItemService CreateService()
+
+    private static TestableItemService BuildItemServiceWithProduct(string productId, string productCode, string catalogId)
+    {
+        var itemEntity = CreateItemEntity(productId, productCode, catalogId);
+        var repository = GetCatalogRepository([itemEntity]);
+
+        return new TestableItemService(
+            () => repository,
+            GetPlatformMemoryCache(),
+            Mock.Of<IEventPublisher>(),
+            GetPropertiesValidator(),
+            GetCatalogService(catalogId),
+            GetCategoryService(),
+            Mock.Of<IOutlineService>(),
+            Mock.Of<IBlobUrlResolver>(),
+            Mock.Of<ISkuGenerator>(),
+            new ProductValidator(new PropertyValidator()),
+            Mock.Of<IPropertyValueSanitizer>());
+    }
+
+    private static ItemEntity CreateItemEntity(string id, string code, string catalogId)
+    {
+        return new ItemEntity
+        {
+            Id = id,
+            Code = code,
+            CatalogId = catalogId,
+            Name = Guid.NewGuid().ToString(),
+            IsActive = true,
+        };
+    }
+
+    private static CatalogProduct CreateProduct(string id, string code, string catalogId)
+    {
+        return new CatalogProduct
+        {
+            Id = id,
+            Code = code,
+            CatalogId = catalogId,
+            Name = Guid.NewGuid().ToString(),
+        };
+    }
+
+    private static ICatalogRepository GetCatalogRepository(List<ItemEntity> items)
+    {
+        var repositoryMock = new Mock<ICatalogRepository>();
+
+        repositoryMock
+            .Setup(x => x.Items)
+            .Returns(items.BuildMockDbSet().Object);
+
+        repositoryMock
+            .Setup(x => x.GetItemByIdsAsync(It.IsAny<IList<string>>(), It.IsAny<string>()))
+            .ReturnsAsync((IList<string> ids, string _) =>
+            {
+                return items.Where(x => ids.Contains(x.Id)).ToList();
+            });
+
+        repositoryMock
+            .Setup(x => x.RemoveItemsAsync(It.IsAny<IList<string>>()))
+            .Callback((IList<string> ids) =>
+            {
+                items.RemoveAll(x => ids.Contains(x.Id));
+            });
+
+        repositoryMock.Setup(x => x.UnitOfWork).Returns(Mock.Of<IUnitOfWork>());
+
+        return repositoryMock.Object;
+    }
+
+    private static PlatformMemoryCache GetPlatformMemoryCache()
     {
         var memoryCache = new MemoryCache(Options.Create(new MemoryCacheOptions()));
+
         var platformMemoryCache = new PlatformMemoryCache(
             memoryCache,
             Options.Create(new CachingOptions()),
             new Mock<ILogger<PlatformMemoryCache>>().Object);
 
-        return new TestableItemService(
-            () => _repositoryMock.Object,
-            platformMemoryCache,
-            _eventPublisherMock.Object,
-            _hasPropertyValidatorMock.Object,
-            _catalogServiceMock.Object,
-            _categoryServiceMock.Object,
-            _outlineServiceMock.Object,
-            _blobUrlResolverMock.Object,
-            _skuGeneratorMock.Object,
-            new ProductValidator(new PropertyValidator()),
-            _propertyValueSanitizerMock.Object);
+        return platformMemoryCache;
     }
 
-    private void SetupItemsQuery(IList<ItemEntity> items)
+    private static AbstractValidator<IHasProperties> GetPropertiesValidator()
     {
-        _repositoryMock.Setup(x => x.Items).Returns(items.BuildMockDbSet().Object);
+        var hasPropertiesValidatorMock = new Mock<AbstractValidator<IHasProperties>>();
+
+        hasPropertiesValidatorMock
+            .Setup(x => x.ValidateAsync(It.IsAny<ValidationContext<IHasProperties>>(), CancellationToken.None))
+            .ReturnsAsync(new ValidationResult());
+
+        return hasPropertiesValidatorMock.Object;
     }
 
-    private void SetupForLoad(IList<ItemEntity> items)
+    private static ICatalogService GetCatalogService(string catalogId)
     {
-        SetupItemsQuery(items);
+        var catalogServiceMock = new Mock<ICatalogService>();
 
-        _repositoryMock
-            .Setup(x => x.GetItemByIdsAsync(It.IsAny<IList<string>>(), It.IsAny<string>()))
-            .ReturnsAsync((IList<string> ids, string _) =>
-                items.Where(x => ids.Contains(x.Id)).ToList());
+        catalogServiceMock
+            .Setup(x => x.GetAsync(It.IsAny<IList<string>>(), It.IsAny<string>(), It.IsAny<bool>()))
+            .ReturnsAsync([new Catalog { Id = catalogId }]);
+
+        return catalogServiceMock.Object;
     }
 
-    private void SetupForSave()
+    private static ICategoryService GetCategoryService()
     {
-        _repositoryMock
-            .Setup(x => x.GetItemByIdsAsync(It.IsAny<IList<string>>(), null))
-            .ReturnsAsync([CreateItemEntity(ProductCode)]);
-    }
+        var categoryServiceMock = new Mock<ICategoryService>();
 
-    private static ItemEntity CreateItemEntity(string code) =>
-        new()
-        {
-            Id = ProductId,
-            Code = code,
-            Name = "Test Product",
-            CatalogId = CatalogId,
-            IsActive = true,
-        };
+        categoryServiceMock
+            .Setup(x => x.GetAsync(It.IsAny<IList<string>>(), It.IsAny<string>(), It.IsAny<bool>()))
+            .ReturnsAsync([]);
+
+        return categoryServiceMock.Object;
+    }
 
     private sealed class TestableItemService(
         Func<ICatalogRepository> repositoryFactory,
@@ -184,6 +207,12 @@ public class ItemServiceGetIdsByCodesCacheTests
         IPropertyValueSanitizer propertyValueSanitizer)
         : ItemService(repositoryFactory, platformMemoryCache, eventPublisher, hasPropertyValidator, catalogService, categoryService, outlineService, blobUrlResolver, skuGenerator, productValidator, propertyValueSanitizer)
     {
-        protected override Task BeforeSaveChanges(IList<CatalogProduct> models) => Task.CompletedTask;
+        public int GetIdsByCodesNoCacheCallsCount { get; private set; }
+
+        protected override Task<IList<ProductCodeCacheItem>> GetIdsByCodesNoCache(string catalogId, IList<string> codes)
+        {
+            GetIdsByCodesNoCacheCallsCount++;
+            return base.GetIdsByCodesNoCache(catalogId, codes);
+        }
     }
 }
