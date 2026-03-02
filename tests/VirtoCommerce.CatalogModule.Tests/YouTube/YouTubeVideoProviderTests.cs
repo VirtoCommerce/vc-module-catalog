@@ -107,7 +107,7 @@ public class YouTubeVideoProviderTests
         var video = await provider.GetVideoAsync(request);
 
         // Assert
-        video.Duration.Should().BeNull();
+        Assert.Equal("00:00:00", video.Duration);
     }
 
     [Theory]
