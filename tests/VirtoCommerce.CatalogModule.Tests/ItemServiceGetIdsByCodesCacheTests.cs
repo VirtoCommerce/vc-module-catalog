@@ -105,7 +105,7 @@ public class ItemServiceGetIdsByCodesCacheTests
             Id = id,
             Code = code,
             CatalogId = catalogId,
-            Name = Guid.NewGuid().ToString()
+            Name = Guid.NewGuid().ToString(),
         };
     }
 
