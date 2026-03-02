@@ -11,7 +11,7 @@ using VirtoCommerce.Seo.Core.Models;
 
 namespace VirtoCommerce.CatalogModule.Core.Model
 {
-    public class Category : AuditableEntity, IHasLinks, ISeoSupport, IHasOutlines, IHasImages, IHasProperties, IHasTaxType, IHasName, IHasOuterId, IExportable, IHasExcludedProperties, IHasRelevanceScore
+    public class Category : AuditableEntity, IHasLinks, ISeoSupport, IHasOutlines, IHasImages, IHasAssets, IHasProperties, IHasTaxType, IHasName, IHasOuterId, IExportable, IHasExcludedProperties, IHasRelevanceScore
     {
         private Category _parent;
         private string _outline;
@@ -136,6 +136,10 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         public IList<Image> Images { get; set; }
         #endregion
 
+        #region IHasAssets members
+        public IList<Asset> Assets { get; set; }
+        #endregion
+
         #region IHasOutlines members
         public IList<Outline> Outlines { get; set; }
         #endregion
@@ -195,6 +199,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
             result.Properties = Properties?.Select(x => x.CloneTyped()).ToList();
             result.Links = Links?.Select(x => x.CloneTyped()).ToList();
             result.Descriptions = Descriptions?.Select(x => x.CloneTyped()).ToList();
+            result.Assets = Assets?.Select(x => x.CloneTyped()).ToList();
             //result.Images = Images?.Select(x => x.CloneTyped()).ToList(); // Intentionally temporary disabled due to memory overhead
             result.LocalizedName = LocalizedName?.CloneTyped();
 
@@ -231,6 +236,10 @@ namespace VirtoCommerce.CatalogModule.Core.Model
             if (!categoryResponseGroup.HasFlag(CategoryResponseGroup.WithImages))
             {
                 Images = null;
+            }
+            if (!categoryResponseGroup.HasFlag(CategoryResponseGroup.WithAssets))
+            {
+                Assets = null;
             }
             if (!categoryResponseGroup.HasFlag(CategoryResponseGroup.WithLinks))
             {

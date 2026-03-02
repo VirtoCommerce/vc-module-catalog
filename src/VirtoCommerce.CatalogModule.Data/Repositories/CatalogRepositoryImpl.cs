@@ -183,6 +183,11 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     await Images.Where(x => categoriesIds.Contains(x.CategoryId)).LoadAsync();
                 }
 
+                if (categoryResponseGroup.HasFlag(CategoryResponseGroup.WithAssets))
+                {
+                    await Assets.Where(x => categoriesIds.Contains(x.CategoryId)).LoadAsync();
+                }
+
                 if (categoryResponseGroup.HasFlag(CategoryResponseGroup.WithSeo))
                 {
                     await SeoInfos.Where(x => categoriesIds.Contains(x.CategoryId)).LoadAsync();
@@ -834,6 +839,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             return entry.Entity switch
             {
                 AssociationEntity { ItemId: null, AssociatedItemId: null, AssociatedCategoryId: null } => true,
+                AssetEntity { ItemId: null, CategoryId: null } => true,
                 CategoryItemRelationEntity { ItemId: null, CategoryId: null, CatalogId: null } => true,
                 CategoryRelationEntity { SourceCategoryId: null, TargetCatalogId: null, TargetCategoryId: null } => true,
                 ImageEntity { ItemId: null, CategoryId: null } => true,
