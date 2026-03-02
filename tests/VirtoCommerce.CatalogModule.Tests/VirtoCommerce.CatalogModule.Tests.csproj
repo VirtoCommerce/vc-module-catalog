@@ -3,6 +3,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <noWarn>1591;NU1608</noWarn>
     <IsPackable>False</IsPackable>
+    <UserSecretsId>vc-module-catalog-tests</UserSecretsId>
   </PropertyGroup>
   <PropertyGroup>
     <!-- Project is a test project -->
@@ -10,7 +11,9 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AutoFixture" Version="4.18.1" />
-    <PackageReference Include="coverlet.collector" Version="6.0.4">
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="10.0.0" />
+    <PackageReference Include="coverlet.collector" Version="8.0.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -18,8 +21,6 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
     <PackageReference Include="MockQueryable.Moq" Version="10.0.1" />
     <PackageReference Include="Moq" Version="4.20.72" />
-    
-    
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.1" />
     <PackageReference Include="xunit.v3" Version="3.2.2" />
     <PackageReference Include="xunit.v3.runner.console" Version="3.2.2">
@@ -35,5 +36,6 @@
     <ProjectReference Include="..\..\src\VirtoCommerce.CatalogModule.BulkActions\VirtoCommerce.CatalogModule.BulkActions.csproj" />
     <ProjectReference Include="..\..\src\VirtoCommerce.CatalogModule.Core\VirtoCommerce.CatalogModule.Core.csproj" />
     <ProjectReference Include="..\..\src\VirtoCommerce.CatalogModule.Data\VirtoCommerce.CatalogModule.Data.csproj" />
+    <ProjectReference Include="..\..\src\VirtoCommerce.CatalogModule.Data.YouTube\VirtoCommerce.CatalogModule.Data.YouTube.csproj" />
   </ItemGroup>
 </Project>
