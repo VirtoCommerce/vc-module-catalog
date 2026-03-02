@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.32112.339
+# Visual Studio Version 18
+VisualStudioVersion = 18.2.11408.102 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{DFA3417F-2FA2-4187-B367-F809CB5D804A}"
 EndProject
@@ -38,6 +38,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtoCommerce.CatalogModule.Data.MySql", "src\VirtoCommerce.CatalogModule.Data.MySql\VirtoCommerce.CatalogModule.Data.MySql.csproj", "{5513FAA6-D1A8-4265-AB57-8D7A408F1A97}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtoCommerce.CatalogModule.Data.PostgreSql", "src\VirtoCommerce.CatalogModule.Data.PostgreSql\VirtoCommerce.CatalogModule.Data.PostgreSql.csproj", "{67C8590A-4EA0-48EF-9E58-288BE1F9ED51}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtoCommerce.CatalogModule.Data.YouTube", "src\VirtoCommerce.CatalogModule.Data.YouTube\VirtoCommerce.CatalogModule.Data.YouTube.csproj", "{C072B31F-3D90-4AB9-A1A3-51E1FCDDD6C4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -81,6 +83,10 @@ Global
 		{67C8590A-4EA0-48EF-9E58-288BE1F9ED51}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{67C8590A-4EA0-48EF-9E58-288BE1F9ED51}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{67C8590A-4EA0-48EF-9E58-288BE1F9ED51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C072B31F-3D90-4AB9-A1A3-51E1FCDDD6C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C072B31F-3D90-4AB9-A1A3-51E1FCDDD6C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C072B31F-3D90-4AB9-A1A3-51E1FCDDD6C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C072B31F-3D90-4AB9-A1A3-51E1FCDDD6C4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -95,6 +101,7 @@ Global
 		{4E5425B3-78F7-4148-AE66-9A61F4FD9C78} = {DFA3417F-2FA2-4187-B367-F809CB5D804A}
 		{5513FAA6-D1A8-4265-AB57-8D7A408F1A97} = {DFA3417F-2FA2-4187-B367-F809CB5D804A}
 		{67C8590A-4EA0-48EF-9E58-288BE1F9ED51} = {DFA3417F-2FA2-4187-B367-F809CB5D804A}
+		{C072B31F-3D90-4AB9-A1A3-51E1FCDDD6C4} = {DFA3417F-2FA2-4187-B367-F809CB5D804A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C9B2BF9E-097A-48E6-A338-9176A75C0AA2}

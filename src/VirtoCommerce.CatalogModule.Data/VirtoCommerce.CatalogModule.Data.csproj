@@ -13,9 +13,7 @@
     <SonarQubeTestProject>false</SonarQubeTestProject>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Apis.YouTube.v3" Version="1.73.0.4053" />
     <PackageReference Include="HtmlSanitizer" Version="9.0.892" />
-    
     <PackageReference Include="VirtoCommerce.AssetsModule.Core" Version="3.1000.0" />
     <PackageReference Include="VirtoCommerce.ExportModule.Data" Version="3.1000.0" />
     <PackageReference Include="VirtoCommerce.Platform.Data" Version="3.1002.0" />

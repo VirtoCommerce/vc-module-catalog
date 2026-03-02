@@ -9,7 +9,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    
     <PackageReference Include="VirtoCommerce.Platform.Data.PostgreSql" Version="3.1002.0" />
   </ItemGroup>
   <ItemGroup>
