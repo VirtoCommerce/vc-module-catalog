@@ -68,6 +68,17 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return GetByIdsAsync(ids, responseGroup, clone: true, catalogId);
         }
 
+        public virtual async Task<IDictionary<string, string>> GetIdsByCodes(string catalogId, IList<string> codes)
+        {
+            var cacheKeyPrefix = CacheKey.With(GetType(), nameof(GetIdsByCodes), catalogId);
+
+            var models = await _platformMemoryCache.GetOrLoadByIdsAsync(cacheKeyPrefix, codes,
+                missingCodes => GetIdsByCodesNoCache(catalogId, missingCodes),
+                ConfigureCacheOptions);
+
+            return models.ToDictionary(x => x.Id, x => x.CategoryId, StringComparer.OrdinalIgnoreCase);
+        }
+
         protected virtual async Task<IList<Category>> GetByIdsAsync(IList<string> ids, string responseGroup, bool clone, string catalogId)
         {
             ids = ids
@@ -286,7 +297,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
         {
             ArgumentNullException.ThrowIfNull(categories);
 
-            // Validate categories 
+            // Validate categories
             var validator = new CategoryValidator();
 
             foreach (var category in categories)
@@ -331,6 +342,20 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
 
             return category;
+        }
+
+        protected virtual async Task<IList<CategoryCodeCacheItem>> GetIdsByCodesNoCache(string catalogId, IList<string> codes)
+        {
+            using var repository = _repositoryFactory();
+            var query = repository.Categories.Where(x => x.CatalogId == catalogId);
+
+            query = codes.Count == 1
+                ? query.Where(x => x.Code == codes.First())
+                : query.Where(x => codes.Contains(x.Code));
+
+            return await query
+                .Select(x => new CategoryCodeCacheItem { Id = x.Code, CategoryId = x.Id })
+                .ToListAsync();
         }
 
         protected virtual async Task<IList<Category>> GetByIdsNoCache(IList<string> ids)
@@ -405,6 +430,16 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             }
         }
 
+        protected virtual void ConfigureCacheOptions(MemoryCacheEntryOptions cacheOptions, string id, CategoryCodeCacheItem model)
+        {
+            cacheOptions.AddExpirationToken(CatalogTreeCacheRegion.CreateChangeTokenForKey(id));
+
+            if (model is not null)
+            {
+                cacheOptions.AddExpirationToken(CatalogTreeCacheRegion.CreateChangeTokenForKey(model.CategoryId));
+            }
+        }
+
         protected override void ClearCache(IList<Category> models)
         {
             ClearCacheAsync(models).GetAwaiter().GetResult();
@@ -475,6 +510,11 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             var entry = new GenericChangedEntry<T>(entity, EntryState.Deleted);
 
             return entry;
+        }
+
+        protected class CategoryCodeCacheItem : Entity
+        {
+            public string CategoryId { get; set; }
         }
     }
 }
