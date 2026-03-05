@@ -278,7 +278,7 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                 //Register category asset widget
                 var categoryAssetWidget = {
                     controller: 'virtoCommerce.catalogModule.categoryAssetWidgetController',
-                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/categoryAssetWidget.tpl.html'
+                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/categoryAssetWidget.html'
                 };
                 widgetService.registerWidget(categoryAssetWidget, 'categoryDetail');
 

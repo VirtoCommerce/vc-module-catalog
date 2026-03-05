@@ -299,10 +299,10 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
             modelBuilder.Entity<AssetEntity>().ToTable("CatalogAsset").HasKey(x => x.Id);
             modelBuilder.Entity<AssetEntity>().Property(x => x.Id).HasMaxLength(128).ValueGeneratedOnAdd();
-            modelBuilder.Entity<AssetEntity>().HasOne(m => m.CatalogItem).WithMany(x => x.Assets).HasForeignKey(x => x.ItemId)
-                .IsRequired(false).OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<AssetEntity>().HasOne(m => m.Category).WithMany(x => x.Assets).HasForeignKey(x => x.CategoryId)
-                .IsRequired(false).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<AssetEntity>().HasOne(x => x.CatalogItem).WithMany(x => x.Assets).HasForeignKey(x => x.ItemId)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<AssetEntity>().HasOne(x => x.Category).WithMany(x => x.Assets).HasForeignKey(x => x.CategoryId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             #endregion Asset
 
