@@ -313,14 +313,13 @@ namespace VirtoCommerce.CatalogModule.Core.Model
 
                 InheritReviews(parentProduct);
 
-                // TODO: prevent saving the inherited simple values
-                Width = parentProduct.Width ?? Width;
-                Height = parentProduct.Height ?? Height;
-                Length = parentProduct.Length ?? Length;
-                MeasureUnit = parentProduct.MeasureUnit ?? MeasureUnit;
-                Weight = parentProduct.Weight ?? Weight;
-                WeightUnit = parentProduct.WeightUnit ?? WeightUnit;
-                PackageType = parentProduct.PackageType ?? PackageType;
+                Width = Width ?? parentProduct.Width;
+                Height = Height ?? parentProduct.Height;
+                Length = Length ?? parentProduct.Length;
+                MeasureUnit = MeasureUnit ?? parentProduct.MeasureUnit;
+                Weight = Weight ?? parentProduct.Weight;
+                WeightUnit = WeightUnit ?? parentProduct.WeightUnit;
+                PackageType = PackageType ?? parentProduct.PackageType;
             }
         }
 
