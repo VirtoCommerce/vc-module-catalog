@@ -41,6 +41,9 @@ namespace VirtoCommerce.CatalogModule.Data.Model
         public string ItemId { get; set; }
         public virtual ItemEntity CatalogItem { get; set; }
 
+        public string CategoryId { get; set; }
+        public virtual CategoryEntity Category { get; set; }
+
         #endregion
 
         public virtual Asset ToModel(Asset asset)

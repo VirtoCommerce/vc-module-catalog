@@ -17,7 +17,7 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.11")
+                .HasAnnotation("ProductVersion", "10.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -27,6 +27,9 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<string>("CategoryId")
                         .HasColumnType("character varying(128)");
 
                     b.Property<string>("CreatedBy")
@@ -45,7 +48,6 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
                         .HasColumnType("character varying(64)");
 
                     b.Property<string>("ItemId")
-                        .IsRequired()
                         .HasColumnType("character varying(128)");
 
                     b.Property<string>("LanguageCode")
@@ -83,6 +85,8 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
                         .HasColumnType("character varying(2083)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
 
                     b.HasIndex("ItemId");
 
@@ -1708,13 +1712,19 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.AssetEntity", b =>
                 {
+                    b.HasOne("VirtoCommerce.CatalogModule.Data.Model.CategoryEntity", "Category")
+                        .WithMany("Assets")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("VirtoCommerce.CatalogModule.Data.Model.ItemEntity", "CatalogItem")
                         .WithMany("Assets")
                         .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("CatalogItem");
+
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.AssociationEntity", b =>
@@ -2181,6 +2191,8 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.CategoryEntity", b =>
                 {
+                    b.Navigation("Assets");
+
                     b.Navigation("CategoryDescriptions");
 
                     b.Navigation("CategoryPropertyValues");
