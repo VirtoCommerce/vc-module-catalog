@@ -97,7 +97,7 @@ public class YouTubeVideoProviderTests
     }
 
     [Fact]
-    public async Task GetVideoAsync_OEmbedPath_DurationIsNull()
+    public async Task GetVideoAsync_OEmbedPath_DurationIsZero()
     {
         // Arrange — no API key forces the oEmbed fallback, which does not return duration
         var provider = CreateProvider();
@@ -107,7 +107,7 @@ public class YouTubeVideoProviderTests
         var video = await provider.GetVideoAsync(request);
 
         // Assert
-        video.Duration.Should().BeNull();
+        Assert.Equal("00:00:00", video.Duration);
     }
 
     [Theory]

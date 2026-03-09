@@ -562,6 +562,9 @@
           "description": "Angi beskrivelse",
           "language": "Velg språk",
           "content-url": "Angi video-URL"
+        },
+        "validations": {
+          "description-maxlength": "Beskrivelsen kan ikke overstige 1024 tegn"
         }
       },
       "item-asset-detail": {

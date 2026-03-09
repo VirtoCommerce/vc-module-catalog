@@ -25,7 +25,10 @@
                     <div class="form-group __info list">
                         <label class="form-label">{{ 'catalog.blades.video-detail.labels.description' | translate }}</label>
                         <div class="form-input">
-                            <textarea cols="30" rows="5" ng-model="blade.currentEntity.description" required ng-maxlength="1024" placeholder="{{ 'catalog.blades.video-detail.placeholders.description' | translate }}"></textarea>
+                            <textarea cols="30" rows="5" name="description" ng-model="blade.currentEntity.description" required ng-maxlength="1024" placeholder="{{ 'catalog.blades.video-detail.placeholders.description' | translate }}"></textarea>
+                        </div>
+                        <div class="form-error" ng-show="formScope.description.$error.maxlength">
+                            {{ 'catalog.blades.video-detail.validations.description-maxlength' | translate }}
                         </div>
                     </div>
 
