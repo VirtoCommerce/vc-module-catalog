@@ -299,8 +299,10 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
             modelBuilder.Entity<AssetEntity>().ToTable("CatalogAsset").HasKey(x => x.Id);
             modelBuilder.Entity<AssetEntity>().Property(x => x.Id).HasMaxLength(128).ValueGeneratedOnAdd();
-            modelBuilder.Entity<AssetEntity>().HasOne(m => m.CatalogItem).WithMany(x => x.Assets).HasForeignKey(x => x.ItemId)
-                .IsRequired().OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<AssetEntity>().HasOne(x => x.CatalogItem).WithMany(x => x.Assets).HasForeignKey(x => x.ItemId)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<AssetEntity>().HasOne(x => x.Category).WithMany(x => x.Assets).HasForeignKey(x => x.CategoryId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             #endregion Asset
 
@@ -442,7 +444,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             base.OnModelCreating(modelBuilder);
 
             // Allows configuration for an entity type for different database types.
-            // Applies configuration from all <see cref="IEntityTypeConfiguration{TEntity}" in VirtoCommerce.CatalogModule.Data.XXX project. /> 
+            // Applies configuration from all <see cref="IEntityTypeConfiguration{TEntity}" in VirtoCommerce.CatalogModule.Data.XXX project. />
             switch (Database.ProviderName)
             {
                 case "Pomelo.EntityFrameworkCore.MySql":
