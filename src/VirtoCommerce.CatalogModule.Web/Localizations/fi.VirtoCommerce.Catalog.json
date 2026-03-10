@@ -562,6 +562,9 @@
           "description": "Syötä kuvaus",
           "language": "Valitse kieli",
           "content-url": "Syötä videon URL"
+        },
+        "validations": {
+          "description-maxlength": "Kuvaus ei saa ylittää 1024 merkkiä"
         }
       },
       "item-asset-detail": {

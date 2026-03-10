@@ -562,6 +562,9 @@
           "description": "Введите описание",
           "language": "Выбрать язык",
           "content-url": "Введите URL видео"
+        },
+        "validations": {
+          "description-maxlength": "Описание не может превышать 1024 символа"
         }
       },
       "item-asset-detail": {

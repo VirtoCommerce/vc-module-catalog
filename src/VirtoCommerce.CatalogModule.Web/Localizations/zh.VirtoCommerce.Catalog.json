@@ -562,6 +562,9 @@
           "description": "输入描述",
           "language": "选择语言",
           "content-url": "输入视频 URL"
+        },
+        "validations": {
+          "description-maxlength": "描述不能超过1024个字符"
         }
       },
       "item-asset-detail": {
