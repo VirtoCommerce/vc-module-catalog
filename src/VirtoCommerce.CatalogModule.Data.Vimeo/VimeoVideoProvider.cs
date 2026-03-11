@@ -9,22 +9,16 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.Vimeo;
 
-public partial class VimeoVideoProvider : IVideoProvider
+public partial class VimeoVideoProvider(IOptions<VideoOptions> videoOptions, IHttpClientFactory httpClientFactory)
+    : IVideoProvider
 {
     [GeneratedRegex("src=\"(.*?)\"")]
     private static partial Regex EmbedSrcRegex();
 
-    private const int MaxDescriptionLength = 1024;
-    private const string OEmbedUrl = "https://vimeo.com/api/oembed.json";
+    private const int _maxDescriptionLength = 1024;
+    private const string _oEmbedUrl = "https://vimeo.com/api/oembed.json";
 
-    private readonly VideoOptions _videoOptions;
-    private readonly IHttpClientFactory _httpClientFactory;
-
-    public VimeoVideoProvider(IOptions<VideoOptions> videoOptions, IHttpClientFactory httpClientFactory)
-    {
-        _videoOptions = videoOptions.Value;
-        _httpClientFactory = httpClientFactory;
-    }
+    private readonly VideoOptions _videoOptions = videoOptions.Value;
 
     public bool CanHandle(string contentUrl)
     {
@@ -47,9 +41,9 @@ public partial class VimeoVideoProvider : IVideoProvider
         video.OwnerId = request.OwnerId;
         video.OwnerType = request.OwnerType;
 
-        var requestUrl = $"{OEmbedUrl}?url={Uri.EscapeDataString(request.ContentUrl)}";
+        var requestUrl = $"{_oEmbedUrl}?url={Uri.EscapeDataString(request.ContentUrl)}";
 
-        using var httpClient = _httpClientFactory.CreateClient();
+        using var httpClient = httpClientFactory.CreateClient();
 
         if (!string.IsNullOrEmpty(_videoOptions.VimeoAccessToken))
         {
@@ -74,7 +68,7 @@ public partial class VimeoVideoProvider : IVideoProvider
         var resource = JObject.Parse(content);
 
         video.Name = resource.Value<string>("title");
-        video.Description = resource.Value<string>("description")?.SoftTruncate(MaxDescriptionLength) ?? video.Name;
+        video.Description = resource.Value<string>("description")?.SoftTruncate(_maxDescriptionLength) ?? video.Name;
         video.ThumbnailUrl = resource.Value<string>("thumbnail_url");
         video.EmbedUrl = GetEmbedUrl(resource.Value<string>("html"));
         video.Duration = FormatDuration(resource.Value<int?>("duration"));

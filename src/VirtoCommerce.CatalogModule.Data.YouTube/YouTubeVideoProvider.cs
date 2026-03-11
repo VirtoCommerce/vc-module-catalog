@@ -11,7 +11,7 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.YouTube
 {
-    public partial class YouTubeVideoProvider : IVideoProvider
+    public partial class YouTubeVideoProvider(IOptions<VideoOptions> videoOptions) : IVideoProvider
     {
         [GeneratedRegex(@"(vi\/|v%3D|v=|\/v\/|youtu\.be\/|\/embed\/)")]
         private static partial Regex VideoIdSeparatorRegex();
@@ -25,14 +25,9 @@ namespace VirtoCommerce.CatalogModule.Data.YouTube
         [GeneratedRegex(@"PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$")]
         private static partial Regex DurationRegex();
 
-        private const int MaxDescriptionLength = 1024;
+        private const int _maxDescriptionLength = 1024;
 
-        private readonly VideoOptions _videoOptions;
-
-        public YouTubeVideoProvider(IOptions<VideoOptions> videoOptions)
-        {
-            _videoOptions = videoOptions.Value;
-        }
+        private readonly VideoOptions _videoOptions = videoOptions.Value;
 
         public bool CanHandle(string contentUrl)
         {
@@ -78,7 +73,7 @@ namespace VirtoCommerce.CatalogModule.Data.YouTube
                 var snippet = resource.Snippet;
 
                 video.Name = snippet.Title;
-                video.Description = snippet.Description.SoftTruncate(MaxDescriptionLength);
+                video.Description = snippet.Description.SoftTruncate(_maxDescriptionLength);
                 video.UploadDate = snippet.PublishedAtDateTimeOffset?.UtcDateTime;
                 video.ThumbnailUrl = snippet.Thumbnails?.High?.Url;
                 video.EmbedUrl = GetEmbedUrl(resource.Player.EmbedHtml);
