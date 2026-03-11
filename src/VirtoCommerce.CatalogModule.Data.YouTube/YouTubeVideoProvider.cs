@@ -34,6 +34,24 @@ namespace VirtoCommerce.CatalogModule.Data.YouTube
             _videoOptions = videoOptions.Value;
         }
 
+        public bool CanHandle(string contentUrl)
+        {
+            if (string.IsNullOrWhiteSpace(contentUrl))
+            {
+                return false;
+            }
+
+            return Uri.TryCreate(contentUrl, UriKind.Absolute, out var uri)
+                && (MatchesHost(uri.Host, "youtube.com")
+                    || MatchesHost(uri.Host, "youtu.be"));
+        }
+
+        private static bool MatchesHost(string host, string expected)
+        {
+            return host.Equals(expected, StringComparison.OrdinalIgnoreCase)
+                || host.EndsWith($".{expected}", StringComparison.OrdinalIgnoreCase);
+        }
+
         public async Task<Video> GetVideoAsync(VideoCreateRequest request)
         {
             var video = AbstractTypeFactory<Video>.TryCreateInstance();

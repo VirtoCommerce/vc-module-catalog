@@ -35,6 +35,7 @@ using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
 using VirtoCommerce.CatalogModule.Data.Search.Indexing;
 using VirtoCommerce.CatalogModule.Data.Services;
 using VirtoCommerce.CatalogModule.Data.SqlServer;
+using VirtoCommerce.CatalogModule.Data.Vimeo;
 using VirtoCommerce.CatalogModule.Data.YouTube;
 using VirtoCommerce.CatalogModule.Data.Validation;
 using VirtoCommerce.CatalogModule.Web.Authorization;
@@ -131,7 +132,14 @@ namespace VirtoCommerce.CatalogModule.Web
             serviceCollection.AddTransient<IAssociationService, AssociationService>();
 
             serviceCollection.Configure<VideoOptions>(Configuration.GetSection(VideoOptions.SectionName));
-            serviceCollection.AddTransient<IVideoProvider, YouTubeVideoProvider>();
+            serviceCollection.AddHttpClient();
+            serviceCollection.AddTransient<YouTubeVideoProvider>();
+            serviceCollection.AddTransient<VimeoVideoProvider>();
+            serviceCollection.AddTransient<IVideoProvider>(provider =>
+                new CompositeVideoProvider([
+                    provider.GetRequiredService<YouTubeVideoProvider>(),
+                    provider.GetRequiredService<VimeoVideoProvider>(),
+                ]));
             serviceCollection.AddTransient<IVideoSearchService, VideoSearchService>();
             serviceCollection.AddTransient<IVideoService, VideoService>();
 

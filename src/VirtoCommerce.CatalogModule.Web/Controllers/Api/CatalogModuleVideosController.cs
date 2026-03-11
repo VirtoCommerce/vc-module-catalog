@@ -27,11 +27,16 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// </summary>
         [HttpGet]
         [Route("options")]
-        [ProducesResponseType(typeof(VideoOptions), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(VideoOptionsResult), StatusCodes.Status200OK)]
         [Authorize(ModuleConstants.Security.Permissions.Access)]
-        public ActionResult<VideoOptions> GetOptions()
+        public ActionResult<VideoOptionsResult> GetOptions()
         {
-            return Ok(videoOptions.Value);
+            var options = videoOptions.Value;
+            return Ok(new VideoOptionsResult
+            {
+                IsYouTubeApiKeyConfigured = !string.IsNullOrEmpty(options.GoogleApiKey),
+                IsVimeoAccessTokenConfigured = !string.IsNullOrEmpty(options.VimeoAccessToken),
+            });
         }
 
         /// <summary>

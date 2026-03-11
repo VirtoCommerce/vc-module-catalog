@@ -8,6 +8,7 @@ namespace VirtoCommerce.CatalogModule.Core.Services
     /// </summary>
     public interface IVideoProvider
     {
+        bool CanHandle(string contentUrl);
         Task<Video> GetVideoAsync(VideoCreateRequest request);
     }
 }

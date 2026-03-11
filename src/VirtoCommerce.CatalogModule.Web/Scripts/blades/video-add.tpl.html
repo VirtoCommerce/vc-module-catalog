@@ -9,7 +9,8 @@
                             <input ng-model="blade.currentEntity.contentUrl" required ng-maxlength="2083" placeholder="{{ 'catalog.blades.video-add.placeholders.content-url' | translate }}">
                         </div>
                     </div>
-                    <div class="note" ng-if="!blade.videoOptions.googleApiKey">{{ 'catalog.blades.video-add.labels.no-apikey' | translate }}</div>
+                    <div class="note" ng-if="!blade.videoOptions.isYouTubeApiKeyConfigured">{{ 'catalog.blades.video-add.labels.no-youtube-apikey' | translate }}</div>
+                    <div class="note" ng-if="!blade.videoOptions.isVimeoAccessTokenConfigured">{{ 'catalog.blades.video-add.labels.no-vimeo-token' | translate }}</div>
                 </fieldset>
             </form>
         </div>

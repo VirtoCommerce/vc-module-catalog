@@ -26,5 +26,6 @@
     <ProjectReference Include="..\VirtoCommerce.CatalogModule.Data.SqlServer\VirtoCommerce.CatalogModule.Data.SqlServer.csproj" />
     <ProjectReference Include="..\VirtoCommerce.CatalogModule.Data\VirtoCommerce.CatalogModule.Data.csproj" />
     <ProjectReference Include="..\VirtoCommerce.CatalogModule.Data.YouTube\VirtoCommerce.CatalogModule.Data.YouTube.csproj" />
+    <ProjectReference Include="..\VirtoCommerce.CatalogModule.Data.Vimeo\VirtoCommerce.CatalogModule.Data.Vimeo.csproj" />
   </ItemGroup>
 </Project>

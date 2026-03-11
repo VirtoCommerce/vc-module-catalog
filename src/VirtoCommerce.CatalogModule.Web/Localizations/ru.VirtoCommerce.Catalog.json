@@ -528,19 +528,20 @@
         }
       },
       "video-add": {
-        "title": "Видео YouTube",
+        "title": "Видео",
         "subtitle": "Новое видео",
         "create": "Создать",
         "labels": {
           "content-url": "URL содержимого",
-          "no-apikey": "Вы не предоставили ключ API Google в файле конфигурации платформы. Информация о видео будет неполной"
+          "no-youtube-apikey": "Вы не предоставили ключ API Google в файле конфигурации платформы. Информация о видео будет неполной",
+          "no-vimeo-token": "Vimeo access token is not configured in appsettings.json. Private Vimeo videos will not be available."
         },
         "placeholders": {
           "content-url": "Введите URL видео"
         }
       },
       "video-detail": {
-        "title": "Видео YouTube",
+        "title": "Видео",
         "subtitle": "Редактировать информацию о видео",
         "labels": {
           "name": "Имя видео",
