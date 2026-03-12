@@ -562,6 +562,9 @@
           "description": "Ange beskrivning",
           "language": "Välj språk",
           "content-url": "Ange video-URL"
+        },
+        "validations": {
+          "description-maxlength": "Beskrivningen får inte överstiga 1024 tecken"
         }
       },
       "item-asset-detail": {

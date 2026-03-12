@@ -604,8 +604,12 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         private async Task TryAddLabelsAsyncForProperty(IEnumerable<Property> allProperties, Aggregation aggregation, IList<IBrowseFilter> browseFilters)
         {
-            IBrowseFilter filter = browseFilters.OfType<AttributeFilter>().FirstOrDefault(f => f.IndexFieldName.EqualsIgnoreCase(aggregation.Field));
-            filter ??= browseFilters.OfType<RangeFilter>().FirstOrDefault(f => f.IndexFieldName.EqualsIgnoreCase(aggregation.Field));
+            IBrowseFilter filter = null;
+            if (browseFilters != null)
+            {
+                filter = browseFilters.OfType<AttributeFilter>().FirstOrDefault(f => f.IndexFieldName.EqualsIgnoreCase(aggregation.Field));
+                filter ??= browseFilters.OfType<RangeFilter>().FirstOrDefault(f => f.IndexFieldName.EqualsIgnoreCase(aggregation.Field));
+            }
 
             // There can be many properties with the same name
             var properties = allProperties.Where(p => p.Name.EqualsIgnoreCase(filter?.Key ?? aggregation.Field)).ToArray();

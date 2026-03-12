@@ -275,6 +275,13 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                 };
                 widgetService.registerWidget(categoryDescriptionWidget, 'categoryDetail');
 
+                //Register category asset widget
+                var categoryAssetWidget = {
+                    controller: 'virtoCommerce.catalogModule.categoryAssetWidgetController',
+                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/categoryAssetWidget.html'
+                };
+                widgetService.registerWidget(categoryAssetWidget, 'categoryDetail');
+
                 // Register category automatic links widget
                 var categoryAutomaticLinksWidget = {
                     controller: 'virtoCommerce.catalogModule.automaticLinksWidgetController',

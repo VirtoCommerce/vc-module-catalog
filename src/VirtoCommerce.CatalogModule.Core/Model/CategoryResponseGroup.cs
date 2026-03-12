@@ -14,6 +14,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         WithParents = 1 << 5,
         WithOutlines = 1 << 6,
         WithDescriptions = 1 << 7,
-        Full = Info | WithImages | WithProperties | WithLinks | WithSeo | WithParents | WithOutlines | WithDescriptions
+        WithAssets = 1 << 8,
+        Full = Info | WithImages | WithProperties | WithLinks | WithSeo | WithParents | WithOutlines | WithDescriptions | WithAssets
     }
 }

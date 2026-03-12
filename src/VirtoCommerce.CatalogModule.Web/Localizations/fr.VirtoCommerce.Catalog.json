@@ -562,6 +562,9 @@
           "description": "Entrez la description",
           "language": "Sélectionner la langue",
           "content-url": "Entrez l'URL de la vidéo"
+        },
+        "validations": {
+          "description-maxlength": "La description ne peut pas dépasser 1024 caractères"
         }
       },
       "item-asset-detail": {

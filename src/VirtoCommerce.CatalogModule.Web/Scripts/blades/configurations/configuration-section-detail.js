@@ -39,40 +39,23 @@ angular.module('virtoCommerce.catalogModule')
 
             $scope.isValid = false;
 
-            // Single $watch for currentEntity that handles all validation and mutual exclusivity logic
             var previousAllowCustomText = null;
             var previousAllowPredefinedOptions = null;
 
-            $scope.$watch("blade.currentEntity", function (entity, oldEntity) {
+            $scope.$watch("blade.currentEntity", function (entity) {
                 if (!entity) {
                     return;
                 }
 
-                // Form validation
                 $scope.isValid = blade.formScope && blade.formScope.$valid && entity.name;
                 if ($scope.isValid && blade.origEntity.name) {
-                    // Update case (form is valid when changes exist)
                     $scope.isValid = !angular.equals(blade.origEntity, entity);
                 }
 
-                // Mutual exclusivity logic for allowCustomText and allowPredefinedOptions
-                // At least one must be true when type is 'Text'
                 if (entity.type === 'Text') {
-                    // Check if allowCustomText changed from true to false
-                    if (previousAllowCustomText === true && entity.allowCustomText === false) {
-                        if (!entity.allowPredefinedOptions) {
-                            entity.allowPredefinedOptions = true;
-                        }
-                    }
-                    // Check if allowPredefinedOptions changed from true to false
-                    else if (previousAllowPredefinedOptions === true && entity.allowPredefinedOptions === false) {
-                        if (!entity.allowCustomText) {
-                            entity.allowCustomText = true;
-                        }
-                    }
+                    enforceTextToggleConstraint(entity);
                 }
 
-                // Store current values for next comparison
                 previousAllowCustomText = entity.allowCustomText;
                 previousAllowPredefinedOptions = entity.allowPredefinedOptions;
             }, true);
@@ -159,6 +142,16 @@ angular.module('virtoCommerce.catalogModule')
 
                 return true;
             };
+
+            // At least one of allowCustomText/allowPredefinedOptions must be true for Text sections.
+            // When user turns one off, the other is forced on.
+            function enforceTextToggleConstraint(entity) {
+                if (previousAllowCustomText && !entity.allowCustomText && !entity.allowPredefinedOptions) {
+                    entity.allowPredefinedOptions = true;
+                } else if (previousAllowPredefinedOptions && !entity.allowPredefinedOptions && !entity.allowCustomText) {
+                    entity.allowCustomText = true;
+                }
+            }
 
             function deleteList(list) {
                 bladeNavigationService.closeChildrenBlades(blade,
@@ -273,11 +266,11 @@ angular.module('virtoCommerce.catalogModule')
                 }
 
                 blade.currentEntity = angular.copy(item);
-                
+
                 // Initialize previous values for mutual exclusivity tracking
                 previousAllowCustomText = blade.currentEntity.allowCustomText;
                 previousAllowPredefinedOptions = blade.currentEntity.allowPredefinedOptions;
-                
+
                 blade.isLoading = false;
             }
 

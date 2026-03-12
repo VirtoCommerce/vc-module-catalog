@@ -562,6 +562,9 @@
           "description": "説明を入力",
           "language": "言語を選択",
           "content-url": "ビデオURLを入力"
+        },
+        "validations": {
+          "description-maxlength": "説明は1024文字を超えることはできません"
         }
       },
       "item-asset-detail": {

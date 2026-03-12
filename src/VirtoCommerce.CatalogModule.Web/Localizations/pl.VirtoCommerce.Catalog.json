@@ -562,6 +562,9 @@
           "description": "Wprowadź opis",
           "language": "Wybierz język",
           "content-url": "Wprowadź URL filmu"
+        },
+        "validations": {
+          "description-maxlength": "Opis nie może przekraczać 1024 znaków"
         }
       },
       "item-asset-detail": {
