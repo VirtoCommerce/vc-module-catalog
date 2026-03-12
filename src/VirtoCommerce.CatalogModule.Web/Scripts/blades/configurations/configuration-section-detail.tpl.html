@@ -1,4 +1,4 @@
-<div class="blade-static config-section-detail form-group" style="white-space: normal; padding: 0 20px;">
+<div class="config-section-detail" style="white-space: normal; padding: 0 20px;">
   <form class="form" name="formScope" style="margin: 0; padding: 0;">
     <va-metaform registered-inputs="blade.metaFields" blade="blade" column-count="6" ng-if="blade.currentEntity" ng-init="setForm(formScope)"></va-metaform>
   </form>
@@ -96,7 +96,7 @@
   </div>
 </script>
 <script type="text/ng-template" id="section-is-required.html">
-  <div class="form-group">
+  <div>
     <label class="form-label">{{ 'catalog.blades.section-details.labels.required' | translate }}</label>
     <div class="form-input">
       <label class="form-label __switch">
