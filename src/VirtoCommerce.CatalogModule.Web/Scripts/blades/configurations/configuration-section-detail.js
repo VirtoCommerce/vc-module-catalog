@@ -1,11 +1,17 @@
 angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.configurationSectionDetailController',
-        ['$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.uiGridHelper',
-        function ($scope, bladeNavigationService, uiGridHelper) {
+        ['$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.uiGridHelper', 'platformWebApp.metaFormsService',
+        function ($scope, bladeNavigationService, uiGridHelper, metaFormsService) {
             var blade = $scope.blade;
             blade.headIcon = 'fas fa-puzzle-piece';
             blade.title = blade.origEntity.name ? blade.origEntity.name : 'catalog.blades.section-details.title';
             blade.formScope = null;
+
+            // Get metafields for the form
+            blade.metaFields = metaFormsService.getMetaFields("configurationSectionDetail");
+
+            // Section types for the dropdown
+            blade.sectionTypes = ['Product', 'Variation', 'Text', 'File'];
 
             blade.toolbarCommands = [
                 {
@@ -33,22 +39,25 @@ angular.module('virtoCommerce.catalogModule')
 
             $scope.isValid = false;
 
+            var previousAllowCustomText = null;
+            var previousAllowPredefinedOptions = null;
+
             $scope.$watch("blade.currentEntity", function (entity) {
+                if (!entity) {
+                    return;
+                }
+
                 $scope.isValid = blade.formScope && blade.formScope.$valid && entity.name;
                 if ($scope.isValid && blade.origEntity.name) {
-                    // Update case (form is valid when changes exist)
                     $scope.isValid = !angular.equals(blade.origEntity, entity);
                 }
-            }, true);
-            $scope.$watch("blade.currentEntity.allowCustomText", function (value) {
-                if (!value && !blade.currentEntity.allowPredefinedOptions) {
-                    blade.currentEntity.allowPredefinedOptions = true;
+
+                if (entity.type === 'Text') {
+                    enforceTextToggleConstraint(entity);
                 }
-            }, true);
-            $scope.$watch("blade.currentEntity.allowPredefinedOptions", function (value) {
-                if (!value && !blade.currentEntity.allowCustomText) {
-                    blade.currentEntity.allowCustomText = true;
-                }
+
+                previousAllowCustomText = entity.allowCustomText;
+                previousAllowPredefinedOptions = entity.allowPredefinedOptions;
             }, true);
 
             $scope.setForm = function (form) { blade.formScope = form; };
@@ -117,7 +126,8 @@ angular.module('virtoCommerce.catalogModule')
                 deleteList([data]);
             };
 
-            $scope.isTypeChangeDisabled = function() {
+            // Function exposed on blade for template access
+            blade.isTypeChangeDisabled = function() {
                 if (blade.currentEntity == null || blade.currentEntity.type == null) {
                     return false;
                 }
@@ -131,6 +141,16 @@ angular.module('virtoCommerce.catalogModule')
                 }
 
                 return true;
+            };
+
+            // At least one of allowCustomText/allowPredefinedOptions must be true for Text sections.
+            // When user turns one off, the other is forced on.
+            function enforceTextToggleConstraint(entity) {
+                if (previousAllowCustomText && !entity.allowCustomText && !entity.allowPredefinedOptions) {
+                    entity.allowPredefinedOptions = true;
+                } else if (previousAllowPredefinedOptions && !entity.allowPredefinedOptions && !entity.allowCustomText) {
+                    entity.allowCustomText = true;
+                }
             }
 
             function deleteList(list) {
@@ -246,8 +266,12 @@ angular.module('virtoCommerce.catalogModule')
                 }
 
                 blade.currentEntity = angular.copy(item);
+
+                // Initialize previous values for mutual exclusivity tracking
+                previousAllowCustomText = blade.currentEntity.allowCustomText;
+                previousAllowPredefinedOptions = blade.currentEntity.allowPredefinedOptions;
+
                 blade.isLoading = false;
-                $scope.sectionTypes = ['Product', 'Text', 'File'];
             }
 
             initialize(blade.origEntity);
