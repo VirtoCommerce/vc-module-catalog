@@ -266,11 +266,11 @@ angular.module('virtoCommerce.catalogModule')
                 }
 
                 blade.currentEntity = angular.copy(item);
-                
+
                 // Initialize previous values for mutual exclusivity tracking
                 previousAllowCustomText = blade.currentEntity.allowCustomText;
                 previousAllowPredefinedOptions = blade.currentEntity.allowPredefinedOptions;
-                
+
                 blade.isLoading = false;
             }
 
