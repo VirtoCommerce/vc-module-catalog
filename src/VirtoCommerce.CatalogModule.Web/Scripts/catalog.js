@@ -835,16 +835,8 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                     },
                     {
                         title: "catalog.blades.section-details.labels.type",
-                        colSpan: 2,
+                        colSpan: 4,
                         templateUrl: "section-type.html"
-                    },
-                    {
-                        colSpan: 2,
-                        templateUrl: "section-allow-custom-text.html"
-                    },
-                    {
-                        colSpan: 2,
-                        templateUrl: "section-allow-predefined.html"
                     },
                     {
                         colSpan: 2,
@@ -853,6 +845,14 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                     {
                         colSpan: 2,
                         templateUrl: "section-max-length.html"
+                    },
+                    {
+                        colSpan: 2,
+                        templateUrl: "section-allow-custom-text.html"
+                    },
+                    {
+                        colSpan: 2,
+                        templateUrl: "section-allow-predefined.html"
                     }
                 ]);
             }]);
