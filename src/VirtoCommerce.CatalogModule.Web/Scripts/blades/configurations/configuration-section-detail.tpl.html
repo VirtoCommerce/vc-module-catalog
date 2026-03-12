@@ -1,12 +1,10 @@
-<div class="blade-content __large-wide">
-  <div class="blade-inner config-section-detail">
-    <form class="form" name="formScope">
-      <va-metaform registered-inputs="blade.metaFields" blade="blade" column-count="6" ng-if="blade.currentEntity" ng-init="setForm(formScope)"></va-metaform>
-    </form>
-  </div>
+<div class="blade-static config-section-detail form-group" style="white-space: normal; padding: 0 20px;">
+  <form class="form" name="formScope" style="margin: 0; padding: 0;">
+    <va-metaform registered-inputs="blade.metaFields" blade="blade" column-count="6" ng-if="blade.currentEntity" ng-init="setForm(formScope)"></va-metaform>
+  </form>
 </div>
 <div class="blade-static __bottom" ng-include="'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/common/templates/ok-cancel.tpl.html'"></div>
-<div class="blade-content __large-wide" style="height: calc(100% - 422px) !important;">
+<div class="blade-content __large-wide">
   <div class="blade-inner" ng-if="blade.currentEntity.type === 'Product'">
     <div class="inner-block" ng-init="setGridOptions({
                     rowTemplate: 'option-list.row.html',
@@ -141,8 +139,14 @@
   }
 
   .blade .blade-container .blade-static.config-section-detail .column .form-group {
-    margin: 5px 10px 0 0;
-    padding-top: 0px;
+    margin: 10px 10px 0 0;
+    padding-top: 5px;
+  }
+
+  .config-section-detail .form-input input,
+  .config-section-detail .form-input textarea {
+    background: #fff;
+    border-color: #d4d4d4;
   }
 
   .config-section-detail .form-input textarea {
