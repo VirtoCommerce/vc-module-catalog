@@ -77,14 +77,12 @@ public class CatalogModuleConfigurationsController(
         }
 
         // Only the full configuration can be active
-        // Sections with Type as Text, File, and Variation can be without predefined options.
-        // Note: Variation type is not validated here because it uses product variations from the catalog as options, not predefined options.
+        // Only Product sections require predefined options.
+        // Text (even with AllowPredefinedOptions), File, and Variation sections can be without predefined options.
+        // Note: Variation type uses product variations from the catalog as options, not predefined options.
         if (configuration.Sections.IsNullOrEmpty() ||
             configuration.Sections
                 .Where(x => x.Type == ModuleConstants.ConfigurationSectionTypeProduct)
-                .Any(x => x.Options.IsNullOrEmpty()) ||
-            configuration.Sections
-                .Where(x => x.Type == ModuleConstants.ConfigurationSectionTypeText && x.AllowPredefinedOptions)
                 .Any(x => x.Options.IsNullOrEmpty())
         )
         {
