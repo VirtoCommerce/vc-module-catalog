@@ -11,6 +11,7 @@ namespace VirtoCommerce.CatalogModule.Core
     public static class ModuleConstants
     {
         public const string ConfigurationSectionTypeProduct = "Product";
+        public const string ConfigurationSectionTypeVariation = "Variation";
         public const string ConfigurationSectionTypeText = "Text";
         public const string ConfigurationSectionTypeFile = "File";
         public const string ConfigurationSectionFilesScope = "product-configuration";

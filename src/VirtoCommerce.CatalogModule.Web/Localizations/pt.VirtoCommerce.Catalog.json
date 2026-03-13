@@ -819,6 +819,7 @@
           "type": "Tipo de seção",
           "allow-custom-text": "Permitir texto personalizado",
           "allow-predefined-options": "Permitir opções predefinidas",
+          "max-length": "Comprimento máximo",
           "text": "Texto"
         },
         "descr": {

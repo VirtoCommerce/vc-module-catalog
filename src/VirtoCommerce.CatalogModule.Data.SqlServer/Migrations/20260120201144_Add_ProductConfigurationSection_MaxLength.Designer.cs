@@ -3,21 +3,24 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 
 #nullable disable
 
-namespace VirtoCommerce.CatalogModule.Data.Migrations
+namespace VirtoCommerce.CatalogModule.Data.SqlServer.Migrations
 {
     [DbContext(typeof(CatalogDbContext))]
-    partial class CatalogDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260120201144_Add_ProductConfigurationSection_MaxLength")]
+    partial class Add_ProductConfigurationSection_MaxLength
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.1")
+                .HasAnnotation("ProductVersion", "8.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -27,9 +30,6 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
-
-                    b.Property<string>("CategoryId")
                         .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("CreatedBy")
@@ -48,6 +48,7 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasColumnType("nvarchar(64)");
 
                     b.Property<string>("ItemId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("LanguageCode")
@@ -85,8 +86,6 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .HasColumnType("nvarchar(2083)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CategoryId");
 
                     b.HasIndex("ItemId");
 
@@ -1717,19 +1716,13 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.AssetEntity", b =>
                 {
-                    b.HasOne("VirtoCommerce.CatalogModule.Data.Model.CategoryEntity", "Category")
-                        .WithMany("Assets")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("VirtoCommerce.CatalogModule.Data.Model.ItemEntity", "CatalogItem")
                         .WithMany("Assets")
                         .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("CatalogItem");
-
-                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.AssociationEntity", b =>
@@ -2196,8 +2189,6 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.CategoryEntity", b =>
                 {
-                    b.Navigation("Assets");
-
                     b.Navigation("CategoryDescriptions");
 
                     b.Navigation("CategoryPropertyValues");
