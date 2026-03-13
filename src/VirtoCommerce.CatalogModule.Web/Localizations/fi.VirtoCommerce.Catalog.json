@@ -820,7 +820,8 @@
           "allow-custom-text": "Salli mukautettu teksti",
           "allow-predefined-options": "Salli ennalta määritetyt vaihtoehdot",
           "max-length": "Maksimipituus",
-          "text": "Teksti"
+          "text": "Teksti",
+          "depends-on": "Aktiivinen kun osiolla on arvo"
         },
         "descr": {
           "no-options": "Tässä osiossa ei ole vielä vaihtoehtoja"
@@ -829,7 +830,8 @@
           "add": "Lisää vaihtoehtoja"
         },
         "placeholders": {
-          "type": "Valitse..."
+          "type": "Valitse...",
+          "depends-on": "Aina aktiivinen"
         }
       },
       "option-details": {

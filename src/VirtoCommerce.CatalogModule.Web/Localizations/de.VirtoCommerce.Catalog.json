@@ -820,7 +820,8 @@
           "allow-custom-text": "Benutzerdefinierter Text erlaubt",
           "allow-predefined-options": "Vordefinierte Optionen zulassen",
           "max-length": "Maximale Länge",
-          "text": "Text"
+          "text": "Text",
+          "depends-on": "Aktiv wenn Abschnitt einen Wert hat"
         },
         "descr": {
           "no-options": "Noch keine Optionen in diesem Abschnitt"
@@ -829,7 +830,8 @@
           "add": "Optionen hinzufügen"
         },
         "placeholders": {
-          "type": "Bitte auswählen..."
+          "type": "Bitte auswählen...",
+          "depends-on": "Immer aktiv"
         }
       },
       "option-details": {

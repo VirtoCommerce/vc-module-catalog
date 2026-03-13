@@ -820,7 +820,8 @@
           "allow-custom-text": "Permitir texto personalizado",
           "allow-predefined-options": "Permitir opciones predefinidas",
           "max-length": "Longitud máxima",
-          "text": "Texto"
+          "text": "Texto",
+          "depends-on": "Activa cuando la sección tiene un valor"
         },
         "descr": {
           "no-options": "Aún no hay opciones en esta sección"
@@ -829,7 +830,8 @@
           "add": "Agregar opciones"
         },
         "placeholders": {
-          "type": "Elegid..."
+          "type": "Elegid...",
+          "depends-on": "Siempre activa"
         }
       },
       "option-details": {

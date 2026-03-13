@@ -820,7 +820,8 @@
           "allow-custom-text": "カスタムテキストを許可",
           "allow-predefined-options": "既定のオプションを許可",
           "max-length": "最大長",
-          "text": "テキスト"
+          "text": "テキスト",
+          "depends-on": "セクションに値がある場合にアクティブ"
         },
         "descr": {
           "no-options": "このセクションにはまだオプションがありません"
@@ -829,7 +830,8 @@
           "add": "オプションを追加"
         },
         "placeholders": {
-          "type": "選択してください..."
+          "type": "選択してください...",
+          "depends-on": "常にアクティブ"
         }
       },
       "option-details": {

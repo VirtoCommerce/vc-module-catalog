@@ -415,6 +415,8 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             modelBuilder.Entity<ProductConfigurationSectionEntity>().HasOne(x => x.Configuration).WithMany(x => x.Sections)
                 .HasForeignKey(x => x.ConfigurationId).IsRequired().OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<ProductConfigurationSectionEntity>().Property(x => x.AllowCustomText).HasDefaultValue(true);
+            modelBuilder.Entity<ProductConfigurationSectionEntity>().HasOne(x => x.DependsOnSection).WithMany()
+                .HasForeignKey(x => x.DependsOnSectionId).OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<ProductConfigurationOptionEntity>().ToTable("ProductConfigurationOption").HasKey(x => x.Id);
             modelBuilder.Entity<ProductConfigurationOptionEntity>().Property(x => x.Id).HasMaxLength(128).ValueGeneratedOnAdd();

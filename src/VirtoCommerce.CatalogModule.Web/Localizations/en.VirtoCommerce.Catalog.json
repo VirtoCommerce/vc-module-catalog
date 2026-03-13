@@ -820,7 +820,8 @@
           "allow-custom-text": "Allow custom text",
           "allow-predefined-options": "Allow predefined options",
           "max-length": "Max length",
-          "text": "Text"
+          "text": "Text",
+          "depends-on": "Active when section has value"
         },
         "descr": {
           "no-options": "No options in this section yet"
@@ -829,7 +830,8 @@
           "add": "Add options"
         },
         "placeholders": {
-          "type": "Please select..."
+          "type": "Please select...",
+          "depends-on": "Always active"
         }
       },
       "option-details": {

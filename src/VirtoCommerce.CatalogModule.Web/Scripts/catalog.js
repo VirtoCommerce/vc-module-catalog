@@ -850,6 +850,10 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                         templateUrl: "section-is-required.html"
                     },
                     {
+                        colSpan: 4,
+                        templateUrl: "section-depends-on.html"
+                    },
+                    {
                         colSpan: 2,
                         templateUrl: "section-max-length.html"
                     },

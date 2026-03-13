@@ -95,6 +95,19 @@
     </div>
   </div>
 </script>
+<script type="text/ng-template" id="section-depends-on.html">
+  <div class="form-group">
+    <label class="form-label">{{ 'catalog.blades.section-details.labels.depends-on' | translate }}</label>
+    <div class="form-input">
+      <ui-select ng-model="blade.currentEntity.dependsOnSectionId" allow-clear="true">
+        <ui-select-match placeholder="{{ 'catalog.blades.section-details.placeholders.depends-on' | translate }}" allow-clear="true">{{$select.selected.name}}</ui-select-match>
+        <ui-select-choices repeat="s.id as s in blade.otherSections | filter: { name: $select.search }">
+          <span ng-bind-html="s.name | highlight: $select.search"></span>
+        </ui-select-choices>
+      </ui-select>
+    </div>
+  </div>
+</script>
 <script type="text/ng-template" id="section-is-required.html">
   <div>
     <label class="form-label">{{ 'catalog.blades.section-details.labels.required' | translate }}</label>

@@ -820,7 +820,8 @@
           "allow-custom-text": "Tillat tilpasset tekst",
           "allow-predefined-options": "Tillat forhåndsdefinerte alternativer",
           "max-length": "Maksimal lengde",
-          "text": "Tekst"
+          "text": "Tekst",
+          "depends-on": "Aktiv når seksjonen har en verdi"
         },
         "descr": {
           "no-options": "Ingen alternativer i denne seksjonen ennå"
@@ -829,7 +830,8 @@
           "add": "Legg til alternativ"
         },
         "placeholders": {
-          "type": "Velg..."
+          "type": "Velg...",
+          "depends-on": "Alltid aktiv"
         }
       },
       "option-details": {

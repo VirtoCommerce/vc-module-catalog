@@ -820,7 +820,8 @@
           "allow-custom-text": "Autoriser le texte personnalisé",
           "allow-predefined-options": "Autoriser les options prédéfinies",
           "max-length": "Longueur maximale",
-          "text": "Texte"
+          "text": "Texte",
+          "depends-on": "Active quand la section a une valeur"
         },
         "descr": {
           "no-options": "Pas encore d'options dans cette section"
@@ -829,7 +830,8 @@
           "add": "Ajouter des options"
         },
         "placeholders": {
-          "type": "Choisissez..."
+          "type": "Choisissez...",
+          "depends-on": "Toujours active"
         }
       },
       "option-details": {

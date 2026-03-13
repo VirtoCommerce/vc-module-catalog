@@ -265,6 +265,7 @@ angular.module('virtoCommerce.catalogModule')
                     item.allowCustomText = true;
                 }
 
+                blade.otherSections = blade.otherSections || [];
                 blade.currentEntity = angular.copy(item);
 
                 // Initialize previous values for mutual exclusivity tracking

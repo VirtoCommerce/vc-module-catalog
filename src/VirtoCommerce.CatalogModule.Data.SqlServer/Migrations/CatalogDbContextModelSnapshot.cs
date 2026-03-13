@@ -1083,6 +1083,10 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("DependsOnSectionId")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
@@ -1115,6 +1119,8 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ConfigurationId");
+
+                    b.HasIndex("DependsOnSectionId");
 
                     b.ToTable("ProductConfigurationSection", (string)null);
                 });
@@ -2010,7 +2016,14 @@ namespace VirtoCommerce.CatalogModule.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("VirtoCommerce.CatalogModule.Data.Model.ProductConfigurationSectionEntity", "DependsOnSection")
+                        .WithMany()
+                        .HasForeignKey("DependsOnSectionId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
                     b.Navigation("Configuration");
+
+                    b.Navigation("DependsOnSection");
                 });
 
             modelBuilder.Entity("VirtoCommerce.CatalogModule.Data.Model.PropertyAttributeEntity", b =>

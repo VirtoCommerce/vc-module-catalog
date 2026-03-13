@@ -820,7 +820,8 @@
           "allow-custom-text": "Tillåt anpassad text",
           "allow-predefined-options": "Tillåt fördefinierade alternativ",
           "max-length": "Max längd",
-          "text": "Text"
+          "text": "Text",
+          "depends-on": "Aktiv när sektionen har ett värde"
         },
         "descr": {
           "no-options": "Inga alternativ i denna sektion än"
@@ -829,7 +830,8 @@
           "add": "Lägg till alternativ"
         },
         "placeholders": {
-          "type": "Välj..."
+          "type": "Välj...",
+          "depends-on": "Alltid aktiv"
         }
       },
       "option-details": {

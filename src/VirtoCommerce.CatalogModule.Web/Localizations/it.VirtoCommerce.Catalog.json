@@ -820,7 +820,8 @@
           "allow-custom-text": "Consenti testo personalizzato",
           "allow-predefined-options": "Consenti opzioni predefinite",
           "max-length": "Lunghezza massima",
-          "text": "Testo"
+          "text": "Testo",
+          "depends-on": "Attiva quando la sezione ha un valore"
         },
         "descr": {
           "no-options": "Ancora nessuna opzione in questa sezione"
@@ -829,7 +830,8 @@
           "add": "Aggiungi opzioni"
         },
         "placeholders": {
-          "type": "Selezionate..."
+          "type": "Selezionate...",
+          "depends-on": "Sempre attiva"
         }
       },
       "option-details": {

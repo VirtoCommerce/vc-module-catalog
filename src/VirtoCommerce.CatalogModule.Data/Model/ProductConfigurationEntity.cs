@@ -67,6 +67,22 @@ public class ProductConfigurationEntity : AuditableEntity, IDataEntity<ProductCo
 
         if (!Sections.IsNullCollection())
         {
+            var removedIds = target.Sections
+                .Where(t => !Sections.Any(s => s.Id == t.Id))
+                .Select(t => t.Id)
+                .ToHashSet();
+
+            if (removedIds.Count > 0)
+            {
+                foreach (var section in target.Sections)
+                {
+                    if (section.DependsOnSectionId != null && removedIds.Contains(section.DependsOnSectionId))
+                    {
+                        section.DependsOnSectionId = null;
+                    }
+                }
+            }
+
             Sections.Patch(target.Sections, (sourceSection, targetSection) => sourceSection.Patch(targetSection));
         }
     }

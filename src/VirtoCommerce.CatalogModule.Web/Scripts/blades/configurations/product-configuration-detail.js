@@ -109,11 +109,16 @@ angular.module('virtoCommerce.catalogModule')
             }
 
             function openSectionBlade(section) {
+                var otherSections = _.filter(blade.currentEntity.sections, function(s) {
+                    return s !== section && s.name;
+                });
+
                 var newBlade = {
                     id: "sectionDetail",
                     controller: 'virtoCommerce.catalogModule.configurationSectionDetailController',
                     template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/configurations/configuration-section-detail.tpl.html',
                     origEntity: section,
+                    otherSections: otherSections,
                     onSaveNew: function (newSection) {
                         newSection.displayOrder = blade.currentEntity.sections.length;
                         blade.currentEntity.sections.push(newSection);
