@@ -8,5 +8,6 @@ namespace VirtoCommerce.CatalogModule.Core.Services
     public interface ICategoryService : IOuterEntityService<Category>
     {
         Task<IList<Category>> GetByIdsAsync(IList<string> ids, string responseGroup, string catalogId);
+        Task<IDictionary<string, string>> GetIdsByCodes(string catalogId, IList<string> codes);
     }
 }

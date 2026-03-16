@@ -820,6 +820,7 @@
           "type": "Тип секции",
           "allow-custom-text": "Разрешить свой текст",
           "allow-predefined-options": "Разрешить предопределенные опции",
+          "max-length": "Максимальная длина",
           "text": "Текст"
         },
         "descr": {
