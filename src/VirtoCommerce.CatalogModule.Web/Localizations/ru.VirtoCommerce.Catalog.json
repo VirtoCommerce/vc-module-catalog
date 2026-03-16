@@ -833,8 +833,8 @@
         }
       },
       "section-options-list": {
-        "title": "Options",
-        "subtitle": "Manage section options"
+        "title": "Параметры",
+        "subtitle": "Управление параметрами раздела"
       },
       "option-details": {
         "title": "Выберите элементы в качестве опций",

@@ -833,8 +833,8 @@
         }
       },
       "section-options-list": {
-        "title": "Options",
-        "subtitle": "Manage section options"
+        "title": "オプション",
+        "subtitle": "セクションオプションの管理"
       },
       "option-details": {
         "title": "オプションとしてアイテムを選択",

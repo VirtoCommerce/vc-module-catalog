@@ -833,8 +833,8 @@
         }
       },
       "section-options-list": {
-        "title": "Options",
-        "subtitle": "Manage section options"
+        "title": "选项",
+        "subtitle": "管理部分选项"
       },
       "option-details": {
         "title": "选择项目作为选项",
