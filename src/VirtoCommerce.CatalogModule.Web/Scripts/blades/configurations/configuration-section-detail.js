@@ -12,6 +12,9 @@ angular.module('virtoCommerce.catalogModule')
             // Section types for the dropdown
             blade.sectionTypes = ['Product', 'Variation', 'Text', 'File'];
 
+            // Tooltip visibility state
+            blade.setting = {};
+
             $scope.currentChild = undefined;
 
             var formScope;
@@ -27,6 +30,11 @@ angular.module('virtoCommerce.catalogModule')
 
                 if (entity.type === 'Text') {
                     enforceTextToggleConstraint(entity);
+
+                    // Set default maxLength when allowCustomText is turned on
+                    if (!previousAllowCustomText && entity.allowCustomText && !entity.maxLength) {
+                        entity.maxLength = 255;
+                    }
                 }
 
                 previousAllowCustomText = entity.allowCustomText;
@@ -130,6 +138,9 @@ angular.module('virtoCommerce.catalogModule')
 
                 if (item.id == null) {
                     item.allowCustomText = true;
+                    if (!item.maxLength) {
+                        item.maxLength = 255;
+                    }
                 }
 
                 blade.currentEntity = angular.copy(item);

@@ -1,4 +1,4 @@
-<div class="blade-content">
+<div class="blade-content __medium-wide">
   <div class="blade-inner">
     <div class="inner-block">
       <div class="config-section-detail" style="white-space: normal;">
@@ -21,6 +21,7 @@
 </div>
 
 <script type="text/ng-template" id="section-type.html">
+  <i class="form-ico fa fa-question-circle __link __lightblue" ng-click="blade.setting.type_descrVisible=!blade.setting.type_descrVisible"></i>
   <div class="form-input">
     <ui-select ng-model="blade.currentEntity.type" ng-disabled="blade.isTypeChangeDisabled()" required>
       <ui-select-match placeholder="{{ 'catalog.blades.section-details.placeholders.type' | translate }}">{{$select.selected}}</ui-select-match>
@@ -29,45 +30,69 @@
       </ui-select-choices>
     </ui-select>
   </div>
+  <div ng-if="blade.setting.type_descrVisible">
+    <div class="list __info list-descr">{{ 'catalog.blades.section-details.descr.type' | translate }}</div>
+    <a href="" ng-click="blade.setting.type_descrVisible = null;">{{ 'catalog.blades.section-details.hide-description' | translate }}</a>
+  </div>
 </script>
 <script type="text/ng-template" id="section-allow-custom-text.html">
   <div class="form-group" ng-if="blade.currentEntity.type === 'Text'">
     <label class="form-label">{{ 'catalog.blades.section-details.labels.allow-custom-text' | translate }}</label>
+    <i class="form-ico fa fa-question-circle __link __lightblue" ng-click="blade.setting.allowCustomText_descrVisible=!blade.setting.allowCustomText_descrVisible"></i>
     <div class="form-input">
       <label class="form-label __switch">
         <input type="checkbox" ng-model="blade.currentEntity.allowCustomText" />
         <span class="switch"></span>
       </label>
     </div>
+    <div ng-if="blade.setting.allowCustomText_descrVisible">
+      <div class="list __info list-descr">{{ 'catalog.blades.section-details.descr.allow-custom-text' | translate }}</div>
+      <a href="" ng-click="blade.setting.allowCustomText_descrVisible = null;">{{ 'catalog.blades.section-details.hide-description' | translate }}</a>
+    </div>
   </div>
 </script>
 <script type="text/ng-template" id="section-allow-predefined.html">
   <div class="form-group" ng-if="blade.currentEntity.type === 'Text'">
     <label class="form-label">{{ 'catalog.blades.section-details.labels.allow-predefined-options' | translate }}</label>
+    <i class="form-ico fa fa-question-circle __link __lightblue" ng-click="blade.setting.allowPredefined_descrVisible=!blade.setting.allowPredefined_descrVisible"></i>
     <div class="form-input">
       <label class="form-label __switch">
         <input type="checkbox" ng-model="blade.currentEntity.allowPredefinedOptions" />
         <span class="switch"></span>
       </label>
     </div>
+    <div ng-if="blade.setting.allowPredefined_descrVisible">
+      <div class="list __info list-descr">{{ 'catalog.blades.section-details.descr.allow-predefined-options' | translate }}</div>
+      <a href="" ng-click="blade.setting.allowPredefined_descrVisible = null;">{{ 'catalog.blades.section-details.hide-description' | translate }}</a>
+    </div>
   </div>
 </script>
 <script type="text/ng-template" id="section-is-required.html">
   <div>
     <label class="form-label">{{ 'catalog.blades.section-details.labels.required' | translate }}</label>
+    <i class="form-ico fa fa-question-circle __link __lightblue" ng-click="blade.setting.isRequired_descrVisible=!blade.setting.isRequired_descrVisible"></i>
     <div class="form-input">
       <label class="form-label __switch">
         <input type="checkbox" ng-model="blade.currentEntity.isRequired" />
         <span class="switch"></span>
       </label>
     </div>
+    <div ng-if="blade.setting.isRequired_descrVisible">
+      <div class="list __info list-descr">{{ 'catalog.blades.section-details.descr.is-required' | translate }}</div>
+      <a href="" ng-click="blade.setting.isRequired_descrVisible = null;">{{ 'catalog.blades.section-details.hide-description' | translate }}</a>
+    </div>
   </div>
 </script>
 <script type="text/ng-template" id="section-max-length.html">
   <div class="form-group" ng-if="blade.currentEntity.type === 'Text'">
     <label class="form-label">{{ 'catalog.blades.section-details.labels.max-length' | translate }}</label>
+    <i class="form-ico fa fa-question-circle __link __lightblue" ng-click="blade.setting.maxLength_descrVisible=!blade.setting.maxLength_descrVisible"></i>
     <div class="form-input">
-      <input type="number" min="0" ng-model="blade.currentEntity.maxLength" />
+      <input type="number" min="0" ng-model="blade.currentEntity.maxLength" ng-disabled="!blade.currentEntity.allowCustomText" />
+    </div>
+    <div ng-if="blade.setting.maxLength_descrVisible">
+      <div class="list __info list-descr">{{ 'catalog.blades.section-details.descr.max-length' | translate }}</div>
+      <a href="" ng-click="blade.setting.maxLength_descrVisible = null;">{{ 'catalog.blades.section-details.hide-description' | translate }}</a>
     </div>
   </div>
 </script>

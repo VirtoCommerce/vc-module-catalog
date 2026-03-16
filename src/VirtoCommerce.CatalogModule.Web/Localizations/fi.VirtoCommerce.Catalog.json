@@ -808,6 +808,7 @@
       },
       "section-details": {
         "title": "Uusi osio",
+        "hide-description": "Piilota",
         "labels": {
           "name": "Osion nimi",
           "description": "Kuvaus",
@@ -823,7 +824,12 @@
           "text": "Teksti"
         },
         "descr": {
-          "no-options": "Tässä osiossa ei ole vielä vaihtoehtoja"
+          "no-options": "Tässä osiossa ei ole vielä vaihtoehtoja",
+          "type": "Määrittää tässä osiossa käytettävissä olevien vaihtoehtojen tyypin: Tuote katalogikohteille, Variaatio tuotevarianteille, Teksti mukautetuille tekstimerkinnöille ja Tiedosto tiedostojen latauksille",
+          "is-required": "Kun käytössä, asiakkaan on valittava vaihtoehto tästä osiosta ennen tuotteen lisäämistä ostoskoriin",
+          "allow-custom-text": "Kun käytössä, asiakkaat voivat kirjoittaa oman tekstinsä ennalta määritettyjen vaihtoehtojen lisäksi tai sijasta",
+          "allow-predefined-options": "Kun käytössä, ennalta määritettyjen tekstivaihtoehtojen luettelo on asiakkaan valittavissa",
+          "max-length": "Tekstisyötteen sallittu enimmäismerkkimäärä. Jätä tyhjäksi, jos rajaa ei ole"
         },
         "commands": {
           "add": "Lisää vaihtoehtoja"

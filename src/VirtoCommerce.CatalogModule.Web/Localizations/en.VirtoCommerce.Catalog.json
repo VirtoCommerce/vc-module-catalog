@@ -808,6 +808,7 @@
       },
       "section-details": {
         "title": "New section",
+        "hide-description": "Hide",
         "labels": {
           "name": "Section name",
           "description": "Description",
@@ -823,7 +824,12 @@
           "text": "Text"
         },
         "descr": {
-          "no-options": "No options in this section yet"
+          "no-options": "No options in this section yet",
+          "type": "Defines the kind of options available in this section: Product for catalog items, Variation for product variants, Text for custom text entries, and File for file uploads",
+          "is-required": "When enabled, the customer must select an option from this section before adding the product to the cart",
+          "allow-custom-text": "When enabled, customers can type their own text value in addition to or instead of selecting from predefined options",
+          "allow-predefined-options": "When enabled, a list of predefined text options will be available for the customer to choose from",
+          "max-length": "Maximum number of characters allowed for the text input. Leave empty for no limit"
         },
         "commands": {
           "add": "Add options"

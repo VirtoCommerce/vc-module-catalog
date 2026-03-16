@@ -851,11 +851,11 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                     },
                     {
                         colSpan: 3,
-                        templateUrl: "section-max-length.html"
+                        templateUrl: "section-allow-custom-text.html"
                     },
                     {
                         colSpan: 3,
-                        templateUrl: "section-allow-custom-text.html"
+                        templateUrl: "section-max-length.html"
                     },
                     {
                         colSpan: 6,
