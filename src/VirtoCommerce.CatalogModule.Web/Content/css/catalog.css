@@ -393,3 +393,8 @@ vc-item-search {
 .ui-select-multiple[sortable="true"] .ui-select-match-item:not(.btn-default) {
   cursor: move;
 }
+
+.config-section-detail {
+  margin-bottom: 20px;
+}
+
