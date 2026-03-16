@@ -19,16 +19,19 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 {
     public class VideoService : CrudService<Video, VideoEntity, VideoChangingEvent, VideoChangedEvent>, IVideoService
     {
-        private readonly IVideoProvider _videoProvider;
+        private readonly List<IVideoProvider> _providers;
+        private readonly string _unsupportedUrlMessage;
 
         public VideoService(
             Func<ICatalogRepository> repositoryFactory,
             IPlatformMemoryCache platformMemoryCache,
             IEventPublisher eventPublisher,
-            IVideoProvider videoProvider)
+            IEnumerable<IVideoProvider> providers)
             : base(repositoryFactory, platformMemoryCache, eventPublisher)
         {
-            _videoProvider = videoProvider;
+            _providers = providers.ToList();
+            var supportedProviders = string.Join(", ", _providers.Select(x => x.Name));
+            _unsupportedUrlMessage = $"Unsupported video URL. Available providers: {supportedProviders}.";
         }
 
         protected override async Task<IList<VideoEntity>> LoadEntities(IRepository repository, IList<string> ids, string responseGroup)
@@ -38,11 +41,14 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 .ToListAsync();
         }
 
-        public async Task<Video> CreateVideo(VideoCreateRequest createRequest)
+        public virtual async Task<Video> CreateVideo(VideoCreateRequest createRequest)
         {
             await new VideoCreateRequestValidator().ValidateAndThrowAsync(createRequest);
 
-            return await _videoProvider.GetVideoAsync(createRequest);
+            var provider = _providers.FirstOrDefault(x => x.CanHandle(createRequest.ContentUrl)) ??
+                           throw new InvalidOperationException(_unsupportedUrlMessage);
+
+            return await provider.GetVideoAsync(createRequest);
         }
     }
 }

@@ -1,4 +1,7 @@
+using System;
+using System.Net.Http;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using VirtoCommerce.CatalogModule.Core.Extensions;
@@ -9,8 +12,7 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.Vimeo;
 
-public partial class VimeoVideoProvider(IOptions<VideoOptions> videoOptions, IHttpClientFactory httpClientFactory)
-    : IVideoProvider
+public partial class VimeoVideoProvider(IOptions<VideoOptions> videoOptions, IHttpClientFactory httpClientFactory) : IVideoProvider
 {
     [GeneratedRegex("src=\"(.*?)\"")]
     private static partial Regex EmbedSrcRegex();
@@ -20,19 +22,21 @@ public partial class VimeoVideoProvider(IOptions<VideoOptions> videoOptions, IHt
 
     private readonly VideoOptions _videoOptions = videoOptions.Value;
 
-    public bool CanHandle(string contentUrl)
+    public virtual string Name => "Vimeo";
+
+    public virtual bool CanHandle(string contentUrl)
     {
         if (string.IsNullOrWhiteSpace(contentUrl))
         {
             return false;
         }
 
-        return Uri.TryCreate(contentUrl, UriKind.Absolute, out var uri)
-            && (uri.Host.Equals("vimeo.com", StringComparison.OrdinalIgnoreCase)
-                || uri.Host.EndsWith(".vimeo.com", StringComparison.OrdinalIgnoreCase));
+        return Uri.TryCreate(contentUrl, UriKind.Absolute, out var uri) && (
+            uri.Host.EqualsIgnoreCase("vimeo.com") ||
+            uri.Host.EndsWithIgnoreCase(".vimeo.com"));
     }
 
-    public async Task<Video> GetVideoAsync(VideoCreateRequest request)
+    public virtual async Task<Video> GetVideoAsync(VideoCreateRequest request)
     {
         var video = AbstractTypeFactory<Video>.TryCreateInstance();
         video.ContentUrl = request.ContentUrl;
@@ -79,14 +83,16 @@ public partial class VimeoVideoProvider(IOptions<VideoOptions> videoOptions, IHt
 
     private static string GetEmbedUrl(string html)
     {
-        if (string.IsNullOrWhiteSpace(html) || !html.Contains("<iframe", StringComparison.OrdinalIgnoreCase))
+        if (string.IsNullOrWhiteSpace(html) || !html.ContainsIgnoreCase("<iframe"))
         {
             return null;
         }
 
         var match = EmbedSrcRegex().Match(html);
 
-        return match.Success ? match.Groups[1].Value : null;
+        return match.Success
+            ? match.Groups[1].Value
+            : null;
     }
 
     private static string FormatDuration(int? totalSeconds)
@@ -97,6 +103,6 @@ public partial class VimeoVideoProvider(IOptions<VideoOptions> videoOptions, IHt
         }
 
         var time = TimeSpan.FromSeconds(totalSeconds.Value);
-        return time.ToString(@"hh\:mm\:ss");
+        return time.ToString("hh:mm:ss");
     }
 }

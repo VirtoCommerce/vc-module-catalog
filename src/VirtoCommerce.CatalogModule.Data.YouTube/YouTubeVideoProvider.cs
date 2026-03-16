@@ -1,4 +1,8 @@
+using System;
+using System.Linq;
+using System.Net.Http;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Google.Apis.Services;
 using Google.Apis.YouTube.v3;
 using Microsoft.Extensions.Options;
@@ -29,25 +33,27 @@ namespace VirtoCommerce.CatalogModule.Data.YouTube
 
         private readonly VideoOptions _videoOptions = videoOptions.Value;
 
-        public bool CanHandle(string contentUrl)
+        public virtual string Name => "YouTube";
+
+        public virtual bool CanHandle(string contentUrl)
         {
             if (string.IsNullOrWhiteSpace(contentUrl))
             {
                 return false;
             }
 
-            return Uri.TryCreate(contentUrl, UriKind.Absolute, out var uri)
-                && (MatchesHost(uri.Host, "youtube.com")
-                    || MatchesHost(uri.Host, "youtu.be"));
+            return Uri.TryCreate(contentUrl, UriKind.Absolute, out var uri) && (
+                MatchesHost(uri.Host, "youtube.com") ||
+                MatchesHost(uri.Host, "youtu.be"));
+
+            static bool MatchesHost(string host, string expected)
+            {
+                return host.EqualsIgnoreCase(expected) ||
+                       host.EndsWithIgnoreCase($".{expected}");
+            }
         }
 
-        private static bool MatchesHost(string host, string expected)
-        {
-            return host.Equals(expected, StringComparison.OrdinalIgnoreCase)
-                || host.EndsWith($".{expected}", StringComparison.OrdinalIgnoreCase);
-        }
-
-        public async Task<Video> GetVideoAsync(VideoCreateRequest request)
+        public virtual async Task<Video> GetVideoAsync(VideoCreateRequest request)
         {
             var video = AbstractTypeFactory<Video>.TryCreateInstance();
             video.ContentUrl = request.ContentUrl;

@@ -32,6 +32,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         public ActionResult<VideoOptionsResult> GetOptions()
         {
             var options = videoOptions.Value;
+
             return Ok(new VideoOptionsResult
             {
                 IsYouTubeApiKeyConfigured = !string.IsNullOrEmpty(options.GoogleApiKey),
