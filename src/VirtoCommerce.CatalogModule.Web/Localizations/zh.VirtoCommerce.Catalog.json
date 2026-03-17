@@ -808,6 +808,7 @@
       },
       "section-details": {
         "title": "新部分",
+        "hide-description": "隐藏",
         "labels": {
           "name": "部分名称",
           "description": "描述",
@@ -823,7 +824,12 @@
           "text": "文本"
         },
         "descr": {
-          "no-options": "此部分中尚无选项"
+          "no-options": "此部分中尚无选项",
+          "type": "定义此部分中可用的选项类型：产品用于目录项目，变体用于产品变体，文本用于自定义文本条目，文件用于文件上传",
+          "is-required": "启用后，客户必须在将产品添加到购物车之前从此部分选择一个选项",
+          "allow-custom-text": "启用后，客户可以输入自己的文本，作为预定义选项的补充或替代",
+          "allow-predefined-options": "启用后，将为客户提供预定义文本选项列表供其选择",
+          "max-length": "文本输入允许的最大字符数。留空表示无限制"
         },
         "commands": {
           "add": "添加选项"
@@ -831,6 +837,10 @@
         "placeholders": {
           "type": "请选择..."
         }
+      },
+      "section-options-list": {
+        "title": "选项",
+        "subtitle": "管理部分选项"
       },
       "option-details": {
         "title": "选择项目作为选项",

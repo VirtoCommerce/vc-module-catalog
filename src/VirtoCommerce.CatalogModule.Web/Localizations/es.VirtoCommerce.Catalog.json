@@ -808,6 +808,7 @@
       },
       "section-details": {
         "title": "Nueva sección",
+        "hide-description": "Ocultar",
         "labels": {
           "name": "Nombre de la sección",
           "description": "Descripción",
@@ -823,7 +824,12 @@
           "text": "Texto"
         },
         "descr": {
-          "no-options": "Aún no hay opciones en esta sección"
+          "no-options": "Aún no hay opciones en esta sección",
+          "type": "Define el tipo de opciones disponibles en esta sección: Producto para artículos del catálogo, Variación para variantes de producto, Texto para entradas de texto personalizadas y Archivo para carga de archivos",
+          "is-required": "Cuando está habilitado, el cliente debe seleccionar una opción de esta sección antes de agregar el producto al carrito",
+          "allow-custom-text": "Cuando está habilitado, los clientes pueden escribir su propio texto además de o en lugar de seleccionar entre opciones predefinidas",
+          "allow-predefined-options": "Cuando está habilitado, una lista de opciones de texto predefinidas estará disponible para que el cliente elija",
+          "max-length": "Número máximo de caracteres permitidos para la entrada de texto. Dejar vacío para sin límite"
         },
         "commands": {
           "add": "Agregar opciones"
@@ -831,6 +837,10 @@
         "placeholders": {
           "type": "Elegid..."
         }
+      },
+      "section-options-list": {
+        "title": "Opciones",
+        "subtitle": "Administrar opciones de sección"
       },
       "option-details": {
         "title": "Seleccionar artículos como opciones",

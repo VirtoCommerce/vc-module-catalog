@@ -808,6 +808,7 @@
       },
       "section-details": {
         "title": "Ny seksjon",
+        "hide-description": "Skjul",
         "labels": {
           "name": "Seksjonsnavn",
           "description": "Beskrivelse",
@@ -823,7 +824,12 @@
           "text": "Tekst"
         },
         "descr": {
-          "no-options": "Ingen alternativer i denne seksjonen ennå"
+          "no-options": "Ingen alternativer i denne seksjonen ennå",
+          "type": "Definerer typen alternativer tilgjengelig i denne seksjonen: Produkt for katalogartikler, Variasjon for produktvarianter, Tekst for egendefinerte tekstoppføringer og Fil for filopplastinger",
+          "is-required": "Når aktivert, må kunden velge et alternativ fra denne seksjonen før produktet legges i handlekurven",
+          "allow-custom-text": "Når aktivert, kan kunder skrive inn sin egen tekst i tillegg til eller i stedet for å velge fra forhåndsdefinerte alternativer",
+          "allow-predefined-options": "Når aktivert, vil en liste med forhåndsdefinerte tekstalternativer være tilgjengelig for kunden å velge fra",
+          "max-length": "Maksimalt antall tegn tillatt for tekstinntasting. La stå tomt for ingen grense"
         },
         "commands": {
           "add": "Legg til alternativ"
@@ -831,6 +837,10 @@
         "placeholders": {
           "type": "Velg..."
         }
+      },
+      "section-options-list": {
+        "title": "Alternativer",
+        "subtitle": "Administrer seksjonsalternativer"
       },
       "option-details": {
         "title": "Velg objekt som alternativ",
