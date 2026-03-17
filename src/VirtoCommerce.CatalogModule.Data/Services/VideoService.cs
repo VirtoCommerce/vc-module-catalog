@@ -19,7 +19,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 {
     public class VideoService : CrudService<Video, VideoEntity, VideoChangingEvent, VideoChangedEvent>, IVideoService
     {
-        private readonly List<IVideoProvider> _providers;
+        private readonly IVideoProvider[] _providers;
         private readonly string _unsupportedUrlMessage;
 
         public VideoService(
@@ -29,9 +29,9 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             IEnumerable<IVideoProvider> providers)
             : base(repositoryFactory, platformMemoryCache, eventPublisher)
         {
-            _providers = providers.ToList();
-            var supportedProviders = string.Join(", ", _providers.Select(x => x.Name));
-            _unsupportedUrlMessage = $"Unsupported video URL. Available providers: {supportedProviders}.";
+            _providers = providers.ToArray();
+            var providerNames = string.Join(", ", _providers.Select(x => x.Name));
+            _unsupportedUrlMessage = $"Unsupported video URL. Available providers: {providerNames}.";
         }
 
         protected override async Task<IList<VideoEntity>> LoadEntities(IRepository repository, IList<string> ids, string responseGroup)

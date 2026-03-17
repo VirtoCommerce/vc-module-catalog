@@ -33,11 +33,13 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         {
             var options = videoOptions.Value;
 
-            return Ok(new VideoOptionsResult
+            var result = new VideoOptionsResult
             {
                 IsYouTubeApiKeyConfigured = !string.IsNullOrEmpty(options.GoogleApiKey),
                 IsVimeoAccessTokenConfigured = !string.IsNullOrEmpty(options.VimeoAccessToken),
-            });
+            };
+
+            return Ok(result);
         }
 
         /// <summary>
