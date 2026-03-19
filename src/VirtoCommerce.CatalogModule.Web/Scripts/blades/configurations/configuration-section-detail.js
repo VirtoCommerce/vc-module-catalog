@@ -1,11 +1,10 @@
 angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.configurationSectionDetailController',
-        ['$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.uiGridHelper', 'platformWebApp.metaFormsService',
-        function ($scope, bladeNavigationService, uiGridHelper, metaFormsService) {
+        ['$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.metaFormsService',
+        function ($scope, bladeNavigationService, metaFormsService) {
             var blade = $scope.blade;
             blade.headIcon = 'fas fa-puzzle-piece';
             blade.title = blade.origEntity.name ? blade.origEntity.name : 'catalog.blades.section-details.title';
-            blade.formScope = null;
 
             // Get metafields for the form
             blade.metaFields = metaFormsService.getMetaFields("configurationSectionDetail");
@@ -13,31 +12,13 @@ angular.module('virtoCommerce.catalogModule')
             // Section types for the dropdown
             blade.sectionTypes = ['Product', 'Variation', 'Text', 'File'];
 
-            blade.toolbarCommands = [
-                {
-                    name: "platform.commands.reset",
-                    icon: 'fa fa-undo',
-                    executeMethod: function () { angular.copy(blade.origEntity, blade.currentEntity); },
-                    canExecuteMethod: isDirty,
-                    permission: 'catalog:configurations:update'
-                },
-                {
-                    name: "catalog.blades.section-details.commands.add",
-                    icon: 'fas fa-plus',
-                    executeMethod: openOptionAddBlade,
-                    canExecuteMethod: canAddOptions,
-                    permission: 'catalog:configurations:update'
-                },
-                {
-                    name: "platform.commands.delete",
-                    icon: 'fas fa-trash-alt',
-                    executeMethod: function () { deleteList($scope.gridApi.selection.getSelectedRows()); },
-                    canExecuteMethod: isItemsChecked,
-                    permission: 'catalog:configurations:delete'
-                }
-            ];
+            // Tooltip visibility state
+            blade.setting = {};
 
-            $scope.isValid = false;
+            $scope.currentChild = undefined;
+
+            var formScope;
+            $scope.setForm = function (form) { formScope = form; };
 
             var previousAllowCustomText = null;
             var previousAllowPredefinedOptions = null;
@@ -47,41 +28,28 @@ angular.module('virtoCommerce.catalogModule')
                     return;
                 }
 
-                $scope.isValid = blade.formScope && blade.formScope.$valid && entity.name;
-                if ($scope.isValid && blade.origEntity.name) {
-                    $scope.isValid = !angular.equals(blade.origEntity, entity);
-                }
-
                 if (entity.type === 'Text') {
                     enforceTextToggleConstraint(entity);
+
+                    // Set default maxLength when allowCustomText is turned on
+                    if (!previousAllowCustomText && entity.allowCustomText && !entity.maxLength) {
+                        entity.maxLength = 255;
+                    }
                 }
 
                 previousAllowCustomText = entity.allowCustomText;
                 previousAllowPredefinedOptions = entity.allowPredefinedOptions;
             }, true);
 
-            $scope.setForm = function (form) { blade.formScope = form; };
+            function isDirty() {
+                return !angular.equals(blade.currentEntity, blade.origEntity);
+            }
 
-            $scope.setGridOptions = function (gridOptions) {
-                uiGridHelper.initialize($scope, gridOptions, function (gridApi) {
-                    $scope.gridApi = gridApi;
-                });
-            };
+            function canSave() {
+                return isDirty() && formScope && formScope.$valid && blade.currentEntity.name;
+            }
 
-            $scope.openItem = function (item) {
-                $scope.selectedNodeId = item.productId;
-                var newBlade = {
-                    id: 'optionItemDetail',
-                    controller: 'virtoCommerce.catalogModule.itemDetailController',
-                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/item-detail.tpl.html',
-                    itemId: item.productId,
-                    productType: item.productType,
-                };
-
-                bladeNavigationService.showBlade(newBlade, blade);
-            };
-
-            $scope.saveChanges = function () {
+            function saveChanges() {
                 var isNew = !blade.origEntity.name;
                 angular.copy(blade.currentEntity, blade.origEntity);
 
@@ -90,40 +58,45 @@ angular.module('virtoCommerce.catalogModule')
                 }
 
                 $scope.bladeClose();
-            };
-
-            $scope.edit = function (item) {
-                $scope.selectedNodeId = item.productId;
-
-                if (blade.currentEntity.type === 'Product' || blade.currentEntity.type === 'Text') {
-                    var newBlade = {};
-
-                    if (blade.currentEntity.type === 'Product') {
-                        newBlade = {
-                            id: 'optionProductDetail',
-                            controller: 'virtoCommerce.catalogModule.configurationOptionProductDetailController',
-                            template:
-                                'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/configurations/option-product-detail.tpl.html',
-                            origEntity: item,
-                        };
-                    }
-
-                    if (blade.currentEntity.type === 'Text') {
-                        newBlade = {
-                            id: 'optionTextDetail',
-                            controller: 'virtoCommerce.catalogModule.configurationOptionTextDetailController',
-                            template:
-                                'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/configurations/option-text-detail.tpl.html',
-                            origEntity: item,
-                        };
-                    }
-
-                    bladeNavigationService.showBlade(newBlade, blade);
-                }
             }
 
-            $scope.delete = function (data) {
-                deleteList([data]);
+            blade.onClose = function (closeCallback) {
+                bladeNavigationService.showConfirmationIfNeeded(isDirty(), canSave(), blade, saveChanges, closeCallback,
+                    "catalog.dialogs.configuration-save.title", "catalog.dialogs.configuration-save.message");
+            };
+
+            blade.toolbarCommands = [
+                {
+                    name: "platform.commands.save",
+                    icon: 'fas fa-save',
+                    executeMethod: saveChanges,
+                    canExecuteMethod: canSave,
+                    permission: 'catalog:configurations:update'
+                },
+                {
+                    name: "platform.commands.reset",
+                    icon: 'fa fa-undo',
+                    executeMethod: function () { angular.copy(blade.origEntity, blade.currentEntity); },
+                    canExecuteMethod: isDirty,
+                    permission: 'catalog:configurations:update'
+                }
+            ];
+
+            $scope.openChild = function (childType) {
+                var newBlade = { id: "sectionChild" };
+                newBlade.sectionEntity = blade.currentEntity;
+
+                switch (childType) {
+                    case 'options':
+                        newBlade.title = 'catalog.blades.section-options-list.title';
+                        newBlade.subtitle = 'catalog.blades.section-options-list.subtitle';
+                        newBlade.controller = 'virtoCommerce.catalogModule.configurationOptionsListController';
+                        newBlade.template = 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/configurations/configuration-options-list.tpl.html';
+                        break;
+                }
+
+                bladeNavigationService.showBlade(newBlade, blade);
+                $scope.currentChild = childType;
             };
 
             // Function exposed on blade for template access
@@ -143,6 +116,11 @@ angular.module('virtoCommerce.catalogModule')
                 return true;
             };
 
+            blade.canShowOptions = function() {
+                return blade.currentEntity.type === 'Product' ||
+                    (blade.currentEntity.type === 'Text' && blade.currentEntity.allowPredefinedOptions);
+            };
+
             // At least one of allowCustomText/allowPredefinedOptions must be true for Text sections.
             // When user turns one off, the other is forced on.
             function enforceTextToggleConstraint(entity) {
@@ -153,109 +131,6 @@ angular.module('virtoCommerce.catalogModule')
                 }
             }
 
-            function deleteList(list) {
-                bladeNavigationService.closeChildrenBlades(blade,
-                    function () {
-                        var undeletedEntries = _.difference(blade.currentEntity.options, list);
-                        blade.currentEntity.options = undeletedEntries;
-                    });
-            }
-
-            function isItemsChecked() {
-                return $scope.gridApi && _.any($scope.gridApi.selection.getSelectedRows());
-            }
-
-            function isDirty() {
-                return !angular.equals(blade.currentEntity, blade.origEntity);
-            }
-
-            function canAddOptions() {
-                return blade.currentEntity.type === 'Product' ||
-                    blade.currentEntity.type === 'Text' && blade.currentEntity.allowPredefinedOptions;
-            }
-
-            function openOptionAddBlade() {
-                var newBlade = {};
-
-                if (blade.currentEntity.type === 'Product') {
-                    var selection = [];
-                    var options = {
-                        allowCheckingCategory: false,
-                        selectedItemIds: [],
-                        checkItemFn: function(listItem, isSelected) {
-                            if (isSelected) {
-                                if (!_.find(selection, function(x) { return x.id === listItem.id; })) {
-                                    selection.push(listItem);
-                                }
-                            } else {
-                                selection = _.reject(selection, function(x) { return x.id === listItem.id; });
-                            }
-                        }
-                    };
-
-                    newBlade = {
-                        id: "CatalogItemsSelect",
-                        controller: 'virtoCommerce.catalogModule.catalogItemSelectController',
-                        template:
-                            'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/common/catalog-items-select.tpl.html',
-                        title: "catalog.blades.option-details.title",
-                        options: options,
-                        headIcon: "fas fa-list",
-                        breadcrumbs: [],
-                        toolbarCommands: [
-                            {
-                                name: "platform.commands.confirm",
-                                icon: 'fa fa-check',
-                                executeMethod: function(pickingBlade) {
-                                    var currentSelection = _.map(blade.currentEntity.options,
-                                        function(x) {
-                                            return { id: x.productId, productType: x.productType, option: x }
-                                        });
-
-                                    currentSelection = _.uniq(_.union(currentSelection, selection),
-                                        function(x) {
-                                            return [x.productType, x.id].join();
-                                        });
-
-                                    blade.currentEntity.options = _.map(currentSelection,
-                                        function(x) {
-                                            var option = x.option;
-                                            if (!option) {
-                                                option = {
-                                                    productType: x.productType,
-                                                    productId: x.id,
-                                                    productName: x.name,
-                                                    productImageUrl: x.imageUrl,
-                                                    quantity: 1
-                                                };
-                                            }
-                                            return option;
-                                        });
-
-                                    bladeNavigationService.closeBlade(pickingBlade);
-                                },
-                                canExecuteMethod: function() { return _.any(selection); }
-                            }
-                        ]
-                    };
-                }
-
-                if (blade.currentEntity.type === 'Text') {
-                    newBlade = {
-                        id: 'optionTextDetail',
-                        controller: 'virtoCommerce.catalogModule.configurationOptionTextDetailController',
-                        template:
-                            'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/configurations/option-text-detail.tpl.html',
-                        origEntity: {},
-                        onSaveNew: function (newOption) {
-                            blade.currentEntity.options.push(newOption);
-                        },
-                    };
-                }
-
-                bladeNavigationService.showBlade(newBlade, blade);
-            }
-
             function initialize(item) {
                 if (item.options == null) {
                     item.options = [];
@@ -263,6 +138,9 @@ angular.module('virtoCommerce.catalogModule')
 
                 if (item.id == null) {
                     item.allowCustomText = true;
+                    if (!item.maxLength) {
+                        item.maxLength = 255;
+                    }
                 }
 
                 blade.otherSections = blade.otherSections || [];

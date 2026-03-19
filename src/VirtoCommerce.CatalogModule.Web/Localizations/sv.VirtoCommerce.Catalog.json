@@ -808,6 +808,7 @@
       },
       "section-details": {
         "title": "Ny sektion",
+        "hide-description": "Dölj",
         "labels": {
           "name": "Sektionsnamn",
           "description": "Beskrivning",
@@ -824,7 +825,12 @@
           "depends-on": "Aktiv när sektionen har ett värde"
         },
         "descr": {
-          "no-options": "Inga alternativ i denna sektion än"
+          "no-options": "Inga alternativ i denna sektion än",
+          "type": "Definierar vilken typ av alternativ som finns tillgängliga i denna sektion: Produkt för katalogartiklar, Variation för produktvarianter, Text för anpassade textinmatningar och Fil för filuppladdningar",
+          "is-required": "När aktiverat måste kunden välja ett alternativ från denna sektion innan produkten läggs i varukorgen",
+          "allow-custom-text": "När aktiverat kan kunder skriva in egen text utöver eller istället för att välja bland fördefinierade alternativ",
+          "allow-predefined-options": "När aktiverat kommer en lista med fördefinierade textalternativ att vara tillgänglig för kunden att välja från",
+          "max-length": "Maximalt antal tecken tillåtna för textinmatning. Lämna tomt för ingen begränsning"
         },
         "commands": {
           "add": "Lägg till alternativ"
@@ -833,6 +839,10 @@
           "type": "Välj...",
           "depends-on": "Alltid aktiv"
         }
+      },
+      "section-options-list": {
+        "title": "Alternativ",
+        "subtitle": "Hantera sektionsalternativ"
       },
       "option-details": {
         "title": "Välj objekt som alternativ",
