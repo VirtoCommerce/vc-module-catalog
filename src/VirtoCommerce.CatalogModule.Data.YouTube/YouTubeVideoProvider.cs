@@ -15,7 +15,7 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.YouTube
 {
-    public partial class YouTubeVideoProvider(IOptions<Core.Options.VideoOptions> videoOptions) : IVideoProvider
+    public partial class YouTubeVideoProvider(IOptions<VideoOptions> videoOptions) : IVideoProvider
     {
         [GeneratedRegex(@"(vi\/|v%3D|v=|\/v\/|youtu\.be\/|\/embed\/)")]
         private static partial Regex VideoIdSeparatorRegex();
@@ -31,7 +31,7 @@ namespace VirtoCommerce.CatalogModule.Data.YouTube
 
         private const int _maxDescriptionLength = 1024;
 
-        private readonly Core.Options.VideoOptions _videoOptions = videoOptions.Value;
+        private readonly VideoOptions _videoOptions = videoOptions.Value;
 
         public virtual string Name => "YouTube";
 

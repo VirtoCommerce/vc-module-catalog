@@ -30,11 +30,11 @@ public class YouTubeVideoProviderTests
     private static readonly string _apiKey = new ConfigurationBuilder()
         .AddUserSecrets<YouTubeVideoProviderTests>()
         .AddEnvironmentVariables()
-        .Build()[$"{Core.Options.VideoOptions.SectionName}:GoogleApiKey"];
+        .Build()[$"{VideoOptions.SectionName}:GoogleApiKey"];
 
     private static YouTubeVideoProvider CreateProvider(string apiKey = null)
     {
-        var options = Options.Create(new Core.Options.VideoOptions { GoogleApiKey = apiKey });
+        var options = Options.Create(new VideoOptions { GoogleApiKey = apiKey });
         return new YouTubeVideoProvider(options);
     }
 
