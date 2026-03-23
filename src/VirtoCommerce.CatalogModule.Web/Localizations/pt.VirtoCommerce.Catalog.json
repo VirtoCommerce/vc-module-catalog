@@ -534,7 +534,7 @@
         "labels": {
           "content-url": "URL do conteúdo",
           "no-youtube-apikey": "Você não forneceu nenhuma chave de API do Google no arquivo de configuração da plataforma. As informações do vídeo estarão incompletas",
-          "no-vimeo-token": "Vimeo access token is not configured in appsettings.json. Private Vimeo videos will not be available."
+          "no-vimeo-token": "O token de acesso do Vimeo não está configurado em appsettings.json. Os vídeos privados do Vimeo não estarão disponíveis."
         },
         "placeholders": {
           "content-url": "Insira o URL do vídeo"

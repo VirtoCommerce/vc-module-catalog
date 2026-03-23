@@ -38,7 +38,7 @@ angular.module('virtoCommerce.catalogModule')
                                     isNew: true,
                                     currentEntity: data,
                                     controller: 'virtoCommerce.catalogModule.videoDetailController',
-                                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/video-detail.tpl.html'
+                                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/video-detail.html'
                                 };
                                 bladeNavigationService.showBlade(newBlade, parentBlade);
                             });

@@ -534,7 +534,7 @@
         "labels": {
           "content-url": "Sisällön URL",
           "no-youtube-apikey": "Et ole antanut Google API-avainta alustan konfiguraatiotiedostossa. Videon tiedot ovat puutteelliset",
-          "no-vimeo-token": "Vimeo access token is not configured in appsettings.json. Private Vimeo videos will not be available."
+          "no-vimeo-token": "Vimeo-käyttöoikeustunnusta ei ole määritetty appsettings.json-tiedostossa. Yksityiset Vimeo-videot eivät ole käytettävissä."
         },
         "placeholders": {
           "content-url": "Syötä videon URL"

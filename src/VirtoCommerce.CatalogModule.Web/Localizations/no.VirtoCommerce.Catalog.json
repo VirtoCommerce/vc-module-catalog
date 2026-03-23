@@ -534,7 +534,7 @@
         "labels": {
           "content-url": "Innholds-URL",
           "no-youtube-apikey": "Du har ikke angitt en Google API-nøkkel i plattformens konfigurasjonsfil. Videoinformasjonen vil være ufullstendig",
-          "no-vimeo-token": "Vimeo access token is not configured in appsettings.json. Private Vimeo videos will not be available."
+          "no-vimeo-token": "Vimeo-tilgangstoken er ikke konfigurert i appsettings.json. Private Vimeo-videoer vil ikke være tilgjengelige."
         },
         "placeholders": {
           "content-url": "Angi video-URL"

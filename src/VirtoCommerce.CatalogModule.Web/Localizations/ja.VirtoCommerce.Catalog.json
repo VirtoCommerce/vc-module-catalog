@@ -534,7 +534,7 @@
         "labels": {
           "content-url": "コンテンツURL",
           "no-youtube-apikey": "プラットフォーム構成ファイルにGoogle APIキーが提供されていません。ビデオ情報は不完全になります",
-          "no-vimeo-token": "Vimeo access token is not configured in appsettings.json. Private Vimeo videos will not be available."
+          "no-vimeo-token": "Vimeoアクセストークンがappsettings.jsonに設定されていません。プライベートVimeo動画は利用できません。"
         },
         "placeholders": {
           "content-url": "ビデオURLを入力"

@@ -12,7 +12,7 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.Vimeo;
 
-public partial class VimeoVideoProvider(IOptions<VideoOptions> videoOptions, IHttpClientFactory httpClientFactory) : IVideoProvider
+public partial class VimeoVideoProvider(IOptions<Core.Options.VideoOptions> videoOptions, IHttpClientFactory httpClientFactory) : IVideoProvider
 {
     [GeneratedRegex("src=\"(.*?)\"")]
     private static partial Regex EmbedSrcRegex();
@@ -20,7 +20,7 @@ public partial class VimeoVideoProvider(IOptions<VideoOptions> videoOptions, IHt
     private const int _maxDescriptionLength = 1024;
     private const string _oEmbedUrl = "https://vimeo.com/api/oembed.json";
 
-    private readonly VideoOptions _videoOptions = videoOptions.Value;
+    private readonly Core.Options.VideoOptions _videoOptions = videoOptions.Value;
 
     public virtual string Name => "Vimeo";
 

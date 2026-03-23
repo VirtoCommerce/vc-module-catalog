@@ -534,7 +534,7 @@
         "labels": {
           "content-url": "内容 URL",
           "no-youtube-apikey": "您在平台配置文件中未提供任何 Google API 密钥。视频信息将不完整",
-          "no-vimeo-token": "Vimeo access token is not configured in appsettings.json. Private Vimeo videos will not be available."
+          "no-vimeo-token": "Vimeo访问令牌未在appsettings.json中配置。私有Vimeo视频将不可用。"
         },
         "placeholders": {
           "content-url": "输入视频 URL"

@@ -534,7 +534,7 @@
         "labels": {
           "content-url": "Innehållets URL",
           "no-youtube-apikey": "Du har inte angett någon Google API-nyckel i plattformens konfigurationsfil. Videoinformationen kommer att vara ofullständig",
-          "no-vimeo-token": "Vimeo access token is not configured in appsettings.json. Private Vimeo videos will not be available."
+          "no-vimeo-token": "Vimeo-åtkomsttoken är inte konfigurerad i appsettings.json. Privata Vimeo-videor kommer inte att vara tillgängliga."
         },
         "placeholders": {
           "content-url": "Ange video-URL"
