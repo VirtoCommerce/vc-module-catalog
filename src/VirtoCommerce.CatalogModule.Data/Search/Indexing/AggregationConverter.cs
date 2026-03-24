@@ -607,7 +607,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 foreach (var aggregation in prioritySortingAggregations)
                 {
                     var propertyMap = propertiesMap.FirstOrDefault(x => x.Value.EqualsIgnoreCase(aggregation.Field));
-                    if (propertiesMap == null)
+                    if (propertyMap == null)
                     {
                         continue;
                     }
