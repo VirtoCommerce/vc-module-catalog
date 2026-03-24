@@ -578,10 +578,17 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             {
                 var allCatalogProperties = await _propertyService.GetAllCatalogPropertiesAsync(catalogId);
 
-                var prioritySortingAggregationFields = prioritySortingAggregations.Select(x => x.Field).ToList();
+                var prioritySortingPropertyNames = prioritySortingAggregations
+                    .Select(aggregation =>
+                    {
+                        var filter = attributeFilters.FirstOrDefault(x => aggregation.Field.EqualsIgnoreCase(x.GetIndexFieldName()));
+                        return filter?.Key ?? aggregation.Field;
+                    })
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToList();
 
                 var propertiesMap = allCatalogProperties
-                    .Where(p => prioritySortingAggregationFields.ContainsIgnoreCase(p.Name))
+                    .Where(p => prioritySortingPropertyNames.ContainsIgnoreCase(p.Name))
                     .Select(x => new KeyValue { Key = x.Id, Value = x.Name })
                     .ToArray();
 
@@ -606,8 +613,10 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
                 foreach (var aggregation in prioritySortingAggregations)
                 {
-                    var propertyMap = propertiesMap.FirstOrDefault(x => x.Value.EqualsIgnoreCase(aggregation.Field));
-                    if (propertiesMap == null)
+                    var filter = attributeFilters.FirstOrDefault(x => aggregation.Field.EqualsIgnoreCase(x.GetIndexFieldName()));
+                    var propertyName = filter?.Key ?? aggregation.Field;
+                    var propertyMap = propertiesMap.FirstOrDefault(x => x.Value.EqualsIgnoreCase(propertyName));
+                    if (propertyMap == null)
                     {
                         continue;
                     }
@@ -615,7 +624,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                     if (dictionaryItemsMap.TryGetValue(propertyMap.Key, out var items))
                     {
                         // alias is value
-                        aggregation.Items = aggregation.Items.OrderByDescending(x =>
+                        aggregation.Items = aggregation.Items.OrderBy(x =>
                         {
                             var item = items.FirstOrDefault(i => i.Alias.EqualsIgnoreCase(x.Value?.ToString()));
                             return item != null ? item.SortOrder : 0;
