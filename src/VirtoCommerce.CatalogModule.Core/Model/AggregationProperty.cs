@@ -15,6 +15,7 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         public bool IsSelected { get; set; }
         public int? Size { get; set; }
         public int ValuesCount => Values?.Count ?? 0;
+        public string TermValuesSortingType { get; set; }
         public IList<string> Values { get; set; }
 
         public object Clone()

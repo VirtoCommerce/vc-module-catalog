@@ -1,7 +1,7 @@
 angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.aggregationPropertyDetailsController', [
-        '$scope', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.aggregationProperties', 'virtoCommerce.catalogModule.measures',
-        function ($scope, bladeNavigationService, aggregationProperties, measures) {
+        '$scope', '$translate', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.aggregationProperties', 'virtoCommerce.catalogModule.measures',
+        function ($scope, $translate, bladeNavigationService, aggregationProperties, measures) {
             var blade = $scope.blade;
             blade.updatePermission = 'store:update';
             blade.headIcon = 'fa fa-gear';
@@ -10,6 +10,24 @@ angular.module('virtoCommerce.catalogModule')
             var rangeType = 'Range';
             var priceRangeType = 'PriceRange';
             blade.propertyTypes = [attributeType, rangeType];
+
+            blade.termValuesSortingTypes = [
+                {
+                    id: "Score",
+                    nameKey: "catalog.blades.aggregation-properties-details.sorting-type-labels.score",
+                },
+                {
+                    id: "Priority",
+                    nameKey: "catalog.blades.aggregation-properties-details.sorting-type-labels.priority",
+                },
+                {
+                    id: "NameAscending",
+                    nameKey: "catalog.blades.aggregation-properties-details.sorting-type-labels.nameAscending",
+                },
+                {
+                    id: "NameDescending",
+                    nameKey: "catalog.blades.aggregation-properties-details.sorting-type-labels.nameDescending",
+                }];
 
             function initializeBlade() {
                 $scope.isValid = true;
@@ -48,6 +66,10 @@ angular.module('virtoCommerce.catalogModule')
                 });
             }
 
+            blade.canSetItemsSorting = function () {
+                return blade.property.type === attributeType;
+            };
+
             blade.isRange = function () {
                 return blade.property.type !== attributeType;
             };
@@ -74,6 +96,14 @@ angular.module('virtoCommerce.catalogModule')
 
                 return result;
             };
+
+            blade.getSortingTypes = function () {
+                _.each(blade.termValuesSortingTypes, function (sortingType) {
+                    sortingType.name = $translate.instant(sortingType.nameKey);
+                });
+
+                return blade.termValuesSortingTypes;
+            }
 
             blade.hasPredefinedValues = function () {
                 return blade.isRange() || (!!blade.values && blade.values.length > 0);

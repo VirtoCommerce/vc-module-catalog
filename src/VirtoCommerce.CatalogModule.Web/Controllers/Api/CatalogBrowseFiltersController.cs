@@ -180,6 +180,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                             MeasureId = attributeFilter.MeasureId,
                             UnitOfMeasureId = attributeFilter.UnitOfMeasureId,
                             IndexFieldName = attributeFilter.IndexFieldName,
+                            TermValuesSortingType = attributeFilter.TermValuesSortingType,
                         },
                         RangeFilter rangeFilter => new AggregationProperty
                         {
@@ -232,6 +233,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                         UnitOfMeasureId = property.UnitOfMeasureId,
                         IndexFieldName = property.IndexFieldName,
                         FacetSize = property.Size,
+                        TermValuesSortingType = property.TermValuesSortingType,
                         Values = property.Values?.OrderBy(v => v, StringComparer.OrdinalIgnoreCase).Select(v => new AttributeFilterValue { Id = v }).ToArray(),
                     };
                     break;

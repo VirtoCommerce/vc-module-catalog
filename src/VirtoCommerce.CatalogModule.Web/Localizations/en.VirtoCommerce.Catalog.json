@@ -676,6 +676,16 @@
           "label": "Price range bounds",
           "placeholder": "Add number",
           "description": "Bounds will be sorted automatically before saving. Price ranges are constructed as follows: Under [bound 1], [bound 1] to [bound 2], ... , Over [bound N]"
+        },
+        "sorting": {
+          "label": "Sorting",
+          "placeholder": "Select sorting method"
+        },
+        "sorting-type-labels": {
+          "score": "Score",
+          "priority": "Priority",
+          "nameAscending": "Name ascending",
+          "nameDescending": "Name descending"
         }
       },
       "importers-list": {
