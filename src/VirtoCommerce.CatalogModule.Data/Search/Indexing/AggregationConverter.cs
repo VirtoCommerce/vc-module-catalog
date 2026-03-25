@@ -536,7 +536,13 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         private async Task SortAggregationItemsAsync(List<Aggregation> result, string catalogId, IList<IBrowseFilter> browseFilters)
         {
-            var prioritySortingAggregations = new List<Aggregation>();
+            if (browseFilters.IsNullOrEmpty())
+            {
+                return;
+            }
+
+            var prioritySortingAggregationsMap = new List<Tuple<Aggregation, string>>();
+
             var attributeFilters = browseFilters.OfType<AttributeFilter>().ToList();
 
             foreach (var aggregation in result.Where(x => x.AggregationType == "attr" && !x.Items.IsNullOrEmpty()))
@@ -562,8 +568,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                         }
                     case ModuleConstants.TermValuesSortingTypePriority:
                         {
-                            // special case: need to load dictionary items to get priority values
-                            prioritySortingAggregations.Add(aggregation);
+                            // special case: save aggregation (with resolved name) to load dictionary items to get priority values later
+                            prioritySortingAggregationsMap.Add(new Tuple<Aggregation, string>(aggregation, attributeFilter.Key ?? aggregation.Field));
                             break;
                         }
                     default:
@@ -574,14 +580,12 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 }
             }
 
-            if (prioritySortingAggregations.Count > 0)
+            if (prioritySortingAggregationsMap.Count > 0)
             {
                 var allCatalogProperties = await _propertyService.GetAllCatalogPropertiesAsync(catalogId);
-
-                var prioritySortingAggregationFields = prioritySortingAggregations.Select(x => x.Field).ToList();
-
+                var prioritySortingPropertyNames = prioritySortingAggregationsMap.Select(x => x.Item2).ToList();
                 var propertiesMap = allCatalogProperties
-                    .Where(p => prioritySortingAggregationFields.ContainsIgnoreCase(p.Name))
+                    .Where(p => prioritySortingPropertyNames.ContainsIgnoreCase(p.Name))
                     .Select(x => new KeyValue { Key = x.Id, Value = x.Name })
                     .ToArray();
 
@@ -604,9 +608,12 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                     .GroupBy(x => x.PropertyId)
                     .ToDictionary(x => x.Key, x => x.ToList());
 
-                foreach (var aggregation in prioritySortingAggregations)
+                foreach (var aggregationTuple in prioritySortingAggregationsMap)
                 {
-                    var propertyMap = propertiesMap.FirstOrDefault(x => x.Value.EqualsIgnoreCase(aggregation.Field));
+                    var aggregation = aggregationTuple.Item1;
+                    var propertyName = aggregationTuple.Item2;
+
+                    var propertyMap = propertiesMap.FirstOrDefault(x => x.Value.EqualsIgnoreCase(propertyName));
                     if (propertyMap == null)
                     {
                         continue;
