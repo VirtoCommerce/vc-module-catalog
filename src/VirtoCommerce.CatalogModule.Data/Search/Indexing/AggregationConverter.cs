@@ -541,9 +541,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 return;
             }
 
-            var prioritySortingAggregationsMap = new List<Tuple<Aggregation, string>>();
-
             var attributeFilters = browseFilters.OfType<AttributeFilter>().ToList();
+            var prioritySortingMap = new List<Tuple<Aggregation, string>>();
 
             foreach (var aggregation in result.Where(x => x.AggregationType == "attr" && !x.Items.IsNullOrEmpty()))
             {
@@ -553,82 +552,78 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                     continue;
                 }
 
-                // sort items based on term sorting type
-                switch (attributeFilter.TermValuesSortingType)
+                if (!TryApplySimpleSorting(aggregation, attributeFilter.TermValuesSortingType))
                 {
-                    case ModuleConstants.TermValuesSortingTypeNameAscending:
-                        {
-                            aggregation.Items = aggregation.Items.OrderBy(x => x.Value).ToArray();
-                            break;
-                        }
-                    case ModuleConstants.TermValuesSortingTypeNameDescending:
-                        {
-                            aggregation.Items = aggregation.Items.OrderByDescending(x => x.Value).ToArray();
-                            break;
-                        }
-                    case ModuleConstants.TermValuesSortingTypePriority:
-                        {
-                            // special case: save aggregation (with resolved name) to load dictionary items to get priority values later
-                            prioritySortingAggregationsMap.Add(new Tuple<Aggregation, string>(aggregation, attributeFilter.Key ?? aggregation.Field));
-                            break;
-                        }
-                    default:
-                        {
-                            // already sorted by score
-                            break;
-                        }
+                    // special case: defer priority sorting until dictionary items are loaded
+                    prioritySortingMap.Add(new Tuple<Aggregation, string>(aggregation, attributeFilter.Key ?? aggregation.Field));
                 }
             }
 
-            if (prioritySortingAggregationsMap.Count > 0)
+            if (prioritySortingMap.Count > 0)
             {
-                var allCatalogProperties = await _propertyService.GetAllCatalogPropertiesAsync(catalogId);
-                var prioritySortingPropertyNames = prioritySortingAggregationsMap.Select(x => x.Item2).ToList();
-                var propertiesMap = allCatalogProperties
-                    .Where(p => prioritySortingPropertyNames.ContainsIgnoreCase(p.Name))
-                    .Select(x => new KeyValue { Key = x.Id, Value = x.Name })
-                    .ToArray();
+                await SortByPriorityAsync(prioritySortingMap, catalogId);
+            }
+        }
 
-                if (propertiesMap.Length == 0)
+        private static bool TryApplySimpleSorting(Aggregation aggregation, string sortingType)
+        {
+            switch (sortingType)
+            {
+                case ModuleConstants.TermValuesSortingTypePriority:
+                    return false;
+                case ModuleConstants.TermValuesSortingTypeNameAscending:
+                    aggregation.Items = [.. aggregation.Items.OrderBy(x => x.Value)];
+                    return true;
+                case ModuleConstants.TermValuesSortingTypeNameDescending:
+                    aggregation.Items = [.. aggregation.Items.OrderByDescending(x => x.Value)];
+                    return true;
+                default:
+                    return true; // already sorted by score
+            }
+        }
+
+        private async Task SortByPriorityAsync(List<Tuple<Aggregation, string>> prioritySortingMap, string catalogId)
+        {
+            var allCatalogProperties = await _propertyService.GetAllCatalogPropertiesAsync(catalogId);
+            var propertyNames = prioritySortingMap.Select(x => x.Item2).ToList();
+            var propertiesMap = allCatalogProperties
+                .Where(p => propertyNames.ContainsIgnoreCase(p.Name))
+                .Select(x => new KeyValue { Key = x.Id, Value = x.Name })
+                .ToArray();
+
+            if (propertiesMap.Length == 0)
+            {
+                return;
+            }
+
+            var dictionaryItems = await _propDictItemsSearchService.SearchAllNoCloneAsync(new PropertyDictionaryItemSearchCriteria
+            {
+                PropertyIds = [.. propertiesMap.Select(x => x.Key)],
+            });
+
+            if (dictionaryItems.Count == 0)
+            {
+                return;
+            }
+
+            var dictionaryItemsMap = dictionaryItems
+                .GroupBy(x => x.PropertyId)
+                .ToDictionary(x => x.Key, x => x.ToList());
+
+            foreach (var (aggregation, propertyName) in prioritySortingMap.Select(t => (t.Item1, t.Item2)))
+            {
+                var propertyMap = propertiesMap.FirstOrDefault(x => x.Value.EqualsIgnoreCase(propertyName));
+                if (propertyMap == null || !dictionaryItemsMap.TryGetValue(propertyMap.Key, out var items))
                 {
-                    return;
+                    continue;
                 }
 
-                var dictionaryItemsSearchResult = await _propDictItemsSearchService.SearchAllNoCloneAsync(new PropertyDictionaryItemSearchCriteria
+                // alias is value
+                aggregation.Items = [.. aggregation.Items.OrderByDescending(x =>
                 {
-                    PropertyIds = propertiesMap.Select(x => x.Key).ToArray(),
-                });
-
-                if (dictionaryItemsSearchResult.Count == 0)
-                {
-                    return;
-                }
-
-                var dictionaryItemsMap = dictionaryItemsSearchResult
-                    .GroupBy(x => x.PropertyId)
-                    .ToDictionary(x => x.Key, x => x.ToList());
-
-                foreach (var aggregationTuple in prioritySortingAggregationsMap)
-                {
-                    var aggregation = aggregationTuple.Item1;
-                    var propertyName = aggregationTuple.Item2;
-
-                    var propertyMap = propertiesMap.FirstOrDefault(x => x.Value.EqualsIgnoreCase(propertyName));
-                    if (propertyMap == null)
-                    {
-                        continue;
-                    }
-
-                    if (dictionaryItemsMap.TryGetValue(propertyMap.Key, out var items))
-                    {
-                        // alias is value
-                        aggregation.Items = aggregation.Items.OrderByDescending(x =>
-                        {
-                            var item = items.FirstOrDefault(i => i.Alias.EqualsIgnoreCase(x.Value?.ToString()));
-                            return item != null ? item.SortOrder : 0;
-                        }).ToArray();
-                    }
-                }
+                    var item = items.FirstOrDefault(i => i.Alias.EqualsIgnoreCase(x.Value?.ToString()));
+                    return item?.SortOrder ?? 0;
+                })];
             }
         }
 
