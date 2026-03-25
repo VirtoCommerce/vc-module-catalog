@@ -13,16 +13,25 @@ using Xunit;
 
 namespace VirtoCommerce.CatalogModule.Tests
 {
-    [Trait("Category", "CI")]
     public class AggregationConverterSortingTests
     {
-        private const string FieldName = "Color";
+        private const string PropertyId = "color-property-id";
+        private const string PropertyFieldName = "Color";
 
         private static readonly IList<AggregationResponseValue> _termResponseValues =
         [
-            new AggregationResponseValue { Id = "Banana", Count = 5 },
-            new AggregationResponseValue { Id = "Apple", Count = 30 },
-            new AggregationResponseValue { Id = "Cherry", Count = 15 },
+            new AggregationResponseValue { Id = "Black", Count = 5 },
+            new AggregationResponseValue { Id = "Azure", Count = 30 },
+            new AggregationResponseValue { Id = "Crimson", Count = 15 },
+        ];
+
+        private static readonly Property ColorProperty = new() { Id = PropertyId, Name = PropertyFieldName, DisplayNames = [] };
+
+        private static readonly List<PropertyDictionaryItem> DictinaryItems =
+        [
+            new PropertyDictionaryItem { PropertyId = PropertyId, Alias = "Azure", SortOrder = 100, LocalizedValues = [] },
+            new PropertyDictionaryItem { PropertyId = PropertyId, Alias = "Black", SortOrder = 50, LocalizedValues = [] },
+            new PropertyDictionaryItem { PropertyId = PropertyId, Alias = "Crimson", SortOrder = 10, LocalizedValues = [] },
         ];
 
         [Fact]
@@ -40,9 +49,9 @@ namespace VirtoCommerce.CatalogModule.Tests
             Assert.Single(aggregations);
             var items = aggregations[0].Items;
             Assert.Equal(3, items.Length);
-            Assert.Equal("Apple", items[0].Value);
-            Assert.Equal("Banana", items[1].Value);
-            Assert.Equal("Cherry", items[2].Value);
+            Assert.Equal("Azure", items[0].Value);
+            Assert.Equal("Black", items[1].Value);
+            Assert.Equal("Crimson", items[2].Value);
         }
 
         [Fact]
@@ -60,9 +69,9 @@ namespace VirtoCommerce.CatalogModule.Tests
             Assert.Single(aggregations);
             var items = aggregations[0].Items;
             Assert.Equal(3, items.Length);
-            Assert.Equal("Cherry", items[0].Value);
-            Assert.Equal("Banana", items[1].Value);
-            Assert.Equal("Apple", items[2].Value);
+            Assert.Equal("Crimson", items[0].Value);
+            Assert.Equal("Black", items[1].Value);
+            Assert.Equal("Azure", items[2].Value);
         }
 
         [Fact]
@@ -76,12 +85,12 @@ namespace VirtoCommerce.CatalogModule.Tests
             {
                 new AggregationResponse
                 {
-                    Id = FieldName,
+                    Id = PropertyFieldName,
                     Values =
                     [
-                        new AggregationResponseValue { Id = "Apple", Count = 30 },
-                        new AggregationResponseValue { Id = "Cherry", Count = 15 },
-                        new AggregationResponseValue { Id = "Banana", Count = 5 },
+                        new AggregationResponseValue { Id = "Azure", Count = 30 },
+                        new AggregationResponseValue { Id = "Crimson", Count = 15 },
+                        new AggregationResponseValue { Id = "Black", Count = 5 },
                     ],
                 },
             };
@@ -93,9 +102,29 @@ namespace VirtoCommerce.CatalogModule.Tests
             Assert.Single(aggregations);
             var items = aggregations[0].Items;
             Assert.Equal(3, items.Length);
-            Assert.Equal("Apple", items[0].Value);
-            Assert.Equal("Cherry", items[1].Value);
-            Assert.Equal("Banana", items[2].Value);
+            Assert.Equal("Azure", items[0].Value);
+            Assert.Equal("Crimson", items[1].Value);
+            Assert.Equal("Black", items[2].Value);
+        }
+
+        [Fact]
+        public async Task SortAggregationItems_Priority_ItemsSortedBySortOrderDescending()
+        {
+            // Arrange
+            var converter = GetAggregationConverter(ModuleConstants.TermValuesSortingTypePriority);
+            var criteria = new ProductIndexedSearchCriteria();
+            var responses = BuildAggregationResponses();
+
+            // Act
+            var aggregations = await converter.ConvertAggregationsAsync(responses, criteria);
+
+            // Assert
+            Assert.Single(aggregations);
+            var items = aggregations[0].Items;
+            Assert.Equal(3, items.Length);
+            Assert.Equal("Azure", items[0].Value);
+            Assert.Equal("Black", items[1].Value);
+            Assert.Equal("Crimson", items[2].Value);
         }
 
         private static IList<AggregationResponse> BuildAggregationResponses()
@@ -104,7 +133,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             [
                 new AggregationResponse
                 {
-                    Id = FieldName,
+                    Id = PropertyFieldName,
                     Values = [.. _termResponseValues],
                 },
             ];
@@ -116,7 +145,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             {
                 new AttributeFilter
                 {
-                    Key = FieldName,
+                    Key = PropertyFieldName,
                     TermValuesSortingType = termValuesSortingType,
                 },
             };
@@ -129,14 +158,19 @@ namespace VirtoCommerce.CatalogModule.Tests
             var propertyServiceMock = new Mock<IPropertyService>();
             propertyServiceMock
                 .Setup(x => x.GetAllCatalogPropertiesAsync(It.IsAny<string>()))
-                .ReturnsAsync(new List<Property>());
+                .ReturnsAsync(new List<Property> { ColorProperty });
+
+            var propDictSearchServiceMock = new Mock<IPropertyDictionaryItemSearchService>();
+            propDictSearchServiceMock
+                .Setup(x => x.SearchAsync(It.IsAny<PropertyDictionaryItemSearchCriteria>(), It.IsAny<bool>()))
+                .ReturnsAsync(new PropertyDictionaryItemSearchResult { Results = DictinaryItems, TotalCount = DictinaryItems.Count });
 
             var categoryServiceMock = new Mock<ICategoryService>();
             categoryServiceMock
                 .Setup(x => x.GetAsync(It.IsAny<IList<string>>(), It.IsAny<string>(), It.IsAny<bool>()))
                 .ReturnsAsync(new List<Category>());
 
-            return new AggregationConverter(browseFilterServiceMock.Object, propertyServiceMock.Object, null, categoryServiceMock.Object, null, null);
+            return new AggregationConverter(browseFilterServiceMock.Object, propertyServiceMock.Object, propDictSearchServiceMock.Object, categoryServiceMock.Object, null, null);
         }
     }
 }
