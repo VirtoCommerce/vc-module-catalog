@@ -139,7 +139,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             ];
         }
 
-        private static IAggregationConverter GetAggregationConverter(string termValuesSortingType)
+        private static AggregationConverter GetAggregationConverter(string termValuesSortingType)
         {
             var browseFilters = new List<IBrowseFilter>
             {
