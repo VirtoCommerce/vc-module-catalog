@@ -974,9 +974,7 @@
       },
       "catalog-delete": {
         "title": "Löschen bestätigen",
-        "warning": "WARNUNG: Diese Änderung ist dauerhaft und kann nicht rückgängig gemacht werden. Diese Änderung kann zu Datenverlust führen",
-        "message": "Sind Sie sicher, dass Sie diesen Katalog löschen möchten?",
-        "instruction": "Geben Sie 'yes' ein, um zu löschen:"
+        "message": "Sind Sie sicher, dass Sie diesen Katalog löschen möchten?"
       },
       "catalog-items-delete": {
         "title": "Löschen bestätigen",

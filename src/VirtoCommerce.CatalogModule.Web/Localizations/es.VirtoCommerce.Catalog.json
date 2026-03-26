@@ -974,9 +974,7 @@
       },
       "catalog-delete": {
         "title": "Confirmar eliminación",
-        "warning": "ADVERTENCIA: Este cambio es permanente y no se puede deshacer. Aplicar este cambio puede resultar en pérdida de datos",
-        "message": "¿Está seguro de que desea eliminar este catálogo?",
-        "instruction": "Escriba 'yes' para eliminar:"
+        "message": "¿Está seguro de que desea eliminar este catálogo?"
       },
       "catalog-items-delete": {
         "title": "Confirmar eliminación",

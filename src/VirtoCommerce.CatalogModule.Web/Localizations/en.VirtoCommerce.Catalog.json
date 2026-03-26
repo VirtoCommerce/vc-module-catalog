@@ -974,9 +974,7 @@
       },
       "catalog-delete": {
         "title": "Confirm delete",
-        "warning": "WARNING: This change is permanent and cannot be undone. Applying this change may result in data loss",
-        "message": "Are you sure you want to delete this catalog?",
-        "instruction": "Type 'yes' to delete:"
+        "message": "Are you sure you want to delete this catalog?"
       },
       "catalog-items-delete": {
         "title": "Confirm delete",

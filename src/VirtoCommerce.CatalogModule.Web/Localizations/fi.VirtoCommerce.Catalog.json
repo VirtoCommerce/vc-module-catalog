@@ -974,9 +974,7 @@
       },
       "catalog-delete": {
         "title": "Vahvista poisto",
-        "warning": "VAROITUS: Tämä muutos on pysyvä eikä sitä voi kumota. Tämän muutoksen soveltaminen voi johtaa tietojen menetykseen",
-        "message": "Oletko varma, että haluat poistaa tämän katalogin?",
-        "instruction": "Kirjoita 'yes' poistaaksesi:"
+        "message": "Oletko varma, että haluat poistaa tämän katalogin?"
       },
       "catalog-items-delete": {
         "title": "Vahvista poisto",
