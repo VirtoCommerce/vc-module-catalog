@@ -77,7 +77,7 @@ public class ProductConfigurationEntity : AuditableEntity, IDataEntity<ProductCo
 
         if (removedIds.Count > 0)
         {
-            foreach (var section in target.Sections)
+            foreach (var section in Sections)
             {
                 if (section.DependsOnSectionId != null && removedIds.Contains(section.DependsOnSectionId))
                 {

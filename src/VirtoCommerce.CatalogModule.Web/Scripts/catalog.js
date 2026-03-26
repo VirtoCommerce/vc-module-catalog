@@ -862,8 +862,8 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                         templateUrl: "section-allow-predefined.html"
                     },
                     {
-                        colSpan: 4,
-                        templateUrl: "section-depends-on.html"
+                        colSpan: 6,
+                        templateUrl: "section-depends-on.html",
                     }
                 ]);
             }]);

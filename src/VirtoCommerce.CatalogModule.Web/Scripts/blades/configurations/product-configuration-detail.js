@@ -83,7 +83,13 @@ angular.module('virtoCommerce.catalogModule')
             function deleteList(list) {
                 bladeNavigationService.closeChildrenBlades(blade,
                     function () {
+                        var deletedIds = _.map(list, 'id');
                         var undeletedEntries = _.difference(blade.currentEntity.sections, list);
+                        _.each(undeletedEntries, function (section) {
+                            if (section.dependsOnSectionId && _.contains(deletedIds, section.dependsOnSectionId)) {
+                                section.dependsOnSectionId = null;
+                            }
+                        });
                         blade.currentEntity.sections = undeletedEntries;
                     });
             }
