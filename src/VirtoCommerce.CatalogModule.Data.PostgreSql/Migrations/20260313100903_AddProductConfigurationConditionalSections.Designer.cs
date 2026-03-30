@@ -2020,7 +2020,7 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
                     b.HasOne("VirtoCommerce.CatalogModule.Data.Model.ProductConfigurationSectionEntity", "DependsOnSection")
                         .WithMany()
                         .HasForeignKey("DependsOnSectionId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.ClientSetNull);
 
                     b.Navigation("Configuration");
 

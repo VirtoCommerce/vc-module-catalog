@@ -2022,7 +2022,7 @@ namespace VirtoCommerce.CatalogModule.Data.SqlServer.Migrations
                     b.HasOne("VirtoCommerce.CatalogModule.Data.Model.ProductConfigurationSectionEntity", "DependsOnSection")
                         .WithMany()
                         .HasForeignKey("DependsOnSectionId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.ClientSetNull);
 
                     b.Navigation("Configuration");
 
