@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -76,15 +75,8 @@ public class CatalogModuleConfigurationsController(
             }
         }
 
-        // Only the full configuration can be active
-        // Only Product sections require predefined options.
-        // Text (even with AllowPredefinedOptions), File, and Variation sections can be without predefined options.
-        // Note: Variation type uses product variations from the catalog as options, not predefined options.
-        if (configuration.Sections.IsNullOrEmpty() ||
-            configuration.Sections
-                .Where(x => x.Type == ModuleConstants.ConfigurationSectionTypeProduct)
-                .Any(x => x.Options.IsNullOrEmpty())
-        )
+        // Configuration with any sections can be active
+        if (configuration.Sections.IsNullOrEmpty())
         {
             configuration.IsActive = false;
         }

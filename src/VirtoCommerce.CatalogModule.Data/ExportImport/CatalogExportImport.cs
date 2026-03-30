@@ -598,12 +598,8 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             {
                 foreach (var configuration in configurations)
                 {
-                    // Only the full configuration can be active
-                    // Only Product sections require predefined options
-                    if (configuration.Sections.IsNullOrEmpty() ||
-                        configuration.Sections
-                            .Where(x => x.Type == ModuleConstants.ConfigurationSectionTypeProduct)
-                            .Any(x => x.Options.IsNullOrEmpty()))
+                    // Configuration with any sections can be active
+                    if (configuration.Sections.IsNullOrEmpty())
                     {
                         configuration.IsActive = false;
                     }
