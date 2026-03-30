@@ -1269,7 +1269,15 @@
     "measures:delete": "Delete unit of measure related data",
     "catalog:metadata-property:edit": "Edit metadata of properties",
     "catalog:custom-property:edit": "Edit product custom properties",
-    "catalog:dictionary-property:edit": "Edit dictionary values of property"
+    "catalog:dictionary-property:edit": "Edit dictionary values of property",
+    "catalog:categories:create": "Create categories",
+    "catalog:categories:read": "View categories",
+    "catalog:categories:update": "Update categories",
+    "catalog:categories:delete": "Delete categories",
+    "catalog:products:create": "Create products",
+    "catalog:products:read": "View products",
+    "catalog:products:update": "Update products",
+    "catalog:products:delete": "Delete products"
   },
   "settings": {
     "Catalog": {
