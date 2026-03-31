@@ -56,83 +56,79 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
         {
             var userPermissions = context.User.FindPermissions(permission, _jsonOptions.SerializerSettings);
 
-            if (userPermissions.Count > 0)
+            if (userPermissions.Count <= 0)
             {
-                var allowedCatalogIdsList = new List<string>();
+                return;
+            }
 
-                foreach (var userPermission in userPermissions)
-                {
-                    allowedCatalogIdsList.AddRange(userPermission.AssignedScopes.OfType<SelectedCatalogScope>().Select(y => y.CatalogId));
-                }
+            var allowedCatalogIdsList = new List<string>();
 
-                var allowedCatalogIds = allowedCatalogIdsList.Distinct().ToArray();
+            foreach (var userPermission in userPermissions)
+            {
+                allowedCatalogIdsList.AddRange(userPermission.AssignedScopes.OfType<SelectedCatalogScope>().Select(y => y.CatalogId));
+            }
 
-                if (context.Resource is CatalogSearchCriteria catalogSearchCriteria)
-                {
+            var allowedCatalogIds = allowedCatalogIdsList.Distinct().ToArray();
+
+            switch (context.Resource)
+            {
+                case CatalogSearchCriteria catalogSearchCriteria:
                     catalogSearchCriteria.CatalogIds = catalogSearchCriteria.CatalogIds?.Any() ?? false
                         ? catalogSearchCriteria.CatalogIds.Where(x => allowedCatalogIds.Contains(x)).ToArray()
                         : allowedCatalogIds;
 
                     context.Succeed(requirement);
-                }
-                else if (context.Resource is CatalogListEntrySearchCriteria listEntrySearchCriteria)
-                {
+                    break;
+                case CatalogListEntrySearchCriteria listEntrySearchCriteria:
                     listEntrySearchCriteria.CatalogIds = listEntrySearchCriteria.CatalogIds?.Any() ?? false
                         ? listEntrySearchCriteria.CatalogIds.Where(x => allowedCatalogIds.Contains(x)).ToArray()
                         : allowedCatalogIds;
 
                     context.Succeed(requirement);
-                }
-                else if (context.Resource is Catalog catalog && !catalog.IsTransient())
-                {
-                    if (allowedCatalogIds.Contains(catalog.Id))
+                    break;
+                case Catalog catalog when !catalog.IsTransient():
                     {
+                        if (allowedCatalogIds.Contains(catalog.Id))
+                        {
+                            context.Succeed(requirement);
+                        }
+
+                        break;
+                    }
+                case IEnumerable<IHasCatalogId> hasCatalogIds:
+                    {
+                        var catalogIds = hasCatalogIds.Select(x => x.CatalogId).Distinct().ToList();
+                        if (catalogIds.Intersect(allowedCatalogIds).Count() == catalogIds.Count)
+                        {
+                            context.Succeed(requirement);
+                        }
+
+                        break;
+                    }
+                case IHasCatalogId hasCatalogId:
+                    {
+                        if (allowedCatalogIds.Contains(hasCatalogId.CatalogId))
+                        {
+                            context.Succeed(requirement);
+                        }
+
+                        break;
+                    }
+                case ProductExportDataQuery dataQuery:
+                    {
+                        dataQuery.CatalogIds = dataQuery.CatalogIds.IsNullOrEmpty() ? allowedCatalogIds : dataQuery.CatalogIds.Intersect(allowedCatalogIds).ToArray();
                         context.Succeed(requirement);
+                        break;
                     }
-                }
-                else if (context.Resource is IEnumerable<IHasCatalogId> hasCatalogIds)
-                {
-                    var catalogIds = hasCatalogIds.Select(x => x.CatalogId).Distinct().ToList();
-                    if (catalogIds.Intersect(allowedCatalogIds).Count() == catalogIds.Count)
+                case PropertyDictionaryItemSearchCriteria propertyDictionaryItemSearchCriteria:
                     {
+                        propertyDictionaryItemSearchCriteria.CatalogIds = propertyDictionaryItemSearchCriteria.CatalogIds.IsNullOrEmpty() ? allowedCatalogIds : propertyDictionaryItemSearchCriteria.CatalogIds.Intersect(allowedCatalogIds).ToArray();
                         context.Succeed(requirement);
+                        break;
                     }
-                }
-                else if (context.Resource is IHasCatalogId hasCatalogId)
-                {
-                    if (allowedCatalogIds.Contains(hasCatalogId.CatalogId))
-                    {
-                        context.Succeed(requirement);
-                    }
-                }
-                else if (context.Resource is ProductExportDataQuery dataQuery)
-                {
-                    if (dataQuery.CatalogIds.IsNullOrEmpty())
-                    {
-                        dataQuery.CatalogIds = allowedCatalogIds;
-                    }
-                    else
-                    {
-                        dataQuery.CatalogIds = dataQuery.CatalogIds.Intersect(allowedCatalogIds).ToArray();
-                    }
+                case IEnumerable<PropertyDictionaryItem>:
                     context.Succeed(requirement);
-                }
-                else if (context.Resource is PropertyDictionaryItemSearchCriteria propertyDictionaryItemSearchCriteria)
-                {
-                    if (propertyDictionaryItemSearchCriteria.CatalogIds.IsNullOrEmpty())
-                    {
-                        propertyDictionaryItemSearchCriteria.CatalogIds = allowedCatalogIds;
-                    }
-                    else
-                    {
-                        propertyDictionaryItemSearchCriteria.CatalogIds = propertyDictionaryItemSearchCriteria.CatalogIds.Intersect(allowedCatalogIds).ToArray();
-                    }
-                    context.Succeed(requirement);
-                }
-                else if (context.Resource is IEnumerable<PropertyDictionaryItem>)
-                {
-                    context.Succeed(requirement);
-                }
+                    break;
             }
         }
     }
