@@ -1,17 +1,16 @@
 angular.module('virtoCommerce.catalogModule').controller('virtoCommerce.catalogModule.itemVariationListController', ['$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'virtoCommerce.catalogModule.items', 'filterFilter', 'uiGridConstants', 'platformWebApp.uiGridHelper', 'virtoCommerce.catalogModule.search', 'platformWebApp.bladeUtils', 'platformWebApp.authService', function ($scope, bladeNavigationService, dialogService, items, filterFilter, uiGridConstants, uiGridHelper, search, bladeUtils, authService) {
-    var getScopes = function () { return blade.parentBlade && blade.parentBlade.securityScopes; };
+    $scope.uiGridConstants = uiGridConstants;
+    var blade = $scope.blade;
 
     $scope.canCreateVariation = function () {
-        return authService.checkPermission('catalog:products:create', getScopes()) ||
-               authService.checkPermission('catalog:create', getScopes());
+        return authService.checkPermission('catalog:products:create', blade.parentBlade && blade.parentBlade.securityScopes) ||
+               authService.checkPermission('catalog:create', blade.parentBlade && blade.parentBlade.securityScopes);
     };
 
     $scope.canDeleteVariation = function () {
-        return authService.checkPermission('catalog:products:delete', getScopes()) ||
-               authService.checkPermission('catalog:delete', getScopes());
+        return authService.checkPermission('catalog:products:delete', blade.parentBlade && blade.parentBlade.securityScopes) ||
+               authService.checkPermission('catalog:delete', blade.parentBlade && blade.parentBlade.securityScopes);
     };
-    $scope.uiGridConstants = uiGridConstants;
-    var blade = $scope.blade;
     blade.title = blade.item.name;
     blade.subtitle = 'catalog.widgets.itemVariation.blade-subtitle';
 

@@ -52,6 +52,11 @@ angular.module('virtoCommerce.catalogModule')
             blade.currentEntity = blade.item;
             blade.origItem = data;
             blade.isLoading = false;
+            if (!blade.hasUpdatePermission()) {
+                blade.toolbarCommands = blade.toolbarCommands.filter(function (cmd) {
+                    return cmd.name !== 'platform.commands.save' && cmd.name !== 'platform.commands.reset';
+                });
+            }
 
             if (parentRefresh && blade.parentBlade && blade.parentBlade.refresh) {
                 blade.parentBlade.refresh();

@@ -35,8 +35,8 @@ using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
 using VirtoCommerce.CatalogModule.Data.Search.Indexing;
 using VirtoCommerce.CatalogModule.Data.Services;
 using VirtoCommerce.CatalogModule.Data.SqlServer;
-using VirtoCommerce.CatalogModule.Data.YouTube;
 using VirtoCommerce.CatalogModule.Data.Validation;
+using VirtoCommerce.CatalogModule.Data.YouTube;
 using VirtoCommerce.CatalogModule.Web.Authorization;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.ExportModule.Core.Model;
@@ -244,6 +244,7 @@ namespace VirtoCommerce.CatalogModule.Web
 
             serviceCollection.AddTransient<IAuthorizationHandler, CatalogAuthorizationHandler>();
             serviceCollection.AddTransient<IAuthorizationHandler, CustomPropertyRequirementHandler>();
+            serviceCollection.AddTransient<CatalogEntityAuthorizationService>();
 
             serviceCollection.AddTransient<ICatalogExportPagedDataSourceFactory, CatalogExportPagedDataSourceFactory>();
 

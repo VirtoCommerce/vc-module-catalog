@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -11,8 +12,8 @@ using VirtoCommerce.CatalogModule.Core.Model.ListEntry;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
-using VirtoCommerce.CatalogModule.Data.Authorization;
 using VirtoCommerce.CatalogModule.Data.Services;
+using VirtoCommerce.CatalogModule.Web.Authorization;
 using VirtoCommerce.CatalogModule.Web.Model;
 using VirtoCommerce.Platform.Core.Common;
 
@@ -26,7 +27,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         ICategoryService categoryService,
         IItemService itemService,
         ICatalogService catalogService,
-        IAuthorizationService authorizationService,
+        CatalogEntityAuthorizationService catalogEntityAuthorizationService,
         ListEntryMover<Category> categoryMover,
         ListEntryMover<CatalogProduct> productMover
         ) : Controller
@@ -40,13 +41,18 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("")]
         public async Task<ActionResult<ListEntrySearchResult>> ListItemsSearchAsync([FromBody] CatalogListEntrySearchCriteria criteria)
         {
-            var authorizationResult = await authorizationService.AuthorizeAsync(User, criteria, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
-            if (!authorizationResult.Succeeded)
+            var authorizedCriteria = await catalogEntityAuthorizationService.GetAuthorizedCriteriaByTypeAsync(
+                User,
+                criteria,
+                ModuleConstants.Security.Permissions.CategoriesRead,
+                ModuleConstants.Security.Permissions.ProductsRead,
+                ModuleConstants.Security.Permissions.Read);
+            if (authorizedCriteria.Count == 0)
             {
                 return Forbid();
             }
 
-            var result = await internalListEntrySearchService.InnerListEntrySearchAsync(criteria);
+            var result = await SearchAuthorizedListEntriesAsync(authorizedCriteria);
 
             return Ok(result);
         }
@@ -63,8 +69,12 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var entryIds = links.Select(x => x.EntryId).ToArray();
             var hasLinkEntries = await LoadCatalogEntriesAsync<IHasLinks>(entryIds);
 
-            var authorizationResult = await authorizationService.AuthorizeAsync(User, hasLinkEntries, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
-            if (!authorizationResult.Succeeded)
+            if (!await catalogEntityAuthorizationService.TryAuthorizeEntitiesByTypeAsync(
+                User,
+                hasLinkEntries,
+                ModuleConstants.Security.Permissions.CategoriesUpdate,
+                ModuleConstants.Security.Permissions.ProductsUpdate,
+                ModuleConstants.Security.Permissions.Update))
             {
                 return Forbid();
             }
@@ -104,7 +114,18 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return BadRequest("Target catalog identifier should be specified.");
             }
 
-            var searchResult = await internalListEntrySearchService.SearchAllAsync(creationRequest.SearchCriteria, new CancellationTokenWrapper(cancellationToken));
+            var authorizedCriteria = await catalogEntityAuthorizationService.GetAuthorizedCriteriaByTypeAsync(
+                User,
+                creationRequest.SearchCriteria,
+                ModuleConstants.Security.Permissions.CategoriesUpdate,
+                ModuleConstants.Security.Permissions.ProductsUpdate,
+                ModuleConstants.Security.Permissions.Update);
+            if (authorizedCriteria.Count == 0)
+            {
+                return Forbid();
+            }
+
+            var searchResult = await SearchAllAuthorizedListEntriesAsync(authorizedCriteria, cancellationToken);
             var hasLinkEntries = await LoadCatalogEntriesAsync<IHasLinks>(searchResult.Select(x => x.Id).ToArray());
 
             if (hasLinkEntries.Count == 0)
@@ -112,9 +133,12 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return Ok();
             }
 
-            var authorizationResult = await authorizationService.AuthorizeAsync(User, hasLinkEntries,
-                new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
-            if (!authorizationResult.Succeeded)
+            if (!await catalogEntityAuthorizationService.TryAuthorizeEntitiesByTypeAsync(
+                User,
+                hasLinkEntries,
+                ModuleConstants.Security.Permissions.CategoriesUpdate,
+                ModuleConstants.Security.Permissions.ProductsUpdate,
+                ModuleConstants.Security.Permissions.Update))
             {
                 return Forbid();
             }
@@ -142,8 +166,12 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             var hasLinkEntries = await LoadCatalogEntriesAsync<IHasLinks>(entryIds);
 
-            var authorizationResult = await authorizationService.AuthorizeAsync(User, hasLinkEntries, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
-            if (!authorizationResult.Succeeded)
+            if (!await catalogEntityAuthorizationService.TryAuthorizeEntitiesByTypeAsync(
+                User,
+                hasLinkEntries,
+                ModuleConstants.Security.Permissions.CategoriesRead,
+                ModuleConstants.Security.Permissions.ProductsRead,
+                ModuleConstants.Security.Permissions.Read))
             {
                 return Forbid();
             }
@@ -173,8 +201,12 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var entryIds = links.Select(x => x.EntryId).ToArray();
             var hasLinkEntries = await LoadCatalogEntriesAsync<IHasLinks>(entryIds);
 
-            var authorizationResult = await authorizationService.AuthorizeAsync(User, hasLinkEntries, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Delete));
-            if (!authorizationResult.Succeeded)
+            if (!await catalogEntityAuthorizationService.TryAuthorizeEntitiesByTypeAsync(
+                User,
+                hasLinkEntries,
+                ModuleConstants.Security.Permissions.CategoriesDelete,
+                ModuleConstants.Security.Permissions.ProductsDelete,
+                ModuleConstants.Security.Permissions.Delete))
             {
                 return Forbid();
             }
@@ -202,8 +234,14 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         public async Task<ActionResult> Move([FromBody] ListEntriesMoveRequest moveRequest)
         {
-            var authorizationResult = await authorizationService.AuthorizeAsync(User, moveRequest, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
-            if (!authorizationResult.Succeeded)
+            var sourceEntries = await LoadCatalogEntriesAsync<IEntity>(moveRequest.ListEntries?.Select(x => x.Id).ToArray() ?? []);
+            if (!await catalogEntityAuthorizationService.TryAuthorizeMoveRequestByTypeAsync(
+                User,
+                moveRequest,
+                sourceEntries,
+                ModuleConstants.Security.Permissions.CategoriesUpdate,
+                ModuleConstants.Security.Permissions.ProductsUpdate,
+                ModuleConstants.Security.Permissions.Update))
             {
                 return Forbid();
             }
@@ -233,18 +271,37 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         public async Task<ActionResult> Delete([FromBody] CatalogListEntrySearchCriteria criteria)
         {
             const int deleteBatchSize = 20;
-            var authorizationResult = await authorizationService.AuthorizeAsync(User, criteria, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Delete));
-            if (!authorizationResult.Succeeded)
-            {
-                return Forbid();
-            }
 
             var idsToDelete = criteria.ObjectIds?.ToList() ?? new List<string>();
 
-            if (idsToDelete.IsNullOrEmpty())
+            if (!idsToDelete.IsNullOrEmpty())
             {
-                var listEntries = await internalListEntrySearchService.InnerListEntrySearchAsync(criteria);
-                idsToDelete = listEntries.ListEntries
+                var entitiesToDelete = await LoadCatalogEntriesAsync<IEntity>(idsToDelete.ToArray());
+                if (!await catalogEntityAuthorizationService.TryAuthorizeEntitiesByTypeAsync(
+                    User,
+                    entitiesToDelete,
+                    ModuleConstants.Security.Permissions.CategoriesDelete,
+                    ModuleConstants.Security.Permissions.ProductsDelete,
+                    ModuleConstants.Security.Permissions.Delete))
+                {
+                    return Forbid();
+                }
+            }
+            else
+            {
+                var authorizedCriteria = await catalogEntityAuthorizationService.GetAuthorizedCriteriaByTypeAsync(
+                    User,
+                    criteria,
+                    ModuleConstants.Security.Permissions.CategoriesDelete,
+                    ModuleConstants.Security.Permissions.ProductsDelete,
+                    ModuleConstants.Security.Permissions.Delete);
+                if (authorizedCriteria.Count == 0)
+                {
+                    return Forbid();
+                }
+
+                var listEntries = await SearchAllAuthorizedListEntriesAsync(authorizedCriteria, CancellationToken.None);
+                idsToDelete = listEntries
                     .Where(x => x.Type.EqualsIgnoreCase(ProductListEntry.TypeName) || x.Type.EqualsIgnoreCase(CategoryListEntry.TypeName))
                     .Select(x => x.Id)
                     .ToList();
@@ -262,6 +319,60 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             }
 
             return NoContent();
+        }
+
+        private async Task<ListEntrySearchResult> SearchAuthorizedListEntriesAsync(IList<CatalogListEntrySearchCriteria> authorizedCriteria)
+        {
+            if (authorizedCriteria.Count == 1)
+            {
+                return await internalListEntrySearchService.InnerListEntrySearchAsync(authorizedCriteria[0]);
+            }
+
+            var result = new ListEntrySearchResult();
+            var categoryCriteria = authorizedCriteria.FirstOrDefault(x => x.ObjectTypes?.Contains(nameof(Category)) ?? false);
+            var productCriteria = authorizedCriteria.FirstOrDefault(x => x.ObjectTypes?.Contains(nameof(CatalogProduct)) ?? false);
+
+            var categorySkip = 0;
+            var categoryTake = 0;
+
+            if (categoryCriteria != null)
+            {
+                var categoryResult = await internalListEntrySearchService.InnerListEntrySearchAsync(categoryCriteria);
+                categorySkip = Math.Min(categoryResult.TotalCount, categoryCriteria.Skip);
+                categoryTake = Math.Min(categoryCriteria.Take, Math.Max(0, categoryResult.TotalCount - categoryCriteria.Skip));
+
+                result.TotalCount = categoryResult.TotalCount;
+                result.Results.AddRange(categoryResult.Results);
+            }
+
+            if (productCriteria != null)
+            {
+                var pagedProductCriteria = productCriteria.CloneTyped();
+                pagedProductCriteria.Skip = Math.Max(0, pagedProductCriteria.Skip - categorySkip);
+                pagedProductCriteria.Take = Math.Max(0, pagedProductCriteria.Take - categoryTake);
+
+                var productResult = await internalListEntrySearchService.InnerListEntrySearchAsync(pagedProductCriteria);
+                result.TotalCount += productResult.TotalCount;
+                result.Results.AddRange(productResult.Results);
+            }
+
+            return result;
+        }
+
+        private async Task<IList<ListEntryBase>> SearchAllAuthorizedListEntriesAsync(IList<CatalogListEntrySearchCriteria> authorizedCriteria, CancellationToken cancellationToken)
+        {
+            var result = new List<ListEntryBase>();
+            var cancellationTokenWrapper = new CancellationTokenWrapper(cancellationToken);
+
+            foreach (var authorizedSearchCriteria in authorizedCriteria)
+            {
+                var searchCriteria = authorizedSearchCriteria.CloneTyped();
+                searchCriteria.Skip = 0;
+
+                result.AddRange(await internalListEntrySearchService.SearchAllAsync(searchCriteria, cancellationTokenWrapper));
+            }
+
+            return result;
         }
 
         private async Task SaveListCatalogEntitiesAsync(IEntity[] entities)

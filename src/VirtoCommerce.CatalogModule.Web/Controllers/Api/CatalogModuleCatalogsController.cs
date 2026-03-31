@@ -28,8 +28,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("search")]
         public async Task<ActionResult<CatalogSearchResult>> SearchCatalogs([FromBody] CatalogSearchCriteria criteria)
         {
-            var authorizationResult = await authorizationService.AuthorizeAsync(User, criteria, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
-            if (!authorizationResult.Succeeded)
+            if (!await AuthorizeCatalogReadAsync(criteria))
             {
                 return Forbid();
             }
@@ -54,8 +53,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return NotFound();
             }
 
-            var authorizationResult = await authorizationService.AuthorizeAsync(User, catalog, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
-            if (!authorizationResult.Succeeded)
+            if (!await AuthorizeCatalogReadAsync(catalog))
             {
                 return Forbid();
             }
@@ -79,8 +77,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return NotFound();
             }
 
-            var authorizationResult = await authorizationService.AuthorizeAsync(User, catalog, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Read));
-            if (!authorizationResult.Succeeded)
+            if (!await AuthorizeCatalogReadAsync(catalog))
             {
                 return Forbid();
             }
@@ -238,6 +235,30 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             await catalogService.SaveChangesAsync([catalog]);
 
             return NoContent();
+        }
+
+        private async Task<bool> AuthorizeCatalogReadAsync(object resource)
+        {
+            var permissions = new[]
+            {
+                ModuleConstants.Security.Permissions.Read,
+                ModuleConstants.Security.Permissions.CategoriesRead,
+                ModuleConstants.Security.Permissions.ProductsRead,
+            };
+
+            foreach (var permission in permissions)
+            {
+                var authorizationResult = await authorizationService.AuthorizeAsync(
+                    User,
+                    resource,
+                    new CatalogAuthorizationRequirement(permission));
+                if (authorizationResult.Succeeded)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }
