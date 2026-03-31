@@ -1,4 +1,15 @@
-angular.module('virtoCommerce.catalogModule').controller('virtoCommerce.catalogModule.itemVariationListController', ['$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'virtoCommerce.catalogModule.items', 'filterFilter', 'uiGridConstants', 'platformWebApp.uiGridHelper', 'virtoCommerce.catalogModule.search', 'platformWebApp.bladeUtils', function ($scope, bladeNavigationService, dialogService, items, filterFilter, uiGridConstants, uiGridHelper, search, bladeUtils) {
+angular.module('virtoCommerce.catalogModule').controller('virtoCommerce.catalogModule.itemVariationListController', ['$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'virtoCommerce.catalogModule.items', 'filterFilter', 'uiGridConstants', 'platformWebApp.uiGridHelper', 'virtoCommerce.catalogModule.search', 'platformWebApp.bladeUtils', 'platformWebApp.authService', function ($scope, bladeNavigationService, dialogService, items, filterFilter, uiGridConstants, uiGridHelper, search, bladeUtils, authService) {
+    var getScopes = function () { return blade.parentBlade && blade.parentBlade.securityScopes; };
+
+    $scope.canCreateVariation = function () {
+        return authService.checkPermission('catalog:products:create', getScopes()) ||
+               authService.checkPermission('catalog:create', getScopes());
+    };
+
+    $scope.canDeleteVariation = function () {
+        return authService.checkPermission('catalog:products:delete', getScopes()) ||
+               authService.checkPermission('catalog:delete', getScopes());
+    };
     $scope.uiGridConstants = uiGridConstants;
     var blade = $scope.blade;
     blade.title = blade.item.name;
@@ -111,8 +122,7 @@ angular.module('virtoCommerce.catalogModule').controller('virtoCommerce.catalogM
                     },
                         function (error) { bladeNavigationService.setError('Error ' + error.status, blade); });
                 },
-                canExecuteMethod: function () { return true; },
-                permission: 'catalog:create'
+                canExecuteMethod: function () { return $scope.canCreateVariation(); }
             },
             {
                 name: "platform.commands.delete", icon: 'fas fa-trash-alt',
@@ -120,9 +130,8 @@ angular.module('virtoCommerce.catalogModule').controller('virtoCommerce.catalogM
                     $scope.deleteList($scope.gridApi.selection.getSelectedRows());
                 },
                 canExecuteMethod: function () {
-                    return $scope.gridApi && _.any($scope.gridApi.selection.getSelectedRows());
-                },
-                permission: 'catalog:delete'
+                    return $scope.gridApi && _.any($scope.gridApi.selection.getSelectedRows()) && $scope.canDeleteVariation();
+                }
             }
         ];
 

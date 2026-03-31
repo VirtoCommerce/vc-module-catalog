@@ -45,7 +45,12 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return NotFound();
             }
 
-            var authorizationResult = await authorizationService.AuthorizeAsync(User, product, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.ProductsRead, ModuleConstants.Security.Permissions.Read));
+            var authorizationResult = await authorizationService.AuthorizeAsync(
+                User,
+                product,
+                new CatalogAuthorizationRequirement(
+                    ModuleConstants.Security.Permissions.ProductsRead,
+                    ModuleConstants.Security.Permissions.Read));
             if (!authorizationResult.Succeeded)
             {
                 return Forbid();
@@ -70,7 +75,12 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return NotFound();
             }
 
-            var authorizationResult = await authorizationService.AuthorizeAsync(User, product, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.ProductsRead, ModuleConstants.Security.Permissions.Read));
+            var authorizationResult = await authorizationService.AuthorizeAsync(
+                User,
+                product,
+                new CatalogAuthorizationRequirement(
+                    ModuleConstants.Security.Permissions.ProductsRead,
+                    ModuleConstants.Security.Permissions.Read));
             if (!authorizationResult.Succeeded)
             {
                 return Forbid();
@@ -101,7 +111,13 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             {
                 return NotFound();
             }
-            var authorizationResult = await authorizationService.AuthorizeAsync(User, items, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.ProductsRead, ModuleConstants.Security.Permissions.Read));
+
+            var authorizationResult = await authorizationService.AuthorizeAsync(
+                User,
+                items,
+                new CatalogAuthorizationRequirement(
+                    ModuleConstants.Security.Permissions.ProductsRead,
+                    ModuleConstants.Security.Permissions.Read));
             if (!authorizationResult.Succeeded)
             {
                 return Forbid();
@@ -273,7 +289,12 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return NotFound();
             }
 
-            var authorizationResult = await authorizationService.AuthorizeAsync(User, product, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.ProductsUpdate, ModuleConstants.Security.Permissions.Update));
+            var authorizationResult = await authorizationService.AuthorizeAsync(
+                User,
+                product,
+                new CatalogAuthorizationRequirement(
+                    ModuleConstants.Security.Permissions.ProductsUpdate,
+                    ModuleConstants.Security.Permissions.Update));
             if (!authorizationResult.Succeeded)
             {
                 return Forbid();
@@ -301,11 +322,16 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         public async Task<ActionResult<CatalogProduct>> SaveProduct([FromBody] CatalogProduct product)
         {
-            // Fallback to module-level Update for backward compatibility (old code used Update for both create and update)
             var entityPermission = product.IsTransient()
                 ? ModuleConstants.Security.Permissions.ProductsCreate
                 : ModuleConstants.Security.Permissions.ProductsUpdate;
-            var authorizationResult = await authorizationService.AuthorizeAsync(User, product, new CatalogAuthorizationRequirement(entityPermission, ModuleConstants.Security.Permissions.Update));
+            var fallbackPermission = product.IsTransient()
+                ? ModuleConstants.Security.Permissions.Create
+                : ModuleConstants.Security.Permissions.Update;
+            var authorizationResult = await authorizationService.AuthorizeAsync(
+                User,
+                product,
+                new CatalogAuthorizationRequirement(entityPermission, fallbackPermission));
             if (!authorizationResult.Succeeded)
             {
                 return Forbid();
@@ -333,10 +359,34 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("batch")]
         public async Task<ActionResult> SaveProducts([FromBody] CatalogProduct[] products)
         {
-            var authorizationResult = await authorizationService.AuthorizeAsync(User, products, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.ProductsUpdate, ModuleConstants.Security.Permissions.Update));
-            if (!authorizationResult.Succeeded)
+            var newProducts = products.Where(p => p.IsTransient()).ToArray();
+            if (newProducts.Length > 0)
             {
-                return Forbid();
+                var createResult = await authorizationService.AuthorizeAsync(
+                    User,
+                    newProducts,
+                    new CatalogAuthorizationRequirement(
+                        ModuleConstants.Security.Permissions.ProductsCreate,
+                        ModuleConstants.Security.Permissions.Create));
+                if (!createResult.Succeeded)
+                {
+                    return Forbid();
+                }
+            }
+
+            var existingProducts = products.Where(p => !p.IsTransient()).ToArray();
+            if (existingProducts.Length > 0)
+            {
+                var updateResult = await authorizationService.AuthorizeAsync(
+                    User,
+                    existingProducts,
+                    new CatalogAuthorizationRequirement(
+                        ModuleConstants.Security.Permissions.ProductsUpdate,
+                        ModuleConstants.Security.Permissions.Update));
+                if (!updateResult.Succeeded)
+                {
+                    return Forbid();
+                }
             }
 
             var customPropertyResult = await authorizationService.AuthorizeAsync(User, products, new CustomPropertyRequirement());
@@ -359,7 +409,12 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         public async Task<ActionResult> DeleteProduct([FromQuery] List<string> ids)
         {
             var products = await itemsService.GetNoCloneAsync(ids, ItemResponseGroup.ItemInfo.ToString());
-            var authorizationResult = await authorizationService.AuthorizeAsync(User, products, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.ProductsDelete, ModuleConstants.Security.Permissions.Delete));
+            var authorizationResult = await authorizationService.AuthorizeAsync(
+                User,
+                products,
+                new CatalogAuthorizationRequirement(
+                    ModuleConstants.Security.Permissions.ProductsDelete,
+                    ModuleConstants.Security.Permissions.Delete));
             if (!authorizationResult.Succeeded)
             {
                 return Forbid();
@@ -390,7 +445,12 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return NotFound();
             }
 
-            var authorizationResult = await authorizationService.AuthorizeAsync(User, product, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.ProductsUpdate, ModuleConstants.Security.Permissions.Update));
+            var authorizationResult = await authorizationService.AuthorizeAsync(
+                User,
+                product,
+                new CatalogAuthorizationRequirement(
+                    ModuleConstants.Security.Permissions.ProductsUpdate,
+                    ModuleConstants.Security.Permissions.Update));
             if (!authorizationResult.Succeeded)
             {
                 return Forbid();

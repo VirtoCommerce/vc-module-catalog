@@ -1,7 +1,15 @@
 angular.module('virtoCommerce.catalogModule')
-    .controller('virtoCommerce.catalogModule.itemDetailController', ['$rootScope', '$scope', '$translate', 'platformWebApp.bladeNavigationService', 'platformWebApp.settings', 'virtoCommerce.catalogModule.items', 'virtoCommerce.customerModule.members', 'virtoCommerce.catalogModule.catalogs', 'platformWebApp.metaFormsService', 'virtoCommerce.catalogModule.categories', function ($rootScope, $scope, $translate, bladeNavigationService, settings, items, members, catalogs, metaFormsService, categories) {
+    .controller('virtoCommerce.catalogModule.itemDetailController', ['$rootScope', '$scope', '$translate', 'platformWebApp.bladeNavigationService', 'platformWebApp.settings', 'virtoCommerce.catalogModule.items', 'virtoCommerce.customerModule.members', 'virtoCommerce.catalogModule.catalogs', 'platformWebApp.metaFormsService', 'virtoCommerce.catalogModule.categories', 'platformWebApp.authService', function ($rootScope, $scope, $translate, bladeNavigationService, settings, items, members, catalogs, metaFormsService, categories, authService) {
         var blade = $scope.blade;
         blade.updatePermission = 'catalog:update';
+        blade.hasUpdatePermission = function () {
+            return authService.checkPermission('catalog:products:update', blade.securityScopes) ||
+                   authService.checkPermission('catalog:update', blade.securityScopes);
+        };
+        blade.hasCreatePermission = function () {
+            return authService.checkPermission('catalog:products:create', blade.securityScopes) ||
+                   authService.checkPermission('catalog:create', blade.securityScopes);
+        };
         blade.currentEntityId = blade.itemId;
 
         blade.metaFields = metaFormsService.getMetaFields("productDetail");
@@ -156,16 +164,14 @@ angular.module('virtoCommerce.catalogModule')
             {
                 name: "platform.commands.save", icon: 'fas fa-save',
                 executeMethod: saveChanges,
-                canExecuteMethod: canSave,
-                permission: blade.updatePermission
+                canExecuteMethod: canSave
             },
             {
                 name: "platform.commands.reset", icon: 'fa fa-undo',
                 executeMethod: function () {
                     angular.copy(blade.origItem, blade.item);
                 },
-                canExecuteMethod: isDirty,
-                permission: blade.updatePermission
+                canExecuteMethod: isDirty
             },
             {
                 name: "platform.commands.clone", icon: 'fas fa-clone',
@@ -186,8 +192,7 @@ angular.module('virtoCommerce.catalogModule')
                         function (error) { bladeNavigationService.setError('Error ' + error.status, blade); });
 
                 },
-                canExecuteMethod: function () { return !isDirty(); },
-                permission: 'catalog:create'
+                canExecuteMethod: function () { return !isDirty() && blade.hasCreatePermission(); }
             }
         ];
 

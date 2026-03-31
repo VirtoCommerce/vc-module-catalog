@@ -42,7 +42,8 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
                 return;
             }
 
-            if (userPermissions.Any(p => !p.AssignedScopes.OfType<SelectedCatalogScope>().Any()))
+            var hasGlobalScope = userPermissions.Any(p => !p.AssignedScopes.OfType<SelectedCatalogScope>().Any());
+            if (hasGlobalScope)
             {
                 context.Succeed(requirement);
                 return;

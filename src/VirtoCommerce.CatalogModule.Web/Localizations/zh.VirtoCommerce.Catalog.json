@@ -1269,7 +1269,15 @@
     "measures:delete": "删除计量单位相关数据",
     "catalog:metadata-property:edit": "编辑属性的元数据",
     "catalog:custom-property:edit": "编辑产品自定义属性",
-    "catalog:dictionary-property:edit": "编辑属性的字典值"
+    "catalog:dictionary-property:edit": "编辑属性的字典值",
+    "catalog:categories:create": "创建分类",
+    "catalog:categories:read": "查看分类",
+    "catalog:categories:update": "更新分类",
+    "catalog:categories:delete": "删除分类",
+    "catalog:products:create": "创建产品",
+    "catalog:products:read": "查看产品",
+    "catalog:products:update": "更新产品",
+    "catalog:products:delete": "删除产品"
   },
   "settings": {
     "Catalog": {

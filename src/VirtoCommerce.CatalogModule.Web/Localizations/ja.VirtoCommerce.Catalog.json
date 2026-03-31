@@ -1269,7 +1269,15 @@
     "measures:delete": "測定単位関連データを削除",
     "catalog:metadata-property:edit": "プロパティのメタデータを編集",
     "catalog:custom-property:edit": "製品のカスタムプロパティを編集",
-    "catalog:dictionary-property:edit": "プロパティの辞書値を編集"
+    "catalog:dictionary-property:edit": "プロパティの辞書値を編集",
+    "catalog:categories:create": "カテゴリを作成",
+    "catalog:categories:read": "カテゴリを表示",
+    "catalog:categories:update": "カテゴリを更新",
+    "catalog:categories:delete": "カテゴリを削除",
+    "catalog:products:create": "商品を作成",
+    "catalog:products:read": "商品を表示",
+    "catalog:products:update": "商品を更新",
+    "catalog:products:delete": "商品を削除"
   },
   "settings": {
     "Catalog": {

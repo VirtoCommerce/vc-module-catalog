@@ -1,7 +1,11 @@
 angular.module('virtoCommerce.catalogModule')
-    .controller('virtoCommerce.catalogModule.categoryDetailController', ['$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.settings', 'virtoCommerce.catalogModule.categories', 'virtoCommerce.catalogModule.catalogs', 'platformWebApp.metaFormsService', function ($scope, bladeNavigationService, settings, categories, catalogs, metaFormsService) {
+    .controller('virtoCommerce.catalogModule.categoryDetailController', ['$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.settings', 'virtoCommerce.catalogModule.categories', 'virtoCommerce.catalogModule.catalogs', 'platformWebApp.metaFormsService', 'platformWebApp.authService', function ($scope, bladeNavigationService, settings, categories, catalogs, metaFormsService, authService) {
         var blade = $scope.blade;
         blade.updatePermission = 'catalog:update';
+        blade.hasUpdatePermission = function () {
+            return authService.checkPermission('catalog:categories:update', blade.securityScopes) ||
+                   authService.checkPermission('catalog:update', blade.securityScopes);
+        };
 
         blade.metaFields = metaFormsService.getMetaFields("categoryDetail");
 
@@ -69,16 +73,14 @@ angular.module('virtoCommerce.catalogModule')
             {
                 name: "platform.commands.save", icon: 'fas fa-save',
                 executeMethod: saveChanges,
-                canExecuteMethod: canSave,
-                permission: blade.updatePermission
+                canExecuteMethod: canSave
             },
             {
                 name: "platform.commands.reset", icon: 'fa fa-undo',
                 executeMethod: function () {
                     angular.copy(blade.origEntity, blade.currentEntity);
                 },
-                canExecuteMethod: isDirty,
-                permission: blade.updatePermission
+                canExecuteMethod: isDirty
             }
         ];
 

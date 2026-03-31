@@ -1269,7 +1269,15 @@
     "measures:delete": "Poista mittayksikköön liittyviä tietoja",
     "catalog:metadata-property:edit": "Muokkaa ominaisuuksien metatietoja",
     "catalog:custom-property:edit": "Muokkaa mukautettuja tuoteominaisuuksia",
-    "catalog:dictionary-property:edit": "Muokkaa ominaisuuden sanakirja-arvoja"
+    "catalog:dictionary-property:edit": "Muokkaa ominaisuuden sanakirja-arvoja",
+    "catalog:categories:create": "Luo kategorioita",
+    "catalog:categories:read": "Näytä kategoriat",
+    "catalog:categories:update": "Päivitä kategorioita",
+    "catalog:categories:delete": "Poista kategorioita",
+    "catalog:products:create": "Luo tuotteita",
+    "catalog:products:read": "Näytä tuotteet",
+    "catalog:products:update": "Päivitä tuotteita",
+    "catalog:products:delete": "Poista tuotteita"
   },
   "settings": {
     "Catalog": {

@@ -1269,7 +1269,15 @@
     "measures:delete": "Maßeinheitenbezogene Daten löschen",
     "catalog:metadata-property:edit": "Metadaten von Eigenschaften bearbeiten",
     "catalog:custom-property:edit": "Benutzerdefinierte Produkteigenschaften bearbeiten",
-    "catalog:dictionary-property:edit": "Wörterbuchwerte der Eigenschaft bearbeiten"
+    "catalog:dictionary-property:edit": "Wörterbuchwerte der Eigenschaft bearbeiten",
+    "catalog:categories:create": "Kategorien erstellen",
+    "catalog:categories:read": "Kategorien anzeigen",
+    "catalog:categories:update": "Kategorien aktualisieren",
+    "catalog:categories:delete": "Kategorien löschen",
+    "catalog:products:create": "Produkte erstellen",
+    "catalog:products:read": "Produkte anzeigen",
+    "catalog:products:update": "Produkte aktualisieren",
+    "catalog:products:delete": "Produkte löschen"
   },
   "settings": {
     "Catalog": {

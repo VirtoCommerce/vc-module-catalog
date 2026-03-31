@@ -1269,7 +1269,15 @@
     "measures:delete": "Slett måleenhetsrelaterte data",
     "catalog:metadata-property:edit": "Rediger metadata for egenskaper",
     "catalog:custom-property:edit": "Rediger tilpassede produktegenskaper",
-    "catalog:dictionary-property:edit": "Rediger ordbokverdier for egenskap"
+    "catalog:dictionary-property:edit": "Rediger ordbokverdier for egenskap",
+    "catalog:categories:create": "Opprett kategorier",
+    "catalog:categories:read": "Vis kategorier",
+    "catalog:categories:update": "Oppdater kategorier",
+    "catalog:categories:delete": "Slett kategorier",
+    "catalog:products:create": "Opprett produkter",
+    "catalog:products:read": "Vis produkter",
+    "catalog:products:update": "Oppdater produkter",
+    "catalog:products:delete": "Slett produkter"
   },
   "settings": {
     "Catalog": {
