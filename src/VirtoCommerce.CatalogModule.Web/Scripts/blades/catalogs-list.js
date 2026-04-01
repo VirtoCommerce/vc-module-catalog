@@ -116,7 +116,7 @@ angular.module('virtoCommerce.catalogModule')
                     id: "confirmDelete",
                     title: 'catalog.dialogs.catalog-delete.title',
                     message: 'catalog.dialogs.catalog-delete.message',
-                    name: node.name,
+                    messageValues: { name: node.name },
                     callback: function (remove) {
                         if (remove) {
                             bladeNavigationService.closeChildrenBlades(blade,

@@ -974,7 +974,7 @@
       },
       "catalog-delete": {
         "title": "Confirm delete",
-        "message": "Are you sure you want to delete this catalog?"
+        "message": "Are you sure you want to delete catalog '{{name}}'?"
       },
       "catalog-items-delete": {
         "title": "Confirm delete",
