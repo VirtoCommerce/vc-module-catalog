@@ -974,7 +974,7 @@
       },
       "catalog-delete": {
         "title": "Bekreft sletting",
-        "message": "Er du sikker på at du vil slette denne katalogen?"
+        "message": "Er du sikker på at du vil slette katalogen '{{name}}'?"
       },
       "catalog-items-delete": {
         "title": "Bekreft sletting",

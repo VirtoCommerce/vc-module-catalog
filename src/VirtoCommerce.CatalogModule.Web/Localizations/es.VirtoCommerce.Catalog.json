@@ -974,7 +974,7 @@
       },
       "catalog-delete": {
         "title": "Confirmar eliminación",
-        "message": "¿Está seguro de que desea eliminar este catálogo?"
+        "message": "¿Está seguro de que desea eliminar el catálogo '{{name}}'?"
       },
       "catalog-items-delete": {
         "title": "Confirmar eliminación",

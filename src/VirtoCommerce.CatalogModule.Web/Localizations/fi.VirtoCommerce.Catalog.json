@@ -974,7 +974,7 @@
       },
       "catalog-delete": {
         "title": "Vahvista poisto",
-        "message": "Oletko varma, että haluat poistaa tämän katalogin?"
+        "message": "Oletko varma, että haluat poistaa katalogin '{{name}}'?"
       },
       "catalog-items-delete": {
         "title": "Vahvista poisto",

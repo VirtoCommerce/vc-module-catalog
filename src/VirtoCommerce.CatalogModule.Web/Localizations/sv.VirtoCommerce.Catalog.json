@@ -974,7 +974,7 @@
       },
       "catalog-delete": {
         "title": "Bekräfta borttagning",
-        "message": "Är du säker på att du vill ta bort denna katalog?"
+        "message": "Är du säker på att du vill ta bort katalogen '{{name}}'?"
       },
       "catalog-items-delete": {
         "title": "Bekräfta borttagning",

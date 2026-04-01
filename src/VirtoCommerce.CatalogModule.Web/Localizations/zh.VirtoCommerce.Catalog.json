@@ -974,7 +974,7 @@
       },
       "catalog-delete": {
         "title": "确认删除",
-        "message": "您确定要删除此目录吗？"
+        "message": "您确定要删除目录 '{{name}}' 吗？"
       },
       "catalog-items-delete": {
         "title": "确认删除",
