@@ -103,6 +103,6 @@ public partial class VimeoVideoProvider(IOptions<VideoOptions> videoOptions, IHt
         }
 
         var time = TimeSpan.FromSeconds(totalSeconds.Value);
-        return time.ToString("hh:mm:ss");
+        return time.ToString(@"hh\:mm\:ss");
     }
 }
