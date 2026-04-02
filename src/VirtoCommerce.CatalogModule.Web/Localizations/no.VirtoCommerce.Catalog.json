@@ -1320,6 +1320,10 @@
           "description": "Lagre serialiserte katalogobjekter i indeksen og returner dem i søkeresultatene",
           "title": "Lagre serialiserte katalogobjekter i indeksen"
         },
+        "IndexLinkPriorityFields": {
+          "description": "Aktiver/deaktiver indeksering av felt som brukes til å beregne prioriteten til koblede objekter i søkeresultater",
+          "title": "Indekser lenkeprioritetsfelt"
+        },
         "DefaultAggregationSize": {
           "description": "Angi størrelsen for aggregeringer når den ikke er definert i butikkens aggregeringsegenskaper. Sett til 0 for ubegrenset størrelse",
           "title": "Standardverdi for aggregeringsstørrelse"
