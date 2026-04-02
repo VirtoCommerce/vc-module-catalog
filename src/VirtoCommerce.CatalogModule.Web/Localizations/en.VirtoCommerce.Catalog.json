@@ -1306,6 +1306,10 @@
           "description": "Enable/ disable storing serialized catalog objects in the index and returning them in search results",
           "title": "Storage of serialized catalog objects in the index"
         },
+        "IndexLinkPriorityFields": {
+          "description": "Enable/disable indexing of fields used to calculate the priority of linked objects in search results",
+          "title": "Index link priority fields"
+        },
         "DefaultAggregationSize": {
           "description": "Specify the size for aggregations when not defined in the store's aggregation properties. Set to 0 for unlimited size",
           "title": "Default aggregation size"
