@@ -16,6 +16,11 @@ namespace VirtoCommerce.CatalogModule.Core.Model.Search
         public string Field { get; set; }
 
         /// <summary>
+        /// Gets or sets the type of "Attribute" aggregation type value sorting (if the aggregation was resolved via browse filters)
+        /// </summary>
+        public string TermValuesSortingType { get; set; }
+
+        /// <summary>
         /// Gets or sets the collection of the aggregation labels
         /// </summary>
         public AggregationLabel[] Labels { get; set; }

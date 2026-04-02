@@ -284,6 +284,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                     result = new Aggregation
                     {
                         AggregationType = "attr",
+                        TermValuesSortingType = attributeFilter.TermValuesSortingType,
                         Field = attributeFilter.GetIndexFieldName(),
                         Items = GetAttributeAggregationItems(aggregationResponseValues).ToArray(),
                     };
