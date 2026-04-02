@@ -809,6 +809,7 @@
       },
       "section-details": {
         "title": "Nuova sezione",
+        "hide-description": "Nascondi",
         "labels": {
           "name": "Nome della sezione",
           "description": "Descrizione",
@@ -824,7 +825,12 @@
           "text": "Testo"
         },
         "descr": {
-          "no-options": "Ancora nessuna opzione in questa sezione"
+          "no-options": "Ancora nessuna opzione in questa sezione",
+          "type": "Definisce il tipo di opzioni disponibili in questa sezione: Prodotto per gli articoli del catalogo, Variazione per le varianti di prodotto, Testo per voci di testo personalizzate e File per il caricamento di file",
+          "is-required": "Quando abilitato, il cliente deve selezionare un'opzione da questa sezione prima di aggiungere il prodotto al carrello",
+          "allow-custom-text": "Quando abilitato, i clienti possono digitare il proprio testo in aggiunta o in sostituzione delle opzioni predefinite",
+          "allow-predefined-options": "Quando abilitato, un elenco di opzioni di testo predefinite sarà disponibile per il cliente",
+          "max-length": "Numero massimo di caratteri consentiti per l'inserimento del testo. Lasciare vuoto per nessun limite"
         },
         "commands": {
           "add": "Aggiungi opzioni"
@@ -832,6 +838,10 @@
         "placeholders": {
           "type": "Selezionate..."
         }
+      },
+      "section-options-list": {
+        "title": "Opzioni",
+        "subtitle": "Gestisci opzioni della sezione"
       },
       "option-details": {
         "title": "Seleziona elementi come opzioni",

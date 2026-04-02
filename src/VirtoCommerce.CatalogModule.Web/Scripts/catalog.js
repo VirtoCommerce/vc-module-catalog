@@ -841,24 +841,24 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                         valueType: "LongText"
                     },
                     {
-                        title: "catalog.blades.section-details.labels.type",
-                        colSpan: 4,
-                        templateUrl: "section-type.html"
-                    },
-                    {
-                        colSpan: 2,
+                        colSpan: 6,
                         templateUrl: "section-is-required.html"
                     },
                     {
-                        colSpan: 2,
-                        templateUrl: "section-max-length.html"
+                        title: "catalog.blades.section-details.labels.type",
+                        colSpan: 6,
+                        templateUrl: "section-type.html"
                     },
                     {
-                        colSpan: 2,
+                        colSpan: 3,
                         templateUrl: "section-allow-custom-text.html"
                     },
                     {
-                        colSpan: 2,
+                        colSpan: 3,
+                        templateUrl: "section-max-length.html"
+                    },
+                    {
+                        colSpan: 6,
                         templateUrl: "section-allow-predefined.html"
                     }
                 ]);

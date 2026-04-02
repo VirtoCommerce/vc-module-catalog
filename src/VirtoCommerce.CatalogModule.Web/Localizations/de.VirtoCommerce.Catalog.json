@@ -809,6 +809,7 @@
       },
       "section-details": {
         "title": "Neuer Abschnitt",
+        "hide-description": "Ausblenden",
         "labels": {
           "name": "Abschnittsname",
           "description": "Beschreibung",
@@ -824,7 +825,12 @@
           "text": "Text"
         },
         "descr": {
-          "no-options": "Noch keine Optionen in diesem Abschnitt"
+          "no-options": "Noch keine Optionen in diesem Abschnitt",
+          "type": "Definiert die Art der verfügbaren Optionen in diesem Abschnitt: Produkt für Katalogartikel, Variation für Produktvarianten, Text für benutzerdefinierte Texteinträge und Datei für Datei-Uploads",
+          "is-required": "Wenn aktiviert, muss der Kunde eine Option aus diesem Abschnitt auswählen, bevor er das Produkt in den Warenkorb legt",
+          "allow-custom-text": "Wenn aktiviert, können Kunden ihren eigenen Text eingeben, zusätzlich zu oder anstelle der vordefinierten Optionen",
+          "allow-predefined-options": "Wenn aktiviert, steht dem Kunden eine Liste vordefinierter Textoptionen zur Auswahl",
+          "max-length": "Maximale Anzahl der zulässigen Zeichen für die Texteingabe. Leer lassen für keine Begrenzung"
         },
         "commands": {
           "add": "Optionen hinzufügen"
@@ -832,6 +838,10 @@
         "placeholders": {
           "type": "Bitte auswählen..."
         }
+      },
+      "section-options-list": {
+        "title": "Optionen",
+        "subtitle": "Abschnittsoptionen verwalten"
       },
       "option-details": {
         "title": "Artikel als Optionen auswählen",
