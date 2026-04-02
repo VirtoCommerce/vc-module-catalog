@@ -1320,6 +1320,10 @@
           "description": "Tallenna serialisoidut katalogikohteet indeksiin ja palauta ne hakutuloksissa",
           "title": "Tallenna serialisoidut katalogikohteet indeksiin"
         },
+        "IndexLinkPriorityFields": {
+          "description": "Ota käyttöön tai poista käytöstä niiden kenttien indeksointi, joita käytetään linkitettyjen objektien prioriteetin laskemiseen hakutuloksissa",
+          "title": "Indeksoi linkkien prioriteettikentät"
+        },
         "DefaultAggregationSize": {
           "description": "Määritä koko aggregaatioille, kun sitä ei ole määritelty kaupan aggregaatio-ominaisuuksissa. Aseta 0 rajoittamattomalle koolle",
           "title": "Oletusarvo aggregaation koolle"
