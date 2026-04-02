@@ -1318,6 +1318,10 @@
           "description": "Lagra serialiserade katalogobjekt i indexet och returnera dem i sökresultat",
           "title": "Lagra serialiserade katalogobjekt i indexet"
         },
+        "IndexLinkPriorityFields": {
+          "description": "Aktivera/inaktivera indexering av fält som används för att beräkna prioriteten för länkade objekt i sökresultat",
+          "title": "Indexera länkprioritetsfält"
+        },
         "DefaultAggregationSize": {
           "description": "Ange storlek för aggregationer när det inte definieras i butikens aggregationsinställningar. Sätt till 0 för obegränsad storlek",
           "title": "Standardvärde för aggregationsstorlek"
