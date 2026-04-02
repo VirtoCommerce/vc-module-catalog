@@ -974,9 +974,7 @@
       },
       "catalog-delete": {
         "title": "Bekräfta borttagning",
-        "warning": "VARNING: Denna ändring är permanent och kan inte ångras. Att tillämpa denna ändring kan leda till dataförlust",
-        "message": "Är du säker på att du vill ta bort denna katalog?",
-        "instruction": "Skriv 'yes' för att ta bort:"
+        "message": "Är du säker på att du vill ta bort katalogen '{{name}}'?"
       },
       "catalog-items-delete": {
         "title": "Bekräfta borttagning",

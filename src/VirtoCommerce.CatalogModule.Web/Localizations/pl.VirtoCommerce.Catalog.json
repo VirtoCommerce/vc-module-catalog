@@ -974,9 +974,7 @@
       },
       "catalog-delete": {
         "title": "Potwierdź usunięcie",
-        "warning": "OSTRZEŻENIE: Ta zmiana jest trwała i nie może zostać cofnięta. Zastosowanie tej zmiany może skutkować utratą danych",
-        "message": "Czy na pewno chcesz usunąć ten katalog?",
-        "instruction": "Wpisz 'yes', aby usunąć:"
+        "message": "Czy na pewno chcesz usunąć katalog '{{name}}'?"
       },
       "catalog-items-delete": {
         "title": "Potwierdź usunięcie",

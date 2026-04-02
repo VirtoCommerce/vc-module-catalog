@@ -974,9 +974,7 @@
       },
       "catalog-delete": {
         "title": "Bekreft sletting",
-        "warning": "ADVARSEL: Denne endringen er permanent og kan ikke angres. Å bruke denne endringen kan føre til tap av data",
-        "message": "Er du sikker på at du vil slette denne katalogen?",
-        "instruction": "Skriv 'ja' for å slette:"
+        "message": "Er du sikker på at du vil slette katalogen '{{name}}'?"
       },
       "catalog-items-delete": {
         "title": "Bekreft sletting",
