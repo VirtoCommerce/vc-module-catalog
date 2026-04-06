@@ -974,9 +974,7 @@
       },
       "catalog-delete": {
         "title": "Vahvista poisto",
-        "warning": "VAROITUS: Tämä muutos on pysyvä eikä sitä voi kumota. Tämän muutoksen soveltaminen voi johtaa tietojen menetykseen",
-        "message": "Oletko varma, että haluat poistaa tämän katalogin?",
-        "instruction": "Kirjoita 'yes' poistaaksesi:"
+        "message": "Oletko varma, että haluat poistaa katalogin '{{name}}'?"
       },
       "catalog-items-delete": {
         "title": "Vahvista poisto",
@@ -1327,6 +1325,10 @@
         "UseFullObjectIndexStoring": {
           "description": "Tallenna serialisoidut katalogikohteet indeksiin ja palauta ne hakutuloksissa",
           "title": "Tallenna serialisoidut katalogikohteet indeksiin"
+        },
+        "IndexLinkPriorityFields": {
+          "description": "Ota käyttöön tai poista käytöstä niiden kenttien indeksointi, joita käytetään linkitettyjen objektien prioriteetin laskemiseen hakutuloksissa",
+          "title": "Indeksoi linkkien prioriteettikentät"
         },
         "DefaultAggregationSize": {
           "description": "Määritä koko aggregaatioille, kun sitä ei ole määritelty kaupan aggregaatio-ominaisuuksissa. Aseta 0 rajoittamattomalle koolle",

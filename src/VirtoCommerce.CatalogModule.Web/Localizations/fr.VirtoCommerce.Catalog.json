@@ -974,9 +974,7 @@
       },
       "catalog-delete": {
         "title": "Confirmer la suppression",
-        "warning": "AVERTISSEMENT : Ce changement est permanent et ne peut pas être annulé. L'application de ce changement peut entraîner une perte de données",
-        "message": "Êtes-vous sûr de vouloir supprimer ce catalogue ?",
-        "instruction": "Tapez 'yes' pour supprimer :"
+        "message": "Êtes-vous sûr de vouloir supprimer le catalogue '{{name}}' ?"
       },
       "catalog-items-delete": {
         "title": "Confirmer la suppression",
