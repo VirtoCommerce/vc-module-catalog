@@ -4,7 +4,7 @@ angular.module('virtoCommerce.catalogModule')
             function ($scope, $translate, $timeout, bladeNavigationService, bladeUtils, dialogService, uiGridHelper, videos, settings) {
                 var blade = $scope.blade;
                 blade.updatePermission = 'catalog:update';
-                blade.headIcon = 'fab fa-youtube';
+                blade.headIcon = 'fas fa-video';
                 blade.title = 'catalog.blades.video-list.title';
                 blade.subtitle = 'catalog.blades.video-list.subtitle';
 
@@ -73,7 +73,7 @@ angular.module('virtoCommerce.catalogModule')
                         currentEntityId: item.id,
                         currentEntity: item,
                         controller: 'virtoCommerce.catalogModule.videoDetailController',
-                        template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/video-detail.tpl.html'
+                        template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/video-detail.html'
                     };
                     bladeNavigationService.showBlade(newBlade, blade);
                 };
@@ -115,7 +115,7 @@ angular.module('virtoCommerce.catalogModule')
                         videoOptions: blade.videoOptions,
                         defaultLanguage: blade.catalog.defaultLanguage,
                         controller: 'virtoCommerce.catalogModule.videoAddController',
-                        template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/video-add.tpl.html'
+                        template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/video-add.html'
                     };
                     bladeNavigationService.showBlade(newBlade, blade);
                 }

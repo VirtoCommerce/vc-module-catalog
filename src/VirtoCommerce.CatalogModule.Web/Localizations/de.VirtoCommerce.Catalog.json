@@ -528,19 +528,20 @@
         }
       },
       "video-add": {
-        "title": "YouTube-Video",
+        "title": "Video",
         "subtitle": "Neues Video",
         "create": "Erstellen",
         "labels": {
           "content-url": "Inhalts-URL",
-          "no-apikey": "Sie haben keinen Google API-Schlüssel in der Plattformkonfigurationsdatei angegeben. Die Videoinformationen werden unvollständig sein"
+          "no-youtube-apikey": "Sie haben keinen Google API-Schlüssel in der Plattformkonfigurationsdatei angegeben. Die Videoinformationen werden unvollständig sein",
+          "no-vimeo-token": "Das Vimeo-Zugriffstoken ist in appsettings.json nicht konfiguriert. Private Vimeo-Videos sind nicht verfügbar."
         },
         "placeholders": {
           "content-url": "Video-URL eingeben"
         }
       },
       "video-detail": {
-        "title": "YouTube-Video",
+        "title": "Video",
         "subtitle": "Videoinformationen bearbeiten",
         "labels": {
           "name": "Videoname",

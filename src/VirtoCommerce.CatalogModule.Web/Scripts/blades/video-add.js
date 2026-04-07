@@ -5,7 +5,7 @@ angular.module('virtoCommerce.catalogModule')
                 var blade = $scope.blade;
                 var parentBlade = blade.parentBlade;
 
-                blade.headIcon = 'fab fa-youtube';
+                blade.headIcon = 'fas fa-video';
                 blade.title = 'catalog.blades.video-add.title';
                 blade.subtitle = 'catalog.blades.video-add.subtitle';
 
@@ -38,7 +38,7 @@ angular.module('virtoCommerce.catalogModule')
                                     isNew: true,
                                     currentEntity: data,
                                     controller: 'virtoCommerce.catalogModule.videoDetailController',
-                                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/video-detail.tpl.html'
+                                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/video-detail.html'
                                 };
                                 bladeNavigationService.showBlade(newBlade, parentBlade);
                             });
