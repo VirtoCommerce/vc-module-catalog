@@ -528,19 +528,20 @@
         }
       },
       "video-add": {
-        "title": "YouTubeビデオ",
+        "title": "ビデオ",
         "subtitle": "新しいビデオ",
         "create": "作成",
         "labels": {
           "content-url": "コンテンツURL",
-          "no-apikey": "プラットフォーム構成ファイルにGoogle APIキーが提供されていません。ビデオ情報は不完全になります"
+          "no-youtube-apikey": "プラットフォーム構成ファイルにGoogle APIキーが提供されていません。ビデオ情報は不完全になります",
+          "no-vimeo-token": "Vimeoアクセストークンがappsettings.jsonに設定されていません。プライベートVimeo動画は利用できません。"
         },
         "placeholders": {
           "content-url": "ビデオURLを入力"
         }
       },
       "video-detail": {
-        "title": "YouTubeビデオ",
+        "title": "ビデオ",
         "subtitle": "ビデオ情報を編集",
         "labels": {
           "name": "ビデオ名",

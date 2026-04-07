@@ -19,6 +19,14 @@
     <None Remove="node_modules\**" />
   </ItemGroup>
   <ItemGroup>
+    <Content Update="Content\**">
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </Content>
+    <Content Update="Localizations\**">
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="VirtoCommerce.Platform.Modules" Version="3.1013.0" />
   </ItemGroup>
   <ItemGroup>
@@ -29,5 +37,6 @@
     <ProjectReference Include="..\VirtoCommerce.CatalogModule.Data.SqlServer\VirtoCommerce.CatalogModule.Data.SqlServer.csproj" />
     <ProjectReference Include="..\VirtoCommerce.CatalogModule.Data\VirtoCommerce.CatalogModule.Data.csproj" />
     <ProjectReference Include="..\VirtoCommerce.CatalogModule.Data.YouTube\VirtoCommerce.CatalogModule.Data.YouTube.csproj" />
+    <ProjectReference Include="..\VirtoCommerce.CatalogModule.Data.Vimeo\VirtoCommerce.CatalogModule.Data.Vimeo.csproj" />
   </ItemGroup>
 </Project>

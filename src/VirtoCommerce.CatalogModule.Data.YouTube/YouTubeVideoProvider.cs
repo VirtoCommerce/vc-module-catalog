@@ -1,4 +1,8 @@
+using System;
+using System.Linq;
+using System.Net.Http;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Google.Apis.Services;
 using Google.Apis.YouTube.v3;
 using Microsoft.Extensions.Options;
@@ -11,7 +15,7 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.YouTube
 {
-    public partial class YouTubeVideoProvider : IVideoProvider
+    public partial class YouTubeVideoProvider(IOptions<VideoOptions> videoOptions) : IVideoProvider
     {
         [GeneratedRegex(@"(vi\/|v%3D|v=|\/v\/|youtu\.be\/|\/embed\/)")]
         private static partial Regex VideoIdSeparatorRegex();
@@ -25,16 +29,31 @@ namespace VirtoCommerce.CatalogModule.Data.YouTube
         [GeneratedRegex(@"PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$")]
         private static partial Regex DurationRegex();
 
-        private const int MaxDescriptionLength = 1024;
+        private const int _maxDescriptionLength = 1024;
 
-        private readonly VideoOptions _videoOptions;
+        private readonly VideoOptions _videoOptions = videoOptions.Value;
 
-        public YouTubeVideoProvider(IOptions<VideoOptions> videoOptions)
+        public virtual string Name => "YouTube";
+
+        public virtual bool CanHandle(string contentUrl)
         {
-            _videoOptions = videoOptions.Value;
+            if (string.IsNullOrWhiteSpace(contentUrl))
+            {
+                return false;
+            }
+
+            return Uri.TryCreate(contentUrl, UriKind.Absolute, out var uri) && (
+                MatchesHost(uri.Host, "youtube.com") ||
+                MatchesHost(uri.Host, "youtu.be"));
+
+            static bool MatchesHost(string host, string expected)
+            {
+                return host.EqualsIgnoreCase(expected) ||
+                       host.EndsWithIgnoreCase($".{expected}");
+            }
         }
 
-        public async Task<Video> GetVideoAsync(VideoCreateRequest request)
+        public virtual async Task<Video> GetVideoAsync(VideoCreateRequest request)
         {
             var video = AbstractTypeFactory<Video>.TryCreateInstance();
             video.ContentUrl = request.ContentUrl;
@@ -60,7 +79,7 @@ namespace VirtoCommerce.CatalogModule.Data.YouTube
                 var snippet = resource.Snippet;
 
                 video.Name = snippet.Title;
-                video.Description = snippet.Description.SoftTruncate(MaxDescriptionLength);
+                video.Description = snippet.Description.SoftTruncate(_maxDescriptionLength);
                 video.UploadDate = snippet.PublishedAtDateTimeOffset?.UtcDateTime;
                 video.ThumbnailUrl = snippet.Thumbnails?.High?.Url;
                 video.EmbedUrl = GetEmbedUrl(resource.Player.EmbedHtml);

@@ -528,19 +528,20 @@
         }
       },
       "video-add": {
-        "title": "YouTube-video",
+        "title": "Video",
         "subtitle": "Ny video",
         "create": "Skapa",
         "labels": {
           "content-url": "Innehållets URL",
-          "no-apikey": "Du har inte angett någon Google API-nyckel i plattformens konfigurationsfil. Videoinformationen kommer att vara ofullständig"
+          "no-youtube-apikey": "Du har inte angett någon Google API-nyckel i plattformens konfigurationsfil. Videoinformationen kommer att vara ofullständig",
+          "no-vimeo-token": "Vimeo-åtkomsttoken är inte konfigurerad i appsettings.json. Privata Vimeo-videor kommer inte att vara tillgängliga."
         },
         "placeholders": {
           "content-url": "Ange video-URL"
         }
       },
       "video-detail": {
-        "title": "YouTube-video",
+        "title": "Video",
         "subtitle": "Redigera videoinformation",
         "labels": {
           "name": "Videonamn",

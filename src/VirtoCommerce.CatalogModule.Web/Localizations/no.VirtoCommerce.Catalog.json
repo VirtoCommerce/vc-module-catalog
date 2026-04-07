@@ -528,19 +528,20 @@
         }
       },
       "video-add": {
-        "title": "YouTube-video",
+        "title": "Video",
         "subtitle": "Ny video",
         "create": "Opprett",
         "labels": {
           "content-url": "Innholds-URL",
-          "no-apikey": "Du har ikke angitt en Google API-nøkkel i plattformens konfigurasjonsfil. Videoinformasjonen vil være ufullstendig"
+          "no-youtube-apikey": "Du har ikke angitt en Google API-nøkkel i plattformens konfigurasjonsfil. Videoinformasjonen vil være ufullstendig",
+          "no-vimeo-token": "Vimeo-tilgangstoken er ikke konfigurert i appsettings.json. Private Vimeo-videoer vil ikke være tilgjengelige."
         },
         "placeholders": {
           "content-url": "Angi video-URL"
         }
       },
       "video-detail": {
-        "title": "YouTube-video",
+        "title": "Video",
         "subtitle": "Rediger videoinformasjon",
         "labels": {
           "name": "Videonavn",
@@ -882,7 +883,7 @@
           }
         }
       }
-    },  
+    },
     "exporter-list": {
       "title": "Exporttyper",
       "subtitle": "Velg en av de tilgjengelige exporttypene nedenfor"

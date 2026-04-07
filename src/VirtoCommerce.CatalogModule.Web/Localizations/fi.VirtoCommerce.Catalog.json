@@ -528,19 +528,20 @@
         }
       },
       "video-add": {
-        "title": "YouTube-video",
+        "title": "Video",
         "subtitle": "Uusi video",
         "create": "Luo",
         "labels": {
           "content-url": "Sisällön URL",
-          "no-apikey": "Et ole antanut Google API-avainta alustan konfiguraatiotiedostossa. Videon tiedot ovat puutteelliset"
+          "no-youtube-apikey": "Et ole antanut Google API-avainta alustan konfiguraatiotiedostossa. Videon tiedot ovat puutteelliset",
+          "no-vimeo-token": "Vimeo-käyttöoikeustunnusta ei ole määritetty appsettings.json-tiedostossa. Yksityiset Vimeo-videot eivät ole käytettävissä."
         },
         "placeholders": {
           "content-url": "Syötä videon URL"
         }
       },
       "video-detail": {
-        "title": "YouTube-video",
+        "title": "Video",
         "subtitle": "Muokkaa videon tietoja",
         "labels": {
           "name": "Videon nimi",
