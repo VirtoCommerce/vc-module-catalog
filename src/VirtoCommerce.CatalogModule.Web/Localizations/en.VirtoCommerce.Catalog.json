@@ -975,9 +975,7 @@
       },
       "catalog-delete": {
         "title": "Confirm delete",
-        "warning": "WARNING: This change is permanent and cannot be undone. Applying this change may result in data loss",
-        "message": "Are you sure you want to delete this catalog?",
-        "instruction": "Type 'yes' to delete:"
+        "message": "Are you sure you want to delete catalog '{{name}}'?"
       },
       "catalog-items-delete": {
         "title": "Confirm delete",
@@ -1320,6 +1318,10 @@
         "UseFullObjectIndexStoring": {
           "description": "Enable/ disable storing serialized catalog objects in the index and returning them in search results",
           "title": "Storage of serialized catalog objects in the index"
+        },
+        "IndexLinkPriorityFields": {
+          "description": "Enable/disable indexing of fields used to calculate the priority of linked objects in search results",
+          "title": "Index link priority fields"
         },
         "DefaultAggregationSize": {
           "description": "Specify the size for aggregations when not defined in the store's aggregation properties. Set to 0 for unlimited size",

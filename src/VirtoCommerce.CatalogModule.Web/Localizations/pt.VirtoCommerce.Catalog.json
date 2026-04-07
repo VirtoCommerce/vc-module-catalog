@@ -975,9 +975,7 @@
       },
       "catalog-delete": {
         "title": "Confirmar exclusão",
-        "warning": "AVISO: Esta alteração é permanente e não pode ser desfeita. Aplicar esta alteração pode resultar em perda de dados",
-        "message": "Tem certeza de que deseja excluir este catálogo?",
-        "instruction": "Digite 'yes' para excluir:"
+        "message": "Tem certeza de que deseja excluir o catálogo '{{name}}'?"
       },
       "catalog-items-delete": {
         "title": "Confirmar exclusão",

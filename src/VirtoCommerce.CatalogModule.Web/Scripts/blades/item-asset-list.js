@@ -161,8 +161,8 @@ angular.module('virtoCommerce.catalogModule')
             if (idx >= 0) {
                 var dialog = {
                     id: "confirmDeleteItem",
-                    title: "platform.dialogs.folders-delete.title",
-                    message: "platform.dialogs.folders-delete.message",
+                    title: "assets.dialogs.asset-delete.title",
+                    message: "assets.dialogs.asset-delete.message",
                     callback: function (remove) {
                         if (remove) {
                             blade.currentEntities.splice(idx, 1);
@@ -185,8 +185,8 @@ angular.module('virtoCommerce.catalogModule')
 
             var dialog = {
                 id: "confirmDeleteItem",
-                title: "platform.dialogs.folders-delete.title",
-                message: "platform.dialogs.folders-delete.message",
+                title: "assets.dialogs.asset-delete.title",
+                message: "assets.dialogs.asset-delete.message",
                 callback: function (remove) {
                     if (remove) {
                         angular.forEach(selectedImages, function (image) {

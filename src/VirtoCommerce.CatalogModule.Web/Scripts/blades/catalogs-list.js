@@ -114,7 +114,9 @@ angular.module('virtoCommerce.catalogModule')
             $scope.deleteCatalog = function (node) {
                 var dialog = {
                     id: "confirmDelete",
-                    name: node.name,
+                    title: 'catalog.dialogs.catalog-delete.title',
+                    message: 'catalog.dialogs.catalog-delete.message',
+                    messageValues: { name: node.name },
                     callback: function (remove) {
                         if (remove) {
                             bladeNavigationService.closeChildrenBlades(blade,
@@ -132,9 +134,7 @@ angular.module('virtoCommerce.catalogModule')
                         }
                     }
                 };
-                dialogService.showDialog(dialog,
-                    'Modules/$(VirtoCommerce.Catalog)/Scripts/dialogs/deleteCatalog-dialog.tpl.html',
-                    'platformWebApp.confirmDialogController');
+                dialogService.showDeleteConfirmationDialog(dialog);
             };
 
             function showCatalogBlade(id, data, title) {
