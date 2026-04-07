@@ -248,10 +248,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             foreach (var permission in permissions)
             {
-                var authorizationResult = await authorizationService.AuthorizeAsync(
-                    User,
-                    resource,
-                    new CatalogAuthorizationRequirement(permission));
+                var authorizationResult = await authorizationService.AuthorizeAsync(User, resource, new CatalogAuthorizationRequirement(permission));
                 if (authorizationResult.Succeeded)
                 {
                     return true;

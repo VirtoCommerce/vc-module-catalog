@@ -47,6 +47,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 ModuleConstants.Security.Permissions.CategoriesRead,
                 ModuleConstants.Security.Permissions.ProductsRead,
                 ModuleConstants.Security.Permissions.Read);
+
             if (authorizedCriteria.Count == 0)
             {
                 return Forbid();
@@ -235,6 +236,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         public async Task<ActionResult> Move([FromBody] ListEntriesMoveRequest moveRequest)
         {
             var sourceEntries = await LoadCatalogEntriesAsync<IEntity>(moveRequest.ListEntries?.Select(x => x.Id).ToArray() ?? []);
+
             if (!await catalogEntityAuthorizationService.TryAuthorizeMoveRequestByTypeAsync(
                 User,
                 moveRequest,
@@ -277,6 +279,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             if (!idsToDelete.IsNullOrEmpty())
             {
                 var entitiesToDelete = await LoadCatalogEntriesAsync<IEntity>(idsToDelete.ToArray());
+
                 if (!await catalogEntityAuthorizationService.TryAuthorizeEntitiesByTypeAsync(
                     User,
                     entitiesToDelete,

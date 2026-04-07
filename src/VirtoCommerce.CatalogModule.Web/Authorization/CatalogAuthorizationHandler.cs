@@ -8,7 +8,6 @@ using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Data.Authorization;
 using VirtoCommerce.CatalogModule.Data.ExportImport;
-using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.Platform.Security.Authorization;
 
@@ -42,7 +41,7 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
                 return;
             }
 
-            var hasGlobalScope = userPermissions.Any(p => !p.AssignedScopes.OfType<SelectedCatalogScope>().Any());
+            var hasGlobalScope = userPermissions.Any(x => !x.AssignedScopes.OfType<SelectedCatalogScope>().Any());
             if (hasGlobalScope)
             {
                 context.Succeed(requirement);
@@ -55,8 +54,7 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
         private void TryAuthorizeWithScopedPermission(AuthorizationHandlerContext context, CatalogAuthorizationRequirement requirement, string permission)
         {
             var userPermissions = context.User.FindPermissions(permission, _jsonOptions.SerializerSettings);
-
-            if (userPermissions.Count <= 0)
+            if (userPermissions.Count == 0)
             {
                 return;
             }
@@ -65,7 +63,7 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
 
             foreach (var userPermission in userPermissions)
             {
-                allowedCatalogIdsList.AddRange(userPermission.AssignedScopes.OfType<SelectedCatalogScope>().Select(y => y.CatalogId));
+                allowedCatalogIdsList.AddRange(userPermission.AssignedScopes.OfType<SelectedCatalogScope>().Select(x => x.CatalogId));
             }
 
             var allowedCatalogIds = allowedCatalogIdsList.Distinct().ToArray();
@@ -73,15 +71,15 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
             switch (context.Resource)
             {
                 case CatalogSearchCriteria catalogSearchCriteria:
-                    catalogSearchCriteria.CatalogIds = catalogSearchCriteria.CatalogIds?.Any() ?? false
-                        ? catalogSearchCriteria.CatalogIds.Where(x => allowedCatalogIds.Contains(x)).ToArray()
+                    catalogSearchCriteria.CatalogIds = catalogSearchCriteria.CatalogIds?.Length > 0
+                        ? catalogSearchCriteria.CatalogIds.Intersect(allowedCatalogIds).ToArray()
                         : allowedCatalogIds;
 
                     context.Succeed(requirement);
                     break;
                 case CatalogListEntrySearchCriteria listEntrySearchCriteria:
-                    listEntrySearchCriteria.CatalogIds = listEntrySearchCriteria.CatalogIds?.Any() ?? false
-                        ? listEntrySearchCriteria.CatalogIds.Where(x => allowedCatalogIds.Contains(x)).ToArray()
+                    listEntrySearchCriteria.CatalogIds = listEntrySearchCriteria.CatalogIds?.Length > 0
+                        ? listEntrySearchCriteria.CatalogIds.Intersect(allowedCatalogIds).ToArray()
                         : allowedCatalogIds;
 
                     context.Succeed(requirement);
@@ -116,13 +114,19 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
                     }
                 case ProductExportDataQuery dataQuery:
                     {
-                        dataQuery.CatalogIds = dataQuery.CatalogIds.IsNullOrEmpty() ? allowedCatalogIds : dataQuery.CatalogIds.Intersect(allowedCatalogIds).ToArray();
+                        dataQuery.CatalogIds = dataQuery.CatalogIds?.Length > 0
+                            ? dataQuery.CatalogIds.Intersect(allowedCatalogIds).ToArray()
+                            : allowedCatalogIds;
+
                         context.Succeed(requirement);
                         break;
                     }
                 case PropertyDictionaryItemSearchCriteria propertyDictionaryItemSearchCriteria:
                     {
-                        propertyDictionaryItemSearchCriteria.CatalogIds = propertyDictionaryItemSearchCriteria.CatalogIds.IsNullOrEmpty() ? allowedCatalogIds : propertyDictionaryItemSearchCriteria.CatalogIds.Intersect(allowedCatalogIds).ToArray();
+                        propertyDictionaryItemSearchCriteria.CatalogIds = propertyDictionaryItemSearchCriteria.CatalogIds?.Length > 0
+                            ? propertyDictionaryItemSearchCriteria.CatalogIds.Intersect(allowedCatalogIds).ToArray()
+                            : allowedCatalogIds;
+
                         context.Succeed(requirement);
                         break;
                     }
