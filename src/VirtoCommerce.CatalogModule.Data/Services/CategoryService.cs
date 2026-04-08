@@ -379,7 +379,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 foreach (var id in ids)
                 {
                     var entity = entities.FirstOrDefault(x => x.Id.EqualsIgnoreCase(id));
-                    var model = entity is null ? null : ToModel(entity);
+                    var model = entity is null ? null : ToModel(entity, AbstractTypeFactory<Category>.TryCreateInstance());
                     categoryById.TryAdd(id, model);
                 }
 

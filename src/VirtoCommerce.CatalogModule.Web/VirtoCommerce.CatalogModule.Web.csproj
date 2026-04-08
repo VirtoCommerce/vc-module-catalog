@@ -19,6 +19,9 @@
     <None Remove="node_modules\**" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="VirtoCommerce.Platform.Modules" Version="3.1013.0" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Update="Content\**">
       <CopyToPublishDirectory>Never</CopyToPublishDirectory>
     </Content>
