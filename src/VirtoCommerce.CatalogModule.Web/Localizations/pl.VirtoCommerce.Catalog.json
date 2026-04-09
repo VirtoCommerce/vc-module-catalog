@@ -528,19 +528,20 @@
         }
       },
       "video-add": {
-        "title": "Film YouTube",
+        "title": "Film",
         "subtitle": "Nowy film",
         "create": "Utwórz",
         "labels": {
           "content-url": "URL treści",
-          "no-apikey": "Nie podałeś żadnego klucza API Google w pliku konfiguracyjnym platformy. Informacje o filmie będą niekompletne"
+          "no-youtube-apikey": "Nie podałeś żadnego klucza API Google w pliku konfiguracyjnym platformy. Informacje o filmie będą niekompletne",
+          "no-vimeo-token": "Token dostępu Vimeo nie jest skonfigurowany w appsettings.json. Prywatne filmy Vimeo nie będą dostępne."
         },
         "placeholders": {
           "content-url": "Wprowadź URL filmu"
         }
       },
       "video-detail": {
-        "title": "Film YouTube",
+        "title": "Film",
         "subtitle": "Edytuj informacje o filmie",
         "labels": {
           "name": "Nazwa filmu",
@@ -974,9 +975,7 @@
       },
       "catalog-delete": {
         "title": "Potwierdź usunięcie",
-        "warning": "OSTRZEŻENIE: Ta zmiana jest trwała i nie może zostać cofnięta. Zastosowanie tej zmiany może skutkować utratą danych",
-        "message": "Czy na pewno chcesz usunąć ten katalog?",
-        "instruction": "Wpisz 'yes', aby usunąć:"
+        "message": "Czy na pewno chcesz usunąć katalog '{{name}}'?"
       },
       "catalog-items-delete": {
         "title": "Potwierdź usunięcie",

@@ -528,19 +528,20 @@
         }
       },
       "video-add": {
-        "title": "Vidéo YouTube",
+        "title": "Vidéo",
         "subtitle": "Nouvelle vidéo",
         "create": "Créer",
         "labels": {
           "content-url": "URL du contenu",
-          "no-apikey": "Vous n'avez fourni aucune clé API Google dans le fichier de configuration de la plateforme. Les informations sur la vidéo seront incomplètes"
+          "no-youtube-apikey": "Vous n'avez fourni aucune clé API Google dans le fichier de configuration de la plateforme. Les informations sur la vidéo seront incomplètes",
+          "no-vimeo-token": "Le jeton d'accès Vimeo n'est pas configuré dans appsettings.json. Les vidéos Vimeo privées ne seront pas disponibles."
         },
         "placeholders": {
           "content-url": "Entrez l'URL de la vidéo"
         }
       },
       "video-detail": {
-        "title": "Vidéo YouTube",
+        "title": "Vidéo",
         "subtitle": "Modifier les informations de la vidéo",
         "labels": {
           "name": "Nom de la vidéo",
@@ -974,9 +975,7 @@
       },
       "catalog-delete": {
         "title": "Confirmer la suppression",
-        "warning": "AVERTISSEMENT : Ce changement est permanent et ne peut pas être annulé. L'application de ce changement peut entraîner une perte de données",
-        "message": "Êtes-vous sûr de vouloir supprimer ce catalogue ?",
-        "instruction": "Tapez 'yes' pour supprimer :"
+        "message": "Êtes-vous sûr de vouloir supprimer le catalogue '{{name}}' ?"
       },
       "catalog-items-delete": {
         "title": "Confirmer la suppression",

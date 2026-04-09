@@ -528,19 +528,20 @@
         }
       },
       "video-add": {
-        "title": "YouTube-Video",
+        "title": "Video",
         "subtitle": "Neues Video",
         "create": "Erstellen",
         "labels": {
           "content-url": "Inhalts-URL",
-          "no-apikey": "Sie haben keinen Google API-Schlüssel in der Plattformkonfigurationsdatei angegeben. Die Videoinformationen werden unvollständig sein"
+          "no-youtube-apikey": "Sie haben keinen Google API-Schlüssel in der Plattformkonfigurationsdatei angegeben. Die Videoinformationen werden unvollständig sein",
+          "no-vimeo-token": "Das Vimeo-Zugriffstoken ist in appsettings.json nicht konfiguriert. Private Vimeo-Videos sind nicht verfügbar."
         },
         "placeholders": {
           "content-url": "Video-URL eingeben"
         }
       },
       "video-detail": {
-        "title": "YouTube-Video",
+        "title": "Video",
         "subtitle": "Videoinformationen bearbeiten",
         "labels": {
           "name": "Videoname",
@@ -974,9 +975,7 @@
       },
       "catalog-delete": {
         "title": "Löschen bestätigen",
-        "warning": "WARNUNG: Diese Änderung ist dauerhaft und kann nicht rückgängig gemacht werden. Diese Änderung kann zu Datenverlust führen",
-        "message": "Sind Sie sicher, dass Sie diesen Katalog löschen möchten?",
-        "instruction": "Geben Sie 'yes' ein, um zu löschen:"
+        "message": "Sind Sie sicher, dass Sie den Katalog '{{name}}' löschen möchten?"
       },
       "catalog-items-delete": {
         "title": "Löschen bestätigen",
@@ -1305,6 +1304,10 @@
         "UseFullObjectIndexStoring": {
           "description": "Serialisierte Katalogobjekte im Index speichern und in den Suchergebnissen zurückgeben",
           "title": "Serialisierte Katalogobjekte im Index speichern"
+        },
+        "IndexLinkPriorityFields": {
+          "description": "Aktivieren/deaktivieren Sie die Indizierung von Feldern, die zur Berechnung der Priorität verknüpfter Objekte in Suchergebnissen verwendet werden",
+          "title": "Link-Prioritätsfelder indizieren"
         },
         "DefaultAggregationSize": {
           "description": "Größe für Aggregationen angeben, wenn nicht in den Aggregationseigenschaften des Shops definiert. Auf 0 setzen für unbegrenzte Größe",

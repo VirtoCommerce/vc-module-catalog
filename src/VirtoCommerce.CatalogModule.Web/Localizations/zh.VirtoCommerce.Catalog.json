@@ -528,19 +528,20 @@
         }
       },
       "video-add": {
-        "title": "YouTube 视频",
+        "title": "视频",
         "subtitle": "新视频",
         "create": "创建",
         "labels": {
           "content-url": "内容 URL",
-          "no-apikey": "您在平台配置文件中未提供任何 Google API 密钥。视频信息将不完整"
+          "no-youtube-apikey": "您在平台配置文件中未提供任何 Google API 密钥。视频信息将不完整",
+          "no-vimeo-token": "Vimeo访问令牌未在appsettings.json中配置。私有Vimeo视频将不可用。"
         },
         "placeholders": {
           "content-url": "输入视频 URL"
         }
       },
       "video-detail": {
-        "title": "YouTube 视频",
+        "title": "视频",
         "subtitle": "编辑视频信息",
         "labels": {
           "name": "视频名称",
@@ -974,9 +975,7 @@
       },
       "catalog-delete": {
         "title": "确认删除",
-        "warning": "警告：此更改是永久性的，无法撤销。应用此更改可能会导致数据丢失",
-        "message": "您确定要删除此目录吗？",
-        "instruction": "输入 'yes' 以删除："
+        "message": "您确定要删除目录 '{{name}}' 吗？"
       },
       "catalog-items-delete": {
         "title": "确认删除",
