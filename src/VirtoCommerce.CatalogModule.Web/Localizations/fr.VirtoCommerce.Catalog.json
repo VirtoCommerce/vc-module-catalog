@@ -677,6 +677,16 @@
           "label": "Limites de la plage de prix",
           "placeholder": "Ajouter un nombre",
           "description": "Les limites seront triées automatiquement avant l'enregistrement. Les plages de prix sont construites comme suit : Sous [limite 1], [limite 1] à [limite 2], ... , Au-dessus [limite N]"
+        },
+        "sorting": {
+          "label": "Tri",
+          "placeholder": "Sélectionner une méthode de tri"
+        },
+        "sorting-type-labels": {
+          "score": "Score",
+          "priority": "Priorité",
+          "nameAscending": "Nom croissant",
+          "nameDescending": "Nom décroissant"
         }
       },
       "importers-list": {
