@@ -528,19 +528,20 @@
         }
       },
       "video-add": {
-        "title": "YouTube-video",
+        "title": "Video",
         "subtitle": "Ny video",
         "create": "Skapa",
         "labels": {
           "content-url": "Innehållets URL",
-          "no-apikey": "Du har inte angett någon Google API-nyckel i plattformens konfigurationsfil. Videoinformationen kommer att vara ofullständig"
+          "no-youtube-apikey": "Du har inte angett någon Google API-nyckel i plattformens konfigurationsfil. Videoinformationen kommer att vara ofullständig",
+          "no-vimeo-token": "Vimeo-åtkomsttoken är inte konfigurerad i appsettings.json. Privata Vimeo-videor kommer inte att vara tillgängliga."
         },
         "placeholders": {
           "content-url": "Ange video-URL"
         }
       },
       "video-detail": {
-        "title": "YouTube-video",
+        "title": "Video",
         "subtitle": "Redigera videoinformation",
         "labels": {
           "name": "Videonamn",
@@ -976,9 +977,7 @@
       },
       "catalog-delete": {
         "title": "Bekräfta borttagning",
-        "warning": "VARNING: Denna ändring är permanent och kan inte ångras. Att tillämpa denna ändring kan leda till dataförlust",
-        "message": "Är du säker på att du vill ta bort denna katalog?",
-        "instruction": "Skriv 'yes' för att ta bort:"
+        "message": "Är du säker på att du vill ta bort katalogen '{{name}}'?"
       },
       "catalog-items-delete": {
         "title": "Bekräfta borttagning",
@@ -1321,6 +1320,10 @@
         "UseFullObjectIndexStoring": {
           "description": "Lagra serialiserade katalogobjekt i indexet och returnera dem i sökresultat",
           "title": "Lagra serialiserade katalogobjekt i indexet"
+        },
+        "IndexLinkPriorityFields": {
+          "description": "Aktivera/inaktivera indexering av fält som används för att beräkna prioriteten för länkade objekt i sökresultat",
+          "title": "Indexera länkprioritetsfält"
         },
         "DefaultAggregationSize": {
           "description": "Ange storlek för aggregationer när det inte definieras i butikens aggregationsinställningar. Sätt till 0 för obegränsad storlek",

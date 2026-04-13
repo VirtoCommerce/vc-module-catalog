@@ -528,19 +528,20 @@
         }
       },
       "video-add": {
-        "title": "Vídeo do YouTube",
+        "title": "Vídeo",
         "subtitle": "Novo vídeo",
         "create": "Criar",
         "labels": {
           "content-url": "URL do conteúdo",
-          "no-apikey": "Você não forneceu nenhuma chave de API do Google no arquivo de configuração da plataforma. As informações do vídeo estarão incompletas"
+          "no-youtube-apikey": "Você não forneceu nenhuma chave de API do Google no arquivo de configuração da plataforma. As informações do vídeo estarão incompletas",
+          "no-vimeo-token": "O token de acesso do Vimeo não está configurado em appsettings.json. Os vídeos privados do Vimeo não estarão disponíveis."
         },
         "placeholders": {
           "content-url": "Insira o URL do vídeo"
         }
       },
       "video-detail": {
-        "title": "Vídeo do YouTube",
+        "title": "Vídeo",
         "subtitle": "Editar informações do vídeo",
         "labels": {
           "name": "Nome do vídeo",
@@ -976,9 +977,7 @@
       },
       "catalog-delete": {
         "title": "Confirmar exclusão",
-        "warning": "AVISO: Esta alteração é permanente e não pode ser desfeita. Aplicar esta alteração pode resultar em perda de dados",
-        "message": "Tem certeza de que deseja excluir este catálogo?",
-        "instruction": "Digite 'yes' para excluir:"
+        "message": "Tem certeza de que deseja excluir o catálogo '{{name}}'?"
       },
       "catalog-items-delete": {
         "title": "Confirmar exclusão",

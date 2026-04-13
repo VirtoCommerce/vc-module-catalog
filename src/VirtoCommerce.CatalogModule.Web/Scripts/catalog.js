@@ -181,7 +181,7 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                 //Register video widget
                 var itemVideoWidget = {
                     controller: 'virtoCommerce.catalogModule.videoWidgetController',
-                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/videoWidget.tpl.html'
+                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/videoWidget.html'
                 };
                 widgetService.registerWidget(itemVideoWidget, 'itemDetail');
 

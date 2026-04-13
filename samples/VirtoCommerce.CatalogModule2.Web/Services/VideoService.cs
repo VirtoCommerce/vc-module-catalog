@@ -19,8 +19,8 @@ namespace VirtoCommerce.CatalogModule2.Web.Services
             Func<ICatalogRepository> repositoryFactory,
             IPlatformMemoryCache platformMemoryCache,
             IEventPublisher eventPublisher,
-            IVideoProvider videoProvider)
-            : base(repositoryFactory, platformMemoryCache, eventPublisher, videoProvider)
+            IEnumerable<IVideoProvider> providers)
+            : base(repositoryFactory, platformMemoryCache, eventPublisher, providers)
         {
         }
 

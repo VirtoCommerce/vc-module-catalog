@@ -5,7 +5,7 @@ angular.module('virtoCommerce.catalogModule')
                 var blade = $scope.blade;
                 var parentBlade = blade.parentBlade;
                 blade.updatePermission = 'catalog:update';
-                blade.headIcon = 'fab fa-youtube';
+                blade.headIcon = 'fas fa-video';
                 blade.title = 'catalog.blades.video-detail.title';
                 blade.subtitle = 'catalog.blades.video-detail.subtitle';
 
