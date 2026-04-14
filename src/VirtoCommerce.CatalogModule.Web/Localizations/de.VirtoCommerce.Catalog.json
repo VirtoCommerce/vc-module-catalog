@@ -677,6 +677,16 @@
           "label": "Preisbereichsgrenzen",
           "placeholder": "Nummer hinzufügen",
           "description": "Grenzen werden vor dem Speichern automatisch sortiert. Preisbereiche werden wie folgt konstruiert: Unter [Grenze 1], [Grenze 1] bis [Grenze 2], ... , Über [Grenze N]"
+        },
+        "sorting": {
+          "label": "Sortierung",
+          "placeholder": "Sortiermethode auswählen"
+        },
+        "sorting-type-labels": {
+          "score": "Punktzahl",
+          "priority": "Priorität",
+          "nameAscending": "Name aufsteigend",
+          "nameDescending": "Name absteigend"
         }
       },
       "importers-list": {

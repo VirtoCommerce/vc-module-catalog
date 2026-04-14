@@ -16,6 +16,11 @@ namespace VirtoCommerce.CatalogModule.Core
         public const string ConfigurationSectionTypeFile = "File";
         public const string ConfigurationSectionFilesScope = "product-configuration";
 
+        public const string TermValuesSortingTypeScore = "Score";
+        public const string TermValuesSortingTypePriority = "Priority";
+        public const string TermValuesSortingTypeNameAscending = "NameAscending";
+        public const string TermValuesSortingTypeNameDescending = "NameDescending";
+
         public static class Security
         {
             public static class Permissions
