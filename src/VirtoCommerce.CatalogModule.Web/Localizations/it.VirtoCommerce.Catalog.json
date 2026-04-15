@@ -960,9 +960,7 @@
       },
       "catalog-delete": {
         "title": "Conferma eliminazione",
-        "warning": "ATTENZIONE: Questa modifica è permanente e non può essere annullata. Applicare questa modifica può comportare la perdita di dati",
-        "message": "Sei sicuro di voler eliminare questo catalogo?",
-        "instruction": "Digita 'yes' per eliminare:"
+        "message": "Sei sicuro di voler eliminare il catalogo '{{name}}'?"
       },
       "catalog-items-delete": {
         "title": "Conferma eliminazione",
