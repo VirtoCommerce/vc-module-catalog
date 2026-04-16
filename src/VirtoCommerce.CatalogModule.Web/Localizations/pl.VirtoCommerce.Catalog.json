@@ -677,6 +677,16 @@
           "label": "Granice zakresu cen",
           "placeholder": "Dodaj liczbę",
           "description": "Granice będą sortowane automatycznie przed zapisaniem. Zakresy cen są konstruowane w następujący sposób: Poniżej [granica 1], [granica 1] do [granica 2], ..., Powyżej [granica N]"
+        },
+        "sorting": {
+          "label": "Sortowanie",
+          "placeholder": "Wybierz metodę sortowania"
+        },
+        "sorting-type-labels": {
+          "score": "Wynik",
+          "priority": "Priorytet",
+          "nameAscending": "Nazwa rosnąco",
+          "nameDescending": "Nazwa malejąco"
         }
       },
       "importers-list": {
