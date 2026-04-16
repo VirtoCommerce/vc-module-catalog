@@ -150,7 +150,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("")]
         public async Task<ActionResult> CreateOrUpdateCategory([FromBody] Category category)
         {
-            var categoryExists = await CategoryExistsAsync(category.Id);
+            var categoryExists = await CategoryExistsAsync(category);
 
             if (!categoryExists)
             {
@@ -158,7 +158,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 if (category.SeoInfos == null || !category.SeoInfos.Any())
                 {
                     var slugUrl = category.Name.GenerateSlug();
-                    if (!string.IsNullOrEmpty(slugUrl))
+                    if (!slugUrl.IsNullOrEmpty())
                     {
                         var catalog = await catalogService.GetNoCloneAsync(category.CatalogId);
                         var defaultLanguage = catalog?.Languages.First(x => x.IsDefault).LanguageCode;
@@ -251,27 +251,30 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("batch")]
         public async Task<ActionResult<Category[]>> SaveCategories([FromBody] Category[] categories)
         {
-            var existingCategoryIds = await GetExistingCategoryIdsAsync(categories.Select(x => x.Id).ToArray());
+            var existingCategoryIds = await GetExistingCategoryIdsAsync(categories);
 
-            var newCategories = categories.Where(x => string.IsNullOrEmpty(x.Id) || !existingCategoryIds.Contains(x.Id)).ToArray();
-            if (newCategories.Length > 0)
+            var newCategories = categories
+                .Where(x => x.Id.IsNullOrEmpty() || !existingCategoryIds.Contains(x.Id))
+                .ToArray();
+
+            if (newCategories.Length > 0 &&
+                !await authorizationService.AuthorizeAsync(User, newCategories, Permissions.CategoriesCreate))
             {
-                if (!await authorizationService.AuthorizeAsync(User, newCategories, Permissions.CategoriesCreate))
-                {
-                    return Forbid();
-                }
+                return Forbid();
             }
 
-            var existingCategories = categories.Where(x => !string.IsNullOrEmpty(x.Id) && existingCategoryIds.Contains(x.Id)).ToArray();
-            if (existingCategories.Length > 0)
+            var existingCategories = categories
+                .Where(x => !x.Id.IsNullOrEmpty() && existingCategoryIds.Contains(x.Id))
+                .ToArray();
+
+            if (existingCategories.Length > 0 &&
+                !await authorizationService.AuthorizeAsync(User, existingCategories, Permissions.CategoriesUpdate))
             {
-                if (!await authorizationService.AuthorizeAsync(User, existingCategories, Permissions.CategoriesUpdate))
-                {
-                    return Forbid();
-                }
+                return Forbid();
             }
 
             await categoryService.SaveChangesAsync(categories);
+
             return Ok(categories);
         }
 
@@ -291,22 +294,30 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return NoContent();
         }
 
-        private async Task<bool> CategoryExistsAsync(string id)
+        private async Task<bool> CategoryExistsAsync(Category category)
         {
-            return !string.IsNullOrEmpty(id) && (await GetExistingCategoryIdsAsync([id])).Contains(id);
+            return !category.Id.IsNullOrEmpty() &&
+                   (await GetExistingCategoryIdsAsync([category])).Contains(category.Id);
         }
 
-        private async Task<HashSet<string>> GetExistingCategoryIdsAsync(IList<string> ids)
+        private async Task<HashSet<string>> GetExistingCategoryIdsAsync(IList<Category> categories)
         {
-            var searchIds = ids.Where(x => !string.IsNullOrEmpty(x)).DistinctIgnoreCase().ToArray();
-            if (searchIds.Length == 0)
+            var ids = categories
+                .Where(x => !x.Id.IsNullOrEmpty())
+                .Select(x => x.Id)
+                .DistinctIgnoreCase()
+                .ToArray();
+
+            if (ids.Length == 0)
             {
                 return [];
             }
 
-            var existingCategories = await categoryService.GetNoCloneAsync(searchIds, nameof(CategoryResponseGroup.Info));
+            var existingCategories = await categoryService.GetNoCloneAsync(ids, nameof(CategoryResponseGroup.Info));
 
-            return existingCategories.Select(x => x.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
+            return existingCategories
+                .Select(x => x.Id)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
         }
     }
 }

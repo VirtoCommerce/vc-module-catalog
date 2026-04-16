@@ -300,7 +300,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         public async Task<ActionResult<CatalogProduct>> SaveProduct([FromBody] CatalogProduct product)
         {
-            var productExists = await ProductExistsAsync(product.Id);
+            var productExists = await ProductExistsAsync(product);
 
             var permission = productExists
                 ? Permissions.ProductsUpdate
@@ -334,24 +334,26 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("batch")]
         public async Task<ActionResult> SaveProducts([FromBody] CatalogProduct[] products)
         {
-            var existingProductIds = await GetExistingProductIdsAsync(products.Select(x => x.Id).ToArray());
+            var existingProductIds = await GetExistingProductIdsAsync(products);
 
-            var newProducts = products.Where(p => string.IsNullOrEmpty(p.Id) || !existingProductIds.Contains(p.Id)).ToArray();
-            if (newProducts.Length > 0)
+            var newProducts = products
+                .Where(x => x.Id.IsNullOrEmpty() || !existingProductIds.Contains(x.Id))
+                .ToArray();
+
+            if (newProducts.Length > 0 &&
+                !await authorizationService.AuthorizeAsync(User, newProducts, Permissions.ProductsCreate))
             {
-                if (!await authorizationService.AuthorizeAsync(User, newProducts, Permissions.ProductsCreate))
-                {
-                    return Forbid();
-                }
+                return Forbid();
             }
 
-            var existingProducts = products.Where(p => !string.IsNullOrEmpty(p.Id) && existingProductIds.Contains(p.Id)).ToArray();
-            if (existingProducts.Length > 0)
+            var existingProducts = products
+                .Where(x => !x.Id.IsNullOrEmpty() && existingProductIds.Contains(x.Id))
+                .ToArray();
+
+            if (existingProducts.Length > 0 &&
+                !await authorizationService.AuthorizeAsync(User, existingProducts, Permissions.ProductsUpdate))
             {
-                if (!await authorizationService.AuthorizeAsync(User, existingProducts, Permissions.ProductsUpdate))
-                {
-                    return Forbid();
-                }
+                return Forbid();
             }
 
             if (!await authorizationService.AuthorizeAsync(User, products, new CustomPropertyRequirement()))
@@ -360,6 +362,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             }
 
             await InnerSaveProducts(products, existingProductIds);
+
             return Ok();
         }
 
@@ -426,7 +429,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private async Task<CatalogProduct[]> InnerSaveProducts(CatalogProduct[] products, HashSet<string> existingProductIds = null)
         {
             var toSaveList = new List<CatalogProduct>();
-            existingProductIds ??= await GetExistingProductIdsAsync(products.Select(x => x.Id).ToArray());
+            existingProductIds ??= await GetExistingProductIdsAsync(products);
 
             var catalogs = await catalogService.GetNoCloneAsync(products.Select(pr => pr.CatalogId).Distinct().ToList());
             foreach (var product in products)
@@ -436,13 +439,13 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                     product.Name = product.Name.Trim();
                 }
 
-                var isNewProduct = string.IsNullOrEmpty(product.Id) || !existingProductIds.Contains(product.Id);
+                var isNewProduct = product.Id.IsNullOrEmpty() || !existingProductIds.Contains(product.Id);
                 if (isNewProduct && product.SeoInfos.IsNullOrEmpty())
                 {
                     var slugUrl = GenerateProductDefaultSlugUrl(product);
-                    if (!string.IsNullOrEmpty(slugUrl))
+                    if (!slugUrl.IsNullOrEmpty())
                     {
-                        var catalog = catalogs.FirstOrDefault(c => c.Id.EqualsIgnoreCase(product.CatalogId));
+                        var catalog = catalogs.FirstOrDefault(x => x.Id.EqualsIgnoreCase(product.CatalogId));
                         var defaultLanguageCode = catalog?.Languages.First(x => x.IsDefault).LanguageCode;
                         var seoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
                         seoInfo.LanguageCode = defaultLanguageCode;
@@ -462,23 +465,30 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return [.. toSaveList];
         }
 
-        private async Task<bool> ProductExistsAsync(string id)
+        private async Task<bool> ProductExistsAsync(CatalogProduct product)
         {
-            return !string.IsNullOrEmpty(id) && (await GetExistingProductIdsAsync([id])).Contains(id);
+            return !product.Id.IsNullOrEmpty() &&
+                   (await GetExistingProductIdsAsync([product])).Contains(product.Id);
         }
 
-        private async Task<HashSet<string>> GetExistingProductIdsAsync(IList<string> ids)
+        private async Task<HashSet<string>> GetExistingProductIdsAsync(IList<CatalogProduct> products)
         {
+            var ids = products
+                .Where(x => !x.Id.IsNullOrEmpty())
+                .Select(x => x.Id)
+                .DistinctIgnoreCase()
+                .ToArray();
 
-            var searchIds = ids.Where(x => !string.IsNullOrEmpty(x)).DistinctIgnoreCase().ToArray();
-            if (searchIds.Length == 0)
+            if (ids.Length == 0)
             {
                 return [];
             }
 
-            var existingProducts = await itemsService.GetNoCloneAsync(searchIds, nameof(ItemResponseGroup.ItemInfo));
+            var existingProducts = await itemsService.GetNoCloneAsync(ids, nameof(ItemResponseGroup.ItemInfo));
 
-            return existingProducts.Select(x => x.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
+            return existingProducts
+                .Select(x => x.Id)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
         }
 
         private string GenerateProductDefaultSlugUrl(CatalogProduct product)
