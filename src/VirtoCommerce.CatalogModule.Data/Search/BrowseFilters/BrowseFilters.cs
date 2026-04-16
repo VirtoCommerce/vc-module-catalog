@@ -38,6 +38,9 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
 
         public int Order { get; set; }
 
+        [XmlElement("termValuesSortingType")]
+        public string TermValuesSortingType { get; set; }
+
         [XmlElement("simple")]
         public AttributeFilterValue[] Values { get; set; }
 

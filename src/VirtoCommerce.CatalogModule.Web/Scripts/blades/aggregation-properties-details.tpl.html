@@ -22,6 +22,14 @@
               </div>
             </div>
 
+            <div class="form-group" ng-if="blade.canSetItemsSorting()">
+              <label class="form-label">{{'catalog.blades.aggregation-properties-details.sorting.label' | translate}}</label>
+              <ui-scroll-drop-down ng-model="blade.property.termValuesSortingType"
+                                   data="blade.getSortingTypes()"
+                                   placeholder="'catalog.blades.aggregation-properties-details.sorting.placeholder'">
+              </ui-scroll-drop-down>
+            </div>
+
             <div class="form-group" ng-if="blade.measure">
               <label class="form-label">{{'catalog.blades.aggregation-properties-details.measure.label' | translate}}</label>
               <div class="form-input">

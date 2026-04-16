@@ -677,6 +677,16 @@
           "label": "価格範囲境界",
           "placeholder": "数値を追加",
           "description": "保存前に境界が自動的にソートされます。価格範囲は次のように構成されます: [境界1]以下、[境界1]から[境界2]まで、...、[境界N]以上"
+        },
+        "sorting": {
+          "label": "並び替え",
+          "placeholder": "並び替え方法を選択"
+        },
+        "sorting-type-labels": {
+          "score": "スコア",
+          "priority": "優先度",
+          "nameAscending": "名前（昇順）",
+          "nameDescending": "名前（降順）"
         }
       },
       "importers-list": {
