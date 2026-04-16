@@ -677,6 +677,16 @@
           "label": "Prisintervallgrenser",
           "placeholder": "Legg til nummer",
           "description": "Grenser sorteres automatisk før lagring. Prisintervall konstrueres som følgende: Under [grense 1], [grense 1] til [grense 2], ..., Over [grense N]"
+        },
+        "sorting": {
+          "label": "Sortering",
+          "placeholder": "Velg sorteringsmetode"
+        },
+        "sorting-type-labels": {
+          "score": "Poeng",
+          "priority": "Prioritet",
+          "nameAscending": "Navn stigende",
+          "nameDescending": "Navn synkende"
         }
       },
       "importers-list": {

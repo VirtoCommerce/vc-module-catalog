@@ -677,6 +677,16 @@
           "label": "Límites del rango de precios",
           "placeholder": "Agregar número",
           "description": "Los límites se ordenarán automáticamente antes de guardar. Los rangos de precios se construyen de la siguiente manera: Menor que [límite 1], [límite 1] a [límite 2], ..., Mayor que [límite N]"
+        },
+        "sorting": {
+          "label": "Ordenación",
+          "placeholder": "Seleccionar método de ordenación"
+        },
+        "sorting-type-labels": {
+          "score": "Puntuación",
+          "priority": "Prioridad",
+          "nameAscending": "Nombre ascendente",
+          "nameDescending": "Nombre descendente"
         }
       },
       "importers-list": {

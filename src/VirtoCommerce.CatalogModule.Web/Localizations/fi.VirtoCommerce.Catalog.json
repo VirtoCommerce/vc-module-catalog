@@ -677,6 +677,16 @@
           "label": "Hintavälien rajat",
           "placeholder": "Lisää numero",
           "description": "Rajat lajitellaan automaattisesti ennen tallennusta. Hintavälit muodostetaan seuraavasti: Alle [raja 1], [raja 1] - [raja 2], ... , Yli [raja N]"
+        },
+        "sorting": {
+          "label": "Lajittelu",
+          "placeholder": "Valitse lajittelutapa"
+        },
+        "sorting-type-labels": {
+          "score": "Pisteet",
+          "priority": "Prioriteetti",
+          "nameAscending": "Nimi nouseva",
+          "nameDescending": "Nimi laskeva"
         }
       },
       "importers-list": {

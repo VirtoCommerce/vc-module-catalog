@@ -677,6 +677,16 @@
           "label": "Limiti dell'intervallo di prezzo",
           "placeholder": "Aggiungi numero",
           "description": "I limiti verranno ordinati automaticamente prima di salvare. Gli intervalli di prezzo sono costruiti come segue: Sotto [limite 1], [limite 1] a [limite 2], ..., Sopra [limite N]"
+        },
+        "sorting": {
+          "label": "Ordinamento",
+          "placeholder": "Seleziona metodo di ordinamento"
+        },
+        "sorting-type-labels": {
+          "score": "Punteggio",
+          "priority": "Priorità",
+          "nameAscending": "Nome crescente",
+          "nameDescending": "Nome decrescente"
         }
       },
       "importers-list": {

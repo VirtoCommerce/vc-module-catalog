@@ -677,6 +677,16 @@
           "label": "Limites de faixa de preço",
           "placeholder": "Adicionar número",
           "description": "Os limites serão classificados automaticamente antes de salvar. As faixas de preço são construídas da seguinte forma: Abaixo de [limite 1], [limite 1] a [limite 2], ..., Acima de [limite N]"
+        },
+        "sorting": {
+          "label": "Ordenação",
+          "placeholder": "Selecionar método de ordenação"
+        },
+        "sorting-type-labels": {
+          "score": "Pontuação",
+          "priority": "Prioridade",
+          "nameAscending": "Nome ascendente",
+          "nameDescending": "Nome descendente"
         }
       },
       "importers-list": {
