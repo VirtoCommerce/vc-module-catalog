@@ -13,78 +13,79 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
 {
     public sealed class CatalogEntityAuthorizationService(IAuthorizationService authorizationService)
     {
-        public async Task<IList<CatalogListEntrySearchCriteria>> GetAuthorizedCriteriaByTypeAsync(ClaimsPrincipal user, CatalogListEntrySearchCriteria criteria, string categoryPermission, string productPermission, string fallbackPermission)
+        public async Task<IList<CatalogListEntrySearchCriteria>> GetAuthorizedListEntrySearchCriteriaByObjectTypeAsync(ClaimsPrincipal user, CatalogListEntrySearchCriteria criteria, string categoryPermission, string productPermission)
         {
             var authorizedCriteria = new List<CatalogListEntrySearchCriteria>();
-
-            if (RequestsObjectType(criteria.ObjectTypes, nameof(Category)))
+            var authorizationTargets = new[]
             {
-                var categoryCriteria = CreateTypedCriteria(criteria, nameof(Category));
-                if (await IsAuthorizedAsync(user, categoryCriteria, categoryPermission, fallbackPermission))
-                {
-                    authorizedCriteria.Add(categoryCriteria);
-                }
-            }
+                (ObjectType: nameof(Category), Permission: categoryPermission),
+                (ObjectType: nameof(CatalogProduct), Permission: productPermission),
+            };
 
-            if (RequestsObjectType(criteria.ObjectTypes, nameof(CatalogProduct)))
+            foreach (var target in authorizationTargets)
             {
-                var productCriteria = CreateTypedCriteria(criteria, nameof(CatalogProduct));
-                if (await IsAuthorizedAsync(user, productCriteria, productPermission, fallbackPermission))
+                if (IsListEntryObjectTypeRequested(criteria.ObjectTypes, target.ObjectType))
                 {
-                    authorizedCriteria.Add(productCriteria);
+                    var typedCriteria = CreateTypedCriteria(criteria, target.ObjectType);
+                    if (await IsAuthorizedAsync(user, typedCriteria, target.Permission))
+                    {
+                        authorizedCriteria.Add(typedCriteria);
+                    }
                 }
             }
 
             return authorizedCriteria;
         }
 
-        public async Task<bool> TryAuthorizeEntitiesByTypeAsync(ClaimsPrincipal user, IEnumerable<IEntity> entities, string categoryPermission, string productPermission, string fallbackPermission)
+        public async Task<bool> TryAuthorizeEntitiesByTypeAsync<T>(ClaimsPrincipal user, IList<T> entities, string categoryPermission, string productPermission)
         {
-            var catalogEntities = entities?.ToArray() ?? [];
-
-            var categories = catalogEntities.OfType<Category>().ToArray();
-            if (!categories.IsNullOrEmpty() && !await IsAuthorizedAsync(user, categories, categoryPermission, fallbackPermission))
+            var catalogEntities = entities ?? [];
+            var authorizationTargets = new[]
             {
-                return false;
-            }
+                (Entities: catalogEntities.OfType<Category>().Cast<IHasCatalogId>().ToArray(), Permission: categoryPermission),
+                (Entities: catalogEntities.OfType<CatalogProduct>().Cast<IHasCatalogId>().ToArray(), Permission: productPermission),
+            };
 
-            var products = catalogEntities.OfType<CatalogProduct>().ToArray();
-            if (!products.IsNullOrEmpty() && !await IsAuthorizedAsync(user, products, productPermission, fallbackPermission))
+            foreach (var target in authorizationTargets)
             {
-                return false;
+                if (!target.Entities.IsNullOrEmpty() && !await IsAuthorizedAsync(user, target.Entities, target.Permission))
+                {
+                    return false;
+                }
             }
 
             return true;
         }
 
-        public async Task<bool> TryAuthorizeMoveRequestByTypeAsync(ClaimsPrincipal user, ListEntriesMoveRequest moveRequest, IEnumerable<IEntity> sourceEntities, string categoryPermission, string productPermission, string fallbackPermission)
+        public async Task<bool> TryAuthorizeMoveRequestByTypeAsync(ClaimsPrincipal user, ListEntriesMoveRequest moveRequest, IList<IEntity> sourceEntities, string categoryPermission, string productPermission)
         {
             var listEntries = moveRequest.ListEntries?.ToArray() ?? [];
-            var entities = sourceEntities?.ToArray() ?? [];
+            var entities = sourceEntities ?? [];
+            var authorizationTargets = new[]
+            {
+                (ListEntryType: CategoryListEntry.TypeName, Permission: categoryPermission),
+                (ListEntryType: ProductListEntry.TypeName, Permission: productPermission),
+            };
 
-            if (!await TryAuthorizeEntitiesByTypeAsync(user, entities, categoryPermission, productPermission, fallbackPermission))
+            if (!await TryAuthorizeEntitiesByTypeAsync(user, entities, categoryPermission, productPermission))
             {
                 return false;
             }
 
-            if (listEntries.Any(x => IsCategoryType(x.Type)) &&
-                !await IsAuthorizedAsync(user, moveRequest, categoryPermission, fallbackPermission))
+            foreach (var target in authorizationTargets)
             {
-                return false;
-            }
-
-            if (listEntries.Any(x => IsProductType(x.Type)) &&
-                !await IsAuthorizedAsync(user, moveRequest, productPermission, fallbackPermission))
-            {
-                return false;
+                if (listEntries.Any(x => x.Type.EqualsIgnoreCase(target.ListEntryType)) && !await IsAuthorizedAsync(user, moveRequest, target.Permission))
+                {
+                    return false;
+                }
             }
 
             return true;
         }
 
-        public async Task<bool> IsAuthorizedAsync(ClaimsPrincipal user, object resource, string permission, string fallbackPermission = null)
+        public async Task<bool> IsAuthorizedAsync(ClaimsPrincipal user, object resource, string permission)
         {
-            var authorizationResult = await authorizationService.AuthorizeAsync(user, resource, new CatalogAuthorizationRequirement(permission, fallbackPermission));
+            var authorizationResult = await authorizationService.AuthorizeAsync(user, resource, new CatalogAuthorizationRequirement(permission));
             return authorizationResult.Succeeded;
         }
 
@@ -95,19 +96,10 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
             return typedCriteria;
         }
 
-        private static bool RequestsObjectType(IEnumerable<string> objectTypes, string objectType)
+        private static bool IsListEntryObjectTypeRequested(IList<string> objectTypes, string objectType)
         {
             return objectTypes.IsNullOrEmpty() || objectTypes.Any(x => x.EqualsIgnoreCase(objectType));
         }
 
-        private static bool IsCategoryType(string objectType)
-        {
-            return objectType.EqualsIgnoreCase(CategoryListEntry.TypeName);
-        }
-
-        private static bool IsProductType(string objectType)
-        {
-            return objectType.EqualsIgnoreCase(ProductListEntry.TypeName);
-        }
     }
 }

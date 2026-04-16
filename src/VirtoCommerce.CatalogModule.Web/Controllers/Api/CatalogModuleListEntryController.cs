@@ -41,12 +41,11 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("")]
         public async Task<ActionResult<ListEntrySearchResult>> ListItemsSearchAsync([FromBody] CatalogListEntrySearchCriteria criteria)
         {
-            var authorizedCriteria = await catalogEntityAuthorizationService.GetAuthorizedCriteriaByTypeAsync(
+            var authorizedCriteria = await catalogEntityAuthorizationService.GetAuthorizedListEntrySearchCriteriaByObjectTypeAsync(
                 User,
                 criteria,
                 ModuleConstants.Security.Permissions.CategoriesRead,
-                ModuleConstants.Security.Permissions.ProductsRead,
-                ModuleConstants.Security.Permissions.Read);
+                ModuleConstants.Security.Permissions.ProductsRead);
 
             if (authorizedCriteria.Count == 0)
             {
@@ -74,8 +73,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 User,
                 hasLinkEntries,
                 ModuleConstants.Security.Permissions.CategoriesUpdate,
-                ModuleConstants.Security.Permissions.ProductsUpdate,
-                ModuleConstants.Security.Permissions.Update))
+                ModuleConstants.Security.Permissions.ProductsUpdate))
             {
                 return Forbid();
             }
@@ -115,12 +113,11 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return BadRequest("Target catalog identifier should be specified.");
             }
 
-            var authorizedCriteria = await catalogEntityAuthorizationService.GetAuthorizedCriteriaByTypeAsync(
+            var authorizedCriteria = await catalogEntityAuthorizationService.GetAuthorizedListEntrySearchCriteriaByObjectTypeAsync(
                 User,
                 creationRequest.SearchCriteria,
                 ModuleConstants.Security.Permissions.CategoriesUpdate,
-                ModuleConstants.Security.Permissions.ProductsUpdate,
-                ModuleConstants.Security.Permissions.Update);
+                ModuleConstants.Security.Permissions.ProductsUpdate);
             if (authorizedCriteria.Count == 0)
             {
                 return Forbid();
@@ -138,8 +135,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 User,
                 hasLinkEntries,
                 ModuleConstants.Security.Permissions.CategoriesUpdate,
-                ModuleConstants.Security.Permissions.ProductsUpdate,
-                ModuleConstants.Security.Permissions.Update))
+                ModuleConstants.Security.Permissions.ProductsUpdate))
             {
                 return Forbid();
             }
@@ -171,8 +167,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 User,
                 hasLinkEntries,
                 ModuleConstants.Security.Permissions.CategoriesRead,
-                ModuleConstants.Security.Permissions.ProductsRead,
-                ModuleConstants.Security.Permissions.Read))
+                ModuleConstants.Security.Permissions.ProductsRead))
             {
                 return Forbid();
             }
@@ -206,8 +201,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 User,
                 hasLinkEntries,
                 ModuleConstants.Security.Permissions.CategoriesDelete,
-                ModuleConstants.Security.Permissions.ProductsDelete,
-                ModuleConstants.Security.Permissions.Delete))
+                ModuleConstants.Security.Permissions.ProductsDelete))
             {
                 return Forbid();
             }
@@ -242,8 +236,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 moveRequest,
                 sourceEntries,
                 ModuleConstants.Security.Permissions.CategoriesUpdate,
-                ModuleConstants.Security.Permissions.ProductsUpdate,
-                ModuleConstants.Security.Permissions.Update))
+                ModuleConstants.Security.Permissions.ProductsUpdate))
             {
                 return Forbid();
             }
@@ -284,20 +277,18 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                     User,
                     entitiesToDelete,
                     ModuleConstants.Security.Permissions.CategoriesDelete,
-                    ModuleConstants.Security.Permissions.ProductsDelete,
-                    ModuleConstants.Security.Permissions.Delete))
+                    ModuleConstants.Security.Permissions.ProductsDelete))
                 {
                     return Forbid();
                 }
             }
             else
             {
-                var authorizedCriteria = await catalogEntityAuthorizationService.GetAuthorizedCriteriaByTypeAsync(
+                var authorizedCriteria = await catalogEntityAuthorizationService.GetAuthorizedListEntrySearchCriteriaByObjectTypeAsync(
                     User,
                     criteria,
                     ModuleConstants.Security.Permissions.CategoriesDelete,
-                    ModuleConstants.Security.Permissions.ProductsDelete,
-                    ModuleConstants.Security.Permissions.Delete);
+                    ModuleConstants.Security.Permissions.ProductsDelete);
                 if (authorizedCriteria.Count == 0)
                 {
                     return Forbid();

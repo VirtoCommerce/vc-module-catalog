@@ -1,4 +1,18 @@
-angular.module('virtoCommerce.catalogModule').controller('virtoCommerce.catalogModule.itemVariationListController', ['$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'virtoCommerce.catalogModule.items', 'filterFilter', 'uiGridConstants', 'platformWebApp.uiGridHelper', 'virtoCommerce.catalogModule.search', 'platformWebApp.bladeUtils', 'platformWebApp.authService', function ($scope, bladeNavigationService, dialogService, items, filterFilter, uiGridConstants, uiGridHelper, search, bladeUtils, authService) {
+angular.module('virtoCommerce.catalogModule')
+    .controller('virtoCommerce.catalogModule.itemVariationListController', [
+        '$scope',
+        '$injector',
+        function ($scope, $injector) {
+    var bladeNavigationService = $injector.get('platformWebApp.bladeNavigationService');
+    var dialogService = $injector.get('platformWebApp.dialogService');
+    var items = $injector.get('virtoCommerce.catalogModule.items');
+    var filterFilter = $injector.get('filterFilter');
+    var uiGridConstants = $injector.get('uiGridConstants');
+    var uiGridHelper = $injector.get('platformWebApp.uiGridHelper');
+    var search = $injector.get('virtoCommerce.catalogModule.search');
+    var bladeUtils = $injector.get('platformWebApp.bladeUtils');
+    var authService = $injector.get('platformWebApp.authService');
+
     $scope.uiGridConstants = uiGridConstants;
     var blade = $scope.blade;
 

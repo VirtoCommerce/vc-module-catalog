@@ -1,6 +1,15 @@
 angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.categoriesItemsListController', [
-        '$sessionStorage', '$location', '$timeout', '$scope', 'virtoCommerce.catalogModule.listEntries', 'platformWebApp.bladeUtils', 'platformWebApp.dialogService', 'platformWebApp.authService', 'platformWebApp.uiGridHelper', 'virtoCommerce.catalogModule.catalogs',
+        '$sessionStorage',
+        '$location',
+        '$timeout',
+        '$scope',
+        'virtoCommerce.catalogModule.listEntries',
+        'platformWebApp.bladeUtils',
+        'platformWebApp.dialogService',
+        'platformWebApp.authService',
+        'platformWebApp.uiGridHelper',
+        'virtoCommerce.catalogModule.catalogs',
         function ($sessionStorage, $location, $timeout, $scope, listEntries, bladeUtils, dialogService, authService, uiGridHelper, catalogs) {
             $scope.uiGridConstants = uiGridHelper.uiGridConstants;
             $scope.hasMore = true;
@@ -508,7 +517,7 @@ angular.module('virtoCommerce.catalogModule')
                     }
                     blade.toolbarCommands.splice(1, 5, mapCommand);
                 }
-            } else if (!blade.isBrowsingLinkedCategory && (authService.checkPermission('catalog:create') || authService.checkPermission('catalog:categories:create') || authService.checkPermission('catalog:products:create'))) {
+            } else if (!blade.isBrowsingLinkedCategory && canCreateCatalogItem()) {
                 blade.toolbarCommands.splice(1, 0, {
                     name: "platform.commands.add",
                     icon: 'fas fa-plus',
@@ -525,6 +534,12 @@ angular.module('virtoCommerce.catalogModule')
                     },
                     canExecuteMethod: function () { return blade.catalogId; }
                 });
+            }
+
+            function canCreateCatalogItem() {
+                return authService.checkPermission('catalog:create') ||
+                    authService.checkPermission('catalog:categories:create') ||
+                    authService.checkPermission('catalog:products:create');
             }
 
             blade.onAfterCatalogSelected = function (selectedNode) {

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Data.Authorization;
@@ -16,6 +17,18 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
     public sealed class CatalogAuthorizationHandler(IOptions<MvcNewtonsoftJsonOptions> jsonOptions)
         : PermissionAuthorizationHandlerBase<CatalogAuthorizationRequirement>
     {
+        private static readonly IReadOnlyDictionary<string, string> FallbackPermissions = new Dictionary<string, string>
+        {
+            [ModuleConstants.Security.Permissions.CategoriesCreate] = ModuleConstants.Security.Permissions.Create,
+            [ModuleConstants.Security.Permissions.CategoriesRead] = ModuleConstants.Security.Permissions.Read,
+            [ModuleConstants.Security.Permissions.CategoriesUpdate] = ModuleConstants.Security.Permissions.Update,
+            [ModuleConstants.Security.Permissions.CategoriesDelete] = ModuleConstants.Security.Permissions.Delete,
+            [ModuleConstants.Security.Permissions.ProductsCreate] = ModuleConstants.Security.Permissions.Create,
+            [ModuleConstants.Security.Permissions.ProductsRead] = ModuleConstants.Security.Permissions.Read,
+            [ModuleConstants.Security.Permissions.ProductsUpdate] = ModuleConstants.Security.Permissions.Update,
+            [ModuleConstants.Security.Permissions.ProductsDelete] = ModuleConstants.Security.Permissions.Delete,
+        };
+
         private readonly MvcNewtonsoftJsonOptions _jsonOptions = jsonOptions.Value;
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, CatalogAuthorizationRequirement requirement)
@@ -24,12 +37,12 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
 
             if (!context.HasSucceeded)
             {
-                TryAuthorizeWithScopedPermission(context, requirement, requirement.Permission);
+                TryAuthorizeWithPermission(context, requirement, requirement.Permission);
             }
 
-            if (!context.HasSucceeded && !string.IsNullOrEmpty(requirement.FallbackPermission))
+            if (!context.HasSucceeded && FallbackPermissions.TryGetValue(requirement.Permission, out var fallbackPermission))
             {
-                TryAuthorizeWithPermission(context, requirement, requirement.FallbackPermission);
+                TryAuthorizeWithPermission(context, requirement, fallbackPermission);
             }
         }
 
