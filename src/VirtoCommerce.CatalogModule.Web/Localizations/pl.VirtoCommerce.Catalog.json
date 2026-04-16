@@ -1279,14 +1279,14 @@
     "catalog:metadata-property:edit": "Edytuj metadane właściwości",
     "catalog:custom-property:edit": "Edytuj niestandardowe właściwości produktu",
     "catalog:dictionary-property:edit": "Edytuj wartości słownika właściwości",
-    "catalog:categories:create": "Utwórz kategorie",
-    "catalog:categories:read": "Wyświetl kategorie",
-    "catalog:categories:update": "Zaktualizuj kategorie",
-    "catalog:categories:delete": "Usuń kategorie",
-    "catalog:products:create": "Utwórz produkty",
-    "catalog:products:read": "Wyświetl produkty",
-    "catalog:products:update": "Zaktualizuj produkty",
-    "catalog:products:delete": "Usuń produkty"
+    "catalog:categories:create": "Tworzenie kategorii",
+    "catalog:categories:read": "Przeglądanie kategorii",
+    "catalog:categories:update": "Edytowanie kategorii",
+    "catalog:categories:delete": "Usuwanie kategorii",
+    "catalog:products:create": "Tworzenie produktów",
+    "catalog:products:read": "Przeglądanie produktów",
+    "catalog:products:update": "Edytowanie produktów",
+    "catalog:products:delete": "Usuwanie produktów"
   },
   "settings": {
     "Catalog": {

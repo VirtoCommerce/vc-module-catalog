@@ -1281,11 +1281,11 @@
     "catalog:dictionary-property:edit": "プロパティの辞書値を編集",
     "catalog:categories:create": "カテゴリを作成",
     "catalog:categories:read": "カテゴリを表示",
-    "catalog:categories:update": "カテゴリを更新",
+    "catalog:categories:update": "カテゴリを編集",
     "catalog:categories:delete": "カテゴリを削除",
     "catalog:products:create": "商品を作成",
     "catalog:products:read": "商品を表示",
-    "catalog:products:update": "商品を更新",
+    "catalog:products:update": "商品を編集",
     "catalog:products:delete": "商品を削除"
   },
   "settings": {

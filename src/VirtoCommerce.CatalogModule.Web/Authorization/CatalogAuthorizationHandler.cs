@@ -17,7 +17,7 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
     public sealed class CatalogAuthorizationHandler(IOptions<MvcNewtonsoftJsonOptions> jsonOptions)
         : PermissionAuthorizationHandlerBase<CatalogAuthorizationRequirement>
     {
-        private static readonly IReadOnlyDictionary<string, string> FallbackPermissions = new Dictionary<string, string>
+        private static readonly Dictionary<string, string> _fallbackPermissions = new Dictionary<string, string>
         {
             [ModuleConstants.Security.Permissions.CategoriesCreate] = ModuleConstants.Security.Permissions.Create,
             [ModuleConstants.Security.Permissions.CategoriesRead] = ModuleConstants.Security.Permissions.Read,
@@ -40,7 +40,7 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
                 TryAuthorizeWithPermission(context, requirement, requirement.Permission);
             }
 
-            if (!context.HasSucceeded && FallbackPermissions.TryGetValue(requirement.Permission, out var fallbackPermission))
+            if (!context.HasSucceeded && _fallbackPermissions.TryGetValue(requirement.Permission, out var fallbackPermission))
             {
                 TryAuthorizeWithPermission(context, requirement, fallbackPermission);
             }

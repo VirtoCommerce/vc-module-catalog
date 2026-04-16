@@ -438,7 +438,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return NoContent();
         }
 
-        private async Task<CatalogProduct[]> InnerSaveProducts(CatalogProduct[] products, ISet<string> existingProductIds = null)
+        private async Task<CatalogProduct[]> InnerSaveProducts(CatalogProduct[] products, HashSet<string> existingProductIds = null)
         {
             var toSaveList = new List<CatalogProduct>();
             existingProductIds ??= await GetExistingProductIdsAsync(products.Select(x => x.Id).ToArray());

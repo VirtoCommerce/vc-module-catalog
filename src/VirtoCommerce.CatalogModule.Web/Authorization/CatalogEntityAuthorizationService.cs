@@ -22,15 +22,12 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
                 (ObjectType: nameof(CatalogProduct), Permission: productPermission),
             };
 
-            foreach (var target in authorizationTargets)
+            foreach (var target in authorizationTargets.Where(t => IsListEntryObjectTypeRequested(criteria.ObjectTypes, t.ObjectType)))
             {
-                if (IsListEntryObjectTypeRequested(criteria.ObjectTypes, target.ObjectType))
+                var typedCriteria = CreateTypedCriteria(criteria, target.ObjectType);
+                if (await IsAuthorizedAsync(user, typedCriteria, target.Permission))
                 {
-                    var typedCriteria = CreateTypedCriteria(criteria, target.ObjectType);
-                    if (await IsAuthorizedAsync(user, typedCriteria, target.Permission))
-                    {
-                        authorizedCriteria.Add(typedCriteria);
-                    }
+                    authorizedCriteria.Add(typedCriteria);
                 }
             }
 

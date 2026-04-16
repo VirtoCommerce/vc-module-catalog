@@ -1281,11 +1281,11 @@
     "catalog:dictionary-property:edit": "Wörterbuchwerte der Eigenschaft bearbeiten",
     "catalog:categories:create": "Kategorien erstellen",
     "catalog:categories:read": "Kategorien anzeigen",
-    "catalog:categories:update": "Kategorien aktualisieren",
+    "catalog:categories:update": "Kategorien bearbeiten",
     "catalog:categories:delete": "Kategorien löschen",
     "catalog:products:create": "Produkte erstellen",
     "catalog:products:read": "Produkte anzeigen",
-    "catalog:products:update": "Produkte aktualisieren",
+    "catalog:products:update": "Produkte bearbeiten",
     "catalog:products:delete": "Produkte löschen"
   },
   "settings": {

@@ -1281,11 +1281,11 @@
     "catalog:dictionary-property:edit": "Redigera ordboksvärden för egenskap",
     "catalog:categories:create": "Skapa kategorier",
     "catalog:categories:read": "Visa kategorier",
-    "catalog:categories:update": "Uppdatera kategorier",
+    "catalog:categories:update": "Redigera kategorier",
     "catalog:categories:delete": "Ta bort kategorier",
     "catalog:products:create": "Skapa produkter",
     "catalog:products:read": "Visa produkter",
-    "catalog:products:update": "Uppdatera produkter",
+    "catalog:products:update": "Redigera produkter",
     "catalog:products:delete": "Ta bort produkter"
   },
   "settings": {

@@ -1279,14 +1279,14 @@
     "catalog:metadata-property:edit": "Редактировать метаданные свойств",
     "catalog:custom-property:edit": "Редактировать пользовательские свойства продукта",
     "catalog:dictionary-property:edit": "Редактировать значения словаря свойства",
-    "catalog:categories:create": "Создать категории",
+    "catalog:categories:create": "Создание категорий",
     "catalog:categories:read": "Просмотр категорий",
-    "catalog:categories:update": "Обновить категории",
-    "catalog:categories:delete": "Удалить категории",
-    "catalog:products:create": "Создать продукты",
+    "catalog:categories:update": "Редактирование категорий",
+    "catalog:categories:delete": "Удаление категорий",
+    "catalog:products:create": "Создание продуктов",
     "catalog:products:read": "Просмотр продуктов",
-    "catalog:products:update": "Обновить продукты",
-    "catalog:products:delete": "Удалить продукты"
+    "catalog:products:update": "Редактирование продуктов",
+    "catalog:products:delete": "Удаление продуктов"
   },
   "settings": {
     "Catalog": {
