@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Common;
 using VirtoCommerce.CatalogModule.Core.Extensions;
 using VirtoCommerce.CatalogModule.Core.Model;
@@ -241,6 +242,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             if (result.Any())
             {
                 await AddLabelsAsync(result, criteria.CatalogId, browseFilters);
+                await SortAggregationItemsAsync(result, criteria.CatalogId, browseFilters);
             }
 
             return result.ToArray();
@@ -282,6 +284,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                     result = new Aggregation
                     {
                         AggregationType = "attr",
+                        TermValuesSortingType = attributeFilter.TermValuesSortingType,
                         Field = attributeFilter.GetIndexFieldName(),
                         Items = GetAttributeAggregationItems(aggregationResponseValues).ToArray(),
                     };
@@ -530,6 +533,99 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             }
 
             return result;
+        }
+
+        private async Task SortAggregationItemsAsync(List<Aggregation> result, string catalogId, IList<IBrowseFilter> browseFilters)
+        {
+            if (browseFilters.IsNullOrEmpty())
+            {
+                return;
+            }
+
+            var attributeFilters = browseFilters.OfType<AttributeFilter>().ToList();
+            var prioritySortingMap = new List<Tuple<Aggregation, string>>();
+
+            foreach (var aggregation in result.Where(x => x.AggregationType == "attr" && !x.Items.IsNullOrEmpty()))
+            {
+                var attributeFilter = attributeFilters.FirstOrDefault(x => aggregation.Field == x.GetIndexFieldName());
+                if (attributeFilter == null)
+                {
+                    continue;
+                }
+
+                if (!TryApplySimpleSorting(aggregation, attributeFilter.TermValuesSortingType))
+                {
+                    // special case: defer priority sorting until dictionary items are loaded
+                    prioritySortingMap.Add(new Tuple<Aggregation, string>(aggregation, attributeFilter.Key ?? aggregation.Field));
+                }
+            }
+
+            if (prioritySortingMap.Count > 0)
+            {
+                await SortByPriorityAsync(prioritySortingMap, catalogId);
+            }
+        }
+
+        private static bool TryApplySimpleSorting(Aggregation aggregation, string sortingType)
+        {
+            switch (sortingType)
+            {
+                case ModuleConstants.TermValuesSortingTypePriority:
+                    return false;
+                case ModuleConstants.TermValuesSortingTypeNameAscending:
+                    aggregation.Items = [.. aggregation.Items.OrderBy(x => x.Value)];
+                    return true;
+                case ModuleConstants.TermValuesSortingTypeNameDescending:
+                    aggregation.Items = [.. aggregation.Items.OrderByDescending(x => x.Value)];
+                    return true;
+                default:
+                    return true; // already sorted by score
+            }
+        }
+
+        private async Task SortByPriorityAsync(List<Tuple<Aggregation, string>> prioritySortingMap, string catalogId)
+        {
+            var allCatalogProperties = await _propertyService.GetAllCatalogPropertiesAsync(catalogId);
+            var propertyNames = prioritySortingMap.Select(x => x.Item2).ToList();
+            var propertiesMap = allCatalogProperties
+                .Where(p => propertyNames.ContainsIgnoreCase(p.Name))
+                .Select(x => new KeyValue { Key = x.Id, Value = x.Name })
+                .ToArray();
+
+            if (propertiesMap.Length == 0)
+            {
+                return;
+            }
+
+            var dictionaryItems = await _propDictItemsSearchService.SearchAllNoCloneAsync(new PropertyDictionaryItemSearchCriteria
+            {
+                PropertyIds = [.. propertiesMap.Select(x => x.Key)],
+            });
+
+            if (dictionaryItems.Count == 0)
+            {
+                return;
+            }
+
+            var dictionaryItemsMap = dictionaryItems
+                .GroupBy(x => x.PropertyId)
+                .ToDictionary(x => x.Key, x => x.ToList());
+
+            foreach (var (aggregation, propertyName) in prioritySortingMap.Select(t => (t.Item1, t.Item2)))
+            {
+                var propertyMap = propertiesMap.FirstOrDefault(x => x.Value.EqualsIgnoreCase(propertyName));
+                if (propertyMap == null || !dictionaryItemsMap.TryGetValue(propertyMap.Key, out var items))
+                {
+                    continue;
+                }
+
+                // alias is value
+                aggregation.Items = [.. aggregation.Items.OrderByDescending(x =>
+                {
+                    var item = items.FirstOrDefault(i => i.Alias.EqualsIgnoreCase(x.Value?.ToString()));
+                    return item?.SortOrder ?? 0;
+                })];
+            }
         }
 
         protected virtual async Task AddLabelsAsync(IList<Aggregation> aggregations, string catalogId, IList<IBrowseFilter> browseFilters)

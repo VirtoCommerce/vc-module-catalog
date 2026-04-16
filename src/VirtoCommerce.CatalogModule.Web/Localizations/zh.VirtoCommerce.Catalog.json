@@ -677,6 +677,16 @@
           "label": "价格范围界限",
           "placeholder": "添加数字",
           "description": "在保存之前，界限将自动排序。价格范围构造如下：低于 [界限 1]，[界限 1] 到 [界限 2]，... ，高于 [界限 N]"
+        },
+        "sorting": {
+          "label": "排序",
+          "placeholder": "选择排序方式"
+        },
+        "sorting-type-labels": {
+          "score": "评分",
+          "priority": "优先级",
+          "nameAscending": "名称升序",
+          "nameDescending": "名称降序"
         }
       },
       "importers-list": {

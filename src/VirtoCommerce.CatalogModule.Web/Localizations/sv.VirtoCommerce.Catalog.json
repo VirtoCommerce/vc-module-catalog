@@ -677,6 +677,16 @@
           "label": "Prisintervallgränser",
           "placeholder": "Lägg till nummer",
           "description": "Gränser sorteras automatiskt innan de sparas. Prisintervall konstrueras enligt följande: Under [gräns 1], [gräns 1] till [gräns 2], ..., Över [gräns N]"
+        },
+        "sorting": {
+          "label": "Sortering",
+          "placeholder": "Välj sorteringsmetod"
+        },
+        "sorting-type-labels": {
+          "score": "Poäng",
+          "priority": "Prioritet",
+          "nameAscending": "Namn stigande",
+          "nameDescending": "Namn fallande"
         }
       },
       "importers-list": {
