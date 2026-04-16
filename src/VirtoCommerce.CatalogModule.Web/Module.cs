@@ -48,7 +48,6 @@ using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.DynamicProperties;
 using VirtoCommerce.Platform.Core.Events;
 using VirtoCommerce.Platform.Core.ExportImport;
-using VirtoCommerce.Platform.Core.Extensions;
 using VirtoCommerce.Platform.Core.Modularity;
 using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.Platform.Core.Settings;
@@ -56,6 +55,7 @@ using VirtoCommerce.Platform.Data.Extensions;
 using VirtoCommerce.Platform.Data.MySql.Extensions;
 using VirtoCommerce.Platform.Data.PostgreSql.Extensions;
 using VirtoCommerce.Platform.Data.SqlServer.Extensions;
+using VirtoCommerce.Platform.Modules;
 using VirtoCommerce.Platform.Security.Authorization;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
@@ -66,14 +66,13 @@ using ISeoResolver = VirtoCommerce.Seo.Core.Services.ISeoResolver;
 
 namespace VirtoCommerce.CatalogModule.Web
 {
-    public class Module : IModule, IHasConfiguration, IExportSupport, IImportSupport, IHasModuleCatalog
+    public class Module : IModule, IHasConfiguration, IExportSupport, IImportSupport
     {
         private IApplicationBuilder _appBuilder;
 
         public ManifestModuleInfo ModuleInfo { get; set; }
 
         public IConfiguration Configuration { get; set; }
-        public IModuleCatalog ModuleCatalog { get; set; }
 
         // optional modules
         private const string BulkActionsModuleId = "VirtoCommerce.BulkActionsModule";
@@ -277,7 +276,7 @@ namespace VirtoCommerce.CatalogModule.Web
 
             #region BulkActions
 
-            if (ModuleCatalog.IsModuleInstalled(BulkActionsModuleId))
+            if (ModuleBootstrapper.Instance.IsInstalled(BulkActionsModuleId))
             {
                 serviceCollection.AddTransient<IBulkPropertyUpdateManager, BulkPropertyUpdateManager>();
                 serviceCollection.AddTransient<IDataSourceFactory, DataSourceFactory>();
@@ -361,7 +360,7 @@ namespace VirtoCommerce.CatalogModule.Web
 
             #region Register types for generic Export
 
-            if (ModuleCatalog.IsModuleInstalled(GenericExportModuleId))
+            if (ModuleBootstrapper.Instance.IsInstalled(GenericExportModuleId))
             {
                 var registrar = appBuilder.ApplicationServices.GetService<IKnownExportTypesRegistrar>();
                 registrar.RegisterType(
@@ -394,7 +393,7 @@ namespace VirtoCommerce.CatalogModule.Web
 
             #region BulkActions
 
-            if (ModuleCatalog.IsModuleInstalled(BulkActionsModuleId))
+            if (ModuleBootstrapper.Instance.IsInstalled(BulkActionsModuleId))
             {
                 AbstractTypeFactory<BulkActionContext>.RegisterType<CategoryChangeBulkActionContext>();
                 AbstractTypeFactory<BulkActionContext>.RegisterType<PropertiesUpdateBulkActionContext>();
