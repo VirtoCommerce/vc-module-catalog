@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.ListEntry;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
@@ -16,6 +15,7 @@ using VirtoCommerce.CatalogModule.Data.Services;
 using VirtoCommerce.CatalogModule.Web.Authorization;
 using VirtoCommerce.CatalogModule.Web.Model;
 using VirtoCommerce.Platform.Core.Common;
+using Permissions = VirtoCommerce.CatalogModule.Core.ModuleConstants.Security.Permissions;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
@@ -27,7 +27,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         ICategoryService categoryService,
         IItemService itemService,
         ICatalogService catalogService,
-        CatalogEntityAuthorizationService catalogEntityAuthorizationService,
+        CatalogEntityAuthorizationService authorizationService,
         ListEntryMover<Category> categoryMover,
         ListEntryMover<CatalogProduct> productMover
         ) : Controller
@@ -41,11 +41,11 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("")]
         public async Task<ActionResult<ListEntrySearchResult>> ListItemsSearchAsync([FromBody] CatalogListEntrySearchCriteria criteria)
         {
-            var authorizedCriteria = await catalogEntityAuthorizationService.GetAuthorizedListEntrySearchCriteriaByObjectTypeAsync(
+            var authorizedCriteria = await authorizationService.GetAuthorizedCriteriaByObjectTypeAsync(
                 User,
                 criteria,
-                ModuleConstants.Security.Permissions.CategoriesRead,
-                ModuleConstants.Security.Permissions.ProductsRead);
+                Permissions.CategoriesRead,
+                Permissions.ProductsRead);
 
             if (authorizedCriteria.Count == 0)
             {
@@ -69,11 +69,11 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var entryIds = links.Select(x => x.EntryId).ToArray();
             var hasLinkEntries = await LoadCatalogEntriesAsync<IHasLinks>(entryIds);
 
-            if (!await catalogEntityAuthorizationService.TryAuthorizeEntitiesByTypeAsync(
-                User,
-                hasLinkEntries,
-                ModuleConstants.Security.Permissions.CategoriesUpdate,
-                ModuleConstants.Security.Permissions.ProductsUpdate))
+            if (!await authorizationService.AuthorizeEntitiesAsync(
+                    User,
+                    hasLinkEntries,
+                    Permissions.CategoriesUpdate,
+                    Permissions.ProductsUpdate))
             {
                 return Forbid();
             }
@@ -113,11 +113,11 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return BadRequest("Target catalog identifier should be specified.");
             }
 
-            var authorizedCriteria = await catalogEntityAuthorizationService.GetAuthorizedListEntrySearchCriteriaByObjectTypeAsync(
+            var authorizedCriteria = await authorizationService.GetAuthorizedCriteriaByObjectTypeAsync(
                 User,
                 creationRequest.SearchCriteria,
-                ModuleConstants.Security.Permissions.CategoriesUpdate,
-                ModuleConstants.Security.Permissions.ProductsUpdate);
+                Permissions.CategoriesUpdate,
+                Permissions.ProductsUpdate);
             if (authorizedCriteria.Count == 0)
             {
                 return Forbid();
@@ -131,11 +131,11 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return Ok();
             }
 
-            if (!await catalogEntityAuthorizationService.TryAuthorizeEntitiesByTypeAsync(
-                User,
-                hasLinkEntries,
-                ModuleConstants.Security.Permissions.CategoriesUpdate,
-                ModuleConstants.Security.Permissions.ProductsUpdate))
+            if (!await authorizationService.AuthorizeEntitiesAsync(
+                    User,
+                    hasLinkEntries,
+                    Permissions.CategoriesUpdate,
+                    Permissions.ProductsUpdate))
             {
                 return Forbid();
             }
@@ -163,11 +163,11 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             var hasLinkEntries = await LoadCatalogEntriesAsync<IHasLinks>(entryIds);
 
-            if (!await catalogEntityAuthorizationService.TryAuthorizeEntitiesByTypeAsync(
-                User,
-                hasLinkEntries,
-                ModuleConstants.Security.Permissions.CategoriesRead,
-                ModuleConstants.Security.Permissions.ProductsRead))
+            if (!await authorizationService.AuthorizeEntitiesAsync(
+                    User,
+                    hasLinkEntries,
+                    Permissions.CategoriesRead,
+                    Permissions.ProductsRead))
             {
                 return Forbid();
             }
@@ -197,11 +197,11 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var entryIds = links.Select(x => x.EntryId).ToArray();
             var hasLinkEntries = await LoadCatalogEntriesAsync<IHasLinks>(entryIds);
 
-            if (!await catalogEntityAuthorizationService.TryAuthorizeEntitiesByTypeAsync(
-                User,
-                hasLinkEntries,
-                ModuleConstants.Security.Permissions.CategoriesDelete,
-                ModuleConstants.Security.Permissions.ProductsDelete))
+            if (!await authorizationService.AuthorizeEntitiesAsync(
+                    User,
+                    hasLinkEntries,
+                    Permissions.CategoriesDelete,
+                    Permissions.ProductsDelete))
             {
                 return Forbid();
             }
@@ -231,12 +231,12 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         {
             var sourceEntries = await LoadCatalogEntriesAsync<IEntity>(moveRequest.ListEntries?.Select(x => x.Id).ToArray() ?? []);
 
-            if (!await catalogEntityAuthorizationService.TryAuthorizeMoveRequestByTypeAsync(
-                User,
-                moveRequest,
-                sourceEntries,
-                ModuleConstants.Security.Permissions.CategoriesUpdate,
-                ModuleConstants.Security.Permissions.ProductsUpdate))
+            if (!await authorizationService.AuthorizeMoveRequestAsync(
+                    User,
+                    moveRequest,
+                    sourceEntries,
+                    Permissions.CategoriesUpdate,
+                    Permissions.ProductsUpdate))
             {
                 return Forbid();
             }
@@ -273,22 +273,23 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             {
                 var entitiesToDelete = await LoadCatalogEntriesAsync<IEntity>(idsToDelete.ToArray());
 
-                if (!await catalogEntityAuthorizationService.TryAuthorizeEntitiesByTypeAsync(
-                    User,
-                    entitiesToDelete,
-                    ModuleConstants.Security.Permissions.CategoriesDelete,
-                    ModuleConstants.Security.Permissions.ProductsDelete))
+                if (!await authorizationService.AuthorizeEntitiesAsync(
+                        User,
+                        entitiesToDelete,
+                        Permissions.CategoriesDelete,
+                        Permissions.ProductsDelete))
                 {
                     return Forbid();
                 }
             }
             else
             {
-                var authorizedCriteria = await catalogEntityAuthorizationService.GetAuthorizedListEntrySearchCriteriaByObjectTypeAsync(
+                var authorizedCriteria = await authorizationService.GetAuthorizedCriteriaByObjectTypeAsync(
                     User,
                     criteria,
-                    ModuleConstants.Security.Permissions.CategoriesDelete,
-                    ModuleConstants.Security.Permissions.ProductsDelete);
+                    Permissions.CategoriesDelete,
+                    Permissions.ProductsDelete);
+
                 if (authorizedCriteria.Count == 0)
                 {
                     return Forbid();

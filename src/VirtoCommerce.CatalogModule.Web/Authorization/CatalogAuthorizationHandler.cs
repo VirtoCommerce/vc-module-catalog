@@ -4,29 +4,29 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Data.Authorization;
 using VirtoCommerce.CatalogModule.Data.ExportImport;
 using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.Platform.Security.Authorization;
+using Permissions = VirtoCommerce.CatalogModule.Core.ModuleConstants.Security.Permissions;
 
 namespace VirtoCommerce.CatalogModule.Web.Authorization
 {
     public sealed class CatalogAuthorizationHandler(IOptions<MvcNewtonsoftJsonOptions> jsonOptions)
         : PermissionAuthorizationHandlerBase<CatalogAuthorizationRequirement>
     {
-        private static readonly Dictionary<string, string> _fallbackPermissions = new Dictionary<string, string>
+        private static readonly Dictionary<string, string> _fallbackPermissions = new()
         {
-            [ModuleConstants.Security.Permissions.CategoriesCreate] = ModuleConstants.Security.Permissions.Create,
-            [ModuleConstants.Security.Permissions.CategoriesRead] = ModuleConstants.Security.Permissions.Read,
-            [ModuleConstants.Security.Permissions.CategoriesUpdate] = ModuleConstants.Security.Permissions.Update,
-            [ModuleConstants.Security.Permissions.CategoriesDelete] = ModuleConstants.Security.Permissions.Delete,
-            [ModuleConstants.Security.Permissions.ProductsCreate] = ModuleConstants.Security.Permissions.Create,
-            [ModuleConstants.Security.Permissions.ProductsRead] = ModuleConstants.Security.Permissions.Read,
-            [ModuleConstants.Security.Permissions.ProductsUpdate] = ModuleConstants.Security.Permissions.Update,
-            [ModuleConstants.Security.Permissions.ProductsDelete] = ModuleConstants.Security.Permissions.Delete,
+            [Permissions.CategoriesCreate] = Permissions.Create,
+            [Permissions.CategoriesRead] = Permissions.Read,
+            [Permissions.CategoriesUpdate] = Permissions.Update,
+            [Permissions.CategoriesDelete] = Permissions.Delete,
+            [Permissions.ProductsCreate] = Permissions.Create,
+            [Permissions.ProductsRead] = Permissions.Read,
+            [Permissions.ProductsUpdate] = Permissions.Update,
+            [Permissions.ProductsDelete] = Permissions.Delete,
         };
 
         private readonly MvcNewtonsoftJsonOptions _jsonOptions = jsonOptions.Value;

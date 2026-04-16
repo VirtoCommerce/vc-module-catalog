@@ -9,12 +9,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Authorization;
+using VirtoCommerce.CatalogModule.Web.Authorization;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Seo.Core.Models;
+using Permissions = VirtoCommerce.CatalogModule.Core.ModuleConstants.Security.Permissions;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
@@ -25,7 +26,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         ICategoryService categoryService,
         ICatalogService catalogService,
         ISkuGenerator skuGenerator,
-        IAuthorizationService authorizationService,
+        CatalogEntityAuthorizationService authorizationService,
         IPropertyUpdateManager updateManager,
         IOptions<MvcNewtonsoftJsonOptions> jsonOptions)
         : Controller
@@ -45,8 +46,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return NotFound();
             }
 
-            var authorizationResult = await authorizationService.AuthorizeAsync(User, product, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.ProductsRead));
-            if (!authorizationResult.Succeeded)
+            if (!await authorizationService.AuthorizeAsync(User, product, Permissions.ProductsRead))
             {
                 return Forbid();
             }
@@ -70,8 +70,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return NotFound();
             }
 
-            var authorizationResult = await authorizationService.AuthorizeAsync(User, product, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.ProductsRead));
-            if (!authorizationResult.Succeeded)
+            if (!await authorizationService.AuthorizeAsync(User, product, Permissions.ProductsRead))
             {
                 return Forbid();
             }
@@ -102,12 +101,11 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return NotFound();
             }
 
-            var authorizationResult = await authorizationService.AuthorizeAsync(User, items, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.ProductsRead));
-            if (!authorizationResult.Succeeded)
+            if (!await authorizationService.AuthorizeAsync(User, items, Permissions.ProductsRead))
             {
                 return Forbid();
             }
-            //It is a important to return serialized data by such way. Instead you have a slow response time for large outputs
+            //It is important to return serialized data by such way. Otherwise, you will have slow responses for large outputs.
             //https://github.com/dotnet/aspnetcore/issues/19646
             var result = JsonConvert.SerializeObject(items, jsonOptions.Value.SerializerSettings);
 
@@ -164,7 +162,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             }
             if (categoryId != null)
             {
-                parent = await categoryService.GetByIdAsync(categoryId, CategoryResponseGroup.WithProperties.ToString());
+                parent = await categoryService.GetByIdAsync(categoryId, nameof(CategoryResponseGroup.WithProperties));
             }
             if (parent != null)
             {
@@ -274,8 +272,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return NotFound();
             }
 
-            var authorizationResult = await authorizationService.AuthorizeAsync(User, product, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.ProductsUpdate));
-            if (!authorizationResult.Succeeded)
+            if (!await authorizationService.AuthorizeAsync(User, product, Permissions.ProductsUpdate))
             {
                 return Forbid();
             }
@@ -287,7 +284,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return BadRequest(result);
             }
 
-            await InnerSaveProducts([product]);
+            var existingProductIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { product.Id };
+            await InnerSaveProducts([product], existingProductIds);
 
             return Ok(product);
         }
@@ -303,17 +301,13 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         public async Task<ActionResult<CatalogProduct>> SaveProduct([FromBody] CatalogProduct product)
         {
             var productExists = await ProductExistsAsync(product.Id);
-            var entityPermission = productExists
-                ? ModuleConstants.Security.Permissions.ProductsUpdate
-                : ModuleConstants.Security.Permissions.ProductsCreate;
-            var authorizationResult = await authorizationService.AuthorizeAsync(User, product, new CatalogAuthorizationRequirement(entityPermission));
-            if (!authorizationResult.Succeeded)
-            {
-                return Forbid();
-            }
 
-            var customPropertyResult = await authorizationService.AuthorizeAsync(User, product, new CustomPropertyRequirement());
-            if (!customPropertyResult.Succeeded)
+            var permission = productExists
+                ? Permissions.ProductsUpdate
+                : Permissions.ProductsCreate;
+
+            if (!await authorizationService.AuthorizeAsync(User, product, permission) ||
+                !await authorizationService.AuthorizeAsync(User, product, new CustomPropertyRequirement()))
             {
                 return Forbid();
             }
@@ -345,8 +339,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var newProducts = products.Where(p => string.IsNullOrEmpty(p.Id) || !existingProductIds.Contains(p.Id)).ToArray();
             if (newProducts.Length > 0)
             {
-                var createResult = await authorizationService.AuthorizeAsync(User, newProducts, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.ProductsCreate));
-                if (!createResult.Succeeded)
+                if (!await authorizationService.AuthorizeAsync(User, newProducts, Permissions.ProductsCreate))
                 {
                     return Forbid();
                 }
@@ -355,15 +348,13 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var existingProducts = products.Where(p => !string.IsNullOrEmpty(p.Id) && existingProductIds.Contains(p.Id)).ToArray();
             if (existingProducts.Length > 0)
             {
-                var updateResult = await authorizationService.AuthorizeAsync(User, existingProducts, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.ProductsUpdate));
-                if (!updateResult.Succeeded)
+                if (!await authorizationService.AuthorizeAsync(User, existingProducts, Permissions.ProductsUpdate))
                 {
                     return Forbid();
                 }
             }
 
-            var customPropertyResult = await authorizationService.AuthorizeAsync(User, products, new CustomPropertyRequirement());
-            if (!customPropertyResult.Succeeded)
+            if (!await authorizationService.AuthorizeAsync(User, products, new CustomPropertyRequirement()))
             {
                 return Forbid();
             }
@@ -381,9 +372,9 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Route("")]
         public async Task<ActionResult> DeleteProduct([FromQuery] List<string> ids)
         {
-            var products = await itemsService.GetNoCloneAsync(ids, ItemResponseGroup.ItemInfo.ToString());
-            var authorizationResult = await authorizationService.AuthorizeAsync(User, products, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.ProductsDelete));
-            if (!authorizationResult.Succeeded)
+            var products = await itemsService.GetNoCloneAsync(ids, nameof(ItemResponseGroup.ItemInfo));
+
+            if (!await authorizationService.AuthorizeAsync(User, products, Permissions.ProductsDelete))
             {
                 return Forbid();
             }
@@ -414,14 +405,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return NotFound();
             }
 
-            var authorizationResult = await authorizationService.AuthorizeAsync(User, product, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.ProductsUpdate));
-            if (!authorizationResult.Succeeded)
-            {
-                return Forbid();
-            }
-
-            var customPropertyResult = await authorizationService.AuthorizeAsync(User, product, new CustomPropertyRequirement());
-            if (!customPropertyResult.Succeeded)
+            if (!await authorizationService.AuthorizeAsync(User, product, Permissions.ProductsUpdate) ||
+                !await authorizationService.AuthorizeAsync(User, product, new CustomPropertyRequirement()))
             {
                 return Forbid();
             }
@@ -484,16 +469,16 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
         private async Task<HashSet<string>> GetExistingProductIdsAsync(IList<string> ids)
         {
-            var existingIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            var searchIds = ids.Where(x => !string.IsNullOrEmpty(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
 
-            if (searchIds.Length > 0)
+            var searchIds = ids.Where(x => !string.IsNullOrEmpty(x)).DistinctIgnoreCase().ToArray();
+            if (searchIds.Length == 0)
             {
-                var existingProducts = await itemsService.GetNoCloneAsync(searchIds, ItemResponseGroup.ItemInfo.ToString());
-                existingIds.UnionWith(existingProducts.Select(x => x.Id));
+                return [];
             }
 
-            return existingIds;
+            var existingProducts = await itemsService.GetNoCloneAsync(searchIds, nameof(ItemResponseGroup.ItemInfo));
+
+            return existingProducts.Select(x => x.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
         }
 
         private string GenerateProductDefaultSlugUrl(CatalogProduct product)

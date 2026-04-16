@@ -5,14 +5,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
-using VirtoCommerce.CatalogModule.Data.Authorization;
+using VirtoCommerce.CatalogModule.Web.Authorization;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Seo.Core.Models;
+using Permissions = VirtoCommerce.CatalogModule.Core.ModuleConstants.Security.Permissions;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
@@ -21,9 +21,16 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
     public class CatalogModuleCatalogsController(
         ICatalogService catalogService,
         ICatalogSearchService catalogSearchService,
-        IAuthorizationService authorizationService)
+        CatalogEntityAuthorizationService authorizationService)
         : Controller
     {
+        private readonly string[] _readPermissions =
+        [
+            Permissions.Read,
+            Permissions.CategoriesRead,
+            Permissions.ProductsRead,
+        ];
+
         [HttpPost]
         [Route("search")]
         public async Task<ActionResult<CatalogSearchResult>> SearchCatalogs([FromBody] CatalogSearchCriteria criteria)
@@ -91,7 +98,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <remarks>Gets the template for a new common catalog</remarks>
         [HttpGet]
         [Route("getnew")]
-        [Authorize(ModuleConstants.Security.Permissions.Create)]
+        [Authorize(Permissions.Create)]
         public ActionResult<Catalog> GetNewCatalog()
         {
             var retVal = AbstractTypeFactory<Catalog>.TryCreateInstance();
@@ -99,7 +106,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             retVal.SeoInfos = new List<SeoInfo>();
             retVal.Languages = new List<CatalogLanguage>
                 {
-                    new CatalogLanguage
+                    new()
                     {
                         IsDefault = true,
                         LanguageCode = "en-US"
@@ -113,7 +120,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// </summary>
         [HttpGet]
         [Route("getnewvirtual")]
-        [Authorize(ModuleConstants.Security.Permissions.Create)]
+        [Authorize(Permissions.Create)]
         public ActionResult<Catalog> GetNewVirtualCatalog()
         {
             var retVal = AbstractTypeFactory<Catalog>.TryCreateInstance();
@@ -121,7 +128,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             retVal.IsVirtual = true;
             retVal.Languages = new List<CatalogLanguage>
                 {
-                    new CatalogLanguage
+                    new()
                     {
                         IsDefault = true,
                         LanguageCode = "en-US"
@@ -137,7 +144,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <param name="catalog">The catalog to create</param>
         [HttpPost]
         [Route("")]
-        [Authorize(ModuleConstants.Security.Permissions.Create)]
+        [Authorize(Permissions.Create)]
         public async Task<ActionResult<Catalog>> CreateCatalog([FromBody] Catalog catalog)
         {
             //Ensure that new category has SeoInfo
@@ -162,14 +169,14 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <param name="catalog">The catalog.</param>
         [HttpPut]
         [Route("")]
-        [Authorize(ModuleConstants.Security.Permissions.Update)]
+        [Authorize(Permissions.Update)]
         public async Task<ActionResult> UpdateCatalog([FromBody] Catalog catalog)
         {
-            var authorizationResult = await authorizationService.AuthorizeAsync(User, catalog, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
-            if (!authorizationResult.Succeeded)
+            if (!await authorizationService.AuthorizeAsync(User, catalog, Permissions.Update))
             {
                 return Forbid();
             }
+
             await catalogService.SaveChangesAsync([catalog]);
             return Ok(catalog);
         }
@@ -182,13 +189,13 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <returns></returns>
         [HttpDelete]
         [Route("{id}")]
-        [Authorize(ModuleConstants.Security.Permissions.Delete)]
+        [Authorize(Permissions.Delete)]
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         public async Task<ActionResult> DeleteCatalog(string id)
         {
             var catalog = await catalogService.GetNoCloneAsync(id);
-            var authorizationResult = await authorizationService.AuthorizeAsync(User, catalog, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Delete));
-            if (!authorizationResult.Succeeded)
+
+            if (!await authorizationService.AuthorizeAsync(User, catalog, Permissions.Delete))
             {
                 return Forbid();
             }
@@ -219,8 +226,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return NotFound();
             }
 
-            var authorizationResult = await authorizationService.AuthorizeAsync(User, catalog, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
-            if (!authorizationResult.Succeeded)
+            if (!await authorizationService.AuthorizeAsync(User, catalog, Permissions.Update))
             {
                 return Forbid();
             }
@@ -239,17 +245,9 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
         private async Task<bool> AuthorizeCatalogReadAsync(object resource)
         {
-            var permissions = new[]
+            foreach (var permission in _readPermissions)
             {
-                ModuleConstants.Security.Permissions.Read,
-                ModuleConstants.Security.Permissions.CategoriesRead,
-                ModuleConstants.Security.Permissions.ProductsRead,
-            };
-
-            foreach (var permission in permissions)
-            {
-                var authorizationResult = await authorizationService.AuthorizeAsync(User, resource, new CatalogAuthorizationRequirement(permission));
-                if (authorizationResult.Succeeded)
+                if (await authorizationService.AuthorizeAsync(User, resource, permission))
                 {
                     return true;
                 }

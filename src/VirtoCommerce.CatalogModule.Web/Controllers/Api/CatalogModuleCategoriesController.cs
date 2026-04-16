@@ -11,10 +11,11 @@ using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Extensions;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
-using VirtoCommerce.CatalogModule.Data.Authorization;
 using VirtoCommerce.CatalogModule.Data.BackgroundJobs;
+using VirtoCommerce.CatalogModule.Web.Authorization;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Seo.Core.Models;
+using Permissions = VirtoCommerce.CatalogModule.Core.ModuleConstants.Security.Permissions;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
@@ -23,7 +24,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
     public class CatalogModuleCategoriesController(
         ICategoryService categoryService,
         ICatalogService catalogService,
-        IAuthorizationService authorizationService)
+        CatalogEntityAuthorizationService authorizationService)
         : Controller
     {
         /// <summary>
@@ -41,8 +42,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return NotFound();
             }
 
-            var authorizationResult = await authorizationService.AuthorizeAsync(User, category, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.CategoriesRead));
-            if (!authorizationResult.Succeeded)
+            if (!await authorizationService.AuthorizeAsync(User, category, Permissions.CategoriesRead))
             {
                 return Forbid();
             }
@@ -66,8 +66,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return NotFound();
             }
 
-            var authorizationResult = await authorizationService.AuthorizeAsync(User, category, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.CategoriesRead));
-            if (!authorizationResult.Succeeded)
+            if (!await authorizationService.AuthorizeAsync(User, category, Permissions.CategoriesRead))
             {
                 return Forbid();
             }
@@ -86,8 +85,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         {
             var categories = await categoryService.GetNoCloneAsync(ids, respGroup);
 
-            var authorizationResult = await authorizationService.AuthorizeAsync(User, categories, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.CategoriesRead));
-            if (!authorizationResult.Succeeded)
+            if (!await authorizationService.AuthorizeAsync(User, categories, Permissions.CategoriesRead))
             {
                 return Forbid();
             }
@@ -146,7 +144,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <summary>
         /// Creates or updates the specified category.
         /// </summary>
-        /// <remarks>If category.id does not exist in the database, a new category is created. It's updated otherwise</remarks>
+        /// <remarks>If category ID does not exist in the database, a new category is created. It's updated otherwise</remarks>
         /// <param name="category">The category.</param>
         [HttpPost]
         [Route("")]
@@ -173,11 +171,11 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 }
             }
 
-            var entityPermission = categoryExists
-                ? ModuleConstants.Security.Permissions.CategoriesUpdate
-                : ModuleConstants.Security.Permissions.CategoriesCreate;
-            var authorizationResult = await authorizationService.AuthorizeAsync(User, category, new CatalogAuthorizationRequirement(entityPermission));
-            if (!authorizationResult.Succeeded)
+            var permission = categoryExists
+                ? Permissions.CategoriesUpdate
+                : Permissions.CategoriesCreate;
+
+            if (!await authorizationService.AuthorizeAsync(User, category, permission))
             {
                 return Forbid();
             }
@@ -196,8 +194,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         public async Task<ActionResult> DeleteCategory([FromQuery] List<string> ids)
         {
             var categories = await categoryService.GetNoCloneAsync(ids, nameof(CategoryResponseGroup.Info));
-            var authorizationResult = await authorizationService.AuthorizeAsync(User, categories, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.CategoriesDelete));
-            if (!authorizationResult.Succeeded)
+
+            if (!await authorizationService.AuthorizeAsync(User, categories, Permissions.CategoriesDelete))
             {
                 return Forbid();
             }
@@ -228,8 +226,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return NotFound();
             }
 
-            var authorizationResult = await authorizationService.AuthorizeAsync(User, category, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.CategoriesUpdate));
-            if (!authorizationResult.Succeeded)
+            if (!await authorizationService.AuthorizeAsync(User, category, Permissions.CategoriesUpdate))
             {
                 return Forbid();
             }
@@ -256,21 +253,19 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         {
             var existingCategoryIds = await GetExistingCategoryIdsAsync(categories.Select(x => x.Id).ToArray());
 
-            var newCategories = categories.Where(c => string.IsNullOrEmpty(c.Id) || !existingCategoryIds.Contains(c.Id)).ToArray();
+            var newCategories = categories.Where(x => string.IsNullOrEmpty(x.Id) || !existingCategoryIds.Contains(x.Id)).ToArray();
             if (newCategories.Length > 0)
             {
-                var createResult = await authorizationService.AuthorizeAsync(User, newCategories, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.CategoriesCreate));
-                if (!createResult.Succeeded)
+                if (!await authorizationService.AuthorizeAsync(User, newCategories, Permissions.CategoriesCreate))
                 {
                     return Forbid();
                 }
             }
 
-            var existingCategories = categories.Where(c => !string.IsNullOrEmpty(c.Id) && existingCategoryIds.Contains(c.Id)).ToArray();
+            var existingCategories = categories.Where(x => !string.IsNullOrEmpty(x.Id) && existingCategoryIds.Contains(x.Id)).ToArray();
             if (existingCategories.Length > 0)
             {
-                var updateResult = await authorizationService.AuthorizeAsync(User, existingCategories, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.CategoriesUpdate));
-                if (!updateResult.Succeeded)
+                if (!await authorizationService.AuthorizeAsync(User, existingCategories, Permissions.CategoriesUpdate))
                 {
                     return Forbid();
                 }
@@ -303,16 +298,15 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
         private async Task<HashSet<string>> GetExistingCategoryIdsAsync(IList<string> ids)
         {
-            var existingIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            var searchIds = ids.Where(x => !string.IsNullOrEmpty(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
-
-            if (searchIds.Length > 0)
+            var searchIds = ids.Where(x => !string.IsNullOrEmpty(x)).DistinctIgnoreCase().ToArray();
+            if (searchIds.Length == 0)
             {
-                var existingCategories = await categoryService.GetNoCloneAsync(searchIds, nameof(CategoryResponseGroup.Info));
-                existingIds.UnionWith(existingCategories.Select(x => x.Id));
+                return [];
             }
 
-            return existingIds;
+            var existingCategories = await categoryService.GetNoCloneAsync(searchIds, nameof(CategoryResponseGroup.Info));
+
+            return existingCategories.Select(x => x.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
         }
     }
 }
