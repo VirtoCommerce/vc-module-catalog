@@ -1,5 +1,5 @@
 angular.module('virtoCommerce.catalogModule')
-    .controller('virtoCommerce.catalogModule.newProductWizardController', ['$scope', 'platformWebApp.bladeNavigationService', '$http', 'virtoCommerce.catalogModule.catalogImagesFolderPathHelper', 'virtoCommerce.catalogModule.itemTypesResolverService', function ($scope, bladeNavigationService, $http, catalogImgHelper, itemTypesResolverService) {
+    .controller('virtoCommerce.catalogModule.newProductWizardController', ['$scope', 'platformWebApp.bladeNavigationService', '$http', 'virtoCommerce.catalogModule.catalogImagesFolderPathHelper', 'virtoCommerce.catalogModule.itemTypesResolverService', 'virtoCommerce.storeModule.stores', function ($scope, bladeNavigationService, $http, catalogImgHelper, itemTypesResolverService, storesApi) {
         var blade = $scope.blade;
 
         if (blade.item.productType) {
@@ -70,9 +70,10 @@ angular.module('virtoCommerce.catalogModule')
                             seoContainerObject: blade.item,
                             catalog: blade.catalog,
                             languages: _.pluck(blade.catalog.languages, 'languageCode'),
+                            storeDataSource: function (criteria) { return storesApi.search(criteria); },
                             updatePermission: 'catalog:create',
-                            controller: 'virtoCommerce.coreModule.seo.seoDetailController',
-                            template: 'Modules/$(VirtoCommerce.Core)/Scripts/SEO/blades/seo-detail.tpl.html'
+                            controller: 'virtoCommerce.seo.seoDetailController',
+                            template: 'Modules/$(VirtoCommerce.Seo)/Scripts/blades/seo-detail.html'
                         };
                         bladeNavigationService.showBlade(newSeoBlade, blade);
                     });

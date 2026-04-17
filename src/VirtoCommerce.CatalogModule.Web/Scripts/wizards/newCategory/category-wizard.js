@@ -1,5 +1,5 @@
 angular.module('virtoCommerce.catalogModule')
-.controller('virtoCommerce.catalogModule.newCategoryWizardController', ['$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'virtoCommerce.catalogModule.categories', function ($scope, bladeNavigationService, dialogService, categories) {
+.controller('virtoCommerce.catalogModule.newCategoryWizardController', ['$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'virtoCommerce.catalogModule.categories', 'virtoCommerce.storeModule.stores', function ($scope, bladeNavigationService, dialogService, categories, storesApi) {
     var blade = $scope.blade;
 
     $scope.create = function () {
@@ -33,8 +33,9 @@ angular.module('virtoCommerce.catalogModule')
                 case 'seo':
                     newBlade = {
                         id: "seo",
-                        controller: 'virtoCommerce.coreModule.seo.storeListController',
-                        template: 'Modules/$(VirtoCommerce.Core)/Scripts/SEO/blades/seo-detail.tpl.html'
+                        storeDataSource: function (criteria) { return storesApi.search(criteria); },
+                        controller: 'virtoCommerce.seo.seoDetailController',
+                        template: 'Modules/$(VirtoCommerce.Seo)/Scripts/blades/seo-detail.html'
                     };
                     break;
             }
