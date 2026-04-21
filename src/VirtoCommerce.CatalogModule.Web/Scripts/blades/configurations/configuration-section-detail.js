@@ -143,6 +143,7 @@ angular.module('virtoCommerce.catalogModule')
                     }
                 }
 
+                blade.otherSections = blade.otherSections || [];
                 blade.currentEntity = angular.copy(item);
 
                 // Initialize previous values for mutual exclusivity tracking

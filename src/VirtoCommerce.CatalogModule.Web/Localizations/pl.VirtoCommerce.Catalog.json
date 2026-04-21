@@ -832,7 +832,8 @@
           "allow-custom-text": "Zezwól na własny tekst",
           "allow-predefined-options": "Zezwól na predefiniowane opcje",
           "max-length": "Maksymalna długość",
-          "text": "Tekst"
+          "text": "Tekst",
+          "depends-on": "Aktywna gdy sekcja ma wartość"
         },
         "descr": {
           "no-options": "Brak jeszcze opcji w tej sekcji",
@@ -846,7 +847,8 @@
           "add": "Dodaj opcje"
         },
         "placeholders": {
-          "type": "Wybrać..."
+          "type": "Wybrać...",
+          "depends-on": "Zawsze aktywna"
         }
       },
       "section-options-list": {

@@ -29,7 +29,11 @@ public class ProductConfigurationSectionEntity : AuditableEntity, IDataEntity<Pr
     public int DisplayOrder { get; set; }
     public int? MaxLength { get; set; }
 
+    [StringLength(128)]
+    public string DependsOnSectionId { get; set; }
+
     public virtual ProductConfigurationEntity Configuration { get; set; }
+    public virtual ProductConfigurationSectionEntity DependsOnSection { get; set; }
     public virtual ObservableCollection<ProductConfigurationOptionEntity> Options { get; set; } = new NullCollection<ProductConfigurationOptionEntity>();
 
     public virtual ProductConfigurationSection ToModel(ProductConfigurationSection model)
@@ -51,6 +55,7 @@ public class ProductConfigurationSectionEntity : AuditableEntity, IDataEntity<Pr
         model.DisplayOrder = DisplayOrder;
         model.MaxLength = MaxLength;
         model.Type = Type;
+        model.DependsOnSectionId = DependsOnSectionId;
 
         model.Options = Options.Select(x => x.ToModel(AbstractTypeFactory<ProductConfigurationOption>.TryCreateInstance())).ToList();
 
@@ -78,6 +83,7 @@ public class ProductConfigurationSectionEntity : AuditableEntity, IDataEntity<Pr
         DisplayOrder = model.DisplayOrder;
         MaxLength = model.MaxLength;
         Type = model.Type;
+        DependsOnSectionId = model.DependsOnSectionId;
 
         if (model.Options != null)
         {
@@ -97,6 +103,7 @@ public class ProductConfigurationSectionEntity : AuditableEntity, IDataEntity<Pr
         target.DisplayOrder = DisplayOrder;
         target.MaxLength = MaxLength;
         target.Type = Type;
+        target.DependsOnSectionId = DependsOnSectionId;
 
         if (!Options.IsNullCollection())
         {

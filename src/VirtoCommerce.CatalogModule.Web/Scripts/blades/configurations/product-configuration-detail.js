@@ -83,7 +83,13 @@ angular.module('virtoCommerce.catalogModule')
             function deleteList(list) {
                 bladeNavigationService.closeChildrenBlades(blade,
                     function () {
+                        var deletedIds = _.map(list, 'id');
                         var undeletedEntries = _.difference(blade.currentEntity.sections, list);
+                        _.each(undeletedEntries, function (section) {
+                            if (section.dependsOnSectionId && _.contains(deletedIds, section.dependsOnSectionId)) {
+                                section.dependsOnSectionId = null;
+                            }
+                        });
                         blade.currentEntity.sections = undeletedEntries;
                     });
             }
@@ -109,11 +115,16 @@ angular.module('virtoCommerce.catalogModule')
             }
 
             function openSectionBlade(section) {
+                var otherSections = _.filter(blade.currentEntity.sections, function(s) {
+                    return s !== section && s.name;
+                });
+
                 var newBlade = {
                     id: "sectionDetail",
                     controller: 'virtoCommerce.catalogModule.configurationSectionDetailController',
                     template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/configurations/configuration-section-detail.tpl.html',
                     origEntity: section,
+                    otherSections: otherSections,
                     onSaveNew: function (newSection) {
                         newSection.displayOrder = blade.currentEntity.sections.length;
                         blade.currentEntity.sections.push(newSection);
