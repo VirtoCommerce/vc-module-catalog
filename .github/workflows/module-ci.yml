@@ -308,7 +308,7 @@ jobs:
       customModuleId:  ${{ needs.ci.outputs.moduleId }}
       customModuleUrl:  ${{ needs.ci.outputs.artifactUrl }}
       requiredModulesListUrl: ${{ needs.ci.outputs.requiredModulesListUrl }}
-      vctestingRepoBranch: 'dev'
+      vctestingRepoBranch: 'test-VCST-4958' #'dev'
       frontendZipUrl: 'latest'
       testSuites: 'graphql,restapi'
     secrets:
