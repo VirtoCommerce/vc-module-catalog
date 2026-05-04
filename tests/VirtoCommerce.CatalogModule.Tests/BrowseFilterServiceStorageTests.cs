@@ -117,7 +117,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             return new Store
             {
                 Id = StoreId,
-                Settings = [],
+                Settings = [new ObjectSettingEntry(ModuleConstants.Settings.Search.FilteredBrowsing)],
                 DynamicProperties = [],
             };
         }
