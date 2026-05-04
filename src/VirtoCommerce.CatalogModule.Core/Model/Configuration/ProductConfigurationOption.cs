@@ -10,6 +10,7 @@ public class ProductConfigurationOption : AuditableEntity, ICloneable
     public string ProductId { get; set; }
     public int Quantity { get; set; } = 1;
     public string Text { get; set; }
+    public bool IsDefault { get; set; }
 
     [JsonIgnore]
     public ProductConfigurationSection Section { get; set; }

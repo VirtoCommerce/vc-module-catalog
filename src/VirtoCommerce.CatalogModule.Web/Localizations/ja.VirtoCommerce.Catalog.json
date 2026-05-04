@@ -858,6 +858,7 @@
       "option-details": {
         "title": "オプションとしてアイテムを選択",
         "labels": {
+          "default": "デフォルト",
           "quantity": "数量",
           "text": "オプションのテキスト"
         },

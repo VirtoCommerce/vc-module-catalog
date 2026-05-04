@@ -858,6 +858,7 @@
       "option-details": {
         "title": "Valitse kohteet vaihtoehdoiksi",
         "labels": {
+          "default": "Oletus",
           "quantity": "Määrä",
           "text": "Vaihtoehdon teksti"
         },

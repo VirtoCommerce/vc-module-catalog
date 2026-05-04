@@ -12,7 +12,8 @@
                             enableColumnResizing: false, width: 60, cellTemplate: 'option-list-icon.cell.html'
                         },
                         { name: 'productName', displayName: 'catalog.blades.section-details.labels.product-name'},
-                        { name: 'quantity', displayName: 'catalog.blades.section-details.labels.quantity', width: 120 }
+                        { name: 'quantity', displayName: 'catalog.blades.section-details.labels.quantity', width: 120 },
+                        { name: 'isDefault', displayName: 'catalog.blades.option-details.labels.default', width: 120, cellTemplate: 'option-list-default.cell.html', enableSorting: false, enableColumnResizing: false }
                     ]})">
       <div class="table-wrapper" ng-if="blade.sectionEntity.options.length" style="margin: 0 -21px 0;">
         <div ui-grid="gridOptions" ui-grid-auto-resize ui-grid-save-state ui-grid-selection ui-grid-resize-columns ui-grid-move-columns ui-grid-pinning ui-grid-height></div>
@@ -39,7 +40,8 @@
                   enableSorting: false,
                   columnDefs: [
                       { name: 'actions', displayName: '', enableColumnResizing: false, width: 30, cellTemplate: 'option-list-actions.cell.html', pinnedLeft:true },
-                      { name: 'text', displayName: 'catalog.blades.section-details.labels.text'}
+                      { name: 'text', displayName: 'catalog.blades.section-details.labels.text'},
+                      { name: 'isDefault', displayName: 'catalog.blades.option-details.labels.default', width: 120, cellTemplate: 'option-list-default.cell.html', enableSorting: false, enableColumnResizing: false }
                   ]})">
       <div class="table-wrapper" ng-if="blade.sectionEntity.options.length" style="margin: 0 -21px 0;">
         <div ui-grid="gridOptions" ui-grid-auto-resize ui-grid-save-state ui-grid-selection ui-grid-resize-columns ui-grid-move-columns ui-grid-pinning ui-grid-height></div>
@@ -71,5 +73,13 @@
       <img class="image" ng-src="{{COL_FIELD}}" ng-if="COL_FIELD">
       <span class="table-ico fas fa-image" ng-if="!COL_FIELD"></span>
     </div>
+  </div>
+</script>
+<script type="text/ng-template" id="option-list-default.cell.html">
+  <div class="ui-grid-cell-contents" style="text-align: center;">
+    <input type="checkbox"
+           ng-model="row.entity.isDefault"
+           ng-change="grid.appScope.toggleDefaultOption(row.entity)"
+           ng-click="$event.stopPropagation();" />
   </div>
 </script>
