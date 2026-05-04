@@ -139,8 +139,8 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
     }])
 
     .run(
-        ['$injector', 'platformWebApp.mainMenuService', 'platformWebApp.widgetService', '$state', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.catalogExportService', 'platformWebApp.permissionScopeResolver', 'virtoCommerce.catalogModule.catalogs', 'virtoCommerce.catalogModule.predefinedSearchFilters', 'platformWebApp.metaFormsService', 'virtoCommerce.catalogModule.itemTypesResolverService', 'platformWebApp.dynamicTemplateService', 'platformWebApp.toolbarService', 'platformWebApp.breadcrumbHistoryService', 'platformWebApp.authService',
-            function ($injector, mainMenuService, widgetService, $state, bladeNavigationService, catalogExportService, scopeResolver, catalogs, predefinedSearchFilters, metaFormsService, itemTypesResolverService, dynamicTemplateService, toolbarService, breadcrumbHistoryService, authService) {
+        ['$injector', 'platformWebApp.mainMenuService', 'platformWebApp.widgetService', '$state', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.catalogExportService', 'platformWebApp.permissionScopeResolver', 'virtoCommerce.catalogModule.catalogs', 'virtoCommerce.catalogModule.predefinedSearchFilters', 'platformWebApp.metaFormsService', 'virtoCommerce.catalogModule.itemTypesResolverService', 'platformWebApp.dynamicTemplateService', 'platformWebApp.toolbarService', 'platformWebApp.breadcrumbHistoryService', 'platformWebApp.authService', 'virtoCommerce.storeModule.stores',
+            function ($injector, mainMenuService, widgetService, $state, bladeNavigationService, catalogExportService, scopeResolver, catalogs, predefinedSearchFilters, metaFormsService, itemTypesResolverService, dynamicTemplateService, toolbarService, breadcrumbHistoryService, authService, storesApi) {
 
                 //Register module in main menu
                 var menuItem = {
@@ -201,11 +201,12 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
 
                 //Register item seo widget
                 var itemSeoWidget = {
-                    controller: 'virtoCommerce.coreModule.seo.seoWidgetController',
-                    template: 'Modules/$(VirtoCommerce.Core)/Scripts/SEO/widgets/seoWidget.tpl.html',
+                    controller: 'virtoCommerce.seo.seoWidgetController',
+                    template: 'Modules/$(VirtoCommerce.Seo)/Scripts/widgets/seo-widget.html',
                     objectType: 'CatalogProduct',
                     getDefaultContainerId: function (blade) { return undefined; },
-                    getLanguages: function (blade) { return _.pluck(blade.catalog.languages, 'languageCode'); }
+                    getLanguages: function (blade) { return _.pluck(blade.catalog.languages, 'languageCode'); },
+                    getStoreDataSource: function () { return function (criteria) { return storesApi.search(criteria); }; }
                 };
                 widgetService.registerWidget(itemSeoWidget, 'itemDetail');
 
@@ -260,11 +261,12 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
 
                 //Register category seo widget
                 var categorySeoWidget = {
-                    controller: 'virtoCommerce.coreModule.seo.seoWidgetController',
-                    template: 'Modules/$(VirtoCommerce.Core)/Scripts/SEO/widgets/seoWidget.tpl.html',
+                    controller: 'virtoCommerce.seo.seoWidgetController',
+                    template: 'Modules/$(VirtoCommerce.Seo)/Scripts/widgets/seo-widget.html',
                     objectType: 'Category',
                     getDefaultContainerId: function (blade) { return undefined; },
-                    getLanguages: function (blade) { return _.pluck(blade.catalog.languages, 'languageCode'); }
+                    getLanguages: function (blade) { return _.pluck(blade.catalog.languages, 'languageCode'); },
+                    getStoreDataSource: function () { return function (criteria) { return storesApi.search(criteria); }; }
                 };
                 widgetService.registerWidget(categorySeoWidget, 'categoryDetail');
 
@@ -312,11 +314,12 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                 widgetService.registerWidget(propertyGroupsWidget, 'catalogDetail');
 
                 var catalogSeoWidget = {
-                    controller: 'virtoCommerce.coreModule.seo.seoWidgetController',
-                    template: 'Modules/$(VirtoCommerce.Core)/Scripts/SEO/widgets/seoWidget.tpl.html',
+                    controller: 'virtoCommerce.seo.seoWidgetController',
+                    template: 'Modules/$(VirtoCommerce.Seo)/Scripts/widgets/seo-widget.html',
                     objectType: 'Catalog',
                     getDefaultContainerId: function (blade) { return undefined; },
-                    getLanguages: function (blade) { return _.pluck(blade.currentEntity.languages, 'languageCode'); }
+                    getLanguages: function (blade) { return _.pluck(blade.currentEntity.languages, 'languageCode'); },
+                    getStoreDataSource: function () { return function (criteria) { return storesApi.search(criteria); }; }
                 };
 
                 widgetService.registerWidget(catalogSeoWidget, 'catalogDetail');
@@ -342,8 +345,8 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                 widgetService.registerWidget(brandSettingsWidget, 'storeDetail');
 
                 var brandsSettingsCatalogSeoWidget = {
-                    controller: 'virtoCommerce.coreModule.seo.seoWidgetController',
-                    template: 'Modules/$(VirtoCommerce.Core)/Scripts/SEO/widgets/seoWidget.tpl.html',
+                    controller: 'virtoCommerce.seo.seoWidgetController',
+                    template: 'Modules/$(VirtoCommerce.Seo)/Scripts/widgets/seo-widget.html',
                     objectType: 'Catalog',
 
                     getDefaultContainerId: function (blade) {
@@ -351,7 +354,8 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                     },
                     getLanguages: function (blade) {
                         return _.pluck(blade.selectedCatalog.languages, 'languageCode');
-                    }
+                    },
+                    getStoreDataSource: function () { return function (criteria) { return storesApi.search(criteria); }; }
                 };
 
                 widgetService.registerWidget(brandsSettingsCatalogSeoWidget, 'brandsSettingsCatalogDetail');
@@ -860,6 +864,10 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                     {
                         colSpan: 6,
                         templateUrl: "section-allow-predefined.html"
+                    },
+                    {
+                        colSpan: 6,
+                        templateUrl: "section-depends-on.html",
                     }
                 ]);
             }]);
