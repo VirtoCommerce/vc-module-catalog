@@ -126,14 +126,6 @@ namespace VirtoCommerce.CatalogModule.Tests
         {
             var store = CreateStore();
 
-            if (value != null)
-            {
-                store.Settings.Add(new ObjectSettingEntry(ModuleConstants.Settings.Search.FilteredBrowsing)
-                {
-                    Value = value,
-                });
-            }
-
             return store;
         }
 
