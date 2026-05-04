@@ -1349,6 +1349,12 @@
           "title": "Nombre de la propiedad de la marca",
           "description": "Nombre de la propiedad para la marca"
         }
+      },
+      "BrowseFilters": {
+        "FilteredBrowsing": {
+          "title": "Propiedades de filtrado",
+          "description": "Configuración por tienda de los filtros de navegación facetada. Editable mediante el widget Propiedades de filtrado en la página de la tienda"
+        }
       }
     },
     "VirtoCommerce": {

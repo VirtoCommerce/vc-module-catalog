@@ -1349,6 +1349,12 @@
       "ProductConfigurationMaximumFiles": {
         "title": "Maximum number of files in the configuration section",
         "description": "Limit the maximum number of files in the configuration section"
+      },
+      "BrowseFilters": {
+        "FilteredBrowsing": {
+          "title": "Filtering properties",
+          "description": "Per-store faceted browsing filter configuration. Edit through the Filtering properties widget on the store page"
+        }
       }
     },
     "VirtoCommerce": {

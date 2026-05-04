@@ -1349,6 +1349,12 @@
       "ProductConfigurationMaximumFiles": {
         "title": "Enimmäistiedostomäärä konfiguraatio-osiossa",
         "description": "Rajoita enimmäistiedostomäärää konfiguraatio-osiossa"
+      },
+      "BrowseFilters": {
+        "FilteredBrowsing": {
+          "title": "Suodatusominaisuudet",
+          "description": "Myymäläkohtainen fasetoidun selauksen suodatusasetus. Muokataan myymäläsivun Suodatusominaisuudet-widgetin kautta"
+        }
       }
     },
     "VirtoCommerce": {

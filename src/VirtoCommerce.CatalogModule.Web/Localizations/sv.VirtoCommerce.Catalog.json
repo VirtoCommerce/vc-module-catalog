@@ -1349,6 +1349,12 @@
       "ProductConfigurationMaximumFiles": {
         "title": "Maximalt antal filer i konfigurationssektionen",
         "description": "Begränsa det maximala antalet filer i konfigurationssektionen"
+      },
+      "BrowseFilters": {
+        "FilteredBrowsing": {
+          "title": "Filtreringsegenskaper",
+          "description": "Konfiguration av fasettsökningsfilter per butik. Redigeras via widgeten Filtreringsegenskaper på butikssidan"
+        }
       }
     },
     "VirtoCommerce": {
