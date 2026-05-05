@@ -17,9 +17,9 @@ namespace VirtoCommerce.CatalogModule.Tests
         private const string StoreId = "Store-Test";
 
         [Fact]
-        public async Task GetStoreAggregations_ReadsFromStoreSettings_RoundTripsThroughSave()
+        public async Task GetStoreAggregations_RoundTripsThroughSave()
         {
-            var store = CreateStore();
+            var store = CreateStoreWithSetting();
             var storeService = CreateStoreServiceMock(store);
 
             var service = new BrowseFilterService(storeService.Object);
@@ -56,7 +56,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         [Fact]
         public async Task GetStoreAggregations_WhenSettingValueEmpty_ReturnsNull()
         {
-            var store = CreateStore();
+            var store = CreateStoreWithSetting();
             var storeService = CreateStoreServiceMock(store);
 
             var service = new BrowseFilterService(storeService.Object);
@@ -69,7 +69,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         [Fact]
         public async Task SaveStoreAggregations_WhenSettingMissing_AddsNewSetting()
         {
-            var store = CreateStore();
+            var store = CreateStoreWithoutSetting();
             var storeService = CreateStoreServiceMock(store);
 
             var service = new BrowseFilterService(storeService.Object);
@@ -81,9 +81,8 @@ namespace VirtoCommerce.CatalogModule.Tests
 
             await service.SaveStoreAggregationsAsync(StoreId, filters);
 
-            var setting = store.Settings.Single(x =>
-                x.Name == ModuleConstants.Settings.Search.FilteredBrowsing.Name);
-
+            var setting = Assert.Single(store.Settings,
+                x => x.Name == ModuleConstants.Settings.Search.FilteredBrowsing.Name);
             Assert.NotNull(setting.Value);
             Assert.Contains("Brand", setting.Value as string);
             storeService.Verify(x => x.SaveChangesAsync(It.Is<IList<Store>>(s => s.Count == 1 && s[0] == store)), Times.Once);
@@ -91,7 +90,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         }
 
         [Fact]
-        public async Task SaveStoreAggregations_WhenSettingExists_UpdatesValue()
+        public async Task SaveStoreAggregations_WhenSettingExists_OverwritesValue()
         {
             var store = CreateStoreWithSetting("legacy-value");
             var storeService = CreateStoreServiceMock(store);
@@ -107,26 +106,37 @@ namespace VirtoCommerce.CatalogModule.Tests
 
             var setting = store.Settings.Single(x =>
                 x.Name == ModuleConstants.Settings.Search.FilteredBrowsing.Name);
-
             Assert.Contains("Color", setting.Value as string);
             Assert.DoesNotContain("legacy-value", setting.Value as string);
         }
 
-        private static Store CreateStore()
+        // Store with an empty Settings collection — exercises the "add new entry" branch in SaveSerializedValue.
+        private static Store CreateStoreWithoutSetting()
         {
             return new Store
             {
                 Id = StoreId,
-                Settings = [new ObjectSettingEntry(ModuleConstants.Settings.Search.FilteredBrowsing)],
+                Settings = [],
                 DynamicProperties = [],
             };
         }
 
-        private static Store CreateStoreWithSetting(string value)
+        // Store with the FilteredBrowsing setting already registered (mirrors the runtime state where
+        // settings are auto-created on registration). Pass a value to pre-populate it.
+        private static Store CreateStoreWithSetting(string value = null)
         {
-            var store = CreateStore();
-
-            return store;
+            return new Store
+            {
+                Id = StoreId,
+                Settings =
+                [
+                    new ObjectSettingEntry(ModuleConstants.Settings.Search.FilteredBrowsing)
+                    {
+                        Value = value,
+                    },
+                ],
+                DynamicProperties = [],
+            };
         }
 
         private static Mock<IStoreService> CreateStoreServiceMock(Store store)

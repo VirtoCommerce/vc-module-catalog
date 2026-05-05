@@ -349,8 +349,8 @@ namespace VirtoCommerce.CatalogModule.Web
             // Migrate the FilteredBrowsing dynamic property values (legacy storage) to per-store settings.
             // The dynamic property is no longer registered: it now lives in Store.Settings, which is
             // not exposed by the platform's Dynamic Properties admin UI and so cannot be deleted there.
-            var fiteredBrowsingMigrationTask = appBuilder.ApplicationServices.GetService<FilteredBrowsingMigrationStartupTask>();
-            fiteredBrowsingMigrationTask.RunAsync().GetAwaiter().GetResult();
+            var filteredBrowsingMigrationTask = appBuilder.ApplicationServices.GetService<FilteredBrowsingMigrationStartupTask>();
+            filteredBrowsingMigrationTask.RunAsync().GetAwaiter().GetResult();
 
             #region Register types for generic Export
 

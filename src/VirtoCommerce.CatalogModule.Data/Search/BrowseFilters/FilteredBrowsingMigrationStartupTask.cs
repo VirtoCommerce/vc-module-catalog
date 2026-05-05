@@ -51,7 +51,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
                         continue;
                     }
 
-
                     store.Settings.First(x => x.Name.EqualsIgnoreCase(settingDescriptor.Name)).Value = legacyValue;
 
                     storesToSave.Add(store);
