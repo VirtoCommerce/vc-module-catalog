@@ -67,9 +67,9 @@ namespace VirtoCommerce.CatalogModule.Tests
         }
 
         [Fact]
-        public async Task SaveStoreAggregations_WhenSettingMissing_AddsNewSetting()
+        public async Task SaveStoreAggregations_WritesValueToRegisteredSetting()
         {
-            var store = CreateStoreWithoutSetting();
+            var store = CreateStoreWithSetting();
             var storeService = CreateStoreServiceMock(store);
 
             var service = new BrowseFilterService(storeService.Object);
@@ -81,8 +81,8 @@ namespace VirtoCommerce.CatalogModule.Tests
 
             await service.SaveStoreAggregationsAsync(StoreId, filters);
 
-            var setting = Assert.Single(store.Settings,
-                x => x.Name == ModuleConstants.Settings.Search.FilteredBrowsing.Name);
+            var setting = store.Settings.Single(x =>
+                x.Name == ModuleConstants.Settings.Search.FilteredBrowsing.Name);
             Assert.NotNull(setting.Value);
             Assert.Contains("Brand", setting.Value as string);
             storeService.Verify(x => x.SaveChangesAsync(It.Is<IList<Store>>(s => s.Count == 1 && s[0] == store)), Times.Once);
@@ -90,7 +90,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         }
 
         [Fact]
-        public async Task SaveStoreAggregations_WhenSettingExists_OverwritesValue()
+        public async Task SaveStoreAggregations_OverwritesExistingValue()
         {
             var store = CreateStoreWithSetting("legacy-value");
             var storeService = CreateStoreServiceMock(store);
@@ -108,17 +108,6 @@ namespace VirtoCommerce.CatalogModule.Tests
                 x.Name == ModuleConstants.Settings.Search.FilteredBrowsing.Name);
             Assert.Contains("Color", setting.Value as string);
             Assert.DoesNotContain("legacy-value", setting.Value as string);
-        }
-
-        // Store with an empty Settings collection — exercises the "add new entry" branch in SaveSerializedValue.
-        private static Store CreateStoreWithoutSetting()
-        {
-            return new Store
-            {
-                Id = StoreId,
-                Settings = [],
-                DynamicProperties = [],
-            };
         }
 
         // Store with the FilteredBrowsing setting already registered (mirrors the runtime state where
