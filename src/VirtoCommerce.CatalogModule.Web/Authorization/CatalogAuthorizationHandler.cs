@@ -84,18 +84,18 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
             switch (context.Resource)
             {
                 case CatalogSearchCriteria catalogSearchCriteria:
-                    catalogSearchCriteria.CatalogIds = catalogSearchCriteria.CatalogIds?.Length > 0
-                        ? catalogSearchCriteria.CatalogIds.Intersect(allowedCatalogIds).ToArray()
-                        : allowedCatalogIds;
-
-                    context.Succeed(requirement);
+                    if (CatalogScopeAuthorizationHelper.TryGetAuthorizedCatalogIds(catalogSearchCriteria.CatalogIds, allowedCatalogIds, out var catalogIds))
+                    {
+                        catalogSearchCriteria.CatalogIds = catalogIds;
+                        context.Succeed(requirement);
+                    }
                     break;
                 case CatalogListEntrySearchCriteria listEntrySearchCriteria:
-                    listEntrySearchCriteria.CatalogIds = listEntrySearchCriteria.CatalogIds?.Length > 0
-                        ? listEntrySearchCriteria.CatalogIds.Intersect(allowedCatalogIds).ToArray()
-                        : allowedCatalogIds;
-
-                    context.Succeed(requirement);
+                    if (CatalogScopeAuthorizationHelper.TryGetAuthorizedCatalogIds(listEntrySearchCriteria.CatalogIds, allowedCatalogIds, out catalogIds))
+                    {
+                        listEntrySearchCriteria.CatalogIds = catalogIds;
+                        context.Succeed(requirement);
+                    }
                     break;
                 case Catalog catalog when !catalog.IsTransient():
                     {
@@ -108,8 +108,8 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
                     }
                 case IEnumerable<IHasCatalogId> hasCatalogIds:
                     {
-                        var catalogIds = hasCatalogIds.Select(x => x.CatalogId).Distinct().ToList();
-                        if (catalogIds.Intersect(allowedCatalogIds).Count() == catalogIds.Count)
+                        var resourceCatalogIds = hasCatalogIds.Select(x => x.CatalogId).Distinct().ToList();
+                        if (resourceCatalogIds.Intersect(allowedCatalogIds).Count() == resourceCatalogIds.Count)
                         {
                             context.Succeed(requirement);
                         }
@@ -127,20 +127,20 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
                     }
                 case ProductExportDataQuery dataQuery:
                     {
-                        dataQuery.CatalogIds = dataQuery.CatalogIds?.Length > 0
-                            ? dataQuery.CatalogIds.Intersect(allowedCatalogIds).ToArray()
-                            : allowedCatalogIds;
-
-                        context.Succeed(requirement);
+                        if (CatalogScopeAuthorizationHelper.TryGetAuthorizedCatalogIds(dataQuery.CatalogIds, allowedCatalogIds, out catalogIds))
+                        {
+                            dataQuery.CatalogIds = catalogIds;
+                            context.Succeed(requirement);
+                        }
                         break;
                     }
                 case PropertyDictionaryItemSearchCriteria propertyDictionaryItemSearchCriteria:
                     {
-                        propertyDictionaryItemSearchCriteria.CatalogIds = propertyDictionaryItemSearchCriteria.CatalogIds?.Length > 0
-                            ? propertyDictionaryItemSearchCriteria.CatalogIds.Intersect(allowedCatalogIds).ToArray()
-                            : allowedCatalogIds;
-
-                        context.Succeed(requirement);
+                        if (CatalogScopeAuthorizationHelper.TryGetAuthorizedCatalogIds(propertyDictionaryItemSearchCriteria.CatalogIds, allowedCatalogIds, out catalogIds))
+                        {
+                            propertyDictionaryItemSearchCriteria.CatalogIds = catalogIds;
+                            context.Succeed(requirement);
+                        }
                         break;
                     }
                 case IEnumerable<PropertyDictionaryItem>:
