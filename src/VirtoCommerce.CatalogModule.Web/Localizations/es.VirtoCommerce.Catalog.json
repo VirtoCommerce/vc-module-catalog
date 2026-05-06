@@ -1280,7 +1280,15 @@
     "measures:delete": "Eliminar datos relacionados con la unidad de medida",
     "catalog:metadata-property:edit": "Editar metadatos de propiedades",
     "catalog:custom-property:edit": "Editar propiedades personalizadas del producto",
-    "catalog:dictionary-property:edit": "Editar valores del diccionario de la propiedad"
+    "catalog:dictionary-property:edit": "Editar valores del diccionario de la propiedad",
+    "catalog:categories:create": "Crear categorías",
+    "catalog:categories:read": "Ver categorías",
+    "catalog:categories:update": "Editar categorías",
+    "catalog:categories:delete": "Eliminar categorías",
+    "catalog:products:create": "Crear productos",
+    "catalog:products:read": "Ver productos",
+    "catalog:products:update": "Editar productos",
+    "catalog:products:delete": "Eliminar productos"
   },
   "settings": {
     "Catalog": {
