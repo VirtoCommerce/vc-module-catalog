@@ -1,6 +1,15 @@
 angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.categoriesItemsListController', [
-        '$sessionStorage', '$location', '$timeout', '$scope', 'virtoCommerce.catalogModule.listEntries', 'platformWebApp.bladeUtils', 'platformWebApp.dialogService', 'platformWebApp.authService', 'platformWebApp.uiGridHelper', 'virtoCommerce.catalogModule.catalogs',
+        '$sessionStorage',
+        '$location',
+        '$timeout',
+        '$scope',
+        'virtoCommerce.catalogModule.listEntries',
+        'platformWebApp.bladeUtils',
+        'platformWebApp.dialogService',
+        'platformWebApp.authService',
+        'platformWebApp.uiGridHelper',
+        'virtoCommerce.catalogModule.catalogs',
         function ($sessionStorage, $location, $timeout, $scope, listEntries, bladeUtils, dialogService, authService, uiGridHelper, catalogs) {
             $scope.uiGridConstants = uiGridHelper.uiGridConstants;
             $scope.hasMore = true;
@@ -10,6 +19,24 @@ angular.module('virtoCommerce.catalogModule')
             var bladeNavigationService = bladeUtils.bladeNavigationService;
             if (blade.catalogId)
                 blade.catalog = catalogs.get({ id: blade.catalogId });
+
+            $scope.canDelete = function () {
+                return authService.checkPermission('catalog:products:delete', blade.securityScopes) ||
+                       authService.checkPermission('catalog:categories:delete', blade.securityScopes) ||
+                       authService.checkPermission('catalog:delete', blade.securityScopes);
+            };
+
+            $scope.canCutPaste = function () {
+                return authService.checkPermission('catalog:products:update', blade.securityScopes) ||
+                       authService.checkPermission('catalog:categories:update', blade.securityScopes) ||
+                       authService.checkPermission('catalog:update', blade.securityScopes);
+            };
+
+            $scope.canRead = function () {
+                return authService.checkPermission('catalog:products:read', blade.securityScopes) ||
+                       authService.checkPermission('catalog:categories:read', blade.securityScopes) ||
+                       authService.checkPermission('catalog:read', blade.securityScopes);
+            };
 
             blade.refresh = function () {
 
@@ -404,8 +431,7 @@ angular.module('virtoCommerce.catalogModule')
                     name: "platform.commands.delete",
                     icon: 'fas fa-trash-alt',
                     executeMethod: function () { deleteList($scope.gridApi.selection.getSelectedRows()); },
-                    canExecuteMethod: isItemsChecked,
-                    permission: 'catalog:delete'
+                    canExecuteMethod: function () { return isItemsChecked() && $scope.canDelete(); }
                 },
                 {
                     name: "platform.commands.import",
@@ -450,8 +476,7 @@ angular.module('virtoCommerce.catalogModule')
                     executeMethod: function () {
                         cutList($scope.gridApi.selection.getSelectedRows());
                     },
-                    canExecuteMethod: isItemsChecked,
-                    permission: 'catalog:create'
+                    canExecuteMethod: function () { return isItemsChecked() && $scope.canCutPaste(); }
                 },
                 {
                     name: "platform.commands.paste",
@@ -470,9 +495,8 @@ angular.module('virtoCommerce.catalogModule')
                         });
                     },
                     canExecuteMethod: function () {
-                        return $sessionStorage.catalogClipboardContent && blade.catalog && !blade.catalog.isVirtual;
-                    },
-                    permission: 'catalog:create'
+                        return $sessionStorage.catalogClipboardContent && blade.catalog && !blade.catalog.isVirtual && $scope.canCutPaste();
+                    }
                 }
             ];
 
@@ -493,7 +517,7 @@ angular.module('virtoCommerce.catalogModule')
                     }
                     blade.toolbarCommands.splice(1, 5, mapCommand);
                 }
-            } else if (!blade.isBrowsingLinkedCategory && authService.checkPermission('catalog:create')) {
+            } else if (!blade.isBrowsingLinkedCategory && canCreateCatalogItem()) {
                 blade.toolbarCommands.splice(1, 0, {
                     name: "platform.commands.add",
                     icon: 'fas fa-plus',
@@ -510,6 +534,12 @@ angular.module('virtoCommerce.catalogModule')
                     },
                     canExecuteMethod: function () { return blade.catalogId; }
                 });
+            }
+
+            function canCreateCatalogItem() {
+                return authService.checkPermission('catalog:create') ||
+                    authService.checkPermission('catalog:categories:create') ||
+                    authService.checkPermission('catalog:products:create');
             }
 
             blade.onAfterCatalogSelected = function (selectedNode) {

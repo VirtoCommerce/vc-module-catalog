@@ -1,7 +1,27 @@
 angular.module('virtoCommerce.catalogModule')
-    .controller('virtoCommerce.catalogModule.categoriesItemsAddController', ['$scope', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.categories', 'virtoCommerce.catalogModule.items', 'virtoCommerce.catalogModule.itemTypesResolverService', function ($scope, bladeNavigationService, categories, items, itemTypesResolverService) {
+    .controller('virtoCommerce.catalogModule.categoriesItemsAddController', [
+        '$scope',
+        'platformWebApp.bladeNavigationService',
+        'virtoCommerce.catalogModule.categories',
+        'virtoCommerce.catalogModule.items',
+        'virtoCommerce.catalogModule.itemTypesResolverService',
+        'platformWebApp.authService',
+        function ($scope, bladeNavigationService, categories, items, itemTypesResolverService, authService) {
         var blade = $scope.blade;
         var pb = blade.parentBlade;
+        var getScopes = function () {
+            return pb && pb.securityScopes;
+        };
+
+        $scope.canAddCategory = function () {
+            return authService.checkPermission('catalog:categories:create', getScopes()) ||
+                   authService.checkPermission('catalog:create', getScopes());
+        };
+
+        $scope.canAddProduct = function () {
+            return authService.checkPermission('catalog:products:create', getScopes()) ||
+                   authService.checkPermission('catalog:create', getScopes());
+        };
 
         $scope.availableTypes = itemTypesResolverService.objects;
 

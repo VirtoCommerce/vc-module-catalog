@@ -1,7 +1,19 @@
 angular.module('virtoCommerce.catalogModule')
-    .controller('virtoCommerce.catalogModule.categoryDetailController', ['$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.settings', 'virtoCommerce.catalogModule.categories', 'virtoCommerce.catalogModule.catalogs', 'platformWebApp.metaFormsService', function ($scope, bladeNavigationService, settings, categories, catalogs, metaFormsService) {
+    .controller('virtoCommerce.catalogModule.categoryDetailController', [
+        '$scope',
+        'platformWebApp.bladeNavigationService',
+        'platformWebApp.settings',
+        'virtoCommerce.catalogModule.categories',
+        'virtoCommerce.catalogModule.catalogs',
+        'platformWebApp.metaFormsService',
+        'platformWebApp.authService',
+        function ($scope, bladeNavigationService, settings, categories, catalogs, metaFormsService, authService) {
         var blade = $scope.blade;
         blade.updatePermission = 'catalog:update';
+        blade.hasUpdatePermission = function () {
+            return authService.checkPermission('catalog:categories:update', blade.securityScopes) ||
+                   authService.checkPermission('catalog:update', blade.securityScopes);
+        };
 
         blade.metaFields = metaFormsService.getMetaFields("categoryDetail");
 
@@ -35,6 +47,11 @@ angular.module('virtoCommerce.catalogModule')
             blade.title = data.name;
             blade.isLoading = false;
             blade.securityScopes = data.securityScopes;
+            if (!blade.hasUpdatePermission()) {
+                blade.toolbarCommands = blade.toolbarCommands.filter(function (cmd) {
+                    return cmd.name !== 'platform.commands.save' && cmd.name !== 'platform.commands.reset';
+                });
+            }
         };
 
         blade.codeValidator = function (value) {
@@ -59,26 +76,33 @@ angular.module('virtoCommerce.catalogModule')
         };
 
         blade.onClose = function (closeCallback) {
-            bladeNavigationService.showConfirmationIfNeeded(isDirty(), canSave(), blade, saveChanges, closeCallback, "catalog.dialogs.category-save.title", "catalog.dialogs.category-save.message");
+            bladeNavigationService.showConfirmationIfNeeded(
+                isDirty(),
+                canSave(),
+                blade,
+                saveChanges,
+                closeCallback,
+                "catalog.dialogs.category-save.title",
+                "catalog.dialogs.category-save.message");
         };
 
         blade.formScope = null;
-        $scope.setForm = function (form) { blade.formScope = form; }
+        $scope.setForm = function (form) {
+            blade.formScope = form;
+        };
 
         blade.toolbarCommands = [
             {
                 name: "platform.commands.save", icon: 'fas fa-save',
                 executeMethod: saveChanges,
-                canExecuteMethod: canSave,
-                permission: blade.updatePermission
+                canExecuteMethod: canSave
             },
             {
                 name: "platform.commands.reset", icon: 'fa fa-undo',
                 executeMethod: function () {
                     angular.copy(blade.origEntity, blade.currentEntity);
                 },
-                canExecuteMethod: isDirty,
-                permission: blade.updatePermission
+                canExecuteMethod: isDirty
             }
         ];
 

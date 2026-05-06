@@ -354,7 +354,9 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 foreach (var id in ids)
                 {
                     var entity = entities.FirstOrDefault(x => x.Id.EqualsIgnoreCase(id));
+#pragma warning disable VC0014 // Type or member is obsolete
                     var model = entity is null ? null : ToModel(entity);
+#pragma warning restore VC0014 // Type or member is obsolete
                     categoryById.TryAdd(id, model);
                 }
 

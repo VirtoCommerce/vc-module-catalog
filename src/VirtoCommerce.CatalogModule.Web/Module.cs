@@ -64,14 +64,18 @@ using ISeoResolver = VirtoCommerce.Seo.Core.Services.ISeoResolver;
 
 namespace VirtoCommerce.CatalogModule.Web
 {
+#pragma warning disable VC0014 // Type or member is obsolete
     public class Module : IModule, IHasConfiguration, IExportSupport, IImportSupport, IHasModuleCatalog
+#pragma warning restore VC0014 // Type or member is obsolete
     {
         private IApplicationBuilder _appBuilder;
 
         public ManifestModuleInfo ModuleInfo { get; set; }
 
         public IConfiguration Configuration { get; set; }
+#pragma warning disable VC0014 // Type or member is obsolete
         public IModuleCatalog ModuleCatalog { get; set; }
+#pragma warning restore VC0014 // Type or member is obsolete
 
         // optional modules
         private const string BulkActionsModuleId = "VirtoCommerce.BulkActionsModule";
@@ -242,6 +246,7 @@ namespace VirtoCommerce.CatalogModule.Web
 
             serviceCollection.AddTransient<IAuthorizationHandler, CatalogAuthorizationHandler>();
             serviceCollection.AddTransient<IAuthorizationHandler, CustomPropertyRequirementHandler>();
+            serviceCollection.AddTransient<CatalogEntityAuthorizationService>();
 
             serviceCollection.AddTransient<ICatalogExportPagedDataSourceFactory, CatalogExportPagedDataSourceFactory>();
 
@@ -273,12 +278,14 @@ namespace VirtoCommerce.CatalogModule.Web
 
             #region BulkActions
 
+#pragma warning disable VC0014 // Type or member is obsolete
             if (ModuleCatalog.IsModuleInstalled(BulkActionsModuleId))
             {
                 serviceCollection.AddTransient<IBulkPropertyUpdateManager, BulkPropertyUpdateManager>();
                 serviceCollection.AddTransient<IDataSourceFactory, DataSourceFactory>();
                 serviceCollection.AddTransient<IBulkActionFactory, CatalogBulkActionFactory>();
             }
+#pragma warning restore VC0014 // Type or member is obsolete
 
             #endregion BulkActions
 
@@ -316,6 +323,14 @@ namespace VirtoCommerce.CatalogModule.Web
                 ModuleConstants.Security.Permissions.Read,
                 ModuleConstants.Security.Permissions.Update,
                 ModuleConstants.Security.Permissions.Delete,
+                ModuleConstants.Security.Permissions.CategoriesCreate,
+                ModuleConstants.Security.Permissions.CategoriesRead,
+                ModuleConstants.Security.Permissions.CategoriesUpdate,
+                ModuleConstants.Security.Permissions.CategoriesDelete,
+                ModuleConstants.Security.Permissions.ProductsCreate,
+                ModuleConstants.Security.Permissions.ProductsRead,
+                ModuleConstants.Security.Permissions.ProductsUpdate,
+                ModuleConstants.Security.Permissions.ProductsDelete,
             }, new SelectedCatalogScope());
 
             appBuilder.RegisterEventHandler<ProductChangedEvent, LogChangesChangedEventHandler>();
@@ -357,6 +372,7 @@ namespace VirtoCommerce.CatalogModule.Web
 
             #region Register types for generic Export
 
+#pragma warning disable VC0014 // Type or member is obsolete
             if (ModuleCatalog.IsModuleInstalled(GenericExportModuleId))
             {
                 var registrar = appBuilder.ApplicationServices.GetService<IKnownExportTypesRegistrar>();
@@ -385,11 +401,12 @@ namespace VirtoCommerce.CatalogModule.Web
                         .WithMetadata(new ExportedTypeMetadata { PropertyInfos = Array.Empty<ExportedTypePropertyInfo>() })
                         .WithRestrictDataSelectivity());
             }
+#pragma warning restore VC0014 // Type or member is obsolete
 
             #endregion Register types for generic Export
 
             #region BulkActions
-
+#pragma warning disable VC0014 // Type or member is obsolete
             if (ModuleCatalog.IsModuleInstalled(BulkActionsModuleId))
             {
                 AbstractTypeFactory<BulkActionContext>.RegisterType<CategoryChangeBulkActionContext>();
@@ -398,6 +415,7 @@ namespace VirtoCommerce.CatalogModule.Web
                 RegisterBulkAction(nameof(CategoryChangeBulkAction), nameof(CategoryChangeBulkActionContext));
                 RegisterBulkAction(nameof(PropertiesUpdateBulkAction), nameof(PropertiesUpdateBulkActionContext));
             }
+#pragma warning restore VC0014 // Type or member is obsolete
 
             #endregion BulkActions
         }

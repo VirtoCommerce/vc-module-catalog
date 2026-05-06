@@ -1,6 +1,30 @@
-angular.module('virtoCommerce.catalogModule').controller('virtoCommerce.catalogModule.itemVariationListController', ['$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'virtoCommerce.catalogModule.items', 'filterFilter', 'uiGridConstants', 'platformWebApp.uiGridHelper', 'virtoCommerce.catalogModule.search', 'platformWebApp.bladeUtils', function ($scope, bladeNavigationService, dialogService, items, filterFilter, uiGridConstants, uiGridHelper, search, bladeUtils) {
+angular.module('virtoCommerce.catalogModule')
+    .controller('virtoCommerce.catalogModule.itemVariationListController', [
+        '$scope',
+        '$injector',
+        function ($scope, $injector) {
+    var bladeNavigationService = $injector.get('platformWebApp.bladeNavigationService');
+    var dialogService = $injector.get('platformWebApp.dialogService');
+    var items = $injector.get('virtoCommerce.catalogModule.items');
+    var filterFilter = $injector.get('filterFilter');
+    var uiGridConstants = $injector.get('uiGridConstants');
+    var uiGridHelper = $injector.get('platformWebApp.uiGridHelper');
+    var search = $injector.get('virtoCommerce.catalogModule.search');
+    var bladeUtils = $injector.get('platformWebApp.bladeUtils');
+    var authService = $injector.get('platformWebApp.authService');
+
     $scope.uiGridConstants = uiGridConstants;
     var blade = $scope.blade;
+
+    $scope.canCreateVariation = function () {
+        return authService.checkPermission('catalog:products:create', blade.parentBlade && blade.parentBlade.securityScopes) ||
+               authService.checkPermission('catalog:create', blade.parentBlade && blade.parentBlade.securityScopes);
+    };
+
+    $scope.canDeleteVariation = function () {
+        return authService.checkPermission('catalog:products:delete', blade.parentBlade && blade.parentBlade.securityScopes) ||
+               authService.checkPermission('catalog:delete', blade.parentBlade && blade.parentBlade.securityScopes);
+    };
     blade.title = blade.item.name;
     blade.subtitle = 'catalog.widgets.itemVariation.blade-subtitle';
 
@@ -111,8 +135,7 @@ angular.module('virtoCommerce.catalogModule').controller('virtoCommerce.catalogM
                     },
                         function (error) { bladeNavigationService.setError('Error ' + error.status, blade); });
                 },
-                canExecuteMethod: function () { return true; },
-                permission: 'catalog:create'
+                canExecuteMethod: function () { return $scope.canCreateVariation(); }
             },
             {
                 name: "platform.commands.delete", icon: 'fas fa-trash-alt',
@@ -120,9 +143,8 @@ angular.module('virtoCommerce.catalogModule').controller('virtoCommerce.catalogM
                     $scope.deleteList($scope.gridApi.selection.getSelectedRows());
                 },
                 canExecuteMethod: function () {
-                    return $scope.gridApi && _.any($scope.gridApi.selection.getSelectedRows());
-                },
-                permission: 'catalog:delete'
+                    return $scope.gridApi && _.any($scope.gridApi.selection.getSelectedRows()) && $scope.canDeleteVariation();
+                }
             }
         ];
 

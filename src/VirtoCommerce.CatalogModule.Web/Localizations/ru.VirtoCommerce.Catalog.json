@@ -1253,7 +1253,15 @@
     "measures:delete": "Удалить данные, связанные с единицами измерения",
     "catalog:metadata-property:edit": "Редактировать метаданные свойств",
     "catalog:custom-property:edit": "Редактировать пользовательские свойства продукта",
-    "catalog:dictionary-property:edit": "Редактировать значения словаря свойства"
+    "catalog:dictionary-property:edit": "Редактировать значения словаря свойства",
+    "catalog:categories:create": "Создание категорий",
+    "catalog:categories:read": "Просмотр категорий",
+    "catalog:categories:update": "Редактирование категорий",
+    "catalog:categories:delete": "Удаление категорий",
+    "catalog:products:create": "Создание продуктов",
+    "catalog:products:read": "Просмотр продуктов",
+    "catalog:products:update": "Редактирование продуктов",
+    "catalog:products:delete": "Удаление продуктов"
   },
   "settings": {
     "Catalog": {

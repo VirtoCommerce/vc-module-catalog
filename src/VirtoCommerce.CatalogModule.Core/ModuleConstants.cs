@@ -43,6 +43,16 @@ namespace VirtoCommerce.CatalogModule.Core
                 public const string ConfigurationsUpdate = "catalog:configurations:update";
                 public const string ConfigurationsDelete = "catalog:configurations:delete";
 
+                public const string CategoriesCreate = "catalog:categories:create";
+                public const string CategoriesRead = "catalog:categories:read";
+                public const string CategoriesUpdate = "catalog:categories:update";
+                public const string CategoriesDelete = "catalog:categories:delete";
+
+                public const string ProductsCreate = "catalog:products:create";
+                public const string ProductsRead = "catalog:products:read";
+                public const string ProductsUpdate = "catalog:products:update";
+                public const string ProductsDelete = "catalog:products:delete";
+
                 public static string[] AllPermissions { get; } =
                 {
                     Access,
@@ -67,6 +77,14 @@ namespace VirtoCommerce.CatalogModule.Core
                     ConfigurationsRead,
                     ConfigurationsUpdate,
                     ConfigurationsDelete,
+                    CategoriesCreate,
+                    CategoriesRead,
+                    CategoriesUpdate,
+                    CategoriesDelete,
+                    ProductsCreate,
+                    ProductsRead,
+                    ProductsUpdate,
+                    ProductsDelete,
                 };
             }
         }
