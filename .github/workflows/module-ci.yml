@@ -289,7 +289,7 @@ jobs:
     if: ${{ ((github.ref == 'refs/heads/dev') && (github.event_name == 'push')) ||
         (github.event_name == 'workflow_dispatch') || ((github.base_ref == 'dev') && (github.event_name == 'pull_request')) }}
     needs: ci
-    uses: VirtoCommerce/.github/.github/workflows/pytest-tests.yml@v3.800.30
+    uses: VirtoCommerce/.github/.github/workflows/pytest-tests.yml@VCST-5041 #v3.800.30
     with:
       installModules: 'false'
       installCustomModule: 'true'
@@ -299,6 +299,7 @@ jobs:
       vctestingRepoBranch: 'dev'
       frontendZipUrl: 'latest'
       testSuites: 'graphql,restapi'
+      
     secrets:
       envPAT: ${{ secrets.REPO_TOKEN }}
       testSecretEnvFile: ${{ secrets.VC_TESTING_MODULE_ENV_FILE }}
