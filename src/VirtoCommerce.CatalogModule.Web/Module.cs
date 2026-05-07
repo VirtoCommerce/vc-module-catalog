@@ -36,8 +36,8 @@ using VirtoCommerce.CatalogModule.Data.Search.Indexing;
 using VirtoCommerce.CatalogModule.Data.Services;
 using VirtoCommerce.CatalogModule.Data.SqlServer;
 using VirtoCommerce.CatalogModule.Data.Validation;
-using VirtoCommerce.CatalogModule.Data.Vimeo;
 using VirtoCommerce.CatalogModule.Data.YouTube;
+using VirtoCommerce.CatalogModule.Data.Vimeo;
 using VirtoCommerce.CatalogModule.Web.Authorization;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.ExportModule.Core.Model;
@@ -245,6 +245,7 @@ namespace VirtoCommerce.CatalogModule.Web
 
             serviceCollection.AddTransient<IAuthorizationHandler, CatalogAuthorizationHandler>();
             serviceCollection.AddTransient<IAuthorizationHandler, CustomPropertyRequirementHandler>();
+            serviceCollection.AddTransient<CatalogEntityAuthorizationService>();
 
             serviceCollection.AddTransient<ICatalogExportPagedDataSourceFactory, CatalogExportPagedDataSourceFactory>();
 
@@ -319,6 +320,14 @@ namespace VirtoCommerce.CatalogModule.Web
                 ModuleConstants.Security.Permissions.Read,
                 ModuleConstants.Security.Permissions.Update,
                 ModuleConstants.Security.Permissions.Delete,
+                ModuleConstants.Security.Permissions.CategoriesCreate,
+                ModuleConstants.Security.Permissions.CategoriesRead,
+                ModuleConstants.Security.Permissions.CategoriesUpdate,
+                ModuleConstants.Security.Permissions.CategoriesDelete,
+                ModuleConstants.Security.Permissions.ProductsCreate,
+                ModuleConstants.Security.Permissions.ProductsRead,
+                ModuleConstants.Security.Permissions.ProductsUpdate,
+                ModuleConstants.Security.Permissions.ProductsDelete,
             }, new SelectedCatalogScope());
 
             appBuilder.RegisterEventHandler<ProductChangedEvent, LogChangesChangedEventHandler>();
