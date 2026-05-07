@@ -121,68 +121,90 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
             foreach (var pair in rootsBySourceCatalog)
             {
-                var sourceCatalogId = pair.Key;
-                var rootIds = pair.Value;
-
-                // Page through the entire source catalog and build a parent -> children map in memory.
-                // ICategorySearchService doesn't accept multiple parent ids, so a single catalog-wide
-                // load is more efficient than one search per node when the moved subtree is non-trivial.
-                var byParent = new Dictionary<string, List<Category>>(StringComparer.OrdinalIgnoreCase);
-                var skip = 0;
-                while (true)
-                {
-                    var criteria = AbstractTypeFactory<CategorySearchCriteria>.TryCreateInstance();
-                    criteria.CatalogId = sourceCatalogId;
-                    criteria.ResponseGroup = CategoryResponseGroup.Info.ToString();
-                    criteria.Skip = skip;
-                    criteria.Take = CategoryPageSize;
-
-                    var page = await _categorySearchService.SearchAsync(criteria);
-                    if (page.Results.Count == 0)
-                    {
-                        break;
-                    }
-
-                    foreach (var category in page.Results)
-                    {
-                        var parentKey = category.ParentId ?? string.Empty;
-                        if (!byParent.TryGetValue(parentKey, out var children))
-                        {
-                            children = new List<Category>();
-                            byParent[parentKey] = children;
-                        }
-                        children.Add(category);
-                    }
-
-                    if (page.Results.Count < CategoryPageSize)
-                    {
-                        break;
-                    }
-                    skip += CategoryPageSize;
-                }
-
-                // BFS from each moved root. Roots themselves are seeded as visited so we don't
-                // re-add them (they're already in the result list of PrepareMoveAsync).
-                var visited = new HashSet<string>(rootIds, StringComparer.OrdinalIgnoreCase);
-                var queue = new Queue<string>(rootIds);
-                while (queue.Count > 0)
-                {
-                    var parentId = queue.Dequeue();
-                    if (byParent.TryGetValue(parentId, out var children))
-                    {
-                        foreach (var child in children)
-                        {
-                            if (visited.Add(child.Id))
-                            {
-                                all.Add(child);
-                                queue.Enqueue(child.Id);
-                            }
-                        }
-                    }
-                }
+                var byParent = await BuildParentChildrenMapAsync(pair.Key);
+                CollectDescendants(byParent, pair.Value, all);
             }
 
             return all;
+        }
+
+        // Page through the entire source catalog and build a parent -> children map in memory.
+        // ICategorySearchService doesn't accept multiple parent ids, so a single catalog-wide
+        // load is more efficient than one search per node when the moved subtree is non-trivial.
+        private async Task<Dictionary<string, List<Category>>> BuildParentChildrenMapAsync(string sourceCatalogId)
+        {
+            var byParent = new Dictionary<string, List<Category>>(StringComparer.OrdinalIgnoreCase);
+            var skip = 0;
+
+            while (true)
+            {
+                var page = await SearchCategoryPageAsync(sourceCatalogId, skip);
+                if (page.Count == 0)
+                {
+                    break;
+                }
+
+                foreach (var category in page)
+                {
+                    AddToParentMap(byParent, category);
+                }
+
+                if (page.Count < CategoryPageSize)
+                {
+                    break;
+                }
+                skip += CategoryPageSize;
+            }
+
+            return byParent;
+        }
+
+        private async Task<IList<Category>> SearchCategoryPageAsync(string sourceCatalogId, int skip)
+        {
+            var criteria = AbstractTypeFactory<CategorySearchCriteria>.TryCreateInstance();
+            criteria.CatalogId = sourceCatalogId;
+            criteria.ResponseGroup = CategoryResponseGroup.Info.ToString();
+            criteria.Skip = skip;
+            criteria.Take = CategoryPageSize;
+
+            var result = await _categorySearchService.SearchAsync(criteria);
+            return result.Results;
+        }
+
+        private static void AddToParentMap(Dictionary<string, List<Category>> byParent, Category category)
+        {
+            var parentKey = category.ParentId ?? string.Empty;
+            if (!byParent.TryGetValue(parentKey, out var children))
+            {
+                byParent[parentKey] = children = new List<Category>();
+            }
+            children.Add(category);
+        }
+
+        // BFS from each moved root. Roots themselves are seeded as visited so we don't re-add
+        // them (they're already in the result list of PrepareMoveAsync).
+        private static void CollectDescendants(Dictionary<string, List<Category>> byParent, IList<string> rootIds, List<Category> output)
+        {
+            var visited = new HashSet<string>(rootIds, StringComparer.OrdinalIgnoreCase);
+            var queue = new Queue<string>(rootIds);
+
+            while (queue.Count > 0)
+            {
+                var parentId = queue.Dequeue();
+                if (!byParent.TryGetValue(parentId, out var children))
+                {
+                    continue;
+                }
+
+                foreach (var child in children)
+                {
+                    if (visited.Add(child.Id))
+                    {
+                        output.Add(child);
+                        queue.Enqueue(child.Id);
+                    }
+                }
+            }
         }
 
         private async Task CascadeProductsAsync(IList<string> categoryIds, string targetCatalogId)
