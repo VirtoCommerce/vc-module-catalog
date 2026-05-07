@@ -7,11 +7,7 @@ angular.module('virtoCommerce.catalogModule')
         $scope.isValid = false;
 
         $scope.$watch("blade.currentEntity", function (entity) {
-            $scope.isValid = $scope.formScope && $scope.formScope.$valid && entity.text;
-            if ($scope.isValid && blade.origEntity.text) {
-                // Update case (form is valid when changes exist)
-                $scope.isValid = blade.origEntity.text !== entity.text;
-            }
+            $scope.isValid = $scope.formScope && $scope.formScope.$valid && entity && entity.text && isDirty();
         }, true);
 
         blade.toolbarCommands = [
@@ -34,6 +30,10 @@ angular.module('virtoCommerce.catalogModule')
 
             if (isNew && angular.isFunction(blade.onSaveNew)) {
                 blade.onSaveNew(blade.origEntity);
+            }
+
+            if (blade.parentBlade && angular.isFunction(blade.parentBlade.setDefaultOption)) {
+                blade.parentBlade.setDefaultOption(blade.origEntity, blade.origEntity.isDefault);
             }
 
             $scope.bladeClose();

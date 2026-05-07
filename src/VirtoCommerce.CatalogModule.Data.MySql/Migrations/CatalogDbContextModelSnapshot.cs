@@ -17,7 +17,7 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.11")
+                .HasAnnotation("ProductVersion", "10.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
@@ -1020,6 +1020,11 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<bool>("IsDefault")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(false);
+
                     b.Property<string>("ModifiedBy")
                         .HasMaxLength(64)
                         .HasColumnType("varchar(64)");
@@ -2016,8 +2021,7 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
 
                     b.HasOne("VirtoCommerce.CatalogModule.Data.Model.ProductConfigurationSectionEntity", "DependsOnSection")
                         .WithMany()
-                        .HasForeignKey("DependsOnSectionId")
-                        .OnDelete(DeleteBehavior.ClientSetNull);
+                        .HasForeignKey("DependsOnSectionId");
 
                     b.Navigation("Configuration");
 

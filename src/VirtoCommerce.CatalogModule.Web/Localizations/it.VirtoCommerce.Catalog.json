@@ -858,6 +858,7 @@
       "option-details": {
         "title": "Seleziona elementi come opzioni",
         "labels": {
+          "default": "Predefinito",
           "quantity": "Quantità",
           "text": "Testo per l'opzione"
         },
