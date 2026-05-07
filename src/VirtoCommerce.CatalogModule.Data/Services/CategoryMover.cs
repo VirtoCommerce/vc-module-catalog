@@ -196,13 +196,11 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     continue;
                 }
 
-                foreach (var child in children)
+                // visited.Add returns true for ids not seen yet; the side-effect runs as Where enumerates.
+                foreach (var child in children.Where(x => visited.Add(x.Id)))
                 {
-                    if (visited.Add(child.Id))
-                    {
-                        output.Add(child);
-                        queue.Enqueue(child.Id);
-                    }
+                    output.Add(child);
+                    queue.Enqueue(child.Id);
                 }
             }
         }
