@@ -1357,6 +1357,12 @@
           "title": "Marken-Eigentumsname",
           "description": "Eigenschaftsname für die Marke"
         }
+      },
+      "BrowseFilters": {
+        "FilteredBrowsing": {
+          "title": "Filtereigenschaften",
+          "description": "Konfiguration der facettierten Browsing-Filter pro Store. Bearbeitung über das Widget Filtereigenschaften auf der Store-Seite"
+        }
       }
     },
     "VirtoCommerce": {

@@ -45,7 +45,6 @@ using VirtoCommerce.ExportModule.Core.Services;
 using VirtoCommerce.ExportModule.Data.Extensions;
 using VirtoCommerce.ExportModule.Data.Services;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.DynamicProperties;
 using VirtoCommerce.Platform.Core.Events;
 using VirtoCommerce.Platform.Core.ExportImport;
 using VirtoCommerce.Platform.Core.Modularity;
@@ -299,6 +298,8 @@ namespace VirtoCommerce.CatalogModule.Web
             serviceCollection.AddTransient<IAutomaticLinkQueryService, AutomaticLinkQueryService>();
             serviceCollection.AddTransient<IAutomaticLinkQuerySearchService, AutomaticLinkQuerySearchService>();
             serviceCollection.AddTransient<IAutomaticLinkService, AutomaticLinkService>();
+
+            serviceCollection.AddTransient<FilteredBrowsingMigrationStartupTask>();
         }
 
         public void PostInitialize(IApplicationBuilder appBuilder)
@@ -354,18 +355,11 @@ namespace VirtoCommerce.CatalogModule.Web
             searchRequestBuilderRegistrar.Register(KnownDocumentTypes.Product, appBuilder.ApplicationServices.GetService<ProductSearchRequestBuilder>);
             searchRequestBuilderRegistrar.Register(KnownDocumentTypes.Category, appBuilder.ApplicationServices.GetService<CategorySearchRequestBuilder>);
 
-            // Ensure that required dynamic properties are always registered in the system
-            var dynamicPropertyService = appBuilder.ApplicationServices.GetRequiredService<IDynamicPropertyService>();
-            dynamicPropertyService.SaveDynamicPropertiesAsync(new[] {
-                    new DynamicProperty
-                    {
-                        Id = BrowseFilterService.FilteredBrowsingPropertyId,
-                        Name = BrowseFilterService.FilteredBrowsingPropertyName,
-                        ObjectType = typeof(Store).FullName,
-                        ValueType = DynamicPropertyValueType.LongText,
-                        CreatedBy = "Auto"
-                    }
-                }).GetAwaiter().GetResult();
+            // Migrate the FilteredBrowsing dynamic property values (legacy storage) to per-store settings.
+            // The dynamic property is no longer registered: it now lives in Store.Settings, which is
+            // not exposed by the platform's Dynamic Properties admin UI and so cannot be deleted there.
+            var filteredBrowsingMigrationTask = appBuilder.ApplicationServices.GetService<FilteredBrowsingMigrationStartupTask>();
+            filteredBrowsingMigrationTask.RunAsync().GetAwaiter().GetResult();
 
             #region Register types for generic Export
 
