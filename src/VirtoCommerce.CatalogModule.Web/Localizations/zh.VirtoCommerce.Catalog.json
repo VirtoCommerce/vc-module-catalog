@@ -1357,6 +1357,12 @@
           "title": "品牌属性名称",
           "description": "品牌属性名称"
         }
+      },
+      "BrowseFilters": {
+        "FilteredBrowsing": {
+          "title": "筛选属性",
+          "description": "按门店配置的分面浏览筛选器，可通过门店页面上的筛选属性小部件进行编辑"
+        }
       }
     },
     "VirtoCommerce": {
