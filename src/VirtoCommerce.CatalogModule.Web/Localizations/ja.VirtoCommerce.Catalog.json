@@ -1357,6 +1357,12 @@
           "title": "ブランドプロパティ名",
           "description": "ブランドのプロパティ名"
         }
+      },
+      "BrowseFilters": {
+        "FilteredBrowsing": {
+          "title": "フィルタリングプロパティ",
+          "description": "ストアごとのファセットブラウジングフィルタの設定。ストアページのフィルタリングプロパティウィジェットから編集できます"
+        }
       }
     },
     "VirtoCommerce": {

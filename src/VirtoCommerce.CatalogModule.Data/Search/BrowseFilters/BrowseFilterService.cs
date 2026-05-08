@@ -5,26 +5,25 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using Newtonsoft.Json;
+using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.Platform.Core.Common;
-using VirtoCommerce.Platform.Core.DynamicProperties;
+using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.StoreModule.Core.Services;
+using static VirtoCommerce.CatalogModule.Core.ModuleConstants;
 
 namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
 {
-    public class BrowseFilterService : IBrowseFilterService
+    public class BrowseFilterService(IStoreService storeService) : IBrowseFilterService
     {
+        [Obsolete("Kept for migration of legacy values. Use ModuleConstants.Settings.Search.FilteredBrowsing.", DiagnosticId = "VC0014", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions")]
         public const string FilteredBrowsingPropertyId = "VirtoCommerce.Catalog_FilteredBrowsing_Property";
+
+        [Obsolete("Kept for migration of legacy values. Use ModuleConstants.Settings.Search.FilteredBrowsing.", DiagnosticId = "VC0014", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions")]
         public const string FilteredBrowsingPropertyName = "FilteredBrowsing";
 
-        private readonly IStoreService _storeService;
-
-        public BrowseFilterService(IStoreService storeService)
-        {
-            _storeService = storeService;
-        }
-
+        private readonly IStoreService _storeService = storeService;
         private static readonly XmlSerializer _xmlSerializer = new(typeof(FilteredBrowsing));
         private static readonly JsonSerializer _jsonSerializer = new()
         {
@@ -90,30 +89,25 @@ namespace VirtoCommerce.CatalogModule.Data.Search.BrowseFilters
         protected virtual async Task<string> GetSerializedValue(string storeId)
         {
             var store = await _storeService.GetNoCloneAsync(storeId);
-            var result = store?.GetDynamicPropertyValue(FilteredBrowsingPropertyName, string.Empty);
-            return result;
+            if (store == null)
+            {
+                return null;
+            }
+
+            return store.Settings.GetValue<string>(ModuleConstants.Settings.Search.FilteredBrowsing);
         }
 
         protected virtual async Task SaveSerializedValue(string storeId, string serializedValue)
         {
             var store = await _storeService.GetByIdAsync(storeId);
-            if (store != null)
+            if (store == null)
             {
-                var property = store.DynamicProperties.FirstOrDefault(p => p.Name == FilteredBrowsingPropertyName);
-                if (property == null)
-                {
-                    property = AbstractTypeFactory<DynamicObjectProperty>.TryCreateInstance();
-                    property.Id = FilteredBrowsingPropertyId;
-                    property.Name = FilteredBrowsingPropertyName;
-                    property.ValueType = DynamicPropertyValueType.LongText;
-
-                    store.DynamicProperties.Add(property);
-                }
-
-                property.Values = new List<DynamicPropertyObjectValue>(new[] { new DynamicPropertyObjectValue { Value = serializedValue } });
-
-                await _storeService.SaveChangesAsync(new[] { store });
+                return;
             }
+
+            store.Settings.First(x => x.Name.EqualsIgnoreCase(Settings.Search.FilteredBrowsing.Name)).Value = serializedValue;
+
+            await _storeService.SaveChangesAsync([store]);
         }
 
 

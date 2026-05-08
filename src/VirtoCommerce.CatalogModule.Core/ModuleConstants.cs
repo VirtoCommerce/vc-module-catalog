@@ -255,6 +255,23 @@ namespace VirtoCommerce.CatalogModule.Core
                     DefaultValue = 25
                 };
 
+                public static SettingDescriptor FilteredBrowsing { get; } = new SettingDescriptor
+                {
+                    Name = "Catalog.BrowseFilters.FilteredBrowsing",
+                    GroupName = "Catalog|Search",
+                    ValueType = SettingValueType.Json,
+                    DefaultValue = null,
+                };
+
+                public static SettingDescriptor FilteredBrowsingMigrated { get; } = new SettingDescriptor
+                {
+                    Name = "Catalog.BrowseFilters.FilteredBrowsingMigrated",
+                    GroupName = "Catalog|Search",
+                    ValueType = SettingValueType.Boolean,
+                    DefaultValue = false,
+                    IsHidden = true,
+                };
+
                 public static IEnumerable<SettingDescriptor> AllSettings
                 {
                     get
@@ -265,6 +282,8 @@ namespace VirtoCommerce.CatalogModule.Core
                         yield return IndexationDateProduct;
                         yield return IndexationDateCategory;
                         yield return DefaultAggregationSize;
+                        yield return FilteredBrowsing;
+                        yield return FilteredBrowsingMigrated;
                     }
                 }
             }
@@ -284,6 +303,7 @@ namespace VirtoCommerce.CatalogModule.Core
                     yield return General.BrandsEnabled;
                     yield return General.BrandCatalogId;
                     yield return General.BrandPropertyName;
+                    yield return Search.FilteredBrowsing;
                 }
             }
 #pragma warning restore S3218
