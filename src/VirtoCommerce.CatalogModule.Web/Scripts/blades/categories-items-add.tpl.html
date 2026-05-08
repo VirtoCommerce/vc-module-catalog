@@ -2,17 +2,17 @@
     <div class="blade-inner">
         <div class="inner-block">
             <ul class="list __items">
-                <li class="list-item" ng-mouseup="addCategory()" va-permission="catalog:create">
+                <li class="list-item" ng-mouseup="addCategory()" ng-if="canAddCategory()">
                     <i class="list-ico fa fa-folder" style="text-align:center"></i>
                     <span class="list-t">{{'catalog.blades.categories-items-add.menu.category.title' | translate}}</span>
                     <span class="list-descr">{{ 'catalog.blades.categories-items-add.menu.category.description' | translate }}</span>
                 </li>
-                <li class="list-item" ng-mouseup="addLinkedCategory()" ng-if="blade.parentBlade.catalog.isVirtual" va-permission="catalog:create">
+                <li class="list-item" ng-mouseup="addLinkedCategory()" ng-if="blade.parentBlade.catalog.isVirtual && canAddCategory()">
                     <i class="list-ico fas fa-link" style="text-align:center"></i>
                     <span class="list-t">{{ 'catalog.blades.categories-items-add.menu.link.title' | translate }}</span>
                     <span class="list-descr">{{ 'catalog.blades.categories-items-add.menu.link.description' | translate }}</span>
                 </li>
-                <li class="list-item" ng-mouseup="addProduct(data.productType)" ng-repeat="data in availableTypes" ng-if="!blade.parentBlade.catalog.isVirtual" va-permission="catalog:create">
+                <li class="list-item" ng-mouseup="addProduct(data.productType)" ng-repeat="data in availableTypes" ng-if="!blade.parentBlade.catalog.isVirtual && canAddProduct()">
                     <i class="list-ico {{data.icon}}" style="text-align:center"></i>
                     <span class="list-t">{{data.itemType | translate}}</span>
                     <span class="list-descr">{{data.description | translate}}</span>

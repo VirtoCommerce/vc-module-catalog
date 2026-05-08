@@ -8,19 +8,28 @@ using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Data.Authorization;
 using VirtoCommerce.CatalogModule.Data.ExportImport;
-using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.Platform.Security.Authorization;
+using Permissions = VirtoCommerce.CatalogModule.Core.ModuleConstants.Security.Permissions;
 
 namespace VirtoCommerce.CatalogModule.Web.Authorization
 {
-    public sealed class CatalogAuthorizationHandler : PermissionAuthorizationHandlerBase<CatalogAuthorizationRequirement>
+    public sealed class CatalogAuthorizationHandler(IOptions<MvcNewtonsoftJsonOptions> jsonOptions)
+        : PermissionAuthorizationHandlerBase<CatalogAuthorizationRequirement>
     {
-        private readonly MvcNewtonsoftJsonOptions _jsonOptions;
-        public CatalogAuthorizationHandler(IOptions<MvcNewtonsoftJsonOptions> jsonOptions)
+        private static readonly Dictionary<string, string> _fallbackPermissions = new()
         {
-            _jsonOptions = jsonOptions.Value;
-        }
+            [Permissions.CategoriesCreate] = Permissions.Create,
+            [Permissions.CategoriesRead] = Permissions.Read,
+            [Permissions.CategoriesUpdate] = Permissions.Update,
+            [Permissions.CategoriesDelete] = Permissions.Delete,
+            [Permissions.ProductsCreate] = Permissions.Create,
+            [Permissions.ProductsRead] = Permissions.Read,
+            [Permissions.ProductsUpdate] = Permissions.Update,
+            [Permissions.ProductsDelete] = Permissions.Delete,
+        };
+
+        private readonly MvcNewtonsoftJsonOptions _jsonOptions = jsonOptions.Value;
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, CatalogAuthorizationRequirement requirement)
         {
@@ -28,87 +37,115 @@ namespace VirtoCommerce.CatalogModule.Web.Authorization
 
             if (!context.HasSucceeded)
             {
-                var userPermissions = context.User.FindPermissions(requirement.Permission, _jsonOptions.SerializerSettings);
+                TryAuthorizeWithPermission(context, requirement, requirement.Permission);
+            }
 
-                if (userPermissions.Count > 0)
-                {
-                    var allowedCatalogIdsList = new List<string>();
+            if (!context.HasSucceeded && _fallbackPermissions.TryGetValue(requirement.Permission, out var fallbackPermission))
+            {
+                TryAuthorizeWithPermission(context, requirement, fallbackPermission);
+            }
+        }
 
-                    // Collect scope ids from all permissions
-                    foreach (var permission in userPermissions)
+        private void TryAuthorizeWithPermission(AuthorizationHandlerContext context, CatalogAuthorizationRequirement requirement, string permission)
+        {
+            var userPermissions = context.User.FindPermissions(permission, _jsonOptions.SerializerSettings);
+            if (userPermissions.Count == 0)
+            {
+                return;
+            }
+
+            var hasGlobalScope = userPermissions.Any(x => !x.AssignedScopes.OfType<SelectedCatalogScope>().Any());
+            if (hasGlobalScope)
+            {
+                context.Succeed(requirement);
+                return;
+            }
+
+            TryAuthorizeWithScopedPermission(context, requirement, permission);
+        }
+
+        private void TryAuthorizeWithScopedPermission(AuthorizationHandlerContext context, CatalogAuthorizationRequirement requirement, string permission)
+        {
+            var userPermissions = context.User.FindPermissions(permission, _jsonOptions.SerializerSettings);
+            if (userPermissions.Count == 0)
+            {
+                return;
+            }
+
+            var allowedCatalogIdsList = new List<string>();
+
+            foreach (var userPermission in userPermissions)
+            {
+                allowedCatalogIdsList.AddRange(userPermission.AssignedScopes.OfType<SelectedCatalogScope>().Select(x => x.CatalogId));
+            }
+
+            var allowedCatalogIds = allowedCatalogIdsList.Distinct().ToArray();
+
+            switch (context.Resource)
+            {
+                case CatalogSearchCriteria catalogSearchCriteria:
+                    if (CatalogScopeAuthorizationHelper.TryGetAuthorizedCatalogIds(catalogSearchCriteria.CatalogIds, allowedCatalogIds, out var catalogIds))
                     {
-                        allowedCatalogIdsList.AddRange(permission.AssignedScopes.OfType<SelectedCatalogScope>().Select(y => y.CatalogId));
-                    }
-
-                    var allowedCatalogIds = allowedCatalogIdsList.Distinct().ToArray();
-
-                    if (context.Resource is CatalogSearchCriteria catalogSearchCriteria)
-                    {
-                        catalogSearchCriteria.CatalogIds = catalogSearchCriteria.CatalogIds?.Any() ?? false
-                            ? catalogSearchCriteria.CatalogIds.Where(x => allowedCatalogIds.Contains(x)).ToArray()
-                            : allowedCatalogIds;
-
+                        catalogSearchCriteria.CatalogIds = catalogIds;
                         context.Succeed(requirement);
                     }
-                    else if (context.Resource is CatalogListEntrySearchCriteria listEntrySearchCriteria)
+                    break;
+                case CatalogListEntrySearchCriteria listEntrySearchCriteria:
+                    if (CatalogScopeAuthorizationHelper.TryGetAuthorizedCatalogIds(listEntrySearchCriteria.CatalogIds, allowedCatalogIds, out catalogIds))
                     {
-                        listEntrySearchCriteria.CatalogIds = listEntrySearchCriteria.CatalogIds?.Any() ?? false
-                            ? listEntrySearchCriteria.CatalogIds.Where(x => allowedCatalogIds.Contains(x)).ToArray()
-                            : allowedCatalogIds;
-
+                        listEntrySearchCriteria.CatalogIds = catalogIds;
                         context.Succeed(requirement);
                     }
-                    else if (context.Resource is Catalog catalog && !catalog.IsTransient())
+                    break;
+                case Catalog catalog when !catalog.IsTransient():
                     {
                         if (allowedCatalogIds.Contains(catalog.Id))
                         {
                             context.Succeed(requirement);
                         }
+
+                        break;
                     }
-                    else if (context.Resource is IEnumerable<IHasCatalogId> hasCatalogIds)
+                case IEnumerable<IHasCatalogId> hasCatalogIds:
                     {
-                        var catalogIds = hasCatalogIds.Select(x => x.CatalogId).Distinct().ToList();
-                        if (catalogIds.Intersect(allowedCatalogIds).Count() == catalogIds.Count)
+                        var resourceCatalogIds = hasCatalogIds.Select(x => x.CatalogId).Distinct().ToList();
+                        if (resourceCatalogIds.Intersect(allowedCatalogIds).Count() == resourceCatalogIds.Count)
                         {
                             context.Succeed(requirement);
                         }
+
+                        break;
                     }
-                    else if (context.Resource is IHasCatalogId hasCatalogId)
+                case IHasCatalogId hasCatalogId:
                     {
                         if (allowedCatalogIds.Contains(hasCatalogId.CatalogId))
                         {
                             context.Succeed(requirement);
                         }
+
+                        break;
                     }
-                    else if (context.Resource is ProductExportDataQuery dataQuery)
+                case ProductExportDataQuery dataQuery:
                     {
-                        if (dataQuery.CatalogIds.IsNullOrEmpty())
+                        if (CatalogScopeAuthorizationHelper.TryGetAuthorizedCatalogIds(dataQuery.CatalogIds, allowedCatalogIds, out catalogIds))
                         {
-                            dataQuery.CatalogIds = allowedCatalogIds;
+                            dataQuery.CatalogIds = catalogIds;
+                            context.Succeed(requirement);
                         }
-                        else
-                        {
-                            dataQuery.CatalogIds = dataQuery.CatalogIds.Intersect(allowedCatalogIds).ToArray();
-                        }
-                        context.Succeed(requirement);
+                        break;
                     }
-                    else if (context.Resource is PropertyDictionaryItemSearchCriteria propertyDictionaryItemSearchCriteria)
+                case PropertyDictionaryItemSearchCriteria propertyDictionaryItemSearchCriteria:
                     {
-                        if (propertyDictionaryItemSearchCriteria.CatalogIds.IsNullOrEmpty())
+                        if (CatalogScopeAuthorizationHelper.TryGetAuthorizedCatalogIds(propertyDictionaryItemSearchCriteria.CatalogIds, allowedCatalogIds, out catalogIds))
                         {
-                            propertyDictionaryItemSearchCriteria.CatalogIds = allowedCatalogIds;
+                            propertyDictionaryItemSearchCriteria.CatalogIds = catalogIds;
+                            context.Succeed(requirement);
                         }
-                        else
-                        {
-                            propertyDictionaryItemSearchCriteria.CatalogIds = propertyDictionaryItemSearchCriteria.CatalogIds.Intersect(allowedCatalogIds).ToArray();
-                        }
-                        context.Succeed(requirement);
+                        break;
                     }
-                    else if (context.Resource is IEnumerable<PropertyDictionaryItem>)
-                    {
-                        context.Succeed(requirement);
-                    }
-                }
+                case IEnumerable<PropertyDictionaryItem>:
+                    context.Succeed(requirement);
+                    break;
             }
         }
     }

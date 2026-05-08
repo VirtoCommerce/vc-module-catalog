@@ -30,16 +30,16 @@
           <li class="menu-item" ng-click='edit(contextMenuEntity)'>
             <i class="menu-ico fa fa-edit"></i> {{'platform.commands.manage' | translate}}
           </li>
-          <li class="menu-item" ng-click='cut(contextMenuEntity)' va-permission="catalog:create" ng-if="!blade.isBrowsingLinkedCategory">
+          <li class="menu-item" ng-click='cut(contextMenuEntity)' ng-if="!blade.isBrowsingLinkedCategory && canCutPaste()">
             <i class="menu-ico fas fa-cut"></i> {{'platform.commands.cut' | translate}}
           </li>
-          <li class="menu-item" ng-click='delete(contextMenuEntity)' va-permission="catalog:delete" ng-if="!blade.isBrowsingLinkedCategory">
+          <li class="menu-item" ng-click='delete(contextMenuEntity)' ng-if="!blade.isBrowsingLinkedCategory && canDelete()">
             <i class="menu-ico fas fa-trash-alt"></i> {{'platform.commands.delete' | translate}}
           </li>
-          <li class="menu-item" ng-click='copyItemID(contextMenuEntity)' va-permission="catalog:read">
+          <li class="menu-item" ng-click='copyItemID(contextMenuEntity)' ng-if="canRead()">
             <i class="menu-ico far fa-copy"></i> {{ 'catalog.commands.copy-id' | translate }}
           </li>
-          <li class="menu-item" ng-click='copyItemSku(contextMenuEntity)' va-permission="catalog:read" ng-if="contextMenuEntity.type != 'category'">
+          <li class="menu-item" ng-click='copyItemSku(contextMenuEntity)' ng-if="canRead() && contextMenuEntity.type != 'category'">
             <i class="menu-ico far fa-copy"></i> {{ 'catalog.commands.copy-sku' | translate }}
           </li>
         </ul>
