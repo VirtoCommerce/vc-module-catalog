@@ -42,7 +42,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
         Task<IList<CategoryEntity>> GetCategoriesByIdsAsync(IList<string> categoriesIds, string responseGroup);
 
-        Task<IList<ItemEntity>> GetItemByIdsAsync(IList<string> itemIds, string responseGroup = null);
+        Task<IList<ItemEntity>> GetItemByIdsAsync(IList<string> itemIds, string responseGroup = null, CancellationToken cancellationToken = default);
 
         Task<IList<PropertyEntity>> GetAllCatalogPropertiesAsync(string catalogId);
 
@@ -68,7 +68,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
         Task<IList<MeasureEntity>> GetMeasuresByIdsAsync(IList<string> ids);
 
-        Task<IList<ProductConfigurationEntity>> GetConfigurationsByIdsAsync(IList<string> ids, CancellationToken cancellationToken);
+        Task<IList<ProductConfigurationEntity>> GetConfigurationsByIdsAsync(IList<string> ids, string responseGroup, CancellationToken cancellationToken);
 
         Task<IList<AutomaticLinkQueryEntity>> GetAutomaticLinkQueriesByIdsAsync(IList<string> ids, string responseGroup);
     }
